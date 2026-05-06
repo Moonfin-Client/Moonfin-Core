@@ -609,8 +609,8 @@ class _MediaBarState extends State<MediaBar>
     if (!widget.prefs.get(UserPreferences.hardwareDecoding)) {
       return 'no';
     }
-    if (PlatformDetection.isAndroid && PlatformDetection.isTV) {
-      return 'auto';
+    if (PlatformDetection.isAndroid) {
+      return null;
     }
     if (PlatformDetection.isLinux) {
       return 'auto-safe';

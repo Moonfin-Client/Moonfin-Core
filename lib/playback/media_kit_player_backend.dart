@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -134,10 +134,11 @@ class MediaKitPlayerBackend implements PlayerBackend {
     Future<void> Function(int handle)? onNativeHandleReady,
   }) {
     final hwDecodingEnabled = prefs.get(UserPreferences.hardwareDecoding);
+    // Android: null → AndroidVideoController getDefaultHwdec() (mediacodec-copy).
     final String? hwdec = hwDecodingEnabled
-        ? ((PlatformDetection.isAndroid && PlatformDetection.isTV)
-            ? 'auto'
-            : (PlatformDetection.isLinux ? 'auto-safe' : null))
+        ? (PlatformDetection.isAndroid
+              ? null
+              : (PlatformDetection.isLinux ? 'auto-safe' : null))
         : 'no';
 
     final player = Player(

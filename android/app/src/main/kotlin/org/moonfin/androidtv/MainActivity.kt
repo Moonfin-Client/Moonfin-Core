@@ -1,4 +1,4 @@
-package org.moonfin.androidtv
+﻿package org.moonfin.androidtv
 
 import android.app.PendingIntent
 import android.app.PictureInPictureParams
@@ -35,6 +35,8 @@ import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManagerListener
 import com.google.android.gms.common.images.WebImage
 import com.ryanheise.audioservice.AudioServiceActivity
+import io.flutter.embedding.android.RenderMode
+import io.flutter.embedding.android.TransparencyMode
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
@@ -375,6 +377,12 @@ class MainActivity : AudioServiceActivity() {
             registerReceiver(screenReceiver, screenFilter)
         }
     }
+
+    // Must stay surface: media_kit draws video in a native SurfaceView behind Flutter.
+    // RenderMode.texture (FlutterTextureView) is opaque for that stack — video stays black.
+    override fun getRenderMode(): RenderMode = RenderMode.surface
+
+    override fun getTransparencyMode(): TransparencyMode = TransparencyMode.transparent
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()

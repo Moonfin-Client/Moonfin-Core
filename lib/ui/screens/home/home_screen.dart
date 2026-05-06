@@ -886,8 +886,8 @@ class _ContentRowsState extends State<_ContentRows>
     if (!hwDecodingEnabled) {
       return 'no';
     }
-    if (PlatformDetection.isAndroid && PlatformDetection.isTV) {
-      return 'auto';
+    if (PlatformDetection.isAndroid) {
+      return null;
     }
     if (PlatformDetection.isLinux) {
       return 'auto-safe';
