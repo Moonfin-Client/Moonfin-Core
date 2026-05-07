@@ -904,47 +904,26 @@ class _ContentRowsState extends State<_ContentRows>
       Map<String, dynamic> fallbackRawData = item.rawData;
 
       if (item.type == 'Series') {
-        final seasonsData = await client.itemsApi.getSeasons(item.id);
-        final seasons = (seasonsData['Items'] as List?)
-                ?.cast<Map<String, dynamic>>()
-                .toList() ??
-            const <Map<String, dynamic>>[];
-        if (seasons.isEmpty) {
-          return null;
-        }
-
-        seasons.sort((a, b) =>
-            ((a['IndexNumber'] as int?) ?? 1 << 20)
-                .compareTo((b['IndexNumber'] as int?) ?? 1 << 20));
-
-        final firstSeasonId = seasons.first['Id'] as String?;
-        if (firstSeasonId == null || firstSeasonId.isEmpty) {
-          return null;
-        }
-
-        final episodesData = await client.itemsApi.getEpisodes(
-          item.id,
-          seasonId: firstSeasonId,
+        // try NextUp to respect user progress, and avoid empty folder search
+        final nextUpData = await client.itemsApi.getNextUp(
+          seriesId: item.id,
+          limit: 1,
         );
-        final episodes = (episodesData['Items'] as List?)
-                ?.cast<Map<String, dynamic>>()
-                .toList() ??
-            const <Map<String, dynamic>>[];
-        if (episodes.isEmpty) {
-          return null;
+        final nextUpItems = (nextUpData['Items'] as List?)
+            ?.cast<Map<String, dynamic>>()
+            .toList();
+
+        if (nextUpItems != null && nextUpItems.isNotEmpty) {
+          final nextUp = nextUpItems.first;
+          // Skip specials (Season 0) if they appear in Next Up
+          if ((nextUp['ParentIndexNumber'] as int?) != 0) {
+            targetId = nextUp['Id'] as String;
+            fallbackRawData = nextUp;
+          }
         }
 
-        episodes.sort((a, b) =>
-            ((a['IndexNumber'] as int?) ?? 1 << 20)
-                .compareTo((b['IndexNumber'] as int?) ?? 1 << 20));
-
-        final first = episodes.first;
-        final firstId = first['Id'] as String?;
-        if (firstId == null || firstId.isEmpty) {
-          return null;
-        }
-        targetId = firstId;
-        fallbackRawData = first;
+        // If we still only have the Series ID, we couldn't find a valid episode
+        if (targetId == item.id) return null;
       }
 
       try {
@@ -970,6 +949,14 @@ class _ContentRowsState extends State<_ContentRows>
     final resume = _playbackPositionFromRaw(item);
     if (resume != null && resume > Duration.zero) {
       return resume;
+    }
+
+    final duration = item.runtime;
+    if (duration != null && duration > Duration.zero) {
+      // If the video is shorter than 15 minutes, start at 0 instead of 3 mins
+      if (duration < const Duration(minutes: 15)) {
+        return Duration.zero;
+      }
     }
 
     return const Duration(minutes: 3);
