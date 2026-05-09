@@ -62,29 +62,41 @@ android {
 
     flavorDimensions += "device"
     productFlavors {
+        val baseAppId = "org.moonfin.androidtv"
+        val baseAppName = "Moonfin"
+        val mobileAbis = listOf("arm64-v8a")
+        val tvAbis = listOf("arm64-v8a", "armeabi-v7a", "x86_64")
         create("mobile") {
             dimension = "device"
-            applicationId = "org.moonfin.androidtv"
+            applicationId = baseAppId
             versionCode = flutter.versionCode
             versionName = flutter.versionName
-
-            ndk {
-                abiFilters += listOf("arm64-v8a")
-            }
+            ndk { abiFilters += mobileAbis }
+            manifestPlaceholders["appName"] = baseAppName
+        }
+        create("mobile-beta") {
+            dimension = "device"
+            applicationId = "$baseAppId.beta"
+            versionCode = flutter.versionCode
+            versionName = flutter.versionName
+            ndk { abiFilters += mobileAbis }
+            manifestPlaceholders["appName"] = "$baseAppName Beta"
         }
         create("androidTv") {
             dimension = "device"
-            applicationId = "org.moonfin.androidtv"
+            applicationId = baseAppId
             versionCode = androidTvVersionCode
             versionName = androidTvVersionName
-
-            ndk {
-                abiFilters += listOf(
-                    "arm64-v8a",
-                    "armeabi-v7a",
-                    "x86_64",
-                )
-            }
+            ndk { abiFilters += tvAbis }
+            manifestPlaceholders["appName"] = baseAppName
+        }
+        create("androidTv-beta") {
+            dimension = "device"
+            applicationId = "$baseAppId.beta"
+            versionCode = androidTvVersionCode
+            versionName = androidTvVersionName
+            ndk { abiFilters += tvAbis }
+            manifestPlaceholders["appName"] = "$baseAppName Beta"
         }
     }
 
