@@ -59,7 +59,7 @@ class VideoPlayerScreen extends StatefulWidget {
 class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     with WidgetsBindingObserver {
   static final _camelCaseSpaceRe = RegExp(r'(?<=[a-z])(?=[A-Z])');
-  static const _tvTemporarySpeed = 2.0;
+  static const _temporarySpeed = 2.0;
   static const _tvTemporarySpeedHoldDelay = Duration(milliseconds: 420);
   static const _seekPromptSuppressionDuration = Duration(milliseconds: 1200);
   static const _seekDragPromptSuppressionDuration = Duration(seconds: 4);
@@ -131,6 +131,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   LogicalKeyboardKey? _tvTemporarySpeedHoldKey;
   bool _tvTemporarySpeedHoldActive = false;
   double? _tvTemporarySpeedRestoreSpeed;
+  bool _mobileTemporarySpeedHoldActive = false;
+  double? _mobileTemporarySpeedRestoreSpeed;
 
   MediaSegment? _skipSegment;
   Duration? _skipTo;
@@ -714,6 +716,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _cancelTvTemporarySpeedHold();
+    _cancelMobileTemporarySpeedHold();
     _hideTimer?.cancel();
     _volumeOverlayTimer?.cancel();
     _brightnessOverlayTimer?.cancel();
@@ -962,6 +965,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void didChangeAppLifecycleState(AppLifecycleState lifecycleState) {
     if (lifecycleState != AppLifecycleState.resumed) {
       _cancelTvTemporarySpeedHold();
+      _cancelMobileTemporarySpeedHold();
     }
     switch (lifecycleState) {
       case AppLifecycleState.inactive:
@@ -2045,7 +2049,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   bool _canUseTvTemporarySpeedHold() {
-    if (!PlatformDetection.isTV) return false;
+    if (!PlatformDetection.isTV && !PlatformDetection.useDesktopUi) return false;
     if (_castService.activeKind != null) return false;
     if (_isCurrentPreroll) return false;
     if (_isOsdLocked) return false;
@@ -2111,16 +2115,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _tvTemporarySpeedHoldActive = true;
     _tvTemporarySpeedRestoreSpeed ??= _state.playbackSpeed;
 
-    if ((_state.playbackSpeed - _tvTemporarySpeed).abs() < 0.001) {
+    if ((_state.playbackSpeed - _temporarySpeed).abs() < 0.001) {
       return;
     }
 
     try {
-      await _manager.setPlaybackSpeed(_tvTemporarySpeed);
+      await _manager.setPlaybackSpeed(_temporarySpeed);
     } catch (_) {}
   }
 
-  Future<void> _restoreTvTemporarySpeed(double speed) async {
+  Future<void> _restoreTemporarySpeed(double speed) async {
     try {
       await _manager.setPlaybackSpeed(speed);
     } catch (_) {}
@@ -2138,8 +2142,41 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _tvTemporarySpeedRestoreSpeed = null;
 
     if (shouldRestore && restoreSpeed != null) {
-      unawaited(_restoreTvTemporarySpeed(restoreSpeed));
+      unawaited(_restoreTemporarySpeed(restoreSpeed));
     }
+  }
+
+  bool _canUseMobileTemporarySpeedHold() {
+    if (!PlatformDetection.isMobile) return false;
+    if (_castService.activeKind != null) return false;
+    if (_isCurrentPreroll) return false;
+    if (_isOsdLocked) return false;
+    if (!_state.isPlaying) return false;
+    if (_syncPlayManager?.state.enabled == true) return false;
+    return true;
+  }
+
+  Future<void> _activateMobileTemporarySpeedHold() async {
+    if (!mounted) return;
+    if (!_canUseMobileTemporarySpeedHold()) return;
+    _mobileTemporarySpeedHoldActive = true;
+    _mobileTemporarySpeedRestoreSpeed ??= _state.playbackSpeed;
+    _hideTimer?.cancel();
+    if ((_state.playbackSpeed - _temporarySpeed).abs() < 0.001) return;
+    try {
+      await _manager.setPlaybackSpeed(_temporarySpeed);
+    } catch (_) {}
+  }
+
+  void _cancelMobileTemporarySpeedHold() {
+    final shouldRestore = _mobileTemporarySpeedHoldActive;
+    final restoreSpeed = _mobileTemporarySpeedRestoreSpeed;
+    _mobileTemporarySpeedHoldActive = false;
+    _mobileTemporarySpeedRestoreSpeed = null;
+    if (shouldRestore && restoreSpeed != null) {
+      unawaited(_restoreTemporarySpeed(restoreSpeed));
+    }
+    if (_controlsVisible) _scheduleHide();
   }
 
   int _accelerateSeekStep(int baseMs, KeyEvent event) {
@@ -2261,7 +2298,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return KeyEventResult.ignored;
     }
 
-    if (PlatformDetection.isTV) {
+    if (PlatformDetection.isTV || PlatformDetection.useDesktopUi) {
       final temporarySpeedResult = _handleTvTemporarySpeedKeyDownOrRepeat(
         event,
       );
@@ -2553,6 +2590,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           onKeyEvent: _handleKeyEvent,
           child: GestureDetector(
             onTap: PlatformDetection.isTV ? null : _toggleControls,
+            onLongPress: PlatformDetection.useMobileUi && !_isOsdLocked
+                ? () => unawaited(_activateMobileTemporarySpeedHold())
+                : null,
+            onLongPressEnd: PlatformDetection.useMobileUi
+                ? (_) => unawaited(_cancelMobileTemporarySpeedHold())
+                : null,
             onDoubleTapDown: PlatformDetection.isTV
                 ? null
                 : PlatformDetection.useMobileUi && !_isOsdLocked
