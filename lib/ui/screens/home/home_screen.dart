@@ -530,6 +530,7 @@ class _ContentRows extends StatefulWidget {
 
 class _ContentRowsState extends State<_ContentRows>
   with WidgetsBindingObserver, WindowListener {
+  static const double _kHomeRowLabelInset = 16.0;
   final _scrollController = ScrollController();
   final _mediaBarFocusNode = FocusNode(debugLabel: 'home_media_bar_focus');
   final _playbackManager = GetIt.instance<PlaybackManager>();
@@ -2151,11 +2152,16 @@ class _ContentRowsState extends State<_ContentRows>
         : _isHomeRowsStyleV2()
             ? safeTop + navbarHeight + 8
             : safeTop + 56;
-    final navbarLeftInset = navbarIsTop ? 16.0 : 56.0;
+    final tvTopNavbarInset =
+        navbarIsTop && PlatformDetection.isTV && !PlatformDetection.useMobileUi
+            ? 48.0
+            : 0.0;
+    final navbarLeftInset = navbarIsTop ? 16.0 + tvTopNavbarInset : 56.0;
     final infoHeaderLeftInset =
-      (!PlatformDetection.useMobileUi && navbarLeftInset == 16.0) ? 8.0 : 0.0;
-    final rowLeftInset =
-      (navbarIsLeft && !PlatformDetection.useMobileUi) ? 56.0 : 0.0;
+      (!PlatformDetection.useMobileUi && navbarIsTop) ? 8.0 : 0.0;
+    final rowLeftInset = navbarIsLeft && !PlatformDetection.useMobileUi
+        ? 56.0
+        : tvTopNavbarInset;
     final infoTopBasePadding =
       (!PlatformDetection.useMobileUi && navbarHeight == 0) ? 14.0 : 8.0;
     final infoTopPadding = safeTop + navbarHeight + infoTopBasePadding;
@@ -2396,8 +2402,8 @@ class _ContentRowsState extends State<_ContentRows>
         height: rowHeight,
         itemExtent: squarePosterSide,
         itemSpacing: 12,
-        leadingPadding: 0,
-        padding: const EdgeInsets.fromLTRB(16, 5, 20, 5),
+        leadingPadding: _isHomeRowsStyleV2() ? _kHomeRowLabelInset : 0,
+        padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
         onIndexChanged: (_, _) {
           _onHomeRowTileFocused(null);
         },
@@ -2456,8 +2462,8 @@ class _ContentRowsState extends State<_ContentRows>
         height: rowHeight,
         itemExtent: squarePosterSide,
         itemSpacing: 12,
-        leadingPadding: 0,
-        padding: const EdgeInsets.fromLTRB(16, 5, 20, 5),
+        leadingPadding: _isHomeRowsStyleV2() ? _kHomeRowLabelInset : 0,
+        padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
         onIndexChanged: (_, item) {
           _onHomeRowTileFocused(item);
         },
@@ -2570,9 +2576,9 @@ class _ContentRowsState extends State<_ContentRows>
         height: maxCardHeight + (10 * metadataScale),
         itemExtent: firstCardWidth,
         itemSpacing: 12,
-        leadingPadding: isRowsV2 ? 16 : 0,
+        leadingPadding: isRowsV2 ? _kHomeRowLabelInset : 0,
         clipBehavior: isRowsV2 ? Clip.none : Clip.hardEdge,
-        padding: const EdgeInsets.fromLTRB(16, 5, 20, 5),
+        padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
         onFocusChange: (has) => _onRowFocusTracked(rowIndex, has),
         onVerticalNavigation: (isUp) => _onRowVerticalNavigation(
           rowIndex: rowIndex,
@@ -2945,7 +2951,7 @@ class _ContentRowsState extends State<_ContentRows>
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
+          padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 16, 8, 8),
           child: Text(
             title,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
