@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:collection';
+import 'dart:developer' as developer;
 import 'dart:math' as math;
 
 import 'package:dio/dio.dart';
@@ -14,6 +17,11 @@ const String _kShuffleOverlayItemFields =
     'ParentThumbImageTag,Overview,CommunityRating,OfficialRating,CriticRating,'
     'ProviderIds,Genres';
 const String _kShuffleCandidateItemFields = 'Type';
+const _kShuffleUnscopedConcurrency = 3;
+const _kShuffleUnscopedOverallTimeout = Duration(seconds: 12);
+const _kShuffleUnscopedPerLibraryTimeout = Duration(seconds: 4);
+const _kShuffleUserViewsTimeout = Duration(seconds: 6);
+const _kShuffleHydrationTimeout = Duration(seconds: 3);
 
 const List<String> _kShuffleExcludeItemTypes = <String>[
   'BoxSet',
@@ -21,6 +29,26 @@ const List<String> _kShuffleExcludeItemTypes = <String>[
 ];
 
 final Set<String> _shuffleIdsHydrationUnsupportedServers = <String>{};
+
+void _shuffleLogInfo(String message) {
+  assert(() {
+    developer.log(message, name: 'ShuffleFetch');
+    return true;
+  }());
+}
+
+void _shuffleLogError(String message, Object error, StackTrace stackTrace) {
+  assert(() {
+    developer.log(
+      message,
+      name: 'ShuffleFetch',
+      level: 1000,
+      error: error,
+      stackTrace: stackTrace,
+    );
+    return true;
+  }());
+}
 
 bool _shouldDisableIdsHydrationForError(DioException error) {
   final statusCode = error.response?.statusCode;
@@ -31,8 +59,17 @@ bool _shouldDisableIdsHydrationForError(DioException error) {
       statusCode == 501;
 }
 
+String _normalizeShuffleContentType(String contentType) {
+  final normalized = contentType.trim().toLowerCase();
+  return switch (normalized) {
+    'movies' || 'movie' => 'movies',
+    'shows' || 'show' || 'tvshows' || 'tvshow' || 'series' => 'shows',
+    _ => 'both',
+  };
+}
+
 List<String> _shuffleIncludeItemTypes(String contentType) {
-  return switch (contentType) {
+  return switch (_normalizeShuffleContentType(contentType)) {
     'movies' => const ['Movie'],
     'shows' => const ['Series'],
     _ => const ['Movie', 'Series'],
@@ -40,7 +77,7 @@ List<String> _shuffleIncludeItemTypes(String contentType) {
 }
 
 int _shuffleRequestLimit(String contentType, int limit) {
-  return switch (contentType) {
+  return switch (_normalizeShuffleContentType(contentType)) {
     'movies' => math.max(limit * 2, 8),
     'shows' => math.max(limit * 3, 12),
     _ => math.max(limit * 2, 10),
@@ -154,7 +191,8 @@ bool supportsShuffleLibraryForContentType(
   AggregatedLibrary library,
   String contentType,
 ) {
-  final collectionType = library.collectionType.toLowerCase();
+  final normalizedContentType = _normalizeShuffleContentType(contentType);
+  final collectionType = library.collectionType.trim().toLowerCase();
   final normalizedName = library.name.trim().toLowerCase();
 
   if ({'books', 'playlists', 'livetv', 'boxsets'}.contains(collectionType)) {
@@ -165,19 +203,23 @@ bool supportsShuffleLibraryForContentType(
     return false;
   }
 
-  return switch (contentType) {
-    'movies' => collectionType != 'tvshows' && collectionType != 'music',
-    'shows' => collectionType == 'tvshows' || collectionType.isEmpty,
-    _ => collectionType != 'music',
+  final isMovieLibrary = collectionType == 'movies';
+  final isSeriesLibrary = collectionType == 'tvshows';
+
+  return switch (normalizedContentType) {
+    'movies' => isMovieLibrary,
+    'shows' => isSeriesLibrary,
+    _ => isMovieLibrary || isSeriesLibrary,
   };
 }
 
 bool genreMatchesShuffleContent(Map<String, dynamic> item, String contentType) {
+  final normalizedContentType = _normalizeShuffleContentType(contentType);
   final movieCount = item['MovieCount'] as int? ?? 0;
   final seriesCount = item['SeriesCount'] as int? ?? 0;
   if (movieCount == 0 && seriesCount == 0) return true;
 
-  return switch (contentType) {
+  return switch (normalizedContentType) {
     'movies' => movieCount > 0,
     'shows' => seriesCount > 0,
     _ => movieCount > 0 || seriesCount > 0,
@@ -194,9 +236,18 @@ bool _isExcludedShuffleItemType(String? type) {
 Future<List<AggregatedLibrary>> fetchShuffleLibraries({
   required String contentType,
 }) async {
+  final stopwatch = Stopwatch()..start();
   try {
     final viewsRepo = GetIt.instance<UserViewsRepository>();
-    final libs = await viewsRepo.getUserViews();
+    final libs = await viewsRepo.getUserViews().timeout(
+      _kShuffleUserViewsTimeout,
+      onTimeout: () {
+        _shuffleLogInfo(
+          'fetchShuffleLibraries timeout contentType=$contentType elapsedMs=${stopwatch.elapsedMilliseconds}',
+        );
+        return const <AggregatedLibrary>[];
+      },
+    );
     final filtered =
         libs
             .where(
@@ -207,13 +258,22 @@ Future<List<AggregatedLibrary>> fetchShuffleLibraries({
           ..sort(
             (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
           );
+    _shuffleLogInfo(
+      'fetchShuffleLibraries success contentType=$contentType raw=${libs.length} filtered=${filtered.length} elapsedMs=${stopwatch.elapsedMilliseconds}',
+    );
     return filtered;
-  } catch (_) {
+  } catch (error, stackTrace) {
+    _shuffleLogError(
+      'fetchShuffleLibraries failed contentType=$contentType elapsedMs=${stopwatch.elapsedMilliseconds}',
+      error,
+      stackTrace,
+    );
     return const <AggregatedLibrary>[];
   }
 }
 
 Future<List<String>> fetchShuffleGenres({required String contentType}) async {
+  final stopwatch = Stopwatch()..start();
   try {
     final client = GetIt.instance<MediaServerClient>();
     final result = await client.itemsApi.getGenres(
@@ -232,7 +292,12 @@ Future<List<String>> fetchShuffleGenres({required String contentType}) async {
         .map((item) => item['Name'] as String? ?? '')
         .where((name) => name.isNotEmpty)
         .toList();
-  } catch (_) {
+  } catch (error, stackTrace) {
+    _shuffleLogError(
+      'fetchShuffleGenres failed contentType=$contentType elapsedMs=${stopwatch.elapsedMilliseconds}',
+      error,
+      stackTrace,
+    );
     return const <String>[];
   }
 }
@@ -244,7 +309,205 @@ Future<List<AggregatedItem>> fetchRandomItems({
   int limit = 1,
   String fields = _kShuffleOverlayItemFields,
 }) async {
+  final stopwatch = Stopwatch()..start();
   final client = GetIt.instance<MediaServerClient>();
+  _shuffleLogInfo(
+    'fetchRandomItems start contentType=$contentType parentId=$parentId genre=$genreName limit=$limit',
+  );
+
+  if (parentId == null && genreName == null) {
+    final libs = await fetchShuffleLibraries(contentType: contentType);
+    if (libs.isNotEmpty) {
+      final unscopedItems = await _collectUnscopedShuffleItems(
+        libraries: libs,
+        client: client,
+        contentType: contentType,
+        limit: limit,
+        fields: fields,
+      );
+      if (unscopedItems.isNotEmpty) {
+        _shuffleLogInfo(
+          'fetchRandomItems unscoped success contentType=$contentType count=${unscopedItems.length} elapsedMs=${stopwatch.elapsedMilliseconds}',
+        );
+        return unscopedItems;
+      }
+
+      final fallbackLibraries = List<AggregatedLibrary>.from(libs)..shuffle();
+      if (fallbackLibraries.isNotEmpty) {
+        final fallbackLibrary = fallbackLibraries.first;
+        try {
+          final fallbackItems = await _fetchRandomItemsScoped(
+            client: client,
+            contentType: contentType,
+            parentId: fallbackLibrary.id,
+            genreName: null,
+            limit: limit,
+            fields: fields,
+          ).timeout(_kShuffleUnscopedPerLibraryTimeout);
+          _shuffleLogInfo(
+            'fetchRandomItems fallback-library success contentType=$contentType libraryId=${fallbackLibrary.id} count=${fallbackItems.length} elapsedMs=${stopwatch.elapsedMilliseconds}',
+          );
+          return fallbackItems;
+        } catch (error, stackTrace) {
+          _shuffleLogError(
+            'fetchRandomItems fallback-library failed contentType=$contentType libraryId=${fallbackLibrary.id} elapsedMs=${stopwatch.elapsedMilliseconds}',
+            error,
+            stackTrace,
+          );
+        }
+      }
+    } else {
+      _shuffleLogInfo(
+        'fetchRandomItems no eligible libraries contentType=$contentType elapsedMs=${stopwatch.elapsedMilliseconds}',
+      );
+    }
+  }
+
+  final scopedItems = await _fetchRandomItemsScoped(
+    client: client,
+    contentType: contentType,
+    parentId: parentId,
+    genreName: genreName,
+    limit: limit,
+    fields: fields,
+  );
+  _shuffleLogInfo(
+    'fetchRandomItems scoped result contentType=$contentType parentId=$parentId genre=$genreName count=${scopedItems.length} elapsedMs=${stopwatch.elapsedMilliseconds}',
+  );
+  return scopedItems;
+}
+
+Future<List<AggregatedItem>> _collectUnscopedShuffleItems({
+  required List<AggregatedLibrary> libraries,
+  required MediaServerClient client,
+  required String contentType,
+  required int limit,
+  required String fields,
+}) async {
+  if (libraries.isEmpty || limit <= 0) {
+    return const <AggregatedItem>[];
+  }
+
+  final stopwatch = Stopwatch()..start();
+  final pool = List<AggregatedLibrary>.from(libraries)..shuffle();
+  final queue = Queue<AggregatedLibrary>.from(pool);
+  final seenIds = <String>{};
+  final collected = <AggregatedItem>[];
+  final deadline = DateTime.now().add(_kShuffleUnscopedOverallTimeout);
+
+  final sampleWindow = math.min(
+    pool.length,
+    math.max(_kShuffleUnscopedConcurrency * 2, 6),
+  );
+  final perLibraryLimit = math.max(1, ((limit * 2) / sampleWindow).ceil());
+
+  Future<void> worker() async {
+    while (collected.length < limit) {
+      if (DateTime.now().isAfter(deadline)) {
+        return;
+      }
+      if (queue.isEmpty) {
+        return;
+      }
+
+      final library = queue.removeFirst();
+      final remaining = deadline.difference(DateTime.now());
+      if (remaining <= Duration.zero) {
+        return;
+      }
+
+      final requestTimeout = remaining < _kShuffleUnscopedPerLibraryTimeout
+          ? remaining
+          : _kShuffleUnscopedPerLibraryTimeout;
+
+      try {
+        final items = await _fetchRandomItemsScoped(
+          client: client,
+          contentType: contentType,
+          parentId: library.id,
+          genreName: null,
+          limit: perLibraryLimit,
+          fields: fields,
+        ).timeout(requestTimeout);
+        for (final item in items) {
+          if (!seenIds.add(item.id)) {
+            continue;
+          }
+          collected.add(item);
+          if (collected.length >= limit) {
+            return;
+          }
+        }
+      } catch (error, stackTrace) {
+        _shuffleLogError(
+          '_collectUnscopedShuffleItems worker failure contentType=$contentType libraryId=${library.id} requestTimeoutMs=${requestTimeout.inMilliseconds}',
+          error,
+          stackTrace,
+        );
+      }
+    }
+  }
+
+  final workerCount = math.min(_kShuffleUnscopedConcurrency, queue.length);
+  if (workerCount > 0) {
+    await Future.wait(
+      List<Future<void>>.generate(workerCount, (_) => worker()),
+    );
+  }
+
+  while (collected.length < limit && queue.isNotEmpty) {
+    final remaining = deadline.difference(DateTime.now());
+    if (remaining <= Duration.zero) {
+      break;
+    }
+    final library = queue.removeFirst();
+    final requestTimeout = remaining < _kShuffleUnscopedPerLibraryTimeout
+        ? remaining
+        : _kShuffleUnscopedPerLibraryTimeout;
+    try {
+      final items = await _fetchRandomItemsScoped(
+        client: client,
+        contentType: contentType,
+        parentId: library.id,
+        genreName: null,
+        limit: 1,
+        fields: fields,
+      ).timeout(requestTimeout);
+      for (final item in items) {
+        if (!seenIds.add(item.id)) {
+          continue;
+        }
+        collected.add(item);
+        if (collected.length >= limit) {
+          break;
+        }
+      }
+    } catch (error, stackTrace) {
+      _shuffleLogError(
+        '_collectUnscopedShuffleItems fallback failure contentType=$contentType libraryId=${library.id} requestTimeoutMs=${requestTimeout.inMilliseconds}',
+        error,
+        stackTrace,
+      );
+    }
+  }
+
+  collected.shuffle();
+  final result = collected.take(limit).toList();
+  _shuffleLogInfo(
+    '_collectUnscopedShuffleItems complete contentType=$contentType libraries=${libraries.length} requested=$limit result=${result.length} elapsedMs=${stopwatch.elapsedMilliseconds}',
+  );
+  return result;
+}
+
+Future<List<AggregatedItem>> _fetchRandomItemsScoped({
+  required MediaServerClient client,
+  required String contentType,
+  required int limit,
+  required String fields,
+  String? parentId,
+  String? genreName,
+}) async {
+  final stopwatch = Stopwatch()..start();
   final serverId = client.baseUrl;
 
   final requestLimit = _shuffleRequestLimit(contentType, limit);
@@ -277,6 +540,9 @@ Future<List<AggregatedItem>> fetchRandomItems({
   );
 
   if (candidates.isEmpty) {
+    _shuffleLogInfo(
+      '_fetchRandomItemsScoped no candidates contentType=$contentType serverId=$serverId parentId=$parentId genre=$genreName elapsedMs=${stopwatch.elapsedMilliseconds}',
+    );
     return const <AggregatedItem>[];
   }
 
@@ -291,17 +557,40 @@ Future<List<AggregatedItem>> fetchRandomItems({
       contentType: contentType,
       ids: candidateIds,
       fields: fields,
-    );
+    ).timeout(_kShuffleHydrationTimeout);
     if (hydrated.isNotEmpty) {
+      _shuffleLogInfo(
+        '_fetchRandomItemsScoped hydrated success contentType=$contentType serverId=$serverId count=${hydrated.length} elapsedMs=${stopwatch.elapsedMilliseconds}',
+      );
       return hydrated;
     }
+  } on TimeoutException catch (error, stackTrace) {
+    _shuffleLogError(
+      '_fetchRandomItemsScoped hydration timeout contentType=$contentType serverId=$serverId ids=${candidateIds.length} elapsedMs=${stopwatch.elapsedMilliseconds}',
+      error,
+      stackTrace,
+    );
   } on DioException catch (e) {
+    _shuffleLogError(
+      '_fetchRandomItemsScoped hydration dio failure contentType=$contentType serverId=$serverId ids=${candidateIds.length} elapsedMs=${stopwatch.elapsedMilliseconds}',
+      e,
+      e.stackTrace,
+    );
     if (_shouldDisableIdsHydrationForError(e)) {
       _shuffleIdsHydrationUnsupportedServers.add(serverId);
+      _shuffleLogInfo(
+        '_fetchRandomItemsScoped disabling hydration contentType=$contentType serverId=$serverId statusCode=${e.response?.statusCode}',
+      );
     }
-  } catch (_) {}
+  } catch (error, stackTrace) {
+    _shuffleLogError(
+      '_fetchRandomItemsScoped hydration unknown failure contentType=$contentType serverId=$serverId ids=${candidateIds.length} elapsedMs=${stopwatch.elapsedMilliseconds}',
+      error,
+      stackTrace,
+    );
+  }
 
-  return _collectRandomItems(
+  final fallbackItems = await _collectRandomItems(
     client: client,
     serverId: serverId,
     contentType: contentType,
@@ -312,4 +601,8 @@ Future<List<AggregatedItem>> fetchRandomItems({
     parentId: parentId,
     genreName: genreName,
   );
+  _shuffleLogInfo(
+    '_fetchRandomItemsScoped fallback collect contentType=$contentType serverId=$serverId parentId=$parentId genre=$genreName count=${fallbackItems.length} elapsedMs=${stopwatch.elapsedMilliseconds}',
+  );
+  return fallbackItems;
 }

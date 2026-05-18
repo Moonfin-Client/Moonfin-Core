@@ -24,6 +24,10 @@ import 'shuffle_options_dialog.dart';
 
 const _kShuffleCardCount = 5;
 const _kShuffleLoadTimeout = Duration(seconds: 25);
+const _kShuffleMaxAttempts = 3;
+const _kShuffleRetryDelay = Duration(milliseconds: 800);
+
+enum _ShuffleLoadTrigger { initial, random, library, genre }
 
 Future<void> showShuffleOverlay(BuildContext context) {
   final prefs = GetIt.instance<UserPreferences>();
@@ -83,12 +87,16 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
   bool _hasLoadError = false;
   int _loadRequestId = 0;
   int _ratingsRequestId = 0;
+  _ShuffleLoadTrigger _activeLoadTrigger = _ShuffleLoadTrigger.initial;
 
   @override
   void initState() {
     super.initState();
     _contentType = widget.initialContentType;
-    _loadItems(requestInitialFocus: true);
+    _loadItems(
+      requestInitialFocus: true,
+      trigger: _ShuffleLoadTrigger.initial,
+    );
   }
 
   @override
@@ -104,54 +112,116 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
     super.dispose();
   }
 
-  Future<void> _loadItems({bool requestInitialFocus = false}) async {
+  void _logShuffleLoadInfo(String message) {
+    assert(() {
+      debugPrint('[ShuffleOverlay] $message');
+      return true;
+    }());
+  }
+
+  void _logShuffleLoadError(
+    String message,
+    Object error,
+    StackTrace stackTrace,
+  ) {
+    assert(() {
+      debugPrint('[ShuffleOverlay] $message (${error.runtimeType}): $error');
+      return true;
+    }());
+  }
+
+  Future<void> _loadItems({
+    bool requestInitialFocus = false,
+    _ShuffleLoadTrigger trigger = _ShuffleLoadTrigger.random,
+  }) async {
     final requestId = ++_loadRequestId;
     if (mounted) {
       setState(() {
         _loading = true;
         _hasLoadError = false;
         _selectedRatings = const {};
+        _activeLoadTrigger = trigger;
       });
     }
 
-    try {
-      final items = await fetchRandomItems(
-        contentType: _contentType,
-        parentId: _activeLibraryId,
-        genreName: _activeGenreName,
-        limit: _kShuffleCardCount,
-      ).timeout(_kShuffleLoadTimeout);
+    final stopwatch = Stopwatch()..start();
+    Object? lastError;
 
+    for (var attempt = 1; attempt <= _kShuffleMaxAttempts; attempt++) {
       if (!mounted || requestId != _loadRequestId) return;
-      final selectedItem = items.isEmpty ? null : items.first;
-      setState(() {
-        _items = items;
-        _loading = false;
-        _hasLoadError = false;
-        _selectedIndex = 0;
-        _selectedItem = selectedItem;
-      });
 
-      if (PlatformDetection.useMobileUi) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted || !_mobilePageController.hasClients) return;
-          _syncMobilePage(0, jump: true);
+      try {
+        final items = await fetchRandomItems(
+          contentType: _contentType,
+          parentId: _activeLibraryId,
+          genreName: _activeGenreName,
+          limit: _kShuffleCardCount,
+        ).timeout(_kShuffleLoadTimeout);
+
+        if (!mounted || requestId != _loadRequestId) return;
+        final selectedItem = items.isEmpty ? null : items.first;
+        setState(() {
+          _items = items;
+          _loading = false;
+          _hasLoadError = false;
+          _selectedIndex = 0;
+          _selectedItem = selectedItem;
         });
-      }
 
-      _loadRatingsForSelected(selectedItem);
-      _warmRatingsCache(items, selectedItem: selectedItem);
-    } catch (_) {
-      if (!mounted || requestId != _loadRequestId) return;
-      setState(() {
-        _items = const <AggregatedItem>[];
-        _loading = false;
-        _hasLoadError = true;
-        _selectedIndex = 0;
-        _selectedItem = null;
-        _selectedRatings = const {};
-      });
+        _logShuffleLoadInfo(
+          'trigger=$trigger attempt=$attempt success items=${items.length} elapsedMs=${stopwatch.elapsedMilliseconds}',
+        );
+
+        if (PlatformDetection.useMobileUi) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted || !_mobilePageController.hasClients) return;
+            _syncMobilePage(0, jump: true);
+          });
+        }
+
+        _loadRatingsForSelected(selectedItem);
+        _warmRatingsCache(items, selectedItem: selectedItem);
+
+        if (requestInitialFocus) {
+          _requestInitialFocus();
+        }
+        return;
+      } on TimeoutException catch (error, stackTrace) {
+        lastError = error;
+        _logShuffleLoadError(
+          'trigger=$trigger attempt=$attempt timeout elapsedMs=${stopwatch.elapsedMilliseconds}',
+          error,
+          stackTrace,
+        );
+        break;
+      } catch (error, stackTrace) {
+        lastError = error;
+        _logShuffleLoadError(
+          'trigger=$trigger attempt=$attempt failed elapsedMs=${stopwatch.elapsedMilliseconds}',
+          error,
+          stackTrace,
+        );
+
+        if (attempt >= _kShuffleMaxAttempts) {
+          break;
+        }
+
+        await Future.delayed(_kShuffleRetryDelay);
+      }
     }
+
+    if (!mounted || requestId != _loadRequestId) return;
+    _logShuffleLoadInfo(
+      'trigger=$trigger failed attempts=$_kShuffleMaxAttempts elapsedMs=${stopwatch.elapsedMilliseconds} lastError=${lastError.runtimeType}',
+    );
+    setState(() {
+      _items = const <AggregatedItem>[];
+      _loading = false;
+      _hasLoadError = true;
+      _selectedIndex = 0;
+      _selectedItem = null;
+      _selectedRatings = const {};
+    });
 
     if (requestInitialFocus) {
       _requestInitialFocus();
@@ -194,7 +264,10 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
       _activeGenreName = null;
     });
 
-    await _loadItems(requestInitialFocus: true);
+    await _loadItems(
+      requestInitialFocus: true,
+      trigger: _ShuffleLoadTrigger.library,
+    );
   }
 
   Future<void> _pickGenre() async {
@@ -216,7 +289,10 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
       _activeLibraryId = null;
     });
 
-    await _loadItems(requestInitialFocus: true);
+    await _loadItems(
+      requestInitialFocus: true,
+      trigger: _ShuffleLoadTrigger.genre,
+    );
   }
 
   void _setSelectedAt(int index, {bool syncPage = true}) {
@@ -336,8 +412,15 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
     double aspectRatio,
   ) {
     final imageApi = _clientForItem(item).imageApi;
-    final maxHeight = (cardWidth / aspectRatio).round();
-    final maxWidth = cardWidth.round();
+    final requestScale = PlatformDetection.isTV
+        ? 2.4
+        : (PlatformDetection.useMobileUi ? 1.8 : 1.6);
+    final requestedWidth = (cardWidth * requestScale).round();
+    final maxWidth = math.max(
+      requestedWidth,
+      PlatformDetection.isTV ? 360 : requestedWidth,
+    );
+    final maxHeight = (maxWidth / aspectRatio).round();
 
     if (aspectRatio > 1.2) {
       if (item.thumbImageTag != null) {
@@ -403,29 +486,6 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
 
     final type = (item.type ?? 'item').toLowerCase();
     return 'Discover a random $type from your library.';
-  }
-
-  String _cardSubtitle(AggregatedItem item) {
-    final parts = <String>[];
-
-    if (item.productionYear != null) {
-      parts.add(item.productionYear.toString());
-    }
-
-    if (item.officialRating != null && item.officialRating!.isNotEmpty) {
-      parts.add(item.officialRating!);
-    }
-
-    final type = item.type;
-    if (type != null && type.isNotEmpty) {
-      parts.add(type == 'Series' ? 'TV Series' : type);
-    }
-
-    if (parts.isNotEmpty) {
-      return parts.join(' - ');
-    }
-
-    return item.subtitle ?? '';
   }
 
   String? _formatRuntime(Duration? runtime) {
@@ -572,6 +632,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isMobile = PlatformDetection.useMobileUi;
+    final showTopStrip = !PlatformDetection.isTV;
 
     return Material(
       color: Colors.transparent,
@@ -644,8 +705,10 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
                         ),
                         child: Column(
                           children: [
-                            _buildTopStrip(l10n),
-                            SizedBox(height: isMobile ? 6 : 8),
+                            if (showTopStrip) ...[
+                              _buildTopStrip(l10n),
+                              SizedBox(height: isMobile ? 6 : 8),
+                            ],
                             Expanded(child: _buildCardsArea(l10n)),
                             SizedBox(height: isMobile ? 8 : 10),
                             _buildFocusHeader(l10n),
@@ -733,7 +796,10 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
             ),
             SizedBox(height: isMobile ? 12 : 14),
             OutlinedButton.icon(
-              onPressed: () => _loadItems(requestInitialFocus: true),
+              onPressed: () => _loadItems(
+                requestInitialFocus: true,
+                trigger: _activeLoadTrigger,
+              ),
               icon: const Icon(Icons.refresh_rounded),
               label: Text(l10n.tryAgain),
             ),
@@ -753,8 +819,10 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
     return LayoutBuilder(
       builder: (context, constraints) {
         const posterAspectRatio = 2 / 3;
-        const textBlockHeight = 46.0;
         const centerScale = 1.18;
+        final cardExpansionScale = cardFocusExpansion == true ? 1.05 : 1.0;
+        final selectedScale = centerScale * cardExpansionScale;
+        final textBlockHeight = isTv ? 8.0 : 6.0;
 
         final spacing = isTv ? 18.0 : 14.0;
         final minCardWidth = isTv ? 130.0 : 112.0;
@@ -771,10 +839,10 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
               )
             : minCardWidth;
 
-        final maxStripHeight = constraints.maxHeight - 26;
+        final maxStripHeight = constraints.maxHeight - (isTv ? 64 : 26);
         final maxImageHeight = math.max(
           0,
-          (maxStripHeight - textBlockHeight) / centerScale,
+          (maxStripHeight - textBlockHeight) / selectedScale,
         );
         final heightBased = maxImageHeight * posterAspectRatio;
         final cardWidth = math
@@ -815,8 +883,6 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
                 ),
               ),
             ),
-            const SizedBox(height: 6),
-            _buildDotIndicator(),
           ],
         );
       },
@@ -888,8 +954,6 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
                 },
               ),
             ),
-            const SizedBox(height: 8),
-            _buildDotIndicator(),
           ],
         );
       },
@@ -911,8 +975,8 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
       button: true,
       label: item.name,
       child: MediaCard(
-        title: item.name,
-        subtitle: _cardSubtitle(item),
+        title: null,
+        subtitle: null,
         imageUrl: imageUrl,
         width: cardWidth,
         aspectRatio: aspectRatio,
@@ -934,100 +998,121 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
     );
   }
 
-  Widget _buildDotIndicator() {
-    if (_items.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    final activeIndex = _selectedIndex < _items.length ? _selectedIndex : 0;
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        for (var index = 0; index < _items.length; index++)
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            curve: Curves.easeOut,
-            width: index == activeIndex ? 14 : 6,
-            height: 6,
-            margin: const EdgeInsets.symmetric(horizontal: 4),
-            decoration: BoxDecoration(
-              color: index == activeIndex
-                  ? AppColorScheme.accent
-                  : AppColorScheme.onSurface.withValues(alpha: 0.26),
-              borderRadius: BorderRadius.circular(99),
-            ),
-          ),
-      ],
-    );
-  }
-
   Widget _buildActionButtons(AppLocalizations l10n) {
     final isMobile = PlatformDetection.useMobileUi;
+    final isTv = PlatformDetection.isTV;
+    final tvDense = isTv && !isMobile;
     final focusColor = Color(_prefs.get(UserPreferences.focusColor).colorValue);
 
-    return AbsorbPointer(
-      absorbing: _loading,
-      child: Container(
-        padding: EdgeInsets.all(isMobile ? 8 : 10),
-        decoration: BoxDecoration(
-          color: AppColorScheme.scrim.withValues(alpha: 0.28),
-          borderRadius: BorderRadius.circular(isMobile ? 20 : 24),
-          border: Border.fromBorderSide(
-            ThemeRegistry.active.borders.cardBorder.copyWith(
-              color: AppColorScheme.onSurface.withValues(alpha: 0.15),
-            ),
+    return Container(
+      padding: EdgeInsets.all(isMobile ? 8 : (tvDense ? 6 : 10)),
+      decoration: BoxDecoration(
+        color: AppColorScheme.scrim.withValues(alpha: 0.28),
+        borderRadius: BorderRadius.circular(isMobile ? 20 : (tvDense ? 18 : 24)),
+        border: Border.fromBorderSide(
+          ThemeRegistry.active.borders.cardBorder.copyWith(
+            color: AppColorScheme.onSurface.withValues(alpha: 0.15),
           ),
         ),
-        child: Row(
-          children: [
-            Expanded(
-              flex: isMobile ? 1 : 30,
-              child: _ShuffleActionCard(
-                focusNode: _libraryButtonFocusNode,
-                focusColor: focusColor,
-                label: l10n.library,
-                subtitle: l10n.shuffleSelectLibrary,
-                icon: const Icon(Icons.video_library_rounded),
-                compact: isMobile,
-                onTap: _pickLibrary,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_loading)
+            Padding(
+              padding: EdgeInsets.only(bottom: isMobile ? 8 : 10),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: isMobile ? 14 : 16,
+                    height: isMobile ? 14 : 16,
+                    child: const CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  SizedBox(width: isMobile ? 8 : 10),
+                  Text(
+                    'Loading shuffle...',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColorScheme.onSurface.withValues(alpha: 0.8),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(width: isMobile ? 8 : 12),
-            Expanded(
-              flex: isMobile ? 1 : 40,
-              child: _ShuffleActionCard(
-                focusNode: _shuffleButtonFocusNode,
-                focusColor: focusColor,
-                label: l10n.shuffle,
-                subtitle: '',
-                icon: const Icon(Icons.shuffle_rounded),
-                compact: isMobile,
-                primary: false,
-                onTap: () => _loadItems(requestInitialFocus: true),
-              ),
-            ),
-            SizedBox(width: isMobile ? 8 : 12),
-            Expanded(
-              flex: isMobile ? 1 : 30,
-              child: _ShuffleActionCard(
-                focusNode: _genresButtonFocusNode,
-                focusColor: focusColor,
-                label: l10n.genres,
-                subtitle: l10n.shuffleSelectGenre,
-                icon: Image.asset(
-                  'assets/icons/genres.png',
-                  width: isMobile ? 18 : 20,
-                  height: isMobile ? 18 : 20,
-                  color: AppColorScheme.onSurface,
-                  fit: BoxFit.contain,
+          Row(
+            children: [
+              Expanded(
+                flex: isMobile ? 1 : 30,
+                child: _ShuffleActionCard(
+                  focusNode: _libraryButtonFocusNode,
+                  focusColor: focusColor,
+                  label: 'LIBRARY SHUFFLE',
+                  subtitle: tvDense ? '' : l10n.shuffleSelectLibrary,
+                  icon: const Icon(Icons.video_library_rounded),
+                  compact: isMobile,
+                  dense: tvDense,
+                  onTap: () {
+                    if (_loading &&
+                        _activeLoadTrigger == _ShuffleLoadTrigger.library) {
+                      return;
+                    }
+                    _pickLibrary();
+                  },
                 ),
-                compact: isMobile,
-                onTap: _pickGenre,
               ),
-            ),
-          ],
-        ),
+              SizedBox(width: isMobile ? 8 : (tvDense ? 8 : 12)),
+              Expanded(
+                flex: isMobile ? 1 : 40,
+                child: _ShuffleActionCard(
+                  focusNode: _shuffleButtonFocusNode,
+                  focusColor: focusColor,
+                  label: 'RANDOM SHUFFLE',
+                  subtitle: '',
+                  icon: const Icon(Icons.shuffle_rounded),
+                  compact: isMobile,
+                  dense: tvDense,
+                  primary: false,
+                  onTap: () {
+                    if (_loading &&
+                        _activeLoadTrigger == _ShuffleLoadTrigger.random) {
+                      return;
+                    }
+                    _loadItems(
+                      requestInitialFocus: true,
+                      trigger: _ShuffleLoadTrigger.random,
+                    );
+                  },
+                ),
+              ),
+              SizedBox(width: isMobile ? 8 : (tvDense ? 8 : 12)),
+              Expanded(
+                flex: isMobile ? 1 : 30,
+                child: _ShuffleActionCard(
+                  focusNode: _genresButtonFocusNode,
+                  focusColor: focusColor,
+                  label: 'GENRES SHUFFLE',
+                  subtitle: tvDense ? '' : l10n.shuffleSelectGenre,
+                  icon: Image.asset(
+                    'assets/icons/genres.png',
+                    width: isMobile ? 18 : (tvDense ? 18 : 20),
+                    height: isMobile ? 18 : (tvDense ? 18 : 20),
+                    color: AppColorScheme.onSurface,
+                    fit: BoxFit.contain,
+                  ),
+                  compact: isMobile,
+                  dense: tvDense,
+                  onTap: () {
+                    if (_loading &&
+                        _activeLoadTrigger == _ShuffleLoadTrigger.genre) {
+                      return;
+                    }
+                    _pickGenre();
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -1223,6 +1308,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
     final overviewFontSize = overviewStyle?.fontSize ?? 12;
     final overviewLineHeight =
         overviewFontSize * (overviewStyle?.height ?? 1.0);
+    final overviewMinHeight = (overviewLineHeight * 3) + 4;
 
     return KeyedSubtree(
       key: ValueKey<String>('${item.serverId}:${item.id}'),
@@ -1242,8 +1328,8 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
                 children: firstRowParts,
               ),
             const SizedBox(height: 8),
-            SizedBox(
-              height: overviewLineHeight * 3,
+            ConstrainedBox(
+              constraints: BoxConstraints(minHeight: overviewMinHeight),
               child: Text(
                 overviewText,
                 maxLines: 3,
@@ -1313,6 +1399,7 @@ class _ShuffleActionCard extends StatefulWidget {
   final VoidCallback onTap;
   final bool primary;
   final bool compact;
+  final bool dense;
 
   const _ShuffleActionCard({
     required this.focusNode,
@@ -1323,6 +1410,7 @@ class _ShuffleActionCard extends StatefulWidget {
     required this.onTap,
     this.primary = false,
     this.compact = false,
+    this.dense = false,
   });
 
   @override
@@ -1357,7 +1445,7 @@ class _ShuffleActionCardState extends State<_ShuffleActionCard> {
     final titleStyle = Theme.of(context).textTheme.labelMedium?.copyWith(
       color: AppColorScheme.onSurface,
       fontWeight: FontWeight.w700,
-      letterSpacing: 1.1,
+      letterSpacing: widget.dense ? 0.8 : 1.1,
     );
     final subtitleStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
       color: AppColorScheme.onSurface.withValues(alpha: 0.72),
@@ -1379,7 +1467,7 @@ class _ShuffleActionCardState extends State<_ShuffleActionCard> {
                 AppColorScheme.scrim.withValues(alpha: active ? 0.42 : 0.34),
               ],
       ),
-      borderRadius: BorderRadius.circular(widget.compact ? 18 : 20),
+      borderRadius: BorderRadius.circular(widget.compact ? 18 : (widget.dense ? 16 : 20)),
       border: Border.fromBorderSide(
         ThemeRegistry.active.borders.cardBorder.copyWith(
           color: active
@@ -1402,11 +1490,11 @@ class _ShuffleActionCardState extends State<_ShuffleActionCard> {
 
     final content = AnimatedContainer(
       duration: const Duration(milliseconds: 160),
-      height: widget.compact ? 92 : (widget.primary ? 90 : 84),
+      height: widget.compact ? 92 : (widget.dense ? 66 : (widget.primary ? 90 : 84)),
       decoration: baseDecoration,
       padding: EdgeInsets.symmetric(
-        horizontal: widget.compact ? 8 : 14,
-        vertical: widget.compact ? 6 : 10,
+        horizontal: widget.compact ? 8 : (widget.dense ? 10 : 14),
+        vertical: widget.compact ? 6 : (widget.dense ? 6 : 10),
       ),
       child: widget.compact
           ? Column(
@@ -1444,8 +1532,8 @@ class _ShuffleActionCardState extends State<_ShuffleActionCard> {
           : Row(
               children: [
                 Container(
-                  width: 38,
-                  height: 38,
+                  width: widget.dense ? 30 : 38,
+                  height: widget.dense ? 30 : 38,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: widget.primary
@@ -1456,13 +1544,13 @@ class _ShuffleActionCardState extends State<_ShuffleActionCard> {
                     child: IconTheme(
                       data: IconThemeData(
                         color: AppColorScheme.onSurface,
-                        size: 22,
+                        size: widget.dense ? 18 : 22,
                       ),
                       child: widget.icon,
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: widget.dense ? 8 : 12),
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -1474,7 +1562,7 @@ class _ShuffleActionCardState extends State<_ShuffleActionCard> {
                         overflow: TextOverflow.ellipsis,
                         style: titleStyle,
                       ),
-                      if (widget.subtitle.trim().isNotEmpty) ...[
+                      if (!widget.dense && widget.subtitle.trim().isNotEmpty) ...[
                         const SizedBox(height: 2),
                         Text(
                           widget.subtitle,
@@ -1486,11 +1574,12 @@ class _ShuffleActionCardState extends State<_ShuffleActionCard> {
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  size: 22,
-                  color: AppColorScheme.onSurface.withValues(alpha: 0.86),
-                ),
+                if (!widget.dense)
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: 22,
+                    color: AppColorScheme.onSurface.withValues(alpha: 0.86),
+                  ),
               ],
             ),
     );
