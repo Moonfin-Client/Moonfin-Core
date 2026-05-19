@@ -20,17 +20,17 @@ class StoragePathService {
 
   static String get appFolderName {
     // get the flavor passed via --flavor
-    // android/androidtv/macos/ios - only android/androidtv are set up currently
+    // android/androidtv/macos/ios/linux too? - only android/androidtv are set up currently
     const flavor = String.fromEnvironment('FLUTTER_APP_FLAVOR');
     final betaFlavor = flavor.toLowerCase().contains('beta');
-    // check for --dart-define MOONFIN_BETA_BUILD=true from CLI
-    const betaCLI = bool.fromEnvironment('MOONFIN_BETA_BUILD');
-    // check for env var MOONFIN_BETA_BUILD=true
-    final betaEnvVar = Platform.environment['MOONFIN_BETA_BUILD'] == 'true';
 
-    final isBeta = betaFlavor || betaCLI || betaEnvVar;
-    debugPrint('StoragePathService: isBeta=$isBeta (flavor=$flavor, betaCLI=$betaCLI, betaEnvVar=$betaEnvVar)');
-    return isBeta ? 'MoonfinBeta' : 'Moonfin';
+    // check for --dart-define MOONFIN_BETA_BUILD=true from CLI
+    // needed for windows, and maybe linux if we don't do a flavor
+    const betaDartDefine = bool.fromEnvironment('MOONFIN_BETA_BUILD');
+
+    final isBeta = betaFlavor || betaDartDefine;
+    debugPrint('StoragePathService: isBeta=$isBeta (flavor=$flavor, betaDartDefine=$betaDartDefine)');
+    return isBeta ? 'Moonfin Beta' : 'Moonfin';
   }
 
   Future<Directory> getOfflineRoot() async {
@@ -106,7 +106,10 @@ class StoragePathService {
   Future<Directory> getImageCacheDir() async {
     if (PlatformDetection.isAndroid && _useMediaStore) {
       final support = await getApplicationSupportDirectory();
-      final dir = Directory('${support.path}/$appFolderName/images');
+      final dir = (!Platform.isWindows)
+        ? Directory('${support.path}/$appFolderName/images')
+        // windows includes the app folder
+        : Directory('${support.path}/images');
       if (!await dir.exists()) await dir.create(recursive: true);
       return dir;
     }
