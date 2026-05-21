@@ -17,6 +17,12 @@ class PlaybackManager {
   PlayerService? _service;
   Future<void> Function(dynamic item)? _resolverConfigurator;
   bool Function(List<dynamic> items)? _externalPlaybackDecider;
+  Future<List<dynamic>> Function(
+    dynamic completedItem,
+    List<dynamic> queueItems,
+    int completedIndex,
+  )?
+  _nextSeasonItemsProvider;
   PlayerBackend Function(
     StreamResolutionResult resolution,
     PlayerBackend currentBackend,
@@ -258,6 +264,17 @@ class PlaybackManager {
     bool Function(List<dynamic> items)? decider,
   ) {
     _externalPlaybackDecider = decider;
+  }
+
+  void setNextSeasonItemsProvider(
+    Future<List<dynamic>> Function(
+      dynamic completedItem,
+      List<dynamic> queueItems,
+      int completedIndex,
+    )?
+    provider,
+  ) {
+    _nextSeasonItemsProvider = provider;
   }
 
   Future<void> configureResolverForItem(dynamic item) async {
@@ -555,7 +572,38 @@ class PlaybackManager {
     final hadNext = queueService.next();
     if (hadNext) {
       await _playCurrentItem();
+      return;
     }
+
+    await _tryAutoAdvanceToNextSeason();
+  }
+
+  Future<void> _tryAutoAdvanceToNextSeason() async {
+    final provider = _nextSeasonItemsProvider;
+    if (provider == null) return;
+    if (_isOfflinePlayback) return;
+    if (queueService.repeatMode != RepeatMode.none) return;
+
+    final completedItem = queueService.currentItem;
+    final completedIndex = queueService.currentIndex;
+    final queueSnapshot = queueService.items;
+    if (completedItem == null || completedIndex < 0 || queueSnapshot.isEmpty) {
+      return;
+    }
+    if (completedIndex != queueSnapshot.length - 1) return;
+
+    List<dynamic> nextSeasonItems;
+    try {
+      nextSeasonItems = await provider(completedItem, queueSnapshot, completedIndex);
+    } catch (_) {
+      return;
+    }
+
+    if (nextSeasonItems.isEmpty) return;
+
+    queueService.addItems(nextSeasonItems);
+    if (!queueService.next()) return;
+    await _playCurrentItem();
   }
 
   Future<void> playItems(

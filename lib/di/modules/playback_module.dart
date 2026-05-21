@@ -22,6 +22,10 @@ import '../../util/platform_detection.dart';
 
 final _getIt = GetIt.instance;
 
+const _nextSeasonEpisodeFields =
+  'Type,UserData,SeriesName,ParentIndexNumber,IndexNumber,SeriesId,SeasonId,'
+  'MediaSources,MediaStreams,RunTimeTicks';
+
 bool _isDolbyVisionResolution(StreamResolutionResult resolution) {
   for (final stream in resolution.mediaStreams) {
     if (HdrStreamCapability.isDolbyVisionVideoStream(stream)) {
@@ -49,6 +53,229 @@ bool _hasUnsupportedDolbyVisionProfile(StreamResolutionResult resolution) {
     }
   }
   return false;
+}
+
+bool _isEpisodeQueueItem(AggregatedItem item) {
+  final type = item.type?.trim().toLowerCase();
+  return type == 'episode';
+}
+
+MediaServerClient? _resolveClientForServerId(String serverId) {
+  final factory = _getIt<MediaServerClientFactory>();
+  final direct = factory.getClientIfExists(serverId);
+  if (direct != null) return direct;
+
+  if (factory.clients.length == 1) {
+    return factory.clients.values.first;
+  }
+
+  return null;
+}
+
+int? _asInt(dynamic value) {
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value);
+  return null;
+}
+
+bool _isSingleSeasonEpisodeQueue(
+  List<dynamic> queueItems, {
+  required String seriesId,
+  required String seasonId,
+  required int seasonNumber,
+}) {
+  if (queueItems.isEmpty) return false;
+
+  for (final item in queueItems) {
+    if (item is! AggregatedItem) return false;
+    if (!_isEpisodeQueueItem(item)) return false;
+    if (item.seriesId != seriesId) return false;
+
+    final itemSeasonId = item.seasonId;
+    if (itemSeasonId != null && itemSeasonId.isNotEmpty) {
+      if (itemSeasonId != seasonId) return false;
+      continue;
+    }
+
+    if (item.parentIndexNumber != seasonNumber) return false;
+  }
+
+  return true;
+}
+
+List<AggregatedItem> _mapServerItemsToAggregated(
+  List<dynamic> items,
+  String serverId,
+) {
+  return items
+      .whereType<Map<String, dynamic>>()
+      .map((raw) {
+        final id = raw['Id']?.toString();
+        if (id == null || id.isEmpty) {
+          return null;
+        }
+        return AggregatedItem(id: id, serverId: serverId, rawData: raw);
+      })
+      .whereType<AggregatedItem>()
+      .toList(growable: false);
+}
+
+List<AggregatedItem> _sortEpisodesForPlayback(List<AggregatedItem> episodes) {
+  final sorted = List<AggregatedItem>.from(episodes);
+  sorted.sort((a, b) {
+    final seasonCmp = (a.parentIndexNumber ?? 0).compareTo(
+      b.parentIndexNumber ?? 0,
+    );
+    if (seasonCmp != 0) return seasonCmp;
+    final episodeCmp = (a.indexNumber ?? 0).compareTo(b.indexNumber ?? 0);
+    if (episodeCmp != 0) return episodeCmp;
+    return a.id.compareTo(b.id);
+  });
+  return sorted;
+}
+
+bool _isSeasonFinale(
+  AggregatedItem completedItem,
+  List<AggregatedItem> seasonEpisodes,
+) {
+  if (seasonEpisodes.isEmpty) return false;
+
+  final completedId = completedItem.id;
+  if (seasonEpisodes.last.id == completedId) return true;
+
+  if (seasonEpisodes.any((episode) => episode.id == completedId)) {
+    return false;
+  }
+
+  final completedIndex = completedItem.indexNumber;
+  if (completedIndex == null) return false;
+
+  int? maxEpisodeIndex;
+  for (final episode in seasonEpisodes) {
+    final idx = episode.indexNumber;
+    if (idx == null) continue;
+    if (maxEpisodeIndex == null || idx > maxEpisodeIndex) {
+      maxEpisodeIndex = idx;
+    }
+  }
+
+  return maxEpisodeIndex != null && completedIndex >= maxEpisodeIndex;
+}
+
+Future<List<AggregatedItem>> _fetchSeasonEpisodes({
+  required MediaServerClient client,
+  required String serverId,
+  required String seriesId,
+  required String seasonId,
+}) async {
+  final data = await client.itemsApi.getEpisodes(
+    seriesId,
+    seasonId: seasonId,
+    fields: _nextSeasonEpisodeFields,
+  );
+  final rawItems = (data['Items'] as List?) ?? const [];
+  final episodes = _mapServerItemsToAggregated(rawItems, serverId);
+  return _sortEpisodesForPlayback(episodes);
+}
+
+Future<String?> _resolveNextSeasonId({
+  required MediaServerClient client,
+  required String seriesId,
+  required int currentSeasonNumber,
+}) async {
+  final seasonsData = await client.itemsApi.getSeasons(seriesId);
+  final seasonItems = (seasonsData['Items'] as List?) ?? const [];
+
+  int? bestSeasonNumber;
+  String? bestSeasonId;
+  for (final raw in seasonItems.whereType<Map<String, dynamic>>()) {
+    final candidateId = raw['Id']?.toString();
+    if (candidateId == null || candidateId.isEmpty) continue;
+
+    final candidateNumber = _asInt(raw['IndexNumber'] ?? raw['ParentIndexNumber']);
+    if (candidateNumber == null || candidateNumber <= currentSeasonNumber) {
+      continue;
+    }
+
+    if (bestSeasonNumber == null || candidateNumber < bestSeasonNumber) {
+      bestSeasonNumber = candidateNumber;
+      bestSeasonId = candidateId;
+    }
+  }
+
+  return bestSeasonId;
+}
+
+Future<List<dynamic>> _nextSeasonItemsProvider(
+  dynamic completedItem,
+  List<dynamic> queueItems,
+  int _,
+) async {
+  if (completedItem is! AggregatedItem) return const <dynamic>[];
+  if (!_isEpisodeQueueItem(completedItem)) return const <dynamic>[];
+
+  final seriesId = completedItem.seriesId;
+  final seasonId = completedItem.seasonId;
+  final seasonNumber = completedItem.parentIndexNumber;
+  if (seriesId == null || seriesId.isEmpty) return const <dynamic>[];
+  if (seasonId == null || seasonId.isEmpty) return const <dynamic>[];
+  if (seasonNumber == null) return const <dynamic>[];
+
+  if (!_isSingleSeasonEpisodeQueue(
+    queueItems,
+    seriesId: seriesId,
+    seasonId: seasonId,
+    seasonNumber: seasonNumber,
+  )) {
+    return const <dynamic>[];
+  }
+
+  final client = _resolveClientForServerId(completedItem.serverId);
+  if (client == null) return const <dynamic>[];
+
+  List<AggregatedItem> currentSeasonEpisodes;
+  try {
+    currentSeasonEpisodes = await _fetchSeasonEpisodes(
+      client: client,
+      serverId: completedItem.serverId,
+      seriesId: seriesId,
+      seasonId: seasonId,
+    );
+  } catch (_) {
+    return const <dynamic>[];
+  }
+
+  if (!_isSeasonFinale(completedItem, currentSeasonEpisodes)) {
+    return const <dynamic>[];
+  }
+
+  String? nextSeasonId;
+  try {
+    nextSeasonId = await _resolveNextSeasonId(
+      client: client,
+      seriesId: seriesId,
+      currentSeasonNumber: seasonNumber,
+    );
+  } catch (_) {
+    return const <dynamic>[];
+  }
+
+  if (nextSeasonId == null || nextSeasonId.isEmpty) {
+    return const <dynamic>[];
+  }
+
+  try {
+    final nextSeasonEpisodes = await _fetchSeasonEpisodes(
+      client: client,
+      serverId: completedItem.serverId,
+      seriesId: seriesId,
+      seasonId: nextSeasonId,
+    );
+    return nextSeasonEpisodes;
+  } catch (_) {
+    return const <dynamic>[];
+  }
 }
 
 void registerPlaybackModule() {
@@ -148,6 +375,7 @@ void registerPlaybackModule() {
 
     return ExternalPlayerPolicy.isEligibleQueue(items);
   });
+  manager.setNextSeasonItemsProvider(_nextSeasonItemsProvider);
   manager.setResolverConfigurator(_ensureResolverForItem);
   _getIt.registerSingleton<PlaybackManager>(manager);
 
