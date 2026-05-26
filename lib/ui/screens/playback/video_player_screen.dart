@@ -353,8 +353,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         item.type == 'AudioBook' ||
         mediaType == 'Audio';
 
-    return !PlatformDetection.isTV &&
-        client.serverType == ServerType.jellyfin &&
+    return client.serverType == ServerType.jellyfin &&
         (user?.canManageSubtitles ?? false) &&
         item.mediaSources.isNotEmpty &&
         item.type != 'Photo' &&
@@ -4261,7 +4260,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         final isFavorite = canFavorite && _queueItemIsFavorite(item);
         final hasChapters = item is AggregatedItem && item.chapters.isNotEmpty;
         final hasCast = _hasCastCrew(item);
-        final showSubtitleButton = true;
+        final playbackStreams = _currentPlaybackMediaStreams();
+        final hasSubtitleStreams = playbackStreams.any(
+          (s) => s['Type'] == 'Subtitle',
+        );
+        final canDownloadRemoteSubtitles =
+          item is AggregatedItem && _canDownloadRemoteSubtitles(item);
+        final showSubtitleButton =
+          hasSubtitleStreams || canDownloadRemoteSubtitles;
+        final subtitleButtonIcon =
+          !hasSubtitleStreams && canDownloadRemoteSubtitles
+          ? Icons.download_rounded
+          : Icons.subtitles_outlined;
         final showAudioButton = true;
         final isLandscape =
             MediaQuery.of(context).orientation == Orientation.landscape;
@@ -4326,7 +4336,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             ),
           if (showSubtitleButton)
             _controlButton(
-              Icons.subtitles_outlined,
+              subtitleButtonIcon,
               onPressed: () => _showTrackSelector(audio: false),
               size: secondaryIconSize,
               extent: secondaryExtent,

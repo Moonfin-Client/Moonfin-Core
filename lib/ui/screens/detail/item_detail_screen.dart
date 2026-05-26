@@ -4250,6 +4250,13 @@ class _ActionButtonsState extends State<_ActionButtons> {
     final subtitleStreams = mediaStreams
         .where((s) => s['Type'] == 'Subtitle')
         .toList();
+    final canDownloadRemoteSubtitles = _canDownloadRemoteSubtitles(item);
+    final showSubtitleButton =
+      subtitleStreams.isNotEmpty || canDownloadRemoteSubtitles;
+    final subtitleButtonIcon =
+      subtitleStreams.isEmpty && canDownloadRemoteSubtitles
+      ? Icons.download_rounded
+      : Icons.subtitles;
     final l10n = AppLocalizations.of(context);
     final canShowDownloadActions =
         _isDownloadable(item.type) &&
@@ -4316,10 +4323,10 @@ class _ActionButtonsState extends State<_ActionButtons> {
           icon: Icons.audiotrack,
           onPressed: () => _openAudioSelector(context, item),
         ),
-      if (subtitleStreams.isNotEmpty || _canDownloadRemoteSubtitles(item))
+      if (showSubtitleButton)
         _DetailActionButton(
           label: l10n.subtitles,
-          icon: Icons.subtitles,
+          icon: subtitleButtonIcon,
           onPressed: () => _openSubtitleSelector(context, item),
         ),
       if (item.mediaSources.length > 1)
@@ -5554,8 +5561,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
         item.type == 'AudioBook' ||
         mediaType == 'Audio';
 
-    return !PlatformDetection.isTV &&
-        client.serverType == ServerType.jellyfin &&
+    return client.serverType == ServerType.jellyfin &&
         (user?.canManageSubtitles ?? false) &&
         item.mediaSources.isNotEmpty &&
         item.type != 'Photo' &&
