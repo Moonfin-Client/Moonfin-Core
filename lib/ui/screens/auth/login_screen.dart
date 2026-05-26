@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
@@ -18,9 +19,11 @@ import '../../../auth/repositories/session_repository.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../../util/pin_code_util.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/login_scaffold.dart';
+import '../../widgets/pin_entry_dialog.dart';
 
 final _kAccent = AppColorScheme.accent;
 
@@ -345,7 +348,30 @@ class _LoginScreenState extends State<LoginScreen> {
             serverId: authResult.serverId,
             userId: authResult.userId,
           );
-          if (mounted) context.go(Destinations.home);
+          if (mounted) {
+            final store = GetIt.instance<PreferenceStore>();
+            final pinUtil = PinCodeUtil(store, authResult.userId);
+
+            if (pinUtil.isPinEnabled) {
+              final verified = await PinEntryDialog.show(
+                context,
+                mode: PinEntryMode.verify,
+                onVerify: pinUtil.verifyPin,
+                onForgotPin: () {
+                  if (mounted) context.go(Destinations.serverSelect);
+                },
+              );
+
+              if (!verified) {
+                // For quick connect, if PIN verification fails, go back to login screen
+                // to allow user to try with different credentials or method
+                if (mounted) context.go('${Destinations.login}?serverId=${_server!.id}');
+                return;
+              }
+            }
+
+            if (mounted) context.go(Destinations.home);
+          }
         }
       }
     } catch (_) {}
@@ -415,7 +441,26 @@ class _LoginScreenState extends State<LoginScreen> {
           );
           if (!mounted) return;
           if (switched) {
-            context.go(Destinations.home);
+            final store = GetIt.instance<PreferenceStore>();
+            final pinUtil = PinCodeUtil(store, result.userId);
+
+            if (pinUtil.isPinEnabled) {
+              final verified = await PinEntryDialog.show(
+                context,
+                mode: PinEntryMode.verify,
+                onVerify: pinUtil.verifyPin,
+                onForgotPin: () {
+                  if (mounted) context.go(Destinations.serverSelect);
+                },
+              );
+
+              if (!verified) {
+                if (mounted) context.go('${Destinations.login}?serverId=${_server!.id}');
+                return;
+              }
+            }
+
+            if (mounted) context.go(Destinations.home);
             return;
           }
           _finishLoginWithError(l10n.loginFailed);
