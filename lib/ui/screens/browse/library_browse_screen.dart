@@ -4039,6 +4039,16 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                         ? null
                         : () => _vm.setFocusedItem(null),
                     onKeyEvent: (_, event) {
+                      if (event.isActionable && event.logicalKey.isRightKey) {
+                        final isLastColumn =
+                            (index % crossAxisCount) == crossAxisCount - 1;
+                        final isLastItem = index == _vm.items.length - 1;
+                        if (isLastColumn || isLastItem) {
+                          // Keep focus in the current grid row at the right edge.
+                          return KeyEventResult.handled;
+                        }
+                      }
+
                       if (!_vm.hasMore && !_vm.loadingMore) {
                         return KeyEventResult.ignored;
                       }
