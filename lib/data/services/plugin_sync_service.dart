@@ -53,6 +53,7 @@ class PluginSyncService extends ChangeNotifier {
   bool get mdblistAvailable => _mdblistAvailable;
   bool _tmdbAvailable = false;
   bool get tmdbAvailable => _tmdbAvailable;
+  void Function(String message)? onAdminMessage;
   CancelToken? _settingsStreamCancelToken;
   StreamSubscription<String>? _settingsStreamSubscription;
   bool _settingsStreamReconnectPending = false;
@@ -336,6 +337,17 @@ class PluginSyncService extends ChangeNotifier {
     try {
       final parsed = jsonDecode(payload);
       if (parsed is! Map<String, dynamic>) {
+        return;
+      }
+
+      if (parsed['type'] == 'adminMessage') {
+        final text = parsed['text'];
+        if (text is String) {
+          final trimmed = text.trim();
+          if (trimmed.isNotEmpty) {
+            onAdminMessage?.call(trimmed);
+          }
+        }
         return;
       }
 

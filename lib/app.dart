@@ -11,6 +11,7 @@ import 'package:window_manager/window_manager.dart';
 
 import 'data/services/app_update_service.dart';
 import 'data/services/download_service.dart';
+import 'data/services/plugin_sync_service.dart';
 import 'di/providers.dart';
 import 'l10n/app_localizations.dart';
 import 'preference/user_preferences.dart';
@@ -578,6 +579,9 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     ref.read(syncPlayRuntimeCoordinatorProvider);
     final manager = ref.read(syncPlayManagerProvider);
     _syncPlayEventsSub = manager.uiEvents.listen(_handleSyncPlayEvent);
+    if (GetIt.instance.isRegistered<PluginSyncService>()) {
+      GetIt.instance<PluginSyncService>().onAdminMessage = _handleAdminMessage;
+    }
     if (GetIt.instance.isRegistered<DownloadService>()) {
       _downloadErrorSub = GetIt.instance<DownloadService>().errors.listen(
         _handleDownloadError,
@@ -590,6 +594,9 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     WidgetsBinding.instance.removeObserver(this);
     _syncPlayEventsSub?.cancel();
     _downloadErrorSub?.cancel();
+    if (GetIt.instance.isRegistered<PluginSyncService>()) {
+      GetIt.instance<PluginSyncService>().onAdminMessage = null;
+    }
     super.dispose();
   }
 
@@ -664,6 +671,32 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
         content: Text(message),
         duration: const Duration(seconds: 5),
         behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _handleAdminMessage(String message) {
+    if (!mounted) return;
+
+    final navContext = appRouter.routerDelegate.navigatorKey.currentContext ?? context;
+    if (!navContext.mounted) {
+      return;
+    }
+
+    final l10n = AppLocalizations.of(navContext);
+    showFocusRestoringDialog<void>(
+      context: navContext,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        icon: const Icon(Icons.campaign_outlined),
+        title: Text(l10n.adminSendMessage),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.ok),
+          ),
+        ],
       ),
     );
   }
