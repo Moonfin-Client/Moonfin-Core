@@ -2279,7 +2279,7 @@ class _ContentRowsState extends State<_ContentRows>
                 bottom: neededBottomPadding,
               ),
               itemCount: rows.length + headerCount,
-              scrollCacheExtent: const ScrollCacheExtent.pixels(600),
+              cacheExtent: 600,
               itemBuilder: (context, index) {
               if (includeMediaBar && index == 0) {
                 return AnimatedOpacity(
