@@ -39,7 +39,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get waitingForAuthorization => 'Wachten op toestemming...';
 
   @override
-  String get back => 'Rug';
+  String get back => 'Terug';
 
   @override
   String get serverUnavailable => 'Server is niet beschikbaar';
@@ -68,7 +68,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin version $version';
+    return 'Moonfin versie $version';
   }
 
   @override
@@ -212,7 +212,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get exitAppConfirmation => 'Weet u zeker dat u wilt afsluiten?';
 
   @override
-  String get exit => 'Uitgang';
+  String get exit => 'Afsluiten';
 
   @override
   String get noHomeRowsLoaded => 'Er konden geen thuisrijen worden geladen';
@@ -390,17 +390,17 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return '${count}m ago';
+    return '${count}m geleden';
   }
 
   @override
   String hoursAgo(int count) {
-    return '${count}h ago';
+    return '${count}h geleden';
   }
 
   @override
   String daysAgo(int count) {
-    return '${count}d ago';
+    return '${count}d geleden';
   }
 
   @override
@@ -460,7 +460,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get listen => 'Luisteren';
 
   @override
-  String get resume => 'Cv';
+  String get resume => 'Hervatten';
 
   @override
   String get failedToLoadLibrary => 'Kan bibliotheek niet laden';
@@ -719,7 +719,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get delete => 'Verwijderen';
 
   @override
-  String get save => 'Redden';
+  String get save => 'Opslaan';
 
   @override
   String get moreLikeThis => 'Meer zoals dit';
@@ -831,7 +831,7 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get play => 'Toneelstuk';
+  String get play => 'Afspelen';
 
   @override
   String get startOver => 'Begin opnieuw';
@@ -855,10 +855,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get version => 'Versie';
 
   @override
-  String get cast => 'Vorm';
+  String get cast => 'Cast';
 
   @override
-  String get trailer => 'Aanhangwagen';
+  String get trailer => 'Trailer';
 
   @override
   String get finished => 'Afgerond';
@@ -1126,7 +1126,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get readMore => 'Lees meer';
 
   @override
-  String get shuffle => 'Schudden';
+  String get shuffle => 'Willekeurig';
 
   @override
   String downloadsCount(int count) {
@@ -1599,10 +1599,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get unableToCreateRecording => 'Unable to create recording';
 
   @override
-  String get watch => 'Horloge';
+  String get watch => 'Bekijken';
 
   @override
-  String get close => 'Dichtbij';
+  String get close => 'Sluiten';
 
   @override
   String failedToPlayChannel(String name) {
@@ -1682,7 +1682,7 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get seerr => 'Zier';
+  String get seerr => 'Seerr';
 
   @override
   String get seerrAccountType => 'Seerr-accounttype';
@@ -1910,7 +1910,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get versionLicenses => 'Versie, licenties';
 
   @override
-  String get account => 'Rekening';
+  String get account => 'Account';
 
   @override
   String get signInAndSecurity => 'Inloggen en beveiliging';
@@ -2497,7 +2497,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get yellow => 'Geel';
 
   @override
-  String get green => 'Groente';
+  String get green => 'Groen';
 
   @override
   String get cyan => 'Cyaan';
@@ -3060,7 +3060,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get trakt => 'Trakt';
 
   @override
-  String get letterboxd => 'Brievenbusd';
+  String get letterboxd => 'Letterboxd';
 
   @override
   String get myAnimeList => 'MijnAnimeLijst';
@@ -3552,7 +3552,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get done => 'Klaar';
 
   @override
-  String get edit => 'Bewerking';
+  String get edit => 'Bewerken';
 
   @override
   String get encoding => 'Codering';
@@ -3621,13 +3621,13 @@ class AppLocalizationsNl extends AppLocalizations {
   String get role => 'Rol';
 
   @override
-  String get root => 'Wortel';
+  String get root => 'Root';
 
   @override
-  String get run => 'Loop';
+  String get run => 'Uitvoeren';
 
   @override
-  String get search => 'Zoekopdracht';
+  String get search => 'Zoeken';
 
   @override
   String get select => 'Selecteer';
@@ -3654,7 +3654,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get time => 'Tijd';
 
   @override
-  String get trickplay => 'Trucspel';
+  String get trickplay => 'Trickplay';
 
   @override
   String get uninstall => 'Verwijderen';
@@ -3672,7 +3672,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get unmute => 'Dempen opheffen';
 
   @override
-  String get mute => 'Stom';
+  String get mute => 'Dempen';
 
   @override
   String get branding => 'Branding';
@@ -3699,13 +3699,13 @@ class AppLocalizationsNl extends AppLocalizations {
   String get adminDrawerTranscoding => 'Transcoderen';
 
   @override
-  String get adminDrawerResume => 'Cv';
+  String get adminDrawerResume => 'Hervatten';
 
   @override
   String get adminDrawerStreaming => 'Streamen';
 
   @override
-  String get adminDrawerTrickplay => 'Trucspel';
+  String get adminDrawerTrickplay => 'Trickplay';
 
   @override
   String get adminDrawerDevices => 'Apparaten';
@@ -5888,7 +5888,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get adminTaskStop => 'Stop';
 
   @override
-  String get adminTaskRun => 'Loop';
+  String get adminTaskRun => 'Uitvoeren';
 
   @override
   String get adminTaskDetailLastExecution => 'Laatste executie';
