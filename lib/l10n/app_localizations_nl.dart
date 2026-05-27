@@ -141,7 +141,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Use your device input method by default for text entry';
 
   @override
-  String get themeMoonfin => 'Maanvin';
+  String get themeMoonfin => 'Moonfin';
 
   @override
   String get themeMoonfinSubtitle =>
@@ -1669,7 +1669,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get searchThisLibrary => 'Doorzoek deze bibliotheek...';
 
   @override
-  String get searchEllipsis => 'Zoekopdracht...';
+  String get searchEllipsis => 'Zoeken...';
 
   @override
   String noResultsForQuery(String query) {
@@ -2091,7 +2091,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get scaleOnDevice => 'Schaal op apparaat';
 
   @override
-  String get trickPlay => 'Truc spelen';
+  String get trickPlay => 'TrickPlay';
 
   @override
   String get showPreviewThumbnailsWhenSeeking =>
@@ -2792,7 +2792,7 @@ class AppLocalizationsNl extends AppLocalizations {
       'Kies tussen Moonfin, MakD of schakel de mediabalk uit';
 
   @override
-  String get mediaBarModeMoonfin => 'Maanvin';
+  String get mediaBarModeMoonfin => 'Moonfin';
 
   @override
   String get mediaBarModeMakd => 'MakD';
