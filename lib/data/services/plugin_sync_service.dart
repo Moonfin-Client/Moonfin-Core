@@ -847,6 +847,11 @@ class PluginSyncService extends ChangeNotifier {
       UserPreferences.homeRowsUniversalImageType,
       enumValues: prefs.ImageType.values,
     );
+    _applyBool(
+      resolved,
+      'homeImageUseSeriesImage',
+      UserPreferences.seriesThumbnailsEnabled,
+    );
 
     _applyBool(resolved, 'backdropEnabled', UserPreferences.backdropEnabled);
     _applyString(
@@ -1187,6 +1192,9 @@ class PluginSyncService extends ChangeNotifier {
       'homeRowsImageType': _prefs
           .get(UserPreferences.homeRowsUniversalImageType)
           .name,
+      'homeImageUseSeriesImage': _prefs.get(
+        UserPreferences.seriesThumbnailsEnabled,
+      ),
       'backdropEnabled': _prefs.get(UserPreferences.backdropEnabled),
       'detailsScreenBlur': _prefs
           .get(UserPreferences.detailsBackgroundBlurAmount)
