@@ -4694,7 +4694,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
     final preferSdh = prefs.get(UserPreferences.preferSdhSubtitles);
 
     Map<String, dynamic>? bestStream;
-    var bestScore = -1;
+    var bestScore = -(subtitleStreams.length + 1);
 
     for (var i = 0; i < subtitleStreams.length; i++) {
       final stream = subtitleStreams[i];
