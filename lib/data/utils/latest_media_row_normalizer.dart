@@ -71,6 +71,12 @@ AggregatedItem? _seriesCardForLatestTvItem(AggregatedItem item) {
   rawData.remove('IndexNumber');
   rawData.remove('ParentIndexNumber');
 
+  if (item.type == 'Episode') {
+    rawData['LatestEpisodeId'] = item.id;
+    rawData['LatestEpisodePrimaryImageTag'] =
+        item.primaryImageTag ?? item.primaryImageTagField;
+  }
+
   final seriesPrimaryImageTag = item.seriesPrimaryImageTag;
   if (seriesPrimaryImageTag != null && seriesPrimaryImageTag.isNotEmpty) {
     final imageTags = Map<String, dynamic>.from(

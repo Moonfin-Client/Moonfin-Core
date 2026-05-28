@@ -2745,19 +2745,20 @@ class _ContentRowsState extends State<_ContentRows>
               imageApi,
               v2ImageHeight,
               ImageType.poster,
-              useSeriesThumbs,
+              item.type == 'Episode' ? true : useSeriesThumbs,
               requestScale,
               isMyMediaRow: row.rowType == HomeRowType.libraryTiles,
             );
             imageUrl = canUseExpandedV2Card
-              ? (_resolveV2FocusedImageUrl(
-                  item,
-                  imageApi,
-                  v2ImageHeight,
-                  requestScale,
-                ) ??
-                posterUrl)
-              : posterUrl;
+                ? (_resolveV2FocusedImageUrl(
+                      item,
+                      imageApi,
+                      v2ImageHeight,
+                      useSeriesThumbs,
+                      requestScale,
+                    ) ??
+                    posterUrl)
+                : posterUrl;
           } else {
             final itemAr = _aspectRatioForRowItem(item, row, rowImageType);
             final itemHeight = (itemAr > 1
@@ -3097,15 +3098,16 @@ class _ContentRowsState extends State<_ContentRows>
     double requestScale,
   ) {
     final maxH = (height * requestScale).toInt();
-    if (useSeriesThumbs &&
-        item.type == 'Episode' &&
-        item.seriesId != null &&
-        item.seriesPrimaryImageTag != null) {
-      return imageApi.getPrimaryImageUrl(
-        item.seriesId!,
-        maxHeight: maxH,
-        tag: item.seriesPrimaryImageTag,
-      );
+    if (useSeriesThumbs && item.type == 'Episode') {
+      final sId = item.seriesId ?? item.parentPrimaryImageItemId;
+      final sTag = item.seriesPrimaryImageTag ?? item.parentPrimaryImageTag;
+      if (sId != null) {
+        return imageApi.getPrimaryImageUrl(
+          sId,
+          maxHeight: maxH,
+          tag: sTag,
+        );
+      }
     }
     return _resolvePrimaryImageUrl(item, imageApi, maxHeight: maxH);
   }
@@ -3161,10 +3163,35 @@ class _ContentRowsState extends State<_ContentRows>
     AggregatedItem item,
     ImageApi imageApi,
     double height,
+    bool useSeriesThumbs,
     double requestScale,
   ) {
     final maxW = (height * 16 / 9 * requestScale).toInt();
     final maxH = (height * requestScale).toInt();
+    if (!useSeriesThumbs) {
+      if (item.type == 'Episode') {
+        final episodePrimary = _resolvePrimaryImageUrl(
+          item,
+          imageApi,
+          maxHeight: maxH,
+          maxWidth: maxW,
+        );
+        if (episodePrimary != null) {
+          return episodePrimary;
+        }
+      } else if (item.type == 'Series') {
+        final latestEpId = item.rawData['LatestEpisodeId'] as String?;
+        final latestEpTag = item.rawData['LatestEpisodePrimaryImageTag'] as String?;
+        if (latestEpId != null) {
+          return imageApi.getPrimaryImageUrl(
+            latestEpId,
+            maxHeight: maxH,
+            maxWidth: maxW,
+            tag: latestEpTag,
+          );
+        }
+      }
+    }
     final itemThumbTag = _tagForType(item, 'Thumb');
     if (itemThumbTag != null) {
       return imageApi.getThumbImageUrl(item.id, maxWidth: maxW, tag: itemThumbTag);
@@ -3321,21 +3348,48 @@ class _ContentRowsState extends State<_ContentRows>
 
     if (imageType == ImageType.thumb) {
       final maxW = (height * 16 / 9 * requestScale).toInt();
+      final maxH = (height * requestScale).toInt();
+      if (!useSeriesThumbs) {
+        if (item.type == 'Episode') {
+          final episodePrimary = _resolvePrimaryImageUrl(
+            item,
+            imageApi,
+            maxHeight: maxH,
+            maxWidth: maxW,
+          );
+          if (episodePrimary != null) {
+            return episodePrimary;
+          }
+        } else if (item.type == 'Series') {
+          final latestEpId = item.rawData['LatestEpisodeId'] as String?;
+          final latestEpTag = item.rawData['LatestEpisodePrimaryImageTag'] as String?;
+          if (latestEpId != null) {
+            return imageApi.getPrimaryImageUrl(
+              latestEpId,
+              maxHeight: maxH,
+              maxWidth: maxW,
+              tag: latestEpTag,
+            );
+          }
+        }
+      }
       if (itemThumbTag != null) {
         return imageApi.getThumbImageUrl(item.id, maxWidth: maxW, tag: itemThumbTag);
       }
       if (item.backdropImageTags.isNotEmpty) {
         return imageApi.getBackdropImageUrl(item.id, maxWidth: maxW, tag: item.backdropImageTags.first);
       }
-      if (parentThumbItemId != null && parentThumbTag != null) {
-        return imageApi.getThumbImageUrl(parentThumbItemId, maxWidth: maxW, tag: parentThumbTag);
-      }
-      if (item.parentBackdropItemId != null && item.parentBackdropImageTags.isNotEmpty) {
-        return imageApi.getBackdropImageUrl(
-          item.parentBackdropItemId!,
-          maxWidth: maxW,
-          tag: item.parentBackdropImageTags.first,
-        );
+      if (useSeriesThumbs || item.type != 'Episode') {
+        if (parentThumbItemId != null && parentThumbTag != null) {
+          return imageApi.getThumbImageUrl(parentThumbItemId, maxWidth: maxW, tag: parentThumbTag);
+        }
+        if (item.parentBackdropItemId != null && item.parentBackdropImageTags.isNotEmpty) {
+          return imageApi.getBackdropImageUrl(
+            item.parentBackdropItemId!,
+            maxWidth: maxW,
+            tag: item.parentBackdropImageTags.first,
+          );
+        }
       }
       return _resolveLandscapeImageUrl(item, imageApi, height, requestScale);
     }
@@ -3360,11 +3414,13 @@ class _ContentRowsState extends State<_ContentRows>
     final parentBackdropTags = item.parentBackdropImageTags;
 
     if (imageType == ImageType.poster) {
-      if (seriesId != null && seriesPrimaryTag != null) {
+      final sId = seriesId ?? item.parentPrimaryImageItemId;
+      final sTag = seriesPrimaryTag ?? item.parentPrimaryImageTag;
+      if (sId != null) {
         return imageApi.getPrimaryImageUrl(
-          seriesId,
+          sId,
           maxHeight: maxH,
-          tag: seriesPrimaryTag,
+          tag: sTag,
         );
       }
       return null;
