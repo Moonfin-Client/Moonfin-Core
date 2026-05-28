@@ -579,7 +579,7 @@ function renderHome(){
       <div class="rd-clock">12:31 AM</div>
     </div>`;
   const content=`
-    <div class="rh${topMode?' top-mode':''}">
+    <div class="rh">
       <div class="rh-backdrop" style="background:${pg(2)}"></div>
       <div class="rh-backdrop-scrim"></div>
       ${topMode?navPill:''}
