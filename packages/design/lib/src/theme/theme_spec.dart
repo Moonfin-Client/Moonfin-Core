@@ -358,7 +358,6 @@ class ThemeSpec {
 
   final String id;
   final String displayName;
-  final Brightness brightness;
   final ThemeColorTokens colors;
   final ThemeBorderTokens borders;
   final ThemeSemanticTokens semantic;
@@ -386,7 +385,6 @@ class ThemeSpec {
   const ThemeSpec({
     required this.id,
     required this.displayName,
-    required this.brightness,
     required this.colors,
     required this.borders,
     this.semantic = ThemeSemanticTokens.defaults,
@@ -415,14 +413,6 @@ class ThemeSpec {
         'Theme "displayName" must be a non-empty string.',
       );
     }
-    final brightnessRaw = json['brightness'];
-    final brightness = switch (brightnessRaw) {
-      'dark' => Brightness.dark,
-      'light' => Brightness.light,
-      _ => throw ThemeSpecParseException(
-          'Theme "brightness" must be "dark" or "light" (got $brightnessRaw).',
-        ),
-    };
     final colorsJson = json['colors'];
     final bordersJson = json['borders'];
     final semanticJson = json['semantic'];
@@ -439,7 +429,6 @@ class ThemeSpec {
     return ThemeSpec(
       id: id,
       displayName: displayName,
-      brightness: brightness,
       colors: ThemeColorTokens.fromJson(colorsJson.cast<String, dynamic>()),
       borders: ThemeBorderTokens.fromJson(bordersJson.cast<String, dynamic>()),
       semantic: semanticJson is Map
@@ -459,7 +448,6 @@ class ThemeSpec {
         'schemaVersion': currentSchemaVersion,
         'id': id,
         'displayName': displayName,
-        'brightness': brightness == Brightness.dark ? 'dark' : 'light',
         if (fontFamily != null) 'fontFamily': fontFamily,
         if (textGlow.isNotEmpty)
           'textGlow': textGlow.map(_encodeTextShadow).toList(),

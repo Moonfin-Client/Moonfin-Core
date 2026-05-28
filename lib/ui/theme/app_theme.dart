@@ -7,7 +7,7 @@ class AppTheme {
   static TextTheme _buildTextTheme(ThemeSpec spec) {
     final c = spec.colors;
     final base = ThemeData(
-      brightness: spec.brightness,
+      brightness: Brightness.dark,
       fontFamily: spec.fontFamily,
     ).textTheme;
     if (spec.textGlow.isEmpty) {
@@ -60,7 +60,7 @@ class AppTheme {
     final c = spec.colors;
     return ThemeData(
       useMaterial3: true,
-      brightness: spec.brightness,
+      brightness: Brightness.dark,
       fontFamily: spec.fontFamily,
       colorScheme: ColorScheme.dark(
         primary: c.accent,

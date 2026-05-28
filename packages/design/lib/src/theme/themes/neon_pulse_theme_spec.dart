@@ -5,7 +5,6 @@ import '../theme_spec.dart';
 const neonPulseThemeSpec = ThemeSpec(
   id: 'neon_pulse',
   displayName: 'Neon Pulse',
-  brightness: Brightness.dark,
   fontFamily: 'NeonPulseDisplay',
   textGlow: [Shadow(color: Color(0x6600E5FF), blurRadius: 8)],
   navColorCycle: [Color(0xFFFF2E92), Color(0xFF00E5FF)],
