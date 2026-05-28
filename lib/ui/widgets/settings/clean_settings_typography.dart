@@ -42,6 +42,9 @@ Widget withCleanSettingsTypography(BuildContext context, Widget child) {
         ),
       ),
     ),
-    child: child,
+    child: DefaultTextStyle.merge(
+      style: const TextStyle(fontFamily: kCleanSettingsFontFamily),
+      child: child,
+    ),
   );
 }

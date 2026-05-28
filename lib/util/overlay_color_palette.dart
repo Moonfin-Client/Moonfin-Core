@@ -16,7 +16,23 @@ abstract final class OverlayColorPalette {
     'dark_green',
     'slate',
     'indigo',
+    'moonfinCyan',
+    'neonPulseMagenta',
   ];
+
+  static const _aliases = <String, String>{
+    'grey': 'gray',
+    'darkblue': 'dark_blue',
+    'dark_blue': 'dark_blue',
+    'darkred': 'dark_red',
+    'dark_red': 'dark_red',
+    'darkgreen': 'dark_green',
+    'dark_green': 'dark_green',
+    'moonfincyan': 'moonfinCyan',
+    'moonfin_cyan': 'moonfinCyan',
+    'neonpulsemagenta': 'neonPulseMagenta',
+    'neon_pulse_magenta': 'neonPulseMagenta',
+  };
 
   static const pickerSwatches = <String, int>{
     'gray': 0xFF6B7280,
@@ -31,10 +47,29 @@ abstract final class OverlayColorPalette {
     'dark_green': 0xFF14532D,
     'slate': 0xFF334155,
     'indigo': 0xFF4338CA,
+    'moonfinCyan': 0xFF00A4DC,
+    'neonPulseMagenta': 0xFFFF2E92,
   };
 
+  static String normalizeKey(String? colorName) {
+    final raw = colorName?.trim();
+    if (raw == null || raw.isEmpty) {
+      return 'gray';
+    }
+    if (keys.contains(raw)) {
+      return raw;
+    }
+
+    final lower = raw.toLowerCase();
+    if (keys.contains(lower)) {
+      return lower;
+    }
+
+    return _aliases[lower] ?? 'gray';
+  }
+
   static Color resolveColor(String colorName) {
-    return switch (colorName) {
+    return switch (normalizeKey(colorName)) {
       'black' => Colors.black,
       'gray' => Colors.grey,
       'dark_blue' => const Color(0xFF1A2332),
@@ -47,12 +82,14 @@ abstract final class OverlayColorPalette {
       'dark_green' => const Color(0xFF0B4F0F),
       'slate' => const Color(0xFF475569),
       'indigo' => const Color(0xFF1E3A8A),
+      'moonfinCyan' => const Color(0xFF00A4DC),
+      'neonPulseMagenta' => const Color(0xFFFF2E92),
       _ => Colors.grey,
     };
   }
 
   static String labelFor(String key, AppLocalizations l10n) {
-    return switch (key) {
+    return switch (normalizeKey(key)) {
       'gray' => l10n.gray,
       'black' => l10n.black,
       'dark_blue' => l10n.darkBlue,
@@ -65,7 +102,9 @@ abstract final class OverlayColorPalette {
       'dark_green' => l10n.darkGreen,
       'slate' => l10n.slate,
       'indigo' => l10n.indigo,
-      _ => key,
+      'moonfinCyan' => 'Moonfin Cyan',
+      'neonPulseMagenta' => 'Neon Pulse Magenta',
+      _ => normalizeKey(key),
     };
   }
 

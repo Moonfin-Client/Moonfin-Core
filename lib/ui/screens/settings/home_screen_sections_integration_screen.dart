@@ -57,60 +57,64 @@ class _HomeScreenSectionsIntegrationScreenState
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final caps = _service.allCapabilities.toList();
     return withCleanSettingsTypography(
       context,
-      Scaffold(
-        appBar: buildSettingsAppBar(
-          context,
-          const Text('Home Screen Sections'),
-          actions: [
-            IconButton(
-              tooltip: l10n.refresh,
-              icon: _refreshing
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.refresh),
-              onPressed: _refreshing ? null : _refresh,
+      Builder(
+        builder: (context) {
+          final l10n = AppLocalizations.of(context);
+          final theme = Theme.of(context);
+          final caps = _service.allCapabilities.toList();
+          return Scaffold(
+            appBar: buildSettingsAppBar(
+              context,
+              const Text('Home Screen Sections'),
+              actions: [
+                IconButton(
+                  tooltip: l10n.refresh,
+                  icon: _refreshing
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.refresh),
+                  onPressed: _refreshing ? null : _refresh,
+                ),
+              ],
             ),
-          ],
-        ),
-        body: ListView(
-          children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text(
-              l10n.homeScreenSectionsIntegrationDescription,
-              style: theme.textTheme.bodyMedium,
+            body: ListView(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Text(
+                    l10n.homeScreenSectionsIntegrationDescription,
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                ),
+                if (caps.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(l10n.homeScreenSectionsIntegrationNoServers),
+                  )
+                else
+                  ...caps.map(_buildCapabilityTile),
+                const Divider(),
+                if (_canOpenHomeSections())
+                  ListTile(
+                    leading: const Icon(Icons.tune),
+                    title: Text(l10n.integrationOpenHomeSections),
+                    subtitle: Text(
+                      l10n.integrationOpenHomeSectionsSubtitle,
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => context.pushSettingsScreen(
+                      const HomeSectionsScreen(showGeneralOptions: false),
+                    ),
+                  ),
+              ],
             ),
-          ),
-          if (caps.isEmpty)
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Text(l10n.homeScreenSectionsIntegrationNoServers),
-            )
-          else
-            ...caps.map(_buildCapabilityTile),
-          const Divider(),
-          if (_canOpenHomeSections())
-            ListTile(
-              leading: const Icon(Icons.tune),
-              title: Text(l10n.integrationOpenHomeSections),
-              subtitle: Text(
-                l10n.integrationOpenHomeSectionsSubtitle,
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.pushSettingsScreen(
-                const HomeSectionsScreen(showGeneralOptions: false),
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

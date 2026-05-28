@@ -124,180 +124,185 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
       RequestInitialFocus(child: _buildContent(context));
 
   Widget _buildContent(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final borders = ThemeRegistry.active.borders;
-    final pluginAvailable = _syncService.pluginAvailable;
-    final pluginVersion = _syncService.pluginVersion;
-    final pluginStateText = pluginAvailable
-        ? l10n.pluginDetectedDescription
-        : l10n.pluginNotDetectedDescription;
-    final availableServices = <String>[
-      if (_syncService.mdblistAvailable) 'MDBList',
-      if (_syncService.tmdbAvailable) 'TMDB',
-      if (_syncService.seerrEnabled) 'Seerr',
-    ];
-    final pluginSyncEnabled = _prefs.get(UserPreferences.pluginSyncEnabled);
-    final showProfileSync = pluginAvailable && pluginSyncEnabled;
-
     return withCleanSettingsTypography(
       context,
-      Padding(
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
-        child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.fromBorderSide(
-                borders.cardBorder.copyWith(
-                  color: pluginAvailable
-                      ? colorScheme.primary.withValues(alpha: 0.35)
-                      : colorScheme.outlineVariant.withValues(alpha: 0.45),
-                ),
-              ),
-            ),
+      Builder(
+        builder: (context) {
+          final l10n = AppLocalizations.of(context);
+          final theme = Theme.of(context);
+          final colorScheme = theme.colorScheme;
+          final borders = ThemeRegistry.active.borders;
+          final pluginAvailable = _syncService.pluginAvailable;
+          final pluginVersion = _syncService.pluginVersion;
+          final pluginStateText = pluginAvailable
+              ? l10n.pluginDetectedDescription
+              : l10n.pluginNotDetectedDescription;
+          final availableServices = <String>[
+            if (_syncService.mdblistAvailable) 'MDBList',
+            if (_syncService.tmdbAvailable) 'TMDB',
+            if (_syncService.seerrEnabled) 'Seerr',
+          ];
+          final pluginSyncEnabled = _prefs.get(UserPreferences.pluginSyncEnabled);
+          final showProfileSync = pluginAvailable && pluginSyncEnabled;
+
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.fromBorderSide(
+                      borders.cardBorder.copyWith(
                         color: pluginAvailable
-                            ? colorScheme.primary.withValues(alpha: 0.18)
-                            : colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        pluginAvailable
-                            ? Icons.extension
-                            : Icons.extension_off,
-                        color: pluginAvailable
-                            ? colorScheme.primary
-                            : colorScheme.onSurfaceVariant,
+                            ? colorScheme.primary.withValues(alpha: 0.35)
+                            : colorScheme.outlineVariant.withValues(alpha: 0.45),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
-                          Text(
-                            pluginAvailable
-                                ? l10n.pluginDetected
-                                : l10n.pluginNotDetected,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: pluginAvailable
+                                  ? colorScheme.primary.withValues(alpha: 0.18)
+                                  : colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              pluginAvailable
+                                  ? Icons.extension
+                                  : Icons.extension_off,
+                              color: pluginAvailable
+                                  ? colorScheme.primary
+                                  : colorScheme.onSurfaceVariant,
                             ),
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            pluginVersion != null && pluginVersion.trim().isNotEmpty
-                                ? l10n.pluginStatusVersion(pluginStateText, pluginVersion)
-                                : pluginStateText,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  pluginAvailable
+                                      ? l10n.pluginDetected
+                                      : l10n.pluginNotDetected,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  pluginVersion != null && pluginVersion.trim().isNotEmpty
+                                      ? l10n.pluginStatusVersion(pluginStateText, pluginVersion)
+                                      : pluginStateText,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-                if (availableServices.isNotEmpty) ...[
-                  const SizedBox(height: 14),
-                  Text(
-                    l10n.availableServices,
-                    style: theme.textTheme.labelLarge?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
+                      if (availableServices.isNotEmpty) ...[
+                        const SizedBox(height: 14),
+                        Text(
+                          l10n.availableServices,
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final service in availableServices)
+                              Chip(
+                                visualDensity: VisualDensity.compact,
+                                avatar: Icon(Icons.check_circle, size: 16, color: AppColorScheme.accent),
+                                label: Text(service),
+                                backgroundColor: borders.chipBackground,
+                                side: borders.chipBorder,
+                                shape: RoundedRectangleBorder(borderRadius: borders.chipRadius),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
                     children: [
-                      for (final service in availableServices)
-                        Chip(
-                          visualDensity: VisualDensity.compact,
-                          avatar: Icon(Icons.check_circle, size: 16, color: AppColorScheme.accent),
-                          label: Text(service),
-                          backgroundColor: borders.chipBackground,
-                          side: borders.chipBorder,
-                          shape: RoundedRectangleBorder(borderRadius: borders.chipRadius),
+                      SwitchPreferenceTile(
+                        preference: UserPreferences.pluginSyncEnabled,
+                        title: l10n.serverPluginSync,
+                        subtitle: l10n.syncSettingsWithPlugin,
+                        icon: Icons.sync,
+                        onChanged: _pushSync,
+                      ),
+                      if (showProfileSync)
+                        const Divider(height: 1),
+                      if (showProfileSync)
+                        _ProfileSyncSection(
+                          syncService: _syncService,
+                          profileLabel: (p) => _profileLabel(p, l10n),
+                          busy: _profileSyncBusy,
+                          onLoad: _pullSelectedProfile,
+                          onSave: _pushSelectedProfile,
                         ),
                     ],
                   ),
-                ],
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              children: [
-                SwitchPreferenceTile(
-                  preference: UserPreferences.pluginSyncEnabled,
-                  title: l10n.serverPluginSync,
-                  subtitle: l10n.syncSettingsWithPlugin,
-                  icon: Icons.sync,
-                  onChanged: _pushSync,
                 ),
-                if (showProfileSync)
-                  const Divider(height: 1),
-                if (showProfileSync)
-                  _ProfileSyncSection(
-                    syncService: _syncService,
-                    profileLabel: (p) => _profileLabel(p, l10n),
-                    busy: _profileSyncBusy,
-                    onLoad: _pullSelectedProfile,
-                    onSave: _pushSelectedProfile,
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(16),
                   ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  size: 20,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        l10n.whatSyncControls,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                      Icon(
+                        Icons.info_outline,
+                        size: 20,
+                        color: colorScheme.onSurfaceVariant,
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        l10n.syncControlsDescription,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.whatSyncControls,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n.syncControlsDescription,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -305,9 +310,8 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
                 ),
               ],
             ),
-          ),
-        ],
-        ),
+          );
+        },
       ),
     );
   }

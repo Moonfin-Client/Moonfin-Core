@@ -220,11 +220,6 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
       _focusNodes.insert(newIndex, node);
     });
     _saveRows();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (newIndex < _focusNodes.length) {
-        _focusNodes[newIndex].requestFocus();
-      }
-    });
   }
 
   String _rowLabel(SeerrRowType type, AppLocalizations l10n) => switch (type) {
@@ -272,6 +267,7 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
   }
 
   Widget _buildRowsHeader(
+    BuildContext context,
     AppLocalizations l10n,
     bool seerrAvailable,
     bool showSeerrSettings,
@@ -340,7 +336,12 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
       itemCount: (showSeerrSettings ? _rows.length : 0) + 1,
       itemBuilder: (context, index) {
         if (index == 0) {
-          return _buildRowsHeader(l10n, seerrAvailable, showSeerrSettings);
+          return _buildRowsHeader(
+            context,
+            l10n,
+            seerrAvailable,
+            showSeerrSettings,
+          );
         }
         final rowIndex = index - 1;
         final row = _rows[rowIndex];
@@ -382,7 +383,14 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     return ListView(
       children: [
-        _buildRowsHeader(l10n, seerrAvailable, showSeerrSettings),
+        Builder(
+          builder: (context) => _buildRowsHeader(
+            context,
+            l10n,
+            seerrAvailable,
+            showSeerrSettings,
+          ),
+        ),
         if (showSeerrSettings)
           ReorderableListView.builder(
             shrinkWrap: true,
@@ -1263,6 +1271,34 @@ class _SeerrReorderableTileState extends State<_SeerrReorderableTile> {
   bool _focused = false;
 
   @override
+  void initState() {
+    super.initState();
+    _focused = widget.focusNode.hasFocus;
+  }
+
+  @override
+  void didUpdateWidget(covariant _SeerrReorderableTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final hasFocus = widget.focusNode.hasFocus;
+    if (_focused != hasFocus) {
+      _focused = hasFocus;
+    }
+  }
+
+  void _ensureFocusedTileVisible() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_focused) return;
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOut,
+        alignment: 0.2,
+        alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final bg = _focused
@@ -1271,7 +1307,14 @@ class _SeerrReorderableTileState extends State<_SeerrReorderableTile> {
 
     return Focus(
       focusNode: widget.focusNode,
-      onFocusChange: (f) => setState(() => _focused = f),
+      onFocusChange: (f) {
+        if (_focused != f && mounted) {
+          setState(() => _focused = f);
+        }
+        if (f) {
+          _ensureFocusedTileVisible();
+        }
+      },
       onKeyEvent: (node, event) {
         if (event is! KeyDownEvent) return KeyEventResult.ignored;
         if (event.logicalKey == LogicalKeyboardKey.arrowLeft &&

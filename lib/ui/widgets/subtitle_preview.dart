@@ -40,6 +40,17 @@ class _SubtitlePreviewState extends State<SubtitlePreview> {
         Color(_prefs.get(UserPreferences.subtitleTextStrokeColor));
     final displaySize = _prefs.get(UserPreferences.subtitlesTextSize) * 1.3;
     final fontWeight = _prefs.get(UserPreferences.subtitlesTextWeight);
+    final topColor = AppColorScheme.surfaceVariant;
+    final bottomColor = AppColorScheme.scrim;
+    final bothVeryLight =
+        topColor.computeLuminance() > 0.85 &&
+        bottomColor.computeLuminance() > 0.85;
+    final gradientTop = bothVeryLight
+        ? AppColorScheme.onSurface.withValues(alpha: 0.28)
+        : topColor;
+    final gradientBottom = bothVeryLight
+        ? AppColorScheme.onSurface.withValues(alpha: 0.56)
+        : bottomColor;
 
     return Container(
       height: 140,
@@ -50,8 +61,8 @@ class _SubtitlePreviewState extends State<SubtitlePreview> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColorScheme.surfaceVariant,
-            AppColorScheme.scrim,
+            gradientTop,
+            gradientBottom,
           ],
         ),
         borderRadius: BorderRadius.circular(12),

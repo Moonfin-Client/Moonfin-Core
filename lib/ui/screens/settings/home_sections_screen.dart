@@ -606,7 +606,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
   void _focusSectionAndEnsureVisible(int index, {int attempt = 0}) {
     if (!mounted || index < 0 || index >= _focusNodes.length) return;
     final node = _focusNodes[index];
-    node.requestFocus();
+    if (!node.hasFocus) {
+      node.requestFocus();
+    }
 
     final targetContext = _focusNodes[index].context;
     if (targetContext != null) {
@@ -614,8 +616,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         targetContext,
         duration: const Duration(milliseconds: 140),
         curve: Curves.easeOut,
-        alignment: 0.9,
-        alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+        alignment: 0.2,
+        alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
       );
       return;
     }
@@ -981,12 +983,23 @@ class _HomeSectionTileState extends State<_HomeSectionTile> {
   }
 
   @override
+  void didUpdateWidget(covariant _HomeSectionTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final hasFocus = widget.focusNode.hasFocus;
+    if (_focused != hasFocus) {
+      _focused = hasFocus;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Focus(
       focusNode: widget.focusNode,
       autofocus: widget.autofocus,
       onFocusChange: (f) {
-        if (_focused != f && mounted) setState(() => _focused = f);
+        if (_focused != f && mounted) {
+          setState(() => _focused = f);
+        }
         if (f) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted || !_focused) return;
@@ -994,8 +1007,8 @@ class _HomeSectionTileState extends State<_HomeSectionTile> {
               context,
               duration: const Duration(milliseconds: 120),
               curve: Curves.easeOut,
-              alignment: 0.9,
-              alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+              alignment: 0.2,
+              alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
             );
           });
         }

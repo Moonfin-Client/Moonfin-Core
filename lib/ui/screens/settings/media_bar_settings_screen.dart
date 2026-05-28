@@ -8,7 +8,6 @@ import 'package:server_core/server_core.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/focus/dpad_keys.dart';
-import '../../../util/overlay_color_palette.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -325,23 +324,6 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
               },
               onChanged: _pushSync,
             ),
-            StringPickerPreferenceTile(
-              preference: UserPreferences.mediaBarOverlayColor,
-              title: l10n.navbarColor,
-              icon: Icons.color_lens,
-              options: OverlayColorPalette.localizedOptions(l10n),
-              onChanged: _pushSync,
-            ),
-            SliderPreferenceTile(
-              preference: UserPreferences.mediaBarOverlayOpacity,
-              title: l10n.navbarOpacity,
-              icon: Icons.opacity,
-              min: 0,
-              max: 100,
-              divisions: 20,
-              labelOf: (v) => '$v%',
-              onChangeEnd: _pushSync,
-            ),
             _MediaBarContentTypePickerTile(onChanged: _pushSync),
             _MediaBarItemCountPickerTile(onChanged: _pushSync),
 
@@ -349,7 +331,9 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
               padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
               child: Text(
                 l10n.mediaSources,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontFamily: kCleanSettingsFontFamily,
+                ),
               ),
             ),
             _MediaBarActionTile(
@@ -399,7 +383,9 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
               padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
               child: Text(
                 l10n.behavior,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontFamily: kCleanSettingsFontFamily,
+                ),
               ),
             ),
             SwitchPreferenceTile(

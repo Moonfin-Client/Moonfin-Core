@@ -1236,44 +1236,51 @@ class _PluginScreenState extends State<_PluginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final l10n = AppLocalizations.of(context);
-    return Scaffold(
-      appBar: buildSettingsAppBar(context, Text(l10n.pluginLabel)),
-      body: FocusScope(
-        node: _pluginScope,
-        autofocus: true,
-        child: ListView(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(Icons.extension, size: 20, color: colorScheme.primary),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        l10n.settingsPluginScreenDescription,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
+    return withCleanSettingsTypography(
+      context,
+      Builder(
+        builder: (context) {
+          final theme = Theme.of(context);
+          final colorScheme = theme.colorScheme;
+          final l10n = AppLocalizations.of(context);
+          return Scaffold(
+            appBar: buildSettingsAppBar(context, Text(l10n.pluginLabel)),
+            body: FocusScope(
+              node: _pluginScope,
+              autofocus: true,
+              child: ListView(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                    child: Container(
+                      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.extension, size: 20, color: colorScheme.primary),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              l10n.settingsPluginScreenDescription,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const PluginSettingsSection(),
+                ],
               ),
             ),
-            const PluginSettingsSection(),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -1300,54 +1307,61 @@ class _MetadataRatingsScreenState extends State<_MetadataRatingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Scaffold(
-      appBar: buildSettingsAppBar(
-        context,
-        Text(l10n.settingsMetadataAndRatings),
-      ),
-      body: FocusScope(
-        node: _metadataScope,
-        autofocus: true,
-        child: ListView(
-          children: [
-            SwitchPreferenceTile(
-              preference: UserPreferences.enableAdditionalRatings,
-              title: l10n.additionalRatings,
-              subtitle: l10n.showMdbListAndTmdbRatings,
-              icon: Icons.star,
-              onChanged: _pushPersonalizationSync,
+    return withCleanSettingsTypography(
+      context,
+      Builder(
+        builder: (context) {
+          final l10n = AppLocalizations.of(context);
+          return Scaffold(
+            appBar: buildSettingsAppBar(
+              context,
+              Text(l10n.settingsMetadataAndRatings),
             ),
-            _TvSettingsListTile(
-              leading: const Icon(Icons.reorder),
-              title: Text(l10n.ratingSources),
-              subtitle: Text(l10n.ratingSourcesDescription),
-              onTap: () =>
-                  context.pushSettingsScreen(const RatingsConfigScreen()),
+            body: FocusScope(
+              node: _metadataScope,
+              autofocus: true,
+              child: ListView(
+                children: [
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.enableAdditionalRatings,
+                    title: l10n.additionalRatings,
+                    subtitle: l10n.showMdbListAndTmdbRatings,
+                    icon: Icons.star,
+                    onChanged: _pushPersonalizationSync,
+                  ),
+                  _TvSettingsListTile(
+                    leading: const Icon(Icons.reorder),
+                    title: Text(l10n.ratingSources),
+                    subtitle: Text(l10n.ratingSourcesDescription),
+                    onTap: () =>
+                        context.pushSettingsScreen(const RatingsConfigScreen()),
+                  ),
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.enableEpisodeRatings,
+                    title: l10n.episodeRatings,
+                    subtitle: l10n.showRatingsOnEpisodes,
+                    icon: Icons.stars,
+                    onChanged: _pushPersonalizationSync,
+                  ),
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.showRatingLabels,
+                    title: l10n.ratingLabels,
+                    subtitle: l10n.showLabelsNextToIcons,
+                    icon: Icons.label,
+                    onChanged: _pushPersonalizationSync,
+                  ),
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.showRatingBadges,
+                    title: l10n.ratingBadges,
+                    subtitle: l10n.showDecorativeBadges,
+                    icon: Icons.style,
+                    onChanged: _pushPersonalizationSync,
+                  ),
+                ],
+              ),
             ),
-            SwitchPreferenceTile(
-              preference: UserPreferences.enableEpisodeRatings,
-              title: l10n.episodeRatings,
-              subtitle: l10n.showRatingsOnEpisodes,
-              icon: Icons.stars,
-              onChanged: _pushPersonalizationSync,
-            ),
-            SwitchPreferenceTile(
-              preference: UserPreferences.showRatingLabels,
-              title: l10n.ratingLabels,
-              subtitle: l10n.showLabelsNextToIcons,
-              icon: Icons.label,
-              onChanged: _pushPersonalizationSync,
-            ),
-            SwitchPreferenceTile(
-              preference: UserPreferences.showRatingBadges,
-              title: l10n.ratingBadges,
-              subtitle: l10n.showDecorativeBadges,
-              icon: Icons.style,
-              onChanged: _pushPersonalizationSync,
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -2678,14 +2692,6 @@ class _AutomationQueueScreenState extends State<_AutomationQueueScreen> {
             },
           ),
           if (showNextUpOptions)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-              child: Text(
-                'How long should the Next Up display appear before auto-playing next episode (auto-play on) or returning to the media details page (auto-play off).',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ),
-          if (showNextUpOptions)
             SliderPreferenceTile(
               preference: UserPreferences.nextUpTimeout,
               title: l10n.nextUpTimeout,
@@ -3289,25 +3295,36 @@ class _NavbarColorPickerTileState extends State<_NavbarColorPickerTile> {
     final l10n = AppLocalizations.of(context);
     return ValueListenableBuilder<String>(
       valueListenable: _binding,
-      builder: (context, value, _) => _TvSettingsListTile(
-        leading: const Icon(Icons.palette),
-        title: Text(l10n.navbarColor),
-        subtitle: Text(_labelFor(value, l10n)),
-        trailing: Container(
-          width: 18,
-          height: 18,
-          decoration: BoxDecoration(
-            color: _swatchColor(value),
-            shape: BoxShape.circle,
-            border: Border.fromBorderSide(
-              ThemeRegistry.active.borders.chipBorder.copyWith(
-                color: _swatchBorder(_swatchColor(value)),
+      builder: (context, value, _) {
+        final normalized = OverlayColorPalette.normalizeKey(value);
+        if (normalized != value) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted || _binding.value == normalized) return;
+            _binding.value = normalized;
+            widget.onChanged?.call();
+          });
+        }
+
+        return _TvSettingsListTile(
+          leading: const Icon(Icons.palette),
+          title: Text(l10n.navbarColor),
+          subtitle: Text(_labelFor(normalized, l10n)),
+          trailing: Container(
+            width: 18,
+            height: 18,
+            decoration: BoxDecoration(
+              color: _swatchColor(normalized),
+              shape: BoxShape.circle,
+              border: Border.fromBorderSide(
+                ThemeRegistry.active.borders.chipBorder.copyWith(
+                  color: _swatchBorder(_swatchColor(normalized)),
+                ),
               ),
             ),
           ),
-        ),
-        onTap: () => _showPicker(context, value),
-      ),
+          onTap: () => _showPicker(context, normalized),
+        );
+      },
     );
   }
 
@@ -3387,6 +3404,7 @@ class _ShuffleContentTypePickerTileState
   static const _fallbackKey = 'both';
 
   late final PreferenceBinding<String> _binding;
+  late final PreferenceBinding<bool> _showShuffleButtonBinding;
   bool _pickerOpen = false;
 
   @override
@@ -3396,11 +3414,16 @@ class _ShuffleContentTypePickerTileState
       GetIt.instance<PreferenceStore>(),
       UserPreferences.shuffleContentType,
     );
+    _showShuffleButtonBinding = PreferenceBinding(
+      GetIt.instance<PreferenceStore>(),
+      UserPreferences.showShuffleButton,
+    );
   }
 
   @override
   void dispose() {
     _binding.dispose();
+    _showShuffleButtonBinding.dispose();
     super.dispose();
   }
 
@@ -3416,22 +3439,31 @@ class _ShuffleContentTypePickerTileState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return ValueListenableBuilder<String>(
-      valueListenable: _binding,
-      builder: (context, value, _) {
-        final normalized = _normalize(value);
-        if (normalized != value) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted || _binding.value == normalized) return;
-            _binding.value = normalized;
-            widget.onChanged?.call();
-          });
+    return ValueListenableBuilder<bool>(
+      valueListenable: _showShuffleButtonBinding,
+      builder: (context, showShuffleButton, _) {
+        if (!showShuffleButton) {
+          return const SizedBox.shrink();
         }
-        return _TvSettingsListTile(
-          leading: const Icon(Icons.shuffle),
-          title: Text(l10n.settingsShuffleContentTypeFilter),
-          subtitle: Text(_label(normalized, l10n)),
-          onTap: () => _showPicker(context, normalized),
+
+        return ValueListenableBuilder<String>(
+          valueListenable: _binding,
+          builder: (context, value, _) {
+            final normalized = _normalize(value);
+            if (normalized != value) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!mounted || _binding.value == normalized) return;
+                _binding.value = normalized;
+                widget.onChanged?.call();
+              });
+            }
+            return _TvSettingsListTile(
+              leading: const Icon(Icons.shuffle),
+              title: Text(l10n.settingsShuffleContentTypeFilter),
+              subtitle: Text(_label(normalized, l10n)),
+              onTap: () => _showPicker(context, normalized),
+            );
+          },
         );
       },
     );

@@ -107,8 +107,13 @@ class _SubtitleCustomizationScreenState
   }
 
   @override
-  Widget build(BuildContext context) =>
-      RequestInitialFocus(child: _buildContent(context));
+  Widget build(BuildContext context) {
+    final content = _buildContent(context);
+    if (PlatformDetection.isTV) {
+      return RequestInitialFocus(child: content);
+    }
+    return content;
+  }
 
   Widget _buildContent(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -200,6 +205,8 @@ class _SubtitleCustomizationScreenState
     required String Function(double) labelBuilder,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
+    final useTvFocusStyling = PlatformDetection.isTV;
+    final activeFocusStyling = useTvFocusStyling && focused;
     return ValueListenableBuilder<double>(
       valueListenable: binding,
       builder: (context, value, _) => Padding(
@@ -220,25 +227,25 @@ class _SubtitleCustomizationScreenState
             duration: const Duration(milliseconds: 90),
             curve: Curves.easeOut,
             decoration: BoxDecoration(
-              color: focused
+              color: activeFocusStyling
                   ? AppColorScheme.onSurface
                   : colorScheme.surfaceContainerLow,
               borderRadius: BorderRadius.circular(12),
               border: Border.fromBorderSide(
-                (focused
+                (activeFocusStyling
                         ? ThemeRegistry.active.borders.focusBorder
                         : ThemeRegistry.active.borders.cardBorder)
                     .copyWith(width: 1),
               ),
-              boxShadow: focused
+              boxShadow: activeFocusStyling
                   ? ThemeRegistry.active.borders.focusGlow
                   : null,
             ),
             child: ListTileTheme.merge(
-              textColor: focused
+              textColor: activeFocusStyling
                   ? AppColors.black.withValues(alpha: 0.87)
                   : AppColorScheme.onSurface,
-              iconColor: focused
+              iconColor: activeFocusStyling
                   ? AppColors.black.withValues(alpha: 0.54)
                   : AppColorScheme.onSurface.withValues(alpha: 0.7),
               child: ListTile(

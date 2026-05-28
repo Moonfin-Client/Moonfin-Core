@@ -123,6 +123,9 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
         .where((i) => i.enabled)
         .map((i) => i.key)
         .join(',');
+    // Keep local ordering/focus stable for in-screen edits; external updates
+    // still refresh via _onPrefsChanged when the stored CSV differs.
+    _lastEnabledRatingsCsv = csv;
     _store.set(UserPreferences.enabledRatings, csv);
 
     final syncService = GetIt.instance<PluginSyncService>();
@@ -219,8 +222,6 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
 
   Widget _buildTvList(AppLocalizations l10n) {
     return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
       itemCount: _items.length + 1,
       itemBuilder: (context, index) {
         if (index == 0) {
@@ -264,11 +265,6 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
       _focusNodes.insert(newIndex, node);
     });
     _save();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (newIndex < _focusNodes.length) {
-        _focusNodes[newIndex].requestFocus();
-      }
-    });
   }
 }
 
@@ -304,6 +300,34 @@ class _ReorderableTileState extends State<_ReorderableTile> {
   bool _focused = false;
 
   @override
+  void initState() {
+    super.initState();
+    _focused = widget.focusNode.hasFocus;
+  }
+
+  @override
+  void didUpdateWidget(covariant _ReorderableTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final hasFocus = widget.focusNode.hasFocus;
+    if (_focused != hasFocus) {
+      _focused = hasFocus;
+    }
+  }
+
+  void _ensureFocusedTileVisible() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_focused) return;
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOut,
+        alignment: 0.2,
+        alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final bg = _focused
@@ -312,7 +336,14 @@ class _ReorderableTileState extends State<_ReorderableTile> {
 
     return Focus(
       focusNode: widget.focusNode,
-      onFocusChange: (f) => setState(() => _focused = f),
+      onFocusChange: (f) {
+        if (_focused != f && mounted) {
+          setState(() => _focused = f);
+        }
+        if (f) {
+          _ensureFocusedTileVisible();
+        }
+      },
       onKeyEvent: (node, event) {
         if (event is! KeyDownEvent) return KeyEventResult.ignored;
         if (event.logicalKey == LogicalKeyboardKey.arrowLeft && !widget.isFirst) {
