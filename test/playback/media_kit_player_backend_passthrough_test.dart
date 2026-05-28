@@ -26,7 +26,7 @@ void main() {
         ac3PassthroughEnabled: true,
         eac3PassthroughEnabled: true,
         eac3JocPassthroughEnabled: false,
-        dtsCorePassthroughEnabled: false,
+        dtsCorePassthroughEnabled: true,
         dtsHdPassthroughEnabled: true,
         dtsXPassthroughEnabled: false,
         trueHdPassthroughEnabled: true,
@@ -68,7 +68,7 @@ void main() {
       expect(codecs, equals(<String>['dts-hd']));
     });
 
-    test('maps eac3-joc and truehd-atmos toggles to codec families', () {
+    test('requires base toggles for eac3-joc and truehd-atmos passthrough', () {
       final codecs = MediaKitPlayerBackend.passthroughCodecsFromPreferences(
         audioOutputMode: AudioOutputMode.auto,
         ac3PassthroughEnabled: false,
@@ -81,23 +81,42 @@ void main() {
         trueHdAtmosPassthroughEnabled: true,
       );
 
-      expect(codecs, equals(<String>['eac3', 'truehd']));
+      expect(codecs, isEmpty);
     });
 
-    test('maps DTS:X toggle to dts-hd passthrough string', () {
+    test(
+      'maps DTS:X toggle to dts-hd when DTS core and DTS-HD are enabled',
+      () {
+        final codecs = MediaKitPlayerBackend.passthroughCodecsFromPreferences(
+          audioOutputMode: AudioOutputMode.auto,
+          ac3PassthroughEnabled: false,
+          eac3PassthroughEnabled: false,
+          eac3JocPassthroughEnabled: false,
+          dtsCorePassthroughEnabled: true,
+          dtsHdPassthroughEnabled: true,
+          dtsXPassthroughEnabled: true,
+          trueHdPassthroughEnabled: false,
+          trueHdAtmosPassthroughEnabled: false,
+        );
+
+        expect(codecs, equals(<String>['dts-hd']));
+      },
+    );
+
+    test('ignores DTS:X toggle when DTS core is disabled', () {
       final codecs = MediaKitPlayerBackend.passthroughCodecsFromPreferences(
         audioOutputMode: AudioOutputMode.auto,
         ac3PassthroughEnabled: false,
         eac3PassthroughEnabled: false,
         eac3JocPassthroughEnabled: false,
         dtsCorePassthroughEnabled: false,
-        dtsHdPassthroughEnabled: false,
+        dtsHdPassthroughEnabled: true,
         dtsXPassthroughEnabled: true,
         trueHdPassthroughEnabled: false,
         trueHdAtmosPassthroughEnabled: false,
       );
 
-      expect(codecs, equals(<String>['dts-hd']));
+      expect(codecs, isEmpty);
     });
   });
 

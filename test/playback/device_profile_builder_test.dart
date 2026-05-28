@@ -236,6 +236,27 @@ void main() {
       expect(codecs, contains('dca'));
     });
 
+    test(
+      'in AVR passthrough mode, disabled passthrough toggle removes codec even when local decode is available',
+      () {
+        final profile = DeviceProfileBuilder.build(
+          downMixAudio: false,
+          audioOutputMode: AudioOutputMode.avrPassthrough,
+          audioCapabilityProfile: _capabilityProfile(
+            canDecodeDts: true,
+            canDecodeDtsHd: true,
+          ),
+          dtsCorePassthroughEnabled: false,
+          dtsHdPassthroughEnabled: false,
+          dtsXPassthroughEnabled: false,
+        );
+
+        final codecs = _videoDirectPlayAudioCodecs(profile);
+        expect(codecs, isNot(contains('dts')));
+        expect(codecs, isNot(contains('dca')));
+      },
+    );
+
     test('keeps codec when decode is unavailable but passthrough is enabled and supported', () {
       final profile = DeviceProfileBuilder.build(
         downMixAudio: false,
@@ -262,8 +283,8 @@ void main() {
           canPassthroughDtsHd: false,
           canPassthroughDtsX: true,
         ),
-        dtsCorePassthroughEnabled: false,
-        dtsHdPassthroughEnabled: false,
+        dtsCorePassthroughEnabled: true,
+        dtsHdPassthroughEnabled: true,
         dtsXPassthroughEnabled: true,
       );
 
@@ -271,6 +292,30 @@ void main() {
       expect(codecs, contains('dts'));
       expect(codecs, contains('dca'));
     });
+
+    test(
+      'removes DTS codec when DTS core is disabled even if DTS-HD and DTS:X toggles are enabled',
+      () {
+        final profile = DeviceProfileBuilder.build(
+          downMixAudio: false,
+          audioOutputMode: AudioOutputMode.avrPassthrough,
+          audioCapabilityProfile: _capabilityProfile(
+            canDecodeDts: false,
+            canDecodeDtsHd: false,
+            canPassthroughDts: false,
+            canPassthroughDtsHd: true,
+            canPassthroughDtsX: true,
+          ),
+          dtsCorePassthroughEnabled: false,
+          dtsHdPassthroughEnabled: true,
+          dtsXPassthroughEnabled: true,
+        );
+
+        final codecs = _videoDirectPlayAudioCodecs(profile);
+        expect(codecs, isNot(contains('dts')));
+        expect(codecs, isNot(contains('dca')));
+      },
+    );
 
     test('keeps TrueHD codec when TrueHD JOC passthrough is enabled and supported', () {
       final profile = DeviceProfileBuilder.build(
@@ -280,7 +325,7 @@ void main() {
           canPassthroughTrueHd: false,
           canPassthroughTrueHdJoc: true,
         ),
-        trueHdPassthroughEnabled: false,
+        trueHdPassthroughEnabled: true,
         trueHdAtmosPassthroughEnabled: true,
       );
 
@@ -288,6 +333,27 @@ void main() {
       expect(codecs, contains('truehd'));
       expect(codecs, contains('mlp'));
     });
+
+    test(
+      'removes TrueHD codec when base TrueHD toggle is disabled even if Atmos toggle is enabled',
+      () {
+        final profile = DeviceProfileBuilder.build(
+          downMixAudio: false,
+          audioOutputMode: AudioOutputMode.avrPassthrough,
+          audioCapabilityProfile: _capabilityProfile(
+            canDecodeTrueHd: false,
+            canPassthroughTrueHd: false,
+            canPassthroughTrueHdJoc: true,
+          ),
+          trueHdPassthroughEnabled: false,
+          trueHdAtmosPassthroughEnabled: true,
+        );
+
+        final codecs = _videoDirectPlayAudioCodecs(profile);
+        expect(codecs, isNot(contains('truehd')));
+        expect(codecs, isNot(contains('mlp')));
+      },
+    );
 
     test(
       'includes codec when user passthrough toggle is on, even if probe did not detect support',

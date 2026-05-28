@@ -542,19 +542,28 @@ class MediaKitPlayerBackend implements PlayerBackend {
       return const <String>[];
     }
 
+    final effectiveEac3JocPassthroughEnabled =
+        eac3PassthroughEnabled && eac3JocPassthroughEnabled;
+    final effectiveDtsHdPassthroughEnabled =
+        dtsCorePassthroughEnabled && dtsHdPassthroughEnabled;
+    final effectiveDtsXPassthroughEnabled =
+        effectiveDtsHdPassthroughEnabled && dtsXPassthroughEnabled;
+    final effectiveTrueHdAtmosPassthroughEnabled =
+        trueHdPassthroughEnabled && trueHdAtmosPassthroughEnabled;
+
     final codecs = <String>[];
     if (ac3PassthroughEnabled) {
       codecs.add('ac3');
     }
-    if (eac3PassthroughEnabled || eac3JocPassthroughEnabled) {
+    if (eac3PassthroughEnabled || effectiveEac3JocPassthroughEnabled) {
       codecs.add('eac3');
     }
-    if (dtsHdPassthroughEnabled || dtsXPassthroughEnabled) {
+    if (effectiveDtsHdPassthroughEnabled || effectiveDtsXPassthroughEnabled) {
       codecs.add('dts-hd');
     } else if (dtsCorePassthroughEnabled) {
       codecs.add('dts');
     }
-    if (trueHdPassthroughEnabled || trueHdAtmosPassthroughEnabled) {
+    if (trueHdPassthroughEnabled || effectiveTrueHdAtmosPassthroughEnabled) {
       codecs.add('truehd');
     }
     return codecs;
