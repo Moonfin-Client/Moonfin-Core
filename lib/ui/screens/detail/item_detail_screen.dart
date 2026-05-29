@@ -4287,9 +4287,17 @@ class _ActionButtonsState extends State<_ActionButtons> {
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final isPhoto = item.type == 'Photo';
     final isBook = _isReadableBookItem(item);
-    final hasProgress =
-        (item.playedPercentage ?? 0) > 0 ||
-        (item.playbackPosition?.inMilliseconds ?? 0) > 0;
+    final isSeries = item.type == 'Series';
+    final totalEpisodes = item.childCount ?? item.recursiveItemCount ?? 0;
+    final unplayed = item.unplayedItemCount ?? totalEpisodes;
+    final isFullyWatched = item.isPlayed || unplayed == 0;
+    final isFullyUnwatched = unplayed == totalEpisodes;
+    final isPartiallyWatched = !isFullyWatched && !isFullyUnwatched;
+
+    final hasProgress = isSeries
+        ? isPartiallyWatched
+        : ((item.playedPercentage ?? 0) > 0 ||
+           (item.playbackPosition?.inMilliseconds ?? 0) > 0);
     final selectedSource = _selectedMediaSourceForItem(
       item,
       widget.selectedMediaSourceId,
@@ -4314,17 +4322,39 @@ class _ActionButtonsState extends State<_ActionButtons> {
         _canUserDownload() &&
         !PlatformDetection.isTV;
 
+    final String playButtonLabel;
+    if (isPhoto) {
+      playButtonLabel = l10n.view;
+    } else if (isBook) {
+      playButtonLabel = hasProgress ? l10n.resumeReading : l10n.read;
+    } else if (isSeries) {
+      if (isFullyWatched || isFullyUnwatched) {
+        playButtonLabel = 'Play from Start';
+      } else {
+        final nextUp = viewModel.nextUp;
+        if (nextUp != null) {
+          final s = nextUp.parentIndexNumber;
+          final e = nextUp.indexNumber;
+          if (s != null && e != null) {
+            playButtonLabel = 'Resume from S$s:E$e';
+          } else {
+            playButtonLabel = 'Resume';
+          }
+        } else {
+          playButtonLabel = 'Resume';
+        }
+      }
+    } else if (hasProgress) {
+      playButtonLabel = l10n.resumeFrom(_formatResumePosition(item.playbackPosition));
+    } else {
+      playButtonLabel = l10n.play;
+    }
+
     _ensureTvPlayFocus(item.id);
 
     var allButtons = <Widget>[
       _DetailActionButton(
-        label: isPhoto
-            ? l10n.view
-            : isBook
-            ? (hasProgress ? l10n.resumeReading : l10n.read)
-            : hasProgress
-            ? l10n.resumeFrom(_formatResumePosition(item.playbackPosition))
-            : l10n.play,
+        label: playButtonLabel,
         icon: isPhoto
             ? Icons.photo
             : isBook
@@ -5160,9 +5190,19 @@ class _ActionButtonsState extends State<_ActionButtons> {
           case 'Series':
             const episodeQueueFields =
                 'Overview,MediaStreams,MediaSources,RunTimeTicks,Trickplay';
-            final nextUp = viewModel.nextUp;
-            if (nextUp == null || !isEligibleNextEpisodeCandidate(nextUp)) {
-              if (mounted) {
+            
+            final client = _clientForItem(item);
+            final data = await client.itemsApi.getEpisodes(
+              item.id,
+              fields: episodeQueueFields,
+            );
+            final allEpisodes = _mapRawItemsForServer(
+              data['Items'],
+              item.serverId,
+            ).where(isEligibleNextEpisodeCandidate).toList();
+
+            if (allEpisodes.isEmpty) {
+              if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -5173,42 +5213,60 @@ class _ActionButtonsState extends State<_ActionButtons> {
               }
               throw PlaybackStartupRecoveryAbortedException();
             }
-            final seriesId =
-                (nextUp.seriesId?.isNotEmpty ?? false)
-                    ? nextUp.seriesId!
-                    : item.id;
-            final seasonId = nextUp.seasonId;
-            var episodes = <AggregatedItem>[nextUp];
-            if (seasonId != null && seasonId.isNotEmpty) {
+
+            final totalEpisodes = item.childCount ?? item.recursiveItemCount ?? 0;
+            final unplayed = item.unplayedItemCount ?? totalEpisodes;
+            final isFullyWatched = item.isPlayed || unplayed == 0;
+            final isFullyUnwatched = unplayed == totalEpisodes;
+
+            AggregatedItem targetEpisode;
+            if (isFullyWatched || isFullyUnwatched) {
+              final s1e1 = allEpisodes.firstWhere(
+                (e) => e.parentIndexNumber == 1 && e.indexNumber == 1,
+                orElse: () => allEpisodes.first,
+              );
+              targetEpisode = s1e1;
+            } else {
+              final firstUnwatched = allEpisodes.firstWhere(
+                (e) => !e.isPlayed,
+                orElse: () => allEpisodes.first,
+              );
+              targetEpisode = firstUnwatched;
+            }
+
+            final targetSeasonId = targetEpisode.seasonId;
+            var queueEpisodes = <AggregatedItem>[targetEpisode];
+            if (targetSeasonId != null && targetSeasonId.isNotEmpty) {
               try {
-                final client = _clientForItem(nextUp);
-                final data = await client.itemsApi.getEpisodes(
-                  seriesId,
-                  seasonId: seasonId,
+                final seasonData = await client.itemsApi.getEpisodes(
+                  item.id,
+                  seasonId: targetSeasonId,
                   fields: episodeQueueFields,
                 );
                 final seasonEpisodes = _mapRawItemsForServer(
-                  data['Items'],
-                  nextUp.serverId,
+                  seasonData['Items'],
+                  item.serverId,
                 );
                 final playableSeasonEpisodes = seasonEpisodes
                     .where(isEligibleNextEpisodeCandidate)
                     .toList();
                 if (playableSeasonEpisodes.isNotEmpty) {
-                  episodes = playableSeasonEpisodes;
+                  queueEpisodes = playableSeasonEpisodes;
                 }
               } catch (_) {}
             }
-            final startIndex = episodes.indexWhere((e) => e.id == nextUp.id);
+
+            final startIndex = queueEpisodes.indexWhere((e) => e.id == targetEpisode.id);
             final idx = startIndex >= 0 ? startIndex : 0;
-            final selectedEpisode = episodes[idx];
+            final selectedEpisode = queueEpisodes[idx];
             final seriesQueue = _truncateQueueIfImmediateNextUnplayable(
-              episodes,
+              queueEpisodes,
               startIndex: idx,
             );
             final startPosition = resume
                 ? (selectedEpisode.playbackPosition ?? Duration.zero)
                 : Duration.zero;
+
             if (!context.mounted) return;
             final forceTranscode = await _shouldForceTranscodeForDolbyVision(
               context,
