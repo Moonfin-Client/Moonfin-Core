@@ -30,18 +30,25 @@ class MediaBarRepository {
     }
 
     final contentType = _prefs.get(UserPreferences.mediaBarContentType);
-    final maxItems =
-        int.tryParse(_prefs.get(UserPreferences.mediaBarItemCount)) ?? 10;
-    final libraryIds = _prefs
-        .get(UserPreferences.mediaBarLibraryIds)
-        .split(',')
-        .where((s) => s.isNotEmpty)
-        .toList();
-    final collectionIds = _prefs
-        .get(UserPreferences.mediaBarCollectionIds)
-        .split(',')
-        .where((s) => s.isNotEmpty)
-        .toList();
+    final pluginSyncEnabled = _prefs.get(UserPreferences.pluginSyncEnabled);
+
+    final maxItems = pluginSyncEnabled
+        ? (int.tryParse(_prefs.get(UserPreferences.mediaBarItemCount)) ?? 10)
+        : 5;
+    final libraryIds = pluginSyncEnabled
+        ? _prefs
+            .get(UserPreferences.mediaBarLibraryIds)
+            .split(',')
+            .where((s) => s.isNotEmpty)
+            .toList()
+        : <String>[];
+    final collectionIds = pluginSyncEnabled
+        ? _prefs
+            .get(UserPreferences.mediaBarCollectionIds)
+            .split(',')
+            .where((s) => s.isNotEmpty)
+            .toList()
+        : <String>[];
     final excludedGenres = _prefs
         .get(UserPreferences.mediaBarExcludedGenres)
         .split(',')
