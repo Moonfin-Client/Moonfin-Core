@@ -1,0 +1,72 @@
+name: Build Windows ARM64
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: '3.41.2'
+
+jobs:
+  build-windows-arm64:
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Enable Windows desktop
+        shell: pwsh
+        run: flutter config --enable-windows-desktop
+
+      - name: Resolve dependencies
+        shell: pwsh
+        run: flutter pub get
+
+      - name: Build Windows ARM64 release
+        shell: pwsh
+        run: |
+          flutter build windows --release --target-platform=windows-arm64 --dart-define=DISTRIBUTION_CHANNEL=windows
+
+      - name: Package release output
+        shell: pwsh
+        run: |
+          $releaseExe = Get-ChildItem -Path build/windows -Filter moonfin.exe -Recurse -File | Select-Object -First 1
+          if (-not $releaseExe) {
+            throw "Missing moonfin.exe in build/windows"
+          }
+
+          $releaseDir = $releaseExe.Directory
+          $version = (Select-String -Path pubspec.yaml -Pattern '^version:' | Select-Object -First 1).Line.Split(':', 2)[1].Trim().Split('+')[0]
+          $zipPath = Join-Path $PWD "Moonfin_Windows_ARM64_v$version.zip"
+
+          if (Test-Path $zipPath) {
+            Remove-Item $zipPath -Force
+          }
+
+          Compress-Archive -Path (Join-Path $releaseDir.FullName '*') -DestinationPath $zipPath -Force
+          Write-Host "Packaged release from: $($releaseDir.FullName)"
+          Write-Host "Created artifact: $zipPath"
+
+      - name: Verify artifact
+        shell: pwsh
+        run: |
+          $artifact = Get-ChildItem -Path . -Filter "Moonfin_Windows_ARM64_v*.zip" -File -ErrorAction SilentlyContinue
+          if (-not $artifact) {
+            throw "Windows ARM64 package was not created"
+          }
+          Write-Host "Found artifact(s):"
+          $artifact | ForEach-Object { Write-Host "  - $($_.Name)" }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-arm64
+          path: Moonfin_Windows_ARM64_v*.zip
+          if-no-files-found: error
