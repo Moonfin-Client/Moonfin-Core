@@ -14,13 +14,22 @@ env:
 
 jobs:
   build-windows-arm64:
-    runs-on: windows-11-arm64
+    runs-on: windows-11-arm
+
     steps:
       - uses: actions/checkout@v4
 
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
+      - name: Set up Flutter from git
+        shell: pwsh
+        run: |
+          git clone https://github.com/flutter/flutter.git --branch $env:FLUTTER_VERSION --depth 1 C:\flutter
+          echo "C:\flutter\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Show Flutter environment
+        shell: pwsh
+        run: |
+          flutter --version
+          flutter doctor -v
 
       - name: Enable Windows desktop
         shell: pwsh
@@ -62,10 +71,12 @@ jobs:
           if (-not $artifact) {
             throw "Windows ARM64 package was not created"
           }
+
           Write-Host "Found artifact(s):"
           $artifact | ForEach-Object { Write-Host "  - $($_.Name)" }
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: windows-arm64
           path: Moonfin_Windows_ARM64_v*.zip

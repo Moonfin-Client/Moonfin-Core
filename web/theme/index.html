@@ -4,12 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Moonfin Theme Editor</title>
+  <link rel="icon" type="image/png" href="../favicon.png">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
 <div class="topbar">
-  <div class="topbar-logo">◆ Theme Editor</div>
+  <div class="topbar-logo">
+    <img class="topbar-logo-mark" src="../../assets/icons/moonfin_logo.svg" alt="Moonfin">
+    <span>Theme Editor</span>
+  </div>
   <div class="tf"><label>ID</label><input id="tId" value="my-theme" maxlength="40" style="width:100px" oninput="onMeta()"></div>
   <div class="tf"><label>Name</label><input id="tName" value="My Theme" maxlength="60" oninput="onMeta()"></div>
   <div class="tf"><label>Description</label><input id="tDesc" value="" placeholder="optional" style="width:180px" oninput="onMeta()"></div>

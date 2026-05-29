@@ -7,7 +7,8 @@ body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;background:va
 
 /* TOP BAR */
 .topbar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--e-surf);border-bottom:1px solid var(--e-bdr);flex-shrink:0;flex-wrap:wrap}
-.topbar-logo{font-weight:800;font-size:15px;color:var(--e-acc);white-space:nowrap;letter-spacing:-0.3px}
+.topbar-logo{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:15px;color:var(--e-acc);white-space:nowrap;letter-spacing:-0.3px}
+.topbar-logo-mark{width: 30px;height:30px;display:block;flex-shrink:0}
 .topbar-sep{flex:1;min-width:8px}
 .topbar-break{width:100%;height:0;margin:0;padding:0}
 .tf{display:flex;align-items:center;gap:5px}

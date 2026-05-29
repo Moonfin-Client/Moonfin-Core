@@ -1014,10 +1014,10 @@ const TOKEN_META = {
   'colors.inputFocused': {label:'Input Fill (Focused)', hint:'Focused input fill color'},
   'colors.inputBorder': {label:'Input Border (Normal)', hint:'Default input border color'},
   'colors.inputBorderFocused': {label:'Input Border (Focused)', hint:'Focused input border color'},
-  'colors.rangeTrack': {label:'Slider Track', hint:'Unfilled range/slider track'},
-  'colors.rangeProgress': {label:'Slider Progress', hint:'Filled range/slider progress'},
-  'colors.rangeThumb': {label:'Slider Thumb', hint:'Drag thumb/knob color'},
-  'colors.seekbarBuffered': {label:'Seekbar Buffered', hint:'Buffered media segment color'},
+  'colors.rangeTrack': {label:'Slider Background Track', hint:'The unfilled part of sliders and range controls'},
+  'colors.rangeProgress': {label:'Slider Filled Progress', hint:'The filled/played part of sliders and range controls'},
+  'colors.rangeThumb': {label:'Slider Handle (Knob)', hint:'The draggable knob users move on sliders'},
+  'colors.seekbarBuffered': {label:'Seekbar Buffered Segment', hint:'Preloaded media portion shown ahead of playback position'},
   'colors.badgeBackground': {label:'Badge Fill', hint:'Generic badge background'},
   'colors.onBadge': {label:'Badge Text', hint:'Text/icons shown on badges'},
   'colors.badgeUnplayed': {label:'Unplayed Indicator', hint:'Unplayed dot/marker color'},
@@ -1042,25 +1042,35 @@ const TOKEN_META = {
   'book.gradientBottom': {label:'Book Gradient (Bottom)', hint:'Bottom gradient stop color'},
   'book.inactiveChip': {label:'Inactive Chip', hint:'Unselected chip background in book UI'},
   'borders.cardBorder.color': {label:'Card Border Color', hint:'Border color around cards'},
-  'borders.cardBorder.width': {label:'Card Border Width', hint:'Card border thickness in px'},
+  'borders.cardBorder.width': {label:'Card Border Thickness', hint:'How thick card outlines appear (px)'},
   'borders.chipBorder.color': {label:'Chip Border Color', hint:'Border color around chips'},
-  'borders.chipBorder.width': {label:'Chip Border Width', hint:'Chip border thickness in px'},
+  'borders.chipBorder.width': {label:'Chip Border Thickness', hint:'How thick chip outlines appear (px)'},
   'borders.focusBorder.color': {label:'Focus Outline Color', hint:'Primary focus ring/outline color'},
-  'borders.focusBorder.width': {label:'Focus Outline Width', hint:'Focus outline thickness in px'},
+  'borders.focusBorder.width': {label:'Focus Outline Thickness', hint:'How thick focused outlines appear (px)'},
+  'borders.cardRadius': {label:'Card Corner Roundness', hint:'Overall roundness for card corners (px)'},
+  'borders.cardRadius.topLeft': {label:'Card Corner: Top Left', hint:'Top-left corner roundness (px)'},
+  'borders.cardRadius.topRight': {label:'Card Corner: Top Right', hint:'Top-right corner roundness (px)'},
+  'borders.cardRadius.bottomLeft': {label:'Card Corner: Bottom Left', hint:'Bottom-left corner roundness (px)'},
+  'borders.cardRadius.bottomRight': {label:'Card Corner: Bottom Right', hint:'Bottom-right corner roundness (px)'},
+  'borders.chipRadius': {label:'Chip Corner Roundness', hint:'Overall roundness for chip corners (px)'},
+  'borders.chipRadius.topLeft': {label:'Chip Corner: Top Left', hint:'Top-left corner roundness (px)'},
+  'borders.chipRadius.topRight': {label:'Chip Corner: Top Right', hint:'Top-right corner roundness (px)'},
+  'borders.chipRadius.bottomLeft': {label:'Chip Corner: Bottom Left', hint:'Bottom-left corner roundness (px)'},
+  'borders.chipRadius.bottomRight': {label:'Chip Corner: Bottom Right', hint:'Bottom-right corner roundness (px)'},
   'borders.chipBackground': {label:'Chip Background', hint:'Default chip fill color'},
   'borders.navBorder.color': {label:'Navbar Border Color', hint:'Optional nav edge/border color'},
-  'borders.navBorder.width': {label:'Navbar Border Width', hint:'Optional nav edge thickness in px'},
+  'borders.navBorder.width': {label:'Navbar Border Thickness', hint:'How thick the optional nav edge appears (px)'},
   'borders.focusGlow.color': {label:'Focus Glow Color', hint:'Glow tint for focused elements'},
-  'borders.focusGlow.blurRadius': {label:'Focus Glow Blur', hint:'Glow blur radius in px'},
-  'borders.focusGlow.spreadRadius': {label:'Focus Glow Spread', hint:'Glow spread radius in px'},
-  'borders.focusGlow.offsetX': {label:'Focus Glow Offset X', hint:'Horizontal glow offset in px'},
-  'borders.focusGlow.offsetY': {label:'Focus Glow Offset Y', hint:'Vertical glow offset in px'},
+  'borders.focusGlow.blurRadius': {label:'Focus Glow Softness (Blur)', hint:'How soft or diffused the focus glow looks (px)'},
+  'borders.focusGlow.spreadRadius': {label:'Focus Glow Size (Spread)', hint:'How far the focus glow expands outward (px)'},
+  'borders.focusGlow.offsetX': {label:'Focus Glow Horizontal Shift', hint:'Move focus glow left/right relative to the element (px)'},
+  'borders.focusGlow.offsetY': {label:'Focus Glow Vertical Shift', hint:'Move focus glow up/down relative to the element (px)'},
   'textGlow.color': {label:'Text Glow Color', hint:'Glow tint around text'},
-  'textGlow.blurRadius': {label:'Text Glow Blur', hint:'Text glow blur radius in px'},
-  'textGlow.offsetX': {label:'Text Glow Offset X', hint:'Horizontal text glow offset in px'},
-  'textGlow.offsetY': {label:'Text Glow Offset Y', hint:'Vertical text glow offset in px'},
-  'navColorCycle': {label:'Navbar Gradient Slot', hint:'Color slot used by navbar color cycle'},
-  'book.placeholderPalette': {label:'Placeholder Palette Slot', hint:'Fallback palette color used for book placeholders'},
+  'textGlow.blurRadius': {label:'Text Glow Softness (Blur)', hint:'How soft the glow around text appears (px)'},
+  'textGlow.offsetX': {label:'Text Glow Horizontal Shift', hint:'Move text glow left/right relative to text (px)'},
+  'textGlow.offsetY': {label:'Text Glow Vertical Shift', hint:'Move text glow up/down relative to text (px)'},
+  'navColorCycle': {label:'Navbar Gradient Color Slot', hint:'One color stop used in the navbar gradient cycle'},
+  'book.placeholderPalette': {label:'Placeholder Palette Color Slot', hint:'Fallback cover color used when book art is missing'},
 };
 
 function tokenMeta(path, fallbackLabel){
@@ -1077,6 +1087,7 @@ function mkCrow(label,path){
   const id='c_'+path.replace(/\./g,'_');
   const meta=tokenMeta(path,label);
   const title=[meta.hint, 'JSON key: '+meta.keyLabel].filter(Boolean).join('\n');
+  const opacityLabel='Opacity for '+meta.label;
   return `
     <div class="crow" data-cpath="${path}">
       <span class="clabel" title="${title}"><span class="clabel-main">${meta.label}</span><span class="clabel-sub">${meta.keyLabel}</span></span>
@@ -1086,6 +1097,7 @@ function mkCrow(label,path){
       <input class="hexin" id="hex_${id}" type="text" maxlength="9" placeholder="#AARRGGBB"
         oninput="onHex('${id}','${path}')" onblur="syncC('${id}',rpath('${path}'))">
       <input class="alphasl" id="asl_${id}" type="range" min="0" max="255"
+        aria-label="${opacityLabel}" title="${opacityLabel}"
         oninput="onAsl('${id}','${path}')">
       <span class="alphalbl" id="albl_${id}">100%</span>
       <input type="color" class="cpick-hidden" id="cpk_${id}" oninput="onPick('${id}','${path}')">
