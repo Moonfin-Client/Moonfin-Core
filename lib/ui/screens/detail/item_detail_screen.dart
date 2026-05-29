@@ -3000,6 +3000,19 @@ class _MetadataRow extends StatelessWidget {
       parts.add(_badge(theme, item.officialRating!));
     }
 
+    final sizeBytes = selectedMediaSource?['Size'] as int? ??
+        (item.mediaSources.isNotEmpty ? item.mediaSources.first['Size'] as int? : null);
+    if (sizeBytes != null && sizeBytes > 0 && item.type != 'Series' && item.type != 'Season') {
+      final double mb = sizeBytes / (1024 * 1024);
+      final String formattedSize;
+      if (mb > 999) {
+        formattedSize = '${(mb / 1024).toStringAsFixed(2)} GB';
+      } else {
+        formattedSize = '${mb.toStringAsFixed(0)} MB';
+      }
+      parts.add(_text(theme, formattedSize));
+    }
+
     final runtime = _runtimeForItem(item, selectedMediaSource);
     if (runtime != null && item.type != 'Series') {
       final h = runtime.inHours;
