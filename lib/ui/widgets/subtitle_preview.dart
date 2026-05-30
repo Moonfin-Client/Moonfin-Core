@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
-import '../../playback/subtitle_font_fallback.dart';
 import '../../preference/user_preferences.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -77,7 +76,7 @@ class _SubtitlePreviewState extends State<SubtitlePreview> {
           fontSize: displaySize,
           color: textColor,
           backgroundColor: bgColor,
-          fontFamilyFallback: kSubtitleFontFamilyFallback,
+          fontFamilyFallback: const ['Roboto', 'Noto Sans', 'Arial'],
           fontWeight: fontWeight >= 700 ? FontWeight.bold : FontWeight.normal,
           shadows: subtitleStrokeShadows(strokeColor, displaySize),
         ),

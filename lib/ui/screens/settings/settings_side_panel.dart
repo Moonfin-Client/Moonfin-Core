@@ -94,9 +94,9 @@ class _SettingsSidePanelState extends ConsumerState<SettingsSidePanel> {
     );
 
     if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not open $uri')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not open $uri')));
     }
   }
 
@@ -783,7 +783,9 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
               onChanged: _pushPersonalizationSync,
             ),
             if (showShuffleButton)
-              _ShuffleContentTypePickerTile(onChanged: _pushPersonalizationSync),
+              _ShuffleContentTypePickerTile(
+                onChanged: _pushPersonalizationSync,
+              ),
             SwitchPreferenceTile(
               preference: UserPreferences.showGenresButton,
               title: l10n.showGenresButton,
@@ -1261,7 +1263,11 @@ class _PluginScreenState extends State<_PluginScreen> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.extension, size: 20, color: colorScheme.primary),
+                          Icon(
+                            Icons.extension,
+                            size: 20,
+                            color: colorScheme.primary,
+                          ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
@@ -2008,10 +2014,12 @@ class _VideoPlaybackScreen extends StatelessWidget {
                     ),
               icon: Icons.video_settings,
               labelOf: (v) => switch (v) {
-                PlaybackEnginePreference.media3 =>
-                  l10n.settingsPlaybackEngineMedia3Recommended,
-                PlaybackEnginePreference.mpv =>
-                  l10n.settingsPlaybackEngineMpvLegacy,
+                PlaybackEnginePreference.media3 => PlatformDetection.isTV
+                  ? l10n.settingsPlaybackEngineMedia3Recommended
+                  : l10n.settingsPlaybackEngineMedia3Legacy,
+                PlaybackEnginePreference.mpv => PlatformDetection.isTV
+                  ? l10n.settingsPlaybackEngineMpvLegacy
+                  : l10n.settingsPlaybackEngineMpvRecommended,
               },
             ),
           if (PlatformDetection.isAndroid && PlatformDetection.isTV)
@@ -2606,8 +2614,7 @@ class _AutomationQueueScreen extends StatefulWidget {
   const _AutomationQueueScreen();
 
   @override
-  State<_AutomationQueueScreen> createState() =>
-      _AutomationQueueScreenState();
+  State<_AutomationQueueScreen> createState() => _AutomationQueueScreenState();
 }
 
 class _AutomationQueueScreenState extends State<_AutomationQueueScreen> {
@@ -2674,9 +2681,8 @@ class _AutomationQueueScreenState extends State<_AutomationQueueScreen> {
           ),
           SwitchPreferenceTile(
             preference: UserPreferences.autoplayNextEpisode,
-            title: 'Autoplay Next Episode',
-            subtitle:
-                'Automatically play the next episode when available.',
+            title: l10n.autoplayNextEpisode,
+            subtitle: l10n.autoplayNextEpisodeSubtitle,
             icon: Icons.play_circle,
           ),
           EnumPreferenceTile<NextUpBehavior>(
@@ -2777,6 +2783,30 @@ class _AdvancedOptionsScreenState extends State<_AdvancedOptionsScreen> {
                 subtitle:
                     'Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.',
                 icon: Icons.memory,
+              ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.media3SkipSilence,
+                title: l10n.skipSilenceTitle,
+                subtitle: l10n.skipSilenceSubtitle,
+                icon: Icons.graphic_eq,
+              ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.media3AllowExternalAudioEffects,
+                title: l10n.allowExternalAudioEffectsTitle,
+                subtitle: l10n.allowExternalAudioEffectsSubtitle,
+                icon: Icons.equalizer,
+              ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.media3TunnelingDisabled,
+                title: l10n.disableTunnelingTitle,
+                subtitle: l10n.disableTunnelingSubtitle,
+                icon: Icons.tv_off,
+              ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.media3MapDolbyVisionProfile7ToHevc,
+                title: l10n.mapDolbyVisionP7Title,
+                subtitle: l10n.mapDolbyVisionP7Subtitle,
+                icon: Icons.hdr_strong,
               ),
               SwitchPreferenceTile(
                 preference: UserPreferences.useExternalPlayer,
@@ -3200,7 +3230,9 @@ class _DoubleSliderTileState extends State<_DoubleSliderTile> {
                       : ThemeRegistry.active.borders.cardBorder)
                   .copyWith(width: 1),
             ),
-            boxShadow: _outerFocused ? ThemeRegistry.active.borders.focusGlow : null,
+            boxShadow: _outerFocused
+                ? ThemeRegistry.active.borders.focusGlow
+                : null,
           ),
           child: ListTileTheme.merge(
             textColor: _outerFocused

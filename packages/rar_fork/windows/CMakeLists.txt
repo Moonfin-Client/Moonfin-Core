@@ -13,12 +13,13 @@ if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
   set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 endif()
 if(DEFINED ENV{VCPKG_ROOT})
-  # Determine vcpkg triplet architecture by void pointer size
-  # Triplet needs to be installed already through vcpkg
-  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(_vcpkg_triplet "x64-windows")
-  else()
+  # Determine the vcpkg triplet from the architecture 
+  if(CMAKE_GENERATOR_PLATFORM MATCHES "[Aa][Rr][Mm]64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "[Aa][Rr][Mm]64")
+    set(_vcpkg_triplet "arm64-windows")
+  elseif(CMAKE_GENERATOR_PLATFORM STREQUAL "Win32" OR CMAKE_SIZEOF_VOID_P EQUAL 4)
     set(_vcpkg_triplet "x86-windows")
+  else()
+    set(_vcpkg_triplet "x64-windows")
   endif()
   set(LibArchive_ROOT "$ENV{VCPKG_ROOT}/installed/${_vcpkg_triplet}")
 endif()

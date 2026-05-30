@@ -158,12 +158,6 @@ flutter:
     - family: NotoSans
       fonts:
         - asset: assets/fonts/NotoSans-Regular.ttf
-    - family: NotoSansCJK
-      fonts:
-        - asset: assets/fonts/NotoSansCJK-Regular.ttc
-    - family: NotoSansSymbols2
-      fonts:
-        - asset: assets/fonts/NotoSansSymbols2-Regular.ttf
 
 msix_config:
   display_name: Moonfin

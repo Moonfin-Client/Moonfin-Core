@@ -43,6 +43,20 @@ jobs:
           flutter --version
           flutter doctor -v
 
+      - name: Assert Flutter is using a native ARM64 Dart SDK
+        shell: pwsh
+        run: |
+          $dartVersion = (& dart --version 2>&1 | Out-String)
+          Write-Host $dartVersion
+
+          if ($dartVersion -notmatch 'windows_arm64|arm64') {
+            throw @"
+          Why wont you work
+          "@
+          }
+
+          Write-Host "OK: native ARM64 Dart SDK detected; flutter build windows will target arm64."
+
       - name: Enable Windows desktop
         shell: pwsh
         run: flutter config --enable-windows-desktop
@@ -79,7 +93,14 @@ jobs:
 
           Write-Host "Using vcpkg: $vcpkg"
           & $vcpkg install libarchive:arm64-windows
+          if ($LASTEXITCODE -ne 0) { throw "vcpkg install libarchive:arm64-windows failed ($LASTEXITCODE)" }
           & $vcpkg integrate install
+
+          # The Flutter plugin CMakeLists (archive_extract, rar_fork) locate
+          # libarchive via $env:VCPKG_ROOT. `vcpkg integrate install` only wires
+          # up MSBuild, not Flutter's CMake build, so export VCPKG_ROOT for the
+          # build step.
+          "VCPKG_ROOT=$vcpkgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Build Windows release
         shell: pwsh
@@ -90,6 +111,11 @@ jobs:
           flutter clean
           flutter pub get
           flutter build windows --release --dart-define=DISTRIBUTION_CHANNEL=windows
+
+          if (-not (Test-Path "build\windows\arm64")) {
+            $produced = (Get-ChildItem build\windows -Directory | ForEach-Object { $_.Name }) -join ", "
+            throw "flutter build windows did not produce an arm64 target (found: $produced). Expected build\windows\arm64."
+          }
 
       - name: Verify ARM64 executable
         shell: pwsh

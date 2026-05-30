@@ -15,7 +15,6 @@ import '../../../l10n/app_localizations.dart';
 import '../../../playback/html_video_backend.dart';
 import '../../../playback/media_kit_player_backend.dart';
 import '../../../playback/media3_player_backend.dart';
-import '../../../playback/subtitle_font_fallback.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
@@ -89,7 +88,6 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
     _applySubtitleStyle();
     _backendSub = _manager.backendChangedStream.listen((backend) {
       if (!mounted) return;
-      _applySubtitleStyle();
       setState(() {});
     });
     _playCurrentChannel();
@@ -292,7 +290,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
         color: textColor,
         fontWeight: fontWeight >= 700 ? FontWeight.bold : FontWeight.normal,
         backgroundColor: bgColor,
-        fontFamilyFallback: kSubtitleFontFamilyFallback,
+        fontFamilyFallback: const ['Roboto', 'Noto Sans', 'Arial'],
         shadows: strokeShadows,
       ),
       textAlign: TextAlign.center,

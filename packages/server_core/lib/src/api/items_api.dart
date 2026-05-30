@@ -23,6 +23,7 @@ abstract class ItemsApi {
     bool? collapseBoxSetItems,
     bool? enableTotalRecordCount,
     String? enableImageTypes,
+    int? imageTypeLimit,
     List<String>? tags,
     List<String>? studios,
     DateTime? minPremiereDate,
@@ -40,6 +41,8 @@ abstract class ItemsApi {
     int? limit,
     String? fields,
     bool? enableResumable,
+    String? enableImageTypes,
+    int? imageTypeLimit,
   });
 
   Future<Map<String, dynamic>> getResumeItems({
@@ -47,6 +50,8 @@ abstract class ItemsApi {
     List<String>? includeItemTypes,
     int? limit,
     String? fields,
+    String? enableImageTypes,
+    int? imageTypeLimit,
   });
 
   Future<Map<String, dynamic>> getLatestItems({
@@ -54,6 +59,8 @@ abstract class ItemsApi {
     List<String>? includeItemTypes,
     int? limit,
     String? fields,
+    String? enableImageTypes,
+    int? imageTypeLimit,
   });
 
   Future<Map<String, dynamic>> getSeasons(String seriesId);

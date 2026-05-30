@@ -153,6 +153,7 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
         limit: 6,
         fields: 'PrimaryImageTag,ImageTags,BackdropImageTags',
         enableImageTypes: 'Primary,Backdrop',
+        imageTypeLimit: 1,
       );
       final items = (response['Items'] as List?) ?? [];
 

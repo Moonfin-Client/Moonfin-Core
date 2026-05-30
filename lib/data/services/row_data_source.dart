@@ -41,6 +41,10 @@ class RowDataSource {
       'Type,UserData,RunTimeTicks,ProductionYear,ImageTags,BackdropImageTags,'
       'ParentBackdropItemId,ParentBackdropImageTags,SeriesId';
 
+  // Cap image tags to one per type (server returns all by default)
+  static const _imageTypes = 'Primary,Backdrop,Thumb';
+  static const _imageTypeLimit = 1;
+
   RowDataSource(this._client);
 
   ImageApi get imageApi => _client.imageApi;
@@ -674,6 +678,8 @@ class RowDataSource {
         limit: limit,
         isFavorite: isFavorite,
         fields: _fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
       );
       return response;
     } on DioException catch (e) {
@@ -697,6 +703,8 @@ class RowDataSource {
         limit: limit,
         isFavorite: isFavorite,
         fields: _fallbackFields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
         enableTotalRecordCount: false,
       );
       return response;
@@ -714,6 +722,8 @@ class RowDataSource {
         includeItemTypes: includeItemTypes,
         limit: limit,
         fields: _fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
       ).timeout(const Duration(seconds: 8));
       return response;
     } on TimeoutException {
@@ -722,6 +732,8 @@ class RowDataSource {
         includeItemTypes: includeItemTypes,
         limit: limit,
         fields: _fallbackFields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
       ).timeout(const Duration(seconds: 6));
       return response;
     } on DioException catch (e) {
@@ -732,6 +744,8 @@ class RowDataSource {
         includeItemTypes: includeItemTypes,
         limit: limit,
         fields: _fallbackFields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
       );
       return response;
     }
@@ -747,6 +761,8 @@ class RowDataSource {
         parentId: parentId,
         limit: limit,
         fields: _fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
         enableResumable: enableResumable,
       ).timeout(const Duration(seconds: 8));
       return response;
@@ -755,6 +771,8 @@ class RowDataSource {
         parentId: parentId,
         limit: limit,
         fields: _fallbackFields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
         enableResumable: enableResumable,
       ).timeout(const Duration(seconds: 6));
       return response;
@@ -765,6 +783,8 @@ class RowDataSource {
         parentId: parentId,
         limit: limit,
         fields: _fallbackFields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
         enableResumable: enableResumable,
       );
       return response;
@@ -782,6 +802,8 @@ class RowDataSource {
         includeItemTypes: includeItemTypes,
         limit: limit,
         fields: _fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
       ).timeout(const Duration(seconds: 20));
       return response;
     } on TimeoutException {
@@ -791,6 +813,8 @@ class RowDataSource {
           includeItemTypes: includeItemTypes,
           limit: limit,
           fields: _minimalFields,
+          enableImageTypes: _imageTypes,
+          imageTypeLimit: _imageTypeLimit,
         ).timeout(const Duration(seconds: 12));
         return response;
       } catch (e) {
@@ -811,6 +835,8 @@ class RowDataSource {
         parentId: parentId,
         limit: limit,
         fields: _fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
         enableResumable: enableResumable,
       ).timeout(const Duration(seconds: 20));
       return response;
@@ -820,6 +846,8 @@ class RowDataSource {
           parentId: parentId,
           limit: limit,
           fields: _minimalFields,
+          enableImageTypes: _imageTypes,
+          imageTypeLimit: _imageTypeLimit,
           enableResumable: enableResumable,
         ).timeout(const Duration(seconds: 12));
         return response;
@@ -840,6 +868,8 @@ class RowDataSource {
         parentId: parentId,
         limit: limit,
         fields: _fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
       );
       return response;
     } on DioException catch (e) {
@@ -849,6 +879,8 @@ class RowDataSource {
         parentId: parentId,
         limit: limit,
         fields: _fallbackFields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
       );
       return response;
     }
@@ -1057,6 +1089,8 @@ class RowDataSource {
               DateTime.now().subtract(const Duration(days: 7)),
           limit: limit,
           fields: _fields,
+          enableImageTypes: _imageTypes,
+          imageTypeLimit: _imageTypeLimit,
         );
       case 'recentlyReleasedEpisodes':
         return _client.itemsApi.getItems(
@@ -1068,6 +1102,8 @@ class RowDataSource {
               DateTime.now().subtract(const Duration(days: 7)),
           limit: limit,
           fields: _fields,
+          enableImageTypes: _imageTypes,
+          imageTypeLimit: _imageTypeLimit,
         );
       case 'watchAgain':
         return _client.itemsApi.getItems(
@@ -1078,6 +1114,8 @@ class RowDataSource {
           sortOrder: 'Descending',
           limit: limit,
           fields: _fields,
+          enableImageTypes: _imageTypes,
+          imageTypeLimit: _imageTypeLimit,
         );
       case 'recentlyAddedInLibrary':
         return _runKefinRecentlyAddedInLibrary(spec, limit);
@@ -1104,6 +1142,8 @@ class RowDataSource {
           parentId: id,
           limit: limit,
           fields: _fields,
+          enableImageTypes: _imageTypes,
+          imageTypeLimit: _imageTypeLimit,
         );
         final items = response['Items'];
         if (items is List) {
@@ -1144,6 +1184,8 @@ class RowDataSource {
           tags: [source],
           limit: limit,
           fields: _fields,
+          enableImageTypes: _imageTypes,
+          imageTypeLimit: _imageTypeLimit,
         );
       case 'genre':
         return _client.itemsApi.getItems(
@@ -1154,6 +1196,8 @@ class RowDataSource {
           genres: [source],
           limit: limit,
           fields: _fields,
+          enableImageTypes: _imageTypes,
+          imageTypeLimit: _imageTypeLimit,
         );
       case 'parent':
       case 'collection':
@@ -1166,6 +1210,8 @@ class RowDataSource {
           sortOrder: sortOrder,
           limit: limit,
           fields: _fields,
+          enableImageTypes: _imageTypes,
+          imageTypeLimit: _imageTypeLimit,
         );
     }
     return null;
@@ -1272,6 +1318,8 @@ class RowDataSource {
       final full = await _client.itemsApi.getItems(
         ids: ids,
         fields: _fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
         limit: ids.length,
       );
       final fullItems = full['Items'];

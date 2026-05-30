@@ -41,6 +41,7 @@ class JellyfinItemsApi implements ItemsApi {
     bool? collapseBoxSetItems,
     bool? enableTotalRecordCount,
     String? enableImageTypes,
+    int? imageTypeLimit,
     List<String>? tags,
     List<String>? studios,
     DateTime? minPremiereDate,
@@ -75,6 +76,7 @@ class JellyfinItemsApi implements ItemsApi {
         'CollapseBoxSetItems': ?collapseBoxSetItems,
         'EnableTotalRecordCount': ?enableTotalRecordCount,
         'EnableImageTypes': ?enableImageTypes,
+        'ImageTypeLimit': ?imageTypeLimit,
         if (tags != null && tags.isNotEmpty) 'Tags': tags.join('|'),
         if (studios != null && studios.isNotEmpty) 'Studios': studios.join('|'),
         if (minPremiereDate != null)
@@ -123,6 +125,8 @@ class JellyfinItemsApi implements ItemsApi {
     int? limit,
     String? fields,
     bool? enableResumable,
+    String? enableImageTypes,
+    int? imageTypeLimit,
   }) async {
     final response = await _dio.get(
       '/Shows/NextUp',
@@ -132,6 +136,8 @@ class JellyfinItemsApi implements ItemsApi {
         'Limit': ?limit,
         'Fields': ?fields,
         'EnableResumable': ?enableResumable,
+        'EnableImageTypes': ?enableImageTypes,
+        'ImageTypeLimit': ?imageTypeLimit,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -143,6 +149,8 @@ class JellyfinItemsApi implements ItemsApi {
     List<String>? includeItemTypes,
     int? limit,
     String? fields,
+    String? enableImageTypes,
+    int? imageTypeLimit,
   }) async {
     final response = await _dio.get(
       '/UserItems/Resume',
@@ -152,6 +160,8 @@ class JellyfinItemsApi implements ItemsApi {
           'IncludeItemTypes': includeItemTypes.join(','),
         'Limit': ?limit,
         'Fields': ?fields,
+        'EnableImageTypes': ?enableImageTypes,
+        'ImageTypeLimit': ?imageTypeLimit,
       },
     );
     return response.data as Map<String, dynamic>;
@@ -163,6 +173,8 @@ class JellyfinItemsApi implements ItemsApi {
     List<String>? includeItemTypes,
     int? limit,
     String? fields,
+    String? enableImageTypes,
+    int? imageTypeLimit,
   }) async {
     final response = await _dio.get(
       '/Items/Latest',
@@ -172,6 +184,8 @@ class JellyfinItemsApi implements ItemsApi {
           'IncludeItemTypes': includeItemTypes.join(','),
         'Limit': ?limit,
         'Fields': ?fields,
+        'EnableImageTypes': ?enableImageTypes,
+        'ImageTypeLimit': ?imageTypeLimit,
       },
     );
     final data = response.data;

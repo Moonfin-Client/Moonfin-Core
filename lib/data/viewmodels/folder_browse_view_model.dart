@@ -22,6 +22,9 @@ class FolderBrowseViewModel extends ChangeNotifier {
   static const _pageSize = 100;
   static const _fields =
       'Type,ProductionYear,ImageTags,BackdropImageTags,ChildCount,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag';
+  // Cap image tags to one per type (server returns all by default)
+  static const _imageTypes = 'Primary,Backdrop,Thumb';
+  static const _imageTypeLimit = 1;
 
   FolderBrowseViewModel(this._client, {String? serverId})
       : _serverId = serverId;
@@ -178,6 +181,8 @@ class FolderBrowseViewModel extends ChangeNotifier {
         startIndex: startIndex,
         limit: _pageSize,
         fields: _fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
         enableTotalRecordCount: true,
       );
     } on DioException catch (e) {
@@ -194,6 +199,8 @@ class FolderBrowseViewModel extends ChangeNotifier {
         startIndex: startIndex,
         limit: _pageSize,
         fields: _fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
         enableTotalRecordCount: false,
       );
     }

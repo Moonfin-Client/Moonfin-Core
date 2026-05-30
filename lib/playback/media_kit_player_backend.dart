@@ -177,7 +177,7 @@ class MediaKitPlayerBackend implements PlayerBackend {
   final Future<void> Function(int handle)? _onNativeHandleReady;
   final bool _hwDecodingEnabled;
   bool _didNotifyNativeHandle = false;
-  bool _didConfigureLibassFonts = false;
+  bool _didConfigureAppleMobileLibassFont = false;
   Map<String, String>? _appliedAudioPassthroughProperties;
   bool _audioPassthroughApplyInProgress = false;
   bool _audioPassthroughApplyQueued = false;
@@ -276,15 +276,6 @@ class MediaKitPlayerBackend implements PlayerBackend {
 
   static bool get _useNativeSurface => PlatformDetection.useNativeVideoSurface;
 
-  static const String _androidLibassFontAsset =
-      'assets/fonts/NotoSansCJK-Regular.ttc';
-  static const String _mobilePrimarySubtitleFontFamily = 'Noto Sans CJK JP';
-  static const List<String> _mobileLibassFallbackFontAssets = <String>[
-    'NotoSans-Regular.ttf',
-    'NotoSansCJK-Regular.ttc',
-    'NotoSansSymbols2-Regular.ttf',
-  ];
-
   MediaKitPlayerBackend._(
     this._player,
     this._videoController,
@@ -310,11 +301,9 @@ class MediaKitPlayerBackend implements PlayerBackend {
       configuration: PlayerConfiguration(
         libass: _useLibass,
         libassAndroidFont: PlatformDetection.isAndroid
-            ? _androidLibassFontAsset
+            ? 'assets/fonts/NotoSans-Regular.ttf'
             : null,
-        libassAndroidFontName: PlatformDetection.isAndroid
-            ? _mobilePrimarySubtitleFontFamily
-            : null,
+        libassAndroidFontName: PlatformDetection.isAndroid ? 'Noto Sans' : null,
       ),
     );
     unawaited(player.setPlaylistMode(PlaylistMode.none));
@@ -479,7 +468,7 @@ class MediaKitPlayerBackend implements PlayerBackend {
     if (url.isEmpty) return;
 
     await _notifyNativeHandleReady();
-    await _configureLibassFonts();
+    await _configureAppleMobileLibassFont();
     await _applyAudioPassthroughOptions();
     await _applyCustomMpvConfIfEnabled();
     await _applyAssOverrideMode();
@@ -969,12 +958,8 @@ class MediaKitPlayerBackend implements PlayerBackend {
     'cache-',
   ];
 
-  Future<void> _configureLibassFonts() async {
-    final supportedPlatform =
-        PlatformDetection.isDesktop ||
-        PlatformDetection.isIOS ||
-        PlatformDetection.isAndroid;
-    if (!supportedPlatform || _didConfigureLibassFonts) {
+  Future<void> _configureAppleMobileLibassFont() async {
+    if (!PlatformDetection.isIOS || _didConfigureAppleMobileLibassFont) {
       return;
     }
     try {
@@ -984,25 +969,18 @@ class MediaKitPlayerBackend implements PlayerBackend {
       );
       await fontsDirectory.create(recursive: true);
 
-      for (final fontAsset in _mobileLibassFallbackFontAssets) {
-        final fontFile = File('${fontsDirectory.path}/$fontAsset');
-        if (await fontFile.exists()) {
-          continue;
-        }
-        final data = await rootBundle.load('assets/fonts/$fontAsset');
+      final fontFile = File('${fontsDirectory.path}/NotoSans-Regular.ttf');
+      if (!await fontFile.exists()) {
+        final data = await rootBundle.load('assets/fonts/NotoSans-Regular.ttf');
         await fontFile.writeAsBytes(data.buffer.asUint8List(), flush: true);
       }
 
       final native = _player.platform as NativePlayer;
       await _nativeSetProperty(native, 'sub-fonts-dir', fontsDirectory.path);
-      await _nativeSetProperty(
-        native,
-        'sub-font',
-        _mobilePrimarySubtitleFontFamily,
-      );
+      await _nativeSetProperty(native, 'sub-font', 'Noto Sans');
       await _nativeSetProperty(native, 'sub-ass', 'yes');
       await _nativeSetProperty(native, 'sub-visibility', 'yes');
-      _didConfigureLibassFonts = true;
+      _didConfigureAppleMobileLibassFont = true;
     } catch (_) {}
   }
 

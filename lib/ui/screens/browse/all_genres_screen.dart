@@ -152,6 +152,7 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
         limit: 4,
         fields: 'PrimaryImageTag,ImageTags,BackdropImageTags',
         enableImageTypes: 'Primary,Backdrop',
+        imageTypeLimit: 1,
       );
 
       final items = (response['Items'] as List?) ?? [];

@@ -12497,11 +12497,23 @@ abstract class AppLocalizations {
   /// **'Media3 (recommended)'**
   String get settingsPlaybackEngineMedia3Recommended;
 
+  /// No description provided for @settingsPlaybackEngineMedia3Legacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Media3 (legacy)'**
+  String get settingsPlaybackEngineMedia3Legacy;
+
   /// No description provided for @settingsPlaybackEngineMpvLegacy.
   ///
   /// In en, this message translates to:
   /// **'mpv (legacy)'**
   String get settingsPlaybackEngineMpvLegacy;
+
+  /// No description provided for @settingsPlaybackEngineMpvRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'mpv (recommended)'**
+  String get settingsPlaybackEngineMpvRecommended;
 
   /// No description provided for @settingsDolbyVisionFallback.
   ///
@@ -12820,6 +12832,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Latest {libraryName}'**
   String latestLibraryName(String libraryName);
+
+  /// Setting title: automatically start the next episode
+  ///
+  /// In en, this message translates to:
+  /// **'Autoplay Next Episode'**
+  String get autoplayNextEpisode;
+
+  /// Setting subtitle for autoplay next episode
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically play the next episode when available.'**
+  String get autoplayNextEpisodeSubtitle;
+
+  /// Setting title: skip silent audio segments during playback
+  ///
+  /// In en, this message translates to:
+  /// **'Skip silence'**
+  String get skipSilenceTitle;
+
+  /// Setting subtitle for skip silence
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically skip silent audio segments when supported by the stream.'**
+  String get skipSilenceSubtitle;
+
+  /// Setting title: allow equalizer apps to attach to Media3
+  ///
+  /// In en, this message translates to:
+  /// **'Allow external audio effects'**
+  String get allowExternalAudioEffectsTitle;
+
+  /// Setting subtitle for external audio effects
+  ///
+  /// In en, this message translates to:
+  /// **'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.'**
+  String get allowExternalAudioEffectsSubtitle;
+
+  /// Setting title: force non-tunneled video playback
+  ///
+  /// In en, this message translates to:
+  /// **'Disable tunneling'**
+  String get disableTunnelingTitle;
+
+  /// Setting subtitle for disable tunneling
+  ///
+  /// In en, this message translates to:
+  /// **'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.'**
+  String get disableTunnelingSubtitle;
+
+  /// Setting title: play DV P7 as HDR10 HEVC on non-DV devices
+  ///
+  /// In en, this message translates to:
+  /// **'Map Dolby Vision profile 7 to HEVC'**
+  String get mapDolbyVisionP7Title;
+
+  /// Setting subtitle for DV P7 to HEVC mapping
+  ///
+  /// In en, this message translates to:
+  /// **'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.'**
+  String get mapDolbyVisionP7Subtitle;
+
+  /// Setting title: apply colours/positioning from the subtitle track
+  ///
+  /// In en, this message translates to:
+  /// **'Use embedded subtitle styles'**
+  String get subtitlesUseEmbeddedStyles;
+
+  /// Setting subtitle for embedded styles toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.'**
+  String get subtitlesUseEmbeddedStylesSubtitle;
+
+  /// Setting title: apply font sizes from the subtitle track
+  ///
+  /// In en, this message translates to:
+  /// **'Use embedded subtitle font sizes'**
+  String get subtitlesUseEmbeddedFontSizes;
+
+  /// Setting subtitle for embedded font sizes toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.'**
+  String get subtitlesUseEmbeddedFontSizesSubtitle;
 }
 
 class _AppLocalizationsDelegate

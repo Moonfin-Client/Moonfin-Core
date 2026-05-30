@@ -40,6 +40,11 @@ class Media3PlayerBackend implements PlayerBackend {
   bool _isBuffering = false;
   double _playbackSpeed = 1.0;
   double _volume = 100.0;
+  double _audioDelaySeconds = 0.0;
+  double _subtitleDelaySeconds = 0.0;
+  int _volumeBoostLevel = 0;
+  bool _skipSilenceEnabled = false;
+  RepeatMode _repeatMode = RepeatMode.none;
   bool _completed = false;
   SubtitleRendererMode _requestedSubtitleRendererMode =
       SubtitleRendererMode.native;
@@ -52,6 +57,7 @@ class Media3PlayerBackend implements PlayerBackend {
   bool _activityStarted = false;
   bool _sessionTunnelingDisabled = false;
   final List<int> _discontinuityTimestamps = <int>[];
+  Timer? _audioDelayDebounce;
 
   final _positionStream = StreamController<Duration>.broadcast();
   final _durationStream = StreamController<Duration>.broadcast();
@@ -60,6 +66,8 @@ class Media3PlayerBackend implements PlayerBackend {
   final _bufferingStream = StreamController<bool>.broadcast();
   final _completedStream = StreamController<bool>.broadcast();
   final _errorStream = StreamController<Map<String, dynamic>>.broadcast();
+
+  int get volumeBoostLevel => _volumeBoostLevel;
 
   @override
   Stream<Map<String, dynamic>> get errorStream => _errorStream.stream;
@@ -155,6 +163,13 @@ class Media3PlayerBackend implements PlayerBackend {
         _playingStream.add(false);
         _bufferingStream.add(false);
         _completedStream.add(false);
+      case 'syncDelays':
+        _audioDelaySeconds = _toInt(map['audioDelayMs']) / 1000.0;
+        _subtitleDelaySeconds = _toInt(map['subtitleDelayMs']) / 1000.0;
+      case 'volumeBoost':
+        _volumeBoostLevel = (_toInt(map['level']).clamp(0, 10)).toInt();
+      case 'repeatModeChanged':
+        _repeatMode = _repeatModeFromWire(map['repeatMode']?.toString());
       case 'tunnelingDiscontinuity':
         _onTunnelingDiscontinuity();
     }
@@ -210,6 +225,35 @@ class Media3PlayerBackend implements PlayerBackend {
     };
   }
 
+  RepeatMode _repeatModeFromWire(String? value) {
+    switch ((value ?? '').trim().toLowerCase()) {
+      case 'one':
+      case 'repeatone':
+        return RepeatMode.repeatOne;
+      case 'all':
+      case 'repeatall':
+        return RepeatMode.repeatAll;
+      default:
+        return RepeatMode.none;
+    }
+  }
+
+  String _repeatModeToWire(RepeatMode mode) {
+    return switch (mode) {
+      RepeatMode.none => 'off',
+      RepeatMode.repeatOne => 'one',
+      RepeatMode.repeatAll => 'all',
+    };
+  }
+
+  String? _normalizeTrackLanguagePref(String? value) {
+    final normalized = (value ?? '').trim().toLowerCase();
+    if (normalized.isEmpty || normalized == 'auto' || normalized == 'none') {
+      return null;
+    }
+    return normalized;
+  }
+
   @override
   Future<void> play(
     dynamic mediaItem, {
@@ -237,15 +281,40 @@ class Media3PlayerBackend implements PlayerBackend {
     _textTrackCount = 0;
     _tracksReadyCompleter = null;
     _discontinuityTimestamps.clear();
-    _sessionTunnelingDisabled = _prefs.get(
-      UserPreferences.tunnelingFallbackDisabled,
+    _skipSilenceEnabled = _prefs.get(UserPreferences.media3SkipSilence);
+    _volumeBoostLevel = 0;
+    final preferredAudioLanguage = _normalizeTrackLanguagePref(
+      _prefs.get(UserPreferences.defaultAudioLanguage),
     );
+    final preferredSubtitleLanguage = _normalizeTrackLanguagePref(
+      _prefs.get(UserPreferences.defaultSubtitleLanguage),
+    );
+    final tunnelingDisabledByUser = _prefs.get(
+      UserPreferences.media3TunnelingDisabled,
+    );
+    final dvFallbackBehavior = _prefs.get(
+      UserPreferences.dolbyVisionFallbackBehavior,
+    );
+    final mapDolbyVisionProfile7ToHevc =
+        _prefs.get(UserPreferences.media3MapDolbyVisionProfile7ToHevc) ||
+        (!PlatformDetection.supportsDoViProfile7 &&
+            dvFallbackBehavior != DolbyVisionFallbackBehavior.transcode);
+    _sessionTunnelingDisabled =
+        _prefs.get(UserPreferences.tunnelingFallbackDisabled) ||
+        tunnelingDisabledByUser;
 
     await _ensureActivityStarted();
 
     await _invoke<void>('setDecoderPreferences', {
       'preferFfmpeg': _prefs.get(UserPreferences.preferExoPlayerFfmpeg),
       'tunnelingDisabled': _sessionTunnelingDisabled,
+      'mapDolbyVisionProfile7ToHevc': mapDolbyVisionProfile7ToHevc,
+      'allowExternalAudioEffects': _prefs.get(
+        UserPreferences.media3AllowExternalAudioEffects,
+      ),
+      'frameRateSwitchingBehavior': _prefs
+          .get(UserPreferences.refreshRateSwitchingBehavior)
+          .name,
     });
     await _invoke<void>('setSource', {
       'url': url,
@@ -256,9 +325,29 @@ class Media3PlayerBackend implements PlayerBackend {
       'videoRangeType': videoRangeType,
       'mediaType': mediaType,
       'normalizationGainDb': normalizationGainDb,
+      'skipSilenceEnabled': _skipSilenceEnabled,
+      'preferredAudioLanguage': preferredAudioLanguage,
+      'preferredTextLanguage': preferredSubtitleLanguage,
+      'selectUndeterminedTextLanguage': false,
+      'audioDelayMs': (_audioDelaySeconds * 1000).round(),
+      'subtitleDelayMs': (_subtitleDelaySeconds * 1000).round(),
+      'volumeBoostLevel': _volumeBoostLevel,
+    });
+    await _invoke<void>('setRepeatMode', {
+      'mode': _repeatModeToWire(_repeatMode),
     });
     await _invoke<void>('setSpeed', {'speed': _playbackSpeed});
     await _invoke<void>('setVolume', {'volume': _volume});
+    await _invoke<void>('setSkipSilence', {'enabled': _skipSilenceEnabled});
+    await _invoke<void>('setVolumeBoost', {'level': _volumeBoostLevel});
+    await _invoke<void>('setAudioDelay', {
+      'seconds': _audioDelaySeconds,
+      'delayMs': (_audioDelaySeconds * 1000).round(),
+    });
+    await _invoke<void>('setSubtitleDelay', {
+      'seconds': _subtitleDelaySeconds,
+      'delayMs': (_subtitleDelaySeconds * 1000).round(),
+    });
     await _invoke<void>('setSubtitleRendererMode', {
       'mode': _modeToWire(_requestedSubtitleRendererMode),
     });
@@ -351,8 +440,10 @@ class Media3PlayerBackend implements PlayerBackend {
       dtsHdPassthroughEnabled: _prefs.resolveDtsHdPassthroughEnabled(),
       dtsXPassthroughEnabled: _prefs.resolveDtsXPassthroughEnabled(),
       trueHdPassthroughEnabled: _prefs.resolveTrueHdPassthroughEnabled(),
-      trueHdAtmosPassthroughEnabled: _prefs.resolveTrueHdAtmosPassthroughEnabled(),
-      downMixAudio: _prefs.resolveAudioOutputMode() == AudioOutputMode.forceStereo,
+      trueHdAtmosPassthroughEnabled: _prefs
+          .resolveTrueHdAtmosPassthroughEnabled(),
+      downMixAudio:
+          _prefs.resolveAudioOutputMode() == AudioOutputMode.forceStereo,
       audioFallbackToStereoAac:
           _prefs.resolveAudioFallbackCodec() == AudioFallbackCodec.aacStereo,
       maxResolution: maxResolution,
@@ -410,6 +501,7 @@ class Media3PlayerBackend implements PlayerBackend {
     required int skipForwardMs,
     required String topTitle,
     required String topSubtitle,
+    String artworkUrl = '',
     required bool showClock,
     required String zoomModeLabel,
     List<Map<String, dynamic>> streamInfoSections = const [],
@@ -430,6 +522,7 @@ class Media3PlayerBackend implements PlayerBackend {
       'skipForwardMs': skipForwardMs,
       'topTitle': topTitle,
       'topSubtitle': topSubtitle,
+      'artworkUrl': artworkUrl,
       'showClock': showClock,
       'zoomModeLabel': zoomModeLabel,
       'streamInfoSections': streamInfoSections,
@@ -506,10 +599,29 @@ class Media3PlayerBackend implements PlayerBackend {
   }
 
   @override
-  Future<void> setAudioDelay(double seconds) async {}
+  Future<void> setAudioDelay(double seconds) async {
+    _audioDelaySeconds = seconds;
+    // The engine applies audio delay via a buffer flush (seek), so debounce
+    // rapid button taps into a single call to avoid audio stuttering.
+    _audioDelayDebounce?.cancel();
+    _audioDelayDebounce = Timer(const Duration(milliseconds: 350), () {
+      _audioDelayDebounce = null;
+      if (_disposed) return;
+      unawaited(_invoke<void>('setAudioDelay', {
+        'seconds': _audioDelaySeconds,
+        'delayMs': (_audioDelaySeconds * 1000).round(),
+      }));
+    });
+  }
 
   @override
-  Future<void> setSubtitleDelay(double seconds) async {}
+  Future<void> setSubtitleDelay(double seconds) async {
+    _subtitleDelaySeconds = seconds;
+    await _invoke<void>('setSubtitleDelay', {
+      'seconds': seconds,
+      'delayMs': (seconds * 1000).round(),
+    });
+  }
 
   @override
   Future<void> addExternalSubtitle(
@@ -534,6 +646,8 @@ class Media3PlayerBackend implements PlayerBackend {
     double? fontSize,
     int? fontWeight,
     double? verticalOffset,
+    bool? applyEmbeddedStyles,
+    bool? applyEmbeddedFontSizes,
   }) async {
     await _invoke<void>('configureSubtitleStyle', {
       'textColor': textColor,
@@ -542,6 +656,8 @@ class Media3PlayerBackend implements PlayerBackend {
       'fontSize': fontSize,
       'fontWeight': fontWeight,
       'verticalOffset': verticalOffset,
+      'applyEmbeddedStyles': applyEmbeddedStyles,
+      'applyEmbeddedFontSizes': applyEmbeddedFontSizes,
     });
   }
 
@@ -553,6 +669,21 @@ class Media3PlayerBackend implements PlayerBackend {
 
   Future<void> setZoomMode(String mode) async {
     await _invoke<void>('setZoomMode', {'mode': mode});
+  }
+
+  Future<void> setRepeatMode(RepeatMode mode) async {
+    _repeatMode = mode;
+    await _invoke<void>('setRepeatMode', {'mode': _repeatModeToWire(mode)});
+  }
+
+  Future<void> setSkipSilence(bool enabled) async {
+    _skipSilenceEnabled = enabled;
+    await _invoke<void>('setSkipSilence', {'enabled': enabled});
+  }
+
+  Future<void> setVolumeBoostLevel(int level) async {
+    _volumeBoostLevel = (level.clamp(0, 10)).toInt();
+    await _invoke<void>('setVolumeBoost', {'level': _volumeBoostLevel});
   }
 
   String _modeToWire(SubtitleRendererMode mode) {
@@ -578,6 +709,8 @@ class Media3PlayerBackend implements PlayerBackend {
   void dispose() {
     if (_disposed) return;
     _disposed = true;
+    _audioDelayDebounce?.cancel();
+    _audioDelayDebounce = null;
     unawaited(_stopActivity());
     unawaited(_eventSub?.cancel());
     _positionStream.close();

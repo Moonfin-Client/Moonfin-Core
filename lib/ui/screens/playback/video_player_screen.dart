@@ -22,7 +22,6 @@ import '../../../playback/html_video_backend.dart';
 import '../../../playback/media_kit_player_backend.dart';
 import '../../../playback/playback_lifecycle_handler.dart';
 import '../../../playback/playback_profile_diagnostics.dart';
-import '../../../playback/subtitle_font_fallback.dart';
 import '../../../playback/hdr_stream_capability.dart';
 import '../../../auth/repositories/user_repository.dart';
 import '../../../data/models/aggregated_item.dart';
@@ -138,6 +137,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool _isInPiP = false;
   bool _forcedLandscape = false;
   double _playerVolume = 100.0;
+  int _media3VolumeBoostLevel = 0;
   bool _didRequestIosPiPForBackground = false;
   bool _isStartingIosPiPForBackground = false;
   bool _didHandleBackgroundSuspend = false;
@@ -788,11 +788,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _backendSub = _manager.backendChangedStream.listen((backend) {
       if (backend is Media3PlayerBackend) {
         unawaited(_syncMedia3ZoomMode());
+        _syncMedia3VolumeBoostLevel();
+      } else {
+        _syncMedia3VolumeBoostLevel(resetWhenUnavailable: true);
       }
       if (!mounted) return;
-      _applySubtitleStyle();
       setState(() {});
     });
+    _syncMedia3VolumeBoostLevel(resetWhenUnavailable: true);
     if (PlatformDetection.isTV) {
       _tvSeekbarFocus.addListener(_onSeekbarFocusChange);
     }
@@ -834,6 +837,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _manager.suppressAutoNext = false;
       _consecutiveEpisodes++;
       unawaited(_pushMedia3UiMetadata());
+      _syncMedia3VolumeBoostLevel();
       unawaited(_syncAutoHdrSwitching());
       final isPreroll = _isCurrentPreroll;
       setState(() {
@@ -1826,6 +1830,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final castStateLabel = _remotePlaybackState == null
         ? ''
         : _castStateLabel(_remotePlaybackState!, l10n);
+    final artworkUrl = _artworkUrlForQueueItem(item) ?? '';
 
     List<Map<String, dynamic>>? rawChapters;
     if (item is AggregatedItem) {
@@ -1889,6 +1894,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       skipForwardMs: _prefs.get(UserPreferences.skipForwardLength),
       topTitle: topTitle,
       topSubtitle: topSubtitle,
+      artworkUrl: artworkUrl,
       showClock: false,
       zoomModeLabel: _zoomModeLabel(_zoomMode),
       streamInfoSections: streamInfoSections,
@@ -2047,7 +2053,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _syncMediaQueuingPreference() {
-    _manager.autoAdvanceEnabled = _prefs.get(UserPreferences.autoplayNextEpisode);
+    _manager.autoAdvanceEnabled = _prefs.get(
+      UserPreferences.autoplayNextEpisode,
+    );
   }
 
   void _suppressSeekPrompts({
@@ -2745,7 +2753,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         color: textColor,
         fontWeight: fontWeight >= 700 ? FontWeight.bold : FontWeight.normal,
         backgroundColor: bgColor,
-        fontFamilyFallback: kSubtitleFontFamilyFallback,
+        fontFamilyFallback: const ['Roboto', 'Noto Sans', 'Arial'],
         shadows: strokeShadows,
       ),
       textAlign: TextAlign.center,
@@ -2756,16 +2764,43 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void _applySubtitleStyle() {
     final backend = _activeBackend;
     if (backend == null) return;
-    unawaited(
-      backend.configureSubtitleStyle(
-        textColor: _prefs.get(UserPreferences.subtitlesTextColor),
-        backgroundColor: _prefs.get(UserPreferences.subtitlesBackgroundColor),
-        strokeColor: _prefs.get(UserPreferences.subtitleTextStrokeColor),
-        fontSize: _prefs.get(UserPreferences.subtitlesTextSize),
-        fontWeight: _prefs.get(UserPreferences.subtitlesTextWeight),
-        verticalOffset: _prefs.get(UserPreferences.subtitlesOffsetPosition),
-      ),
-    );
+
+    final textColor = _prefs.get(UserPreferences.subtitlesTextColor);
+    final backgroundColor = _prefs.get(UserPreferences.subtitlesBackgroundColor);
+    final strokeColor = _prefs.get(UserPreferences.subtitleTextStrokeColor);
+    final fontSize = _prefs.get(UserPreferences.subtitlesTextSize);
+    final fontWeight = _prefs.get(UserPreferences.subtitlesTextWeight);
+    final verticalOffset = _prefs.get(UserPreferences.subtitlesOffsetPosition);
+
+    // Embedded-style overrides are Media3-specific (Android only) and live on
+    // the Media3PlayerBackend's wider signature, not the base PlayerBackend.
+    if (backend is Media3PlayerBackend) {
+      unawaited(
+        backend.configureSubtitleStyle(
+          textColor: textColor,
+          backgroundColor: backgroundColor,
+          strokeColor: strokeColor,
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          verticalOffset: verticalOffset,
+          applyEmbeddedStyles:
+              _prefs.get(UserPreferences.subtitlesUseEmbeddedStyles),
+          applyEmbeddedFontSizes:
+              _prefs.get(UserPreferences.subtitlesUseEmbeddedFontSizes),
+        ),
+      );
+    } else {
+      unawaited(
+        backend.configureSubtitleStyle(
+          textColor: textColor,
+          backgroundColor: backgroundColor,
+          strokeColor: strokeColor,
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          verticalOffset: verticalOffset,
+        ),
+      );
+    }
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
@@ -3269,7 +3304,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                       timeoutMs: _prefs.get(UserPreferences.nextUpTimeout),
                       onPlayNext: _handleNextUpPlay,
                       onDismiss: _handleNextUpCancel,
-                        onTimeout: _prefs.get(UserPreferences.autoplayNextEpisode)
+                      onTimeout: _prefs.get(UserPreferences.autoplayNextEpisode)
                           ? _handleNextUpPlay
                           : _handleNextUpCancel,
                       focusNode: PlatformDetection.isTV
@@ -3798,6 +3833,58 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       maxWidth: 420,
       tag: normalizedTag,
     );
+  }
+
+  String? _artworkUrlForQueueItem(dynamic item) {
+    final raw = _rawDataForQueueItem(item);
+    final itemId = _itemIdForQueueItem(item);
+    if (raw == null || itemId == null || itemId.isEmpty) {
+      return null;
+    }
+
+    final imageApi = _clientForQueueItem(item).imageApi;
+    final imageTags = raw['ImageTags'] as Map?;
+    final primaryTag = (imageTags?['Primary'] as String?)?.trim();
+    final thumbTag = (imageTags?['Thumb'] as String?)?.trim();
+    final backdropTags = raw['BackdropImageTags'] as List?;
+    final backdropTag = backdropTags?.isNotEmpty == true
+        ? backdropTags!.first.toString().trim()
+        : null;
+
+    if (primaryTag != null && primaryTag.isNotEmpty) {
+      return imageApi.getPrimaryImageUrl(
+        itemId,
+        maxHeight: 420,
+        tag: primaryTag,
+      );
+    }
+
+    if (thumbTag != null && thumbTag.isNotEmpty) {
+      return imageApi.getThumbImageUrl(itemId, maxWidth: 960, tag: thumbTag);
+    }
+
+    if (backdropTag != null && backdropTag.isNotEmpty) {
+      return imageApi.getBackdropImageUrl(
+        itemId,
+        maxWidth: 1280,
+        tag: backdropTag,
+      );
+    }
+
+    final parentThumbItemId = (raw['ParentThumbItemId'] as String?)?.trim();
+    final parentThumbTag = (raw['ParentThumbImageTag'] as String?)?.trim();
+    if (parentThumbItemId != null &&
+        parentThumbItemId.isNotEmpty &&
+        parentThumbTag != null &&
+        parentThumbTag.isNotEmpty) {
+      return imageApi.getThumbImageUrl(
+        parentThumbItemId,
+        maxWidth: 960,
+        tag: parentThumbTag,
+      );
+    }
+
+    return imageApi.getPrimaryImageUrl(itemId, maxHeight: 420);
   }
 
   Widget _buildCastMiniBar() {
@@ -4409,13 +4496,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           (s) => s['Type'] == 'Subtitle',
         );
         final canDownloadRemoteSubtitles =
-          item is AggregatedItem && _canDownloadRemoteSubtitles(item);
+            item is AggregatedItem && _canDownloadRemoteSubtitles(item);
         final showSubtitleButton =
-          hasSubtitleStreams || canDownloadRemoteSubtitles;
+            hasSubtitleStreams || canDownloadRemoteSubtitles;
         final subtitleButtonIcon =
-          !hasSubtitleStreams && canDownloadRemoteSubtitles
-          ? Icons.download_rounded
-          : Icons.subtitles_outlined;
+            !hasSubtitleStreams && canDownloadRemoteSubtitles
+            ? Icons.download_rounded
+            : Icons.subtitles_outlined;
         final showAudioButton = true;
         final isLandscape =
             MediaQuery.of(context).orientation == Orientation.landscape;
@@ -4720,6 +4807,47 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     await _setAlwaysOnTop(!_isAlwaysOnTop);
   }
 
+  void _syncMedia3VolumeBoostLevel({bool resetWhenUnavailable = false}) {
+    final backend = _activeMedia3Backend;
+    if (backend == null) {
+      if (resetWhenUnavailable && _media3VolumeBoostLevel != 0) {
+        if (mounted) {
+          setState(() => _media3VolumeBoostLevel = 0);
+        } else {
+          _media3VolumeBoostLevel = 0;
+        }
+      }
+      return;
+    }
+
+    final next = backend.volumeBoostLevel.clamp(0, 10).toInt();
+    if (next != _media3VolumeBoostLevel) {
+      if (mounted) {
+        setState(() => _media3VolumeBoostLevel = next);
+      } else {
+        _media3VolumeBoostLevel = next;
+      }
+    }
+  }
+
+  Future<void> _setMedia3VolumeBoostLevel(int level) async {
+    final backend = _activeMedia3Backend;
+    if (backend == null) {
+      return;
+    }
+
+    final clampedLevel = level.clamp(0, 10).toInt();
+    if (_media3VolumeBoostLevel != clampedLevel) {
+      if (mounted) {
+        setState(() => _media3VolumeBoostLevel = clampedLevel);
+      } else {
+        _media3VolumeBoostLevel = clampedLevel;
+      }
+    }
+
+    await backend.setVolumeBoostLevel(clampedLevel);
+  }
+
   Future<void> _changeVolumeBy(double delta) async {
     final castKind = _castService.activeKind;
     if (castKind != null) {
@@ -4730,8 +4858,26 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
 
     if (PlatformDetection.isMobile) {
-      final next = (_systemVolume + delta).clamp(0.0, 1.0);
-      unawaited(_setMobileSystemVolume(next, syncFromSystem: true));
+      final media3Backend = _activeMedia3Backend;
+      if (media3Backend != null) {
+        _syncMedia3VolumeBoostLevel();
+        final effectiveVolume =
+            _systemVolume + (_media3VolumeBoostLevel / 10.0);
+        final nextEffective = (effectiveVolume + delta)
+            .clamp(0.0, 2.0)
+            .toDouble();
+        final nextSystemVolume = nextEffective.clamp(0.0, 1.0).toDouble();
+        final nextBoostLevel = nextEffective <= 1.0
+            ? 0
+            : ((nextEffective - 1.0) * 10.0).round().clamp(0, 10).toInt();
+        await _setMedia3VolumeBoostLevel(nextBoostLevel);
+        unawaited(
+          _setMobileSystemVolume(nextSystemVolume, syncFromSystem: true),
+        );
+      } else {
+        final next = (_systemVolume + delta).clamp(0.0, 1.0);
+        unawaited(_setMobileSystemVolume(next, syncFromSystem: true));
+      }
       _showVolumeIndicator();
       return;
     }
@@ -4804,6 +4950,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _volumeListenerSub = vc.addListener((value) {
       if (mounted && (value - _systemVolume).abs() > 0.01) {
         setState(() => _systemVolume = value);
+      }
+
+      if (value < 0.99 &&
+          _media3VolumeBoostLevel > 0 &&
+          _activeMedia3Backend != null) {
+        unawaited(_setMedia3VolumeBoostLevel(0));
       }
     }, fetchInitialVolume: true);
   }
@@ -4936,9 +5088,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final screenWidth = MediaQuery.sizeOf(context).width;
     _verticalDragIsVolume = details.localPosition.dx > screenWidth / 2;
     _verticalDragStartY = details.localPosition.dy;
-    _verticalDragStartValue = _verticalDragIsVolume
-        ? (PlatformDetection.isMobile ? _systemVolume : _playerVolume / 100.0)
-        : _brightnessValue;
+    if (_verticalDragIsVolume) {
+      final baseVolume = PlatformDetection.isMobile
+          ? _systemVolume
+          : _playerVolume / 100.0;
+      final includeBoost =
+          PlatformDetection.isMobile && _activeMedia3Backend != null;
+      _verticalDragStartValue = includeBoost
+          ? baseVolume + (_media3VolumeBoostLevel / 10.0)
+          : baseVolume;
+      return;
+    }
+    _verticalDragStartValue = _brightnessValue;
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) {
@@ -4947,10 +5108,28 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final deltaValue = deltaY / (screenHeight * 0.7);
 
     if (_verticalDragIsVolume) {
-      final newVolume = (_verticalDragStartValue + deltaValue).clamp(0.0, 1.0);
       if (PlatformDetection.isMobile) {
-        unawaited(_setMobileSystemVolume(newVolume));
+        final media3Backend = _activeMedia3Backend;
+        if (media3Backend != null) {
+          final rawEffective = (_verticalDragStartValue + deltaValue)
+              .clamp(0.0, 2.0)
+              .toDouble();
+          final newSystemVolume = rawEffective.clamp(0.0, 1.0).toDouble();
+          final newBoostLevel = rawEffective <= 1.0
+              ? 0
+              : ((rawEffective - 1.0) * 10.0).round().clamp(0, 10).toInt();
+          unawaited(_setMedia3VolumeBoostLevel(newBoostLevel));
+          unawaited(_setMobileSystemVolume(newSystemVolume));
+        } else {
+          final newVolume = (_verticalDragStartValue + deltaValue)
+              .clamp(0.0, 1.0)
+              .toDouble();
+          unawaited(_setMobileSystemVolume(newVolume));
+        }
       } else {
+        final newVolume = (_verticalDragStartValue + deltaValue)
+            .clamp(0.0, 1.0)
+            .toDouble();
         _playerVolume = newVolume * 100.0;
         _manager.backend?.setVolume(_playerVolume);
       }
@@ -4981,6 +5160,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Widget _buildVolumeOverlay() {
     final isMobile = PlatformDetection.isMobile;
     final displayVolume = isMobile ? _systemVolume : _playerVolume / 100.0;
+    final usingMedia3Boost = isMobile && _activeMedia3Backend != null;
+    final overlayProgress = usingMedia3Boost
+        ? ((displayVolume * 100.0) + (_media3VolumeBoostLevel * 10.0)).clamp(
+                0.0,
+                200.0,
+              ) /
+              200.0
+        : displayVolume.clamp(0.0, 1.0);
+    final overlayLabel = usingMedia3Boost && _media3VolumeBoostLevel > 0
+        ? 'Volume +$_media3VolumeBoostLevel'
+        : '${(displayVolume * 100).round()}%';
     return Positioned.fill(
       child: AnimatedOpacity(
         opacity: _showVolumeOverlay ? 1.0 : 0.0,
@@ -4994,8 +5184,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                   : displayVolume < 0.5
                   ? Icons.volume_down_rounded
                   : Icons.volume_up_rounded,
-              value: displayVolume,
-              label: '${(displayVolume * 100).round()}%',
+              value: overlayProgress,
+              label: overlayLabel,
             ),
           ),
         ),
@@ -5067,7 +5257,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           ),
           const SizedBox(height: 10),
           SizedBox(
-            width: 40,
+            width: 88,
             child: Text(
               label,
               textAlign: TextAlign.center,
@@ -5499,7 +5689,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         options: options,
         selectedIndex: selectedIndex,
         useRootNavigator: false,
-        footer: _activeMedia3Backend == null
+        // Delay controls are only wired for the Media3 backend (Android).
+        // On other platforms the backend no-ops setAudioDelay/setSubtitleDelay,
+        // so the footer is hidden to avoid a confusing unresponsive control.
+        footer: _activeMedia3Backend != null
             ? _DelayFooter(
                 initialDelay: audio ? _audioDelay : _subtitleDelay,
                 label: audio ? l10n.audioDelay : l10n.subtitleDelay,

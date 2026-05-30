@@ -7114,7 +7114,13 @@ class AppLocalizationsGl extends AppLocalizations {
   String get settingsPlaybackEngineMedia3Recommended => 'Media3 (recomendado)';
 
   @override
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
+
+  @override
   String get settingsPlaybackEngineMpvLegacy => 'mpv (herdado)';
+
+  @override
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Vision Alternativa';
@@ -7302,4 +7308,54 @@ class AppLocalizationsGl extends AppLocalizations {
   String latestLibraryName(String libraryName) {
     return 'Latest $libraryName';
   }
+
+  @override
+  String get autoplayNextEpisode => 'Autoplay Next Episode';
+
+  @override
+  String get autoplayNextEpisodeSubtitle =>
+      'Automatically play the next episode when available.';
+
+  @override
+  String get skipSilenceTitle => 'Skip silence';
+
+  @override
+  String get skipSilenceSubtitle =>
+      'Automatically skip silent audio segments when supported by the stream.';
+
+  @override
+  String get allowExternalAudioEffectsTitle => 'Allow external audio effects';
+
+  @override
+  String get allowExternalAudioEffectsSubtitle =>
+      'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.';
+
+  @override
+  String get disableTunnelingTitle => 'Disable tunneling';
+
+  @override
+  String get disableTunnelingSubtitle =>
+      'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
+
+  @override
+  String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
+
+  @override
+  String get mapDolbyVisionP7Subtitle =>
+      'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.';
+
+  @override
+  String get subtitlesUseEmbeddedStyles => 'Use embedded subtitle styles';
+
+  @override
+  String get subtitlesUseEmbeddedStylesSubtitle =>
+      'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.';
+
+  @override
+  String get subtitlesUseEmbeddedFontSizes =>
+      'Use embedded subtitle font sizes';
+
+  @override
+  String get subtitlesUseEmbeddedFontSizesSubtitle =>
+      'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
 }

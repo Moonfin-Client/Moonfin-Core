@@ -74,7 +74,6 @@ class PlaybackManager {
   Duration _deferredStartPosition = Duration.zero;
   bool _deferPlaybackToExternalPlayer = false;
   bool _skipExternalRoutingOnce = false;
-  bool _awaitingNativeAudioRetryResult = false;
   bool _unsupportedAudioRecoveryInFlight = false;
   bool _suppressNextGenericBackendError = false;
   final _backendChangedController = StreamController<PlayerBackend>.broadcast();
@@ -93,8 +92,8 @@ class PlaybackManager {
   StreamResolutionResult? get currentResolution => _currentResolution;
   int? get audioStreamIndex => _audioStreamIndex;
   int? get subtitleStreamIndex => _subtitleStreamIndex;
-    int? get pendingAudioStreamIndex => _pendingItemAudioStreamIndex;
-    int? get pendingSubtitleStreamIndex => _pendingItemSubtitleStreamIndex;
+  int? get pendingAudioStreamIndex => _pendingItemAudioStreamIndex;
+  int? get pendingSubtitleStreamIndex => _pendingItemSubtitleStreamIndex;
   String? get pendingMediaSourceId => _mediaSourceId;
   bool get playbackDeferredToExternalPlayer => _deferPlaybackToExternalPlayer;
   bool consumeSkipExternalRoutingOnce() {
@@ -140,8 +139,9 @@ class PlaybackManager {
     _pendingItemOverrideId = normalizedItemId;
     _pendingItemAudioStreamIndex = audioStreamIndex;
     _pendingItemSubtitleStreamIndex = subtitleStreamIndex;
-    _pendingItemMediaSourceId =
-      mediaSourceId == null || mediaSourceId.isEmpty ? null : mediaSourceId;
+    _pendingItemMediaSourceId = mediaSourceId == null || mediaSourceId.isEmpty
+        ? null
+        : mediaSourceId;
   }
 
   List<Map<String, dynamic>> get _currentMediaStreams {
@@ -231,7 +231,6 @@ class PlaybackManager {
       return;
     }
     final previous = _backend;
-    _awaitingNativeAudioRetryResult = false;
     _unsupportedAudioRecoveryInFlight = false;
     _suppressNextGenericBackendError = false;
     _disposeStreamSubs();
@@ -263,9 +262,7 @@ class PlaybackManager {
     _resolverConfigurator = configurator;
   }
 
-  void setExternalPlaybackDecider(
-    bool Function(List<dynamic> items)? decider,
-  ) {
+  void setExternalPlaybackDecider(bool Function(List<dynamic> items)? decider) {
     _externalPlaybackDecider = decider;
   }
 
@@ -327,9 +324,6 @@ class PlaybackManager {
     _sessionLockedBackend = null;
   }
 
-  /// Optional interceptor invoked before transport actions (resume/pause/seek/stop).
-  /// Returning `true` indicates the action was handled and the backend call should
-  /// be skipped. Used by SyncPlay to redirect local transport into a group request.
   Future<bool> Function(TransportAction action, {Duration? position})?
   _transportInterceptor;
 
@@ -376,10 +370,7 @@ class PlaybackManager {
     final errorStream = backend.errorStream;
     if (errorStream != null) {
       _streamSubs.add(
-        errorStream.listen(
-          _onBackendErrorEvent,
-          onError: (_) {},
-        ),
+        errorStream.listen(_onBackendErrorEvent, onError: (_) {}),
       );
     }
   }
@@ -433,14 +424,12 @@ class PlaybackManager {
     if (!autoAdvanceEnabled) {
       _isAutoNexting = true;
       _mediaSourceId = null;
-      _stopAndReportCurrent(skipQueueChange: true)
-          .whenComplete(() {
-            _isAutoNexting = false;
-            _notifySessionEnded();
-          });
+      _stopAndReportCurrent(skipQueueChange: true).whenComplete(() {
+        _isAutoNexting = false;
+        _notifySessionEnded();
+      });
       return;
     }
-    // Ignore completed events that fire during initial load/seek.
     if (_playbackStartTime != null &&
         DateTime.now().difference(_playbackStartTime!).inSeconds < 5) {
       return;
@@ -523,7 +512,6 @@ class PlaybackManager {
         return;
       }
 
-      _awaitingNativeAudioRetryResult = false;
       emitFailedBringupState('Playback failed.');
       return;
     }
@@ -534,8 +522,36 @@ class PlaybackManager {
 
     if (!recoverable) {
       _suppressNextGenericBackendError = true;
-      _awaitingNativeAudioRetryResult = false;
       emitFailedBringupState('Playback failed.');
+      return;
+    }
+
+    bool canReResolve() =>
+        resolution != null &&
+        resolution.playMethod != StreamPlayMethod.transcode &&
+        !_isOfflinePlayback &&
+        !_waitingForMedia &&
+        !_unsupportedAudioRecoveryInFlight;
+
+    Future<void> recoverViaTranscode() async {
+      _unsupportedAudioRecoveryInFlight = true;
+      try {
+        await _reResolveAtCurrentPosition(forceTranscode: true);
+      } catch (_) {
+      } finally {
+        _unsupportedAudioRecoveryInFlight = false;
+      }
+    }
+
+    // Container/source error (e.g. brand-less MP4 that no extractor could read).
+    // Only suppress the trailing generic "error" event and recover when we can
+    // actually re-resolve; otherwise let the failure surface.
+    if (kind == 'unsupported_container') {
+      if (!canReResolve()) {
+        return;
+      }
+      _suppressNextGenericBackendError = true;
+      await recoverViaTranscode();
       return;
     }
 
@@ -546,30 +562,13 @@ class PlaybackManager {
     _suppressNextGenericBackendError = true;
 
     if (event['audioOffloadRetryTriggered'] == true) {
-      _awaitingNativeAudioRetryResult = true;
       return;
     }
 
-    if (_awaitingNativeAudioRetryResult) {
-      _awaitingNativeAudioRetryResult = false;
-    }
-
-    if (resolution == null ||
-        resolution.playMethod == StreamPlayMethod.transcode ||
-        _isOfflinePlayback ||
-        _waitingForMedia ||
-        _unsupportedAudioRecoveryInFlight) {
+    if (!canReResolve()) {
       return;
     }
-
-    _awaitingNativeAudioRetryResult = false;
-    _unsupportedAudioRecoveryInFlight = true;
-    try {
-      await _reResolveAtCurrentPosition(forceTranscode: true);
-    } catch (_) {
-    } finally {
-      _unsupportedAudioRecoveryInFlight = false;
-    }
+    await recoverViaTranscode();
   }
 
   Future<void> _autoNext() async {
@@ -618,7 +617,11 @@ class PlaybackManager {
 
     List<dynamic> nextSeasonItems;
     try {
-      nextSeasonItems = await provider(completedItem, queueSnapshot, completedIndex);
+      nextSeasonItems = await provider(
+        completedItem,
+        queueSnapshot,
+        completedIndex,
+      );
     } catch (_) {
       return false;
     }
@@ -842,7 +845,6 @@ class PlaybackManager {
     }
 
     _playbackStartTime = DateTime.now();
-    _awaitingNativeAudioRetryResult = false;
     _unsupportedAudioRecoveryInFlight = false;
     _suppressNextGenericBackendError = false;
     _waitingForMedia = true;
@@ -864,6 +866,7 @@ class PlaybackManager {
         backendMediaPayload,
         startPosition: useNativeStart ? startPosition : Duration.zero,
       );
+      await _syncBackendRepeatModeIfSupported();
       if (_backend!.requiresStartupMediaReadyCheck) {
         _setBringupState(
           PlaybackBringupState(
@@ -1079,19 +1082,13 @@ class PlaybackManager {
     await _backend?.pause();
   }
 
-  /// Polls until the backend reports a non-zero duration, indicating the
-  /// media is ready for seeking / track selection. For transcoded streams,
-  /// also accepts [isPlaying] since the full duration may never arrive.
   Future<bool> _waitForMediaReady({
     bool isTranscode = false,
     Duration timeout = _defaultMediaReadyTimeout,
   }) async {
-
     bool isReady() {
       if (_backend!.duration > Duration.zero) return true;
 
-      // Some Android TV pipelines begin decoding before duration metadata is
-      // available. Consider playback progression as readiness.
       if (_backend!.position > Duration.zero) return true;
       if (_backend!.buffer > Duration.zero) return true;
       if (_backend!.isPlaying) return true;
@@ -1185,6 +1182,15 @@ class PlaybackManager {
   void toggleRepeat() {
     queueService.toggleRepeat();
     state.setRepeatMode(queueService.repeatMode);
+    unawaited(_syncBackendRepeatModeIfSupported());
+  }
+
+  Future<void> _syncBackendRepeatModeIfSupported() async {
+    final dynamic backend = _backend;
+    if (backend == null) return;
+    try {
+      await backend.setRepeatMode(queueService.repeatMode);
+    } catch (_) {}
   }
 
   void toggleShuffle() {
@@ -1461,7 +1467,6 @@ class PlaybackManager {
     await _backend?.disableSubtitleTrack();
   }
 
-  /// Re-resolve the stream at the current playback position.
   Future<void> changeBitrate(int? mbps) async {
     _maxBitrateOverrideMbps = mbps;
     await _reResolveAtCurrentPosition(forceTranscode: mbps != null);
@@ -1733,6 +1738,7 @@ class PlaybackManager {
       _buildBackendMediaPayload(url: url, mediaStreams: offlineStreams),
       startPosition: startPosition,
     );
+    await _syncBackendRepeatModeIfSupported();
     await _waitForMediaReady();
     _waitingForMedia = false;
 
@@ -1838,7 +1844,6 @@ class PlaybackManager {
   }
 }
 
-/// Transport actions that may be intercepted before reaching the backend.
 enum TransportAction { resume, pause, seek, stop, next, previous }
 
 enum PlaybackStartupRecoveryDecision { retryWithTranscode, abortPlayback }

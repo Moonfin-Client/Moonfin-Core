@@ -23,6 +23,9 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   static const _firstPageSize = 36;
   static const _browseFields =
       'PrimaryImageAspectRatio,SortName,Type,IsFolder,UserData,CommunityRating,OfficialRating,RunTimeTicks,ProductionYear,ImageTags,BackdropImageTags,ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag';
+  // Cap image tags to one per type (server returns all by default)
+  static const _imageTypes = 'Primary,Backdrop,Thumb';
+  static const _imageTypeLimit = 1;
 
   LibraryBrowseState _state = LibraryBrowseState.loading;
   LibraryBrowseState get state => _state;
@@ -455,6 +458,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         limit: limit,
         recursive: recursive,
         fields: fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
         filters: filters,
         seriesStatus: seriesStatus,
         nameStartsWith: nameStartsWith,
@@ -484,6 +489,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         limit: limit,
         recursive: recursive,
         fields: fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
         filters: filters,
         seriesStatus: seriesStatus,
         nameStartsWith: nameStartsWith,

@@ -109,6 +109,10 @@ class Media3PlayerActivity : ComponentActivity() {
             var showSpeedDialog by remember { mutableStateOf(false) }
             var showCastCrewDialog by remember { mutableStateOf(false) }
             var showCastControlsDialog by remember { mutableStateOf(false) }
+            // Scrubber state: while the user is dragging, freeze the displayed
+            // position to the thumb position rather than the live player position.
+            var isScrubbing by remember { mutableStateOf(false) }
+            var scrubPositionMs by remember { mutableStateOf(0L) }
             val hasOpenDialog =
                 showAudioDialog ||
                     showSubtitleDialog ||
@@ -440,43 +444,69 @@ class Media3PlayerActivity : ComponentActivity() {
                                 .padding(top = 14.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            Box(modifier = Modifier.fillMaxWidth()) {
+                            val displayPositionMs = if (isScrubbing) scrubPositionMs else uiState.positionMs
+                            val sliderValue = if (uiState.durationMs > 0L) {
+                                (displayPositionMs.toFloat() / uiState.durationMs.toFloat()).coerceIn(0f, 1f)
+                            } else {
+                                0f
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 4.dp),
+                            ) {
                                 LinearProgressIndicator(
                                     progress = uiState.bufferedProgress,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    color = Color.White.copy(alpha = 0.35f),
-                                    trackColor = Color.White.copy(alpha = 0.15f),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .align(Alignment.Center),
+                                    color = Color.White.copy(alpha = 0.30f),
+                                    trackColor = Color.White.copy(alpha = 0.12f),
                                 )
-                                LinearProgressIndicator(
-                                    progress = uiState.progress,
+                                Slider(
+                                    value = sliderValue,
+                                    onValueChange = { fraction ->
+                                        isScrubbing = true
+                                        scrubPositionMs = (fraction * uiState.durationMs).toLong()
+                                        controlsVisibleState.value = true
+                                    },
+                                    onValueChangeFinished = {
+                                        val targetMs = scrubPositionMs
+                                        isScrubbing = false
+                                        if (uiState.durationMs > 0L) {
+                                            Media3Bridge.dispatchControl(
+                                                method = "seek",
+                                                args = mapOf("positionMs" to targetMs),
+                                            )
+                                        }
+                                    },
+                                    enabled = uiState.durationMs > 0L,
                                     modifier = Modifier.fillMaxWidth(),
-                                    color = Color.White,
-                                    trackColor = Color.Transparent,
+                                    colors = androidx.compose.material3.SliderDefaults.colors(
+                                        thumbColor = Color.White,
+                                        activeTrackColor = Color.White,
+                                        inactiveTrackColor = Color.Transparent,
+                                    ),
                                 )
                             }
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(4.dp))
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Text(
-                                    text = formatDuration(uiState.positionMs),
+                                    text = formatDuration(displayPositionMs),
                                     color = Color.White,
                                     style = MaterialTheme.typography.bodySmall,
                                 )
                                 Text(
-                                    text = "-${formatDuration((uiState.durationMs - uiState.positionMs).coerceAtLeast(0L))}",
+                                    text = "-${formatDuration((uiState.durationMs - displayPositionMs).coerceAtLeast(0L))}",
                                     color = Color.White,
                                     style = MaterialTheme.typography.bodySmall,
                                 )
                             }
-                            Text(
-                                text = "${formatDuration(uiState.positionMs)} / ${formatDuration(uiState.durationMs)}",
-                                color = Color.White.copy(alpha = 0.9f),
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(top = 6.dp),
-                            )
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))

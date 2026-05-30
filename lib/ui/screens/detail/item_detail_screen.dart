@@ -43,6 +43,7 @@ import '../../widgets/track_selector_dialog.dart';
 import '../../widgets/remote_play_to_session_dialog.dart';
 import '../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
+import '../../widgets/focus/focusable_button.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/focus/step_scroll.dart';
 import '../../widgets/overlay_sheet.dart';
@@ -6454,18 +6455,19 @@ _showDolbyVisionDirectPlayStartupFailureDecisionDialog(
   BuildContext context,
 ) async {
   final l10n = AppLocalizations.of(context);
-  final retryWithTranscode = await showDialog<bool>(
+  final retryWithTranscode = await showFocusRestoringDialog<bool>(
     context: context,
     builder: (dialogContext) {
       return AlertDialog(
         title: Text(l10n.dolbyVisionDirectPlayFailedTitle),
         content: Text(l10n.dolbyVisionDirectPlayFailedMessage),
         actions: [
-          TextButton(
+          FocusableButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
+          FocusableButton(
+            autofocus: true,
             onPressed: () => Navigator.of(dialogContext).pop(true),
             child: Text(l10n.retryWithTranscode),
           ),
@@ -6549,7 +6551,7 @@ Future<_DolbyVisionPlayDecision?> _showDolbyVisionFallbackDecisionDialog(
   final l10n = AppLocalizations.of(context);
   var rememberChoice = false;
 
-  final choice = await showDialog<DolbyVisionFallbackBehavior>(
+  final choice = await showFocusRestoringDialog<DolbyVisionFallbackBehavior>(
     context: context,
     builder: (dialogContext) {
       return StatefulBuilder(
@@ -6562,22 +6564,28 @@ Future<_DolbyVisionPlayDecision?> _showDolbyVisionFallbackDecisionDialog(
               children: [
                 Text(l10n.dolbyVisionNotSupportedMessage),
                 const SizedBox(height: 12),
-                CheckboxListTile(
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                  value: rememberChoice,
-                  onChanged: (value) {
-                    setDialogState(() {
-                      rememberChoice = value ?? false;
-                    });
-                  },
-                  title: Text(l10n.rememberMyChoice),
-                  controlAffinity: ListTileControlAffinity.leading,
+                FocusableButton(
+                  onPressed: () => setDialogState(() {
+                    rememberChoice = !rememberChoice;
+                  }),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        rememberChoice
+                            ? Icons.check_box
+                            : Icons.check_box_outline_blank,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(l10n.rememberMyChoice),
+                    ],
+                  ),
                 ),
               ],
             ),
             actions: [
-              TextButton(
+              FocusableButton(
+                autofocus: true,
                 onPressed: () {
                   Navigator.of(
                     dialogContext,
@@ -6585,7 +6593,7 @@ Future<_DolbyVisionPlayDecision?> _showDolbyVisionFallbackDecisionDialog(
                 },
                 child: Text(l10n.playHdr10Fallback),
               ),
-              FilledButton(
+              FocusableButton(
                 onPressed: () {
                   Navigator.of(
                     dialogContext,

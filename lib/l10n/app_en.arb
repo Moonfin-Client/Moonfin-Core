@@ -6761,7 +6761,9 @@
   "settingsPlaybackEngineAndroidTv": "Playback Engine (Android TV)",
   "settingsPlaybackEngineAndroidTvDescription": "Choose the default playback engine on Android TV devices. Changes apply to the next playback session.",
   "settingsPlaybackEngineMedia3Recommended": "Media3 (recommended)",
+  "settingsPlaybackEngineMedia3Legacy": "Media3 (legacy)",
   "settingsPlaybackEngineMpvLegacy": "mpv (legacy)",
+  "settingsPlaybackEngineMpvRecommended": "mpv (recommended)",
   "settingsDolbyVisionFallback": "Dolby Vision Fallback",
   "settingsDolbyVisionFallbackDescription": "Behavior for Dolby Vision titles on devices without Dolby Vision decoding.",
   "settingsAskEachTime": "Ask each time",
@@ -6841,5 +6843,68 @@
         "type": "String"
       }
     }
+  },
+
+  "autoplayNextEpisode": "Autoplay Next Episode",
+  "@autoplayNextEpisode": {
+    "description": "Setting title: automatically start the next episode"
+  },
+  "autoplayNextEpisodeSubtitle": "Automatically play the next episode when available.",
+  "@autoplayNextEpisodeSubtitle": {
+    "description": "Setting subtitle for autoplay next episode"
+  },
+
+  "skipSilenceTitle": "Skip silence",
+  "@skipSilenceTitle": {
+    "description": "Setting title: skip silent audio segments during playback"
+  },
+  "skipSilenceSubtitle": "Automatically skip silent audio segments when supported by the stream.",
+  "@skipSilenceSubtitle": {
+    "description": "Setting subtitle for skip silence"
+  },
+
+  "allowExternalAudioEffectsTitle": "Allow external audio effects",
+  "@allowExternalAudioEffectsTitle": {
+    "description": "Setting title: allow equalizer apps to attach to Media3"
+  },
+  "allowExternalAudioEffectsSubtitle": "Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.",
+  "@allowExternalAudioEffectsSubtitle": {
+    "description": "Setting subtitle for external audio effects"
+  },
+
+  "disableTunnelingTitle": "Disable tunneling",
+  "@disableTunnelingTitle": {
+    "description": "Setting title: force non-tunneled video playback"
+  },
+  "disableTunnelingSubtitle": "Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.",
+  "@disableTunnelingSubtitle": {
+    "description": "Setting subtitle for disable tunneling"
+  },
+
+  "mapDolbyVisionP7Title": "Map Dolby Vision profile 7 to HEVC",
+  "@mapDolbyVisionP7Title": {
+    "description": "Setting title: play DV P7 as HDR10 HEVC on non-DV devices"
+  },
+  "mapDolbyVisionP7Subtitle": "Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.",
+  "@mapDolbyVisionP7Subtitle": {
+    "description": "Setting subtitle for DV P7 to HEVC mapping"
+  },
+
+  "subtitlesUseEmbeddedStyles": "Use embedded subtitle styles",
+  "@subtitlesUseEmbeddedStyles": {
+    "description": "Setting title: apply colours/positioning from the subtitle track"
+  },
+  "subtitlesUseEmbeddedStylesSubtitle": "Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.",
+  "@subtitlesUseEmbeddedStylesSubtitle": {
+    "description": "Setting subtitle for embedded styles toggle"
+  },
+
+  "subtitlesUseEmbeddedFontSizes": "Use embedded subtitle font sizes",
+  "@subtitlesUseEmbeddedFontSizes": {
+    "description": "Setting title: apply font sizes from the subtitle track"
+  },
+  "subtitlesUseEmbeddedFontSizesSubtitle": "Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.",
+  "@subtitlesUseEmbeddedFontSizesSubtitle": {
+    "description": "Setting subtitle for embedded font sizes toggle"
   }
 }
