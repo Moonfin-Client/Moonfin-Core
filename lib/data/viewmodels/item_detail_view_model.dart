@@ -579,11 +579,11 @@ class ItemDetailViewModel extends ChangeNotifier {
     try {
       final data = await _client.itemsApi.getItems(
         personIds: [itemId],
-        includeItemTypes: ['Movie', 'Series', 'MusicVideo'],
+        includeItemTypes: ['Movie', 'Series', 'MusicVideo', 'Episode'],
         sortBy: 'PremiereDate',
         sortOrder: 'Descending',
         recursive: true,
-        limit: 50,
+        limit: 100,
         fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
       );
       final items = (data['Items'] as List?) ?? [];
@@ -692,6 +692,9 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   List<AggregatedItem> get filmographyMusicVideos =>
       _filmography.where((i) => i.type == 'MusicVideo').toList();
+
+  List<AggregatedItem> get filmographyEpisodes =>
+      _filmography.where((i) => i.type == 'Episode').toList();
 
   @override
   void notifyListeners() {
