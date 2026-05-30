@@ -618,6 +618,11 @@ class HomeViewModel extends ChangeNotifier {
             ? await _multiServerRepo.getAggregatedLibraryTiles(rowType: HomeRowType.libraryTilesSmall)
             : await _dataSource.loadLibraryTiles(_serverId, HomeRowType.libraryTilesSmall)];
       case HomeSectionType.liveTv:
+        try {
+          if (!await _dataSource.hasLiveTvChannels()) return [];
+        } catch (_) {
+          return [];
+        }
         final rows = <HomeRow>[
           HomeRow(
             id: 'liveTv',

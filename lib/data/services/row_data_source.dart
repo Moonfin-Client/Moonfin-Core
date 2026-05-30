@@ -46,6 +46,15 @@ class RowDataSource {
   ImageApi get imageApi => _client.imageApi;
   AppLocalizations get _l10n => currentAppLocalizations();
 
+  Future<bool> hasLiveTvChannels() async {
+    final response = await _client.liveTvApi.getChannels(
+      limit: 1,
+      enableTotalRecordCount: true,
+    );
+    final total = response['TotalRecordCount'] as int? ?? 0;
+    return total > 0;
+  }
+
   Future<HomeRow> loadOnNow(String serverId) async {
     final response = await _client.liveTvApi.getRecommendedPrograms(
       limit: _defaultLimit,
