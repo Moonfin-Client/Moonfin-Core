@@ -4374,6 +4374,10 @@
   "@networks": {
     "description": "Seerr row: networks"
   },
+  "yourWatchlist": "Your Watchlist",
+  "@yourWatchlist": {
+    "description": "Seerr row: watchlist"
+  },
   "resetRowsToDefaults": "Reset rows to defaults",
   "@resetRowsToDefaults": {
     "description": "Tooltip for reset rows to defaults"
