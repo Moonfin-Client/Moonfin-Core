@@ -689,7 +689,7 @@ class _SeerrMediaDetailScreenState
     }
     tiles.add(_ActionTile(
       icon: s.onUserWatchlist ? Icons.bookmark : Icons.bookmark_border,
-      label: s.onUserWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist',
+      label: s.onUserWatchlist ? l10n.removeFromWatchlist : l10n.addToWatchlist,
       onTap: s.isTogglingWatchlist ? null : () => vm.toggleWatchlist(),
       focusNode: takeFirst(),
     ));
@@ -1172,7 +1172,7 @@ class _SeerrMediaDetailScreenState
                   s.onUserWatchlist ? Icons.bookmark : Icons.bookmark_border,
                   size: 18,
                 ),
-                label: Text(s.onUserWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'),
+                label: Text(s.onUserWatchlist ? l10n.removeFromWatchlist : l10n.addToWatchlist),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.white70,
                   side: ThemeRegistry.active.borders.chipBorder.copyWith(
