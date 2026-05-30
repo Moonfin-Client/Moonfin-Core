@@ -234,6 +234,7 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     SeerrRowType.seriesGenres => l10n.seriesGenres,
     SeerrRowType.upcomingSeries => l10n.upcomingSeries,
     SeerrRowType.networks => l10n.networks,
+    SeerrRowType.yourWatchlist => l10n.yourWatchlist,
   };
 
   @override

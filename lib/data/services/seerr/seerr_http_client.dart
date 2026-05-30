@@ -393,6 +393,43 @@ class SeerrHttpClient {
     return response.data as Map<String, dynamic>;
   }
 
+  Future<void> addToWatchlist({required int tmdbId, required String mediaType}) async {
+    final response = await _dio.post(
+      _apiUrl('watchlist'),
+      data: {'tmdbId': tmdbId, 'mediaType': mediaType},
+      options: _authJsonOptions(),
+    );
+    _requireSuccess(response, 'addToWatchlist');
+  }
+
+  Future<void> removeFromWatchlist({required int tmdbId, required String mediaType}) async {
+    final response = await _dio.delete(
+      _apiUrl('watchlist/$tmdbId'),
+      queryParameters: {'mediaType': mediaType},
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'removeFromWatchlist');
+  }
+
+  Future<Map<String, dynamic>> getWatchlist({int page = 1}) async {
+    final response = await _dio.get(
+      _apiUrl('discover/watchlist'),
+      queryParameters: {'page': page},
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'getWatchlist');
+    final body = Map<String, dynamic>.from(response.data as Map<String, dynamic>);
+    final results = (body['results'] as List? ?? []).map((raw) {
+      final item = Map<String, dynamic>.from(raw as Map<String, dynamic>);
+      if (item['tmdbId'] != null) item['id'] = item['tmdbId'];
+      if (item.containsKey('media') && !item.containsKey('mediaInfo')) {
+        item['mediaInfo'] = item['media'];
+      }
+      return item;
+    }).toList();
+    return {...body, 'results': results};
+  }
+
   Future<Map<String, dynamic>> discoverMovies({
     int page = 1,
     String sortBy = 'popularity.desc',

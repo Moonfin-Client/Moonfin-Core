@@ -5801,6 +5801,12 @@ abstract class AppLocalizations {
   /// **'Networks'**
   String get networks;
 
+  /// Seerr row: watchlist
+  ///
+  /// In en, this message translates to:
+  /// **'Your Watchlist'**
+  String get yourWatchlist;
+
   /// Tooltip for reset rows to defaults
   ///
   /// In en, this message translates to:

@@ -4374,6 +4374,10 @@
   "@networks": {
     "description": "Seerr row: networks"
   },
+  "yourWatchlist": "Your Watchlist",
+  "@yourWatchlist": {
+    "description": "Seerr row: watchlist"
+  },
   "resetRowsToDefaults": "Reset rows to defaults",
   "@resetRowsToDefaults": {
     "description": "Tooltip for reset rows to defaults"
@@ -6906,5 +6910,13 @@
   "subtitlesUseEmbeddedFontSizesSubtitle": "Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.",
   "@subtitlesUseEmbeddedFontSizesSubtitle": {
     "description": "Setting subtitle for embedded font sizes toggle"
+  },
+  "addToWatchlist": "Add to Watchlist",
+  "@addToWatchlist": {
+    "description": "Button label to add media to the user's Seerr watchlist"
+  },
+  "removeFromWatchlist": "Remove from Watchlist",
+  "@removeFromWatchlist": {
+    "description": "Button label to remove media from the user's Seerr watchlist"
   }
 }
