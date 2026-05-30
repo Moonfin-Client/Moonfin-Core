@@ -2758,6 +2758,93 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    if (_isCurrentPreroll) {
+      if (event is KeyUpEvent) {
+        final isBackKey =
+            event.logicalKey == LogicalKeyboardKey.goBack ||
+            event.logicalKey == LogicalKeyboardKey.escape ||
+            event.logicalKey == LogicalKeyboardKey.browserBack ||
+            event.logicalKey == LogicalKeyboardKey.backspace;
+        if (isBackKey) {
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      }
+
+      if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+        return KeyEventResult.ignored;
+      }
+
+      if (event is KeyDownEvent) {
+        final isBackKey =
+            event.logicalKey == LogicalKeyboardKey.goBack ||
+            event.logicalKey == LogicalKeyboardKey.escape ||
+            event.logicalKey == LogicalKeyboardKey.browserBack ||
+            event.logicalKey == LogicalKeyboardKey.backspace;
+
+        if (isBackKey) {
+          if (!_isBackNavigationSuppressed()) {
+            _exitPlayback();
+          }
+          return KeyEventResult.handled;
+        }
+
+        switch (event.logicalKey) {
+          case LogicalKeyboardKey.mediaPlay:
+            unawaited(_resumeWithConfiguredRewind());
+            return KeyEventResult.handled;
+          case LogicalKeyboardKey.mediaPause:
+            _manager.pause();
+            return KeyEventResult.handled;
+          case LogicalKeyboardKey.mediaPlayPause:
+          case LogicalKeyboardKey.space:
+          case LogicalKeyboardKey.enter:
+          case LogicalKeyboardKey.select:
+            _togglePlayPause();
+            return KeyEventResult.handled;
+
+          case LogicalKeyboardKey.mediaFastForward:
+            unawaited(_manager.next());
+            return KeyEventResult.handled;
+
+          case LogicalKeyboardKey.mediaRewind:
+            unawaited(_manager.seekTo(Duration.zero));
+            unawaited(_manager.resume());
+            return KeyEventResult.handled;
+
+          default:
+            return KeyEventResult.handled;
+        }
+      }
+
+      if (event is KeyRepeatEvent) {
+        final isBackKey =
+            event.logicalKey == LogicalKeyboardKey.goBack ||
+            event.logicalKey == LogicalKeyboardKey.escape ||
+            event.logicalKey == LogicalKeyboardKey.browserBack ||
+            event.logicalKey == LogicalKeyboardKey.backspace;
+        if (isBackKey) {
+          return KeyEventResult.handled;
+        }
+
+        switch (event.logicalKey) {
+          case LogicalKeyboardKey.mediaPlay:
+          case LogicalKeyboardKey.mediaPause:
+          case LogicalKeyboardKey.mediaPlayPause:
+          case LogicalKeyboardKey.space:
+          case LogicalKeyboardKey.enter:
+          case LogicalKeyboardKey.select:
+          case LogicalKeyboardKey.mediaFastForward:
+          case LogicalKeyboardKey.mediaRewind:
+            return KeyEventResult.handled;
+          default:
+            return KeyEventResult.handled;
+        }
+      }
+
+      return KeyEventResult.ignored;
+    }
+
     if (event is KeyUpEvent) {
       final temporarySpeedResult = _handleTvTemporarySpeedKeyUp(event);
       if (temporarySpeedResult != KeyEventResult.ignored) {
