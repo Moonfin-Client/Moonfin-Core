@@ -863,7 +863,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get cast => 'Besetzung';
 
   @override
-  String get trailer => 'Anhänger';
+  String get trailer => 'Trailer';
 
   @override
   String get finished => 'Abgeschlossen';

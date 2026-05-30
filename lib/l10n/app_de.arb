@@ -1116,7 +1116,7 @@
   "@cast": {
     "description": "Action button label for casting to a device"
   },
-  "trailer": "Anhänger",
+  "trailer": "Trailer",
   "@trailer": {
     "description": "Action button label for trailer playback"
   },
