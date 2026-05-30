@@ -6844,7 +6844,6 @@
       }
     }
   },
-
   "autoplayNextEpisode": "Autoplay Next Episode",
   "@autoplayNextEpisode": {
     "description": "Setting title: automatically start the next episode"
@@ -6906,5 +6905,13 @@
   "subtitlesUseEmbeddedFontSizesSubtitle": "Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.",
   "@subtitlesUseEmbeddedFontSizesSubtitle": {
     "description": "Setting subtitle for embedded font sizes toggle"
+  },
+  "useDetailedSubHeadings": "Use Detailed Sub-Headings",
+  "@useDetailedSubHeadings": {
+    "description": "Label for setting to toggle detailed or minimal subrow on library pages"
+  },
+  "useDetailedSubHeadingsDescription": "Show detailed or minimal subrow on Library pages.",
+  "@useDetailedSubHeadingsDescription": {
+    "description": "Subtitle for the use detailed sub headings setting"
   }
 }

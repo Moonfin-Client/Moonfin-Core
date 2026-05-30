@@ -4267,6 +4267,11 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       return parts.isEmpty ? null : parts.join('  ');
     }
 
+    final useDetailed = _prefs.get(UserPreferences.useDetailedSubHeadings);
+    if (!useDetailed) {
+      return item.productionYear != null ? '${item.productionYear}' : null;
+    }
+
     if (item.productionYear != null) parts.add('${item.productionYear}');
     if (item.officialRating != null) parts.add(item.officialRating!);
     final rt = item.runtime;

@@ -7330,6 +7330,13 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get subtitlesUseEmbeddedFontSizesSubtitle =>
       'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
+
+  @override
+  String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
+
+  @override
+  String get useDetailedSubHeadingsDescription =>
+      'Show detailed or minimal subrow on Library pages.';
 }
 
 /// The translations for Spanish Castilian, as used in Latin America and the Caribbean (`es_419`).
