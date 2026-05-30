@@ -186,14 +186,14 @@ class _AccountDialogState extends State<_AccountDialog> {
         children: [
           Expanded(
             child: SizedBox(
-              height: 52,
+              height: 76,
               child: first,
             ),
           ),
           SizedBox(width: 10),
           Expanded(
             child: SizedBox(
-              height: 52,
+              height: 76,
               child: second,
             ),
           ),
@@ -713,9 +713,6 @@ class _ActionButtonState extends State<_ActionButton> {
           child: Center(
             child: Text(
               widget.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              softWrap: false,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 17,
