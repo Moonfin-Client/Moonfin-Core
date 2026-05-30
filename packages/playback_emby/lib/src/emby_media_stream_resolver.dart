@@ -18,6 +18,7 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
     String? mediaSourceId,
     bool enableDirectPlay = true,
     bool enableDirectStream = true,
+    bool enableTranscoding = true,
   }) async {
     final itemId = MediaStreamResolver.extractItemId(mediaItem);
 
@@ -31,6 +32,7 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
       startTimeTicks: startTimeTicks,
       enableDirectPlay: enableDirectPlay,
       enableDirectStream: enableDirectStream,
+      enableTranscoding: enableTranscoding,
     );
 
     final rawInfo = await _client.playbackApi.getPlaybackInfo(

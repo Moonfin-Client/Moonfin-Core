@@ -378,7 +378,16 @@ final appRouter = GoRouter(
       routes: [
         GoRoute(
           path: 'guide',
-          builder: (context, state) => const LiveTvGuideScreen(),
+          builder: (context, state) {
+            final extra = state.extra;
+            final extraMap = extra is Map<String, dynamic>
+                ? extra
+                : const <String, dynamic>{};
+            return LiveTvGuideScreen(
+              miniPlayerMode: extraMap['miniPlayerMode'] == true,
+              currentChannel: extraMap['currentChannel'] as GuideChannel?,
+            );
+          },
         ),
         GoRoute(
           path: 'schedule',

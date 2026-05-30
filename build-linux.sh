@@ -488,9 +488,12 @@ build_flutter_binary() {
     ls -l "$mpv_link_dir" 2>/dev/null | sed 's/^/    /' || true
   fi
 
+  local mpv_link_path="${MOONFIN_MPV_PREFIX:+${MOONFIN_MPV_PREFIX}/lib}"
+
   local attempt=1 max_attempts=3
   while true; do
-    if "$flutter_bin" build linux --release --dart-define=DISTRIBUTION_CHANNEL=linux; then
+    if LD_LIBRARY_PATH="${mpv_link_path}${mpv_link_path:+:}${LD_LIBRARY_PATH:-}" \
+        "$flutter_bin" build linux --release --dart-define=DISTRIBUTION_CHANNEL=linux; then
       return 0
     fi
     if [ "$attempt" -ge "$max_attempts" ]; then
