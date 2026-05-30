@@ -6670,6 +6670,12 @@ abstract class AppLocalizations {
   /// **'Seerr Discovery Rows'**
   String get seerrDiscoveryRows;
 
+  /// Seerr row: watchlist
+  ///
+  /// In en, this message translates to:
+  /// **'Your Watchlist'**
+  String get yourWatchlist;
+
   /// Tooltip for reset rows to defaults
   ///
   /// In en, this message translates to:
