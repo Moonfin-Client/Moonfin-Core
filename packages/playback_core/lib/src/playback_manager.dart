@@ -643,6 +643,7 @@ class PlaybackManager {
     String? mediaSourceId,
     bool enableDirectPlay = true,
     bool enableDirectStream = true,
+    bool enableTranscoding = true,
   }) async {
     _clearPendingItemOverrides();
     _isAutoNexting = false;
@@ -687,6 +688,7 @@ class PlaybackManager {
       startPosition: startPosition,
       enableDirectPlay: enableDirectPlay,
       enableDirectStream: enableDirectStream,
+      enableTranscoding: enableTranscoding,
     );
   }
 
@@ -694,6 +696,7 @@ class PlaybackManager {
     Duration startPosition = Duration.zero,
     bool enableDirectPlay = true,
     bool enableDirectStream = true,
+    bool enableTranscoding = true,
   }) async {
     _deferredStartPosition = Duration.zero;
     _deferPlaybackToExternalPlayer = false;
@@ -701,6 +704,7 @@ class PlaybackManager {
       startPosition: startPosition,
       enableDirectPlay: enableDirectPlay,
       enableDirectStream: enableDirectStream,
+      enableTranscoding: enableTranscoding,
     );
   }
 
@@ -708,6 +712,7 @@ class PlaybackManager {
     Duration startPosition = Duration.zero,
     bool enableDirectPlay = true,
     bool enableDirectStream = true,
+    bool enableTranscoding = true,
     bool allowStartupRecovery = true,
   }) async {
     _deferredStartPosition = Duration.zero;
@@ -716,6 +721,7 @@ class PlaybackManager {
     if (_forceTranscodeForQueue) {
       enableDirectPlay = false;
       enableDirectStream = false;
+      enableTranscoding = true;
     }
 
     final item = queueService.currentItem;
@@ -778,6 +784,7 @@ class PlaybackManager {
       mediaSourceId: _mediaSourceId,
       enableDirectPlay: enableDirectPlay,
       enableDirectStream: enableDirectStream,
+      enableTranscoding: enableTranscoding,
     );
     _setBringupState(
       PlaybackBringupState(
@@ -806,12 +813,14 @@ class PlaybackManager {
     if (transcodeSelector != null &&
         enableDirectPlay &&
         enableDirectStream &&
+        enableTranscoding &&
         resolution.playMethod != StreamPlayMethod.transcode &&
         transcodeSelector(resolution)) {
       await _playCurrentItem(
         startPosition: startPosition,
         enableDirectPlay: false,
         enableDirectStream: false,
+        enableTranscoding: true,
         allowStartupRecovery: allowStartupRecovery,
       );
       return;
@@ -908,6 +917,7 @@ class PlaybackManager {
 
       if (allowStartupRecovery) {
         final forceTranscodeFallback =
+            enableTranscoding &&
             resolution.playMethod != StreamPlayMethod.transcode;
         if (forceTranscodeFallback) {
           var decision = PlaybackStartupRecoveryDecision.retryWithTranscode;
@@ -946,6 +956,7 @@ class PlaybackManager {
           enableDirectStream: forceTranscodeFallback
               ? false
               : enableDirectStream,
+          enableTranscoding: forceTranscodeFallback ? true : enableTranscoding,
           allowStartupRecovery: false,
         );
         return;

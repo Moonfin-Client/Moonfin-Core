@@ -9,17 +9,21 @@ import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/horizontal_scroll_section.dart';
+import '../../widgets/live_tv/live_tv_mini_player.dart';
+import '../../widgets/marquee_text.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/key_event_utils.dart';
 
 const _kChannelColumnWidth = 160.0;
-const _kRowHeight = 74.0;
+const _kRowHeight = 84.0;
 const _kTimeHeaderHeight = 40.0;
 const _kPixelsPerMinute = 6.0;
 const _kMinGuideHours = 3;
 const _kMaxGuideHours = 12;
+const _kMiniPlayerWidth = 300.0;
+const _kMiniPlayerHeight = 168.0;
 
 int _guideHoursForWidth(double availableWidth) {
   final guideWidth = availableWidth - _kChannelColumnWidth;
@@ -29,7 +33,14 @@ int _guideHoursForWidth(double availableWidth) {
 }
 
 class LiveTvGuideScreen extends StatefulWidget {
-  const LiveTvGuideScreen({super.key});
+  final bool miniPlayerMode;
+  final GuideChannel? currentChannel;
+
+  const LiveTvGuideScreen({
+    super.key,
+    this.miniPlayerMode = false,
+    this.currentChannel,
+  });
 
   @override
   State<LiveTvGuideScreen> createState() => _LiveTvGuideScreenState();
@@ -41,6 +52,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
   final _programScrollController = ScrollController();
   final _timeHeaderHorizontalScrollController = ScrollController();
   final _guideHorizontalScrollController = ScrollController();
+  final _miniPlayerFocusNode = FocusNode(debugLabel: 'GuideMiniPlayer');
   final Map<int, FocusNode> _channelFocusNodes = {};
 
   bool _syncingScroll = false;
@@ -49,6 +61,9 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
   bool _isShowingDatePicker = false;
   bool _isOpeningRecordings = false;
   int? _lastFocusedRowIndex;
+  GuideProgram? _focusedProgram;
+  GuideChannel? _focusedChannel;
+  bool _didInitializeMiniPlayerMode = false;
 
   double _contentTopInset() => 20.0;
 
@@ -127,7 +142,40 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
   }
 
   void _onChanged() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    setState(_initializeMiniPlayerMode);
+  }
+
+  void _initializeMiniPlayerMode() {
+    if (!widget.miniPlayerMode ||
+        _didInitializeMiniPlayerMode ||
+        _vm.state != GuideState.ready) {
+      return;
+    }
+
+    final channels = _vm.filteredChannels;
+    if (channels.isEmpty) return;
+
+    var initialIndex = 0;
+    final currentChannelId = widget.currentChannel?.id;
+    if (currentChannelId != null) {
+      final matchedIndex = channels.indexWhere(
+        (channel) => channel.id == currentChannelId,
+      );
+      if (matchedIndex >= 0) {
+        initialIndex = matchedIndex;
+      }
+    }
+
+    _didInitializeMiniPlayerMode = true;
+    final channel = channels[initialIndex];
+    _focusedChannel = channel;
+    _focusedProgram = _currentProgramForChannel(channel.id);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _focusChannelRow(initialIndex);
+    });
   }
 
   void _scrollToRow(int index) {
@@ -165,6 +213,29 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
   void _focusChannelRow(int index) {
     _scrollToRow(index);
     _channelFocusNodeFor(index).requestFocus();
+  }
+
+  void _focusMiniPlayer() {
+    if (!widget.miniPlayerMode) return;
+    _miniPlayerFocusNode.requestFocus();
+  }
+
+  void _focusRowFromMiniPlayer() {
+    final channels = _vm.filteredChannels;
+    if (channels.isEmpty) return;
+
+    var targetIndex = _lastFocusedRowIndex ?? 0;
+    final focusedChannelId = _focusedChannel?.id;
+    if (focusedChannelId != null) {
+      final channelIndex = channels.indexWhere(
+        (channel) => channel.id == focusedChannelId,
+      );
+      if (channelIndex >= 0) {
+        targetIndex = channelIndex;
+      }
+    }
+
+    _focusChannelRow(targetIndex.clamp(0, channels.length - 1));
   }
 
   Future<void> _openDatePicker() async {
@@ -209,6 +280,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
     _programScrollController.dispose();
     _timeHeaderHorizontalScrollController.dispose();
     _guideHorizontalScrollController.dispose();
+    _miniPlayerFocusNode.dispose();
     for (final node in _channelFocusNodes.values) {
       node.dispose();
     }
@@ -241,6 +313,20 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
       'Dec',
     ];
     return '${days[dt.weekday - 1]}, ${months[dt.month - 1]} ${dt.day}';
+  }
+
+  GuideProgram? _currentProgramForChannel(String channelId) {
+    final programs = _vm.programsForChannel(channelId);
+    if (programs.isEmpty) return null;
+
+    final now = DateTime.now();
+    for (final program in programs) {
+      if (!now.isBefore(program.startDate) && now.isBefore(program.endDate)) {
+        return program;
+      }
+    }
+
+    return programs.first;
   }
 
   double _totalGuideWidth() {
@@ -276,8 +362,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
               ),
               child: Column(
                 children: [
-                  _buildToolbar(),
-                  _buildFilterChips(),
+                  _buildTopSection(),
                   const SizedBox(height: 8),
                   Expanded(child: _buildBody()),
                 ],
@@ -289,6 +374,153 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
     );
   }
 
+  Widget _buildTopSection() {
+    if (_focusedProgram != null || widget.miniPlayerMode) {
+      final focusedProgram = _focusedProgram;
+      final focusedChannel = focusedProgram == null
+          ? (widget.currentChannel ?? _focusedChannel)
+          : _vm.channelForId(focusedProgram.channelId);
+      return _buildProgramInfoHeader(
+        program: focusedProgram,
+        channel: focusedChannel,
+      );
+    }
+
+    return Column(
+      children: [
+        _buildToolbar(),
+        _buildFilterChips(),
+      ],
+    );
+  }
+
+  Widget _buildProgramInfoHeader({
+    required GuideProgram? program,
+    required GuideChannel? channel,
+  }) {
+    final l10n = AppLocalizations.of(context);
+    final title = program?.name ?? channel?.name ?? l10n.guideTimeline;
+    final episodeTitle = program?.episodeTitle;
+    final timeRange = program == null
+        ? null
+        : '${_formatTime(program.startDate)} - ${_formatTime(program.endDate)}';
+    final overview = program?.overview;
+    final channelLabel = channel == null
+        ? null
+        : channel.number == null || channel.number!.isEmpty
+            ? channel.name
+            : '${channel.number}  ${channel.name}';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.fromBorderSide(ThemeRegistry.active.borders.cardBorder),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (widget.miniPlayerMode) ...[
+            SizedBox(
+              width: _kMiniPlayerWidth,
+              height: _kMiniPlayerHeight,
+              child: _buildMiniPlayerCard(),
+            ),
+            const SizedBox(width: 16),
+          ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: AppTypography.fontSizeXl,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (timeRange != null || channelLabel != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    [?timeRange, ?channelLabel].join('   '),
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: AppTypography.fontSizeSm,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+                if (episodeTitle != null && episodeTitle.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    episodeTitle,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: AppTypography.fontSizeSm,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+                if (overview != null && overview.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    overview,
+                    style: const TextStyle(
+                      color: Colors.white60,
+                      fontSize: AppTypography.fontSizeSm,
+                      height: 1.3,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMiniPlayerCard() {
+    final l10n = AppLocalizations.of(context);
+    final currentChannel = widget.currentChannel;
+    final currentProgram = currentChannel == null
+        ? null
+        : _currentProgramForChannel(currentChannel.id);
+    final imageUrl = currentChannel?.imageTag == null
+        ? null
+        : _vm.imageApi.getPrimaryImageUrl(
+            currentChannel!.id,
+            tag: currentChannel.imageTag,
+          );
+
+    return LiveTvMiniPlayer(
+      imageUrl: imageUrl,
+      channelName: currentChannel?.name ?? l10n.channels,
+      channelNumber: currentChannel?.number,
+      programTitle: currentProgram?.name,
+      showLiveVideo: true,
+      onActivate: () => Navigator.of(context).pop(),
+      focusNode: _miniPlayerFocusNode,
+      onKeyEvent: (_, event) {
+        if (!event.isActionable) return KeyEventResult.ignored;
+        if (event.logicalKey.isDownKey) {
+          _focusRowFromMiniPlayer();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+    );
+  }
+
   Widget _buildToolbar() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -296,7 +528,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
         children: [
           _GuidePillButton(
             icon: Icons.arrow_back,
-            onPressed: () => context.pop(),
+            onPressed: () => Navigator.of(context).pop(),
           ),
           const SizedBox(width: 8),
           _GuidePillButton(
@@ -507,8 +739,25 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
     return _GuideFocusableSurface(
       focusNode: _channelFocusNodeFor(index),
       onPressed: () => _watchChannel(channel.id),
+      onKeyEvent: (_, event) {
+        if (!widget.miniPlayerMode || index != 0 || !event.isActionable) {
+          return KeyEventResult.ignored;
+        }
+        if (event.logicalKey.isUpKey) {
+          _focusMiniPlayer();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
       onFocusChange: (focused) {
-        if (focused) _scrollToRow(index);
+        if (!focused) return;
+        _scrollToRow(index);
+        if (_focusedProgram != null || _focusedChannel?.id != channel.id) {
+          setState(() {
+            _focusedProgram = null;
+            _focusedChannel = channel;
+          });
+        }
       },
       builder: (focused) => Container(
         height: _kRowHeight,
@@ -521,43 +770,40 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
             bottom: ThemeRegistry.active.borders.cardBorder,
           ),
         ),
-        child: Row(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (imageUrl != null)
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: CachedNetworkImage(
                   imageUrl: imageUrl,
-                  width: 32,
-                  height: 32,
+                  width: 42,
+                  height: 42,
                   fit: BoxFit.contain,
                   errorWidget: (_, _, _) =>
-                      const Icon(Icons.tv, color: Colors.white38, size: 24),
+                      const Icon(Icons.tv, color: Colors.white38, size: 30),
                 ),
               )
             else
-              const Icon(Icons.tv, color: Colors.white38, size: 24),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (channel.number != null)
-                    Text(
-                      channel.number!,
-                      style: const TextStyle(color: Colors.white54, fontSize: 11),
-                      maxLines: 1,
-                    ),
-                  Text(
-                    channel.name,
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+              const Icon(Icons.tv, color: Colors.white38, size: 30),
+            const SizedBox(height: 6),
+            SizedBox(
+              width: double.infinity,
+              child: MarqueeText(
+                text: channel.name,
+                style: const TextStyle(color: Colors.white, fontSize: 13),
+                millisPerPixel: 45,
               ),
             ),
+            if (channel.number != null)
+              Text(
+                channel.number!,
+                style: const TextStyle(color: Colors.white54, fontSize: 11),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
           ],
         ),
       ),
@@ -581,8 +827,19 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
       windowStart: _vm.windowStart,
       windowEnd: _vm.windowEnd,
       onLeftEdge: () => _focusChannelRow(rowIndex),
-      onProgramSelected: _showProgramDetails,
-      onProgramFocused: (left, width) {
+      onProgramSelected: widget.miniPlayerMode
+          ? (program) => _watchChannel(program.channelId)
+          : _showProgramDetails,
+      onTopEdge: widget.miniPlayerMode && rowIndex == 0
+          ? _focusMiniPlayer
+          : null,
+      onProgramFocused: (program, left, width) {
+        if (_focusedProgram?.id != program.id) {
+          setState(() {
+            _focusedProgram = program;
+            _focusedChannel = _vm.channelForId(program.channelId);
+          });
+        }
         _scrollToRow(rowIndex);
         if (_guideHorizontalScrollController.hasClients) {
           final viewport = _guideHorizontalScrollController.position.viewportDimension;
@@ -600,6 +857,11 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
   }
 
   void _watchChannel(String channelId) {
+    if (widget.miniPlayerMode) {
+      Navigator.of(context).pop(channelId);
+      return;
+    }
+
     final channels = _vm.filteredChannels;
     final index = channels.indexWhere((channel) => channel.id == channelId);
     if (index < 0) return;
@@ -937,8 +1199,10 @@ class _GuideProgramRow extends StatefulWidget {
   final DateTime windowStart;
   final DateTime windowEnd;
   final VoidCallback? onLeftEdge;
+  final VoidCallback? onTopEdge;
   final ValueChanged<GuideProgram> onProgramSelected;
-  final void Function(double left, double width) onProgramFocused;
+  final void Function(GuideProgram program, double left, double width)
+  onProgramFocused;
   final String Function(DateTime) formatTime;
 
   const _GuideProgramRow({
@@ -947,6 +1211,7 @@ class _GuideProgramRow extends StatefulWidget {
     required this.windowStart,
     required this.windowEnd,
     this.onLeftEdge,
+    this.onTopEdge,
     required this.onProgramSelected,
     required this.onProgramFocused,
     required this.formatTime,
@@ -1016,6 +1281,10 @@ class _GuideProgramRowState extends State<_GuideProgramRow> {
       }
       return KeyEventResult.ignored;
     }
+    if (key.isUpKey && widget.onTopEdge != null) {
+      widget.onTopEdge!();
+      return KeyEventResult.handled;
+    }
 
     return KeyEventResult.ignored;
   }
@@ -1068,7 +1337,7 @@ class _GuideProgramRowState extends State<_GuideProgramRow> {
         onKeyEvent: (node, event) => _handleProgramKeyEvent(index, node, event),
         onFocusChange: (focused) {
           if (!focused) return;
-          widget.onProgramFocused(left, width);
+          widget.onProgramFocused(program, left, width);
         },
         borderRadius: BorderRadius.circular(4),
         builder: (focused) {
