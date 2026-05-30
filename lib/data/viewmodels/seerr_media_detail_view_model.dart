@@ -21,6 +21,8 @@ class SeerrMediaDetailState {
   final SeerrRequestErrorKind? requestErrorKind;
   final String? requestSuccess;
   final SeerrQuota? quota;
+  final bool isTogglingWatchlist;
+  final bool onUserWatchlist;
 
   const SeerrMediaDetailState({
     this.isLoading = false,
@@ -35,6 +37,8 @@ class SeerrMediaDetailState {
     this.requestErrorKind,
     this.requestSuccess,
     this.quota,
+    this.isTogglingWatchlist = false,
+    this.onUserWatchlist = false,
   });
 
   bool get isMovie => movie != null;
@@ -178,6 +182,8 @@ class SeerrMediaDetailState {
     SeerrRequestErrorKind? requestErrorKind,
     String? requestSuccess,
     SeerrQuota? quota,
+    bool? isTogglingWatchlist,
+    bool? onUserWatchlist,
   }) =>
       SeerrMediaDetailState(
         isLoading: isLoading ?? this.isLoading,
@@ -192,6 +198,8 @@ class SeerrMediaDetailState {
         requestErrorKind: requestErrorKind,
         requestSuccess: requestSuccess,
         quota: quota ?? this.quota,
+        isTogglingWatchlist: isTogglingWatchlist ?? this.isTogglingWatchlist,
+        onUserWatchlist: onUserWatchlist ?? this.onUserWatchlist,
       );
 }
 
@@ -299,8 +307,12 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
 
       if (resolvedMediaType == 'tv') {
         try {
-          final details = await _repo.getTvDetails(tmdbId);
-          _state = SeerrMediaDetailState(tv: details, currentUser: user);
+          final (details, onWatchlist) = await _repo.getTvDetailsWithWatchlist(tmdbId);
+          _state = SeerrMediaDetailState(
+            tv: details,
+            currentUser: user,
+            onUserWatchlist: onWatchlist,
+          );
           notifyListeners();
           _loadRelated(tmdbId, 'tv');
         } catch (e) {
@@ -315,8 +327,12 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
         }
       } else {
         try {
-          final details = await _repo.getMovieDetails(tmdbId);
-          _state = SeerrMediaDetailState(movie: details, currentUser: user);
+          final (details, onWatchlist) = await _repo.getMovieDetailsWithWatchlist(tmdbId);
+          _state = SeerrMediaDetailState(
+            movie: details,
+            currentUser: user,
+            onUserWatchlist: onWatchlist,
+          );
           notifyListeners();
           _loadRelated(tmdbId, 'movie');
         } catch (e) {
@@ -532,6 +548,35 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
       );
     }
     _syncDownloadPolling();
+  }
+
+  Future<void> toggleWatchlist() async {
+    final s = _state;
+    if (s.isTogglingWatchlist) return;
+    final tmdbId = s.tmdbId;
+    if (tmdbId == 0) return;
+    final mediaType = s.isMovie ? 'movie' : 'tv';
+    final wasOnWatchlist = s.onUserWatchlist;
+
+    _state = _state.copyWith(
+      isTogglingWatchlist: true,
+      onUserWatchlist: !wasOnWatchlist,
+    );
+    notifyListeners();
+
+    try {
+      if (wasOnWatchlist) {
+        await _repo.removeFromWatchlist(tmdbId: tmdbId, mediaType: mediaType);
+      } else {
+        await _repo.addToWatchlist(tmdbId: tmdbId, mediaType: mediaType);
+      }
+    } catch (e) {
+      _state = _state.copyWith(onUserWatchlist: wasOnWatchlist);
+      debugPrint('[SeerrDetail] Failed to toggle watchlist: $e');
+    } finally {
+      _state = _state.copyWith(isTogglingWatchlist: false);
+      notifyListeners();
+    }
   }
 
   bool get canManageRequests => _state.canManageRequests;

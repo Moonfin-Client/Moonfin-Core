@@ -5013,6 +5013,10 @@
   "@seerrDiscoveryRows": {
     "description": "Subtitle shown under Seerr discovery home rows"
   },
+  "yourWatchlist": "Your Watchlist",
+  "@yourWatchlist": {
+    "description": "Seerr row: watchlist"
+  },
   "resetRowsToDefaults": "Reset rows to defaults",
   "@resetRowsToDefaults": {
     "description": "Tooltip for reset rows to defaults"

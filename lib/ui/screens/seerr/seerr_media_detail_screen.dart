@@ -746,6 +746,12 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
         ),
       );
     }
+    tiles.add(_ActionTile(
+      icon: s.onUserWatchlist ? Icons.bookmark : Icons.bookmark_border,
+      label: s.onUserWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist',
+      onTap: s.isTogglingWatchlist ? null : () => vm.toggleWatchlist(),
+      focusNode: takeFirst(),
+    ));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1331,6 +1337,20 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
                     foregroundColor: Colors.white,
                   ),
                 ),
+              OutlinedButton.icon(
+                onPressed: s.isTogglingWatchlist ? null : () => vm.toggleWatchlist(),
+                icon: Icon(
+                  s.onUserWatchlist ? Icons.bookmark : Icons.bookmark_border,
+                  size: 18,
+                ),
+                label: Text(s.onUserWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.white70,
+                  side: ThemeRegistry.active.borders.chipBorder.copyWith(
+                    color: Colors.white38,
+                  ),
+                ),
+              ),
               if (hasOpenRequest && s.cancelableRequests.isNotEmpty)
                 OutlinedButton.icon(
                   onPressed: s.isRequesting ? null : () => _showCancelDialog(s),
