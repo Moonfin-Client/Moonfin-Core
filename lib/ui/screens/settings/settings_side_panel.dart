@@ -1052,6 +1052,13 @@ class _LibrariesCategoryScreen extends StatelessWidget {
             icon: Icons.dns,
             onChanged: _pushPersonalizationSync,
           ),
+          SwitchPreferenceTile(
+            preference: UserPreferences.useDetailedSubHeadings,
+            title: l10n.useDetailedSubHeadings,
+            subtitle: l10n.useDetailedSubHeadingsDescription,
+            icon: Icons.subtitles,
+            onChanged: _pushPersonalizationSync,
+          ),
         ],
       ),
     );

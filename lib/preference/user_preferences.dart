@@ -400,6 +400,11 @@ class UserPreferences extends ChangeNotifier {
     key: 'enable_folder_view',
     defaultValue: false,
   );
+
+  static final useDetailedSubHeadings = Preference(
+    key: 'pref_use_detailed_sub_headings',
+    defaultValue: true,
+  );
   static final maxBitrate = Preference(
     key: 'pref_max_bitrate',
     defaultValue: '120',
