@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../util/language_codes.dart';
 import '../../../util/platform_detection.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../widgets/settings/settings_panel.dart';
@@ -41,24 +42,7 @@ class SubtitleSettingsScreen extends StatelessWidget {
               icon: Icons.language,
               options: {
                 '': l10n.none,
-                'eng': l10n.english,
-                'spa': l10n.spanish,
-                'fra': l10n.french,
-                'deu': l10n.german,
-                'ita': l10n.italian,
-                'por': l10n.portuguese,
-                'jpn': l10n.japanese,
-                'kor': l10n.korean,
-                'zho': l10n.chinese,
-                'rus': l10n.russian,
-                'ara': l10n.arabic,
-                'hin': l10n.hindi,
-                'nld': l10n.dutch,
-                'swe': l10n.swedish,
-                'nor': l10n.norwegian,
-                'dan': l10n.danish,
-                'fin': l10n.finnish,
-                'pol': l10n.polish,
+                ...kIso6392Languages,
               },
             ),
             SwitchPreferenceTile(

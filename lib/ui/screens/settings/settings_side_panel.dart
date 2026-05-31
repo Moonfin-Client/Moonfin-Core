@@ -16,6 +16,7 @@ import '../../../data/services/plugin_sync_service.dart';
 import '../../../di/providers.dart';
 import '../../../platform/web_runtime_config.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../../util/language_codes.dart';
 import '../../../util/overlay_color_palette.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/app_distribution.dart';
@@ -2491,24 +2492,7 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
             icon: Icons.language,
             options: {
               'auto': l10n.autoServerDefault,
-              'eng': l10n.english,
-              'spa': l10n.spanish,
-              'fra': l10n.french,
-              'deu': l10n.german,
-              'ita': l10n.italian,
-              'por': l10n.portuguese,
-              'jpn': l10n.japanese,
-              'kor': l10n.korean,
-              'zho': l10n.chinese,
-              'rus': l10n.russian,
-              'ara': l10n.arabic,
-              'hin': l10n.hindi,
-              'nld': l10n.dutch,
-              'swe': l10n.swedish,
-              'nor': l10n.norwegian,
-              'dan': l10n.danish,
-              'fin': l10n.finnish,
-              'pol': l10n.polish,
+              ...kIso6392Languages,
             },
           ),
 
