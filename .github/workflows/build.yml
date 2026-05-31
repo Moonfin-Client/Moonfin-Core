@@ -238,8 +238,6 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          # libmpv-dev is needed only for HEADERS at Flutter build time (media_kit
-          # links libmpv). The RUNTIME libmpv.so we ship comes from conda-forge below.
           sudo apt-get install -y \
             clang cmake ninja-build pkg-config \
             libgtk-3-dev libglib2.0-dev \
@@ -249,25 +247,6 @@ jobs:
             rpm \
             flatpak flatpak-builder \
             libfuse2
-
-      - name: Set up modern libmpv from conda-forge (low-glibc, full codec closure)
-        run: |
-          set -euo pipefail
-          cd "$RUNNER_TEMP"
-          curl -fsSL https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
-          MAMBA="$RUNNER_TEMP/bin/micromamba"
-          MPV_PREFIX="$RUNNER_TEMP/mpvenv"
-          "$MAMBA" create -y -p "$MPV_PREFIX" -c conda-forge mpv
-          echo "MOONFIN_MPV_PREFIX=$MPV_PREFIX" >> "$GITHUB_ENV"
-          if ! find "$MPV_PREFIX/lib" -maxdepth 1 -name 'libmpv.so.2*' | grep -q .; then
-            echo "ERROR: conda-forge env has no libmpv.so.2" >&2
-            ls -l "$MPV_PREFIX/lib" | grep -i mpv >&2 || true
-            exit 1
-          fi
-          echo "conda libmpv: $(find "$MPV_PREFIX/lib" -maxdepth 1 -name 'libmpv.so.2*' | head -1)"
-          echo "Max GLIBC symbol required by conda libmpv:"
-          objdump -T "$MPV_PREFIX/lib/libmpv.so.2" 2>/dev/null \
-            | grep -oP 'GLIBC_\K[0-9.]+' | sort -V | tail -1 || true
 
       - name: Verify webkit2gtk availability
         run: |

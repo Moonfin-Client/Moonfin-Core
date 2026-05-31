@@ -79,6 +79,7 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
   bool _hasRowFocus = false;
   Timer? _selectHoldTimer;
   bool _selectLongPressFired = false;
+  bool _selectDownSeen = false;
 
   @override
   void initState() {
@@ -185,6 +186,7 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
     if (event.logicalKey.isSelectKey) {
       if (widget.onLongPress != null) {
         if (event is KeyDownEvent) {
+          _selectDownSeen = true;
           _selectLongPressFired = false;
           _selectHoldTimer?.cancel();
           _selectHoldTimer = Timer(_kSelectLongPressDuration, () {
@@ -200,6 +202,8 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
           return KeyEventResult.handled;
         }
         if (event is KeyUpEvent) {
+          if (!_selectDownSeen) return KeyEventResult.ignored;
+          _selectDownSeen = false;
           _selectHoldTimer?.cancel();
           _selectHoldTimer = null;
           final fired = _selectLongPressFired;

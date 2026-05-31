@@ -20,7 +20,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   final List<String>? includeItemTypes;
 
   static const _pageSize = 48;
-  static const _firstPageSize = 36;
+  static const _firstPageSize = 75;
   static const _browseFields =
       'PrimaryImageAspectRatio,SortName,Type,IsFolder,UserData,CommunityRating,OfficialRating,RunTimeTicks,ProductionYear,ImageTags,BackdropImageTags,ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag';
   // Cap image tags to one per type (server returns all by default)

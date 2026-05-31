@@ -144,6 +144,7 @@ class MediaCard extends StatefulWidget {
 class _MediaCardState extends State<MediaCard> with FocusStateMixin {
   Timer? _longPressTimer;
   bool _longPressFired = false;
+  bool _selectDownSeen = false;
 
   @override
   void dispose() {
@@ -280,6 +281,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
 
                 if (widget.onLongPress != null && key.isSelectKey) {
                   if (event is KeyDownEvent) {
+                    _selectDownSeen = true;
                     _longPressFired = false;
                     _longPressTimer?.cancel();
                     _longPressTimer = Timer(
@@ -292,9 +294,13 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                     return KeyEventResult.handled;
                   }
                   if (event is KeyRepeatEvent) {
-                    return KeyEventResult.handled;
+                    return _selectDownSeen
+                        ? KeyEventResult.handled
+                        : KeyEventResult.ignored;
                   }
                   if (event is KeyUpEvent) {
+                    if (!_selectDownSeen) return KeyEventResult.ignored;
+                    _selectDownSeen = false;
                     _longPressTimer?.cancel();
                     _longPressTimer = null;
                     if (!_longPressFired) widget.onTap?.call();
