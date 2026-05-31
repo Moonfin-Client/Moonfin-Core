@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:server_core/server_core.dart' hide ImageType;
 
 import '../util/platform_detection.dart';
 import 'home_section_config.dart';
@@ -48,6 +49,32 @@ class UserPreferences extends ChangeNotifier {
   void _enforceMediaQueuingAlwaysOn() {
     if (_store.get(mediaQueuingEnabled) != true) {
       _store.set(mediaQueuingEnabled, true);
+    }
+  }
+
+  /// Initialize local language preferences from the current server's 
+  /// [UserConfiguration].  This will not overwrite explicitly set preferences,
+  ///  only keys that are missing.
+  ///
+  /// - Audio: if the local pref is still default ('auto') and never
+  ///   explicitly stored), replace it with the server's AudioLanguagePreference.
+  /// - Subtitles: if the local pref has never been explicitly stored (empty
+  ///   default), replace it with the server's SubtitleLanguagePreference.
+  ///
+  void initLanguagePrefs(UserConfiguration config) {
+    // defaultAudioLanguage
+    if (!_store.containsKey(defaultAudioLanguage.key)) {
+      final serverAudio = config.audioLanguagePreference;
+      if (serverAudio != null && serverAudio.isNotEmpty) {
+        _store.set(defaultAudioLanguage, serverAudio.toLowerCase());
+      }
+    }
+    // defaultSubtitleLanguage
+    if (!_store.containsKey(defaultSubtitleLanguage.key)) {
+      final serverSub = config.subtitleLanguagePreference;
+      if (serverSub != null && serverSub.isNotEmpty) {
+        _store.set(defaultSubtitleLanguage, serverSub.toLowerCase());
+      }
     }
   }
 
