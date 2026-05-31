@@ -382,11 +382,24 @@ class _CardImage extends StatelessWidget {
     final showBorder = !suppressFocusBorder && (focused || hovered);
     final borderColor = focusColor ?? Theme.of(context).colorScheme.primary;
     final borders = ThemeRegistry.active.borders;
+    final showGlow = showBorder && !suppressFocusGlow && borders.focusGlow.isNotEmpty;
+
     return AspectRatio(
       aspectRatio: aspectRatio,
       child: Stack(
         fit: StackFit.expand,
         children: [
+          if (showGlow)
+            IgnorePointer(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: isCircular
+                      ? BorderRadius.circular(radius)
+                      : borders.cardRadius,
+                  boxShadow: borders.focusGlow,
+                ),
+              ),
+            ),
           ClipRRect(
             borderRadius: BorderRadius.circular(radius),
             child: Stack(
@@ -459,10 +472,6 @@ class _CardImage extends StatelessWidget {
                   border: Border.fromBorderSide(
                     borders.focusBorder.copyWith(color: borderColor),
                   ),
-                  boxShadow:
-                      (!suppressFocusGlow && borders.focusGlow.isNotEmpty)
-                      ? borders.focusGlow
-                      : null,
                 ),
               ),
             ),
