@@ -20,26 +20,60 @@ class PreferenceStore {
   }
 
   T get<T>(Preference<T> preference) {
-    final key = preference.key;
-    final defaultValue = preference.defaultValue;
+    try {
+      final key = preference.key;
+      final defaultValue = preference.defaultValue;
 
-    if (preference is EnumPreference) {
-      return _getEnumDynamic(preference as EnumPreference) as T;
-    }
+      if (preference is EnumPreference) {
+        return _getEnumDynamic(preference as EnumPreference) as T;
+      }
 
-    switch (defaultValue) {
-      case int _:
-        return (_requirePrefs.getInt(key) ?? defaultValue) as T;
-      case double _:
-        return (_requirePrefs.getDouble(key) ?? defaultValue) as T;
-      case bool _:
-        return (_requirePrefs.getBool(key) ?? defaultValue) as T;
-      case String _:
-        return (_requirePrefs.getString(key) ?? defaultValue) as T;
-      case List<String> _:
-        return (_requirePrefs.getStringList(key) ?? defaultValue) as T;
-      default:
-        throw ArgumentError('Unsupported preference type: ${defaultValue.runtimeType}');
+      switch (defaultValue) {
+        case int _:
+          final val = _requirePrefs.get(key);
+          if (val is num) {
+            return val.toInt() as T;
+          }
+          if (val is String) {
+            final clean = val.replaceAll('#', '').trim();
+            if (clean.length == 6) {
+              final parsed = int.tryParse(clean, radix: 16);
+              if (parsed != null) return (0xFF000000 | parsed) as T;
+            } else if (clean.length == 8) {
+              final parsed = int.tryParse(clean, radix: 16);
+              if (parsed != null) return parsed as T;
+            }
+            return (int.tryParse(val) ?? defaultValue) as T;
+          }
+          return (val ?? defaultValue) as T;
+        case double _:
+          final val = _requirePrefs.get(key);
+          if (val is num) {
+            return val.toDouble() as T;
+          }
+          if (val is String) {
+            return (double.tryParse(val) ?? defaultValue) as T;
+          }
+          return (val ?? defaultValue) as T;
+        case bool _:
+          final val = _requirePrefs.get(key);
+          if (val is bool) {
+            return val as T;
+          }
+          if (val is String) {
+            if (val.toLowerCase() == 'true') return true as T;
+            if (val.toLowerCase() == 'false') return false as T;
+          }
+          return (val ?? defaultValue) as T;
+        case String _:
+          return (_requirePrefs.getString(key) ?? defaultValue) as T;
+        case List<String> _:
+          return (_requirePrefs.getStringList(key) ?? defaultValue) as T;
+        default:
+          throw ArgumentError('Unsupported preference type: ${defaultValue.runtimeType}');
+      }
+    } catch (_) {
+      return preference.defaultValue;
     }
   }
 
@@ -96,11 +130,13 @@ class PreferenceStore {
   Future<void> reset<T>(Preference<T> preference) => set(preference, preference.defaultValue);
 
   dynamic _getEnumDynamic(EnumPreference<dynamic> preference) {
-    final stored = _requirePrefs.getString(preference.key);
-    if (stored == null || stored.isEmpty) return preference.defaultValue;
-    for (final v in preference.values) {
-      if ((v as Enum).name == stored) return v;
-    }
+    try {
+      final stored = _requirePrefs.getString(preference.key);
+      if (stored == null || stored.isEmpty) return preference.defaultValue;
+      for (final v in preference.values) {
+        if ((v as Enum).name == stored) return v;
+      }
+    } catch (_) {}
     return preference.defaultValue;
   }
 
