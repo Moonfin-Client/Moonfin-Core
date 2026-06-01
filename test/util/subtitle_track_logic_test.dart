@@ -51,7 +51,7 @@ void main() {
     });
   });
   group('computeEffectiveSubtitleIndex', () {
-    test('returns selectedSubtitleIndex when set', (){ 
+    test('returns selectedSubtitleIndex when set', (){  
       expect(
         computeEffectiveSubtitleIndex(
           subtitleStreams: streams,
@@ -64,7 +64,7 @@ void main() {
         99
       );
     });
-    test('returns activePlaybackSubtitleIndex when no selection', (){ 
+    test('returns activePlaybackSubtitleIndex when no selection', () { 
       expect(
         computeEffectiveSubtitleIndex(
           subtitleStreams: streams,
@@ -79,7 +79,7 @@ void main() {
     });
     // exclude forced track — IsDefault bonus would override language matching result
     final nonForced = streams.where((s) => s['IsForced'] != true).toList();
-    test('selects preferred language track', (){ 
+    test('selects preferred language track', () { 
       expect(
         computeEffectiveSubtitleIndex(
           subtitleStreams: nonForced,
@@ -92,7 +92,7 @@ void main() {
         3
       );
     });
-    test('prefers SDH track when preferSdh is true', (){ 
+    test('prefers SDH track when preferSdh is true', () { 
       expect(
         computeEffectiveSubtitleIndex(
           subtitleStreams: streams,
@@ -105,7 +105,7 @@ void main() {
         4
       );
     });
-    test('returns null when no preferred language set', (){ 
+    test('returns null when no preferred language set', () { 
       expect(
         computeEffectiveSubtitleIndex(
           subtitleStreams: streams,
@@ -118,7 +118,7 @@ void main() {
         null
       );
     });
-    test('falls back to first stream when preferred language not found', (){ 
+    test('falls back to first stream when preferred language not found', () { 
       expect(
         computeEffectiveSubtitleIndex(
           subtitleStreams: streams,
@@ -132,7 +132,7 @@ void main() {
       );
     });
     final czech = streams.where((s) => s['Language'] == 'ces').toList();
-    test('cs does not match ces due to missing mapping', (){ 
+    test('cs does not match ces due to missing mapping', () { 
       expect(
         computeEffectiveSubtitleIndex(
           subtitleStreams: czech,
@@ -145,7 +145,7 @@ void main() {
         9
       );
     });
-    test('ces matches Czech stream directly', (){ 
+    test('ces matches Czech stream directly', () { 
       expect(
         computeEffectiveSubtitleIndex(
           subtitleStreams: czech,
@@ -157,6 +157,17 @@ void main() {
         ),
         9
       );
+    });
+  });
+  group('mapSubtitleResultToStreamIndex', () {
+    test('returns -1 when result is 0 (None selected)', () {
+      expect(mapSubtitleResultToStreamIndex(0, streams), -1);
+    });
+    test('returns correct stream index for valid result', () {
+      expect(mapSubtitleResultToStreamIndex(1, streams), streams.first['Index']);
+    });
+    test('returns null when result is out of range', () {
+      expect(mapSubtitleResultToStreamIndex(999, streams), null);
     });
   });
 }
