@@ -125,7 +125,8 @@ class _ActiveSessionsCardState extends State<ActiveSessionsCard> {
               )
             else
               ..._sessions.map((session) {
-                final userName = session['UserName'] as String? ?? 'Unknown';
+                final userName =
+                    session['UserName'] as String? ?? l10n.unknown;
                 final client = session['Client'] as String? ?? '';
                 final device = session['DeviceName'] as String? ?? '';
                 final nowPlaying =
@@ -191,7 +192,7 @@ class _ActiveSessionsCardState extends State<ActiveSessionsCard> {
                                   Text(
                                     nowPlaying != null
                                         ? (nowPlaying['Name'] as String? ??
-                                            'Unknown')
+                                        l10n.unknown)
                                         : '$client · $device',
                                     style: theme.textTheme.bodySmall,
                                     overflow: TextOverflow.ellipsis,
@@ -267,18 +268,19 @@ class _ActiveSessionsCardState extends State<ActiveSessionsCard> {
     bool isPlaying,
     ThemeData theme,
   ) {
+    final l10n = AppLocalizations.of(context);
     final IconData icon;
     final String label;
     final Color bg;
     final Color fg;
     if (!isPlaying) {
       icon = Icons.stop_circle_outlined;
-      label = 'Idle';
+      label = l10n.idle;
       bg = theme.colorScheme.surfaceContainerHighest;
       fg = theme.colorScheme.onSurfaceVariant;
     } else if (isPaused) {
       icon = Icons.pause;
-      label = 'Paused';
+      label = l10n.paused;
       bg = theme.colorScheme.surfaceContainerHighest;
       fg = theme.colorScheme.onSurfaceVariant;
     } else if (transcodingInfo != null) {
@@ -287,12 +289,12 @@ class _ActiveSessionsCardState extends State<ActiveSessionsCard> {
           ? ' ${(bitrate / 1000000).toStringAsFixed(1)}M'
           : '';
       icon = Icons.swap_horiz;
-      label = 'Transcode$mbps';
+      label = '${l10n.transcoding}$mbps';
       bg = theme.colorScheme.secondaryContainer;
       fg = theme.colorScheme.onSecondaryContainer;
     } else {
       icon = Icons.play_arrow;
-      label = 'Direct';
+      label = l10n.direct;
       bg = theme.colorScheme.primaryContainer;
       fg = theme.colorScheme.onPrimaryContainer;
     }

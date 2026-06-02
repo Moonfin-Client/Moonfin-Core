@@ -67,7 +67,7 @@ class _HomeScreenSectionsIntegrationScreenState
           return Scaffold(
             appBar: buildSettingsAppBar(
               context,
-              const Text('Home Screen Sections'),
+              Text(l10n.homeScreenSectionsTitle),
               actions: [
                 IconButton(
                   tooltip: l10n.refresh,

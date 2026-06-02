@@ -33,6 +33,7 @@ object Media3Bridge {
         "skipForwardMs" to 10000,
         "topTitle" to "",
         "topSubtitle" to "",
+        "artworkUrl" to "",
         "showClock" to false,
         "zoomModeLabel" to "",
         "streamInfoSections" to emptyList<Map<String, Any?>>(),
@@ -54,6 +55,15 @@ object Media3Bridge {
 
     @Volatile
     private var sessionTunnelingDisabled = false
+
+    @Volatile
+    private var mapDolbyVisionProfile7ToHevc = false
+
+    @Volatile
+    private var allowExternalAudioEffects = true
+
+    @Volatile
+    private var frameRateSwitchingBehavior = "disabled"
 
     @Volatile
     private var activeView: Media3VideoView? = null
@@ -104,6 +114,12 @@ object Media3Bridge {
 
     fun sessionTunnelingDisabledEnabled(): Boolean = sessionTunnelingDisabled
 
+    fun mapDolbyVisionProfile7ToHevcEnabled(): Boolean = mapDolbyVisionProfile7ToHevc
+
+    fun allowExternalAudioEffectsEnabled(): Boolean = allowExternalAudioEffects
+
+    fun frameRateSwitchingBehavior(): String = frameRateSwitchingBehavior
+
     fun setSessionTunnelingDisabledEnabled(value: Boolean) {
         sessionTunnelingDisabled = value
     }
@@ -111,6 +127,7 @@ object Media3Bridge {
     fun handleMethodCall(call: MethodCall, result: MethodChannel.Result) {
         if (call.method == "setUiMetadata") {
             uiMetadata = normalizeUiMetadata(call.arguments as? Map<*, *>)
+            activeView?.refreshNowPlayingMetadata()
             result.success(null)
             return
         }
@@ -121,6 +138,15 @@ object Media3Bridge {
             (args?.get("tunnelingDisabled") as? Boolean)?.let {
                 sessionTunnelingDisabled = it
             }
+            (args?.get("mapDolbyVisionProfile7ToHevc") as? Boolean)?.let {
+                mapDolbyVisionProfile7ToHevc = it
+            }
+            (args?.get("allowExternalAudioEffects") as? Boolean)?.let {
+                allowExternalAudioEffects = it
+            }
+            frameRateSwitchingBehavior =
+                args?.get("frameRateSwitchingBehavior")?.toString()?.trim()?.lowercase()
+                    ?: "disabled"
 
             val view = activeView
             if (view != null) {
@@ -153,6 +179,11 @@ object Media3Bridge {
             "setAudioTrack",
             "setSubtitleTrack",
             "disableSubtitleTrack",
+            "setAudioDelay",
+            "setSubtitleDelay",
+            "setRepeatMode",
+            "setSkipSilence",
+            "setVolumeBoost",
             "setSubtitleRendererMode",
             "disableTunnelingForSession",
             "addExternalSubtitle",
@@ -210,6 +241,7 @@ object Media3Bridge {
         val skipForwardMs = (args["skipForwardMs"] as? Number)?.toInt() ?: 10000
         val topTitle = args["topTitle"]?.toString() ?: ""
         val topSubtitle = args["topSubtitle"]?.toString() ?: ""
+        val artworkUrl = args["artworkUrl"]?.toString() ?: ""
         val showClock = args["showClock"] as? Boolean ?: false
         val zoomModeLabel = args["zoomModeLabel"]?.toString() ?: ""
         val hasCastCrew = args["hasCastCrew"] as? Boolean ?: false
@@ -277,6 +309,7 @@ object Media3Bridge {
             "skipForwardMs" to skipForwardMs,
             "topTitle" to topTitle,
             "topSubtitle" to topSubtitle,
+            "artworkUrl" to artworkUrl,
             "showClock" to showClock,
             "zoomModeLabel" to zoomModeLabel,
             "streamInfoSections" to streamInfoSections,

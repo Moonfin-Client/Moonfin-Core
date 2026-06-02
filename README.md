@@ -33,13 +33,23 @@ Moonfin is a cross-platform media client built with Flutter, designed for Jellyf
 | **macOS** | 10.15 (Catalina) | Full support |
 | **Windows** | 10 | Full support |
 | **Linux** | GTK 3 + CMake 3.13+ | Full support |
+| **Tizen (Samsung TV)** | Tizen 6.0+ | Experimental — see notes below |
+
+> **Tizen (Samsung TV) — experimental.** Built with the
+> [`flutter-tizen`](https://github.com/flutter-tizen/flutter-tizen) wrapper and the
+> .NET app runner (the only runner Samsung TVs support). Playback uses the native
+> Tizen AVPlay player (via `video_player` / `video_player_tizen`) instead of
+> libmpv/ExoPlayer. Current limitations: no runtime audio/subtitle track switching
+> (tracks are selected server-side via the device profile / transcoding), no bitmap
+> or ASS subtitle styling, and PDF/EPUB reading, in-app web trailers, and desktop
+> window management are disabled. See "Building for Tizen" below.
 
 ## Features & Enhancements
 
 ### Mobile + Desktop Experience
 - Optimized for phones, tablets, and desktop environments from one Flutter codebase
 - Responsive navigation patterns tuned for touch on mobile and larger layouts on desktop
-- Platform-specific build/release scripts for Android, iOS, Linux, macOS, and Windows
+- Platform-specific build/release scripts for Android, iOS, Linux, macOS, Windows, and Tizen (Samsung TV)
 
 ### Playback Engine - libmpv via media_kit
 All video and audio playback is powered by [media_kit](https://github.com/media-kit/media-kit) (libmpv) across every platform. This gives Moonfin broad codec coverage without relying on platform-specific media frameworks:
@@ -376,6 +386,41 @@ If you use another AUR helper, substitute the command accordingly.
 - Linux packaging via tarball/AppImage/deb/rpm/snap/flatpak (depending on tools)
 - Linux package outputs: `Moonfin_Linux_v<version>.<ext>`
 - macOS app bundle build support
+
+### Tizen (Samsung TV) — experimental
+Tizen is a separate build target driven by the
+[`flutter-tizen`](https://github.com/flutter-tizen/flutter-tizen) wrapper (Samsung
+TVs require the .NET app runner; the platform project lives in `tizen/`). It builds
+a signed `.tpk`.
+
+**Toolchain prerequisites:**
+1. **flutter-tizen** — clone it and add `flutter-tizen/bin` to PATH (or set
+   `FLUTTER_TIZEN_BIN`). First run downloads its bundled Flutter engine:
+   ```bash
+   git clone https://github.com/flutter-tizen/flutter-tizen.git ~/flutter-tizen
+   export PATH="$HOME/flutter-tizen/bin:$PATH"
+   flutter-tizen doctor -v
+   ```
+2. **Tizen Studio + TV extension** (requires a Java runtime) — provides the SDK
+   that compiles and signs the `.tpk`, plus the TV emulator. Set `TIZEN_SDK` if
+   installed to a non-default location.
+3. **A Tizen certificate / security profile** (author + distributor certs) to sign
+   the package. Pass its name via `MOONFIN_TIZEN_SECURITY_PROFILE`.
+
+**Build:**
+```bash
+MOONFIN_TIZEN_SECURITY_PROFILE=<your-profile> ./build-tizen.sh
+```
+The script runs `flutter-tizen build tpk --device-profile tv
+--dart-define=MOONFIN_TIZEN=true` and emits the `.tpk` under `build/tizen/tpk/`.
+The `MOONFIN_TIZEN=true` dart-define is what flips the app into its Tizen code
+paths (`PlatformDetection.isTizen`), since Tizen otherwise reports as Linux.
+
+**Run on the TV emulator / device:**
+```bash
+flutter-tizen emulators --launch <emulator-id>
+flutter-tizen run -d <device>
+```
 
 ## Building from Source
 

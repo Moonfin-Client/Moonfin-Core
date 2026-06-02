@@ -35,6 +35,10 @@ val keystoreProperties = Properties().apply {
     val file = rootProject.file("keystore.properties")
     if (file.exists()) file.inputStream().use { load(it) }
 }
+val keystoreStoreType = keystoreProperties
+    .getProperty("storeType")
+    ?.trim()
+    ?.takeIf { it.isNotEmpty() }
 
 android {
     namespace = "org.moonfin.androidtv"
@@ -103,6 +107,7 @@ android {
     signingConfigs {
         create("release") {
             storeFile = file("release.keystore")
+            storeType = keystoreStoreType
             storePassword = keystoreProperties["storePassword"] as String?
             keyAlias = keystoreProperties["keyAlias"] as String?
             keyPassword = keystoreProperties["keyPassword"] as String?

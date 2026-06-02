@@ -144,6 +144,7 @@ class MediaCard extends StatefulWidget {
 class _MediaCardState extends State<MediaCard> with FocusStateMixin {
   Timer? _longPressTimer;
   bool _longPressFired = false;
+  bool _selectDownSeen = false;
 
   @override
   void dispose() {
@@ -280,6 +281,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
 
                 if (widget.onLongPress != null && key.isSelectKey) {
                   if (event is KeyDownEvent) {
+                    _selectDownSeen = true;
                     _longPressFired = false;
                     _longPressTimer?.cancel();
                     _longPressTimer = Timer(
@@ -292,9 +294,13 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                     return KeyEventResult.handled;
                   }
                   if (event is KeyRepeatEvent) {
-                    return KeyEventResult.handled;
+                    return _selectDownSeen
+                        ? KeyEventResult.handled
+                        : KeyEventResult.ignored;
                   }
                   if (event is KeyUpEvent) {
+                    if (!_selectDownSeen) return KeyEventResult.ignored;
+                    _selectDownSeen = false;
                     _longPressTimer?.cancel();
                     _longPressTimer = null;
                     if (!_longPressFired) widget.onTap?.call();
@@ -376,11 +382,24 @@ class _CardImage extends StatelessWidget {
     final showBorder = !suppressFocusBorder && (focused || hovered);
     final borderColor = focusColor ?? Theme.of(context).colorScheme.primary;
     final borders = ThemeRegistry.active.borders;
+    final showGlow = showBorder && !suppressFocusGlow && borders.focusGlow.isNotEmpty;
+
     return AspectRatio(
       aspectRatio: aspectRatio,
       child: Stack(
         fit: StackFit.expand,
         children: [
+          if (showGlow)
+            IgnorePointer(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: isCircular
+                      ? BorderRadius.circular(radius)
+                      : borders.cardRadius,
+                  boxShadow: borders.focusGlow,
+                ),
+              ),
+            ),
           ClipRRect(
             borderRadius: BorderRadius.circular(radius),
             child: Stack(
@@ -453,10 +472,6 @@ class _CardImage extends StatelessWidget {
                   border: Border.fromBorderSide(
                     borders.focusBorder.copyWith(color: borderColor),
                   ),
-                  boxShadow:
-                      (!suppressFocusGlow && borders.focusGlow.isNotEmpty)
-                      ? borders.focusGlow
-                      : null,
                 ),
               ),
             ),

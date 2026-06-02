@@ -113,6 +113,8 @@ resolve_shared_lib() {
     case "$soname" in
       # Prefer libmpv2 where available; keep libmpv1 as distro compatibility fallback.
       libmpv.so.2) pkg_candidates=("libmpv2" "libmpv1") ;;
+      libmpv.so.1) pkg_candidates=("libmpv1" "libmpv2") ;;
+      libmpv.so) pkg_candidates=("libmpv-dev" "libmpv2" "libmpv1") ;;
       libsecret-1.so.0) pkg_candidates=("libsecret-1-0") ;;
       libsqlite3.so.0) pkg_candidates=("libsqlite3-0") ;;
       libwebkit2gtk-4.1.so.0) pkg_candidates=("libwebkit2gtk-4.1-0") ;;
@@ -165,9 +167,15 @@ resolve_shared_lib() {
 runtime_seed_libs() {
   local seed_libs=""
 
-  local libmpv_path
-  if ! libmpv_path="$(resolve_shared_lib libmpv.so.2)"; then
-    echo "Error: could not resolve libmpv.so.2. Install libmpv2 (preferred) or libmpv1 compatibility package on the build host." >&2
+  local libmpv_path=""
+  local mpv_soname
+  for mpv_soname in libmpv.so.2 libmpv.so.1 libmpv.so; do
+    if libmpv_path="$(resolve_shared_lib "$mpv_soname")"; then
+      break
+    fi
+  done
+  if [ -z "$libmpv_path" ]; then
+    echo "Error: could not resolve libmpv (.so.2 or .so.1). Install libmpv2 (preferred) or libmpv1 on the build host." >&2
     return 1
   fi
   seed_libs="$libmpv_path"
@@ -219,6 +227,23 @@ ensure_sqlite_unversioned_link() {
   ln -sf "$(basename "$sqlite_real")" "$dest_lib/libsqlite3.so"
 }
 
+# Arch ships libmpv.so.2; Ubuntu 22.04 ships libmpv.so.1. Ensure both soname
+# symlinks exist in the bundle so binaries compiled against either version work.
+ensure_mpv_compat_symlinks() {
+  local dest_lib="$1"
+
+  local mpv_real
+  mpv_real="$(find "$dest_lib" -maxdepth 1 -name 'libmpv.so.*' ! -type l 2>/dev/null | sort -V | tail -n1 || true)"
+  [ -z "$mpv_real" ] && return 0
+
+  local base
+  base="$(basename "$mpv_real")"
+
+  for alt in libmpv.so.1 libmpv.so.2 libmpv.so; do
+    [ ! -e "$dest_lib/$alt" ] && ln -sf "$base" "$dest_lib/$alt"
+  done
+}
+
 collect_transitive_libs() {
   local seed_libs="$1"
   local all_deps=""
@@ -238,13 +263,11 @@ collect_transitive_libs() {
 runtime_skip_pattern() {
   local skip='linux-vdso|ld-linux|libc[.]so|libm[.]so|libpthread|libdl[.]so|librt[.]so'
   skip="$skip"'|libstdc[+][+]|libgcc_s'
-  # Avoid bundling host-sensitive image codec stacks that often mismatch on rolling distros.
-  skip="$skip"'|libavif|libsharpyuv|libwebp|libjxl|libaom|libdav1d|libSvtAv1Enc|libyuv'
   skip="$skip"'|libX[a-z]|libxcb|libxkb|libxshmfence|libICE|libSM'
   skip="$skip"'|libwayland|libffi|libpcre'
   skip="$skip"'|libGL|libEGL|libGLX|libGLdispatch|libOpenGL|libdrm|libgbm'
   skip="$skip"'|libglib|libgobject|libgio|libgmodule|libgthread'
-  skip="$skip"'|libpulse|libdbus|libasound|libsndfile|libpipewire|libspa|libjack|libsndio'
+  skip="$skip"'|libpulse|libdbus|libasound|libsndfile|libpipewire|libspa|libjack'
   skip="$skip"'|libfontconfig|libfreetype|libharfbuzz|libcairo|libpango|libpixman'
   skip="$skip"'|libatk|libgdk|libgtk|libepoxy|libgdk_pixbuf|librsvg'
   skip="$skip"'|libmount|libblkid|libselinux|libuuid|libresolv|libnss|libnsl|libcrypt'
@@ -315,6 +338,7 @@ inject_linux_runtime_libs() {
   local bundled_count
   bundled_count="$(copy_runtime_libs "$bundle_dir/lib" "$all_deps" "$skip")"
   ensure_sqlite_unversioned_link "$bundle_dir/lib"
+  ensure_mpv_compat_symlinks "$bundle_dir/lib"
   echo "Bundled $bundled_count runtime libraries for AppImage/Tarball"
 }
 
@@ -340,6 +364,7 @@ inject_flatpak_libs() {
   local count
   count="$(copy_runtime_libs "$dest_lib" "$all_deps" "$skip")"
   ensure_sqlite_unversioned_link "$dest_lib"
+  ensure_mpv_compat_symlinks "$dest_lib"
 
   echo "Bundled $count runtime libraries for Flatpak"
 }
@@ -409,7 +434,25 @@ build_flutter_binary() {
   local flutter_bin
   flutter_bin="$(resolve_flutter)"
   cd "$REPO_ROOT"
-  "$flutter_bin" build linux --release --dart-define=DISTRIBUTION_CHANNEL=linux
+
+  local attempt=1 max_attempts=3
+  while true; do
+    if "$flutter_bin" build linux --release --dart-define=DISTRIBUTION_CHANNEL=linux; then
+      return 0
+    fi
+    if [ "$attempt" -ge "$max_attempts" ]; then
+      echo "Error: 'flutter build linux' failed after ${max_attempts} attempts." >&2
+      return 1
+    fi
+    echo "flutter build failed (attempt ${attempt}/${max_attempts}); purging pdfium cache and retrying..." >&2
+    # The plugin downloads into <cmake-binary-dir>/pdfium and copies into .lib/.
+    # Remove both across whatever arch/release dir Flutter used so the next configure
+    # re-fetches from scratch instead of reusing the truncated archive.
+    rm -rf "$REPO_ROOT"/build/linux/*/release/pdfium \
+           "$REPO_ROOT"/build/linux/*/release/.lib/* 2>/dev/null || true
+    sleep $((attempt * 10))
+    attempt=$((attempt + 1))
+  done
 }
 
 build_appimage() {
@@ -577,9 +620,7 @@ build_deb() {
 
   cp -r "$BUILD_DIR"/* "$pkg_root/usr/lib/moonfin/"
 
-  # Strip bundled libmpv/libsecret; deb uses distro packages via Depends.
-  rm -f "$pkg_root/usr/lib/moonfin/lib/libmpv.so."*
-  rm -f "$pkg_root/usr/lib/moonfin/lib/libsecret-1.so."*
+  inject_linux_runtime_libs "$pkg_root/usr/lib/moonfin"
 
   cat > "$pkg_root/usr/bin/moonfin" << 'EOF'
 #!/bin/sh
@@ -601,7 +642,7 @@ Version: ${version}
 Architecture: ${deb_arch}
 Maintainer: Moonfin Team <support@moonfin.dev>
 Installed-Size: $(du -sk "$pkg_root/usr" | cut -f1)
-Depends: libgtk-3-0, libglib2.0-0, libmpv2 | libmpv1, libsecret-1-0, libwebkit2gtk-4.1-0
+Depends: libgtk-3-0, libglib2.0-0, libsecret-1-0, libwebkit2gtk-4.1-0
 Description: Jellyfin & Emby media client
  Moonfin is a media client for Jellyfin and Emby servers,
  available on mobile, TV, and desktop platforms.

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../util/platform_detection.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../widgets/settings/settings_panel.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -68,8 +69,8 @@ class SubtitleSettingsScreen extends StatelessWidget {
             ),
             SwitchPreferenceTile(
               preference: UserPreferences.preferSdhSubtitles,
-              title: 'Prefer SDH subtitles',
-              subtitle: 'Prioritize SDH/CC subtitle tracks when auto-selecting.',
+              title: l10n.preferSdhSubtitles,
+              subtitle: l10n.preferSdhSubtitlesSubtitle,
               icon: Icons.hearing,
             ),
             TvFocusHighlight(
@@ -104,6 +105,21 @@ class SubtitleSettingsScreen extends StatelessWidget {
               subtitle: l10n.directPlayAssSsaSubtitles,
               icon: Icons.text_snippet,
             ),
+            // Embedded-style overrides are only meaningful on Android (Media3).
+            if (PlatformDetection.isAndroid) ...[
+              SwitchPreferenceTile(
+                preference: UserPreferences.subtitlesUseEmbeddedStyles,
+                title: l10n.subtitlesUseEmbeddedStyles,
+                subtitle: l10n.subtitlesUseEmbeddedStylesSubtitle,
+                icon: Icons.format_paint,
+              ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.subtitlesUseEmbeddedFontSizes,
+                title: l10n.subtitlesUseEmbeddedFontSizes,
+                subtitle: l10n.subtitlesUseEmbeddedFontSizesSubtitle,
+                icon: Icons.format_size,
+              ),
+            ],
           ],
         ),
       ),

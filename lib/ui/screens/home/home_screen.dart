@@ -534,10 +534,13 @@ class _ContentRowsState extends State<_ContentRows>
   final _scrollController = ScrollController();
   final _mediaBarFocusNode = FocusNode(debugLabel: 'home_media_bar_focus');
   final _playbackManager = GetIt.instance<PlaybackManager>();
-  final _media3PreviewBackend = GetIt.instance<Media3PlayerBackend>();
+  final Media3PlayerBackend? _media3PreviewBackend = PlatformDetection.isTizen
+      ? null
+      : GetIt.instance<Media3PlayerBackend>();
   final _themeMusicService = GetIt.instance<ThemeMusicService>();
   final Map<int, GlobalKey> _rowKeys = {};
   final Map<int, GlobalKey> _rowContainerKeys = {};
+  final Map<int, ScrollController> _rowHorizontalControllers = {};
   int? _activeFocusedRowIndex;
   Timer? _previewDelayTimer;
   Timer? _previewStopTimer;
@@ -695,7 +698,7 @@ class _ContentRowsState extends State<_ContentRows>
     final previewVolume = kIsWeb ? 0.0 : (previewAudioEnabled ? 100.0 : 0.0);
 
     if (_previewUsingMedia3) {
-      unawaited(_media3PreviewBackend.setVolume(previewVolume));
+      unawaited(_media3PreviewBackend!.setVolume(previewVolume));
       return;
     }
 
@@ -771,6 +774,10 @@ class _ContentRowsState extends State<_ContentRows>
     _mainPlaybackSub?.cancel();
     widget.prefs.removeListener(_onPreviewPrefsChanged);
     _rowKeys.clear();
+    for (final controller in _rowHorizontalControllers.values) {
+      controller.dispose();
+    }
+    _rowHorizontalControllers.clear();
     _disposeSharedPreview();
     super.dispose();
   }
@@ -983,8 +990,8 @@ class _ContentRowsState extends State<_ContentRows>
     }
     if (_previewUsingMedia3) {
       _previewUsingMedia3 = false;
-      unawaited(_media3PreviewBackend.stop());
-      _media3PreviewBackend.resetVolumeState();
+      unawaited(_media3PreviewBackend!.stop());
+      _media3PreviewBackend!.resetVolumeState();
     }
     if (releaseResources || kIsWeb) {
       _previewPlayer?.dispose();
@@ -1028,7 +1035,7 @@ class _ContentRowsState extends State<_ContentRows>
       _previewPlayer?.stop();
     }
     if (_previewUsingMedia3) {
-      await _media3PreviewBackend.stop();
+      await _media3PreviewBackend!.stop();
       _previewUsingMedia3 = false;
     }
     _themeMusicService.setExternalAudioActive(true);
@@ -1063,17 +1070,17 @@ class _ContentRowsState extends State<_ContentRows>
       final useMedia3 = _useMedia3InlinePreview();
       if (useMedia3) {
         _previewUsingMedia3 = true;
-        await _media3PreviewBackend.setVolume(previewVolume);
+        await _media3PreviewBackend!.setVolume(previewVolume);
         if (!_isPreviewRequestActive(requestId, previewKey)) {
           return;
         }
 
-        await _media3PreviewBackend.play(<String, dynamic>{
+        await _media3PreviewBackend!.play(<String, dynamic>{
           'url': previewUrl,
           'mediaType': 'video',
         }).timeout(_previewOpenTimeout);
         if (!_isPreviewRequestActive(requestId, previewKey)) {
-          await _media3PreviewBackend.stop();
+          await _media3PreviewBackend!.stop();
           return;
         }
       } else {
@@ -1636,6 +1643,28 @@ class _ContentRowsState extends State<_ContentRows>
 
   GlobalKey _rowContainerKey(int rowIndex) {
     return _rowContainerKeys.putIfAbsent(rowIndex, () => GlobalKey());
+  }
+
+  ScrollController _rowHorizontalController(int rowIndex) {
+    return _rowHorizontalControllers.putIfAbsent(
+      rowIndex,
+      () => ScrollController(),
+    );
+  }
+
+  void _scrollHomeRowHorizontal(int rowIndex, double delta) {
+    final controller = _rowHorizontalControllers[rowIndex];
+    if (controller == null || !controller.hasClients) return;
+
+    final target = (controller.offset + delta).clamp(
+      0.0,
+      controller.position.maxScrollExtent,
+    );
+    controller.animateTo(
+      target,
+      duration: const Duration(milliseconds: 380),
+      curve: Curves.easeInOut,
+    );
   }
 
   LockedFocusRowState? _rowStateOf(int rowIndex) {
@@ -2473,11 +2502,14 @@ class _ContentRowsState extends State<_ContentRows>
     return _buildTitledRow(
       key: _rowContainerKey(rowIndex),
       title: _localizedRowTitle(row, l10n),
+      rowIndex: rowIndex,
+      hasItems: actions.isNotEmpty,
       height: rowHeight,
       child: LockedFocusRow<_LiveTvAction>(
         key: _rowKey(rowIndex),
         items: actions,
         hubKey: _hubKeyForRow(row),
+        controller: _rowHorizontalController(rowIndex),
         height: rowHeight,
         itemExtent: squarePosterSide,
         itemSpacing: 12,
@@ -2533,11 +2565,14 @@ class _ContentRowsState extends State<_ContentRows>
     return _buildTitledRow(
       key: _rowContainerKey(rowIndex),
       title: _localizedRowTitle(row, l10n),
+      rowIndex: rowIndex,
+      hasItems: row.items.isNotEmpty,
       height: rowHeight,
       child: LockedFocusRow<AggregatedItem>(
         key: _rowKey(rowIndex),
         items: row.items,
         hubKey: _hubKeyForRow(row),
+        controller: _rowHorizontalController(rowIndex),
         height: rowHeight,
         itemExtent: squarePosterSide,
         itemSpacing: 12,
@@ -2648,11 +2683,14 @@ class _ContentRowsState extends State<_ContentRows>
     return _buildTitledRow(
       key: _rowContainerKey(rowIndex),
       title: _localizedRowTitle(row, l10n),
+      rowIndex: rowIndex,
+      hasItems: row.items.isNotEmpty,
       height: maxCardHeight + (10 * metadataScale),
       child: LockedFocusRow<AggregatedItem>(
         key: _rowKey(rowIndex),
         items: row.items,
         hubKey: _hubKeyForRow(row),
+        controller: _rowHorizontalController(rowIndex),
         height: maxCardHeight + (10 * metadataScale),
         itemExtent: firstCardWidth,
         itemSpacing: 12,
@@ -3077,10 +3115,16 @@ class _ContentRowsState extends State<_ContentRows>
   Widget _buildTitledRow({
     Key? key,
     required String title,
+    required int rowIndex,
+    required bool hasItems,
     required double height,
     required Widget child,
   }) {
     final isRowsV2 = _isHomeRowsStyleV2();
+    final showHeaderControls =
+      hasItems &&
+      PlatformDetection.useDesktopUi &&
+      !PlatformDetection.isTV;
     return Column(
       key: key,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3093,12 +3137,40 @@ class _ContentRowsState extends State<_ContentRows>
             8,
               isRowsV2 ? 1 : 8,
           ),
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppColorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppColorScheme.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
+              ),
+              if (showHeaderControls) ...[
+                Focus(
+                  canRequestFocus: false,
+                  skipTraversal: true,
+                  descendantsAreFocusable: false,
+                  child: IconButton(
+                    icon: const Icon(Icons.chevron_left),
+                    onPressed: () => _scrollHomeRowHorizontal(rowIndex, -480),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+                Focus(
+                  canRequestFocus: false,
+                  skipTraversal: true,
+                  descendantsAreFocusable: false,
+                  child: IconButton(
+                    icon: const Icon(Icons.chevron_right),
+                    onPressed: () => _scrollHomeRowHorizontal(rowIndex, 480),
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+              ],
+            ],
           ),
         ),
         child,

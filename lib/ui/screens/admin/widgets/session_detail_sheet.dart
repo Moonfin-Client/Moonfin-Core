@@ -154,7 +154,7 @@ class _SessionDetailSheetState extends State<SessionDetailSheet> {
     if (sessionId.isEmpty) {
       return const SizedBox.shrink();
     }
-    final userName = _session['UserName'] as String? ?? 'Unknown';
+    final userName = _session['UserName'] as String? ?? l10n.unknown;
     final client = _session['Client'] as String? ?? '';
     final device = _session['DeviceName'] as String? ?? '';
     final appVersion = _session['ApplicationVersion'] as String? ?? '';

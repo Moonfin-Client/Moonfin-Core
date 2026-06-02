@@ -5,7 +5,7 @@ allprojects {
     }
 }
 
-val media3Version = "1.10.0"
+val media3Version = "1.10.1"
 
 val newBuildDir: Directory = rootProject.layout.buildDirectory.dir("../../build").get()
 rootProject.layout.buildDirectory.value(newBuildDir)

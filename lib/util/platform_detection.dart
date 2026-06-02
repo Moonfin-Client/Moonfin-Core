@@ -6,16 +6,25 @@ class PlatformDetection {
 
   static const double _mobileFormFactorBreakpoint = 600;
 
+  /// True when compiled for Tizen (Samsung TV). Set via
+  /// `--dart-define=MOONFIN_TIZEN=true` in build-tizen.sh. Tizen is Linux-based
+  /// and reports as [TargetPlatform.linux] to the framework, so this
+  /// compile-time flag is the source of truth and must take precedence over the
+  /// OS-derived getters below (otherwise Tizen would take the desktop/libmpv
+  /// path). It const-folds to `false` on every other build, so the `!isTizen`
+  /// guards below add no runtime cost elsewhere.
+  static const bool isTizen = bool.fromEnvironment('MOONFIN_TIZEN');
+
   static bool get isAndroid =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+      !kIsWeb && !isTizen && defaultTargetPlatform == TargetPlatform.android;
   static bool get isIOS =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+      !kIsWeb && !isTizen && defaultTargetPlatform == TargetPlatform.iOS;
   static bool get isMacOS =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.macOS;
+      !kIsWeb && !isTizen && defaultTargetPlatform == TargetPlatform.macOS;
   static bool get isWindows =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.windows;
+      !kIsWeb && !isTizen && defaultTargetPlatform == TargetPlatform.windows;
   static bool get isLinux =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.linux;
+      !kIsWeb && !isTizen && defaultTargetPlatform == TargetPlatform.linux;
   static bool get isWeb => kIsWeb;
 
   static String get linuxSessionType => '';
@@ -28,7 +37,8 @@ class PlatformDetection {
   static bool get isMobile => (isAndroid || isIOS) && !_isTv;
   static bool get isDesktop => isMacOS || isWindows || isLinux;
 
-  static bool get isTV => _isTv;
+  // Tizen runs only on Samsung TVs, so it is always a 10-foot/leanback device.
+  static bool get isTV => _isTv || isTizen;
   static bool _isTv = false;
   static void setTvMode(bool value) => _isTv = value;
 

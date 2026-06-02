@@ -28,22 +28,34 @@ class AdminLibrariesScreen extends ConsumerWidget {
   static IconData iconForType(String? type) =>
       _collectionIcons[type?.toLowerCase()] ?? Icons.folder;
 
-  static const _collectionLabels = <String, String>{
-    'movies': 'Movies',
-    'tvshows': 'TV Shows',
-    'music': 'Music',
-    'musicvideos': 'Music Videos',
-    'books': 'Books',
-    'photos': 'Photos',
-    'homevideos': 'Home Videos',
-    'boxsets': 'Collections',
-    'playlists': 'Playlists',
-  };
+  static String labelForType(String? type, AppLocalizations l10n) {
+    if (type == null || type.isEmpty) {
+      return l10n.mixedContent;
+    }
 
-  static String labelForType(String? type) =>
-      type == null
-          ? 'Mixed Content'
-          : _collectionLabels[type.toLowerCase()] ?? type;
+    switch (type.toLowerCase()) {
+      case 'movies':
+        return l10n.movies;
+      case 'tvshows':
+        return l10n.tvShows;
+      case 'music':
+        return l10n.music;
+      case 'musicvideos':
+        return l10n.musicVideos;
+      case 'books':
+        return l10n.books;
+      case 'photos':
+        return l10n.photos;
+      case 'homevideos':
+        return l10n.homeVideos;
+      case 'boxsets':
+        return l10n.collections;
+      case 'playlists':
+        return l10n.playlists;
+      default:
+        return type;
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -90,7 +102,7 @@ class AdminLibrariesScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              labelForType(lib.collectionType),
+                              labelForType(lib.collectionType, l10n),
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                             if (lib.locations.isNotEmpty)

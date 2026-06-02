@@ -250,13 +250,14 @@ class _AdminActivityScreenState extends State<AdminActivityScreen> {
   }
 
   String _filterLabel(_ActivityFilter f) {
+    final l10n = AppLocalizations.of(context);
     switch (f) {
       case _ActivityFilter.all:
-        return 'All';
+        return l10n.all;
       case _ActivityFilter.user:
-        return 'User Activity';
+        return l10n.userActivity;
       case _ActivityFilter.system:
-        return 'System Events';
+        return l10n.systemEvents;
     }
   }
 }

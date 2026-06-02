@@ -786,9 +786,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   late final int _unreadShuffleSeed;
   Set<String> _localProgressItemIds = const {};
   bool _loadingLocalProgress = false;
-  bool _viewportFillCheckScheduled = false;
-
-  static const _minOverflowBeforeManualScrollFactor = 0.25;
 
   bool get _isBookExperience => widget.forceBookExperience || _vm.isBookLibrary;
 
@@ -949,41 +946,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
     if (pos.pixels > pos.maxScrollExtent - 400) {
       _vm.loadMore();
     }
-  }
-
-  void _scheduleViewportFillCheck() {
-    if (_viewportFillCheckScheduled || !mounted) return;
-    _viewportFillCheckScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _viewportFillCheckScheduled = false;
-      _maybeAutoloadForViewportFill();
-    });
-  }
-
-  void _maybeAutoloadForViewportFill() {
-    if (!mounted) return;
-    if (!PlatformDetection.useDesktopUi || _isBookExperience) return;
-    if (_vm.state != LibraryBrowseState.ready ||
-        _vm.loadingMore ||
-        !_vm.hasMore) {
-      return;
-    }
-
-    if (!_scrollController.hasClients) {
-      _scheduleViewportFillCheck();
-      return;
-    }
-
-    final position = _scrollController.position;
-    final viewportExtent = position.viewportDimension;
-    if (viewportExtent <= 0) return;
-
-    final hasMeaningfulOverflow =
-        position.maxScrollExtent >
-        viewportExtent * _minOverflowBeforeManualScrollFactor;
-    if (hasMeaningfulOverflow) return;
-
-    _vm.loadMore();
   }
 
   void _scrollToGridRow({
@@ -1426,10 +1388,11 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
   Future<void> _showAudiobookGenreSheet() async {
     final temp = {..._discoverAudiobookGenres};
+    final l10n = AppLocalizations.of(context);
     final result = await showGeneralDialog<List<String>>(
       context: context,
       barrierDismissible: true,
-      barrierLabel: 'Close genre panel',
+      barrierLabel: l10n.closeGenrePanel,
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 260),
       pageBuilder: (context, _, _) => const SizedBox.shrink(),
@@ -4197,10 +4160,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         final textHeight = 44.0 * _desktopUiScaleFactor();
         final childAspectRatio = cellWidth / (cellWidth / cardRatio + textHeight);
 
-        if (PlatformDetection.useDesktopUi && _vm.hasMore && !_vm.loadingMore) {
-          _scheduleViewportFillCheck();
-        }
-
         return CustomScrollView(
           controller: _scrollController,
           slivers: [
@@ -4307,6 +4266,11 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         parts.add(AppLocalizations.of(context).itemCountLabel(count));
       }
       return parts.isEmpty ? null : parts.join('  ');
+    }
+
+    final useDetailed = _prefs.get(UserPreferences.useDetailedSubHeadings);
+    if (!useDetailed) {
+      return item.productionYear != null ? '${item.productionYear}' : null;
     }
 
     if (item.productionYear != null) parts.add('${item.productionYear}');

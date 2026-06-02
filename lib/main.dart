@@ -258,7 +258,12 @@ void main() async {
   }
 
   _configureImageCache();
-  MediaKit.ensureInitialized();
+  // media_kit (libmpv) has no Tizen implementation; Tizen plays via
+  // TizenPlayerBackend (the native AVPlay-backed video_player). Initializing it
+  // there would fail to load libmpv.
+  if (!PlatformDetection.isTizen) {
+    MediaKit.ensureInitialized();
+  }
 
   await _detectAndSetTvMode();
   await _detectAndSetDisplayCapabilities();
@@ -269,7 +274,7 @@ void main() async {
   // appear blank. Pumping a warm-up frame gives the font loader time to finish.
   // The issue is intermittent and goes away on re-run once the OS font cache
   // is warm, which confirms the timing root cause.
-  if (PlatformDetection.isLinux) {
+  if (PlatformDetection.isLinux || PlatformDetection.isTizen) {
     WidgetsBinding.instance.scheduleWarmUpFrame();
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
+import '../../l10n/current_app_localizations.dart';
 import '../../util/platform_detection.dart';
 
 typedef VoiceSearchTextListener =
@@ -126,6 +127,7 @@ class VoiceSearchController extends ChangeNotifier {
 
     final permission = await _ensureMicrophonePermission();
     if (permission != _MicrophonePermissionState.granted) {
+      final l10n = currentAppLocalizations();
       _permissionDenied = permission == _MicrophonePermissionState.denied;
       _permissionPermanentlyDenied =
           permission == _MicrophonePermissionState.permanentlyDenied;
@@ -134,8 +136,8 @@ class VoiceSearchController extends ChangeNotifier {
             ? 'permission_permanently_denied'
             : 'permission_denied',
         message: _permissionPermanentlyDenied
-            ? 'Microphone permission is permanently denied.'
-            : 'Microphone permission is denied.',
+            ? l10n.microphonePermissionPermanentlyDenied
+            : l10n.microphonePermissionDenied,
         permanent: _permissionPermanentlyDenied,
       );
       return false;
@@ -159,9 +161,10 @@ class VoiceSearchController extends ChangeNotifier {
     _isInitializing = false;
     _isReady = available;
     if (!available) {
+      final l10n = currentAppLocalizations();
       _setError(
         code: 'speech_unavailable',
-        message: 'Speech recognition is unavailable on this device.',
+        message: l10n.speechRecognitionUnavailable,
         permanent: false,
       );
     }

@@ -115,7 +115,9 @@ class _FolderViewScreenState extends State<FolderViewScreen> {
                         fontSize: 13,
                       ),
                     ),
-                    onTap: () => context.push(Destinations.folder(lib.id)),
+                    onTap: () => context.push(
+                      Destinations.folder(lib.id, serverId: lib.serverId),
+                    ),
                   );
                 },
               );

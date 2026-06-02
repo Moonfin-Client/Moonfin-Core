@@ -1,10 +1,10 @@
-enum SubtitleRendererMode {
-  native,
-  assOverlay,
-}
+enum SubtitleRendererMode { native, assOverlay }
 
 abstract class PlayerBackend {
-  Future<void> play(dynamic mediaItem, {Duration startPosition = Duration.zero});
+  Future<void> play(
+    dynamic mediaItem, {
+    Duration startPosition = Duration.zero,
+  });
   Future<void> resume();
   Future<void> pause();
   Future<void> stop();
@@ -42,7 +42,12 @@ abstract class PlayerBackend {
   Future<void> setVolume(double volume);
   Future<void> setAudioDelay(double seconds);
   Future<void> setSubtitleDelay(double seconds);
-  Future<void> addExternalSubtitle(String url, {String? title, String? language, String? codec});
+  Future<void> addExternalSubtitle(
+    String url, {
+    String? title,
+    String? language,
+    String? codec,
+  });
   Future<void> configureSubtitleStyle({
     int? textColor,
     int? backgroundColor,
@@ -52,26 +57,12 @@ abstract class PlayerBackend {
     double? verticalOffset,
   });
 
-  /// Requests which subtitle renderer mode the backend should use.
-  ///
-  /// `native` means default backend subtitle rendering, while `assOverlay`
-  /// is reserved for ASS/SSA dedicated overlay paths.
   Future<void> setSubtitleRendererMode(SubtitleRendererMode mode);
 
-  /// Whether this backend can change audio/subtitle tracks on the active
-  /// stream without reopening playback.
   bool get supportsRuntimeTrackSelection;
 
-  /// Whether PlaybackManager should block startup on media-ready polling.
-  ///
-  /// Backends that start before a render surface is attached can return false
-  /// to avoid premature startup fallback.
   bool get requiresStartupMediaReadyCheck => true;
 
-  /// Whether this backend applies non-zero start positions during `play(...)`.
-  ///
-  /// Backends returning true should not run PlaybackManager's legacy
-  /// seek-while-paused startup fallback.
   bool get nativelyHandlesStartPosition => false;
 
   bool get canRenderBitmapSubtitles;

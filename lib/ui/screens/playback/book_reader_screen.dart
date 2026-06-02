@@ -23,6 +23,7 @@ import '../../../data/services/book_reader_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../util/platform_detection.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../l10n/current_app_localizations.dart';
 import '../../widgets/overlay_sheet.dart';
 
 class BookReaderScreen extends StatefulWidget {
@@ -364,7 +365,9 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       if (ext == 'cbz' || ext == 'zip' || ext == 'cbt' || ext == 'cbr' || ext == 'cb7') {
         final entries = await _extractComicEntriesForExtension(uris, headers, ext);
         if (entries.isEmpty) {
-          throw StateError('No image pages found inside .$ext archive.');
+          throw StateError(
+            currentAppLocalizations().noImagePagesFoundInArchive(ext),
+          );
         }
 
         if (!mounted) {
@@ -441,10 +444,13 @@ class _BookReaderScreenState extends State<BookReaderScreen>
               },
               onWebResourceError: (error) {
                 if (!mounted) return;
+                final l10n = AppLocalizations.of(context);
                 setState(() {
                   _mode = _ReaderMode.fallback;
-                  _fallbackMessage =
-                      'Embedded renderer failed (${error.errorCode}): ${error.description}';
+                  _fallbackMessage = l10n.embeddedRendererFailed(
+                    error.errorCode,
+                    error.description,
+                  );
                 });
               },
             ),
@@ -556,10 +562,13 @@ class _BookReaderScreenState extends State<BookReaderScreen>
             if (!mounted) {
               return;
             }
+            final l10n = AppLocalizations.of(context);
             setState(() {
               _mode = _ReaderMode.fallback;
-              _fallbackMessage =
-                  'EPUB renderer failed (${error.errorCode}): ${error.description}';
+              _fallbackMessage = l10n.epubRendererFailed(
+                error.errorCode,
+                error.description,
+              );
             });
           },
         ),
@@ -662,6 +671,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
   Future<Uri> _resolveReadableUri(List<Uri> uris, Map<String, String> headers) async {
     final client = HttpClient();
+    final l10n = AppLocalizations.of(context);
     try {
       HttpException? lastError;
 
@@ -672,7 +682,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
             return uri;
           }
 
-          lastError = HttpException('Missing local file for reader: $uri');
+          lastError = HttpException(l10n.missingLocalFileForReader('$uri'));
           continue;
         }
 
@@ -696,11 +706,11 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
         await response.drain<void>();
         lastError = HttpException(
-          'HTTP ${response.statusCode} while opening book data from $uri',
+          l10n.httpStatusWhileOpeningBookData(response.statusCode, '$uri'),
         );
       }
 
-      throw lastError ?? HttpException('No readable book endpoint available');
+      throw lastError ?? HttpException(l10n.noReadableBookEndpointAvailable);
     } finally {
       client.close(force: true);
     }
@@ -723,7 +733,9 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       case 'cb7':
         return _extractCb7Entries(bytes);
       default:
-        throw UnsupportedError('Unsupported comic archive format: .$extension');
+        throw UnsupportedError(
+          currentAppLocalizations().unsupportedComicArchiveFormat(extension),
+        );
     }
   }
 
@@ -746,7 +758,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
       if (!_supportsRarExtraction) {
         throw UnsupportedError(
-          'CBR extraction plugin is not available on this platform.',
+          currentAppLocalizations().cbrExtractionPluginUnavailable,
         );
       }
 
@@ -758,12 +770,13 @@ class _BookReaderScreenState extends State<BookReaderScreen>
         );
       } on MissingPluginException {
         throw UnsupportedError(
-          'CBR extraction plugin is not available on this platform.',
+          currentAppLocalizations().cbrExtractionPluginUnavailable,
         );
       }
 
       if (result['success'] != true) {
-        final message = result['message']?.toString() ?? 'Failed to extract .cbr archive.';
+        final message = result['message']?.toString() ??
+            currentAppLocalizations().failedToExtractCbrArchive;
         throw StateError(message);
       }
 
@@ -776,7 +789,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
   Future<List<ArchiveFile>> _extractCb7Entries(Uint8List bytes) async {
     if (!_supportsCb7Extraction) {
       throw UnsupportedError(
-        'CB7 extraction is not available on this platform.',
+        currentAppLocalizations().cb7ExtractionUnavailable,
       );
     }
 
@@ -796,7 +809,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       return await _readExtractedComicEntries(outputDir);
     } on MissingPluginException {
       throw UnsupportedError(
-        'CB7 extraction plugin is not available on this platform.',
+        currentAppLocalizations().cb7ExtractionPluginUnavailable,
       );
     } finally {
       await workspace.delete(recursive: true);
@@ -1123,10 +1136,11 @@ class _BookReaderScreenState extends State<BookReaderScreen>
   }
 
   void _showTocPanel() {
+    final l10n = AppLocalizations.of(context);
     showGeneralDialog<void>(
       context: context,
       barrierDismissible: true,
-      barrierLabel: 'Table of Contents',
+      barrierLabel: l10n.tableOfContents,
       barrierColor: const Color(0xB3000000),
       transitionDuration: const Duration(milliseconds: 220),
       pageBuilder: (dialogContext, _, _) {

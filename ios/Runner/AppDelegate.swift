@@ -50,7 +50,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
 }
 
 @main
-@objc class AppDelegate: FlutterAppDelegate, GCKSessionManagerListener {
+@objc class AppDelegate: FlutterAppDelegate, GCKSessionManagerListener, FlutterImplicitEngineDelegate {
   private static let isSimulator: Bool = {
     #if targetEnvironment(simulator)
       return true
@@ -85,6 +85,24 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
     let result: FlutterResult
   }
 
+  /// Resolves the root `FlutterViewController` from the active window scene.
+  ///
+  /// Under the UIScene lifecycle the window is owned by `SceneDelegate`, so the
+  /// controller is no longer reachable via `self.window` at launch time and
+  /// must be looked up from the connected scenes when a channel call needs it.
+  private var flutterViewController: FlutterViewController? {
+    for scene in UIApplication.shared.connectedScenes {
+      guard let windowScene = scene as? UIWindowScene else { continue }
+      let windows = windowScene.windows
+      let keyed = windows.first(where: { $0.isKeyWindow }) ?? windows.first
+      if let controller = keyed?.rootViewController as? FlutterViewController {
+        return controller
+      }
+    }
+    // Fallback for the legacy (non-scene) path.
+    return window?.rootViewController as? FlutterViewController
+  }
+
   private func topViewController(from root: UIViewController?) -> UIViewController? {
     guard let root else { return nil }
     if let nav = root as? UINavigationController {
@@ -105,17 +123,28 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
   ) -> Bool {
     configureGoogleCast()
 
-    GeneratedPluginRegistrant.register(with: self)
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
 
-    let controller = window?.rootViewController as! FlutterViewController
+  // Called once the implicit FlutterEngine (created by the storyboard's
+  // FlutterViewController under the UIScene lifecycle) is initialized. Plugin
+  // registration and application-level channels are wired up here against the
+  // engine's messenger instead of `window.rootViewController`, which is not yet
+  // available at `didFinishLaunchingWithOptions` time when scenes are in use.
+  func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    setUpPlatformChannels(messenger: engineBridge.applicationRegistrar.messenger())
+  }
+
+  private func setUpPlatformChannels(messenger: FlutterBinaryMessenger) {
     let storageChannel = FlutterMethodChannel(
       name: "com.moonfin/ios_storage",
-      binaryMessenger: controller.binaryMessenger
+      binaryMessenger: messenger
     )
 
       let pipChannel = FlutterMethodChannel(
         name: "org.moonfin.ios/pip",
-        binaryMessenger: controller.binaryMessenger
+        binaryMessenger: messenger
       )
       self.pipChannel = pipChannel
 
@@ -134,7 +163,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
         }
       }
 
-      pipChannel.setMethodCallHandler { [weak self, weak controller] (call, result) in
+      pipChannel.setMethodCallHandler { [weak self] (call, result) in
         guard let self else { result(FlutterMethodNotImplemented); return }
 
         if #available(iOS 15.0, *), let pip = self.pipController as? PiPController {
@@ -162,7 +191,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
               result(FlutterError(code: "BAD_ARGS", message: "Missing handle", details: nil))
               return
             }
-            let initialized = pip.initialize(mpvHandleAddress: handle, viewController: controller)
+            let initialized = pip.initialize(mpvHandleAddress: handle, viewController: self.flutterViewController)
             if initialized {
               result(nil)
             } else {
@@ -175,7 +204,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
               )
             }
           case "startPiP":
-            guard let vc = controller else {
+            guard let vc = self.flutterViewController else {
               result(FlutterError(code: "NO_VIEW_CONTROLLER", message: "Missing root view controller", details: nil))
               return
             }
@@ -211,29 +240,29 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
 
     let castChannel = FlutterMethodChannel(
       name: "com.moonfin/native_cast",
-      binaryMessenger: controller.binaryMessenger
+      binaryMessenger: messenger
     )
     let castEventsChannel = FlutterEventChannel(
       name: "com.moonfin/native_cast_events",
-      binaryMessenger: controller.binaryMessenger
+      binaryMessenger: messenger
     )
     castEventStreamHandler.appDelegate = self
     castEventsChannel.setStreamHandler(castEventStreamHandler)
 
     let dlnaChannel = FlutterMethodChannel(
       name: "com.moonfin/native_dlna",
-      binaryMessenger: controller.binaryMessenger
+      binaryMessenger: messenger
     )
     let dlnaEventsChannel = FlutterEventChannel(
       name: "com.moonfin/native_dlna_events",
-      binaryMessenger: controller.binaryMessenger
+      binaryMessenger: messenger
     )
     dlnaEventStreamHandler.appDelegate = self
     dlnaEventsChannel.setStreamHandler(dlnaEventStreamHandler)
 
     let airPlayEventsChannel = FlutterEventChannel(
       name: "com.moonfin/native_airplay_events",
-      binaryMessenger: controller.binaryMessenger
+      binaryMessenger: messenger
     )
     airPlayEventStreamHandler.appDelegate = self
     airPlayEventsChannel.setStreamHandler(airPlayEventStreamHandler)
@@ -420,7 +449,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
       }
     }
 
-    castChannel.setMethodCallHandler { [weak controller] (call, result) in
+    castChannel.setMethodCallHandler { (call, result) in
       switch call.method {
       case "discoverGoogleCastTargets":
         self.discoverGoogleCastTargets(result: result)
@@ -457,7 +486,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
           result: result
         )
       case "showAirPlayRoutePicker":
-        guard controller != nil else {
+        guard self.flutterViewController != nil else {
           result(
             FlutterError(
               code: "NO_VIEW_CONTROLLER",
@@ -591,7 +620,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
           )
           return
         }
-        guard let vc = self.topViewController(from: controller) else {
+        guard let vc = self.topViewController(from: self.flutterViewController) else {
           result(
             FlutterError(
               code: "NO_VIEW_CONTROLLER",
@@ -637,8 +666,6 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
         result(FlutterMethodNotImplemented)
       }
     }
-
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
   private func configureGoogleCast() {

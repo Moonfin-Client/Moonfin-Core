@@ -30,7 +30,7 @@ class _AdminContentAnalyticsScreenState
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Failed to Load Media Analytics',
+              l10n.adminMediaAnalyticsLoadFailed,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
@@ -122,8 +122,11 @@ class _AdminContentAnalyticsScreenState
         _ScopeHeaderCard(
           title: selectedLibrary?.name ?? l10n.allLibraries,
           subtitle: selectedLibrary == null
-              ? 'Combined Analytics Across All Media Libraries.'
-              : AdminLibrariesScreen.labelForType(selectedLibrary.collectionType),
+              ? l10n.analyticsCombinedAcrossLibraries
+              : AdminLibrariesScreen.labelForType(
+                  selectedLibrary.collectionType,
+                  l10n,
+                ),
           totalTrackedItems: scopedVisibleTotal,
           libraryCount: selectedLibrary == null ? libraries.length : 1,
           icon: selectedLibrary == null
@@ -185,9 +188,9 @@ class _AdminContentAnalyticsScreenState
 
     if (insights.contributors.isNotEmpty) {
       final title = switch (type) {
-        'music' => 'Top Artists',
-        'books' => 'Top Authors',
-        _ => 'Top Contributors',
+        'music' => l10n.analyticsTopArtists,
+        'books' => l10n.analyticsTopAuthors,
+        _ => l10n.analyticsTopContributors,
       };
       cards.add(
         _TokenDistributionCard(
@@ -443,6 +446,7 @@ class _ScopeHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
     return Card(
@@ -483,7 +487,7 @@ class _ScopeHeaderCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  libraryCount == 1 ? '1 Library' : '$libraryCount Libraries',
+                  l10n.analyticsLibrariesCount(libraryCount),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -529,13 +533,16 @@ class _MetricDistributionCard extends StatelessWidget {
             const SizedBox(height: 12),
             if (nonZeroMetrics.isEmpty)
               Text(
-                'No Indexed Media Totals Are Available for This Selection Yet.',
+                AppLocalizations.of(context).analyticsNoIndexedMediaTotals,
                 style: theme.textTheme.bodyMedium,
               )
             else
               for (final metric in nonZeroMetrics) ...[
                 _DistributionRow(
-                  label: metric.label,
+                  label: adminMediaMetricLabel(
+                    AppLocalizations.of(context),
+                    metric.key,
+                  ),
                   icon: adminMediaIconForKey(metric.key),
                   value: summary.countFor(metric.key),
                   fraction:
@@ -583,7 +590,13 @@ class _TokenDistributionCard extends StatelessWidget {
             else
               for (final entry in topEntries) ...[
                 _DistributionRow(
-                  label: formatLabels ? _prettyToken(entry.key) : entry.key,
+                  label: formatLabels
+                      ? _prettyToken(
+                          entry.key,
+                          l10n.unknown,
+                          l10n.dolbyVision,
+                        )
+                      : entry.key,
                   icon: Icons.bar_chart,
                   value: entry.value,
                   fraction: total == 0 ? 0 : entry.value / total,
@@ -650,6 +663,7 @@ class _LibraryBreakdownCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
     return Card(
@@ -659,13 +673,15 @@ class _LibraryBreakdownCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              libraries.length == 1 ? 'Library Details' : 'Library Breakdown',
+              libraries.length == 1
+                  ? l10n.analyticsLibraryDetails
+                  : l10n.analyticsLibraryBreakdown,
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
             if (libraries.isEmpty)
               Text(
-                'No Libraries Are Available.',
+                l10n.analyticsNoLibrariesAvailable,
                 style: theme.textTheme.bodyMedium,
               )
             else
@@ -722,7 +738,10 @@ class _LibraryAnalyticsTile extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    AdminLibrariesScreen.labelForType(library.collectionType),
+                    AdminLibrariesScreen.labelForType(
+                      library.collectionType,
+                      AppLocalizations.of(context),
+                    ),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -748,7 +767,7 @@ class _LibraryAnalyticsTile extends StatelessWidget {
                 Chip(
                   avatar: Icon(adminMediaIconForKey(metric.key), size: 16),
                   label: Text(
-                    '${metric.label} ${formatAdminCount(library.countFor(metric.key))}',
+                    '${adminMediaMetricLabel(AppLocalizations.of(context), metric.key)} ${formatAdminCount(library.countFor(metric.key))}',
                   ),
                 ),
             ],
@@ -759,12 +778,16 @@ class _LibraryAnalyticsTile extends StatelessWidget {
   }
 }
 
-String _prettyToken(String token) {
+String _prettyToken(
+  String token,
+  String unknownLabel,
+  String dolbyVisionLabel,
+) {
   if (token.isEmpty) {
-    return 'Unknown';
+    return unknownLabel;
   }
 
-  const known = <String, String>{
+  final known = <String, String>{
     'h264': 'H.264',
     'avc': 'AVC',
     'h265': 'H.265',
@@ -797,7 +820,7 @@ String _prettyToken(String token) {
     'wmv': 'WMV',
     'sdr': 'SDR',
     'hdr10': 'HDR10',
-    'dv': 'Dolby Vision',
+    'dv': dolbyVisionLabel,
   };
 
   final normalized = token.trim().toLowerCase();

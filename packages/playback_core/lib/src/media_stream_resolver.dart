@@ -156,5 +156,6 @@ abstract class MediaStreamResolver {
     String? mediaSourceId,
     bool enableDirectPlay = true,
     bool enableDirectStream = true,
+    bool enableTranscoding = true,
   });
 }

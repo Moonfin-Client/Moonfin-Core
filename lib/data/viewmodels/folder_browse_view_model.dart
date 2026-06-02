@@ -17,11 +17,17 @@ enum FolderBrowseState { loading, ready, error }
 class FolderBrowseViewModel extends ChangeNotifier {
   final MediaServerClient _client;
 
+  final String? _serverId;
+
   static const _pageSize = 100;
   static const _fields =
       'Type,ProductionYear,ImageTags,BackdropImageTags,ChildCount,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag';
+  // Cap image tags to one per type (server returns all by default)
+  static const _imageTypes = 'Primary,Backdrop,Thumb';
+  static const _imageTypeLimit = 1;
 
-  FolderBrowseViewModel(this._client);
+  FolderBrowseViewModel(this._client, {String? serverId})
+      : _serverId = serverId;
 
   ImageApi get imageApi => _client.imageApi;
 
@@ -146,7 +152,9 @@ class FolderBrowseViewModel extends ChangeNotifier {
         rawItems.cast<Map<String, dynamic>>().map((raw) {
           return AggregatedItem(
             id: raw['Id'] as String,
-            serverId: _client.baseUrl,
+            serverId: (_serverId != null && _serverId.isNotEmpty)
+                ? _serverId
+                : _client.baseUrl,
             rawData: raw,
           );
         }).toList();
@@ -173,6 +181,8 @@ class FolderBrowseViewModel extends ChangeNotifier {
         startIndex: startIndex,
         limit: _pageSize,
         fields: _fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
         enableTotalRecordCount: true,
       );
     } on DioException catch (e) {
@@ -189,6 +199,8 @@ class FolderBrowseViewModel extends ChangeNotifier {
         startIndex: startIndex,
         limit: _pageSize,
         fields: _fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
         enableTotalRecordCount: false,
       );
     }

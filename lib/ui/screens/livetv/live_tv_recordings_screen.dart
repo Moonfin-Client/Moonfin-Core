@@ -179,7 +179,7 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
     if (rows.isEmpty) {
       return Center(
         child: Text(
-          'No recordings found',
+          l10n.noRecordingsFound,
           style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
         ),
       );

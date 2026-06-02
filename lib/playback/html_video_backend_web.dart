@@ -9,7 +9,6 @@ import 'package:web/web.dart' as web;
 
 import '../preference/user_preferences.dart';
 import 'html_video_backend_profile.dart';
-import 'subtitle_font_fallback.dart';
 
 extension type _MoonfinHlsBridge._(JSObject _) implements JSObject {
   external JSBoolean canUseHlsJs(
@@ -30,34 +29,19 @@ extension type _MoonfinHlsBridge._(JSObject _) implements JSObject {
 class HtmlVideoBackend implements PlayerBackend {
   HtmlVideoBackend(this._prefs)
     : _viewType = 'moonfin-html-video-${_nextViewId++}' {
-    _subtitleCssClass = '$_viewType-subtitles';
-    _subtitleStyleElementId = '$_viewType-subtitle-style';
     _videoElement = _createVideoElement();
     _registerViewFactory();
-    _applySubtitleCss();
   }
 
   static int _nextViewId = 1;
   static final Set<String> _registeredViewTypes = <String>{};
-  static const String _webSubtitleCjkAssetUrl =
-      'assets/assets/fonts/NotoSansCJK-Regular.ttc';
-  static const String _webSubtitleSymbolsAssetUrl =
-      'assets/assets/fonts/NotoSansSymbols2-Regular.ttf';
 
   final UserPreferences _prefs;
   final String _viewType;
-  late final String _subtitleCssClass;
-  late final String _subtitleStyleElementId;
 
   late final web.HTMLVideoElement _videoElement;
   final List<web.HTMLTrackElement> _externalTracks = <web.HTMLTrackElement>[];
   JSAny? _hlsController;
-
-  int _subtitleTextColor = 0xFFFFFFFF;
-  int _subtitleBackgroundColor = 0x00000000;
-  int _subtitleStrokeColor = 0x00000000;
-  double _subtitleFontSize = 24.0;
-  int _subtitleFontWeight = 400;
 
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
@@ -91,162 +75,9 @@ class HtmlVideoBackend implements PlayerBackend {
       ..style.height = '100%'
       ..style.objectFit = 'contain'
       ..style.pointerEvents = 'none'
-      ..style.backgroundColor = 'black'
-      ..className = _subtitleCssClass;
+      ..style.backgroundColor = 'black';
     element.setAttribute('playsinline', '');
     return element;
-  }
-
-  web.HTMLStyleElement? _ensureSubtitleStyleElement() {
-    final existing = web.document.getElementById(_subtitleStyleElementId);
-    if (existing != null) {
-      return existing as web.HTMLStyleElement;
-    }
-
-    final styleElement = web.HTMLStyleElement()..id = _subtitleStyleElementId;
-    final root = web.document.head ?? web.document.body;
-    if (root == null) {
-      return null;
-    }
-    root.appendChild(styleElement);
-    return styleElement;
-  }
-
-  String _argbToCssRgba(int argb) {
-    final a = ((argb >> 24) & 0xFF) / 255.0;
-    final r = (argb >> 16) & 0xFF;
-    final g = (argb >> 8) & 0xFF;
-    final b = argb & 0xFF;
-    return 'rgba($r, $g, $b, ${a.toStringAsFixed(3)})';
-  }
-
-  String _subtitleFontFaceCss() {
-    return '''
-@font-face {
-  font-family: '$kWebSubtitleCjkFontFamily';
-  src: url("$_webSubtitleCjkAssetUrl");
-  font-display: swap;
-}
-@font-face {
-  font-family: '$kWebSubtitleSymbolsFontFamily';
-  src: url("$_webSubtitleSymbolsAssetUrl") format("truetype");
-  font-display: swap;
-}
-''';
-  }
-
-  void _applySubtitleCss() {
-    final styleElement = _ensureSubtitleStyleElement();
-    if (styleElement == null) {
-      return;
-    }
-
-    final scaledFontPercent = ((_subtitleFontSize / 24.0) * 100.0).clamp(
-      70.0,
-      240.0,
-    );
-    final hasStroke = ((_subtitleStrokeColor >> 24) & 0xFF) > 0;
-    final strokeColor = _argbToCssRgba(_subtitleStrokeColor);
-    final strokeShadow = hasStroke
-        ? '0 0 1px $strokeColor, 0 0 2px $strokeColor, 0 0 3px $strokeColor'
-        : 'none';
-
-    styleElement.textContent =
-        '''
-${_subtitleFontFaceCss()}
-
-.$_subtitleCssClass::cue,
-.$_subtitleCssClass::cue(*) {
-  color: ${_argbToCssRgba(_subtitleTextColor)};
-  background-color: ${_argbToCssRgba(_subtitleBackgroundColor)};
-  font-family: ${subtitleFontFamilyCssStack()} !important;
-  font-size: ${scaledFontPercent.toStringAsFixed(0)}%;
-  font-weight: ${_subtitleFontWeight >= 700 ? 700 : 400};
-  text-shadow: $strokeShadow !important;
-}
-''';
-  }
-
-  bool _urlMatches(String left, String right) {
-    if (left == right) {
-      return true;
-    }
-    final leftUri = Uri.tryParse(left);
-    final rightUri = Uri.tryParse(right);
-    if (leftUri == null || rightUri == null) {
-      return false;
-    }
-    return leftUri.replace(fragment: '').toString() ==
-        rightUri.replace(fragment: '').toString();
-  }
-
-  web.HTMLTrackElement? _findExternalTrackByUrl(String url) {
-    for (final track in _externalTracks) {
-      final attrSrc = track.getAttribute('src') ?? '';
-      final resolvedSrc = track.src;
-      if (_urlMatches(attrSrc, url) || _urlMatches(resolvedSrc, url)) {
-        return track;
-      }
-    }
-    return null;
-  }
-
-  Future<void> _setAllTextTrackModes(String mode) async {
-    try {
-      final dynamic tracks = (_videoElement as dynamic).textTracks;
-      final length = (tracks.length as num?)?.toInt() ?? 0;
-      for (var i = 0; i < length; i++) {
-        final dynamic track = tracks[i];
-        track.mode = mode;
-      }
-    } catch (_) {}
-  }
-
-  Future<void> _showTextTrackAtIndex(int index) async {
-    try {
-      final dynamic tracks = (_videoElement as dynamic).textTracks;
-      final length = (tracks.length as num?)?.toInt() ?? 0;
-      // playback_core sends 1-based subtitle track IDs; HTML textTracks are 0-based.
-      final normalizedIndex = index > 0 ? index - 1 : index;
-      if (normalizedIndex < 0 || normalizedIndex >= length) {
-        await _setAllTextTrackModes('disabled');
-        return;
-      }
-      for (var i = 0; i < length; i++) {
-        final dynamic track = tracks[i];
-        track.mode = i == normalizedIndex ? 'showing' : 'disabled';
-      }
-    } catch (_) {}
-  }
-
-  Future<web.HTMLTrackElement?> _ensureExternalTrack(
-    String url, {
-    String? title,
-    String? language,
-    String? codec,
-  }) async {
-    final existing = _findExternalTrackByUrl(url);
-    if (existing != null) {
-      return existing;
-    }
-
-    final track = web.HTMLTrackElement()
-      ..kind = 'subtitles'
-      ..src = url
-      ..label = title ?? language ?? 'External Subtitle'
-      ..srclang = language ?? 'en';
-
-    if (codec != null && codec.isNotEmpty) {
-      track.setAttribute('data-codec', codec);
-    }
-
-    _videoElement.appendChild(track);
-    _externalTracks.add(track);
-    try {
-      final dynamic textTrack = (track as dynamic).track;
-      textTrack.mode = 'disabled';
-    } catch (_) {}
-    return track;
   }
 
   void _registerViewFactory() {
@@ -616,28 +447,31 @@ ${_subtitleFontFaceCss()}
     if (isExternalSubtitle &&
         externalSubtitleUrl != null &&
         externalSubtitleUrl.isNotEmpty) {
-      final track = await _ensureExternalTrack(
-        externalSubtitleUrl,
-        codec: subtitleCodec,
-      );
-      if (track == null) {
-        return;
-      }
-      await _setAllTextTrackModes('disabled');
-      try {
-        final dynamic textTrack = (track as dynamic).track;
-        textTrack.mode = 'showing';
-      } catch (_) {}
+      await addExternalSubtitle(externalSubtitleUrl, codec: subtitleCodec);
       return;
     }
 
-    await _showTextTrackAtIndex(index);
+    try {
+      final dynamic tracks = (_videoElement as dynamic).textTracks;
+      final length = (tracks.length as num?)?.toInt() ?? 0;
+      for (var i = 0; i < length; i++) {
+        final dynamic track = tracks[i];
+        track.mode = i == index ? 'showing' : 'disabled';
+      }
+    } catch (_) {}
   }
 
   @override
   Future<void> disableSubtitleTrack() async {
     if (_disposed) return;
-    await _setAllTextTrackModes('disabled');
+    try {
+      final dynamic tracks = (_videoElement as dynamic).textTracks;
+      final length = (tracks.length as num?)?.toInt() ?? 0;
+      for (var i = 0; i < length; i++) {
+        final dynamic track = tracks[i];
+        track.mode = 'disabled';
+      }
+    } catch (_) {}
   }
 
   @override
@@ -678,12 +512,21 @@ ${_subtitleFontFaceCss()}
     String? codec,
   }) async {
     if (_disposed || url.isEmpty) return;
-    await _ensureExternalTrack(
-      url,
-      title: title,
-      language: language,
-      codec: codec,
-    );
+
+    final track = web.HTMLTrackElement()
+      ..kind = 'subtitles'
+      ..src = url
+      ..label = title ?? language ?? 'External Subtitle'
+      ..srclang = language ?? 'en';
+
+    if (codec != null && codec.isNotEmpty) {
+      track.setAttribute('data-codec', codec);
+    }
+
+    _videoElement.appendChild(track);
+    _externalTracks.add(track);
+
+    await setSubtitleTrack(_externalTracks.length - 1);
   }
 
   @override
@@ -694,24 +537,7 @@ ${_subtitleFontFaceCss()}
     double? fontSize,
     int? fontWeight,
     double? verticalOffset,
-  }) async {
-    if (textColor != null) {
-      _subtitleTextColor = textColor;
-    }
-    if (backgroundColor != null) {
-      _subtitleBackgroundColor = backgroundColor;
-    }
-    if (strokeColor != null) {
-      _subtitleStrokeColor = strokeColor;
-    }
-    if (fontSize != null) {
-      _subtitleFontSize = fontSize;
-    }
-    if (fontWeight != null) {
-      _subtitleFontWeight = fontWeight;
-    }
-    _applySubtitleCss();
-  }
+  }) async {}
 
   @override
   Future<void> setSubtitleRendererMode(SubtitleRendererMode mode) async {
@@ -763,7 +589,6 @@ ${_subtitleFontFaceCss()}
     _videoElement.pause();
     _videoElement.removeAttribute('src');
     _videoElement.load();
-    web.document.getElementById(_subtitleStyleElementId)?.remove();
 
     _positionStream.close();
     _durationStream.close();

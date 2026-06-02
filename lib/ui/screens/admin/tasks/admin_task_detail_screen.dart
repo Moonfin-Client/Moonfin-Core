@@ -398,7 +398,7 @@ class _TriggersSection extends StatelessWidget {
       case 'DailyTrigger':
         return l10n.adminTaskTriggerDaily(_ticksToTime(trigger.timeOfDayTicks ?? 0));
       case 'WeeklyTrigger':
-        return l10n.adminTaskTriggerWeekly(trigger.dayOfWeek ?? 'Unknown', _ticksToTime(trigger.timeOfDayTicks ?? 0));
+        return l10n.adminTaskTriggerWeekly(trigger.dayOfWeek ?? l10n.unknown, _ticksToTime(trigger.timeOfDayTicks ?? 0));
       case 'IntervalTrigger':
         return l10n.adminTaskTriggerInterval(_ticksToDuration(trigger.intervalTicks ?? 0));
       case 'StartupTrigger':

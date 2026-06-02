@@ -305,7 +305,8 @@ final appRouter = GoRouter(
       path: Destinations.folderBrowse,
       builder: (context, state) {
         final folderId = state.pathParameters['folderId']!;
-        return FolderBrowseScreen(folderId: folderId);
+        final serverId = state.uri.queryParameters['serverId'];
+        return FolderBrowseScreen(folderId: folderId, serverId: serverId);
       },
     ),
     GoRoute(
@@ -377,7 +378,16 @@ final appRouter = GoRouter(
       routes: [
         GoRoute(
           path: 'guide',
-          builder: (context, state) => const LiveTvGuideScreen(),
+          builder: (context, state) {
+            final extra = state.extra;
+            final extraMap = extra is Map<String, dynamic>
+                ? extra
+                : const <String, dynamic>{};
+            return LiveTvGuideScreen(
+              miniPlayerMode: extraMap['miniPlayerMode'] == true,
+              currentChannel: extraMap['currentChannel'] as GuideChannel?,
+            );
+          },
         ),
         GoRoute(
           path: 'schedule',

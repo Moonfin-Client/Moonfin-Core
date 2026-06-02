@@ -23,12 +23,12 @@ class _AdminPlaybackSettingsScreenState
   String? _browsingField;
 
   static const _hwAccelOptions = [
-    ('none', 'None'),
+    ('none', 'none'),
     ('vaapi', 'VA-API'),
-    ('qsv', 'Intel Quick Sync'),
+    ('qsv', 'qsv'),
     ('nvenc', 'NVIDIA NVENC'),
     ('v4l2m2m', 'V4L2'),
-    ('rkmpp', 'Rockchip MPP'),
+    ('rkmpp', 'rkmpp'),
     ('videotoolbox', 'VideoToolbox'),
   ];
 
@@ -140,7 +140,12 @@ class _AdminPlaybackSettingsScreenState
             border: const OutlineInputBorder(),
           ),
           items: _hwAccelOptions
-              .map((o) => DropdownMenuItem(value: o.$1, child: Text(o.$1 == 'none' ? l10n.none : o.$2)))
+              .map(
+                (o) => DropdownMenuItem(
+                  value: o.$1,
+                  child: Text(_hwAccelLabel(o.$1, o.$2, l10n)),
+                ),
+              )
               .toList(),
           onChanged: (v) =>
               setState(() => _config!['HardwareAccelerationType'] = v),
@@ -214,6 +219,19 @@ class _AdminPlaybackSettingsScreenState
         },
       );
     }).toList();
+  }
+
+  String _hwAccelLabel(String value, String fallback, AppLocalizations l10n) {
+    switch (value) {
+      case 'none':
+        return l10n.none;
+      case 'qsv':
+        return l10n.intelQuickSync;
+      case 'rkmpp':
+        return l10n.rockchipMpp;
+      default:
+        return fallback;
+    }
   }
 
   Widget _sectionHeader(String text) {

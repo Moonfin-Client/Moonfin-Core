@@ -85,12 +85,11 @@ jobs:
           sed -i "s/^sha256sums=.*/sha256sums=('${SHA256}')/" PKGBUILD
 
           if grep -q '^depends=' PKGBUILD; then
-            sed -i "s/^depends=.*/depends=('gtk3' 'glib2' 'mpv' 'ffmpeg' 'libva' 'libvdpau' 'libsecret' 'sqlite' 'webkit2gtk-4.1')/" PKGBUILD
+            sed -i "s/^depends=.*/depends=('gtk3' 'glib2' 'libsecret' 'webkit2gtk-4.1')/" PKGBUILD
           else
-            sed -i "/^pkgrel=/a depends=('gtk3' 'glib2' 'mpv' 'ffmpeg' 'libva' 'libvdpau' 'libsecret' 'sqlite' 'webkit2gtk-4.1')" PKGBUILD
+            sed -i "/^pkgrel=/a depends=('gtk3' 'glib2' 'libsecret' 'webkit2gtk-4.1')" PKGBUILD
           fi
 
-          # Regenerate .SRCINFO from scratch (4-space indent, matching AUR format)
           printf '%s\n' \
             "pkgbase = moonfin-bin" \
             "    pkgdesc = Jellyfin & Emby media client for Linux (binary release)" \
@@ -101,12 +100,7 @@ jobs:
             "    license = GPL-3.0-or-later" \
             "    depends = gtk3" \
             "    depends = glib2" \
-            "    depends = mpv" \
-            "    depends = ffmpeg" \
-            "    depends = libva" \
-            "    depends = libvdpau" \
             "    depends = libsecret" \
-            "    depends = sqlite" \
             "    depends = webkit2gtk-4.1" \
             "    provides = moonfin" \
             "    conflicts = moonfin" \

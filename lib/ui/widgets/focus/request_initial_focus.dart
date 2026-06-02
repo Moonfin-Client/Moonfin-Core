@@ -21,16 +21,17 @@ class RequestInitialFocus extends StatefulWidget {
 }
 
 class _RequestInitialFocusState extends State<RequestInitialFocus> {
-  static const _maxAttemptsScope = 8;
+  static const _maxAttemptsScope = 60;
   static const _maxAttemptsTarget = 60;
   static const _retryDelay = Duration(milliseconds: 50);
   Timer? _retryTimer;
   bool _settled = false;
+  bool _frameCheckQueued = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _tryFocus(0));
+    _scheduleFrameFocusCheck(0);
   }
 
   @override
@@ -40,7 +41,7 @@ class _RequestInitialFocusState extends State<RequestInitialFocus> {
         widget.targetNode != null) {
       _retryTimer?.cancel();
       _settled = false;
-      WidgetsBinding.instance.addPostFrameCallback((_) => _tryFocus(0));
+      _scheduleFrameFocusCheck(0);
     }
   }
 
@@ -72,7 +73,10 @@ class _RequestInitialFocusState extends State<RequestInitialFocus> {
       if (attempt + 1 >= _maxAttemptsTarget) {
         return;
       }
-      _retryTimer = Timer(_retryDelay, () => _tryFocus(attempt + 1));
+      _retryTimer = Timer(_retryDelay, () {
+        _retryTimer = null;
+        _tryFocus(attempt + 1);
+      });
       return;
     }
 
@@ -80,8 +84,11 @@ class _RequestInitialFocusState extends State<RequestInitialFocus> {
       _settled = true;
       return;
     }
+    if (_requestFirstDescendantFocus(scope)) {
+      _settled = true;
+      return;
+    }
     scope.requestFocus();
-    scope.nextFocus();
     if (_scopeHasFocus(scope)) {
       _settled = true;
       return;
@@ -89,7 +96,30 @@ class _RequestInitialFocusState extends State<RequestInitialFocus> {
     if (attempt + 1 >= _maxAttemptsScope) {
       return;
     }
-    _retryTimer = Timer(_retryDelay, () => _tryFocus(attempt + 1));
+    _retryTimer = Timer(_retryDelay, () {
+      _retryTimer = null;
+      _tryFocus(attempt + 1);
+    });
+  }
+
+  void _scheduleFrameFocusCheck(int attempt) {
+    if (!mounted || _settled || _frameCheckQueued) return;
+    _frameCheckQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _frameCheckQueued = false;
+      _tryFocus(attempt);
+    });
+  }
+
+  bool _requestFirstDescendantFocus(FocusScopeNode scope) {
+    for (final node in scope.traversalDescendants) {
+      if (identical(node, scope)) continue;
+      if (node.context == null) continue;
+      if (!node.canRequestFocus || node.skipTraversal) continue;
+      scope.requestFocus(node);
+      if (node.hasFocus) return true;
+    }
+    return false;
   }
 
   bool _scopeHasFocus(FocusScopeNode scope) {
@@ -105,5 +135,10 @@ class _RequestInitialFocusState extends State<RequestInitialFocus> {
   }
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) {
+    if (!_settled && _retryTimer == null) {
+      _scheduleFrameFocusCheck(0);
+    }
+    return widget.child;
+  }
 }

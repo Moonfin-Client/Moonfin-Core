@@ -242,7 +242,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _showQuickConnect = supportsQC;
       });
       if (supportsQC) {
-        _startQuickConnect();
+        _startQuickConnect(isInitial: true);
       } else {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
@@ -284,7 +284,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  Future<void> _startQuickConnect() async {
+  Future<void> _startQuickConnect({bool isInitial = false}) async {
     final client = _client;
     if (client == null) return;
 
@@ -322,14 +322,25 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
       final l10n = AppLocalizations.of(context);
+      final isQcDisabled = status == 401 ||
+          detail.toLowerCase().contains('disabled') ||
+          detail.toLowerCase().contains('quickconnect is disabled') ||
+          detail.toLowerCase().contains('quick connect is disabled');
+
       setState(() {
-        _errorMessage = status == null
-            ? l10n.quickConnectUnavailableWithStatus(e.type.name, detail)
-            : l10n.quickConnectUnavailableWithStatus(
-                '$status, ${e.type.name}',
-                detail,
-              );
+        _errorMessage = isQcDisabled
+            ? 'QuickConnect is disabled'
+            : (status == null
+                ? l10n.quickConnectUnavailableWithStatus(e.type.name, detail)
+                : l10n.quickConnectUnavailableWithStatus(
+                    '$status, ${e.type.name}',
+                    detail,
+                  ));
       });
+
+      if (isQcDisabled && isInitial) {
+        _selectPassword();
+      }
     } catch (e) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
@@ -704,8 +715,10 @@ class _LoginScreenState extends State<LoginScreen> {
               context,
             ).textTheme.bodySmall?.copyWith(color: _loginForeground(0.5)),
           ),
-        ] else
-          const CircularProgressIndicator(),
+        ] else ...[
+          if (_errorMessage == null)
+            const CircularProgressIndicator(),
+        ],
         if (_errorMessage != null) ...[
           const SizedBox(height: 16),
           Text(_errorMessage!, style: TextStyle(color: _loginErrorColor)),

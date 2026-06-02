@@ -49,6 +49,7 @@ enum MaxVideoResolution {
 enum NavbarPosition {
   top,
   left,
+  bottom,
 }
 
 enum NextUpBehavior {

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../l10n/current_app_localizations.dart';
 import '../../preference/home_section_config.dart';
 import '../repositories/multi_server_repository.dart';
 
@@ -136,6 +137,7 @@ class KefinTweaksService extends ChangeNotifier {
   /// Translates a server's KefinTweaks configuration into a deterministic
   /// list of home rows.
   static List<KefinDiscoveredSection> _buildSections(KefinTweaksConfig config) {
+    final l10n = currentAppLocalizations();
     final hs = config.homeScreen;
     final defaultLimit = hs.defaultItemLimit;
     final result = <KefinDiscoveredSection>[];
@@ -159,7 +161,7 @@ class KefinTweaksService extends ChangeNotifier {
     if (hs.recentlyReleased?.enabled != false && rrEpisodes?.enabled != false) {
       result.add(_buildBuiltin(
         id: 'recentlyReleasedEpisodes',
-        title: rrEpisodes?.name ?? 'Recently Released Episodes',
+        title: rrEpisodes?.name ?? l10n.recentlyReleasedEpisodes,
         order: rrEpisodes?.order ?? 22,
         spec: {
           'kind': 'recentlyReleasedEpisodes',
@@ -173,7 +175,7 @@ class KefinTweaksService extends ChangeNotifier {
     if (watchAgain?.enabled != false) {
       result.add(_buildBuiltin(
         id: 'watchAgain',
-        title: watchAgain?.name ?? 'Watch Again',
+        title: watchAgain?.name ?? l10n.watchAgain,
         order: watchAgain?.order ?? 50,
         spec: {
           'kind': 'watchAgain',
@@ -196,7 +198,7 @@ class KefinTweaksService extends ChangeNotifier {
       if (libraryIds.isNotEmpty) {
         result.add(_buildBuiltin(
           id: 'recentlyAddedInLibrary',
-          title: 'Recently Added',
+          title: l10n.recentlyAdded,
           order: 90,
           spec: {
             'kind': 'recentlyAddedInLibrary',

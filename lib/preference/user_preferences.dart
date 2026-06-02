@@ -400,6 +400,11 @@ class UserPreferences extends ChangeNotifier {
     key: 'enable_folder_view',
     defaultValue: false,
   );
+
+  static final useDetailedSubHeadings = Preference(
+    key: 'pref_use_detailed_sub_headings',
+    defaultValue: true,
+  );
   static final maxBitrate = Preference(
     key: 'pref_max_bitrate',
     defaultValue: '120',
@@ -472,6 +477,26 @@ class UserPreferences extends ChangeNotifier {
   static final preferExoPlayerFfmpeg = Preference(
     key: 'exoplayer_prefer_ffmpeg',
     defaultValue: !(PlatformDetection.isAndroid && PlatformDetection.isTV),
+  );
+
+  static final media3SkipSilence = Preference(
+    key: 'media3_skip_silence',
+    defaultValue: false,
+  );
+
+  static final media3TunnelingDisabled = Preference(
+    key: 'media3_tunneling_disabled',
+    defaultValue: false,
+  );
+
+  static final media3MapDolbyVisionProfile7ToHevc = Preference(
+    key: 'media3_map_dolby_vision_profile7_to_hevc',
+    defaultValue: false,
+  );
+
+  static final media3AllowExternalAudioEffects = Preference(
+    key: 'media3_allow_external_audio_effects',
+    defaultValue: true,
   );
 
   static final tunnelingFallbackDisabled = Preference(
@@ -658,6 +683,22 @@ class UserPreferences extends ChangeNotifier {
   static final subtitlesDefaultToNone = Preference(
     key: 'subtitles_default_to_none',
     defaultValue: false,
+  );
+
+  /// Whether embedded subtitle styles (colours, positioning, fonts) should be
+  /// applied when rendering text tracks. Disable to force the user's caption
+  /// style preferences instead. Media3 (Android) only.
+  static final subtitlesUseEmbeddedStyles = Preference(
+    key: 'subtitles_use_embedded_styles',
+    defaultValue: true,
+  );
+
+  /// Whether embedded subtitle font-size hints should be applied. Independent
+  /// of [subtitlesUseEmbeddedStyles] so users can keep colours but override
+  /// font sizes. Media3 (Android) only.
+  static final subtitlesUseEmbeddedFontSizes = Preference(
+    key: 'subtitles_use_embedded_font_sizes',
+    defaultValue: true,
   );
 
   static final preferSdhSubtitles = Preference(

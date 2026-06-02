@@ -54,6 +54,7 @@ android {
 
     defaultConfig {
         minSdk 21
+        consumerProguardFiles "consumer-rules.pro"
     }
 
     packagingOptions {
@@ -79,13 +80,21 @@ dependencies {
 
     debugImplementation("androidx.compose.ui:ui-tooling")
 
-    implementation("androidx.media3:media3-exoplayer:1.10.0")
-    implementation("androidx.media3:media3-exoplayer-hls:1.10.0")
-    implementation("androidx.media3:media3-exoplayer-dash:1.10.0")
-    implementation("androidx.media3:media3-ui:1.10.0")
-    implementation("androidx.media3:media3-common:1.10.0")
-    implementation("androidx.media3:media3-datasource:1.10.0")
-    implementation("androidx.media3:media3-extractor:1.10.0")
+    implementation("androidx.media3:media3-exoplayer:1.10.1")
+    implementation("androidx.media3:media3-exoplayer-hls:1.10.1")
+    implementation("androidx.media3:media3-exoplayer-dash:1.10.1")
+    implementation("androidx.media3:media3-exoplayer-rtsp:1.10.1")
+    implementation("androidx.media3:media3-exoplayer-smoothstreaming:1.10.1")
+    implementation("androidx.media3:media3-session:1.10.1")
+    implementation("androidx.media3:media3-ui:1.10.1")
+    implementation("androidx.media3:media3-common:1.10.1")
+    implementation("androidx.media3:media3-datasource:1.10.1")
+    implementation("androidx.media3:media3-extractor:1.10.1")
+    // dav1d (AV1) software decoder, unpacked from its .aar into a plain .jar +
+    // src/main/jniLibs. A library module cannot bundle a direct local .aar
+    // dependency into its own AAR (AGP "hasLocalAarDeps" error), but a local
+    // .jar plus jniLibs is allowed and is packaged correctly.
+    implementation(files("libs/lib-decoder-av1.jar"))
     implementation("org.jellyfin.media3:media3-ffmpeg-decoder:1.9.0+1")
 
     implementation("io.github.peerless2012:ass-media:0.4.0")

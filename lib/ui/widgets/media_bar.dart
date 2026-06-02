@@ -77,7 +77,9 @@ class _MediaBarState extends State<MediaBar>
   final _pageController = PageController();
   final _backgroundService = GetIt.instance<BackgroundService>();
   final _playbackManager = GetIt.instance<PlaybackManager>();
-  final _media3TrailerBackend = GetIt.instance<Media3PlayerBackend>();
+  final Media3PlayerBackend? _media3TrailerBackend = PlatformDetection.isTizen
+      ? null
+      : GetIt.instance<Media3PlayerBackend>();
   final _sponsorBlockService = SponsorBlockService();
   final _sponsorBlockSession = SponsorBlockSkipSession();
   bool _isHomeRouteActive = true;
@@ -160,7 +162,7 @@ class _MediaBarState extends State<MediaBar>
     _mainPlaybackSub = _playbackManager.state.playingStream.listen(
       _onMainPlaybackChanged,
     );
-    _media3EventSub = _media3TrailerBackend.errorStream.listen(
+    _media3EventSub = _media3TrailerBackend?.errorStream.listen(
       _onMedia3BackendEvent,
       onError: (_) {},
     );
@@ -417,7 +419,7 @@ class _MediaBarState extends State<MediaBar>
       final audioEnabled = widget.prefs.get(
         UserPreferences.previewAudioEnabled,
       );
-      _media3TrailerBackend.setVolume(audioEnabled ? 100 : 0);
+      _media3TrailerBackend!.setVolume(audioEnabled ? 100 : 0);
     } else if (_trailerPlayer != null) {
       final audioEnabled = widget.prefs.get(
         UserPreferences.previewAudioEnabled,
@@ -586,7 +588,7 @@ class _MediaBarState extends State<MediaBar>
     _isTrailerPlaying = false;
     if (_trailerUsingMedia3) {
       _trailerUsingMedia3 = false;
-      unawaited(_media3TrailerBackend.stop());
+      unawaited(_media3TrailerBackend!.stop());
     } else {
       _trailerPlayer?.stop();
     }
@@ -693,10 +695,10 @@ class _MediaBarState extends State<MediaBar>
     try {
       final useMedia3 = _useMedia3TrailerEngine() && !webOnly;
       if (useMedia3) {
-        _media3TrailerCompletedSub ??= _media3TrailerBackend.completedStream
+        _media3TrailerCompletedSub ??= _media3TrailerBackend!.completedStream
             .listen(_onTrailerCompleted);
         _trailerUsingMedia3 = true;
-        await _media3TrailerBackend.setVolume(0);
+        await _media3TrailerBackend!.setVolume(0);
         if (!mounted || resolveId != _trailerResolveId) return;
 
         final payload = <String, dynamic>{
@@ -705,11 +707,11 @@ class _MediaBarState extends State<MediaBar>
           if (useYouTubeHeaders)
             'headers': YouTubeStreamResolver.youtubeHeaders,
         };
-        await _media3TrailerBackend.play(payload).timeout(_openTimeout);
+        await _media3TrailerBackend!.play(payload).timeout(_openTimeout);
         if (!mounted ||
             resolveId != _trailerResolveId ||
             !_isHomeRouteCurrent()) {
-          await _media3TrailerBackend.stop();
+          await _media3TrailerBackend!.stop();
           return;
         }
       } else {
@@ -784,12 +786,12 @@ class _MediaBarState extends State<MediaBar>
         UserPreferences.previewAudioEnabled,
       );
       try {
-        await _media3TrailerBackend.setVolume(audioEnabled ? 100 : 0);
+        await _media3TrailerBackend!.setVolume(audioEnabled ? 100 : 0);
         if (!mounted || resolveId != _trailerResolveId) return;
 
-        await _media3TrailerBackend.resume();
+        await _media3TrailerBackend!.resume();
         if (!mounted || resolveId != _trailerResolveId) {
-          unawaited(_media3TrailerBackend.stop());
+          unawaited(_media3TrailerBackend!.stop());
           return;
         }
       } catch (_) {
@@ -802,7 +804,7 @@ class _MediaBarState extends State<MediaBar>
       _autoAdvanceTimer?.cancel();
       await _waitForMedia3TrailerReady(resolveId);
       if (!mounted || resolveId != _trailerResolveId) {
-        unawaited(_media3TrailerBackend.stop());
+        unawaited(_media3TrailerBackend!.stop());
         return;
       }
 
@@ -847,10 +849,10 @@ class _MediaBarState extends State<MediaBar>
   Future<bool> _waitForMedia3TrailerReady(int resolveId) async {
     if (!mounted || resolveId != _trailerResolveId) return false;
 
-    var isPlaying = _media3TrailerBackend.isPlaying;
-    var isBuffering = _media3TrailerBackend.isBuffering;
-    var buffered = _media3TrailerBackend.buffer;
-    var position = _media3TrailerBackend.position;
+    var isPlaying = _media3TrailerBackend!.isPlaying;
+    var isBuffering = _media3TrailerBackend!.isBuffering;
+    var buffered = _media3TrailerBackend!.buffer;
+    var position = _media3TrailerBackend!.position;
     if (isPlaying &&
         (!isBuffering ||
             buffered > Duration.zero ||
@@ -874,19 +876,19 @@ class _MediaBarState extends State<MediaBar>
       }
     }
 
-    playingSub = _media3TrailerBackend.playingStream.listen((value) {
+    playingSub = _media3TrailerBackend!.playingStream.listen((value) {
       isPlaying = value;
       checkReady();
     });
-    bufferingSub = _media3TrailerBackend.bufferingStream.listen((value) {
+    bufferingSub = _media3TrailerBackend!.bufferingStream.listen((value) {
       isBuffering = value;
       checkReady();
     });
-    bufferSub = _media3TrailerBackend.bufferStream.listen((value) {
+    bufferSub = _media3TrailerBackend!.bufferStream.listen((value) {
       buffered = value;
       checkReady();
     });
-    positionSub = _media3TrailerBackend.positionStream.listen((value) {
+    positionSub = _media3TrailerBackend!.positionStream.listen((value) {
       position = value;
       checkReady();
     });
@@ -1006,7 +1008,7 @@ class _MediaBarState extends State<MediaBar>
     _media3TrailerCompletedSub = null;
     if (_trailerUsingMedia3) {
       _trailerUsingMedia3 = false;
-      unawaited(_media3TrailerBackend.stop());
+      unawaited(_media3TrailerBackend!.stop());
     }
     _trailerPlayer?.stop();
     _trailerPlayer?.dispose();
@@ -1027,7 +1029,7 @@ class _MediaBarState extends State<MediaBar>
     final token = ++_sponsorBlockToken;
 
     if (_trailerUsingMedia3) {
-      _trailerPositionSub = _media3TrailerBackend.positionStream.listen((
+      _trailerPositionSub = _media3TrailerBackend!.positionStream.listen((
         position,
       ) {
         _handleSponsorBlockPosition(position);
@@ -1075,7 +1077,7 @@ class _MediaBarState extends State<MediaBar>
     unawaited(() async {
       try {
         if (_trailerUsingMedia3) {
-          await _media3TrailerBackend.seekTo(skipTo);
+          await _media3TrailerBackend!.seekTo(skipTo);
         } else {
           await _trailerPlayer?.seek(skipTo);
         }

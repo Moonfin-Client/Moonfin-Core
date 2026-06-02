@@ -6,6 +6,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
+import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/viewmodels/folder_browse_view_model.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -15,8 +16,13 @@ import '../../../l10n/app_localizations.dart';
 
 class FolderBrowseScreen extends StatefulWidget {
   final String folderId;
+  final String? serverId;
 
-  const FolderBrowseScreen({super.key, required this.folderId});
+  const FolderBrowseScreen({
+    super.key,
+    required this.folderId,
+    this.serverId,
+  });
 
   @override
   State<FolderBrowseScreen> createState() => _FolderBrowseScreenState();
@@ -31,7 +37,14 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
   @override
   void initState() {
     super.initState();
-    _vm = FolderBrowseViewModel(GetIt.instance<MediaServerClient>());
+    final serverId = widget.serverId;
+    final client = serverId != null && serverId.isNotEmpty
+        ? GetIt.instance<MediaServerClientFactory>().getClientIfExists(
+                serverId,
+              ) ??
+              GetIt.instance<MediaServerClient>()
+        : GetIt.instance<MediaServerClient>();
+    _vm = FolderBrowseViewModel(client, serverId: serverId);
     _vm.addListener(_onChanged);
     _scrollController.addListener(_onScroll);
     _vm.loadFolder(widget.folderId);
@@ -56,43 +69,67 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
     super.dispose();
   }
 
-  String? _imageUrl(AggregatedItem item) {
+  String? _imageUrl(AggregatedItem item, {int? maxWidth}) {
     final api = _vm.imageApi;
 
     final imageTags = item.rawData['ImageTags'];
     if (imageTags is Map) {
       final thumbTag = imageTags['Thumb'] as String?;
       if (thumbTag != null) {
-        return api.getThumbImageUrl(item.id, tag: thumbTag);
+        return api.getThumbImageUrl(item.id, maxWidth: maxWidth, tag: thumbTag);
       }
 
       final primaryTag = imageTags['Primary'] as String?;
       if (primaryTag != null) {
-        return api.getPrimaryImageUrl(item.id, tag: primaryTag);
+        return api.getPrimaryImageUrl(
+          item.id,
+          maxWidth: maxWidth,
+          tag: primaryTag,
+        );
       }
 
       final backdropTag = imageTags['Backdrop'] as String?;
       if (backdropTag != null) {
-        return api.getBackdropImageUrl(item.id, tag: backdropTag);
+        return api.getBackdropImageUrl(
+          item.id,
+          maxWidth: maxWidth,
+          tag: backdropTag,
+        );
       }
     }
 
     if (item.primaryImageTag != null) {
-      return api.getPrimaryImageUrl(item.id, tag: item.primaryImageTag);
+      return api.getPrimaryImageUrl(
+        item.id,
+        maxWidth: maxWidth,
+        tag: item.primaryImageTag,
+      );
     }
 
     if (item.seriesId != null && item.seriesPrimaryImageTag != null) {
-      return api.getPrimaryImageUrl(item.seriesId!, tag: item.seriesPrimaryImageTag);
+      return api.getPrimaryImageUrl(
+        item.seriesId!,
+        maxWidth: maxWidth,
+        tag: item.seriesPrimaryImageTag,
+      );
     }
 
     if (item.backdropImageTags.isNotEmpty) {
-      return api.getBackdropImageUrl(item.id, tag: item.backdropImageTags.first);
+      return api.getBackdropImageUrl(
+        item.id,
+        maxWidth: maxWidth,
+        tag: item.backdropImageTags.first,
+      );
     }
 
     final parentThumbItemId = item.rawData['ParentThumbItemId'] as String?;
     final parentThumbTag = item.rawData['ParentThumbImageTag'] as String?;
     if (parentThumbItemId != null && parentThumbTag != null) {
-      return api.getThumbImageUrl(parentThumbItemId, tag: parentThumbTag);
+      return api.getThumbImageUrl(
+        parentThumbItemId,
+        maxWidth: maxWidth,
+        tag: parentThumbTag,
+      );
     }
 
     return null;
@@ -109,7 +146,7 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
     _lastItemTapAt = now;
 
     if (_vm.isNavigableFolder(item)) {
-      _scrollController.jumpTo(0);
+      if (_scrollController.hasClients) _scrollController.jumpTo(0);
       _vm.enterFolder(item);
     } else {
       context.push(
@@ -170,7 +207,9 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
               return TextButton(
               onPressed: !isLast
                   ? () {
-                      _scrollController.jumpTo(0);
+                      if (_scrollController.hasClients) {
+                        _scrollController.jumpTo(0);
+                      }
                       _vm.navigateTo(i);
                     }
                   : null,
@@ -255,7 +294,7 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
                   width: cardWidth,
                   child: _FolderGridCard(
                     item: item,
-                    imageUrl: _imageUrl(item),
+                    imageUrl: _imageUrl(item, maxWidth: cardWidth.toInt()),
                     isFolder: _vm.isNavigableFolder(item),
                     icon: MediaCard.iconForType(item.type),
                     subtitle: _subtitleText(item, _vm.isNavigableFolder(item)),

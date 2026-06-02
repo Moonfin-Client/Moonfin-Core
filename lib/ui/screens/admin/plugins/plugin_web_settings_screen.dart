@@ -333,8 +333,9 @@ class _PluginWebSettingsScreenState extends State<PluginWebSettingsScreen> {
     final uri = Uri.tryParse(_addressController.text.trim()) ?? _currentUrl;
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && mounted) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not open $uri')),
+        SnackBar(content: Text(l10n.adminCouldNotOpenUrl('$uri'))),
       );
     }
   }
@@ -421,6 +422,7 @@ class _PluginWebSettingsScreenState extends State<PluginWebSettingsScreen> {
   }
 
   Widget _buildToolbar() {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
       child: LayoutBuilder(
@@ -431,19 +433,19 @@ class _PluginWebSettingsScreenState extends State<PluginWebSettingsScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                tooltip: 'Back',
+                tooltip: l10n.back,
                 visualDensity: VisualDensity.compact,
                 onPressed: _canGoBack ? _goBack : null,
                 icon: const Icon(Icons.arrow_back),
               ),
               IconButton(
-                tooltip: 'Forward',
+                tooltip: l10n.forward,
                 visualDensity: VisualDensity.compact,
                 onPressed: _canGoForward ? _goForward : null,
                 icon: const Icon(Icons.arrow_forward),
               ),
               IconButton(
-                tooltip: 'Refresh',
+                tooltip: l10n.refresh,
                 visualDensity: VisualDensity.compact,
                 onPressed: _refreshPage,
                 icon: const Icon(Icons.refresh),
@@ -457,7 +459,7 @@ class _PluginWebSettingsScreenState extends State<PluginWebSettingsScreen> {
             onSubmitted: (_) => _goToAddress(),
             decoration: InputDecoration(
               isDense: true,
-              hintText: 'Address',
+              hintText: l10n.address,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 12,
                 vertical: 10,
@@ -478,7 +480,7 @@ class _PluginWebSettingsScreenState extends State<PluginWebSettingsScreen> {
                     navButtons,
                     const Spacer(),
                     IconButton(
-                      tooltip: 'Go',
+                      tooltip: l10n.go,
                       visualDensity: VisualDensity.compact,
                       onPressed: _goToAddress,
                       icon: const Icon(Icons.arrow_right_alt),
@@ -498,7 +500,7 @@ class _PluginWebSettingsScreenState extends State<PluginWebSettingsScreen> {
               Expanded(child: addressField),
               const SizedBox(width: 4),
               IconButton(
-                tooltip: 'Go',
+                tooltip: l10n.go,
                 onPressed: _goToAddress,
                 icon: const Icon(Icons.arrow_right_alt),
               ),
@@ -570,6 +572,7 @@ class _PluginWebSettingsScreenState extends State<PluginWebSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final bottomWebViewPadding = MediaQuery.viewPaddingOf(context).bottom + 12;
 
     if (!_supportsAnyEmbeddedWebView) {
@@ -583,15 +586,15 @@ class _PluginWebSettingsScreenState extends State<PluginWebSettingsScreen> {
               children: [
                 const Icon(Icons.open_in_browser, size: 42),
                 const SizedBox(height: 12),
-                const Text(
-                  'Embedded browser is not available on this platform.',
+                Text(
+                  l10n.embeddedBrowserNotAvailable,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
                 FilledButton.icon(
                   onPressed: _openExternal,
                   icon: const Icon(Icons.open_in_new),
-                  label: const Text('Open in Browser'),
+                  label: Text(l10n.openInBrowser),
                 ),
               ],
             ),
@@ -613,7 +616,7 @@ class _PluginWebSettingsScreenState extends State<PluginWebSettingsScreen> {
         title: Text(widget.title),
         actions: [
           IconButton(
-            tooltip: 'Open externally',
+            tooltip: l10n.openExternally,
             onPressed: _openExternal,
             icon: const Icon(Icons.open_in_new),
           ),

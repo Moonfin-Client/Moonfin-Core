@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../l10n/current_app_localizations.dart';
 import '../models/aggregated_item.dart';
 import '../models/home_row.dart';
 import '../services/row_data_source.dart';
@@ -40,10 +41,11 @@ class MusicBrowseViewModel extends ChangeNotifier {
   Future<void> load() async {
     _isLoading = true;
     notifyListeners();
+    final l10n = currentAppLocalizations();
 
     try {
       final itemData = await _client.itemsApi.getItem(libraryId);
-      _libraryName = itemData['Name'] as String? ?? 'Music';
+      _libraryName = itemData['Name'] as String? ?? l10n.music;
     } catch (e) {
       debugPrint('Failed to load library info: $e');
     }
@@ -57,15 +59,15 @@ class MusicBrowseViewModel extends ChangeNotifier {
             includeItemTypes: ['MusicAlbum']),
         _dataSource.loadPlaylists(_serverId, mediaType: 'Audio'),
         _dataSource.loadLibraryItemsByType(libraryId, _serverId,
-          title: 'Album Artists',
+          title: l10n.albumArtists,
           includeItemTypes: ['AlbumArtist'],
           sortBy: 'SortName'),
         _dataSource.loadLibraryItemsByType(libraryId, _serverId,
-            title: 'Artists',
+            title: l10n.artists,
             includeItemTypes: ['MusicArtist'],
             sortBy: 'SortName'),
         _dataSource.loadLibraryItemsByType(libraryId, _serverId,
-            title: 'Albums',
+            title: l10n.albums,
             includeItemTypes: ['MusicAlbum'],
             sortBy: 'DateCreated',
             sortOrder: 'Descending'),

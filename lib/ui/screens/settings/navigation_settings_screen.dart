@@ -23,6 +23,7 @@ class NavigationSettingsScreen extends StatefulWidget {
 
 class _NavigationSettingsScreenState extends State<NavigationSettingsScreen> {
   final _prefs = GetIt.instance<UserPreferences>();
+  bool _navbarNormalizeQueued = false;
 
   void _pushSync() {
     final syncService = GetIt.instance<PluginSyncService>();
@@ -32,12 +33,33 @@ class _NavigationSettingsScreenState extends State<NavigationSettingsScreen> {
     }
   }
 
+  String _navbarPositionLabel(NavbarPosition pos, AppLocalizations l10n) =>
+      switch (pos) {
+        NavbarPosition.top => l10n.topBar,
+        NavbarPosition.left => l10n.leftSidebar,
+        NavbarPosition.bottom => 'Bottom Bar',
+      };
+
   @override
   Widget build(BuildContext context) =>
       RequestInitialFocus(child: _buildContent(context));
 
   Widget _buildContent(BuildContext context) {
-    final navbarPosition = _prefs.get(UserPreferences.navbarPosition);
+    final positions = NavigationLayout.availableNavbarPositions;
+    final storedPosition = _prefs.get(UserPreferences.navbarPosition);
+    final navbarPosition = positions.contains(storedPosition)
+        ? storedPosition
+        : NavbarPosition.top;
+    if (storedPosition != navbarPosition && !_navbarNormalizeQueued) {
+      _navbarNormalizeQueued = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _navbarNormalizeQueued = false;
+        if (!mounted) return;
+        _prefs.set(UserPreferences.navbarPosition, navbarPosition);
+        NavigationLayout.positionNotifier.value = navbarPosition;
+        _pushSync();
+      });
+    }
     final l10n = AppLocalizations.of(context);
 
     return withCleanSettingsTypography(
@@ -49,15 +71,11 @@ class _NavigationSettingsScreenState extends State<NavigationSettingsScreen> {
             ListTile(
               leading: const Icon(Icons.view_sidebar),
               title: Text(l10n.navigationStyle),
-              subtitle: Text(
-                navbarPosition == NavbarPosition.top
-                    ? l10n.topBar
-                    : l10n.leftSidebar,
-              ),
+              subtitle: Text(_navbarPositionLabel(navbarPosition, l10n)),
               onTap: () {
-                final newPos = navbarPosition == NavbarPosition.top
-                    ? NavbarPosition.left
-                    : NavbarPosition.top;
+                var index = positions.indexOf(navbarPosition);
+                if (index < 0) index = 0;
+                final newPos = positions[(index + 1) % positions.length];
                 _prefs.set(UserPreferences.navbarPosition, newPos);
                 _pushSync();
                 NavigationLayout.positionNotifier.value = newPos;
