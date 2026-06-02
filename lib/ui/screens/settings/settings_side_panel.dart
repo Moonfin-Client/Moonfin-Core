@@ -1548,7 +1548,7 @@ class _AboutCategoryScreen extends StatelessWidget {
             subtitle: Text(l10n.settingsJoinDiscordSubtitle),
             onTap: () => showQrOrLaunch(
               context,
-              url: 'https://discord.gg/u7ny4Rnxze',
+              url: 'https://discord.gg/moonfin',
               title: l10n.settingsJoinTheDiscord,
             ),
           ),

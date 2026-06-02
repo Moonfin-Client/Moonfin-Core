@@ -284,6 +284,7 @@ class PlatformDetection {
   }
 
   static bool get _hasMobileFormFactor {
+    if (defaultTargetPlatform == TargetPlatform.iOS) return true;
     final size = _screenLogicalSize;
     if (size == null) return _isMobilePlatformSignal;
     if (size.shortestSide <= 0) return _isMobilePlatformSignal;
