@@ -168,19 +168,29 @@ class SettingsListTypography extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return ListTileTheme(
-      data: ListTileTheme.of(context).copyWith(
-        titleTextStyle:
-            theme.textTheme.bodyMedium?.merge(_kSettingsTitleTextStyle) ??
-            _kSettingsTitleTextStyle,
-        subtitleTextStyle:
-            theme.textTheme.bodySmall?.merge(_kSettingsSubtitleTextStyle) ??
-            _kSettingsSubtitleTextStyle,
-        contentPadding: _kSettingsTileContentPadding,
-        minLeadingWidth: _kSettingsIconShellSize,
-        horizontalTitleGap: 14,
+    return Theme(
+      data: theme.copyWith(
+        focusColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
       ),
-      child: child,
+      child: ListTileTheme(
+        tileColor: Colors.transparent,
+        selectedTileColor: Colors.transparent,
+        data: ListTileTheme.of(context).copyWith(
+          titleTextStyle:
+              theme.textTheme.bodyMedium?.merge(_kSettingsTitleTextStyle) ??
+              _kSettingsTitleTextStyle,
+          subtitleTextStyle:
+              theme.textTheme.bodySmall?.merge(_kSettingsSubtitleTextStyle) ??
+              _kSettingsSubtitleTextStyle,
+          contentPadding: _kSettingsTileContentPadding,
+          minLeadingWidth: _kSettingsIconShellSize,
+          horizontalTitleGap: 14,
+        ),
+        child: child,
+      ),
     );
   }
 }
@@ -321,8 +331,6 @@ class _EnumPreferenceTileState<T extends Enum>
         builder: (context, value, _) {
           final current = values.contains(value) ? value : values.first;
           return ListTile(
-            focusColor: Colors.transparent,
-            hoverColor: Colors.transparent,
             leading: widget.icon != null
                 ? buildSettingsLeadingIconShell(
                     context,
@@ -508,8 +516,6 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
             child: ValueListenableBuilder<int>(
               valueListenable: _binding,
               builder: (context, value, _) => ListTile(
-                focusColor: Colors.transparent,
-                hoverColor: Colors.transparent,
                 leading: widget.icon != null
                     ? buildSettingsLeadingIconShell(
                         context,
@@ -604,8 +610,6 @@ class _StringPickerPreferenceTileState
       builder: (context, focused) => ValueListenableBuilder<String>(
         valueListenable: _binding,
         builder: (context, value, _) => ListTile(
-          focusColor: Colors.transparent,
-          hoverColor: Colors.transparent,
           leading: widget.icon != null
               ? buildSettingsLeadingIconShell(
                   context,
@@ -719,8 +723,6 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
       builder: (context, focused) => ValueListenableBuilder<int>(
         valueListenable: _binding,
         builder: (context, value, _) => ListTile(
-          focusColor: Colors.transparent,
-          hoverColor: Colors.transparent,
           leading: widget.icon != null
               ? buildSettingsLeadingIconShell(
                   context,
