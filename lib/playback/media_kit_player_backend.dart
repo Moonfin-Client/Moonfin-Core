@@ -159,7 +159,8 @@ class _MediaKitDeviceProfileCapabilities {
       maxResolutionAv1Height: _k8kHeight,
       maxResolutionVc1Width: _k8kWidth,
       maxResolutionVc1Height: _k8kHeight,
-      supportsDvProfile5: true,
+      // Force the server to transcode / HDR10-fallback DV P5 on iOS.
+      supportsDvProfile5: !PlatformDetection.isIOS,
       supportsDvProfile7: allowDolbyVisionProfile7DirectPlay,
       supportsDvProfile8: true,
       knownHevcDoviHdr10PlusBug: false,
