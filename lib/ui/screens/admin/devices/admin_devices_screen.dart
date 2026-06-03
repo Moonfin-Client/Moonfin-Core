@@ -249,7 +249,9 @@ class _AdminDevicesScreenState extends ConsumerState<AdminDevicesScreen> {
               child: filtered.isEmpty
           ? Center(
               child: Text(
-                devices.isEmpty ? 'No devices found' : 'No devices match the current filters',
+                devices.isEmpty
+                    ? l10n.adminNoDevicesFound
+                    : l10n.adminNoDevicesMatchCurrentFilters,
               ),
             )
           : ListView.builder(

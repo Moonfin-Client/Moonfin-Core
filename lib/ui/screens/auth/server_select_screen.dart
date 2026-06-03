@@ -574,7 +574,7 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
                   _buildFooterActionButton(
                     onPressed: () => context.go(Destinations.webDiagnostics),
                     icon: const Icon(Icons.bug_report, size: 16),
-                    label: 'Web diagnostics',
+                    label: l10n.webDiagnostics,
                   ),
                 );
               }

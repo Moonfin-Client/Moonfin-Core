@@ -42,6 +42,7 @@ class SeerrRepository {
   String get _moonfinDisplayNameKey => _userKey('moonfin_display_name');
   String get _moonfinUserIdKey => _userKey('moonfin_user_id');
   String get _lastConnectionSuccessKey => _userKey('last_connection_success');
+  String get _autoLoginFailedKey => _userKey('moonfin_autologin_failed');
 
   void _invalidateSessionCache() {
     _lastSessionCheckMs = 0;
@@ -303,6 +304,40 @@ class SeerrRepository {
   Future<MoonfinStatusResponse> checkMoonfinStatus() =>
       _withClient((c) => c.getMoonfinStatus());
 
+  Future<void> bootstrapMoonfinSso({
+    required String jellyfinBaseUrl,
+    required String jellyfinToken,
+    String? username,
+    String? password,
+  }) async {
+    final status = await configureWithMoonfin(
+      jellyfinBaseUrl: jellyfinBaseUrl,
+      jellyfinToken: jellyfinToken,
+    );
+
+    if (status.authenticated) {
+      await _store.setBool(_autoLoginFailedKey, false);
+      return;
+    }
+
+    if (!status.enabled ||
+        username == null ||
+        username.isEmpty ||
+        password == null ||
+        password.isEmpty) {
+      return;
+    }
+
+    if (_store.getBool(_autoLoginFailedKey) ?? false) return;
+
+    try {
+      await loginWithMoonfin(username: username, password: password);
+      await _store.setBool(_autoLoginFailedKey, false);
+    } catch (_) {
+      await _store.setBool(_autoLoginFailedKey, true);
+    }
+  }
+
   Future<MoonfinLoginResponse> loginWithMoonfin({
     required String username,
     required String password,
@@ -320,22 +355,21 @@ class SeerrRepository {
       authType: authType,
     );
 
-    if (response.success) {
-      await _store.setString(
-        _moonfinDisplayNameKey,
-        response.displayName ?? '',
-      );
-      await _store.setString(
-        _moonfinUserIdKey,
-        response.jellyseerrUserId?.toString() ?? '',
-      );
-      await _store.setString(_authMethodKey, 'moonfin');
-      await _store.setBool(_enabledKey, true);
-      await _store.setBool(_lastConnectionSuccessKey, true);
-      _isMoonfinMode = true;
-      _isAvailable = true;
-      _invalidateSessionCache();
-    }
+    await _store.setString(
+      _moonfinDisplayNameKey,
+      response.displayName ?? '',
+    );
+    await _store.setString(
+      _moonfinUserIdKey,
+      response.jellyseerrUserId?.toString() ?? '',
+    );
+    await _store.setString(_authMethodKey, 'moonfin');
+    await _store.setBool(_enabledKey, true);
+    await _store.setBool(_lastConnectionSuccessKey, true);
+    await _store.setBool(_autoLoginFailedKey, false);
+    _isMoonfinMode = true;
+    _isAvailable = true;
+    _invalidateSessionCache();
 
     return response;
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 
 import 'cast_target.dart';
+import '../../../l10n/current_app_localizations.dart';
 import '../../../util/platform_detection.dart';
 
 class NativeCastChannel {
@@ -16,6 +17,7 @@ class NativeCastChannel {
     if (!_supported) {
       return const [];
     }
+    final l10n = currentAppLocalizations();
     final raw = await _channel.invokeMethod<List<dynamic>>(
       'discoverGoogleCastTargets',
     );
@@ -30,7 +32,7 @@ class NativeCastChannel {
           (entry) => CastTarget(
             id: entry['id'] as String? ?? '',
             kind: CastTargetKind.googleCast,
-            title: entry['title'] as String? ?? 'Google Cast',
+            title: entry['title'] as String? ?? l10n.castGoogleCast,
             subtitle: entry['subtitle'] as String? ?? '',
           ),
         )

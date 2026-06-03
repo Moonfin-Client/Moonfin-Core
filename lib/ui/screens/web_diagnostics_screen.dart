@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../platform/web_runtime_config.dart';
 import '../../util/platform_detection.dart';
 import '../../util/server_url.dart';
@@ -31,6 +32,7 @@ if ($request_method = OPTIONS) { return 204; }''';
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final origin = Uri.base;
     final isHttpsPage = origin.scheme.toLowerCase() == 'https';
     final inferredReason = webDiagnosticsFailureReasonFromQuery(reason);
@@ -53,13 +55,13 @@ if ($request_method = OPTIONS) { return 204; }''';
         insecureConfiguredTargets.isNotEmpty;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Moonfin Web Diagnostics')),
+      appBar: AppBar(title: Text(l10n.webDiagnosticsTitle)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              'Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).',
+              l10n.webDiagnosticsIntro,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 12),
@@ -67,8 +69,8 @@ if ($request_method = OPTIONS) { return 204; }''';
               _StatusCard(
                 title:
                     inferredReason == WebDiagnosticsFailureReason.mixedContent
-                    ? 'Detected Mixed-Content Failure'
-                    : 'Detected CORS/Preflight Failure',
+                  ? l10n.webDiagnosticsDetectedMixedContentFailure
+                  : l10n.webDiagnosticsDetectedCorsPreflightFailure,
                 icon: Icons.error_outline,
                 color: AppColorScheme.statusRequested.withValues(alpha: 0.22),
                 child: Column(
@@ -76,20 +78,20 @@ if ($request_method = OPTIONS) { return 204; }''';
                   children: [
                     if (inferredReason ==
                         WebDiagnosticsFailureReason.mixedContent)
-                      const Text(
-                        'Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.',
+                      Text(
+                        l10n.webDiagnosticsMixedContentFailureBody,
                       )
                     else
-                      const Text(
-                        'Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.',
+                      Text(
+                        l10n.webDiagnosticsCorsFailureBody,
                       ),
                     if (normalizedTargetUrl.isNotEmpty) ...[
                       const SizedBox(height: 8),
-                      Text('Target URL: $normalizedTargetUrl'),
+                      Text(l10n.webDiagnosticsTargetUrl(normalizedTargetUrl)),
                     ],
                     if (detailText.isNotEmpty) ...[
                       const SizedBox(height: 8),
-                      Text('Detail: $detailText'),
+                      Text(l10n.webDiagnosticsDetail(detailText)),
                     ],
                   ],
                 ),
@@ -97,52 +99,56 @@ if ($request_method = OPTIONS) { return 204; }''';
               const SizedBox(height: 12),
             ],
             _StatusCard(
-              title: 'Current Runtime Context',
+              title: l10n.webDiagnosticsCurrentRuntimeContext,
               icon: Icons.public,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _kv('Origin', origin.origin),
-                  _kv('Scheme', origin.scheme),
+                  _kv(l10n.webDiagnosticsOrigin, origin.origin),
+                  _kv(l10n.webDiagnosticsScheme, origin.scheme),
                   _kv(
-                    'Plugin Mode',
-                    webRuntimeConfig.pluginMode ? 'enabled' : 'disabled',
+                    l10n.webDiagnosticsPluginMode,
+                    webRuntimeConfig.pluginMode
+                        ? l10n.enabled
+                        : l10n.disabled,
                   ),
                   _kv(
-                    'WebRTC Scan',
-                    webRuntimeConfig.enableWebRtcScan ? 'enabled' : 'disabled',
+                    l10n.webDiagnosticsWebRtcScan,
+                    webRuntimeConfig.enableWebRtcScan
+                        ? l10n.enabled
+                        : l10n.disabled,
                   ),
                   _kv(
-                    'Forced Server URL',
+                    l10n.webDiagnosticsForcedServerUrl,
                     webRuntimeConfig.forcedServerUrl?.trim().isNotEmpty == true
                         ? normalizeServerBaseUrl(
                             webRuntimeConfig.forcedServerUrl!.trim(),
                           )
-                        : 'not configured',
+                        : l10n.notConfigured,
                   ),
                   _kv(
-                    'Default Server URL',
+                    l10n.webDiagnosticsDefaultServerUrl,
                     webRuntimeConfig.defaultServerUrl?.trim().isNotEmpty == true
                         ? normalizeServerBaseUrl(
                             webRuntimeConfig.defaultServerUrl!.trim(),
                           )
-                        : 'not configured',
+                        : l10n.notConfigured,
                   ),
                   _kv(
-                    'Discovery Proxy URL',
+                    l10n.webDiagnosticsDiscoveryProxyUrl,
                     webRuntimeConfig.discoveryProxyUrl?.trim().isNotEmpty ==
                             true
                         ? normalizeServerBaseUrl(
                             webRuntimeConfig.discoveryProxyUrl!.trim(),
                           )
-                        : 'not configured',
+                        : l10n.notConfigured,
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 12),
             _StatusCard(
-              title: 'Mixed Content',
+              title: l10n.webDiagnosticsMixedContent,
               icon: hasMixedContentRisk
                   ? Icons.warning_amber
                   : Icons.check_circle,
@@ -153,49 +159,49 @@ if ($request_method = OPTIONS) { return 204; }''';
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.',
+                        Text(
+                          l10n.webDiagnosticsMixedContentDetected,
                         ),
                         const SizedBox(height: 8),
                         ...insecureConfiguredTargets.map(
                           (url) => Text('• $url'),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
-                          'Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.',
+                        Text(
+                          l10n.webDiagnosticsMixedContentFix,
                         ),
                       ],
                     )
-                  : const Text(
-                      'No obvious mixed-content configuration detected from current runtime settings.',
+                  : Text(
+                      l10n.webDiagnosticsNoMixedContentDetected,
                     ),
             ),
             const SizedBox(height: 12),
             _StatusCard(
-              title: 'CORS Checklist',
+              title: l10n.webDiagnosticsCorsChecklist,
               icon: Icons.rule,
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '• Allow the browser origin in Access-Control-Allow-Origin.',
+                    l10n.webDiagnosticsCorsChecklistItem1,
                   ),
                   SizedBox(height: 4),
                   Text(
-                    '• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.',
+                    l10n.webDiagnosticsCorsChecklistItem2,
                   ),
                   SizedBox(height: 4),
                   Text(
-                    '• Expose Content-Range and Accept-Ranges for streaming and seek behavior.',
+                    l10n.webDiagnosticsCorsChecklistItem3,
                   ),
                   SizedBox(height: 4),
-                  Text('• Return 204 to OPTIONS preflight requests.'),
+                  Text(l10n.webDiagnosticsCorsChecklistItem4),
                 ],
               ),
             ),
             const SizedBox(height: 12),
             _StatusCard(
-              title: 'Example Header Snippet (nginx-style)',
+              title: l10n.webDiagnosticsHeaderSnippetTitle,
               icon: Icons.code,
               child: SelectableText(
                 _corsSnippet,
@@ -207,11 +213,11 @@ if ($request_method = OPTIONS) { return 204; }''';
             ),
             const SizedBox(height: 12),
             if (!PlatformDetection.isWeb)
-              const _StatusCard(
-                title: 'Note',
+              _StatusCard(
+                title: l10n.note,
                 icon: Icons.info,
                 child: Text(
-                  'This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.',
+                  l10n.webDiagnosticsNonWebNote,
                 ),
               ),
             const SizedBox(height: 18),
@@ -222,7 +228,7 @@ if ($request_method = OPTIONS) { return 204; }''';
                 FilledButton.icon(
                   onPressed: () => context.go(Destinations.serverSelect),
                   icon: const Icon(Icons.arrow_back),
-                  label: const Text('Back To Server Select'),
+                  label: Text(l10n.backToServerSelect),
                 ),
               ],
             ),

@@ -242,15 +242,16 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
   }
 
   List<Map<String, String>> _fallbackContentTypeOptions() {
-    return const [
-      {'Value': '', 'Name': 'Default'},
-      {'Value': 'movies', 'Name': 'Movies'},
-      {'Value': 'music', 'Name': 'Music'},
-      {'Value': 'tvshows', 'Name': 'Shows'},
-      {'Value': 'books', 'Name': 'Books'},
-      {'Value': 'homevideos', 'Name': 'Home Videos & Photos'},
-      {'Value': 'musicvideos', 'Name': 'Music Videos'},
-      {'Value': 'mixed', 'Name': 'Mixed Movies & Shows'},
+    final l10n = AppLocalizations.of(context);
+    return [
+      {'Value': '', 'Name': l10n.defaultLabel},
+      {'Value': 'movies', 'Name': l10n.movies},
+      {'Value': 'music', 'Name': l10n.music},
+      {'Value': 'tvshows', 'Name': l10n.tvShows},
+      {'Value': 'books', 'Name': l10n.books},
+      {'Value': 'homevideos', 'Name': l10n.homeVideosAndPhotos},
+      {'Value': 'musicvideos', 'Name': l10n.musicVideos},
+      {'Value': 'mixed', 'Name': l10n.mixedMoviesAndShows},
     ];
   }
 
@@ -557,7 +558,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
                   itemBuilder: (context, index) {
                     final item = results[index];
                     final name =
-                        (item['Name'] ?? item['SearchHint'] ?? 'Unknown')
+                      (item['Name'] ?? item['SearchHint'] ?? l10n.unknown)
                             .toString();
                     final provider =
                         (item['ProviderName'] ?? item['Provider'] ?? '')

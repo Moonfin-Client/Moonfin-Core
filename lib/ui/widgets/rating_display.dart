@@ -1,6 +1,3 @@
-import 'dart:ui';
-
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
@@ -191,36 +188,13 @@ class _SingleRating extends StatelessWidget {
         vertical: isLargeLayout ? 4 : 3,
       ),
       decoration: BoxDecoration(
-        color: AppColorScheme.scrim.withValues(alpha: kIsWeb ? 0.45 : 0.08),
+        color: AppColorScheme.scrim.withValues(alpha: 0.45),
         borderRadius: BorderRadius.circular(4),
         border: badgeBorder,
       ),
       child: ratingContent,
     );
-    if (kIsWeb) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(4),
-        child: badge,
-      );
-    }
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: isLargeLayout ? 8 : 6,
-            vertical: isLargeLayout ? 4 : 3,
-          ),
-          decoration: BoxDecoration(
-            color: AppColorScheme.onSurface.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(4),
-            border: badgeBorder,
-          ),
-          child: ratingContent,
-        ),
-      ),
-    );
+    return ClipRRect(borderRadius: BorderRadius.circular(4), child: badge);
   }
 }
 

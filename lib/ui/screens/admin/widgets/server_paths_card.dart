@@ -16,39 +16,46 @@ class ServerPathsCard extends StatelessWidget {
     final pathRows = <Widget>[];
     for (final row in [
       _pathTile(
-        'Data',
+        l10n.adminServerPathData,
         storageInfo.programDataPath,
         storageInfo.programDataFolder,
+        context,
       ),
       _pathTile(
-        'Image Cache',
+        l10n.adminServerPathImageCache,
         storageInfo.imageCacheFolder?.path ?? '',
         storageInfo.imageCacheFolder,
+        context,
       ),
       _pathTile(
-        'Cache',
+        l10n.adminServerPathCache,
         storageInfo.cachePath,
         storageInfo.cacheFolder,
+        context,
       ),
       _pathTile(
-        'Logs',
+        l10n.adminServerPathLogs,
         storageInfo.logPath,
         storageInfo.logFolder,
+        context,
       ),
       _pathTile(
-        'Metadata',
+        l10n.adminServerPathMetadata,
         storageInfo.internalMetadataPath,
         storageInfo.internalMetadataFolder,
+        context,
       ),
       _pathTile(
-        'Transcode',
+        l10n.adminServerPathTranscode,
         storageInfo.transcodingTempPath,
         storageInfo.transcodingTempFolder,
+        context,
       ),
       _pathTile(
-        'Web',
+        l10n.adminServerPathWeb,
         storageInfo.webFolder?.path ?? '',
         storageInfo.webFolder,
+        context,
       ),
     ]) {
       if (row != null) {
@@ -72,7 +79,7 @@ class ServerPathsCard extends StatelessWidget {
             const SizedBox(height: 12),
             if (pathRows.isEmpty)
               Text(
-                'No server paths returned by this server.',
+                l10n.adminNoServerPathsReturned,
                 style: theme.textTheme.bodySmall,
               )
             else
@@ -83,8 +90,14 @@ class ServerPathsCard extends StatelessWidget {
     );
   }
 
-  Widget? _pathTile(String label, String path, FolderStorageInfo? storage) {
+  Widget? _pathTile(
+    String label,
+    String path,
+    FolderStorageInfo? storage,
+    BuildContext context,
+  ) {
     if (path.trim().isEmpty) return null;
+    final l10n = AppLocalizations.of(context);
 
     final hasCapacity = storage != null && storage.totalSpace > 0;
     final double usageFrac =
@@ -135,7 +148,7 @@ class ServerPathsCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${(usageFrac * 100).round()}% used',
+                  l10n.adminPercentUsed((usageFrac * 100).round()),
                   style: TextStyle(
                     fontSize: 11,
                     color: barColor,

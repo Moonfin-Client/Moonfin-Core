@@ -15,6 +15,7 @@ import '../../playback/known_defects.dart';
 import '../../playback/external_player_policy.dart';
 import '../../playback/media_kit_player_backend.dart';
 import '../../playback/media3_player_backend.dart';
+import '../../playback/tizen_player_backend.dart';
 import '../../playback/offline_stream_resolver.dart';
 import '../../playback/playback_profile_diagnostics.dart';
 import '../../platform/pip_service.dart';
@@ -331,13 +332,26 @@ void registerPlaybackModule() {
 
   final prefs = _getIt<UserPreferences>();
 
-  final backend = MediaKitPlayerBackend(
-    prefs,
-    onNativeHandleReady: pipService.initializeIos,
-  );
-  final media3Backend = Media3PlayerBackend(prefs);
-  _getIt.registerSingleton<MediaKitPlayerBackend>(backend);
-  _getIt.registerSingleton<Media3PlayerBackend>(media3Backend);
+  // media_kit (libmpv) and Media3 (ExoPlayer) are unavailable on Tizen, so the
+  // app plays through TizenPlayerBackend (native AVPlay via video_player) there
+  // and never constructs the other backends (their constructors load native
+  // libraries that don't exist on Tizen).
+  MediaKitPlayerBackend? backend;
+  Media3PlayerBackend? media3Backend;
+  TizenPlayerBackend? tizenBackend;
+
+  if (PlatformDetection.isTizen) {
+    tizenBackend = TizenPlayerBackend(prefs);
+    _getIt.registerSingleton<TizenPlayerBackend>(tizenBackend);
+  } else {
+    backend = MediaKitPlayerBackend(
+      prefs,
+      onNativeHandleReady: pipService.initializeIos,
+    );
+    media3Backend = Media3PlayerBackend(prefs);
+    _getIt.registerSingleton<MediaKitPlayerBackend>(backend);
+    _getIt.registerSingleton<Media3PlayerBackend>(media3Backend);
+  }
 
   HtmlVideoBackend? htmlBackend;
   if (PlatformDetection.isWeb) {
@@ -346,17 +360,25 @@ void registerPlaybackModule() {
   }
 
   final useMedia3ByDefault =
+      !PlatformDetection.isTizen &&
       PlatformDetection.isAndroid &&
       prefs.get(UserPreferences.playbackEnginePreference) ==
           PlaybackEnginePreference.media3;
-  final initialBackend = PlatformDetection.isWeb
-      ? (htmlBackend ?? backend)
-      : (useMedia3ByDefault ? media3Backend : backend);
+  final PlayerBackend initialBackend = PlatformDetection.isTizen
+      ? tizenBackend!
+      : PlatformDetection.isWeb
+          ? (htmlBackend ?? backend!)
+          : (useMedia3ByDefault ? media3Backend! : backend!);
   _getIt.registerSingleton<PlayerBackend>(initialBackend);
 
   final manager = PlaybackManager();
   manager.setBackend(initialBackend);
   manager.setBackendSelector((resolution, currentBackend) {
+    if (PlatformDetection.isTizen) {
+      if (currentBackend is TizenPlayerBackend) return currentBackend;
+      return _getIt<TizenPlayerBackend>();
+    }
+
     if (PlatformDetection.isWeb) {
       final webHtmlBackend = htmlBackend;
       if (webHtmlBackend != null && _shouldUseHtmlVideoBackend(resolution)) {

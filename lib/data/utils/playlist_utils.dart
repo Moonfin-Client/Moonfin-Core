@@ -87,7 +87,9 @@ Future<bool> playlistHasBrowsableItems(
   }
 
   final summaryMediaType = item.rawData['MediaType'] as String?;
-  if (summaryMediaType != null && summaryMediaType != 'Audio') {
+  if (summaryMediaType != null &&
+      summaryMediaType != 'Audio' &&
+      summaryMediaType != 'Unknown') {
     return true;
   }
 

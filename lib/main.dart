@@ -34,6 +34,12 @@ void _configureImageCache() {
     return;
   }
 
+  if (PlatformDetection.isTV) {
+    imageCache.maximumSize = 120;
+    imageCache.maximumSizeBytes = 96 << 20;
+    return;
+  }
+
   imageCache.maximumSize = 200;
   imageCache.maximumSizeBytes = 256 << 20;
 }
@@ -257,19 +263,27 @@ void main() async {
     await windowManager.ensureInitialized();
   }
 
-  _configureImageCache();
-  MediaKit.ensureInitialized();
+  // media_kit (libmpv) has no Tizen implementation; Tizen plays via
+  // TizenPlayerBackend (the native AVPlay-backed video_player). Initializing it
+  // there would fail to load libmpv.
+  if (!PlatformDetection.isTizen) {
+    MediaKit.ensureInitialized();
+  }
 
   await _detectAndSetTvMode();
-  await _detectAndSetDisplayCapabilities();
-  await _detectAndSetCodecCapabilities();
+  await Future.wait([
+    _detectAndSetDisplayCapabilities(),
+    _detectAndSetCodecCapabilities(),
+  ]);
+
+  _configureImageCache();
 
   // On Linux the GTK font pipeline loads fonts asynchronously. The first frame
   // can render before MaterialIcons and other fonts are ready, causing icons to
   // appear blank. Pumping a warm-up frame gives the font loader time to finish.
   // The issue is intermittent and goes away on re-run once the OS font cache
   // is warm, which confirms the timing root cause.
-  if (PlatformDetection.isLinux) {
+  if (PlatformDetection.isLinux || PlatformDetection.isTizen) {
     WidgetsBinding.instance.scheduleWarmUpFrame();
   }
 

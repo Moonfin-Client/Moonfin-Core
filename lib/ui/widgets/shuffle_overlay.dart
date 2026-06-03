@@ -1187,7 +1187,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
                   ),
                   SizedBox(width: isMobile ? 8 : 10),
                   Text(
-                    'Loading shuffle...',
+                    l10n.loadingShuffle,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColorScheme.onSurface.withValues(alpha: 0.8),
                       fontWeight: FontWeight.w600,
@@ -1203,7 +1203,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
                 child: _ShuffleActionCard(
                   focusNode: _libraryButtonFocusNode,
                   focusColor: focusColor,
-                  label: 'LIBRARY SHUFFLE',
+                  label: l10n.libraryShuffleLabel,
                   subtitle: tvDense ? '' : l10n.shuffleSelectLibrary,
                   icon: const Icon(Icons.video_library_rounded),
                   compact: isMobile,
@@ -1227,7 +1227,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
                 child: _ShuffleActionCard(
                   focusNode: _shuffleButtonFocusNode,
                   focusColor: focusColor,
-                  label: 'RANDOM SHUFFLE',
+                  label: l10n.randomShuffleLabel,
                   subtitle: '',
                   icon: const Icon(Icons.shuffle_rounded),
                   compact: isMobile,
@@ -1255,7 +1255,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
                 child: _ShuffleActionCard(
                   focusNode: _genresButtonFocusNode,
                   focusColor: focusColor,
-                  label: 'GENRES SHUFFLE',
+                  label: l10n.genresShuffleLabel,
                   subtitle: tvDense ? '' : l10n.shuffleSelectGenre,
                   icon: Image.asset(
                     'assets/icons/genres.png',

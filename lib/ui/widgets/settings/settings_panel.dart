@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../overlay_sheet.dart';
@@ -16,11 +17,12 @@ class SettingsPanel extends StatelessWidget {
 
   static Future<void> open(BuildContext context, Widget content) {
     FocusManager.instance.primaryFocus?.unfocus();
+    final l10n = AppLocalizations.of(context);
     isOpenNotifier.value = true;
     final future = showGeneralDialog<void>(
       context: context,
       barrierDismissible: true,
-      barrierLabel: 'Settings',
+      barrierLabel: l10n.settings,
       barrierColor: AppColorScheme.scrim.withValues(alpha: 0.54),
       transitionDuration: const Duration(milliseconds: 220),
       pageBuilder: (_, anim, _) => SettingsPanel(child: content),

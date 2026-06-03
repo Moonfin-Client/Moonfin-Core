@@ -256,6 +256,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  connectivity_plus_tizen:
+    dependency: "direct main"
+    description:
+      name: connectivity_plus_tizen
+      sha256: "9f0c14acdceebda77b0bca129b81dc53d0197845ca030032ab5d0198ec5837b3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.0"
   console:
     dependency: transitive
     description:
@@ -367,6 +375,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.3"
+  device_info_plus_tizen:
+    dependency: "direct main"
+    description:
+      name: device_info_plus_tizen
+      sha256: ab5ba568c8c8c3eba302fcc78db4ca2affd4da5243b09285834930c009f2652c
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.0"
   dio:
     dependency: "direct main"
     description:
@@ -617,6 +633,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  flutter_secure_storage_tizen:
+    dependency: "direct main"
+    description:
+      name: flutter_secure_storage_tizen
+      sha256: "4f5b8dd17bfdd2615d41d8d64aa7ee1cbbfac9871829ec87badc302a5035ea58"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.3"
   flutter_secure_storage_web:
     dependency: transitive
     description:
@@ -878,10 +902,10 @@ packages:
     dependency: transitive
     description:
       name: matcher
-      sha256: dc0b7dc7651697ea4ff3e69ef44b0407ea32c487a39fff6a4004fa585e901861
+      sha256: "12956d0ad8390bbcc63ca2e1469c0619946ccb52809807067a7020d57e647aa6"
       url: "https://pub.dev"
     source: hosted
-    version: "0.12.19"
+    version: "0.12.18"
   material_color_utilities:
     dependency: transitive
     description:
@@ -938,12 +962,11 @@ packages:
     source: hosted
     version: "1.0.7"
   media_kit_libs_windows_video:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: media_kit_libs_windows_video
-      sha256: dff76da2778729ab650229e6b4ec6ec111eb5151431002cbd7ea304ff1f112ab
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/media_kit_libs_windows_video"
+      relative: true
+    source: path
     version: "1.0.11"
   media_kit_video:
     dependency: "direct main"
@@ -957,10 +980,10 @@ packages:
     dependency: transitive
     description:
       name: meta
-      sha256: "1741988757a65eb6b36abe716829688cf01910bbf91c34354ff7ec1c3de2b349"
+      sha256: "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394"
       url: "https://pub.dev"
     source: hosted
-    version: "1.18.0"
+    version: "1.17.0"
   mime:
     dependency: transitive
     description:
@@ -1039,6 +1062,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.1"
+  package_info_plus_tizen:
+    dependency: "direct main"
+    description:
+      name: package_info_plus_tizen
+      sha256: "064b1891c7797e2f9e53f16cf1121d04a0fdf8eebcfd3801139a0005f236f48b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   path:
     dependency: transitive
     description:
@@ -1095,6 +1126,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
+  path_provider_tizen:
+    dependency: "direct main"
+    description:
+      name: path_provider_tizen
+      sha256: "1dcafe206f0cfe94931ea8a58fc1e99de53a656b66bd8a85977c8b6fb998fef2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.0"
   path_provider_windows:
     dependency: transitive
     description:
@@ -1183,6 +1222,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.3.0"
+  permission_handler_tizen:
+    dependency: "direct main"
+    description:
+      name: permission_handler_tizen
+      sha256: "28d5455cf3f9020fec2e16ed76f72afd35901a18ec2b6f0f07dfc2afba37e217"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.3"
   permission_handler_windows:
     dependency: transitive
     description:
@@ -1472,6 +1519,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
+  shared_preferences_tizen:
+    dependency: "direct main"
+    description:
+      name: shared_preferences_tizen
+      sha256: "0bb9e5d424570676d23729de251703126d9927016c2617543aa06f463f06401d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.3"
   shared_preferences_web:
     dependency: transitive
     description:
@@ -1597,8 +1652,16 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.0"
+  sqflite_tizen:
+    dependency: "direct main"
+    description:
+      name: sqflite_tizen
+      sha256: b4fcbeae6928b58ba2d092b5171067bcf457dcd8d5d55f3e35d3121fc190f307
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.4"
   sqlite3:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: sqlite3
       sha256: "3145bd74dcdb4fd6f5c6dda4d4e4490a8087d7f286a14dee5d37087290f0f8a2"
@@ -1681,10 +1744,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: "949a932224383300f01be9221c39180316445ecb8e7547f70a41a35bf421fb9e"
+      sha256: "93167629bfc610f71560ab9312acdda4959de4df6fac7492c89ff0d3886f6636"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.11"
+    version: "0.7.9"
   timezone:
     dependency: transitive
     description:
@@ -1701,6 +1764,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
+  tizen_app_control:
+    dependency: transitive
+    description:
+      name: tizen_app_control
+      sha256: "1822a0815434db29b0ac3cf8c37c4d4ad33da08704f68701a926bc99550ccda1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.3"
+  tizen_interop:
+    dependency: transitive
+    description:
+      name: tizen_interop
+      sha256: "46303c36a7e45491ce0149c77a3f54f3d57654938983c482ab0363a8ebe6ee27"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   typed_data:
     dependency: transitive
     description:
@@ -1781,6 +1860,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  url_launcher_tizen:
+    dependency: "direct main"
+    description:
+      name: url_launcher_tizen
+      sha256: a667a5664e9668505dcb8cf618064e3e3944bb351ef7e8d58ef9d5b59e6e8c36
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.5"
   url_launcher_web:
     dependency: transitive
     description:
@@ -1837,6 +1924,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
+  video_player:
+    dependency: "direct main"
+    description:
+      name: video_player
+      sha256: "48a7bdaa38a3d50ec10c78627abdbfad863fdf6f0d6e08c7c3c040cfd80ae36f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.11.1"
+  video_player_android:
+    dependency: transitive
+    description:
+      name: video_player_android
+      sha256: "877a6c7ba772456077d7bfd71314629b3fe2b73733ce503fc77c3314d43a0ca0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.9.5"
+  video_player_avfoundation:
+    dependency: transitive
+    description:
+      name: video_player_avfoundation
+      sha256: "9338f3ec22774f88146b22f13273a446719b1da010fd200c4d1d97802156ac58"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.9.7"
+  video_player_platform_interface:
+    dependency: transitive
+    description:
+      name: video_player_platform_interface
+      sha256: "16eaed5268c571c31840dc58ef8da5f0cd4db2a98490c3b8f1cf70122546c6e0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.7.0"
+  video_player_tizen:
+    dependency: "direct main"
+    description:
+      name: video_player_tizen
+      sha256: "66311a63b259b98a11229f9811bd37e193db3f96d3def538e4afc4f6aa4ca7a2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.11"
+  video_player_web:
+    dependency: transitive
+    description:
+      name: video_player_web
+      sha256: "9f3c00be2ef9b76a95d94ac5119fb843dca6f2c69e6c9968f6f2b6c9e7afbdeb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.0"
   vm_service:
     dependency: transitive
     description:
@@ -1869,6 +2004,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
+  wakelock_plus_tizen:
+    dependency: "direct main"
+    description:
+      name: wakelock_plus_tizen
+      sha256: "12bb99ccc5503bdc98d850b6fb01ac424e05d78c9805dc1c80d01c5d73a70a00"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   watcher:
     dependency: transitive
     description:

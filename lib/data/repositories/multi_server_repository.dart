@@ -11,6 +11,7 @@ import '../models/aggregated_item.dart';
 import '../models/aggregated_library.dart';
 import '../models/home_row.dart';
 import '../services/media_server_client_factory.dart';
+import '../utils/bounded_concurrency.dart';
 import '../utils/genre_browse_utils.dart';
 import '../utils/latest_media_row_normalizer.dart';
 import '../utils/playlist_utils.dart';
@@ -45,10 +46,13 @@ class MultiServerRepository {
       'ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,'
       'ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,'
       'ParentLogoItemId,ParentLogoImageTag';
+  // Cap image tags to one per type (server returns all by default)
+  static const _imageTypes = 'Primary,Backdrop,Thumb';
+  static const _imageTypeLimit = 1;
   static const _defaultLimit = 15;
   static const _defaultSortBy = 'SortName';
   static const _defaultSortOrder = 'Ascending';
-  static const _genreArtworkConcurrency = 4;
+  static const _genreArtworkConcurrency = 6;
 
   List<ServerUserSession>? _cachedSessions;
   DateTime _cacheExpiry = DateTime(0);
@@ -171,6 +175,8 @@ class MultiServerRepository {
             includeItemTypes: ['Movie', 'Episode'],
             limit: perServer,
             fields: _fields,
+            enableImageTypes: _imageTypes,
+            imageTypeLimit: _imageTypeLimit,
           );
           return _parseItems(response, session.server.id);
         }, label: 'resume from ${session.server.name}'),
@@ -198,6 +204,8 @@ class MultiServerRepository {
             includeItemTypes: ['Audio'],
             limit: perServer,
             fields: _fields,
+            enableImageTypes: _imageTypes,
+            imageTypeLimit: _imageTypeLimit,
           );
           return _parseItems(response, session.server.id);
         }, label: 'resume audio from ${session.server.name}'),
@@ -224,6 +232,8 @@ class MultiServerRepository {
           final response = await session.client.itemsApi.getNextUp(
             limit: perServer,
             fields: _fields,
+            enableImageTypes: _imageTypes,
+            imageTypeLimit: _imageTypeLimit,
             enableResumable: false,
           );
           return _parseItems(response, session.server.id);
@@ -254,6 +264,8 @@ class MultiServerRepository {
             recursive: true,
             limit: limit,
             fields: _fields,
+            enableImageTypes: _imageTypes,
+            imageTypeLimit: _imageTypeLimit,
           );
           return filterBrowsablePlaylists(
             session.client,
@@ -381,6 +393,8 @@ class MultiServerRepository {
             limit: perServer,
             isFavorite: isFavorite,
             fields: _fields,
+            enableImageTypes: _imageTypes,
+            imageTypeLimit: _imageTypeLimit,
           );
           return _parseItems(response, session.server.id);
         }, label: '$logPrefix from ${session.server.name}'),
@@ -479,6 +493,8 @@ class MultiServerRepository {
                 parentId: id,
                 limit: fetchLimit,
                 fields: _fields,
+                enableImageTypes: _imageTypes,
+                imageTypeLimit: _imageTypeLimit,
               ),
               label: 'latest $name from ${session.server.name}',
             );
@@ -547,22 +563,17 @@ class MultiServerRepository {
       return const [];
     }
 
-    final enriched = <AggregatedItem>[];
-    for (var i = 0; i < genres.length; i += _genreArtworkConcurrency) {
-      final batch = genres.skip(i).take(_genreArtworkConcurrency);
-      final resolved = await Future.wait(
-        batch.map(
-          (genre) => _enrichSingleGenreForBrowse(
-            session,
-            genre,
-            includeItemTypes: includeItemTypes,
-          ),
-        ),
-      );
-      enriched.addAll(resolved.whereType<AggregatedItem>());
-    }
+    final resolved = await mapBounded(
+      genres,
+      _genreArtworkConcurrency,
+      (genre) => _enrichSingleGenreForBrowse(
+        session,
+        genre,
+        includeItemTypes: includeItemTypes,
+      ),
+    );
 
-    return enriched;
+    return resolved.whereType<AggregatedItem>().toList();
   }
 
   Future<AggregatedItem?> _enrichSingleGenreForBrowse(
@@ -585,6 +596,8 @@ class MultiServerRepository {
         recursive: true,
         limit: 1,
         fields: _fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
       );
 
       final items = (response['Items'] as List?) ?? const [];

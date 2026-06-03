@@ -125,9 +125,83 @@ const NEON = {
 };
 
 const DRAFT_KEY='moonfin-theme-editor-draft-v1';
+const EDITOR_LAYOUT_KEY='moonfin-theme-editor-layout-v1';
 const EDITOR_EXPORT_VERSION='2026.05.28';
 let dirty=false;
 let persistTimer=null;
+let editorWidth=360;
+
+function maxEditorWidthForViewport(){
+  return Math.max(320,Math.min(760,window.innerWidth-420));
+}
+
+function clampEditorWidth(w){
+  return Math.min(maxEditorWidthForViewport(),Math.max(320,Math.round(w)));
+}
+
+function applyEditorWidth(width,persist=true){
+  editorWidth=clampEditorWidth(width);
+  const scale=Math.max(1,Math.min(1.28,1+((editorWidth-360)/(760-360))*0.28));
+  document.documentElement.style.setProperty('--editor-width',editorWidth+'px');
+  document.documentElement.style.setProperty('--editor-scale',scale.toFixed(3));
+  if(persist){
+    localStorage.setItem(EDITOR_LAYOUT_KEY,JSON.stringify({editorWidth}));
+  }
+}
+
+function loadEditorLayout(){
+  try{
+    const raw=localStorage.getItem(EDITOR_LAYOUT_KEY);
+    if(!raw){
+      applyEditorWidth(360,false);
+      return;
+    }
+    const parsed=JSON.parse(raw);
+    applyEditorWidth(parsed&&parsed.editorWidth?parsed.editorWidth:360,false);
+  }catch(e){
+    applyEditorWidth(360,false);
+  }
+}
+
+function initEditorResizer(){
+  const layout=document.querySelector('.layout');
+  const resizer=document.getElementById('editorResizer');
+  if(!layout||!resizer) return;
+
+  let dragging=false;
+  const onMove=(ev)=>{
+    if(!dragging) return;
+    const x=('touches' in ev&&ev.touches.length)?ev.touches[0].clientX:ev.clientX;
+    const left=layout.getBoundingClientRect().left;
+    applyEditorWidth(x-left,false);
+  };
+  const onUp=()=>{
+    if(!dragging) return;
+    dragging=false;
+    document.body.classList.remove('resizing');
+    applyEditorWidth(editorWidth,true);
+    window.removeEventListener('mousemove',onMove);
+    window.removeEventListener('mouseup',onUp);
+    window.removeEventListener('touchmove',onMove);
+    window.removeEventListener('touchend',onUp);
+  };
+
+  resizer.addEventListener('mousedown',(ev)=>{
+    ev.preventDefault();
+    dragging=true;
+    document.body.classList.add('resizing');
+    window.addEventListener('mousemove',onMove);
+    window.addEventListener('mouseup',onUp);
+  });
+  resizer.addEventListener('touchstart',(ev)=>{
+    dragging=true;
+    document.body.classList.add('resizing');
+    window.addEventListener('touchmove',onMove,{passive:false});
+    window.addEventListener('touchend',onUp);
+  },{passive:true});
+
+  window.addEventListener('resize',()=>applyEditorWidth(editorWidth,false));
+}
 
 function hex2css(h){
   if(!h||typeof h!=='string') return 'rgba(0,0,0,0)';
@@ -1632,6 +1706,8 @@ function doExport(){
 
 buildEditor();
 populateAll();
+loadEditorLayout();
+initEditorResizer();
 updateVars();
 renderAll();
 (() => {

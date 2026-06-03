@@ -466,22 +466,12 @@ class PluginSyncService extends ChangeNotifier {
 
     try {
       final seerrRepo = await GetIt.instance.getAsync<SeerrRepository>();
-      final status = await seerrRepo.configureWithMoonfin(
+      await seerrRepo.bootstrapMoonfinSso(
         jellyfinBaseUrl: client.baseUrl,
         jellyfinToken: token,
+        username: username,
+        password: password,
       );
-
-      if (!status.authenticated &&
-          status.enabled &&
-          username != null &&
-          username.isNotEmpty &&
-          password != null &&
-          password.isNotEmpty) {
-        await seerrRepo.loginWithMoonfin(
-          username: username,
-          password: password,
-        );
-      }
     } catch (_) {}
   }
 
@@ -789,7 +779,7 @@ class PluginSyncService extends ChangeNotifier {
       resolved,
       'navbarPosition',
       UserPreferences.navbarPosition,
-      enumValues: prefs.NavbarPosition.values,
+      enumValues: NavigationLayout.availableNavbarPositions,
     );
     _applyString(
       resolved,
@@ -1121,8 +1111,11 @@ class PluginSyncService extends ChangeNotifier {
 
     _prefs.notifyPreferenceChanged();
 
-    // Force navigation layout to rebuild with new position preference
-    final navbarPos = _prefs.get(UserPreferences.navbarPosition);
+    final currentNavbarPos = _prefs.get(UserPreferences.navbarPosition);
+    final navbarPos = NavigationLayout.sanitizeNavbarPosition(currentNavbarPos);
+    if (currentNavbarPos != navbarPos) {
+      await _prefs.set(UserPreferences.navbarPosition, navbarPos);
+    }
     SchedulerBinding.instance.addPostFrameCallback((_) {
       NavigationLayout.positionNotifier.value = navbarPos;
     });

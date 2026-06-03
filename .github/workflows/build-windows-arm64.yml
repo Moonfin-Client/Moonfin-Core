@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  FLUTTER_VERSION: '3.41.2'
+  FLUTTER_VERSION: '3.44.0'
   VCPKG_DEFAULT_TRIPLET: arm64-windows
   VCPKG_TARGET_TRIPLET: arm64-windows
 
@@ -42,6 +42,27 @@ jobs:
         run: |
           flutter --version
           flutter doctor -v
+
+      - name: Assert Flutter is using a native ARM64 Dart SDK
+        shell: pwsh
+        run: |
+          $dartVersion = (& dart --version 2>&1 | Out-String)
+          Write-Host $dartVersion
+
+          if ($dartVersion -notmatch 'windows_arm64|arm64') {
+            throw @"
+          Flutter is using an x64 Dart SDK on this ARM64 runner ($($dartVersion.Trim())).
+
+          update_dart_sdk.ps1 HEAD-requests dart-sdk-windows-arm64.zip for this
+          release's engine and falls back to x64 when it is missing. That means
+          FLUTTER_VERSION ($env:FLUTTER_VERSION) does not publish an arm64 Dart SDK,
+          so the build would target x64 and the arm64 vcpkg libarchive would fail
+          to link (LNK4272/LNK1120). Bump FLUTTER_VERSION to a stable release that
+          ships the arm64 SDK (>= 3.44.0).
+          "@
+          }
+
+          Write-Host "OK: native ARM64 Dart SDK detected; flutter build windows will target arm64."
 
       - name: Enable Windows desktop
         shell: pwsh
@@ -79,7 +100,14 @@ jobs:
 
           Write-Host "Using vcpkg: $vcpkg"
           & $vcpkg install libarchive:arm64-windows
+          if ($LASTEXITCODE -ne 0) { throw "vcpkg install libarchive:arm64-windows failed ($LASTEXITCODE)" }
           & $vcpkg integrate install
+
+          # The Flutter plugin CMakeLists (archive_extract, rar_fork) locate
+          # libarchive via $env:VCPKG_ROOT. `vcpkg integrate install` only wires
+          # up MSBuild, not Flutter's CMake build, so export VCPKG_ROOT for the
+          # build step.
+          "VCPKG_ROOT=$vcpkgRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Build Windows release
         shell: pwsh
@@ -90,6 +118,11 @@ jobs:
           flutter clean
           flutter pub get
           flutter build windows --release --dart-define=DISTRIBUTION_CHANNEL=windows
+
+          if (-not (Test-Path "build\windows\arm64")) {
+            $produced = (Get-ChildItem build\windows -Directory | ForEach-Object { $_.Name }) -join ", "
+            throw "flutter build windows did not produce an arm64 target (found: $produced). Expected build\windows\arm64."
+          }
 
       - name: Verify ARM64 executable
         shell: pwsh

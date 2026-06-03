@@ -5,6 +5,7 @@ import 'package:playback_jellyfin/playback_jellyfin.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../playback/device_profile_builder.dart';
+import '../../../l10n/current_app_localizations.dart';
 import '../../../util/platform_detection.dart';
 import '../../models/aggregated_item.dart';
 import '../media_server_client_factory.dart';
@@ -45,12 +46,13 @@ class AirPlayProvider implements CastProvider, CastTransportControls {
       return const [];
     }
 
-    return const [
+    final l10n = currentAppLocalizations();
+    return [
       CastTarget(
         id: 'airplay-system-picker',
         kind: CastTargetKind.airPlay,
-        title: 'AirPlay',
-        subtitle: 'Open iOS route picker',
+        title: l10n.castAirPlay,
+        subtitle: l10n.openIosRoutePicker,
       ),
     ];
   }
@@ -67,7 +69,7 @@ class AirPlayProvider implements CastProvider, CastTransportControls {
   }) async {
     final isAvailable = await _native.isAirPlayRoutePickerAvailable();
     if (!isAvailable) {
-      throw StateError('AirPlay route picker is unavailable on this device.');
+      throw StateError(currentAppLocalizations().airPlayRoutePickerUnavailable);
     }
 
     final client =

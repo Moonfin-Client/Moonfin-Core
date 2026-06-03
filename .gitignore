@@ -84,6 +84,12 @@ app.*.map.json
 /Moonfin-android.apk
 /Moonfin_Android_v*.apk
 /Moonfin_Android_v*.aab
+/*.apk
+
+# Tizen TPK artifacts and generated dependency metadata
+/Moonfin_Tizen_v*.tpk
+/*.tpk
+/tizen/.app.deps.json
 
 # iOS IPA artifacts and local signing overrides
 /Moonfin-ios.ipa

@@ -127,6 +127,8 @@ class UserConfiguration {
   final bool playDefaultAudioTrack;
   final bool rememberAudioSelections;
   final bool rememberSubtitleSelections;
+  final String? audioLanguagePreference;
+  final String? subtitleLanguagePreference;
   final Map<String, dynamic> _raw;
 
   const UserConfiguration({
@@ -139,6 +141,8 @@ class UserConfiguration {
     this.playDefaultAudioTrack = true,
     this.rememberAudioSelections = true,
     this.rememberSubtitleSelections = true,
+    this.audioLanguagePreference, // = null
+    this.subtitleLanguagePreference, // = null
     Map<String, dynamic> raw = const {},
   }) : _raw = raw;
 
@@ -157,12 +161,19 @@ class UserConfiguration {
             json['RememberAudioSelections'] as bool? ?? true,
         rememberSubtitleSelections:
             json['RememberSubtitleSelections'] as bool? ?? true,
+        audioLanguagePreference: _nonEmptyString(json['AudioLanguagePreference']),
+        subtitleLanguagePreference: _nonEmptyString(json['SubtitleLanguagePreference']),
         raw: json,
       );
 
   static List<String> _stringList(dynamic value) {
     if (value is List) return value.cast<String>();
     return const [];
+  }
+
+  static String? _nonEmptyString(dynamic value) {
+    if (value is String && value.trim().isNotEmpty) return value.trim();
+    return null;
   }
 
   UserConfiguration copyWith({
@@ -179,6 +190,8 @@ class UserConfiguration {
       playDefaultAudioTrack: playDefaultAudioTrack,
       rememberAudioSelections: rememberAudioSelections,
       rememberSubtitleSelections: rememberSubtitleSelections,
+      audioLanguagePreference: audioLanguagePreference,
+      subtitleLanguagePreference: subtitleLanguagePreference,
       raw: _raw,
     );
   }
@@ -194,6 +207,14 @@ class UserConfiguration {
     json['PlayDefaultAudioTrack'] = playDefaultAudioTrack;
     json['RememberAudioSelections'] = rememberAudioSelections;
     json['RememberSubtitleSelections'] = rememberSubtitleSelections;
+
+    // key absence is used as a check, so only set if not null
+    if (audioLanguagePreference != null) {
+      json['AudioLanguagePreference'] = audioLanguagePreference;
+    }
+    if (subtitleLanguagePreference != null) {
+      json['SubtitleLanguagePreference'] = subtitleLanguagePreference;
+    }
     return json;
   }
 }

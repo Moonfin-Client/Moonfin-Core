@@ -65,8 +65,7 @@ class MediaBar extends StatefulWidget {
   State<MediaBar> createState() => _MediaBarState();
 }
 
-class _MediaBarState extends State<MediaBar>
-    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+class _MediaBarState extends State<MediaBar> with WidgetsBindingObserver {
   static const _openTimeout = Duration(seconds: 10);
   static const _previewRevealDelay = Duration(seconds: 3);
   static const _trailerResolveTimeout = Duration(seconds: 10);
@@ -77,7 +76,9 @@ class _MediaBarState extends State<MediaBar>
   final _pageController = PageController();
   final _backgroundService = GetIt.instance<BackgroundService>();
   final _playbackManager = GetIt.instance<PlaybackManager>();
-  final _media3TrailerBackend = GetIt.instance<Media3PlayerBackend>();
+  final Media3PlayerBackend? _media3TrailerBackend = PlatformDetection.isTizen
+      ? null
+      : GetIt.instance<Media3PlayerBackend>();
   final _sponsorBlockService = SponsorBlockService();
   final _sponsorBlockSession = SponsorBlockSkipSession();
   bool _isHomeRouteActive = true;
@@ -119,8 +120,6 @@ class _MediaBarState extends State<MediaBar>
   final Set<String> _failedTrailerItemIds = <String>{};
   late bool _lastHardwareDecodingEnabled;
   late bool _lastUseMedia3TrailerEngine;
-  late final AnimationController _makdKenBurnsController;
-  late final Animation<double> _makdKenBurnsScale;
 
   bool get _hideLeftNavArrowForSidebar {
     if (PlatformDetection.useMobileUi) return false;
@@ -144,14 +143,6 @@ class _MediaBarState extends State<MediaBar>
   @override
   void initState() {
     super.initState();
-    _makdKenBurnsController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 10),
-    );
-    _makdKenBurnsScale = Tween<double>(begin: 1.0, end: 1.08).animate(
-      CurvedAnimation(parent: _makdKenBurnsController, curve: Curves.easeOut),
-    );
-    _makdKenBurnsController.forward();
     _lastHardwareDecodingEnabled = widget.prefs.get(
       UserPreferences.hardwareDecoding,
     );
@@ -160,7 +151,7 @@ class _MediaBarState extends State<MediaBar>
     _mainPlaybackSub = _playbackManager.state.playingStream.listen(
       _onMainPlaybackChanged,
     );
-    _media3EventSub = _media3TrailerBackend.errorStream.listen(
+    _media3EventSub = _media3TrailerBackend?.errorStream.listen(
       _onMedia3BackendEvent,
       onError: (_) {},
     );
@@ -181,7 +172,6 @@ class _MediaBarState extends State<MediaBar>
     _mainPlaybackSub?.cancel();
     _media3EventSub?.cancel();
     _disposeTrailerPlayer();
-    _makdKenBurnsController.dispose();
     _pageController.dispose();
     widget.viewModel.removeListener(_onStateChanged);
     widget.prefs.removeListener(_onPrefsChanged);
@@ -417,7 +407,7 @@ class _MediaBarState extends State<MediaBar>
       final audioEnabled = widget.prefs.get(
         UserPreferences.previewAudioEnabled,
       );
-      _media3TrailerBackend.setVolume(audioEnabled ? 100 : 0);
+      _media3TrailerBackend!.setVolume(audioEnabled ? 100 : 0);
     } else if (_trailerPlayer != null) {
       final audioEnabled = widget.prefs.get(
         UserPreferences.previewAudioEnabled,
@@ -490,7 +480,6 @@ class _MediaBarState extends State<MediaBar>
 
   void _onPageChanged(int index) {
     setState(() => _currentIndex = index);
-    _makdKenBurnsController.forward(from: 0);
     _syncMakdBackdropWithCurrentSlide();
     _startAutoAdvance();
     _cancelTrailerPreview();
@@ -586,7 +575,7 @@ class _MediaBarState extends State<MediaBar>
     _isTrailerPlaying = false;
     if (_trailerUsingMedia3) {
       _trailerUsingMedia3 = false;
-      unawaited(_media3TrailerBackend.stop());
+      unawaited(_media3TrailerBackend!.stop());
     } else {
       _trailerPlayer?.stop();
     }
@@ -693,10 +682,10 @@ class _MediaBarState extends State<MediaBar>
     try {
       final useMedia3 = _useMedia3TrailerEngine() && !webOnly;
       if (useMedia3) {
-        _media3TrailerCompletedSub ??= _media3TrailerBackend.completedStream
+        _media3TrailerCompletedSub ??= _media3TrailerBackend!.completedStream
             .listen(_onTrailerCompleted);
         _trailerUsingMedia3 = true;
-        await _media3TrailerBackend.setVolume(0);
+        await _media3TrailerBackend!.setVolume(0);
         if (!mounted || resolveId != _trailerResolveId) return;
 
         final payload = <String, dynamic>{
@@ -784,7 +773,7 @@ class _MediaBarState extends State<MediaBar>
         UserPreferences.previewAudioEnabled,
       );
       try {
-        await _media3TrailerBackend.setVolume(audioEnabled ? 100 : 0);
+        await _media3TrailerBackend!.setVolume(audioEnabled ? 100 : 0);
         if (!mounted || resolveId != _trailerResolveId) return;
 
         await _media3TrailerBackend.resume();
@@ -847,7 +836,7 @@ class _MediaBarState extends State<MediaBar>
   Future<bool> _waitForMedia3TrailerReady(int resolveId) async {
     if (!mounted || resolveId != _trailerResolveId) return false;
 
-    var isPlaying = _media3TrailerBackend.isPlaying;
+    var isPlaying = _media3TrailerBackend!.isPlaying;
     var isBuffering = _media3TrailerBackend.isBuffering;
     var buffered = _media3TrailerBackend.buffer;
     var position = _media3TrailerBackend.position;
@@ -1006,7 +995,7 @@ class _MediaBarState extends State<MediaBar>
     _media3TrailerCompletedSub = null;
     if (_trailerUsingMedia3) {
       _trailerUsingMedia3 = false;
-      unawaited(_media3TrailerBackend.stop());
+      unawaited(_media3TrailerBackend!.stop());
     }
     _trailerPlayer?.stop();
     _trailerPlayer?.dispose();
@@ -1027,7 +1016,7 @@ class _MediaBarState extends State<MediaBar>
     final token = ++_sponsorBlockToken;
 
     if (_trailerUsingMedia3) {
-      _trailerPositionSub = _media3TrailerBackend.positionStream.listen((
+      _trailerPositionSub = _media3TrailerBackend!.positionStream.listen((
         position,
       ) {
         _handleSponsorBlockPosition(position);
@@ -1075,7 +1064,7 @@ class _MediaBarState extends State<MediaBar>
     unawaited(() async {
       try {
         if (_trailerUsingMedia3) {
-          await _media3TrailerBackend.seekTo(skipTo);
+          await _media3TrailerBackend!.seekTo(skipTo);
         } else {
           await _trailerPlayer?.seek(skipTo);
         }
@@ -1621,20 +1610,10 @@ class _MediaBarState extends State<MediaBar>
                     AnimatedOpacity(
                       opacity: hasVisibleTrailerVideo ? 0 : 1,
                       duration: const Duration(milliseconds: 250),
-                      child: AnimatedBuilder(
-                        animation: _makdKenBurnsScale,
-                        builder: (context, child) {
-                          return Transform.scale(
-                            scale: _makdKenBurnsScale.value,
-                            alignment: Alignment.center,
-                            child: child,
-                          );
-                        },
-                        child: _BackdropLayer(
-                          items: items,
-                          pageController: _pageController,
-                          onPageChanged: _onPageChanged,
-                        ),
+                      child: _BackdropLayer(
+                        items: items,
+                        pageController: _pageController,
+                        onPageChanged: _onPageChanged,
                       ),
                     ),
                   if (!isMobile) ..._buildVideoOverlays(),

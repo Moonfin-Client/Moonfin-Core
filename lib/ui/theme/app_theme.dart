@@ -81,6 +81,16 @@ class AppTheme {
         backgroundColor: c.background,
         elevation: 0,
       ),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: _FadeScalePageTransitionsBuilder(),
+          TargetPlatform.fuchsia: _FadeScalePageTransitionsBuilder(),
+          TargetPlatform.linux: _FadeScalePageTransitionsBuilder(),
+          TargetPlatform.macOS: _FadeScalePageTransitionsBuilder(),
+          TargetPlatform.windows: _FadeScalePageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: c.surface,
         selectedItemColor: c.accent,
@@ -136,4 +146,30 @@ class AppTheme {
   }
 
   static final darkTheme = buildTheme(ThemeRegistry.resolveById(ThemeRegistry.moonfinId));
+}
+
+class _FadeScalePageTransitionsBuilder extends PageTransitionsBuilder {
+  const _FadeScalePageTransitionsBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    final curved = CurvedAnimation(
+      parent: animation,
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    );
+    return FadeTransition(
+      opacity: curved,
+      child: ScaleTransition(
+        scale: Tween<double>(begin: 0.97, end: 1.0).animate(curved),
+        child: child,
+      ),
+    );
+  }
 }

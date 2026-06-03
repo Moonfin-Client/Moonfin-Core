@@ -2,33 +2,61 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import 'admin_user_providers.dart';
 
 class AdminMediaMetricDefinition {
   final String key;
-  final String label;
   final List<String> includeItemTypes;
 
   const AdminMediaMetricDefinition(
     this.key,
-    this.label,
     this.includeItemTypes,
   );
 }
 
 const adminMediaMetrics = <AdminMediaMetricDefinition>[
-  AdminMediaMetricDefinition('movies', 'Movies', ['Movie']),
-  AdminMediaMetricDefinition('series', 'Series', ['Series']),
-  AdminMediaMetricDefinition('episodes', 'Episodes', ['Episode']),
-  AdminMediaMetricDefinition('albums', 'Albums', ['MusicAlbum']),
-  AdminMediaMetricDefinition('songs', 'Songs', ['Audio']),
-  AdminMediaMetricDefinition('books', 'Books', ['Book']),
-  AdminMediaMetricDefinition('audiobooks', 'Audiobooks', ['AudioBook']),
-  AdminMediaMetricDefinition('collections', 'Collections', ['BoxSet']),
-  AdminMediaMetricDefinition('musicVideos', 'Music Videos', ['MusicVideo']),
-  AdminMediaMetricDefinition('photos', 'Photos', ['Photo']),
-  AdminMediaMetricDefinition('videos', 'Videos', ['Video']),
+  AdminMediaMetricDefinition('movies', ['Movie']),
+  AdminMediaMetricDefinition('series', ['Series']),
+  AdminMediaMetricDefinition('episodes', ['Episode']),
+  AdminMediaMetricDefinition('albums', ['MusicAlbum']),
+  AdminMediaMetricDefinition('songs', ['Audio']),
+  AdminMediaMetricDefinition('books', ['Book']),
+  AdminMediaMetricDefinition('audiobooks', ['AudioBook']),
+  AdminMediaMetricDefinition('collections', ['BoxSet']),
+  AdminMediaMetricDefinition('musicVideos', ['MusicVideo']),
+  AdminMediaMetricDefinition('photos', ['Photo']),
+  AdminMediaMetricDefinition('videos', ['Video']),
 ];
+
+String adminMediaMetricLabel(AppLocalizations l10n, String key) {
+  switch (key) {
+    case 'movies':
+      return l10n.movies;
+    case 'series':
+      return l10n.series;
+    case 'episodes':
+      return l10n.episodes;
+    case 'albums':
+      return l10n.albums;
+    case 'songs':
+      return l10n.songs;
+    case 'books':
+      return l10n.books;
+    case 'audiobooks':
+      return l10n.audiobooks;
+    case 'collections':
+      return l10n.collections;
+    case 'musicVideos':
+      return l10n.musicVideos;
+    case 'photos':
+      return l10n.photos;
+    case 'videos':
+      return l10n.videos;
+    default:
+      return key;
+  }
+}
 
 class AdminMediaCountSummary {
   final Map<String, int> totals;

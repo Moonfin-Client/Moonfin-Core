@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 
 void configureServerDio(Dio dio) {
+  dio.transformer = FusedTransformer(contentLengthIsolateThreshold: 50 * 1024);
+
   dio.httpClientAdapter = IOHttpClientAdapter(
     createHttpClient: () {
       final client = HttpClient();

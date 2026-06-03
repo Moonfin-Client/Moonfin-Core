@@ -5912,17 +5912,17 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return 'Daily at $time';
+    return 'Щодня в $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return 'Every $day at $time';
+    return 'Кожен $day о $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return 'Every $duration';
+    return 'Кожен $duration';
   }
 
   @override
@@ -5989,17 +5989,17 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String adminActivityDaysAgo(int days) {
-    return '${days}d ago';
+    return '$daysдн. тому';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '$hoursгод тому';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '$minutesхв тому';
   }
 
   @override
@@ -6117,7 +6117,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Не вдалося оновити тип вмісту: $error';
   }
 
   @override
@@ -6141,12 +6141,12 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Не вдалося оновити зіставлення: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return 'Time limit: $duration';
+    return 'Ліміт часу: $duration';
   }
 
   @override
@@ -6173,10 +6173,10 @@ class AppLocalizationsUk extends AppLocalizations {
       'Для SyncPlay потрібен сервер Jellyfin. Поточний сервер не підтримує це.';
 
   @override
-  String get syncPlayGroupFallbackName => 'Група SyncPlay';
+  String get syncPlayGroupFallbackName => 'SyncPlay Група';
 
   @override
-  String get syncPlayGroupTooltip => 'Група SyncPlay';
+  String get syncPlayGroupTooltip => 'SyncPlay група';
 
   @override
   String syncPlayParticipantCount(int count) {
@@ -6228,7 +6228,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String syncPlayQueueItemFallback(int index) {
-    return 'Item $index';
+    return 'Товар $index';
   }
 
   @override
@@ -6241,7 +6241,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get syncPlayGroupName => 'Назва групи';
 
   @override
-  String get syncPlayDefaultGroupName => 'Моя група SyncPlay';
+  String get syncPlayDefaultGroupName => 'Моя SyncPlay група';
 
   @override
   String get syncPlayCreateGroup => 'Створити групу';
@@ -6276,24 +6276,24 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName joined SyncPlay group';
+    return '$userName приєднався до групи SyncPlay';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName left SyncPlay group';
+    return '$userName залишив групу SyncPlay';
   }
 
   @override
-  String get syncPlayAccessDeniedTitle => 'Доступ до SyncPlay заборонено';
+  String get syncPlayAccessDeniedTitle => 'SyncPlay доступ заборонено';
 
   @override
   String get syncPlayAccessDeniedMessage =>
-      'Ви не маєте доступу до одного чи кількох елементів у цій групі SyncPlay. Попросіть власника групи перевірити дозволи бібліотеки або вибрати іншу чергу.';
+      'Ви не маєте доступу до одного або кількох елементів у цій SyncPlay групі. Попросіть власника групи перевірити дозволи бібліотеки або вибрати іншу чергу.';
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return 'Syncing playback to $groupName';
+    return 'Синхронізація відтворення з $groupName';
   }
 
   @override
@@ -6301,7 +6301,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get dolbyVisionDirectPlayFailedTitle =>
-      'Помилка прямого відтворення Dolby Vision';
+      'Dolby Vision Помилка прямого відтворення';
 
   @override
   String get dolbyVisionDirectPlayFailedMessage =>
@@ -6311,17 +6311,17 @@ class AppLocalizationsUk extends AppLocalizations {
   String get retryWithTranscode => 'Повторіть спробу з перекодуванням';
 
   @override
-  String get dolbyVisionNotSupportedTitle => 'Dolby Vision не підтримується';
+  String get dolbyVisionNotSupportedTitle => 'Dolby Vision Не підтримується';
 
   @override
   String get dolbyVisionNotSupportedMessage =>
-      'Цей пристрій не може безпосередньо декодувати вміст Dolby Vision. Використовуйте резервний HDR10 або надсилайте запит на перекодування сервера.';
+      'Цей пристрій не може безпосередньо декодувати вміст Dolby Vision. Використовуйте HDR10 резервний варіант або надсилайте запит на перекодування сервера.';
 
   @override
   String get rememberMyChoice => 'Запам\'ятай мій вибір';
 
   @override
-  String get playHdr10Fallback => 'Відтворити запасний HDR10';
+  String get playHdr10Fallback => 'Відтворити HDR10 запасний варіант';
 
   @override
   String get requestTranscode => 'Запит на перекодування';
@@ -6332,15 +6332,15 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get homeScreenSectionsIntegrationNoServers =>
-      'Сервери Jellyfin ще не повідомляють про плагін.';
+      'Жоден сервер Jellyfin не повідомляє про плагін.';
 
   @override
   String get kefinTweaksIntegrationDescription =>
-      'Виявляти рядки, налаштовані за допомогою плагіна \"KefinTweaks\" ranaldsgift. Користувальницькі розділи, нещодавно випущені, переглянути ще раз, сезонні та нещодавно додані в бібліотеці відображаються з конфігурації KefinTweaks на кожному сервері Jellyfin.';
+      'Виявляти рядки, налаштовані за допомогою плагіна \"KefinTweaks\" ranaldsgift. Користувальницькі розділи, нещодавно випущені, переглянути ще раз, сезонні та нещодавно додані в бібліотеку відображаються з конфігурації KefinTweaks на кожному сервері Jellyfin.';
 
   @override
   String get kefinTweaksIntegrationNoServers =>
-      'Наразі жоден сервер Jellyfin не повідомляє про KefinTweaks.';
+      'Поки немає серверів Jellyfin, які повідомляють про KefinTweaks.';
 
   @override
   String get integrationOpenHomeSections => 'Відкрийте головні розділи';
@@ -6429,12 +6429,12 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return 'Cast control failed: $error';
+    return 'Помилка керування трансляцією: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return '$kind Controls';
+    return '$kind Елементи керування';
   }
 
   @override
@@ -6445,7 +6445,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return 'Stop $kind';
+    return 'Зупинити $kind';
   }
 
   @override
@@ -6469,12 +6469,12 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String pinEnterNDigit(int length) {
-    return 'Enter a $length-digit PIN';
+    return 'Введіть $length-значний PIN-код';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return 'Enter your $length-digit PIN';
+    return 'Введіть свій $length-значний PIN-код';
   }
 
   @override
@@ -6522,7 +6522,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect failed: $message';
+    return 'Помилка швидкого підключення: $message';
   }
 
   @override
@@ -6533,7 +6533,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String remoteCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Помилка команди: $error';
   }
 
   @override
@@ -6562,7 +6562,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String castingFailed(String error) {
-    return 'Failed to start casting: $error';
+    return 'Не вдалося почати трансляцію: $error';
   }
 
   @override
@@ -6608,7 +6608,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String trackActionDownloading(String name) {
-    return 'Downloading $name...';
+    return 'Завантаження $name...';
   }
 
   @override
@@ -6697,7 +6697,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String skipSegment(String segment) {
-    return 'Skip $segment';
+    return 'Пропустити $segment';
   }
 
   @override
@@ -6708,12 +6708,12 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return 'Downloading $current/$total — $fileName';
+    return 'Завантаження $current/$total — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return 'Downloading $fileName';
+    return 'Завантаження $fileName';
   }
 
   @override
@@ -6936,11 +6936,11 @@ class AppLocalizationsUk extends AppLocalizations {
   String get settingsJoinTheDiscord => 'Приєднуйтесь до Discord';
 
   @override
-  String get settingsSupportMoonfin => 'Підтримайте Moonfin';
+  String get settingsSupportMoonfin => 'Підтримка Moonfin';
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'Позначте проект зірочкою на GitHub або додайте свій внесок';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'ЮРИДИЧНИЙ';
@@ -7057,7 +7057,13 @@ class AppLocalizationsUk extends AppLocalizations {
       'Media3 (рекомендовано)';
 
   @override
-  String get settingsPlaybackEngineMpvLegacy => 'mpv (спадщина)';
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (застаріле)';
+
+  @override
+  String get settingsPlaybackEngineMpvLegacy => 'mpv (застаріле)';
+
+  @override
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (рекомендовано)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Vision Запасний варіант';
@@ -7071,7 +7077,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get settingsPreferHdr10Fallback =>
-      'Віддайте перевагу резервному режиму HDR10';
+      'Віддайте перевагу резервному варіанту HDR10';
 
   @override
   String get settingsPreferServerTranscode =>
@@ -7079,11 +7085,11 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get settingsDolbyVisionProfile7DirectPlay =>
-      'Пряме відтворення Dolby Vision Profile 7';
+      'Dolby Vision Профіль 7 Пряма гра';
 
   @override
   String get settingsDolbyVisionProfile7DirectPlayDescription =>
-      'Контролює, чи повинні потоки покращуваного рівня профілю 7 Dolby Vision спрямовувати відтворення.';
+      'Контролює, чи повинні потоки рівня покращення Dolby Vision направляти відтворення.';
 
   @override
   String get settingsAutoAftkrtEnabled => 'Автоматично (увімкнено AFTKRT)';
@@ -7136,7 +7142,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get settingsNextUpDisplayDescription =>
-      'Розширено показує повну картку з обкладинкою епізоду та описом. Мінімальний показує компактне накладання зворотного відліку. Disabled повністю приховує підказку.';
+      'Розширено показує повну картку з обкладинкою епізоду та описом. Мінімальний показує компактне накладання зворотного відліку. Вимкнено повністю приховує підказку.';
 
   @override
   String get settingsShort => 'Короткий';
@@ -7167,17 +7173,17 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get settingsOpenGroupsSubtitle =>
-      'Створюйте групи SyncPlay, приєднуйтеся до них або керуйте ними';
+      'Створюйте SyncPlay групи, приєднуйтеся до них або керуйте ними';
 
   @override
-  String get settingsSyncplayEnabled => 'SyncPlay увімкнено';
+  String get settingsSyncplayEnabled => 'SyncPlay Увімкнено';
 
   @override
   String get settingsSyncplayEnabledSubtitle =>
       'Увімкнути функції групового перегляду';
 
   @override
-  String get settingsSyncplayButton => 'Кнопка SyncPlay';
+  String get settingsSyncplayButton => 'SyncPlay Кнопка';
 
   @override
   String get settingsSyncplayButtonSubtitle =>
@@ -7244,6 +7250,735 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String latestLibraryName(String libraryName) {
-    return 'Latest $libraryName';
+    return 'Останні $libraryName';
   }
+
+  @override
+  String get autoplayNextEpisode =>
+      'Автоматичне відтворення наступного епізоду';
+
+  @override
+  String get autoplayNextEpisodeSubtitle =>
+      'Автоматично відтворювати наступний епізод, коли він доступний.';
+
+  @override
+  String get skipSilenceTitle => 'Пропустити тишу';
+
+  @override
+  String get skipSilenceSubtitle =>
+      'Автоматично пропускати тихі сегменти аудіо, якщо це підтримується потоком.';
+
+  @override
+  String get allowExternalAudioEffectsTitle =>
+      'Дозволити зовнішні звукові ефекти';
+
+  @override
+  String get allowExternalAudioEffectsSubtitle =>
+      'Дозволити програмам еквалайзера та ефектів (наприклад, Wavelet) приєднуватися до Media3 сеансів відтворення.';
+
+  @override
+  String get disableTunnelingTitle => 'Вимкнути тунелювання';
+
+  @override
+  String get disableTunnelingSubtitle =>
+      'Примусове нетунельоване відтворення. Корисно на пристроях з розривами аудіо/відео тунелювання.';
+
+  @override
+  String get mapDolbyVisionP7Title => 'Зіставте Dolby Vision профіль 7 із HEVC';
+
+  @override
+  String get mapDolbyVisionP7Subtitle =>
+      'Відтворюйте Dolby Vision потоки профілю 7 як HDR10-сумісний HEVC на пристроях, які не підтримують DV.';
+
+  @override
+  String get subtitlesUseEmbeddedStyles =>
+      'Використовуйте вбудовані стилі субтитрів';
+
+  @override
+  String get subtitlesUseEmbeddedStylesSubtitle =>
+      'Застосуйте кольори, шрифти та позиціонування, вбудовані в доріжку субтитрів. Вимкніть, щоб замість цього використовувати ваші налаштування стилю підписів.';
+
+  @override
+  String get subtitlesUseEmbeddedFontSizes =>
+      'Використовуйте розміри вбудованих субтитрів';
+
+  @override
+  String get subtitlesUseEmbeddedFontSizesSubtitle =>
+      'Застосуйте підказки щодо розміру шрифту, вбудовані в доріжку субтитрів. Вимкніть використання розміру субтитрів у ваших налаштуваннях стилю.';
+
+  @override
+  String get useDetailedSubHeadings => 'Використовуйте детальні підзаголовки';
+
+  @override
+  String get useDetailedSubHeadingsDescription =>
+      'Показати детальний або мінімальний підрядок на сторінках бібліотеки.';
+
+  @override
+  String get savedThemesDeleteDialogTitle => 'Видалити збережену тему?';
+
+  @override
+  String savedThemesDeleteDialogMessage(String themeName) {
+    return 'Видалити \"$themeName\" з кешу цього пристрою?';
+  }
+
+  @override
+  String savedThemesDeletedMessage(String themeName) {
+    return 'Видалено \"$themeName\" з цього пристрою.';
+  }
+
+  @override
+  String savedThemesDeleteFailedMessage(String themeName) {
+    return 'Не вдалося видалити \"$themeName\".';
+  }
+
+  @override
+  String get savedThemesTitle => 'Збережені теми';
+
+  @override
+  String get savedThemesDescription =>
+      'Це теми, завантажені з плагіна Moonfin для поточного сервера. Видалення видаляє лише цю локальну копію.';
+
+  @override
+  String get savedThemesEmpty =>
+      'Для цього сервера не знайдено збережених тем.';
+
+  @override
+  String savedThemesCurrentThemeId(String themeId) {
+    return '$themeId • Наразі активний';
+  }
+
+  @override
+  String get savedThemesDeleteTooltip => 'Видалити збережену тему';
+
+  @override
+  String get savedThemesManageSubtitle =>
+      'Керуйте завантаженими темами плагінів на цьому пристрої';
+
+  @override
+  String get kefinTweaksTitle => 'KefinTweaks';
+
+  @override
+  String get homeScreenSectionsTitle => 'Розділи головного екрана';
+
+  @override
+  String get themeEditor => 'Редактор тем';
+
+  @override
+  String get themeEditorSubtitle =>
+      'Відкрийте редактор тем Moonfin у своєму браузері';
+
+  @override
+  String get homeScreen => 'Головний екран';
+
+  @override
+  String get bottomBar => 'Нижня панель';
+
+  @override
+  String get homeRowsStyleClassic => 'класичний';
+
+  @override
+  String get homeRowsStyleModern => 'Сучасний';
+
+  @override
+  String get homeRowsSection => 'Домашні ряди';
+
+  @override
+  String get rowsType => 'Тип рядків';
+
+  @override
+  String get rowsTypeDescription =>
+      'Classic зберігає тип зображення та накладення інформації для кожного рядка. У Modern використовуються рядки з портретом на фон.';
+
+  @override
+  String get displayFavoritesRows => 'Відображення рядків уподобань';
+
+  @override
+  String get displayFavoritesRowsSubtitle =>
+      'Показати улюблені фільми, серіали та інші улюблені рядки в головних розділах.';
+
+  @override
+  String get favoritesRowSorting => 'Сортування рядків вибраного';
+
+  @override
+  String get favoritesRowSortingDescription =>
+      'Сортуйте рядки вибраного за датою додавання, датою випуску, за алфавітом тощо.';
+
+  @override
+  String get displayCollectionsRows => 'Відображення рядків колекцій';
+
+  @override
+  String get displayCollectionsRowsSubtitle =>
+      'Показувати рядки колекцій у розділах «Домашня сторінка».';
+
+  @override
+  String get collectionsRowSorting => 'Сортування рядків колекцій';
+
+  @override
+  String get collectionsRowSortingDescription =>
+      'Сортуйте рядки колекцій за датою додавання, датою випуску, за алфавітом тощо.';
+
+  @override
+  String get displayGenresRows => 'Відображення рядків жанрів';
+
+  @override
+  String get displayGenresRowsSubtitle =>
+      'Показати рядки жанрів у головних розділах.';
+
+  @override
+  String get genresRowSorting => 'Сортування рядків жанрів';
+
+  @override
+  String get genresRowSortingDescription =>
+      'Сортуйте рядки жанрів за датою додавання, датою випуску, за алфавітом тощо.';
+
+  @override
+  String get genresRowItems => 'Елементи рядка жанрів';
+
+  @override
+  String get genresRowItemsDescription =>
+      'Показувати фільми, серіали або обидва в рядках жанрів.';
+
+  @override
+  String get appearance => 'Зовнішній вигляд';
+
+  @override
+  String get cardSize => 'Розмір картки';
+
+  @override
+  String get externalPlayerApp => 'Додаток зовнішнього плеєра';
+
+  @override
+  String get externalPlayerAskEachTimeSubtitle =>
+      'Показувати засіб вибору програм, коли починається відтворення.';
+
+  @override
+  String get loadingInstalledPlayers => 'Завантаження встановлених плеєрів...';
+
+  @override
+  String get connection => 'Підключення';
+
+  @override
+  String get audioTranscodeTarget => 'Мета транскодування аудіо';
+
+  @override
+  String get passthrough => 'Прохідний';
+
+  @override
+  String get supportedOnThisDevice => 'Підтримується на цьому пристрої';
+
+  @override
+  String get notSupportedOnThisDevice => 'Не підтримується на цьому пристрої';
+
+  @override
+  String get settingsAudioDtsXPassthrough => 'Передача DTS:X (DTS UHD).';
+
+  @override
+  String get settingsAudioBitstreamDtsXToExternalDecoder =>
+      'Бітовий потік DTS:X (DTS UHD) на зовнішній декодер.';
+
+  @override
+  String get settingsAudioTrueHdJocPassthrough =>
+      'TrueHD із Atmos (JOC) Passthrough';
+
+  @override
+  String get mediaPlayerBehavior => 'Поведінка медіаплеєра';
+
+  @override
+  String get playbackEnhancements => 'Покращення відтворення';
+
+  @override
+  String get alwaysOn => 'Завжди ввімкнено.';
+
+  @override
+  String get replaceSkipOutroWithNextUpDisplay =>
+      'Замініть Skip Outro на Next Up Display';
+
+  @override
+  String get replaceSkipOutroWithNextUpDisplaySubtitle =>
+      'Показати накладення Next Up замість кнопки Skip Outro.';
+
+  @override
+  String get playerRouting => 'Маршрутизація гравців';
+
+  @override
+  String get preferSoftwareDecoders =>
+      'Віддавайте перевагу програмним декодерам';
+
+  @override
+  String get preferSoftwareDecodersSubtitle =>
+      'Використовуйте FFmpeg (аудіо) і libgav1 (AV1) перед апаратними декодерами. Вимкніть, якщо порушується передача аудіо HDMI.';
+
+  @override
+  String get useExternalPlayer => 'Використовуйте зовнішній плеєр';
+
+  @override
+  String get useExternalPlayerSubtitle =>
+      'Відкрийте відтворення відео у вибраній зовнішній програмі на Android TV.';
+
+  @override
+  String get automaticQueuing => 'Автоматична черга';
+
+  @override
+  String get preferSdhSubtitles => 'Віддавайте перевагу субтитрам SDH';
+
+  @override
+  String get preferSdhSubtitlesSubtitle =>
+      'Пріоритезуйте доріжки субтитрів SDH/CC під час автоматичного вибору.';
+
+  @override
+  String get webDiagnostics => 'Веб-діагностика';
+
+  @override
+  String get webDiagnosticsTitle => 'Moonfin Веб-діагностика';
+
+  @override
+  String get webDiagnosticsIntro =>
+      'Використовуйте цю сторінку, щоб діагностувати проблеми з підключенням браузера (CORS, змішаний вміст і налаштування виявлення).';
+
+  @override
+  String get webDiagnosticsDetectedMixedContentFailure =>
+      'Виявлена ​​помилка зі змішаним вмістом';
+
+  @override
+  String get webDiagnosticsDetectedCorsPreflightFailure =>
+      'Виявлено збій CORS/Preflight';
+
+  @override
+  String get webDiagnosticsMixedContentFailureBody =>
+      'Moonfin виявив сторінку HTTPS, яка намагається викликати URL-адресу сервера HTTP. Браузери блокують цей запит до того, як він досягне вашого сервера.';
+
+  @override
+  String get webDiagnosticsCorsFailureBody =>
+      'Moonfin виявлено помилку запиту на рівні браузера, яка зазвичай спричинена відсутністю CORS або заголовків попередньої перевірки на медіа-сервері.';
+
+  @override
+  String webDiagnosticsTargetUrl(String url) {
+    return 'Цільова URL-адреса: $url';
+  }
+
+  @override
+  String webDiagnosticsDetail(String detail) {
+    return 'Деталі: $detail';
+  }
+
+  @override
+  String get webDiagnosticsCurrentRuntimeContext =>
+      'Поточний контекст виконання';
+
+  @override
+  String get webDiagnosticsOrigin => 'Походження';
+
+  @override
+  String get webDiagnosticsScheme => 'схема';
+
+  @override
+  String get webDiagnosticsPluginMode => 'Режим плагіна';
+
+  @override
+  String get webDiagnosticsWebRtcScan => 'Сканування WebRTC';
+
+  @override
+  String get webDiagnosticsForcedServerUrl => 'Примусова URL-адреса сервера';
+
+  @override
+  String get webDiagnosticsDefaultServerUrl =>
+      'URL-адреса сервера за замовчуванням';
+
+  @override
+  String get webDiagnosticsDiscoveryProxyUrl =>
+      'URL-адреса проксі-сервера виявлення';
+
+  @override
+  String get notConfigured => 'не налаштовано';
+
+  @override
+  String get webDiagnosticsMixedContent => 'Змішаний вміст';
+
+  @override
+  String get webDiagnosticsMixedContentDetected =>
+      'Ця сторінка завантажується через HTTPS, але одна або кілька налаштованих URL-адрес є HTTP. Браузери блокують HTTPS-сторінки від викликів HTTP API.';
+
+  @override
+  String get webDiagnosticsMixedContentFix =>
+      'Виправлення: обслуговуйте свій медіа-сервер або кінцеву точку проксі через HTTPS або завантажуйте Moonfin через HTTP лише в надійних локальних мережах.';
+
+  @override
+  String get webDiagnosticsNoMixedContentDetected =>
+      'З поточних налаштувань середовища виконання не виявлено явної конфігурації змішаного вмісту.';
+
+  @override
+  String get webDiagnosticsCorsChecklist => 'Контрольний список CORS';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem1 =>
+      '• Дозволити джерело браузера в Access-Control-Allow-Origin.';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem2 =>
+      '• Додайте авторизацію, X-Emby-авторизацію та X-Emby-токен у Access-Control-Allow-Headers.';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem3 =>
+      '• Відкрийте Content-Range і Accept-Ranges для потокової передачі та поведінки пошуку.';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem4 =>
+      '• Повернути 204 до OPTIONS запитів перед друком.';
+
+  @override
+  String get webDiagnosticsHeaderSnippetTitle =>
+      'Приклад фрагмента заголовка (стиль nginx)';
+
+  @override
+  String get note => 'Примітка';
+
+  @override
+  String get webDiagnosticsNonWebNote =>
+      'Цей маршрут діагностики призначений для веб-складання. Якщо ви бачите це на іншій платформі, ці перевірки можуть не застосовуватися.';
+
+  @override
+  String get backToServerSelect => 'Назад до сервера Виберіть';
+
+  @override
+  String get signOutAllUsers => 'Вийти з усіх користувачів';
+
+  @override
+  String get voiceSearchPermissionPermanentlyDenied =>
+      'Дозвіл на мікрофон назавжди заборонено. Увімкніть його в налаштуваннях системи.';
+
+  @override
+  String get voiceSearchPermissionRequired =>
+      'Для голосового пошуку потрібен доступ до мікрофона.';
+
+  @override
+  String get voiceSearchNoMatch => 'Не зрозумів. Спробуйте знову.';
+
+  @override
+  String get voiceSearchNoSpeechDetected => 'Мовлення не виявлено.';
+
+  @override
+  String get voiceSearchMicrophoneError => 'Помилка мікрофона.';
+
+  @override
+  String get voiceSearchNeedsInternet =>
+      'Для голосового пошуку потрібен Інтернет.';
+
+  @override
+  String get voiceSearchServiceBusy =>
+      'Голосовий сервіс зайнятий. Спробуйте знову.';
+
+  @override
+  String get microphonePermissionPermanentlyDenied =>
+      'Дозвіл на мікрофон назавжди заборонено.';
+
+  @override
+  String get microphonePermissionDenied => 'У дозволі на мікрофон відмовлено.';
+
+  @override
+  String get speechRecognitionUnavailable =>
+      'Розпізнавання мовлення недоступне на цьому пристрої.';
+
+  @override
+  String get openIosRoutePicker => 'Відкрийте засіб вибору маршруту iOS';
+
+  @override
+  String get airPlayRoutePickerUnavailable =>
+      'AirPlay засіб вибору маршруту недоступний на цьому пристрої.';
+
+  @override
+  String get videos => 'Відео';
+
+  @override
+  String get trailers => 'Трейлери';
+
+  @override
+  String get programs => 'Програми';
+
+  @override
+  String get songs => 'Пісні';
+
+  @override
+  String get photoAlbums => 'Фотоальбоми';
+
+  @override
+  String get photos => 'Фотографії';
+
+  @override
+  String get people => 'люди';
+
+  @override
+  String get recentlyReleasedEpisodes => 'Нещодавно випущені епізоди';
+
+  @override
+  String get watchAgain => 'Дивіться ще раз';
+
+  @override
+  String get guestAppearances => 'Виступ гостей';
+
+  @override
+  String get appearancesSeerr => 'Поява (Seerr)';
+
+  @override
+  String get watchWithGroup => 'Дивіться з групою';
+
+  @override
+  String get errors => 'Помилки';
+
+  @override
+  String get warnings => 'Попередження';
+
+  @override
+  String get disk => 'диск';
+
+  @override
+  String get openInBrowser => 'Відкрити в браузері';
+
+  @override
+  String get embeddedBrowserNotAvailable =>
+      'Вбудований браузер недоступний на цій платформі.';
+
+  @override
+  String get adminRestartServerConfirmation =>
+      'Ви впевнені, що бажаєте перезапустити сервер?';
+
+  @override
+  String get adminShutdownServerConfirmation =>
+      'Ви впевнені, що хочете вимкнути сервер? Вам потрібно буде перезапустити його вручну.';
+
+  @override
+  String get internal => 'внутрішній';
+
+  @override
+  String get idle => 'Бездіяльність';
+
+  @override
+  String get os => 'OS';
+
+  @override
+  String get adminNoUsersFound => 'Користувачів не знайдено';
+
+  @override
+  String get adminNoUsersMatchSearch =>
+      'Жоден користувач не відповідає вашому запиту';
+
+  @override
+  String get adminNoDevicesFound => 'Пристроїв не знайдено';
+
+  @override
+  String get adminNoDevicesMatchCurrentFilters =>
+      'Жоден пристрій не відповідає поточним фільтрам';
+
+  @override
+  String get passwordSet => 'Встановлено пароль';
+
+  @override
+  String get noPasswordConfigured => 'Пароль не налаштовано';
+
+  @override
+  String get remoteAccess => 'Віддалений доступ';
+
+  @override
+  String get localOnly => 'Тільки місцеві';
+
+  @override
+  String get adminMediaAnalyticsLoadFailed =>
+      'Не вдалося завантажити медіааналітику';
+
+  @override
+  String get analyticsCombinedAcrossLibraries =>
+      'Об’єднана аналітика для всіх медіабібліотек.';
+
+  @override
+  String get analyticsTopArtists => 'Найкращі виконавці';
+
+  @override
+  String get analyticsTopAuthors => 'Найкращі автори';
+
+  @override
+  String get analyticsTopContributors => 'Найкращі учасники';
+
+  @override
+  String analyticsLibrariesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Libraries',
+      one: '1 Library',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get analyticsNoIndexedMediaTotals =>
+      'Для цього вибору ще немає доступних проіндексованих медіа-сум.';
+
+  @override
+  String get analyticsLibraryDetails => 'Відомості про бібліотеку';
+
+  @override
+  String get analyticsLibraryBreakdown => 'Розбивка бібліотеки';
+
+  @override
+  String get analyticsNoLibrariesAvailable => 'Немає доступних бібліотек.';
+
+  @override
+  String get adminServerAdministrationTitle => 'Адміністрування сервера';
+
+  @override
+  String get adminServerPathData => 'дані';
+
+  @override
+  String get adminServerPathImageCache => 'Кеш зображень';
+
+  @override
+  String get adminServerPathCache => 'Кеш';
+
+  @override
+  String get adminServerPathLogs => 'Журнали';
+
+  @override
+  String get adminServerPathMetadata => 'Метадані';
+
+  @override
+  String get adminServerPathTranscode => 'Перекодувати';
+
+  @override
+  String get adminServerPathWeb => 'Інтернет';
+
+  @override
+  String get adminNoServerPathsReturned =>
+      'Цей сервер не повертає шляхи до сервера.';
+
+  @override
+  String adminPercentUsed(int percent) {
+    return '$percent% використано';
+  }
+
+  @override
+  String get userActivity => 'Активність користувача';
+
+  @override
+  String get systemEvents => 'Системні події';
+
+  @override
+  String get needsAttention => 'Потребує уваги';
+
+  @override
+  String get adminDrawerSectionServer => 'Сервер';
+
+  @override
+  String get adminDrawerSectionPlayback => 'Відтворення';
+
+  @override
+  String get adminDrawerSectionDevices => 'Пристрої';
+
+  @override
+  String get adminDrawerSectionAdvanced => 'Просунутий';
+
+  @override
+  String get adminDrawerSectionPlugins => 'Плагіни';
+
+  @override
+  String get adminDrawerSectionLiveTv => 'Пряме телебачення';
+
+  @override
+  String get homeVideos => 'Домашнє відео';
+
+  @override
+  String get mixedContent => 'Змішаний вміст';
+
+  @override
+  String get homeVideosAndPhotos => 'Домашнє відео та фото';
+
+  @override
+  String get mixedMoviesAndShows => 'Змішані фільми та шоу';
+
+  @override
+  String get intelQuickSync => 'Intel Quick Sync';
+
+  @override
+  String get rockchipMpp => 'Rockchip MPP';
+
+  @override
+  String get dolbyVision => 'Dolby Vision';
+
+  @override
+  String get noRecordingsFound => 'Записів не знайдено';
+
+  @override
+  String noImagePagesFoundInArchive(String extension) {
+    return 'В архіві .$extension не знайдено сторінок із зображеннями.';
+  }
+
+  @override
+  String embeddedRendererFailed(int code, String description) {
+    return 'Помилка вбудованого рендерера ($code): $description';
+  }
+
+  @override
+  String epubRendererFailed(int code, String description) {
+    return 'Помилка візуалізації EPUB ($code): $description';
+  }
+
+  @override
+  String missingLocalFileForReader(String uri) {
+    return 'Відсутній локальний файл для читача: $uri';
+  }
+
+  @override
+  String httpStatusWhileOpeningBookData(int status, String uri) {
+    return 'HTTP $status під час відкриття даних книги з $uri';
+  }
+
+  @override
+  String get noReadableBookEndpointAvailable =>
+      'Немає доступної кінцевої точки читаної книги';
+
+  @override
+  String unsupportedComicArchiveFormat(String extension) {
+    return 'Непідтримуваний формат архіву коміксів: .$extension';
+  }
+
+  @override
+  String get cbrExtractionPluginUnavailable =>
+      'Плагін вилучення CBR недоступний на цій платформі.';
+
+  @override
+  String get failedToExtractCbrArchive => 'Не вдалося розпакувати архів .cbr.';
+
+  @override
+  String get cb7ExtractionUnavailable =>
+      'Видобуток CB7 недоступний на цій платформі.';
+
+  @override
+  String get cb7ExtractionPluginUnavailable =>
+      'Плагін вилучення CB7 недоступний на цій платформі.';
+
+  @override
+  String get closeGenrePanel => 'Закрити панель жанрів';
+
+  @override
+  String get loadingShuffle => 'Завантаження перемішування...';
+
+  @override
+  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
+
+  @override
+  String get randomShuffleLabel => 'RANDOM SHUFFLE';
+
+  @override
+  String get genresShuffleLabel => 'GENRES SHUFFLE';
+
+  @override
+  String get autoHdrSwitching => 'Автоматичне перемикання HDR';
+
+  @override
+  String get autoHdrSwitchingDescription =>
+      'Автоматично вмикайте HDR для відтворення відео HDR і відновлюйте режим відображення після виходу.';
+
+  @override
+  String get whenFullscreen => 'У повноекранному режимі';
+
+  @override
+  String get transcodingLimits => 'Обмеження перекодування';
 }

@@ -1,3 +1,5 @@
+import '../../l10n/current_app_localizations.dart';
+
 class RatingIconProvider {
   const RatingIconProvider._();
 
@@ -41,6 +43,7 @@ class RatingIconProvider {
   }
 
   static String sourceDisplayName(String source) {
+    final l10n = currentAppLocalizations();
     return switch (source) {
       'tomatoes' => 'Rotten Tomatoes',
       'tomatoes_audience' || 'popcorn' => 'RT Audience',
@@ -53,7 +56,7 @@ class RatingIconProvider {
       'rogerebert' => 'Roger Ebert',
       'myanimelist' => 'MyAnimeList',
       'anilist' => 'AniList',
-      'stars' => 'Community Rating',
+      'stars' => l10n.communityRating,
       _ => source,
     };
   }

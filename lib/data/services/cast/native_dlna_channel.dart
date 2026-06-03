@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 
 import 'cast_target.dart';
+import '../../../l10n/current_app_localizations.dart';
 import '../../../util/platform_detection.dart';
 
 class NativeDlnaChannel {
@@ -16,6 +17,7 @@ class NativeDlnaChannel {
     if (!_supported) {
       return const [];
     }
+    final l10n = currentAppLocalizations();
     final raw = await _channel.invokeMethod<List<dynamic>>('discoverDlnaTargets');
     if (raw == null) {
       return const [];
@@ -28,7 +30,7 @@ class NativeDlnaChannel {
           (entry) => CastTarget(
             id: entry['id'] as String? ?? '',
             kind: CastTargetKind.dlna,
-            title: entry['title'] as String? ?? 'DLNA Device',
+            title: entry['title'] as String? ?? l10n.castDlna,
             subtitle: entry['subtitle'] as String? ?? '',
           ),
         )

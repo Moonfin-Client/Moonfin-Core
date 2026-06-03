@@ -16,7 +16,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String connectingToServer(String serverName) {
-    return 'Connecting to $serverName';
+    return 'Ühenduse loomine aadressiga $serverName';
   }
 
   @override
@@ -49,12 +49,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect unavailable: $detail';
+    return 'QuickConnect pole saadaval: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect unavailable ($status): $detail';
+    return 'QuickConnect pole saadaval ($status): $detail';
   }
 
   @override
@@ -68,7 +68,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin version $version';
+    return 'Moonfin versioon $version';
   }
 
   @override
@@ -94,7 +94,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String removeServerConfirmation(String serverName) {
-    return 'Remove \"$serverName\" from your servers?';
+    return 'Kas eemaldada \"$serverName\" oma serveritest?';
   }
 
   @override
@@ -134,11 +134,11 @@ class AppLocalizationsEt extends AppLocalizations {
       'Lülitage Moonfini ja Neon Pulse vahel ilma rakendust taaskäivitamata';
 
   @override
-  String get keyboardPreferSystemIme => 'Prefer system keyboard';
+  String get keyboardPreferSystemIme => 'Eelista süsteemiklaviatuuri';
 
   @override
   String get keyboardPreferSystemImeDescription =>
-      'Use your device input method by default for text entry';
+      'Kasutage teksti sisestamiseks vaikimisi seadme sisestusmeetodit';
 
   @override
   String get themeMoonfin => 'Kuufin';
@@ -202,7 +202,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String unableToConnectTo(String target) {
-    return 'Unable to connect to $target';
+    return 'Ühendust ei saa luua $target';
   }
 
   @override
@@ -284,7 +284,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return 'Failed to load folder: $error';
+    return 'Kausta laadimine ebaõnnestus: $error';
   }
 
   @override
@@ -292,7 +292,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return '$count items';
+    return '$count üksused';
   }
 
   @override
@@ -309,7 +309,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return '$count Items';
+    return '$count Üksused';
   }
 
   @override
@@ -350,7 +350,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — Genres';
+    return '$name — Žanrid';
   }
 
   @override
@@ -389,17 +389,17 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return '${count}m ago';
+    return '${count}m tagasi';
   }
 
   @override
   String hoursAgo(int count) {
-    return '${count}h ago';
+    return '${count}h tagasi';
   }
 
   @override
   String daysAgo(int count) {
-    return '${count}d ago';
+    return '${count}d tagasi';
   }
 
   @override
@@ -434,7 +434,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String titlesCount(int count) {
-    return '$count titles';
+    return '$count pealkirjad';
   }
 
   @override
@@ -521,17 +521,17 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String authorsCount(int count) {
-    return '$count authors';
+    return '$count autorid';
   }
 
   @override
   String genresCount(int count) {
-    return '$count genres';
+    return '$count žanrid';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '$percent% completed';
+    return '$percent% valmis';
   }
 
   @override
@@ -548,7 +548,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count titles arranged for reading-first browsing.';
+    return '$count pealkirjad, mis on seatud esmaseks lugemiseks sirvimiseks.';
   }
 
   @override
@@ -585,7 +585,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String noLabelFound(String label) {
-    return 'No $label found';
+    return '$label ei leitud';
   }
 
   @override
@@ -657,12 +657,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String sectionCountLabel(int count) {
-    return '$count sections';
+    return '$count jaotised';
   }
 
   @override
   String firstPublished(int year) {
-    return 'First published $year';
+    return 'Esmakordselt avaldatud $year';
   }
 
   @override
@@ -677,7 +677,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String booksCount(int count) {
-    return '$count books';
+    return '$count raamatud';
   }
 
   @override
@@ -688,7 +688,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String authorsCountTitle(int count) {
-    return '$count Authors';
+    return '$count Autorid';
   }
 
   @override
@@ -748,7 +748,7 @@ class AppLocalizationsEt extends AppLocalizations {
   String get movies => 'Filmid';
 
   @override
-  String get musicVideos => 'Music Videos';
+  String get musicVideos => 'Muusikavideod';
 
   @override
   String get other => 'muud';
@@ -767,7 +767,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String discNumber(int number) {
-    return 'Disc $number';
+    return 'Plaat $number';
   }
 
   @override
@@ -792,7 +792,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String published(int year) {
-    return 'Published $year';
+    return 'Avaldatud $year';
   }
 
   @override
@@ -811,7 +811,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String endsAt(String time) {
-    return 'Ends at $time';
+    return 'Lõpeb $time';
   }
 
   @override
@@ -825,7 +825,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return 'Resume from $position';
+    return 'Jätka $position';
   }
 
   @override
@@ -924,7 +924,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return 'Delete downloaded tracks for \"$title\"?';
+    return 'Kas kustutada „$title” allalaaditud lood?';
   }
 
   @override
@@ -939,17 +939,17 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return 'No $itemLabel loaded';
+    return '$itemLabel pole laaditud';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return 'Downloading $title ($count items)...';
+    return '$title ($count üksuste) allalaadimine...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
+    return 'Kas olete kindel, et soovite \"$name\" serverist kustutada? Seda toimingut ei saa tagasi võtta.';
   }
 
   @override
@@ -960,7 +960,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String unsupportedBookFormat(String extension) {
-    return 'Unsupported book format: .$extension';
+    return 'Toetamata raamatuvorming: .$extension';
   }
 
   @override
@@ -987,7 +987,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return 'Subtitle downloaded and selected: $name';
+    return 'Subtiitrid alla laaditud ja valitud: $name';
   }
 
   @override
@@ -996,7 +996,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return 'No remote subtitles found for $language.';
+    return 'Subtiitreid $language ei leitud.';
   }
 
   @override
@@ -1004,7 +1004,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String versionNumber(int number) {
-    return 'Version $number';
+    return 'Versioon $number';
   }
 
   @override
@@ -1026,7 +1026,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String downloadingItem(String name, String quality) {
-    return 'Downloading $name ($quality)...';
+    return '$name ($quality) allalaadimine...';
   }
 
   @override
@@ -1034,7 +1034,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
+    return 'Kas kustutada $typeLabel kohalikud failid?\n\nSee vabastab salvestusruumi. Saate hiljem uuesti alla laadida.';
   }
 
   @override
@@ -1057,12 +1057,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String studioMoreCount(int count) {
-    return '+$count more';
+    return '+$count rohkem';
   }
 
   @override
   String totalEpisodes(int count) {
-    return '$count Episodes';
+    return '$count Episoodid';
   }
 
   @override
@@ -1072,12 +1072,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String episodeLabel(int number) {
-    return 'Episode $number';
+    return 'Jagu $number';
   }
 
   @override
   String chapterNumber(int number) {
-    return 'Chapter $number';
+    return 'Peatükk $number';
   }
 
   @override
@@ -1104,17 +1104,17 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String born(String date) {
-    return 'Born $date';
+    return 'Sündis $date';
   }
 
   @override
   String died(String date) {
-    return 'Died $date';
+    return 'Suri $date';
   }
 
   @override
   String age(int age) {
-    return 'Age $age';
+    return 'Vanus $age';
   }
 
   @override
@@ -1128,7 +1128,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String downloadsCount(int count) {
-    return '$count downloads';
+    return '$count allalaadimised';
   }
 
   @override
@@ -1147,32 +1147,32 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
+    return 'Kaug-alapealkiri $action nõuab selle kasutaja jaoks Jellyfin subtiitrite haldusõigust.';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return 'This item could not be found on the server for remote subtitle $action.';
+    return 'Seda üksust ei leitud serverist kaugalapealkirja $action jaoks.';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return 'Remote subtitle $action failed: $detail';
+    return 'Kaug-alapealkiri $action ebaõnnestus: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return 'Remote subtitle $action failed (HTTP $status).';
+    return 'Kaug-alapealkiri $action ebaõnnestus (HTTP $status).';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return 'Failed to $action remote subtitles.';
+    return '$action kaugsubtiitrite loomine ebaõnnestus.';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return 'all downloaded episodes for \"$name\"';
+    return 'kõik allalaaditud jaod \"$name\"';
   }
 
   @override
@@ -1202,17 +1202,17 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String castActionFailed(String label, String error) {
-    return '$label action failed: $error';
+    return '$label toiming ebaõnnestus: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return 'Failed to set cast volume: $error';
+    return 'Ülekande helitugevuse määramine ebaõnnestus: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return '$label Controls';
+    return '$label Juhtelemendid';
   }
 
   @override
@@ -1229,7 +1229,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String stopCast(String label) {
-    return 'Stop $label';
+    return 'Peata $label';
   }
 
   @override
@@ -1237,7 +1237,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String trackNumber(int number) {
-    return 'Track $number';
+    return 'Jälgi $number';
   }
 
   @override
@@ -1254,7 +1254,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String secondsCount(int seconds) {
-    return '$seconds seconds';
+    return '$seconds sekundit';
   }
 
   @override
@@ -1369,12 +1369,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String castSessionError(String protocol) {
-    return '$protocol session error';
+    return '$protocol seansi viga';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return 'Failed to load book details: $error';
+    return 'Raamatu üksikasjade laadimine ebaõnnestus: $error';
   }
 
   @override
@@ -1383,7 +1383,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return 'This format (.$extension) cannot be rendered in-app yet.';
+    return 'Seda vormingut (.$extension) ei saa veel rakendusesiseselt renderdada.';
   }
 
   @override
@@ -1395,17 +1395,17 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return 'Failed to open in-app reader: $error';
+    return 'Rakendusesisese lugeja avamine nurjus: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return 'Bookmark already saved at $label.';
+    return 'Järjehoidja on juba salvestatud aadressil $label.';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return 'Bookmark added: $label';
+    return 'Järjehoidja lisatud: $label';
   }
 
   @override
@@ -1417,7 +1417,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String pageLabel(int number) {
-    return 'Page $number';
+    return 'Leht $number';
   }
 
   @override
@@ -1428,12 +1428,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String formatExtension(String extension) {
-    return 'Format: .$extension';
+    return 'Vorming: .$extension';
   }
 
   @override
   String percentRead(String percent) {
-    return '$percent% read';
+    return '$percent% loetud';
   }
 
   @override
@@ -1456,7 +1456,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String resetZoom(String zoom) {
-    return 'Reset Zoom (${zoom}x)';
+    return 'Lähtesta suum (${zoom}x)';
   }
 
   @override
@@ -1479,7 +1479,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String failedToUpdateReadState(String error) {
-    return 'Failed to update read state: $error';
+    return 'Lugemisoleku värskendamine ebaõnnestus: $error';
   }
 
   @override
@@ -1513,7 +1513,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return 'This platform cannot host the embedded document engine for $extension files.';
+    return 'See platvorm ei saa majutada $extension failide manustatud dokumendimootorit.';
   }
 
   @override
@@ -1552,7 +1552,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String failedToLoadGuide(String error) {
-    return 'Failed to load guide: $error';
+    return 'Juhendi laadimine ebaõnnestus: $error';
   }
 
   @override
@@ -1581,19 +1581,19 @@ class AppLocalizationsEt extends AppLocalizations {
   String get favoriteChannel => 'Lemmikkanal';
 
   @override
-  String get record => 'Record';
+  String get record => 'Salvestus';
 
   @override
-  String get cancelRecordingAction => 'Cancel Recording';
+  String get cancelRecordingAction => 'Tühista salvestamine';
 
   @override
-  String get programSetToRecord => 'Program set to record';
+  String get programSetToRecord => 'Programm on seadistatud salvestama';
 
   @override
-  String get recordingCancelled => 'Recording cancelled';
+  String get recordingCancelled => 'Salvestamine tühistati';
 
   @override
-  String get unableToCreateRecording => 'Unable to create recording';
+  String get unableToCreateRecording => 'Salvestist ei saa luua';
 
   @override
   String get watch => 'Vaata';
@@ -1603,7 +1603,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String failedToPlayChannel(String name) {
-    return 'Failed to play $name';
+    return '$name esitamine nurjus';
   }
 
   @override
@@ -1629,7 +1629,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return 'Cancel scheduled recording of \"$name\"?';
+    return 'Kas tühistada \"$name\" ajastatud salvestamine?';
   }
 
   @override
@@ -1657,7 +1657,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String stopRecordingName(String name) {
-    return 'Stop recording \"$name\"?';
+    return 'Kas peatada \"$name\" salvestamine?';
   }
 
   @override
@@ -1672,12 +1672,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String noResultsForQuery(String query) {
-    return 'No results for \"$query\"';
+    return 'Päringule \"$query\" ei leitud tulemusi';
   }
 
   @override
   String searchFailedError(String error) {
-    return 'Search failed: $error';
+    return 'Otsing ebaõnnestus: $error';
   }
 
   @override
@@ -1718,12 +1718,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String removeItemAndFiles(String name) {
-    return 'Remove \"$name\" and its files?';
+    return 'Kas eemaldada \"$name\" ja selle failid?';
   }
 
   @override
   String tracksCount(int count) {
-    return '$count tracks';
+    return '$count lugusid';
   }
 
   @override
@@ -1734,12 +1734,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return 'Failed to load album: $error';
+    return 'Albumi laadimine ebaõnnestus: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return 'No downloaded tracks found for $name.';
+    return '$name allalaaditud lugusid ei leitud.';
   }
 
   @override
@@ -1756,7 +1756,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return 'Remove \"$name\"?';
+    return 'Kas eemaldada \"$name\"?';
   }
 
   @override
@@ -1771,7 +1771,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String episodeNumber(int number) {
-    return 'Episode $number';
+    return 'Jagu $number';
   }
 
   @override
@@ -1785,7 +1785,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String seasonNumber(int number) {
-    return 'Season $number';
+    return 'Hooaeg $number';
   }
 
   @override
@@ -1801,7 +1801,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return 'Delete all downloaded episodes in $season?';
+    return 'Kas kustutada kõik allalaaditud jaod kaustas $season?';
   }
 
   @override
@@ -1845,7 +1845,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return 'Delete $count downloaded items?';
+    return 'Kas kustutada $count allalaaditud üksused?';
   }
 
   @override
@@ -1859,7 +1859,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String ofStorageLimit(String limit) {
-    return 'of $limit limit';
+    return '$limit piirangust';
   }
 
   @override
@@ -1943,7 +1943,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return '$count options';
+    return '$count valikud';
   }
 
   @override
@@ -2192,16 +2192,16 @@ class AppLocalizationsEt extends AppLocalizations {
       'Luba TrueHD heli (ei pruugi kõigil platvormidel töötada)';
 
   @override
-  String get settingsAudioOutputMode => 'Audio Output Mode';
+  String get settingsAudioOutputMode => 'Heli väljundrežiim';
 
   @override
   String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
 
   @override
-  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
+  String get settingsAudioFallbackCodec => 'Heli varukoodek';
 
   @override
-  String get settingsAudioFallbackAacStereo => 'AAC Stereo';
+  String get settingsAudioFallbackAacStereo => 'AAC stereo';
 
   @override
   String get settingsAudioFallbackAc35_1 => 'AC3 5.1';
@@ -2210,26 +2210,26 @@ class AppLocalizationsEt extends AppLocalizations {
   String get settingsAudioFallbackEac35_1 => 'EAC3 5.1';
 
   @override
-  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
+  String get settingsAudioPassthroughAdvanced => 'Läbimine (täpsem)';
 
   @override
   String get settingsAudioCodecPassthrough => 'Codec Passthrough';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'Enable only formats your AVR or HDMI sink supports.';
+      'Lubage ainult vormingud, mida teie AVR- või HDMI-pistikupesa toetab.';
 
   @override
-  String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
+  String get settingsAudioEac3Passthrough => 'EAC3 läbipääs';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) Passthrough';
+  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) läbipääs';
 
   @override
   String get settingsAudioDtsCorePassthrough => 'DTS Core Passthrough';
 
   @override
-  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA Passthrough';
+  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA läbilaskevõime';
 
   @override
   String get settingsAudioTrueHdPassthrough => 'TrueHD Passthrough';
@@ -2239,38 +2239,38 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
+      'Bitivoog Dolby Digital Plus (EAC3) välisele dekoodrile.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
+      'Bitivoog Dolby Atmos üle EAC3 (JOC) välisele dekoodrile.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
+      'Bitivoog DTS-HD MA (sisaldab DTS-tuuma) välisele dekoodrile.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
+      'Bitstream Dolby TrueHD koos Atmose metaandmetega välisele dekoodrile.';
 
   @override
-  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
+  String get settingsDetectedAudioCapabilities => 'Tuvastatud helivõimalused';
 
   @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
-      'No runtime capability snapshot available yet.';
+      'Käitusaja võimekuse hetktõmmis pole veel saadaval.';
 
   @override
-  String get settingsAudioRouteLabel => 'Route';
+  String get settingsAudioRouteLabel => 'Marsruut';
 
   @override
-  String get settingsAudioDecodeLabel => 'Decode';
+  String get settingsAudioDecodeLabel => 'Dekodeerida';
 
   @override
-  String get settingsAudioPassthroughLabel => 'Passthrough';
+  String get settingsAudioPassthroughLabel => 'Läbipääs';
 
   @override
-  String get settingsAudioHdRoute => 'HD audio route';
+  String get settingsAudioHdRoute => 'HD heli marsruut';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2285,7 +2285,7 @@ class AppLocalizationsEt extends AppLocalizations {
   String get settingsAudioRouteBluetooth => 'Bluetooth';
 
   @override
-  String get settingsAudioRouteSpeaker => 'Speaker';
+  String get settingsAudioRouteSpeaker => 'Kõlar';
 
   @override
   String settingsAudioPcmChannels(int count) {
@@ -2293,39 +2293,40 @@ class AppLocalizationsEt extends AppLocalizations {
   }
 
   @override
-  String get settingsAudioDiagnostics => 'Diagnostics';
+  String get settingsAudioDiagnostics => 'Diagnostika';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
+  String get settingsAudioDiagnosticsVideoLevel => 'Video tase';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
+  String get settingsAudioDiagnosticsVideoRange => 'Videovahemik';
 
   @override
-  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
+  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtiitrite kodek';
 
   @override
   String get settingsAudioDiagnosticsAllowedAudioCodecs =>
-      'Allowed Audio Codecs';
+      'Lubatud helikoodekid';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
-      'HLS MPEG-TS Audio Codecs';
+      'HLS MPEG-TS helikoodekid';
 
   @override
   String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
-      'HLS fMP4 Audio Codecs';
+      'HLS fMP4 helikoodekid';
 
   @override
   String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
-      'audio-spdif passthrough';
+      'audio-spdif läbipääs';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
+  String get settingsAudioDiagnosticsActiveAudioRoute =>
+      'Aktiivne heli marsruut';
 
   @override
   String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'Route HD Audio Support';
+      'Marsruudi HD-heli tugi';
 
   @override
   String get nightMode => 'Öörežiim';
@@ -2389,7 +2390,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return 'After $episodes episodes / ${hours}h';
+    return 'Pärast $episodes episoode / ${hours}h';
   }
 
   @override
@@ -2520,17 +2521,17 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String loadedProfileSettings(String profile) {
-    return 'Loaded $profile profile settings.';
+    return 'Laaditi $profile profiili seaded.';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return 'Failed to load $profile profile settings.';
+    return '$profile profiili seadete laadimine ebaõnnestus.';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return 'Synced local settings to $profile profile.';
+    return 'Kohalikud seaded sünkrooniti $profile profiiliga.';
   }
 
   @override
@@ -2757,7 +2758,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '$count selected';
+    return '$count valitud';
   }
 
   @override
@@ -3115,7 +3116,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String pluginStatusVersion(String status, String version) {
-    return '$status\nVersion: $version';
+    return '$status\nVersioon: $version';
   }
 
   @override
@@ -3191,7 +3192,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String loggedInAs(String username) {
-    return 'Logged in as: $username';
+    return 'Sisse logitud kui: $username';
   }
 
   @override
@@ -3216,7 +3217,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String versionValue(String version) {
-    return 'Version $version';
+    return 'Versioon $version';
   }
 
   @override
@@ -3267,7 +3268,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String updateAvailableVersion(String version) {
-    return 'Update available: v$version';
+    return 'Värskendus on saadaval: v$version';
   }
 
   @override
@@ -3278,7 +3279,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String updateAvailableTitle(String version) {
-    return 'v$version Available';
+    return 'v$version Saadaval';
   }
 
   @override
@@ -3344,7 +3345,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String itemsCount(int count) {
-    return '$count Items';
+    return '$count Üksused';
   }
 
   @override
@@ -3364,7 +3365,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String requestedByName(String name) {
-    return 'Requested by $name';
+    return 'Taotleja $name';
   }
 
   @override
@@ -3381,12 +3382,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String cancelRequestForTitle(String title) {
-    return 'Cancel request for \"$title\"?';
+    return 'Kas tühistada \"$title\" taotlus?';
   }
 
   @override
   String cancelCountRequestsForTitle(int count, String title) {
-    return 'Cancel $count requests for \"$title\"?';
+    return 'Kas tühistada $count päringud \"$title\"?';
   }
 
   @override
@@ -3400,12 +3401,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String budgetAmount(String amount) {
-    return 'Budget: \$$amount';
+    return 'Eelarve: \$$amount';
   }
 
   @override
   String revenueAmount(String amount) {
-    return 'Revenue: \$$amount';
+    return 'Tulu: \$$amount';
   }
 
   @override
@@ -3415,7 +3416,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie(String type) {
-    return 'Request $type';
+    return 'Taotlus $type';
   }
 
   @override
@@ -3451,7 +3452,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String ageValue(int age) {
-    return 'age $age';
+    return 'vanus $age';
   }
 
   @override
@@ -3743,22 +3744,22 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminPluginUpdatesAvailable(int count) {
-    return 'Plugin updates available: $count';
+    return 'Saadaval on pistikprogrammi värskendused: $count';
   }
 
   @override
   String adminPluginsRequiringRestart(int count) {
-    return 'Plugins requiring restart: $count';
+    return 'Taaskäivitamist vajavad pistikprogrammid: $count';
   }
 
   @override
   String adminFailedScheduledTasks(int count) {
-    return 'Failed scheduled tasks: $count';
+    return 'Ajastatud ülesanded ebaõnnestusid: $count';
   }
 
   @override
   String adminRecentAlertEntries(int count) {
-    return 'Recent warning/error entries: $count';
+    return 'Viimased hoiatus-/veakirjed: $count';
   }
 
   @override
@@ -3817,7 +3818,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String errorGeneric(String error) {
-    return 'Error: $error';
+    return 'Viga: $error';
   }
 
   @override
@@ -3845,7 +3846,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Käsk ebaõnnestus: $error';
   }
 
   @override
@@ -3910,7 +3911,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminActivityLoadFailed(String error) {
-    return 'Failed to load activity log: $error';
+    return 'Tegevuste logi laadimine ebaõnnestus: $error';
   }
 
   @override
@@ -3927,7 +3928,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminDeviceUpdateFailed(String error) {
-    return 'Failed to update device: $error';
+    return 'Seadme värskendamine ebaõnnestus: $error';
   }
 
   @override
@@ -3938,7 +3939,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminDeviceDeleteFailed(String error) {
-    return 'Failed to delete device: $error';
+    return 'Seadme kustutamine ebaõnnestus: $error';
   }
 
   @override
@@ -3967,7 +3968,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminScanFailed(String error) {
-    return 'Failed to start scan: $error';
+    return 'Skannimise käivitamine ebaõnnestus: $error';
   }
 
   @override
@@ -3978,12 +3979,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminLibraryRenamed(String name) {
-    return 'Library renamed to \"$name\"';
+    return 'Teek nimetati ümber \"$name\"';
   }
 
   @override
   String adminRenameFailed(String error) {
-    return 'Failed to rename: $error';
+    return 'Ümbernimetamine ebaõnnestus: $error';
   }
 
   @override
@@ -3991,17 +3992,17 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminLibraryDeleted(String name) {
-    return 'Library \"$name\" deleted';
+    return 'Teek \"$name\" on kustutatud';
   }
 
   @override
   String adminLibraryDeleteFailed(String error) {
-    return 'Failed to delete library: $error';
+    return 'Teegi kustutamine ebaõnnestus: $error';
   }
 
   @override
   String adminAddPathFailed(String error) {
-    return 'Failed to add path: $error';
+    return 'Tee lisamine nurjus: $error';
   }
 
   @override
@@ -4009,12 +4010,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminRemovePathConfirm(String path) {
-    return 'Remove \"$path\" from this library?';
+    return 'Kas eemaldada \"$path\" sellest teegist?';
   }
 
   @override
   String adminRemovePathFailed(String error) {
-    return 'Failed to remove path: $error';
+    return 'Tee eemaldamine ebaõnnestus: $error';
   }
 
   @override
@@ -4022,7 +4023,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminLibraryOptionsSaveFailed(String error) {
-    return 'Failed to save options: $error';
+    return 'Valikute salvestamine ebaõnnestus: $error';
   }
 
   @override
@@ -4057,7 +4058,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminLibraryCreateFailed(String error) {
-    return 'Failed to create library: $error';
+    return 'Teegi loomine ebaõnnestus: $error';
   }
 
   @override
@@ -4083,27 +4084,27 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminDisableUserConfirm(String name) {
-    return 'Disable $name? They will not be able to sign in.';
+    return 'Kas keelata $name? Nad ei saa sisse logida.';
   }
 
   @override
   String adminEnableUserConfirm(String name) {
-    return 'Enable $name? They will be able to sign in again.';
+    return 'Kas lubada $name? Nad saavad uuesti sisse logida.';
   }
 
   @override
   String adminUserDisabled(String name) {
-    return 'User \"$name\" disabled';
+    return 'Kasutaja \"$name\" on keelatud';
   }
 
   @override
   String adminUserEnabled(String name) {
-    return 'User \"$name\" enabled';
+    return 'Kasutaja \"$name\" on lubatud';
   }
 
   @override
   String adminUserPolicyUpdateFailed(String error) {
-    return 'Failed to update user policy: $error';
+    return 'Kasutajapoliitika värskendamine ebaõnnestus: $error';
   }
 
   @override
@@ -4120,7 +4121,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminUserCreateFailed(String error) {
-    return 'Failed to create user: $error';
+    return 'Kasutaja loomine ebaõnnestus: $error';
   }
 
   @override
@@ -4140,7 +4141,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminSaveFailed(String error) {
-    return 'Failed to save: $error';
+    return 'Salvestamine ebaõnnestus: $error';
   }
 
   @override
@@ -4151,7 +4152,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminFailed(String error) {
-    return 'Failed: $error';
+    return 'Ebaõnnestunud: $error';
   }
 
   @override
@@ -4290,22 +4291,22 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminServerReturnedHttp(int status) {
-    return 'Server returned HTTP $status';
+    return 'Server tagastas HTTP $status';
   }
 
   @override
   String adminDeleteUserConfirm(String name) {
-    return 'Are you sure you want to delete $name?';
+    return 'Kas olete kindel, et soovite kustutada $name?';
   }
 
   @override
   String adminUserDeleted(String name) {
-    return 'User \"$name\" deleted';
+    return 'Kasutaja \"$name\" on kustutatud';
   }
 
   @override
   String adminUserDeleteFailed(String error) {
-    return 'Failed to delete user: $error';
+    return 'Kasutaja kustutamine ebaõnnestus: $error';
   }
 
   @override
@@ -4326,7 +4327,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminApiKeyCreateFailed(String error) {
-    return 'Failed to create key: $error';
+    return 'Võtme loomine ebaõnnestus: $error';
   }
 
   @override
@@ -4337,7 +4338,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminRevokeKeyConfirm(String name) {
-    return 'Revoke key for $name?';
+    return 'Kas tühistada $name võti?';
   }
 
   @override
@@ -4345,7 +4346,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminApiKeyRevokeFailed(String error) {
-    return 'Failed to revoke key: $error';
+    return 'Võtme tühistamine ebaõnnestus: $error';
   }
 
   @override
@@ -4365,7 +4366,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminApiKeyTokenCreated(String token, String created) {
-    return 'Token: $token\\nCreated: $created';
+    return 'Token: $token\\nLoodud: $created';
   }
 
   @override
@@ -4376,7 +4377,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminBackupCreateFailed(String error) {
-    return 'Failed to create backup: $error';
+    return 'Varukoopia loomine ebaõnnestus: $error';
   }
 
   @override
@@ -4389,7 +4390,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminManifestLoadFailed(String error) {
-    return 'Failed to load manifest: $error';
+    return 'Manifesti laadimine ebaõnnestus: $error';
   }
 
   @override
@@ -4400,7 +4401,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminRestoreFailed(String error) {
-    return 'Failed to restore backup: $error';
+    return 'Varukoopia taastamine ebaõnnestus: $error';
   }
 
   @override
@@ -4432,17 +4433,17 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminSavedTo(String path) {
-    return 'Saved to $path';
+    return 'Salvestatud aadressile $path';
   }
 
   @override
   String adminFileSaveFailed(String error) {
-    return 'Failed to save file: $error';
+    return 'Faili salvestamine nurjus: $error';
   }
 
   @override
   String adminLogFileLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return '$fileName laadimine nurjus';
   }
 
   @override
@@ -4453,7 +4454,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminTasksLoadFailed(String error) {
-    return 'Failed to load tasks: $error';
+    return 'Ülesannete laadimine ebaõnnestus: $error';
   }
 
   @override
@@ -4465,17 +4466,17 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminTaskStartFailed(String error) {
-    return 'Failed to start task: $error';
+    return 'Ülesande käivitamine ebaõnnestus: $error';
   }
 
   @override
   String adminTaskStopFailed(String error) {
-    return 'Failed to stop task: $error';
+    return 'Ülesande peatamine ebaõnnestus: $error';
   }
 
   @override
   String adminTaskLoadFailed(String error) {
-    return 'Failed to load task: $error';
+    return 'Ülesande laadimine ebaõnnestus: $error';
   }
 
   @override
@@ -4483,12 +4484,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminTriggerRemoveFailed(String error) {
-    return 'Failed to remove trigger: $error';
+    return 'Päästiku eemaldamine ebaõnnestus: $error';
   }
 
   @override
   String adminTriggerAddFailed(String error) {
-    return 'Failed to add trigger: $error';
+    return 'Päästiku lisamine nurjus: $error';
   }
 
   @override
@@ -4514,7 +4515,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminHours(String hours) {
-    return '$hours hour(s)';
+    return '$hours tund(a)';
   }
 
   @override
@@ -4525,7 +4526,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminPluginToggleFailed(String error) {
-    return 'Failed to toggle plugin: $error';
+    return 'Plugina ümberlülitamine nurjus: $error';
   }
 
   @override
@@ -4533,27 +4534,27 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminUninstallPluginConfirm(String name) {
-    return 'Are you sure you want to uninstall \"$name\"?';
+    return 'Kas olete kindel, et soovite desinstallida \"$name\"?';
   }
 
   @override
   String adminPluginUninstallFailed(String error) {
-    return 'Failed to uninstall plugin: $error';
+    return 'Plugina desinstallimine ebaõnnestus: $error';
   }
 
   @override
   String adminPackageInstallFailed(String error) {
-    return 'Failed to install package: $error';
+    return 'Paketi installimine nurjus: $error';
   }
 
   @override
   String adminPluginUpdateFailed(String error) {
-    return 'Failed to install update: $error';
+    return 'Värskenduse installimine ebaõnnestus: $error';
   }
 
   @override
   String adminPluginsLoadFailed(String error) {
-    return 'Failed to load plugins: $error';
+    return 'Pluginate laadimine ebaõnnestus: $error';
   }
 
   @override
@@ -4565,12 +4566,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminInstallUpdate(String version) {
-    return 'Install update (v$version)';
+    return 'Installige värskendus (v$version)';
   }
 
   @override
   String adminCatalogLoadFailed(String error) {
-    return 'Failed to load catalog: $error';
+    return 'Kataloogi laadimine ebaõnnestus: $error';
   }
 
   @override
@@ -4592,17 +4593,17 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminPluginRemoveAfterRestart(String name) {
-    return '\"$name\" will be removed after server restart';
+    return '\"$name\" eemaldatakse pärast serveri taaskäivitamist';
   }
 
   @override
   String adminUninstallFailed(String error) {
-    return 'Failed to uninstall: $error';
+    return 'Desinstallimine ebaõnnestus: $error';
   }
 
   @override
   String adminPluginUpdating(String name, String version) {
-    return 'Updating \"$name\" to v$version...';
+    return '\"$name\" värskendamine v$version...';
   }
 
   @override
@@ -4611,7 +4612,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminPluginLoadFailed(String error) {
-    return 'Failed to load plugin: $error';
+    return 'Plugina laadimine nurjus: $error';
   }
 
   @override
@@ -4619,7 +4620,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminPluginVersion(String version) {
-    return 'Version $version';
+    return 'Versioon $version';
   }
 
   @override
@@ -4639,17 +4640,17 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminRemoveRepositoryConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Kas olete kindel, et soovite \"$name\" eemaldada?';
   }
 
   @override
   String adminRepositoriesSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Hoidlate salvestamine ebaõnnestus: $error';
   }
 
   @override
   String adminRepositoriesLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Hoidlate laadimine ebaõnnestus: $error';
   }
 
   @override
@@ -4666,12 +4667,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminPluginSettingsLoadFailed(String error) {
-    return 'Unable to load plugin settings: $error';
+    return 'Plugina seadeid ei saa laadida: $error';
   }
 
   @override
   String adminCouldNotOpenUrl(String uri) {
-    return 'Could not open $uri';
+    return '$uri ei saanud avada';
   }
 
   @override
@@ -4948,12 +4949,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminMetadataLoadFailed(String error) {
-    return 'Failed to load metadata: $error';
+    return 'Metaandmete laadimine ebaõnnestus: $error';
   }
 
   @override
   String adminMetadataSaveFailed(String error) {
-    return 'Failed to save metadata: $error';
+    return 'Metaandmete salvestamine ebaõnnestus: $error';
   }
 
   @override
@@ -4974,7 +4975,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminMetadataRefreshFailed(String error) {
-    return 'Failed to refresh metadata: $error';
+    return 'Metaandmete värskendamine ebaõnnestus: $error';
   }
 
   @override
@@ -4991,7 +4992,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminRemoteSearchFailed(String error) {
-    return 'Remote search failed: $error';
+    return 'Kaugotsing ebaõnnestus: $error';
   }
 
   @override
@@ -5005,7 +5006,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminContentTypeUpdateFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Sisutüübi värskendamine ebaõnnestus: $error';
   }
 
   @override
@@ -5020,12 +5021,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return '$imageType pilti värskendati';
   }
 
   @override
   String adminImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Pildi allalaadimine ebaõnnestus: $error';
   }
 
   @override
@@ -5036,27 +5037,27 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return '$imageType pilt on üles laaditud';
   }
 
   @override
   String adminImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Pildi üleslaadimine ebaõnnestus: $error';
   }
 
   @override
   String adminDeleteImage(String imageType) {
-    return 'Delete $imageType image';
+    return 'Kustuta $imageType pilt';
   }
 
   @override
   String adminImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return '$imageType pilt kustutatud';
   }
 
   @override
   String adminImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Pildi kustutamine ebaõnnestus: $error';
   }
 
   @override
@@ -5067,7 +5068,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminTunerDiscoveryFailed(String error) {
-    return 'Tuner discovery failed: $error';
+    return 'Tuneri leidmine ebaõnnestus: $error';
   }
 
   @override
@@ -5090,7 +5091,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminTunerAddFailed(String error) {
-    return 'Failed to add tuner: $error';
+    return 'Tuneri lisamine nurjus: $error';
   }
 
   @override
@@ -5113,12 +5114,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminProviderAddFailed(String error) {
-    return 'Failed to add provider: $error';
+    return 'Teenusepakkuja lisamine ebaõnnestus: $error';
   }
 
   @override
   String adminTunerRemoveFailed(String error) {
-    return 'Failed to remove tuner: $error';
+    return 'Tuneri eemaldamine ebaõnnestus: $error';
   }
 
   @override
@@ -5126,12 +5127,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminTunerResetFailed(String error) {
-    return 'Failed to reset tuner: $error';
+    return 'Tuneri lähtestamine ebaõnnestus: $error';
   }
 
   @override
   String adminProviderRemoveFailed(String error) {
-    return 'Failed to remove provider: $error';
+    return 'Teenusepakkuja eemaldamine ebaõnnestus: $error';
   }
 
   @override
@@ -5154,7 +5155,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminSettingsSaveFailed(String error) {
-    return 'Failed to save settings: $error';
+    return 'Seadete salvestamine ebaõnnestus: $error';
   }
 
   @override
@@ -5172,7 +5173,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Vastendite värskendamine ebaõnnestus: $error';
   }
 
   @override
@@ -5197,22 +5198,22 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminRecordingPathDisplay(String path) {
-    return 'Recording path: $path';
+    return 'Salvestustee: $path';
   }
 
   @override
   String adminSeriesPathDisplay(String path) {
-    return 'Series path: $path';
+    return 'Sarja tee: $path';
   }
 
   @override
   String adminPrePaddingDisplay(int minutes) {
-    return 'Pre-padding: $minutes min';
+    return 'Eeltäitmine: $minutes min';
   }
 
   @override
   String adminPostPaddingDisplay(int minutes) {
-    return 'Post-padding: $minutes min';
+    return 'Järeltäide: $minutes min';
   }
 
   @override
@@ -5244,7 +5245,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminRestoreConfirmMessage(String name) {
-    return 'Restore backup $name now?';
+    return 'Kas taastada varukoopia $name kohe?';
   }
 
   @override
@@ -5290,27 +5291,27 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminLogsMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '${minutes}m tagasi';
   }
 
   @override
   String adminLogsHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '${hours}h tagasi';
   }
 
   @override
   String adminLogsDaysAgo(int days) {
-    return '${days}d ago';
+    return '${days}d tagasi';
   }
 
   @override
   String adminLogViewerLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return '$fileName laadimine nurjus';
   }
 
   @override
   String adminLogViewerMatches(int count) {
-    return '$count matches';
+    return '$count vasted';
   }
 
   @override
@@ -5421,22 +5422,22 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminMetadataImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return '$imageType pilti värskendati';
   }
 
   @override
   String adminMetadataImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return '$imageType pilt on üles laaditud';
   }
 
   @override
   String adminMetadataImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return '$imageType pilt kustutatud';
   }
 
   @override
   String adminMetadataImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Pildi allalaadimine ebaõnnestus: $error';
   }
 
   @override
@@ -5445,12 +5446,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminMetadataImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Pildi üleslaadimine ebaõnnestus: $error';
   }
 
   @override
   String adminMetadataDeleteImageTitle(String imageType) {
-    return 'Delete $imageType image';
+    return 'Kustuta $imageType pilt';
   }
 
   @override
@@ -5459,12 +5460,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminMetadataImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Pildi kustutamine ebaõnnestus: $error';
   }
 
   @override
   String adminMetadataChooseImage(String imageType) {
-    return 'Choose $imageType image';
+    return 'Valige $imageType pilt';
   }
 
   @override
@@ -5497,7 +5498,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminPluginsUpdateAvailable(String version) {
-    return 'Update available: v$version';
+    return 'Värskendus on saadaval: v$version';
   }
 
   @override
@@ -5521,7 +5522,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminPluginsInstallUpdateVersioned(String version) {
-    return 'Install update (v$version)';
+    return 'Installige värskendus (v$version)';
   }
 
   @override
@@ -5533,7 +5534,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminPluginsInstalling(String name) {
-    return '\"$name\" is being installed...';
+    return '\"$name\" installitakse...';
   }
 
   @override
@@ -5553,7 +5554,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminPluginDetailSettingsTitle(String name) {
-    return '$name Settings';
+    return '$name Seaded';
   }
 
   @override
@@ -5593,7 +5594,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminReposLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Hoidlate laadimine ebaõnnestus: $error';
   }
 
   @override
@@ -5601,7 +5602,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminReposRemoveConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Kas olete kindel, et soovite \"$name\" eemaldada?';
   }
 
   @override
@@ -5609,7 +5610,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminReposSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Hoidlate salvestamine ebaõnnestus: $error';
   }
 
   @override
@@ -5889,17 +5890,17 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return 'Daily at $time';
+    return 'Iga päev aadressil $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return 'Every $day at $time';
+    return 'Iga $day kell $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return 'Every $duration';
+    return 'Iga $duration';
   }
 
   @override
@@ -5966,17 +5967,17 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminActivityDaysAgo(int days) {
-    return '${days}d ago';
+    return '${days}d tagasi';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '${hours}h tagasi';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '${minutes}m tagasi';
   }
 
   @override
@@ -6093,7 +6094,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Sisutüübi värskendamine ebaõnnestus: $error';
   }
 
   @override
@@ -6117,12 +6118,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Vastendite värskendamine ebaõnnestus: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return 'Time limit: $duration';
+    return 'Ajapiirang: $duration';
   }
 
   @override
@@ -6204,7 +6205,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String syncPlayQueueItemFallback(int index) {
-    return 'Item $index';
+    return 'Üksus $index';
   }
 
   @override
@@ -6252,12 +6253,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName joined SyncPlay group';
+    return '$userName liitus SyncPlay grupiga';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName left SyncPlay group';
+    return '$userName lahkus SyncPlay grupist';
   }
 
   @override
@@ -6269,7 +6270,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return 'Syncing playback to $groupName';
+    return 'Taasesituse sünkroonimine $groupName';
   }
 
   @override
@@ -6405,12 +6406,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return 'Cast control failed: $error';
+    return 'Ülekande juhtimine ebaõnnestus: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return '$kind Controls';
+    return '$kind Juhtelemendid';
   }
 
   @override
@@ -6421,7 +6422,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return 'Stop $kind';
+    return 'Peata $kind';
   }
 
   @override
@@ -6444,12 +6445,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String pinEnterNDigit(int length) {
-    return 'Enter a $length-digit PIN';
+    return 'Sisestage $length-kohaline PIN-kood';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return 'Enter your $length-digit PIN';
+    return 'Sisestage oma $length-kohaline PIN-kood';
   }
 
   @override
@@ -6495,7 +6496,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect failed: $message';
+    return 'Kiirühendus ebaõnnestus: $message';
   }
 
   @override
@@ -6506,7 +6507,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String remoteCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Käsk ebaõnnestus: $error';
   }
 
   @override
@@ -6535,7 +6536,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String castingFailed(String error) {
-    return 'Failed to start casting: $error';
+    return 'Ülekandmise alustamine ebaõnnestus: $error';
   }
 
   @override
@@ -6580,7 +6581,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String trackActionDownloading(String name) {
-    return 'Downloading $name...';
+    return '$name allalaadimine...';
   }
 
   @override
@@ -6669,7 +6670,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String skipSegment(String segment) {
-    return 'Skip $segment';
+    return 'Jäta vahele $segment';
   }
 
   @override
@@ -6680,12 +6681,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return 'Downloading $current/$total — $fileName';
+    return 'Allalaadimine $current/$total — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return 'Downloading $fileName';
+    return 'Allalaadimine $fileName';
   }
 
   @override
@@ -6911,8 +6912,7 @@ class AppLocalizationsEt extends AppLocalizations {
   String get settingsSupportMoonfin => 'Toetage Moonfinit';
 
   @override
-  String get settingsSupportMoonfinSubtitle =>
-      'Tähista projekt GitHubis või panusta';
+  String get settingsSupportMoonfinSubtitle => 'Annetage arendajale kohv';
 
   @override
   String get settingsLegal => 'ÕIGUSLIK';
@@ -7026,7 +7026,13 @@ class AppLocalizationsEt extends AppLocalizations {
   String get settingsPlaybackEngineMedia3Recommended => 'Media3 (soovitatav)';
 
   @override
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
+
+  @override
   String get settingsPlaybackEngineMpvLegacy => 'mpv (pärand)';
+
+  @override
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (soovitatav)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Visioni tagavara';
@@ -7212,6 +7218,730 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String latestLibraryName(String libraryName) {
-    return 'Latest $libraryName';
+    return 'Viimased $libraryName';
   }
+
+  @override
+  String get autoplayNextEpisode => 'Järgmise jao automaatne esitamine';
+
+  @override
+  String get autoplayNextEpisodeSubtitle =>
+      'Esitage järgmine jagu automaatselt, kui see on saadaval.';
+
+  @override
+  String get skipSilenceTitle => 'Jäta vaikus vahele';
+
+  @override
+  String get skipSilenceSubtitle =>
+      'Kui voog toetab, jätke vaiksed helisegmendid automaatselt vahele.';
+
+  @override
+  String get allowExternalAudioEffectsTitle => 'Luba välised heliefektid';
+
+  @override
+  String get allowExternalAudioEffectsSubtitle =>
+      'Lubage ekvalaiseri ja efektide rakendustel (nt Wavelet) lisada Media3 taasesitusseanssidele.';
+
+  @override
+  String get disableTunnelingTitle => 'Keela tunneldamine';
+
+  @override
+  String get disableTunnelingSubtitle =>
+      'Sunnita tunneleerimata taasesitus. Kasulik heli/video katkestustega seadmetes.';
+
+  @override
+  String get mapDolbyVisionP7Title =>
+      'Kaardistada Dolby Vision profiil 7 HEVC-ga';
+
+  @override
+  String get mapDolbyVisionP7Subtitle =>
+      'Esitage Dolby Vision profiili 7 voogusid HDR10-ühilduva HEVC-na mitte-DV-seadmetes.';
+
+  @override
+  String get subtitlesUseEmbeddedStyles =>
+      'Kasutage manustatud subtiitrite stiile';
+
+  @override
+  String get subtitlesUseEmbeddedStylesSubtitle =>
+      'Kasutage subtiitrirajale manustatud värve, fonte ja paigutust. Keelake selle asemel oma subtiitrite stiili eelistuste kasutamine.';
+
+  @override
+  String get subtitlesUseEmbeddedFontSizes =>
+      'Kasutage manustatud subtiitrite fondi suurust';
+
+  @override
+  String get subtitlesUseEmbeddedFontSizesSubtitle =>
+      'Rakendage subtiitrite rajale manustatud fondisuuruse vihjeid. Keelake oma stiilieelistuste alusel subtiitrite suuruse kasutamine.';
+
+  @override
+  String get useDetailedSubHeadings => 'Kasutage üksikasjalikke alapealkirju';
+
+  @override
+  String get useDetailedSubHeadingsDescription =>
+      'Kuva üksikasjalikud või minimaalsed alamread raamatukogu lehtedel.';
+
+  @override
+  String get savedThemesDeleteDialogTitle => 'Kas kustutada salvestatud teema?';
+
+  @override
+  String savedThemesDeleteDialogMessage(String themeName) {
+    return 'Kas eemaldada \"$themeName\" sellest seadme vahemälust?';
+  }
+
+  @override
+  String savedThemesDeletedMessage(String themeName) {
+    return '\"$themeName\" on sellest seadmest kustutatud.';
+  }
+
+  @override
+  String savedThemesDeleteFailedMessage(String themeName) {
+    return '\"$themeName\" ei saanud kustutada.';
+  }
+
+  @override
+  String get savedThemesTitle => 'Salvestatud teemad';
+
+  @override
+  String get savedThemesDescription =>
+      'Need on praeguse serveri pluginast Moonfin alla laaditud teemad. Kustutamine eemaldab ainult selle kohaliku koopia.';
+
+  @override
+  String get savedThemesEmpty =>
+      'Selle serveri jaoks ei leitud ühtegi salvestatud teemat.';
+
+  @override
+  String savedThemesCurrentThemeId(String themeId) {
+    return '$themeId • Hetkel aktiivne';
+  }
+
+  @override
+  String get savedThemesDeleteTooltip => 'Kustutage salvestatud teema';
+
+  @override
+  String get savedThemesManageSubtitle =>
+      'Hallake selles seadmes allalaaditud pistikprogrammide teemasid';
+
+  @override
+  String get kefinTweaksTitle => 'KefinTweaks';
+
+  @override
+  String get homeScreenSectionsTitle => 'Avakuva jaotised';
+
+  @override
+  String get themeEditor => 'Teemaredaktor';
+
+  @override
+  String get themeEditorSubtitle => 'Avage brauseris Moonfin teemaredaktor';
+
+  @override
+  String get homeScreen => 'Avakuva';
+
+  @override
+  String get bottomBar => 'Alumine riba';
+
+  @override
+  String get homeRowsStyleClassic => 'Klassikaline';
+
+  @override
+  String get homeRowsStyleModern => 'Kaasaegne';
+
+  @override
+  String get homeRowsSection => 'Kodu read';
+
+  @override
+  String get rowsType => 'Ridade tüüp';
+
+  @override
+  String get rowsTypeDescription =>
+      'Classic säilitab reapõhise pilditüübi ja teabe ülekatte. Modern kasutab portree-taustadekoratsiooni ridu.';
+
+  @override
+  String get displayFavoritesRows => 'Kuva lemmikute read';
+
+  @override
+  String get displayFavoritesRowsSubtitle =>
+      'Kuva lemmikfilmid, -sarjad ja muud lemmikridad avalehe jaotistes.';
+
+  @override
+  String get favoritesRowSorting => 'Lemmikute ridade sortimine';
+
+  @override
+  String get favoritesRowSortingDescription =>
+      'Sorteerige lemmikute ridu lisamiskuupäeva, väljalaskekuupäeva, tähestiku ja muu järgi.';
+
+  @override
+  String get displayCollectionsRows => 'Kuva kogude read';
+
+  @override
+  String get displayCollectionsRowsSubtitle =>
+      'Kuva kogude read avalehe jaotistes.';
+
+  @override
+  String get collectionsRowSorting => 'Kogude ridade sortimine';
+
+  @override
+  String get collectionsRowSortingDescription =>
+      'Sorteerige kogude ridu lisamiskuupäeva, väljalaskekuupäeva, tähestiku ja muu järgi.';
+
+  @override
+  String get displayGenresRows => 'Kuva Žanrid read';
+
+  @override
+  String get displayGenresRowsSubtitle =>
+      'Kuva žanrite read avalehe jaotistes.';
+
+  @override
+  String get genresRowSorting => 'Žanrid ridade sorteerimine';
+
+  @override
+  String get genresRowSortingDescription =>
+      'Sorteerige Žanrite ridu lisamiskuupäeva, väljalaskekuupäeva, tähestiku ja muu järgi.';
+
+  @override
+  String get genresRowItems => 'Žanrid rea elemendid';
+
+  @override
+  String get genresRowItemsDescription =>
+      'Kuva filmid, seriaalid või mõlemad žanrite ridadel.';
+
+  @override
+  String get appearance => 'Välimus';
+
+  @override
+  String get cardSize => 'Kaardi suurus';
+
+  @override
+  String get externalPlayerApp => 'Väline mängija rakendus';
+
+  @override
+  String get externalPlayerAskEachTimeSubtitle =>
+      'Kuva rakenduse valija, kui taasesitus algab.';
+
+  @override
+  String get loadingInstalledPlayers => 'Installitud mängijate laadimine...';
+
+  @override
+  String get connection => 'Ühendus';
+
+  @override
+  String get audioTranscodeTarget => 'Heli ümberkodeerimise sihtmärk';
+
+  @override
+  String get passthrough => 'Läbipääs';
+
+  @override
+  String get supportedOnThisDevice => 'Selles seadmes toetatud';
+
+  @override
+  String get notSupportedOnThisDevice => 'Selles seadmes ei toetata';
+
+  @override
+  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) läbilaskevõime';
+
+  @override
+  String get settingsAudioBitstreamDtsXToExternalDecoder =>
+      'Bitivoog DTS:X (DTS UHD) välisele dekoodrile.';
+
+  @override
+  String get settingsAudioTrueHdJocPassthrough =>
+      'TrueHD koos Atmose (JOC) läbipääsuga';
+
+  @override
+  String get mediaPlayerBehavior => 'Meediumipleieri käitumine';
+
+  @override
+  String get playbackEnhancements => 'Taasesituse täiustused';
+
+  @override
+  String get alwaysOn => 'Alati sees.';
+
+  @override
+  String get replaceSkipOutroWithNextUpDisplay =>
+      'Asendage Skip Outro järgmise ekraaniga';
+
+  @override
+  String get replaceSkipOutroWithNextUpDisplaySubtitle =>
+      'Kuvage ülekate Next Up (Järgmine üles) nupu Skip Outro asemel.';
+
+  @override
+  String get playerRouting => 'Mängija marsruutimine';
+
+  @override
+  String get preferSoftwareDecoders => 'Eelista tarkvaradekoodereid';
+
+  @override
+  String get preferSoftwareDecodersSubtitle =>
+      'Kasutage enne riistvaradekoodereid FFmpeg (heli) ja libgav1 (AV1). Keelake, kui HDMI-heli läbilaskevõime katkeb.';
+
+  @override
+  String get useExternalPlayer => 'Kasutage välist mängijat';
+
+  @override
+  String get useExternalPlayerSubtitle =>
+      'Avage Android TV valitud välisrakenduses video taasesitus.';
+
+  @override
+  String get automaticQueuing => 'Automaatne järjekord';
+
+  @override
+  String get preferSdhSubtitles => 'Eelista SDH subtiitreid';
+
+  @override
+  String get preferSdhSubtitlesSubtitle =>
+      'Seadistage automaatsel valimisel prioriteediks SDH/CC subtiitrirajad.';
+
+  @override
+  String get webDiagnostics => 'Veebi diagnostika';
+
+  @override
+  String get webDiagnosticsTitle => 'Moonfin Veebidiagnostika';
+
+  @override
+  String get webDiagnosticsIntro =>
+      'Kasutage seda lehte brauseri ühenduvusprobleemide diagnoosimiseks (CORS, segasisu ja avastusseaded).';
+
+  @override
+  String get webDiagnosticsDetectedMixedContentFailure =>
+      'Tuvastatud segasisu tõrge';
+
+  @override
+  String get webDiagnosticsDetectedCorsPreflightFailure =>
+      'Tuvastatud CORS-i/lennueelse rike';
+
+  @override
+  String get webDiagnosticsMixedContentFailureBody =>
+      'Moonfin tuvastas HTTPS-i lehe, mis üritas helistada HTTP-serveri URL-ile. Brauserid blokeerivad selle päringu enne, kui see teie serverisse jõuab.';
+
+  @override
+  String get webDiagnosticsCorsFailureBody =>
+      'Moonfin tuvastas brauseri tasemel päringu tõrke, mille tavaliselt põhjustab meediumiserveris puuduv CORS või eelkontrolli päised.';
+
+  @override
+  String webDiagnosticsTargetUrl(String url) {
+    return 'Siht-URL: $url';
+  }
+
+  @override
+  String webDiagnosticsDetail(String detail) {
+    return 'Üksikasjad: $detail';
+  }
+
+  @override
+  String get webDiagnosticsCurrentRuntimeContext =>
+      'Praegune käitusaja kontekst';
+
+  @override
+  String get webDiagnosticsOrigin => 'Päritolu';
+
+  @override
+  String get webDiagnosticsScheme => 'Skeem';
+
+  @override
+  String get webDiagnosticsPluginMode => 'Plugina režiim';
+
+  @override
+  String get webDiagnosticsWebRtcScan => 'WebRTC skannimine';
+
+  @override
+  String get webDiagnosticsForcedServerUrl => 'Sunnitud serveri URL';
+
+  @override
+  String get webDiagnosticsDefaultServerUrl => 'Serveri vaike-URL';
+
+  @override
+  String get webDiagnosticsDiscoveryProxyUrl => 'Discovery puhverserveri URL';
+
+  @override
+  String get notConfigured => 'pole konfigureeritud';
+
+  @override
+  String get webDiagnosticsMixedContent => 'Segatud sisu';
+
+  @override
+  String get webDiagnosticsMixedContentDetected =>
+      'See leht laaditakse HTTPS-i kaudu, kuid üks või mitu konfigureeritud URL-i on HTTP. Brauserid blokeerivad HTTPS-i lehtedel HTTP API-de kutsumise.';
+
+  @override
+  String get webDiagnosticsMixedContentFix =>
+      'Parandus: teenindage oma meediumiserverit või puhverserveri lõpp-punkti HTTPS-i kaudu või laadige Moonfin HTTP kaudu ainult usaldusväärsetes kohalikes võrkudes.';
+
+  @override
+  String get webDiagnosticsNoMixedContentDetected =>
+      'Praeguste käitusaja seadete põhjal ei tuvastatud ilmset segasisu konfiguratsiooni.';
+
+  @override
+  String get webDiagnosticsCorsChecklist => 'CORSi kontrollnimekiri';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem1 =>
+      '• Luba brauseri lähtekoht valikus Access-Control-Allow-Origin.';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem2 =>
+      '• Lisage jaotisesse Access-Control-Allow-Headers Autoriseerimine, X-Emby-Authorization ja X-Emby-Token.';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem3 =>
+      '• Avaldage voogesituse ja otsingu käitumise jaoks sisuvahemikku ja aktsepteerimisvahemikku.';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem4 =>
+      '• Naaske 204 OPTIONSi lennueelsete taotluste juurde.';
+
+  @override
+  String get webDiagnosticsHeaderSnippetTitle =>
+      'Päise väljavõtte näide (nginxi stiilis)';
+
+  @override
+  String get note => 'Märkus';
+
+  @override
+  String get webDiagnosticsNonWebNote =>
+      'See diagnostikamarsruut on mõeldud veebi koostamiseks. Kui näete seda mõnel teisel platvormil, ei pruugi need kontrollid kehtida.';
+
+  @override
+  String get backToServerSelect => 'Tagasi serverisse Valige';
+
+  @override
+  String get signOutAllUsers => 'Logi välja kõik kasutajad';
+
+  @override
+  String get voiceSearchPermissionPermanentlyDenied =>
+      'Mikrofoni luba on jäädavalt keelatud. Luba see süsteemiseadetes.';
+
+  @override
+  String get voiceSearchPermissionRequired =>
+      'Häälotsingu jaoks on vaja mikrofoni luba.';
+
+  @override
+  String get voiceSearchNoMatch => 'Ei saanud sellest aru. Proovi uuesti.';
+
+  @override
+  String get voiceSearchNoSpeechDetected => 'Kõnet ei tuvastatud.';
+
+  @override
+  String get voiceSearchMicrophoneError => 'Mikrofoni viga.';
+
+  @override
+  String get voiceSearchNeedsInternet => 'Häälotsing vajab Internetti.';
+
+  @override
+  String get voiceSearchServiceBusy => 'Kõneteenus on hõivatud. Proovi uuesti.';
+
+  @override
+  String get microphonePermissionPermanentlyDenied =>
+      'Mikrofoni luba on jäädavalt keelatud.';
+
+  @override
+  String get microphonePermissionDenied => 'Mikrofoni luba on keelatud.';
+
+  @override
+  String get speechRecognitionUnavailable =>
+      'Kõnetuvastus pole selles seadmes saadaval.';
+
+  @override
+  String get openIosRoutePicker => 'Avage iOS-i marsruudi valija';
+
+  @override
+  String get airPlayRoutePickerUnavailable =>
+      'AirPlay marsruudi valija pole selles seadmes saadaval.';
+
+  @override
+  String get videos => 'Videod';
+
+  @override
+  String get trailers => 'Haagised';
+
+  @override
+  String get programs => 'Programmid';
+
+  @override
+  String get songs => 'Laulud';
+
+  @override
+  String get photoAlbums => 'Fotoalbumid';
+
+  @override
+  String get photos => 'Fotod';
+
+  @override
+  String get people => 'Inimesed';
+
+  @override
+  String get recentlyReleasedEpisodes => 'Hiljuti avaldatud episoodid';
+
+  @override
+  String get watchAgain => 'Vaata uuesti';
+
+  @override
+  String get guestAppearances => 'Külalisesinemised';
+
+  @override
+  String get appearancesSeerr => 'Esinemised (nägija)';
+
+  @override
+  String get watchWithGroup => 'Vaadake koos rühmaga';
+
+  @override
+  String get errors => 'Vead';
+
+  @override
+  String get warnings => 'Hoiatused';
+
+  @override
+  String get disk => 'Ketas';
+
+  @override
+  String get openInBrowser => 'Avage brauseris';
+
+  @override
+  String get embeddedBrowserNotAvailable =>
+      'Manustatud brauser pole sellel platvormil saadaval.';
+
+  @override
+  String get adminRestartServerConfirmation =>
+      'Kas olete kindel, et soovite serveri taaskäivitada?';
+
+  @override
+  String get adminShutdownServerConfirmation =>
+      'Kas olete kindel, et soovite serveri sulgeda? Peate selle käsitsi taaskäivitama.';
+
+  @override
+  String get internal => 'Sisemine';
+
+  @override
+  String get idle => 'Tühikäik';
+
+  @override
+  String get os => 'OS';
+
+  @override
+  String get adminNoUsersFound => 'Ühtegi kasutajat ei leitud';
+
+  @override
+  String get adminNoUsersMatchSearch =>
+      'Teie otsingule ei vasta ükski kasutaja';
+
+  @override
+  String get adminNoDevicesFound => 'Ühtegi seadet ei leitud';
+
+  @override
+  String get adminNoDevicesMatchCurrentFilters =>
+      'Ükski seade ei vasta praegustele filtritele';
+
+  @override
+  String get passwordSet => 'Parool määratud';
+
+  @override
+  String get noPasswordConfigured => 'Parool pole konfigureeritud';
+
+  @override
+  String get remoteAccess => 'Kaugjuurdepääs';
+
+  @override
+  String get localOnly => 'Ainult kohalik';
+
+  @override
+  String get adminMediaAnalyticsLoadFailed =>
+      'Meediaanalüüsi laadimine ebaõnnestus';
+
+  @override
+  String get analyticsCombinedAcrossLibraries =>
+      'Kombineeritud analüüs kõigis meediumiteekides.';
+
+  @override
+  String get analyticsTopArtists => 'Tippkunstnikud';
+
+  @override
+  String get analyticsTopAuthors => 'Parimad autorid';
+
+  @override
+  String get analyticsTopContributors => 'Peamised panustajad';
+
+  @override
+  String analyticsLibrariesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Libraries',
+      one: '1 Library',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get analyticsNoIndexedMediaTotals =>
+      'Selle valiku jaoks pole veel ühtegi indekseeritud meedia kogusummat saadaval.';
+
+  @override
+  String get analyticsLibraryDetails => 'Raamatukogu üksikasjad';
+
+  @override
+  String get analyticsLibraryBreakdown => 'Raamatukogu jaotus';
+
+  @override
+  String get analyticsNoLibrariesAvailable =>
+      'Ühtegi raamatukogu pole saadaval.';
+
+  @override
+  String get adminServerAdministrationTitle => 'Serveri administreerimine';
+
+  @override
+  String get adminServerPathData => 'Andmed';
+
+  @override
+  String get adminServerPathImageCache => 'Pildi vahemälu';
+
+  @override
+  String get adminServerPathCache => 'Vahemälu';
+
+  @override
+  String get adminServerPathLogs => 'Palgid';
+
+  @override
+  String get adminServerPathMetadata => 'Metaandmed';
+
+  @override
+  String get adminServerPathTranscode => 'Ümberkodeerimine';
+
+  @override
+  String get adminServerPathWeb => 'Veeb';
+
+  @override
+  String get adminNoServerPathsReturned =>
+      'See server ei tagastanud ühtegi serveriteed.';
+
+  @override
+  String adminPercentUsed(int percent) {
+    return '$percent% kasutatud';
+  }
+
+  @override
+  String get userActivity => 'Kasutaja tegevus';
+
+  @override
+  String get systemEvents => 'Süsteemi sündmused';
+
+  @override
+  String get needsAttention => 'Vajab Tähelepanu';
+
+  @override
+  String get adminDrawerSectionServer => 'Server';
+
+  @override
+  String get adminDrawerSectionPlayback => 'Taasesitus';
+
+  @override
+  String get adminDrawerSectionDevices => 'Seadmed';
+
+  @override
+  String get adminDrawerSectionAdvanced => 'Täiustatud';
+
+  @override
+  String get adminDrawerSectionPlugins => 'Pluginad';
+
+  @override
+  String get adminDrawerSectionLiveTv => 'Otse-TV';
+
+  @override
+  String get homeVideos => 'Koduvideod';
+
+  @override
+  String get mixedContent => 'Segatud sisu';
+
+  @override
+  String get homeVideosAndPhotos => 'Koduvideod ja fotod';
+
+  @override
+  String get mixedMoviesAndShows => 'Segafilmid ja -saated';
+
+  @override
+  String get intelQuickSync => 'Inteli kiire sünkroonimine';
+
+  @override
+  String get rockchipMpp => 'Rockchip MPP';
+
+  @override
+  String get dolbyVision => 'Dolby Vision';
+
+  @override
+  String get noRecordingsFound => 'Salvestisi ei leitud';
+
+  @override
+  String noImagePagesFoundInArchive(String extension) {
+    return '.$extension arhiivist ei leitud ühtegi pildilehte.';
+  }
+
+  @override
+  String embeddedRendererFailed(int code, String description) {
+    return 'Manustatud renderdaja ebaõnnestus ($code): $description';
+  }
+
+  @override
+  String epubRendererFailed(int code, String description) {
+    return 'EPUB-i renderdaja nurjus ($code): $description';
+  }
+
+  @override
+  String missingLocalFileForReader(String uri) {
+    return 'Lugeja jaoks puudub kohalik fail: $uri';
+  }
+
+  @override
+  String httpStatusWhileOpeningBookData(int status, String uri) {
+    return 'HTTP $status raamatuandmete avamisel aadressilt $uri';
+  }
+
+  @override
+  String get noReadableBookEndpointAvailable =>
+      'Loetava raamatu lõpp-punkt pole saadaval';
+
+  @override
+  String unsupportedComicArchiveFormat(String extension) {
+    return 'Toetamata koomiksiarhiivi vorming: .$extension';
+  }
+
+  @override
+  String get cbrExtractionPluginUnavailable =>
+      'CBR-i ekstraheerimise pistikprogramm pole sellel platvormil saadaval.';
+
+  @override
+  String get failedToExtractCbrArchive =>
+      '.cbr arhiivi ekstraktimine ebaõnnestus.';
+
+  @override
+  String get cb7ExtractionUnavailable =>
+      'CB7 ekstraheerimine pole sellel platvormil saadaval.';
+
+  @override
+  String get cb7ExtractionPluginUnavailable =>
+      'CB7 ekstraheerimise pistikprogramm pole sellel platvormil saadaval.';
+
+  @override
+  String get closeGenrePanel => 'Sule žanri paneel';
+
+  @override
+  String get loadingShuffle => 'Juhusliku esituse laadimine...';
+
+  @override
+  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
+
+  @override
+  String get randomShuffleLabel => 'RANDOM SHUFFLE';
+
+  @override
+  String get genresShuffleLabel => 'GENRES SHUFFLE';
+
+  @override
+  String get autoHdrSwitching => 'Automaatne HDR-i vahetamine';
+
+  @override
+  String get autoHdrSwitchingDescription =>
+      'Lubage HDR-i automaatselt HDR-video taasesitamiseks ja taastage väljumisel kuvarežiim.';
+
+  @override
+  String get whenFullscreen => 'Täisekraanil';
+
+  @override
+  String get transcodingLimits => 'Ümberkodeerimise piirangud';
 }

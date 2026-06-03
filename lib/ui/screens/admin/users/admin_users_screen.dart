@@ -156,7 +156,9 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                 child: filtered.isEmpty
             ? Center(
                 child: Text(
-                  users.isEmpty ? 'No users found' : 'No users match your search',
+                  users.isEmpty
+                      ? l10n.adminNoUsersFound
+                      : l10n.adminNoUsersMatchSearch,
                 ),
               )
             : ListView.builder(
@@ -169,7 +171,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                   final isDisabled = policy?.isDisabled ?? false;
                   final hasRemoteAccess = policy?.enableRemoteAccess ?? false;
                   final isHidden = policy?.isHidden ?? false;
-                  final displayName = (user.name ?? 'Unknown').trim();
+                    final displayName = (user.name ?? l10n.unknown).trim();
                   final initials = displayName.isEmpty
                       ? '?'
                       : displayName.characters.first.toUpperCase();
@@ -218,8 +220,8 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                                       const SizedBox(height: 2),
                                       Text(
                                         user.hasPassword
-                                            ? 'Password set'
-                                            : 'No password configured',
+                                            ? l10n.passwordSet
+                                            : l10n.noPasswordConfigured,
                                         style: theme.textTheme.bodySmall,
                                       ),
                                     ],
@@ -237,23 +239,25 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                               spacing: 6,
                               runSpacing: 6,
                               children: [
-                                if (isAdmin) _statusChip(context, 'Admin', Icons.shield),
+                                if (isAdmin) _statusChip(context, l10n.admin, Icons.shield),
                                 if (isDisabled)
                                   _statusChip(
                                     context,
-                                    'Disabled',
+                                    l10n.disabled,
                                     Icons.block,
                                     tint: theme.colorScheme.error,
                                   ),
                                 _statusChip(
                                   context,
-                                  hasRemoteAccess ? 'Remote Access' : 'Local Only',
+                                  hasRemoteAccess
+                                      ? l10n.remoteAccess
+                                      : l10n.localOnly,
                                   hasRemoteAccess ? Icons.cloud_done : Icons.cloud_off,
                                 ),
                                 if (isHidden)
                                   _statusChip(
                                     context,
-                                    'Hidden',
+                                    l10n.hidden,
                                     Icons.visibility_off,
                                   ),
                               ],

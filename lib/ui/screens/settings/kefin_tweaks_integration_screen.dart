@@ -66,7 +66,7 @@ class _KefinTweaksIntegrationScreenState
           return Scaffold(
             appBar: buildSettingsAppBar(
               context,
-              const Text('KefinTweaks'),
+              Text(l10n.kefinTweaksTitle),
               actions: [
                 IconButton(
                   tooltip: l10n.refresh,

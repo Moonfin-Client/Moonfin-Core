@@ -28,18 +28,32 @@ class EmbyConnectService {
     required String username,
     required String password,
   }) async {
-    final body = {'nameOrEmail': username, 'rawpw': password};
-    final headers = {'X-Application': _applicationHeader};
+    final credentials = {'nameOrEmail': username, 'rawpw': password};
+    final headers = {
+      'X-Application': _applicationHeader,
+      'Accept': 'application/json',
+    };
 
-    final response = await _dio.post<dynamic>(
-      'user/authenticate',
-      data: body,
-      options: Options(
-        headers: {...headers, 'Accept': 'application/json'},
-        contentType: Headers.jsonContentType,
-        responseType: ResponseType.json,
-      ),
-    );
+    Response<dynamic> response;
+    try {
+      response = await _dio.get<dynamic>(
+        'user/authenticate',
+        queryParameters: credentials,
+        options: Options(headers: headers, responseType: ResponseType.json),
+      );
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) rethrow;
+      response = await _dio.post<dynamic>(
+        'user/authenticate',
+        data: credentials,
+        options: Options(
+          headers: headers,
+          contentType: Headers.jsonContentType,
+          responseType: ResponseType.json,
+        ),
+      );
+    }
+
     final data = _asJsonMap(response.data, context: 'authenticate');
     return EmbyConnectAuthResult.fromJson(data);
   }
@@ -127,24 +141,23 @@ class EmbyConnectService {
             },
           );
 
-          final response = await dio.getUri<Map<String, dynamic>>(
+          final response = await dio.getUri<dynamic>(
             queryUri,
             options: Options(
               headers: {
                 'X-Emby-Token': accessKey,
                 'X-Application': _applicationHeader,
+                'Accept': 'application/json',
                 'X-Emby-Authorization': buildServerAuthorizationHeader(
                   scheme: 'Emby',
                   deviceInfo: _deviceInfo,
                 ),
               },
+              responseType: ResponseType.json,
             ),
           );
 
-          final data = response.data;
-          if (data == null) {
-            throw const FormatException('Invalid exchange response');
-          }
+          final data = _asJsonMap(response.data, context: 'exchange');
 
           return EmbyConnectExchangeResult.fromJson(
             data,
@@ -203,16 +216,17 @@ class EmbyConnectAuthResult {
   const EmbyConnectAuthResult({required this.accessToken, required this.user});
 
   factory EmbyConnectAuthResult.fromJson(Map<String, dynamic> json) {
-    final rawUser = json['User'] ?? json['user'];
+    final rawUser = (json['User'] ?? json['user']) as Map?;
+    final userJson = rawUser?.cast<String, dynamic>() ?? json;
+
     return EmbyConnectAuthResult(
       accessToken:
           json['AccessToken'] as String? ??
           json['accessToken'] as String? ??
+          json['ConnectAccessToken'] as String? ??
+          json['connectAccessToken'] as String? ??
           '',
-      user: EmbyConnectUser.fromJson(
-        (rawUser as Map?)?.cast<String, dynamic>() ??
-            const <String, dynamic>{},
-      ),
+      user: EmbyConnectUser.fromJson(userJson),
     );
   }
 }
@@ -225,7 +239,12 @@ class EmbyConnectUser {
 
   factory EmbyConnectUser.fromJson(Map<String, dynamic> json) {
     return EmbyConnectUser(
-      id: json['Id'] as String? ?? json['UserId'] as String? ?? '',
+      id:
+          json['Id'] as String? ??
+          json['UserId'] as String? ??
+          json['ConnectUserId'] as String? ??
+          json['connectUserId'] as String? ??
+          '',
       name: json['Name'] as String? ?? json['Username'] as String? ?? '',
     );
   }
@@ -315,8 +334,10 @@ class EmbyConnectExchangeResult {
     required String resolvedBaseUrl,
   }) {
     return EmbyConnectExchangeResult(
-      localUserId: json['LocalUserId'] as String? ?? '',
-      accessToken: json['AccessToken'] as String? ?? '',
+      localUserId:
+          json['LocalUserId'] as String? ?? json['localUserId'] as String? ?? '',
+      accessToken:
+          json['AccessToken'] as String? ?? json['accessToken'] as String? ?? '',
       resolvedBaseUrl: resolvedBaseUrl,
     );
   }

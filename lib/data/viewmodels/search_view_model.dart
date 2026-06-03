@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../l10n/current_app_localizations.dart';
 import '../models/aggregated_item.dart';
 import '../repositories/search_repository.dart';
 import '../repositories/seerr_repository.dart';
@@ -69,32 +70,44 @@ class SearchViewModel extends ChangeNotifier {
   static const _resultLimit = 24;
   static const _globalFetchLimit = 240;
 
-  static const _bookSearchGroups = [
-    SearchResultGroup(title: 'Books', itemTypes: ['Book']),
-    SearchResultGroup(title: 'Audiobooks', itemTypes: ['AudioBook']),
-  ];
+  static List<SearchResultGroup> _bookSearchGroups() {
+    final l10n = currentAppLocalizations();
+    return [
+      SearchResultGroup(title: l10n.books, itemTypes: const ['Book']),
+      SearchResultGroup(title: l10n.audiobooks, itemTypes: const ['AudioBook']),
+    ];
+  }
 
-  static const _searchGroups = [
-    SearchResultGroup(title: 'Books', itemTypes: ['Book']),
-    SearchResultGroup(title: 'Movies', itemTypes: ['Movie']),
-    SearchResultGroup(title: 'Series', itemTypes: ['Series']),
-    SearchResultGroup(title: 'Seasons', itemTypes: ['Season']),
-    SearchResultGroup(title: 'Episodes', itemTypes: ['Episode']),
-    SearchResultGroup(title: 'Videos', itemTypes: ['Video']),
-    SearchResultGroup(title: 'Music Videos', itemTypes: ['MusicVideo']),
-    SearchResultGroup(title: 'Trailers', itemTypes: ['Trailer']),
-    SearchResultGroup(title: 'Programs', itemTypes: ['Program']),
-    SearchResultGroup(title: 'Channels', itemTypes: ['LiveTvChannel']),
-    SearchResultGroup(title: 'Playlists', itemTypes: ['Playlist']),
-    SearchResultGroup(title: 'Artists', itemTypes: ['MusicArtist', 'AlbumArtist']),
-    SearchResultGroup(title: 'Albums', itemTypes: ['MusicAlbum']),
-    SearchResultGroup(title: 'Songs', itemTypes: ['Audio']),
-    SearchResultGroup(title: 'Photo Albums', itemTypes: ['PhotoAlbum']),
-    SearchResultGroup(title: 'Photos', itemTypes: ['Photo']),
-    SearchResultGroup(title: 'Collections', itemTypes: ['BoxSet']),
-    SearchResultGroup(title: 'People', itemTypes: ['Person']),
-    SearchResultGroup(title: 'Folders', itemTypes: ['Folder', 'CollectionFolder', 'UserView']),
-  ];
+  static List<SearchResultGroup> _searchGroups() {
+    final l10n = currentAppLocalizations();
+    return [
+      SearchResultGroup(title: l10n.books, itemTypes: const ['Book']),
+      SearchResultGroup(title: l10n.movies, itemTypes: const ['Movie']),
+      SearchResultGroup(title: l10n.series, itemTypes: const ['Series']),
+      SearchResultGroup(title: l10n.seasons, itemTypes: const ['Season']),
+      SearchResultGroup(title: l10n.episodes, itemTypes: const ['Episode']),
+      SearchResultGroup(title: l10n.videos, itemTypes: const ['Video']),
+      SearchResultGroup(title: l10n.musicVideos, itemTypes: const ['MusicVideo']),
+      SearchResultGroup(title: l10n.trailers, itemTypes: const ['Trailer']),
+      SearchResultGroup(title: l10n.programs, itemTypes: const ['Program']),
+      SearchResultGroup(title: l10n.channels, itemTypes: const ['LiveTvChannel']),
+      SearchResultGroup(title: l10n.playlists, itemTypes: const ['Playlist']),
+      SearchResultGroup(
+        title: l10n.artists,
+        itemTypes: const ['MusicArtist', 'AlbumArtist'],
+      ),
+      SearchResultGroup(title: l10n.albums, itemTypes: const ['MusicAlbum']),
+      SearchResultGroup(title: l10n.songs, itemTypes: const ['Audio']),
+      SearchResultGroup(title: l10n.photoAlbums, itemTypes: const ['PhotoAlbum']),
+      SearchResultGroup(title: l10n.photos, itemTypes: const ['Photo']),
+      SearchResultGroup(title: l10n.collections, itemTypes: const ['BoxSet']),
+      SearchResultGroup(title: l10n.people, itemTypes: const ['Person']),
+      SearchResultGroup(
+        title: l10n.folders,
+        itemTypes: const ['Folder', 'CollectionFolder', 'UserView'],
+      ),
+    ];
+  }
 
   void searchDebounced(String query) {
     final trimmed = query.trim();
@@ -134,7 +147,9 @@ class SearchViewModel extends ChangeNotifier {
     if (query != _query) return;
 
     try {
-      final activeGroups = _scopedParentId != null ? _bookSearchGroups : _searchGroups;
+        final activeGroups = _scopedParentId != null
+          ? _bookSearchGroups()
+          : _searchGroups();
       final seerrFuture = _fetchSeerrResults(query);
 
       final groups = _scopedParentId != null

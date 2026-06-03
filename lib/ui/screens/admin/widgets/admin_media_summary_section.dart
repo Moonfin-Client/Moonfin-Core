@@ -15,7 +15,7 @@ const _dashboardMetricKeys = <String>[
 
 class AdminMediaSummarySection extends StatelessWidget {
   final AdminMediaCountSummary summary;
-  final String title;
+  final String? title;
   final String? subtitle;
   final List<String> metricKeys;
   final VoidCallback? onOpenAnalytics;
@@ -23,7 +23,7 @@ class AdminMediaSummarySection extends StatelessWidget {
   const AdminMediaSummarySection({
     super.key,
     required this.summary,
-    this.title = 'Media Overview',
+    this.title,
     this.subtitle,
     this.metricKeys = _dashboardMetricKeys,
     this.onOpenAnalytics,
@@ -33,6 +33,9 @@ class AdminMediaSummarySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final resolvedTitle = (title != null && title!.isNotEmpty)
+        ? title!
+        : l10n.adminMediaOverview;
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -48,7 +51,7 @@ class AdminMediaSummarySection extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(title, style: theme.textTheme.titleLarge),
+                      Text(resolvedTitle, style: theme.textTheme.titleLarge),
                       if ((subtitle ?? '').isNotEmpty) ...[
                         const SizedBox(height: 4),
                         Text(
@@ -122,6 +125,7 @@ class _AdminMediaMetricTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final child = Container(
       padding: const EdgeInsets.all(16),
@@ -140,7 +144,7 @@ class _AdminMediaMetricTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  metric.label,
+                  adminMediaMetricLabel(l10n, metric.key),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),

@@ -6944,7 +6944,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'GitHubలో ప్రాజెక్ట్‌కు స్టార్ చేయండి లేదా సహకరించండి';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'చట్టపరమైన';
@@ -7062,7 +7062,13 @@ class AppLocalizationsTe extends AppLocalizations {
       'Media3 (సిఫార్సు చేయబడింది)';
 
   @override
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
+
+  @override
   String get settingsPlaybackEngineMpvLegacy => 'mpv (లెగసీ)';
+
+  @override
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Vision ఫాల్‌బ్యాక్';
@@ -7088,7 +7094,7 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get settingsDolbyVisionProfile7DirectPlayDescription =>
-      'Dolby Vision ప్రొఫైల్ 7 మెరుగుదల-లేయర్ స్ట్రీమ్‌లు డైరెక్ట్ ప్లే చేయాలా వద్దా అని నియంత్రిస్తుంది.';
+      'Dolby Vision ప్రొఫైల్ 7 మెరుగుదల-లేయర్ స్ట్రీమ్‌లు డైరెక్ట్ ప్లే చేయాలా వద్దా అనేది నియంత్రిస్తుంది.';
 
   @override
   String get settingsAutoAftkrtEnabled => 'ఆటో (AFTKRT ప్రారంభించబడింది)';
@@ -7247,6 +7253,732 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String latestLibraryName(String libraryName) {
-    return 'Latest $libraryName';
+    return 'తాజా $libraryName';
   }
+
+  @override
+  String get autoplayNextEpisode => 'తదుపరి ఎపిసోడ్‌ను ఆటోప్లే చేయండి';
+
+  @override
+  String get autoplayNextEpisodeSubtitle =>
+      'అందుబాటులో ఉన్నప్పుడు తదుపరి ఎపిసోడ్‌ని స్వయంచాలకంగా ప్లే చేయండి.';
+
+  @override
+  String get skipSilenceTitle => 'నిశ్శబ్దాన్ని దాటవేయి';
+
+  @override
+  String get skipSilenceSubtitle =>
+      'స్ట్రీమ్ మద్దతు ఇచ్చినప్పుడు స్వయంచాలకంగా నిశ్శబ్ద ఆడియో విభాగాలను దాటవేయండి.';
+
+  @override
+  String get allowExternalAudioEffectsTitle =>
+      'బాహ్య ఆడియో ప్రభావాలను అనుమతించండి';
+
+  @override
+  String get allowExternalAudioEffectsSubtitle =>
+      'Media3 ప్లేబ్యాక్ సెషన్‌లకు జోడించడానికి ఈక్వలైజర్ మరియు ఎఫెక్ట్స్ యాప్‌లను (ఉదా. వేవ్‌లెట్) అనుమతించండి.';
+
+  @override
+  String get disableTunnelingTitle => 'టన్నెలింగ్‌ని నిలిపివేయండి';
+
+  @override
+  String get disableTunnelingSubtitle =>
+      'ఫోర్స్ నాన్-టన్నల్ ప్లేబ్యాక్. టన్నెలింగ్ ఆడియో/వీడియో నిలిపివేతలు ఉన్న పరికరాలలో ఉపయోగకరంగా ఉంటుంది.';
+
+  @override
+  String get mapDolbyVisionP7Title =>
+      'Dolby Vision ప్రొఫైల్ 7 నుండి HEVCకి మ్యాప్ చేయండి';
+
+  @override
+  String get mapDolbyVisionP7Subtitle =>
+      'DV యేతర పరికరాలలో Dolby Vision ప్రొఫైల్ 7 స్ట్రీమ్‌లను HDR10-అనుకూలమైన HEVCగా ప్లే చేయండి.';
+
+  @override
+  String get subtitlesUseEmbeddedStyles =>
+      'పొందుపరిచిన ఉపశీర్షిక శైలులను ఉపయోగించండి';
+
+  @override
+  String get subtitlesUseEmbeddedStylesSubtitle =>
+      'ఉపశీర్షిక ట్రాక్‌లో పొందుపరిచిన రంగులు, ఫాంట్‌లు మరియు స్థానాలను వర్తింపజేయండి. బదులుగా మీ శీర్షిక శైలి ప్రాధాన్యతలను ఉపయోగించడాన్ని నిలిపివేయండి.';
+
+  @override
+  String get subtitlesUseEmbeddedFontSizes =>
+      'పొందుపరిచిన ఉపశీర్షిక ఫాంట్ పరిమాణాలను ఉపయోగించండి';
+
+  @override
+  String get subtitlesUseEmbeddedFontSizesSubtitle =>
+      'ఉపశీర్షిక ట్రాక్‌లో పొందుపరిచిన ఫాంట్-పరిమాణ సూచనలను వర్తింపజేయండి. మీ శైలి ప్రాధాన్యతల నుండి ఉపశీర్షిక పరిమాణాన్ని ఉపయోగించడాన్ని నిలిపివేయండి.';
+
+  @override
+  String get useDetailedSubHeadings => 'వివరణాత్మక ఉపశీర్షికలను ఉపయోగించండి';
+
+  @override
+  String get useDetailedSubHeadingsDescription =>
+      'లైబ్రరీ పేజీలలో వివరణాత్మక లేదా కనిష్ట సబ్‌రోను చూపండి.';
+
+  @override
+  String get savedThemesDeleteDialogTitle => 'సేవ్ చేసిన థీమ్‌ను తొలగించాలా?';
+
+  @override
+  String savedThemesDeleteDialogMessage(String themeName) {
+    return 'ఈ పరికర కాష్ నుండి \"$themeName\"ని తీసివేయాలా?';
+  }
+
+  @override
+  String savedThemesDeletedMessage(String themeName) {
+    return 'ఈ పరికరం నుండి \"$themeName\" తొలగించబడింది.';
+  }
+
+  @override
+  String savedThemesDeleteFailedMessage(String themeName) {
+    return '\"$themeName\"ని తొలగించడం సాధ్యపడలేదు.';
+  }
+
+  @override
+  String get savedThemesTitle => 'సేవ్ చేసిన థీమ్‌లు';
+
+  @override
+  String get savedThemesDescription =>
+      'ఇవి ప్రస్తుత సర్వర్ కోసం Moonfin ప్లగిన్ నుండి డౌన్‌లోడ్ చేయబడిన థీమ్‌లు. తొలగించడం వలన ఈ స్థానిక కాపీ మాత్రమే తీసివేయబడుతుంది.';
+
+  @override
+  String get savedThemesEmpty =>
+      'ఈ సర్వర్ కోసం సేవ్ చేయబడిన థీమ్‌లు ఏవీ కనుగొనబడలేదు.';
+
+  @override
+  String savedThemesCurrentThemeId(String themeId) {
+    return '$themeId • ప్రస్తుతం సక్రియంగా ఉంది';
+  }
+
+  @override
+  String get savedThemesDeleteTooltip => 'సేవ్ చేసిన థీమ్‌ను తొలగించండి';
+
+  @override
+  String get savedThemesManageSubtitle =>
+      'ఈ పరికరంలో డౌన్‌లోడ్ చేయబడిన ప్లగిన్ థీమ్‌లను నిర్వహించండి';
+
+  @override
+  String get kefinTweaksTitle => 'కెఫిన్‌ట్వీక్స్';
+
+  @override
+  String get homeScreenSectionsTitle => 'హోమ్ స్క్రీన్ విభాగాలు';
+
+  @override
+  String get themeEditor => 'థీమ్ ఎడిటర్';
+
+  @override
+  String get themeEditorSubtitle =>
+      'మీ బ్రౌజర్‌లో Moonfin థీమ్ ఎడిటర్‌ను తెరవండి';
+
+  @override
+  String get homeScreen => 'హోమ్ స్క్రీన్';
+
+  @override
+  String get bottomBar => 'దిగువ బార్';
+
+  @override
+  String get homeRowsStyleClassic => 'క్లాసిక్';
+
+  @override
+  String get homeRowsStyleModern => 'ఆధునిక';
+
+  @override
+  String get homeRowsSection => 'హోమ్ వరుసలు';
+
+  @override
+  String get rowsType => 'అడ్డు వరుసల రకం';
+
+  @override
+  String get rowsTypeDescription =>
+      'క్లాసిక్ ప్రతి వరుస చిత్ర రకాన్ని మరియు సమాచార అతివ్యాప్తిని ఉంచుతుంది. ఆధునిక పోర్ట్రెయిట్-టు-బ్యాక్‌డ్రాప్ అడ్డు వరుసలను ఉపయోగిస్తుంది.';
+
+  @override
+  String get displayFavoritesRows => 'ఇష్టమైన వరుసలను ప్రదర్శించు';
+
+  @override
+  String get displayFavoritesRowsSubtitle =>
+      'హోమ్ విభాగాలలో ఇష్టమైన సినిమాలు, సిరీస్ మరియు ఇతర ఇష్టమైన అడ్డు వరుసలను చూపండి.';
+
+  @override
+  String get favoritesRowSorting => 'ఇష్టమైనవి వరుస క్రమబద్ధీకరణ';
+
+  @override
+  String get favoritesRowSortingDescription =>
+      'జోడించిన తేదీ, విడుదల తేదీ, అక్షర క్రమంలో మరియు మరిన్నింటి ద్వారా ఇష్టమైన వరుసలను క్రమబద్ధీకరించండి.';
+
+  @override
+  String get displayCollectionsRows => 'సేకరణల వరుసలను ప్రదర్శించు';
+
+  @override
+  String get displayCollectionsRowsSubtitle =>
+      'హోమ్ విభాగాలలో సేకరణల అడ్డు వరుసలను చూపండి.';
+
+  @override
+  String get collectionsRowSorting => 'సేకరణల వరుస క్రమబద్ధీకరణ';
+
+  @override
+  String get collectionsRowSortingDescription =>
+      'జోడించిన తేదీ, విడుదల తేదీ, అక్షర క్రమంలో మరియు మరిన్నింటి ఆధారంగా సేకరణల వరుసలను క్రమబద్ధీకరించండి.';
+
+  @override
+  String get displayGenresRows => 'ప్రదర్శన శైలుల వరుసలు';
+
+  @override
+  String get displayGenresRowsSubtitle =>
+      'హోమ్ విభాగాలలో జెనర్‌ల అడ్డు వరుసలను చూపండి.';
+
+  @override
+  String get genresRowSorting => 'శైలుల వరుస క్రమబద్ధీకరణ';
+
+  @override
+  String get genresRowSortingDescription =>
+      'జోడించిన తేదీ, విడుదల తేదీ, అక్షరక్రమం మరియు మరిన్నింటి ఆధారంగా జెనర్‌ల అడ్డు వరుసలను క్రమబద్ధీకరించండి.';
+
+  @override
+  String get genresRowItems => 'జానర్స్ వరుస అంశాలు';
+
+  @override
+  String get genresRowItemsDescription =>
+      'చలన చిత్రాలను, సిరీస్‌లను లేదా రెండింటినీ జెనర్‌ల వరుసలలో చూపండి.';
+
+  @override
+  String get appearance => 'స్వరూపం';
+
+  @override
+  String get cardSize => 'కార్డ్ పరిమాణం';
+
+  @override
+  String get externalPlayerApp => 'బాహ్య ప్లేయర్ యాప్';
+
+  @override
+  String get externalPlayerAskEachTimeSubtitle =>
+      'ప్లేబ్యాక్ ప్రారంభమైనప్పుడు యాప్ ఎంపికను చూపండి.';
+
+  @override
+  String get loadingInstalledPlayers =>
+      'ఇన్‌స్టాల్ చేయబడిన ప్లేయర్‌లను లోడ్ చేస్తోంది...';
+
+  @override
+  String get connection => 'కనెక్షన్';
+
+  @override
+  String get audioTranscodeTarget => 'ఆడియో ట్రాన్స్‌కోడ్ లక్ష్యం';
+
+  @override
+  String get passthrough => 'పాస్త్రూ';
+
+  @override
+  String get supportedOnThisDevice => 'ఈ పరికరంలో మద్దతు ఉంది';
+
+  @override
+  String get notSupportedOnThisDevice => 'ఈ పరికరంలో మద్దతు లేదు';
+
+  @override
+  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) పాస్‌త్రూ';
+
+  @override
+  String get settingsAudioBitstreamDtsXToExternalDecoder =>
+      'బాహ్య డీకోడర్‌కు బిట్‌స్ట్రీమ్ DTS:X (DTS UHD).';
+
+  @override
+  String get settingsAudioTrueHdJocPassthrough =>
+      'Atmos (JOC) పాస్‌త్రూతో TrueHD';
+
+  @override
+  String get mediaPlayerBehavior => 'మీడియా ప్లేయర్ ప్రవర్తన';
+
+  @override
+  String get playbackEnhancements => 'ప్లేబ్యాక్ మెరుగుదలలు';
+
+  @override
+  String get alwaysOn => 'ఎల్లప్పుడూ ఆన్‌లో ఉంటుంది.';
+
+  @override
+  String get replaceSkipOutroWithNextUpDisplay =>
+      'తదుపరి ప్రదర్శనతో స్కిప్ అవుట్రోను భర్తీ చేయండి';
+
+  @override
+  String get replaceSkipOutroWithNextUpDisplaySubtitle =>
+      'స్కిప్ అవుట్‌రో బటన్‌కు బదులుగా తదుపరి పైకి అతివ్యాప్తిని చూపండి.';
+
+  @override
+  String get playerRouting => 'ప్లేయర్ రూటింగ్';
+
+  @override
+  String get preferSoftwareDecoders => 'సాఫ్ట్‌వేర్ డీకోడర్‌లను ఇష్టపడండి';
+
+  @override
+  String get preferSoftwareDecodersSubtitle =>
+      'హార్డ్‌వేర్ డీకోడర్‌ల ముందు FFmpeg (ఆడియో) మరియు libgav1 (AV1) ఉపయోగించండి. HDMI ఆడియో పాస్‌త్రూ విచ్ఛిన్నమైతే నిలిపివేయండి.';
+
+  @override
+  String get useExternalPlayer => 'బాహ్య ప్లేయర్ ఉపయోగించండి';
+
+  @override
+  String get useExternalPlayerSubtitle =>
+      'Android TVలో మీరు ఎంచుకున్న బాహ్య యాప్‌లో వీడియో ప్లేబ్యాక్‌ని తెరవండి.';
+
+  @override
+  String get automaticQueuing => 'ఆటోమేటిక్ క్యూయింగ్';
+
+  @override
+  String get preferSdhSubtitles => 'SDH ఉపశీర్షికలకు ప్రాధాన్యత ఇవ్వండి';
+
+  @override
+  String get preferSdhSubtitlesSubtitle =>
+      'స్వీయ-ఎంపిక చేసేటప్పుడు SDH/CC ఉపశీర్షిక ట్రాక్‌లకు ప్రాధాన్యత ఇవ్వండి.';
+
+  @override
+  String get webDiagnostics => 'వెబ్ డయాగ్నస్టిక్స్';
+
+  @override
+  String get webDiagnosticsTitle => 'Moonfin వెబ్ డయాగ్నోస్టిక్స్';
+
+  @override
+  String get webDiagnosticsIntro =>
+      'బ్రౌజర్ కనెక్టివిటీ సమస్యలను (CORS, మిశ్రమ కంటెంట్ మరియు ఆవిష్కరణ సెట్టింగ్‌లు) నిర్ధారించడానికి ఈ పేజీని ఉపయోగించండి.';
+
+  @override
+  String get webDiagnosticsDetectedMixedContentFailure =>
+      'మిశ్రమ-కంటెంట్ వైఫల్యం గుర్తించబడింది';
+
+  @override
+  String get webDiagnosticsDetectedCorsPreflightFailure =>
+      'CORS/ప్రీఫ్లైట్ వైఫల్యం గుర్తించబడింది';
+
+  @override
+  String get webDiagnosticsMixedContentFailureBody =>
+      'Moonfin HTTP సర్వర్ URLకి కాల్ చేయడానికి ప్రయత్నిస్తున్న HTTPS పేజీని గుర్తించింది. ఈ అభ్యర్థన మీ సర్వర్‌ను చేరుకోవడానికి ముందే బ్రౌజర్‌లు బ్లాక్ చేస్తాయి.';
+
+  @override
+  String get webDiagnosticsCorsFailureBody =>
+      'Moonfin మీడియా సర్వర్‌లో CORS లేదా ప్రీఫ్లైట్ హెడర్‌లు మిస్ కావడం వల్ల సాధారణంగా సంభవించే బ్రౌజర్-స్థాయి అభ్యర్థన వైఫల్యాన్ని గుర్తించింది.';
+
+  @override
+  String webDiagnosticsTargetUrl(String url) {
+    return 'లక్ష్య URL: $url';
+  }
+
+  @override
+  String webDiagnosticsDetail(String detail) {
+    return 'వివరాలు: $detail';
+  }
+
+  @override
+  String get webDiagnosticsCurrentRuntimeContext => 'ప్రస్తుత రన్‌టైమ్ సందర్భం';
+
+  @override
+  String get webDiagnosticsOrigin => 'మూలం';
+
+  @override
+  String get webDiagnosticsScheme => 'పథకం';
+
+  @override
+  String get webDiagnosticsPluginMode => 'ప్లగిన్ మోడ్';
+
+  @override
+  String get webDiagnosticsWebRtcScan => 'WebRTC స్కాన్';
+
+  @override
+  String get webDiagnosticsForcedServerUrl => 'నిర్బంధ సర్వర్ URL';
+
+  @override
+  String get webDiagnosticsDefaultServerUrl => 'డిఫాల్ట్ సర్వర్ URL';
+
+  @override
+  String get webDiagnosticsDiscoveryProxyUrl => 'డిస్కవరీ ప్రాక్సీ URL';
+
+  @override
+  String get notConfigured => 'కాన్ఫిగర్ చేయబడలేదు';
+
+  @override
+  String get webDiagnosticsMixedContent => 'మిశ్రమ కంటెంట్';
+
+  @override
+  String get webDiagnosticsMixedContentDetected =>
+      'ఈ పేజీ HTTPS ద్వారా లోడ్ చేయబడింది, కానీ ఒకటి లేదా అంతకంటే ఎక్కువ కాన్ఫిగర్ చేయబడిన URLలు HTTP. HTTP APIలకు కాల్ చేయకుండా బ్రౌజర్‌లు HTTPS పేజీలను బ్లాక్ చేస్తాయి.';
+
+  @override
+  String get webDiagnosticsMixedContentFix =>
+      'పరిష్కరించండి: HTTPS ద్వారా మీ మీడియా సర్వర్ లేదా ప్రాక్సీ ఎండ్‌పాయింట్‌ను అందించండి లేదా విశ్వసనీయ స్థానిక నెట్‌వర్క్‌లలో మాత్రమే HTTP ద్వారా Moonfinని లోడ్ చేయండి.';
+
+  @override
+  String get webDiagnosticsNoMixedContentDetected =>
+      'ప్రస్తుత రన్‌టైమ్ సెట్టింగ్‌ల నుండి స్పష్టమైన మిశ్రమ-కంటెంట్ కాన్ఫిగరేషన్ కనుగొనబడలేదు.';
+
+  @override
+  String get webDiagnosticsCorsChecklist => 'CORS చెక్‌లిస్ట్';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem1 =>
+      '• Access-Control-Allow-Originలో బ్రౌజర్ మూలాన్ని అనుమతించండి.';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem2 =>
+      '• Access-Control-Allow-Headersలో ఆథరైజేషన్, X-Emby-ఆథరైజేషన్ మరియు X-Emby-టోకెన్‌ని చేర్చండి.';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem3 =>
+      '• స్ట్రీమింగ్ కోసం కంటెంట్-రేంజ్ మరియు యాక్సెప్ట్-రేంజ్‌లను బహిర్గతం చేయండి మరియు ప్రవర్తనను కోరుకోండి.';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem4 =>
+      '• OPTIONS ప్రీఫ్లైట్ అభ్యర్థనలకు 204ని తిరిగి ఇవ్వండి.';
+
+  @override
+  String get webDiagnosticsHeaderSnippetTitle =>
+      'ఉదాహరణ హెడర్ స్నిప్పెట్ (nginx-శైలి)';
+
+  @override
+  String get note => 'గమనిక';
+
+  @override
+  String get webDiagnosticsNonWebNote =>
+      'ఈ డయాగ్నస్టిక్స్ మార్గం వెబ్ బిల్డ్‌ల కోసం ఉద్దేశించబడింది. మీరు దీన్ని మరొక ప్లాట్‌ఫారమ్‌లో చూస్తున్నట్లయితే, ఈ తనిఖీలు వర్తించకపోవచ్చు.';
+
+  @override
+  String get backToServerSelect => 'సర్వర్‌కి తిరిగి వెళ్లు ఎంచుకోండి';
+
+  @override
+  String get signOutAllUsers => 'వినియోగదారులందరినీ సైన్ అవుట్ చేయండి';
+
+  @override
+  String get voiceSearchPermissionPermanentlyDenied =>
+      'మైక్రోఫోన్ అనుమతి శాశ్వతంగా తిరస్కరించబడింది. సిస్టమ్ సెట్టింగ్‌లలో దీన్ని ప్రారంభించండి.';
+
+  @override
+  String get voiceSearchPermissionRequired =>
+      'వాయిస్ శోధన కోసం మైక్రోఫోన్ అనుమతి అవసరం.';
+
+  @override
+  String get voiceSearchNoMatch => 'అది పట్టలేదు. మళ్లీ ప్రయత్నించండి.';
+
+  @override
+  String get voiceSearchNoSpeechDetected => 'ప్రసంగం కనుగొనబడలేదు.';
+
+  @override
+  String get voiceSearchMicrophoneError => 'మైక్రోఫోన్ లోపం.';
+
+  @override
+  String get voiceSearchNeedsInternet => 'వాయిస్ శోధనకు ఇంటర్నెట్ అవసరం.';
+
+  @override
+  String get voiceSearchServiceBusy =>
+      'వాయిస్ సర్వీస్ బిజీగా ఉంది. మళ్లీ ప్రయత్నించండి.';
+
+  @override
+  String get microphonePermissionPermanentlyDenied =>
+      'మైక్రోఫోన్ అనుమతి శాశ్వతంగా తిరస్కరించబడింది.';
+
+  @override
+  String get microphonePermissionDenied => 'మైక్రోఫోన్ అనుమతి నిరాకరించబడింది.';
+
+  @override
+  String get speechRecognitionUnavailable =>
+      'ఈ పరికరంలో స్పీచ్ రికగ్నిషన్ అందుబాటులో లేదు.';
+
+  @override
+  String get openIosRoutePicker => 'iOS రూట్ పికర్‌ని తెరవండి';
+
+  @override
+  String get airPlayRoutePickerUnavailable =>
+      'AirPlay రూట్ పికర్ ఈ పరికరంలో అందుబాటులో లేదు.';
+
+  @override
+  String get videos => 'వీడియోలు';
+
+  @override
+  String get trailers => 'ట్రైలర్స్';
+
+  @override
+  String get programs => 'కార్యక్రమాలు';
+
+  @override
+  String get songs => 'పాటలు';
+
+  @override
+  String get photoAlbums => 'ఫోటో ఆల్బమ్‌లు';
+
+  @override
+  String get photos => 'ఫోటోలు';
+
+  @override
+  String get people => 'ప్రజలు';
+
+  @override
+  String get recentlyReleasedEpisodes => 'ఇటీవల విడుదలైన ఎపిసోడ్స్';
+
+  @override
+  String get watchAgain => 'మళ్ళీ చూడండి';
+
+  @override
+  String get guestAppearances => 'అతిథి ప్రదర్శనలు';
+
+  @override
+  String get appearancesSeerr => 'ప్రదర్శనలు (సీర్)';
+
+  @override
+  String get watchWithGroup => 'సమూహంతో చూడండి';
+
+  @override
+  String get errors => 'లోపాలు';
+
+  @override
+  String get warnings => 'హెచ్చరికలు';
+
+  @override
+  String get disk => 'డిస్క్';
+
+  @override
+  String get openInBrowser => 'బ్రౌజర్‌లో తెరవండి';
+
+  @override
+  String get embeddedBrowserNotAvailable =>
+      'ఈ ప్లాట్‌ఫారమ్‌లో పొందుపరిచిన బ్రౌజర్ అందుబాటులో లేదు.';
+
+  @override
+  String get adminRestartServerConfirmation =>
+      'మీరు ఖచ్చితంగా సర్వర్‌ని పునఃప్రారంభించాలనుకుంటున్నారా?';
+
+  @override
+  String get adminShutdownServerConfirmation =>
+      'మీరు ఖచ్చితంగా సర్వర్‌ని షట్ డౌన్ చేయాలనుకుంటున్నారా? మీరు దీన్ని మాన్యువల్‌గా రీస్టార్ట్ చేయాలి.';
+
+  @override
+  String get internal => 'అంతర్గత';
+
+  @override
+  String get idle => 'పనిలేకుండా';
+
+  @override
+  String get os => 'OS';
+
+  @override
+  String get adminNoUsersFound => 'వినియోగదారులు కనుగొనబడలేదు';
+
+  @override
+  String get adminNoUsersMatchSearch =>
+      'మీ శోధనకు సరిపోలే వినియోగదారులు ఎవరూ లేరు';
+
+  @override
+  String get adminNoDevicesFound => 'పరికరాలు ఏవీ కనుగొనబడలేదు';
+
+  @override
+  String get adminNoDevicesMatchCurrentFilters =>
+      'ప్రస్తుత ఫిల్టర్‌లకు ఏ పరికరాలు సరిపోలడం లేదు';
+
+  @override
+  String get passwordSet => 'పాస్వర్డ్ సెట్';
+
+  @override
+  String get noPasswordConfigured => 'పాస్‌వర్డ్ కాన్ఫిగర్ చేయబడలేదు';
+
+  @override
+  String get remoteAccess => 'రిమోట్ యాక్సెస్';
+
+  @override
+  String get localOnly => 'స్థానికంగా మాత్రమే';
+
+  @override
+  String get adminMediaAnalyticsLoadFailed =>
+      'మీడియా విశ్లేషణలను లోడ్ చేయడంలో విఫలమైంది';
+
+  @override
+  String get analyticsCombinedAcrossLibraries =>
+      'అన్ని మీడియా లైబ్రరీలలో కలిపి విశ్లేషణలు.';
+
+  @override
+  String get analyticsTopArtists => 'అగ్ర కళాకారులు';
+
+  @override
+  String get analyticsTopAuthors => 'అగ్ర రచయితలు';
+
+  @override
+  String get analyticsTopContributors => 'అగ్ర సహకారులు';
+
+  @override
+  String analyticsLibrariesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Libraries',
+      one: '1 Library',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get analyticsNoIndexedMediaTotals =>
+      'ఈ ఎంపిక కోసం ఇంకా ఇండెక్స్ చేయబడిన మీడియా మొత్తాలు ఏవీ అందుబాటులో లేవు.';
+
+  @override
+  String get analyticsLibraryDetails => 'లైబ్రరీ వివరాలు';
+
+  @override
+  String get analyticsLibraryBreakdown => 'లైబ్రరీ విచ్ఛిన్నం';
+
+  @override
+  String get analyticsNoLibrariesAvailable => 'లైబ్రరీలు అందుబాటులో లేవు.';
+
+  @override
+  String get adminServerAdministrationTitle => 'సర్వర్ అడ్మినిస్ట్రేషన్';
+
+  @override
+  String get adminServerPathData => 'డేటా';
+
+  @override
+  String get adminServerPathImageCache => 'చిత్రం కాష్';
+
+  @override
+  String get adminServerPathCache => 'కాష్';
+
+  @override
+  String get adminServerPathLogs => 'లాగ్‌లు';
+
+  @override
+  String get adminServerPathMetadata => 'మెటాడేటా';
+
+  @override
+  String get adminServerPathTranscode => 'ట్రాన్స్‌కోడ్';
+
+  @override
+  String get adminServerPathWeb => 'వెబ్';
+
+  @override
+  String get adminNoServerPathsReturned =>
+      'ఈ సర్వర్ ద్వారా అందించబడిన సర్వర్ మార్గాలు ఏవీ లేవు.';
+
+  @override
+  String adminPercentUsed(int percent) {
+    return '$percent% ఉపయోగించబడింది';
+  }
+
+  @override
+  String get userActivity => 'వినియోగదారు కార్యాచరణ';
+
+  @override
+  String get systemEvents => 'సిస్టమ్ ఈవెంట్‌లు';
+
+  @override
+  String get needsAttention => 'శ్రద్ధ అవసరం';
+
+  @override
+  String get adminDrawerSectionServer => 'సర్వర్';
+
+  @override
+  String get adminDrawerSectionPlayback => 'ప్లేబ్యాక్';
+
+  @override
+  String get adminDrawerSectionDevices => 'పరికరాలు';
+
+  @override
+  String get adminDrawerSectionAdvanced => 'అధునాతనమైనది';
+
+  @override
+  String get adminDrawerSectionPlugins => 'ప్లగిన్లు';
+
+  @override
+  String get adminDrawerSectionLiveTv => 'ప్రత్యక్ష TV';
+
+  @override
+  String get homeVideos => 'హోమ్ వీడియోలు';
+
+  @override
+  String get mixedContent => 'మిశ్రమ కంటెంట్';
+
+  @override
+  String get homeVideosAndPhotos => 'హోమ్ వీడియోలు & ఫోటోలు';
+
+  @override
+  String get mixedMoviesAndShows => 'మిశ్రమ చలనచిత్రాలు & ప్రదర్శనలు';
+
+  @override
+  String get intelQuickSync => 'ఇంటెల్ త్వరిత సమకాలీకరణ';
+
+  @override
+  String get rockchipMpp => 'రాక్‌చిప్ MPP';
+
+  @override
+  String get dolbyVision => 'Dolby Vision';
+
+  @override
+  String get noRecordingsFound => 'రికార్డింగ్‌లు ఏవీ కనుగొనబడలేదు';
+
+  @override
+  String noImagePagesFoundInArchive(String extension) {
+    return '.$extension ఆర్కైవ్ లోపల చిత్ర పేజీలు ఏవీ కనుగొనబడలేదు.';
+  }
+
+  @override
+  String embeddedRendererFailed(int code, String description) {
+    return 'పొందుపరిచిన రెండరర్ విఫలమైంది ($code): $description';
+  }
+
+  @override
+  String epubRendererFailed(int code, String description) {
+    return 'EPUB రెండరర్ విఫలమైంది ($code): $description';
+  }
+
+  @override
+  String missingLocalFileForReader(String uri) {
+    return 'రీడర్ కోసం స్థానిక ఫైల్ లేదు: $uri';
+  }
+
+  @override
+  String httpStatusWhileOpeningBookData(int status, String uri) {
+    return '$uri నుండి బుక్ డేటాను తెరిచేటప్పుడు HTTP $status';
+  }
+
+  @override
+  String get noReadableBookEndpointAvailable =>
+      'చదవగలిగే పుస్తక ముగింపు స్థానం అందుబాటులో లేదు';
+
+  @override
+  String unsupportedComicArchiveFormat(String extension) {
+    return 'మద్దతు లేని కామిక్ ఆర్కైవ్ ఫార్మాట్: .$extension';
+  }
+
+  @override
+  String get cbrExtractionPluginUnavailable =>
+      'ఈ ప్లాట్‌ఫారమ్‌లో CBR వెలికితీత ప్లగ్ఇన్ అందుబాటులో లేదు.';
+
+  @override
+  String get failedToExtractCbrArchive =>
+      '.cbr ఆర్కైవ్‌ని సంగ్రహించడంలో విఫలమైంది.';
+
+  @override
+  String get cb7ExtractionUnavailable =>
+      'ఈ ప్లాట్‌ఫారమ్‌లో CB7 వెలికితీత అందుబాటులో లేదు.';
+
+  @override
+  String get cb7ExtractionPluginUnavailable =>
+      'ఈ ప్లాట్‌ఫారమ్‌లో CB7 వెలికితీత ప్లగ్ఇన్ అందుబాటులో లేదు.';
+
+  @override
+  String get closeGenrePanel => 'కళా ప్రక్రియ ప్యానెల్‌ను మూసివేయండి';
+
+  @override
+  String get loadingShuffle => 'షఫుల్ లోడ్ అవుతోంది...';
+
+  @override
+  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
+
+  @override
+  String get randomShuffleLabel => 'RANDOM SHUFFLE';
+
+  @override
+  String get genresShuffleLabel => 'GENRES SHUFFLE';
+
+  @override
+  String get autoHdrSwitching => 'ఆటో HDR స్విచింగ్';
+
+  @override
+  String get autoHdrSwitchingDescription =>
+      'HDR వీడియో ప్లేబ్యాక్ కోసం HDRని స్వయంచాలకంగా ప్రారంభించండి మరియు నిష్క్రమణలో ప్రదర్శన మోడ్‌ని పునరుద్ధరించండి.';
+
+  @override
+  String get whenFullscreen => 'పూర్తి స్క్రీన్‌లో ఉన్నప్పుడు';
+
+  @override
+  String get transcodingLimits => 'ట్రాన్స్‌కోడింగ్ పరిమితులు';
 }

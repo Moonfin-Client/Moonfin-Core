@@ -196,7 +196,12 @@ class Destinations {
     return '$base?${params.join('&')}';
   }
 
-  static String folder(String folderId) => '/folder/$folderId';
+  static String folder(String folderId, {String? serverId}) {
+    final base = '/folder/$folderId';
+    return serverId != null && serverId.isNotEmpty
+        ? '$base?serverId=${Uri.encodeComponent(serverId)}'
+        : base;
+  }
   static String collection(String collectionId) => '/collection/$collectionId';
   static String musicLibrary(String libraryId) => '/music/$libraryId';
   static String photo(String itemId) => '/player/photo/$itemId';

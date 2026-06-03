@@ -4681,7 +4681,7 @@
   },
   "appTitle": "Moonfin",
   "signIn": "Mag-sign In",
-  "connectingToServer": "Connecting to {serverName}",
+  "connectingToServer": "Kumokonekta sa {serverName}",
   "quickConnect": "Mabilis na Kumonekta",
   "password": "Password",
   "username": "Username",
@@ -4690,12 +4690,12 @@
   "back": "Bumalik",
   "serverUnavailable": "Hindi available ang server",
   "loginFailed": "Nabigo ang pag-login",
-  "quickConnectUnavailable": "QuickConnect unavailable: {detail}",
-  "quickConnectUnavailableWithStatus": "QuickConnect unavailable ({status}): {detail}",
+  "quickConnectUnavailable": "Hindi available ang QuickConnect: {detail}",
+  "quickConnectUnavailableWithStatus": "Hindi available ang QuickConnect ({status}): {detail}",
   "whosWatching": "Sino nanonood?",
   "addUser": "Magdagdag ng User",
   "selectServer": "Piliin ang Server",
-  "appVersionFooter": "Moonfin version {version}",
+  "appVersionFooter": "Moonfin bersyon {version}",
   "savedServers": "Mga Naka-save na Server",
   "discoveredServers": "Mga Natuklasan na Server",
   "noneFound": "Walang nahanap",
@@ -4703,7 +4703,7 @@
   "addServer": "Magdagdag ng Server",
   "embyConnect": "Emby Kumonekta",
   "removeServer": "Alisin ang Server",
-  "removeServerConfirmation": "Remove \"{serverName}\" from your servers?",
+  "removeServerConfirmation": "Alisin ang \"{serverName}\" sa iyong mga server?",
   "cancel": "Kanselahin",
   "remove": "Alisin",
   "connectToServer": "Kumonekta sa Server",
@@ -4732,7 +4732,7 @@
   "connectingToServerEllipsis": "Kumokonekta sa server...",
   "noReachableAddress": "Walang ibinigay na maabot na address",
   "invalidServerExchangeResponse": "Di-wastong tugon mula sa server exchange endpoint",
-  "unableToConnectTo": "Unable to connect to {target}",
+  "unableToConnectTo": "Hindi makakonekta sa {target}",
   "exitApp": "Lumabas sa Moonfin?",
   "exitAppConfirmation": "Sigurado ka bang gusto mong lumabas?",
   "exit": "Lumabas",
@@ -4758,14 +4758,14 @@
   "displaySettings": "Mga Setting ng Display",
   "allGenres": "Lahat ng Genre",
   "noGenresFound": "Walang nakitang genre",
-  "failedToLoadFolderError": "Failed to load folder: {error}",
+  "failedToLoadFolderError": "Nabigong i-load ang folder: {error}",
   "thisFolderIsEmpty": "Walang laman ang folder na ito",
-  "itemCountLabel": "{count} items",
+  "itemCountLabel": "{count} aytem",
   "failedToLoadFavorites": "Nabigong i-load ang mga paborito",
   "retry": "Subukan muli",
   "noFavoritesYet": "Wala pang paborito",
   "favorites": "Mga paborito",
-  "totalCountItems": "{count} Items",
+  "totalCountItems": "{count} Mga Item",
   "continuing": "nagpapatuloy",
   "ended": "Natapos na",
   "sortAndFilter": "Pagbukud-bukurin at Salain",
@@ -4778,7 +4778,7 @@
   "medium": "Katamtaman",
   "large": "Malaki",
   "extraLarge": "Extra Large",
-  "libraryGenresTitle": "{name} — Genres",
+  "libraryGenresTitle": "{name} — Mga Genre",
   "views": "Mga view",
   "albums": "Mga album",
   "albumArtists": "Mga Artist ng Album",
@@ -4790,9 +4790,9 @@
   "page": "Pahina",
   "bookmark": "Bookmark",
   "justNow": "Ngayon lang",
-  "minutesAgo": "{count}m ago",
-  "hoursAgo": "{count}h ago",
-  "daysAgo": "{count}d ago",
+  "minutesAgo": "{count}m ang nakalipas",
+  "hoursAgo": "{count}h ang nakalipas",
+  "daysAgo": "{count}d ang nakalipas",
   "discoverySubjects": "Mga Paksa ng Pagtuklas",
   "pickDiscoverySubjects": "Piliin kung aling mga feed ng paksa ang ipapakita sa Discover.",
   "apply": "Mag-apply",
@@ -4802,7 +4802,7 @@
   "pickAudiobookGenres": "Piliin kung aling mga genre ang ipapakita sa Audiobook Discover.",
   "discoverAudiobooks": "Tumuklas ng Mga Audiobook",
   "librivoxDescription": "Mga sikat na pamagat ng pampublikong domain mula sa LibriVox.",
-  "titlesCount": "{count} titles",
+  "titlesCount": "{count} mga pamagat",
   "scrollLeft": "Mag-scroll pakaliwa",
   "scrollRight": "Mag-scroll pakanan",
   "couldNotLoadGenre": "Hindi ma-load ang genre na ito sa ngayon.",
@@ -4828,14 +4828,14 @@
   "searchYourLibrary": "Hanapin ang iyong library",
   "pickUpStory": "Kunin ang kuwento kung saan ka tumigil",
   "savedPlacesChapters": "Ang iyong mga na-save na lugar at hindi natapos na mga kabanata",
-  "authorsCount": "{count} authors",
-  "genresCount": "{count} genres",
-  "percentCompleted": "{percent}% completed",
+  "authorsCount": "{count} mga may-akda",
+  "genresCount": "{count} mga genre",
+  "percentCompleted": "{percent}% nakumpleto",
   "readyWhenYouAre": "Handa kung kailan ka na",
   "details": "Mga Detalye",
   "listeningRoom": "Listening Room",
   "bookmarksAndProgress": "Mga Bookmark at Pag-unlad",
-  "titlesArrangedForBrowsing": "{count} titles arranged for reading-first browsing.",
+  "titlesArrangedForBrowsing": "{count} mga pamagat na inayos para sa pagbabasa-unang pagba-browse.",
   "titles": "Mga pamagat",
   "allTitles": "Lahat ng Pamagat",
   "authors": "Mga may-akda",
@@ -4846,7 +4846,7 @@
   "noBookmarkedItems": "Wala pang naka-bookmark na item",
   "nothingMatchesSection": "Wala pang tumutugma sa seksyong ito. Subukan ang isa pang tab o bumalik pagkatapos ng pag-sync ng library.",
   "audiobooks": "Mga Audiobook",
-  "noLabelFound": "No {label} found",
+  "noLabelFound": "Walang nakitang {label}",
   "folder": "Folder",
   "filters": "Mga filter",
   "readingStatus": "Katayuan sa Pagbabasa",
@@ -4869,15 +4869,15 @@
   "internetArchive": "Internet Archive",
   "rssFeed": "RSS Feed",
   "downloadZip": "I-download ang Zip",
-  "sectionCountLabel": "{count} sections",
-  "firstPublished": "First published {year}",
+  "sectionCountLabel": "{count} mga seksyon",
+  "firstPublished": "Unang na-publish {year}",
   "noOpenLibraryOverview": "Wala pang available na pangkalahatang-ideya mula sa Open Library para sa pamagat na ito.",
   "subjects": "Mga paksa",
   "all": "Lahat",
-  "booksCount": "{count} books",
+  "booksCount": "{count} mga aklat",
   "couldNotLoadSubject": "Hindi ma-load ang paksang ito sa ngayon.",
   "audiobookDetails": "Mga Detalye ng Audiobook",
-  "authorsCountTitle": "{count} Authors",
+  "authorsCountTitle": "{count} Mga May-akda",
   "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
   "trackList": "Listahan ng Track",
   "itemListPlaceholder": "Lalabas dito ang listahan ng item",
@@ -4905,14 +4905,14 @@
   "noBiographyAvailable": "Walang available na talambuhay para sa may-akda na ito.",
   "noBooksFound": "Walang nakitang mga aklat para sa may-akda na ito.",
   "unableToLoadAuthorDetails": "Hindi ma-load ang mga detalye ng may-akda sa ngayon.",
-  "published": "Published {year}",
+  "published": "Nai-publish {year}",
   "publicationDateUnknown": "Hindi alam ang petsa ng publikasyon",
   "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
-  "endsAt": "Ends at {time}",
+  "endsAt": "Matatapos sa {time}",
   "view": "Tingnan",
   "resumeReading": "Ipagpatuloy ang Pagbabasa",
   "read": "Basahin",
-  "resumeFrom": "Resume from {position}",
+  "resumeFrom": "Ipagpatuloy mula sa {position}",
   "play": "Maglaro",
   "startOver": "Magsimulang Muli",
   "restart": "I-restart",
@@ -4944,16 +4944,16 @@
   "renamePlaylist": "Palitan ang pangalan ng Playlist",
   "playlistName": "Pangalan ng playlist",
   "deleteDownloadedAlbum": "Tanggalin ang Na-download na Album",
-  "deleteDownloadedTracksMessage": "Delete downloaded tracks for \"{title}\"?",
+  "deleteDownloadedTracksMessage": "Tanggalin ang mga na-download na track para sa \"{title}\"?",
   "downloadedTracksDeleted": "Ang mga na-download na track ay tinanggal",
   "downloadedTracksDeleteFailed": "Hindi matanggal ang ilang na-download na track",
   "noTracksLoaded": "Walang na-load na mga track",
-  "noItemsLoaded": "No {itemLabel} loaded",
-  "downloadingTitle": "Downloading {title} ({count} items)...",
-  "deleteConfirmMessage": "Are you sure you want to delete \"{name}\" from the server? This action cannot be undone.",
+  "noItemsLoaded": "Walang na-load na {itemLabel}",
+  "downloadingTitle": "Dina-download ang {title} ({count} aytem)...",
+  "deleteConfirmMessage": "Sigurado ka bang gusto mong tanggalin ang \"{name}\" mula sa server? Ang pagkilos na ito ay hindi maaaring i-undo.",
   "itemDeleted": "Tinanggal ang item",
   "noPlayableTrailerFound": "Walang nahanap na puwedeng laruin na trailer.",
-  "unsupportedBookFormat": "Unsupported book format: .{extension}",
+  "unsupportedBookFormat": "Hindi sinusuportahang format ng aklat: .{extension}",
   "audioTrack": "Audio Track",
   "subtitleTrack": "Subtitle na Track",
   "none": "wala",
@@ -4961,49 +4961,49 @@
   "searchOpenSubtitlesPlugin": "Maghanap gamit ang OpenSubtitles plugin",
   "downloadSubtitles": "Mag-download ng Mga Subtitle",
   "selectedSubtitleInvalid": "Ang napiling subtitle ay hindi wasto.",
-  "subtitleDownloadedSelected": "Subtitle downloaded and selected: {name}",
+  "subtitleDownloadedSelected": "Na-download at napili ang subtitle: {name}",
   "subtitleDownloadedPending": "Na-download ang subtitle. Maaaring tumagal ng ilang sandali upang lumitaw habang nire-refresh ng Jellyfin ang item.",
-  "noRemoteSubtitlesFound": "No remote subtitles found for {language}.",
+  "noRemoteSubtitlesFound": "Walang nakitang malayuang subtitle para sa {language}.",
   "selectVersion": "Piliin ang Bersyon",
-  "versionNumber": "Version {number}",
+  "versionNumber": "Bersyon {number}",
   "downloadAllQuality": "I-download Lahat — Kalidad",
   "downloadQuality": "Kalidad ng Pag-download",
   "originalFileNoReencoding": "Orihinal na file, walang muling pag-encode",
   "originalFilesNoReencoding": "Mga orihinal na file, walang muling pag-encode",
   "noEpisodesLoaded": "Walang na-load na mga episode",
-  "downloadingItem": "Downloading {name} ({quality})...",
+  "downloadingItem": "Dina-download ang {name} ({quality})...",
   "deleteDownloadedFiles": "Tanggalin ang mga Na-download na File",
-  "deleteLocalFilesMessage": "Delete local files for {typeLabel}?\n\nThis will free up storage space. You can re-download later.",
+  "deleteLocalFilesMessage": "Tanggalin ang mga lokal na file para sa {typeLabel}?\n\nIto ay magpapalaya ng espasyo sa imbakan. Maaari mong muling i-download sa ibang pagkakataon.",
   "downloadedFilesDeleted": "Ang mga na-download na file ay tinanggal",
   "failedToDeleteFiles": "Nabigong tanggalin ang mga file",
   "deleteFiles": "Tanggalin ang mga File",
   "director": "DIREKTOR",
   "writers": "MGA MANUNULAT",
   "studio": "STUDIO",
-  "studioMoreCount": "+{count} more",
-  "totalEpisodes": "{count} Episodes",
+  "studioMoreCount": "+{count} higit pa",
+  "totalEpisodes": "{count} Mga Episode",
   "episodeProgress": "{watched} / {total}",
   "episodeLabel": "Episode {number}",
-  "chapterNumber": "Chapter {number}",
+  "chapterNumber": "Kabanata {number}",
   "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
   "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
-  "born": "Born {date}",
-  "died": "Died {date}",
-  "age": "Age {age}",
+  "born": "Ipinanganak {date}",
+  "died": "Namatay {date}",
+  "age": "Edad {age}",
   "showLess": "Magpakita ng Mas Kaunti",
   "readMore": "Magbasa pa",
   "shuffle": "Balasahin",
-  "downloadsCount": "{count} downloads",
+  "downloadsCount": "{count} mga pag-download",
   "perfectMatch": "Perfect match",
   "channelsCount": "{count}ch",
   "mono": "Mono",
   "stereo": "Stereo",
-  "remoteSubtitlePermissionError": "Remote subtitle {action} requires the Jellyfin subtitle management permission for this user.",
-  "remoteSubtitleNotFoundError": "This item could not be found on the server for remote subtitle {action}.",
-  "remoteSubtitleDetailError": "Remote subtitle {action} failed: {detail}",
-  "remoteSubtitleHttpError": "Remote subtitle {action} failed (HTTP {status}).",
-  "remoteSubtitleGenericError": "Failed to {action} remote subtitles.",
-  "deleteSeriesFiles": "all downloaded episodes for \"{name}\"",
+  "remoteSubtitlePermissionError": "Ang malayuang subtitle na {action} ay nangangailangan ng Jellyfin pahintulot sa pamamahala ng subtitle para sa user na ito.",
+  "remoteSubtitleNotFoundError": "Ang item na ito ay hindi mahanap sa server para sa malayuang subtitle {action}.",
+  "remoteSubtitleDetailError": "Nabigo ang malayuang subtitle {action}: {detail}",
+  "remoteSubtitleHttpError": "Nabigo ang remote subtitle {action} (HTTP {status}).",
+  "remoteSubtitleGenericError": "Nabigo sa {action} mga malayuang subtitle.",
+  "deleteSeriesFiles": "lahat ng na-download na episode para sa \"{name}\"",
   "deleteSeasonFiles": "lahat ng na-download na episode sa season na ito",
   "stillWatching": "Nanonood pa rin?",
   "unableToLoadTrailerStream": "Hindi ma-load ang stream ng trailer.",
@@ -5011,21 +5011,21 @@
   "playbackFailedForTrailer": "Nabigo ang pag-playback para sa trailer na ito.",
   "photoCountOf": "{current} / {total}",
   "castingUnavailableOffline": "Hindi available ang pag-cast sa panahon ng offline na pag-playback.",
-  "castActionFailed": "{label} action failed: {error}",
-  "failedToSetCastVolume": "Failed to set cast volume: {error}",
-  "castControlsTitle": "{label} Controls",
+  "castActionFailed": "{label} nabigo ang pagkilos: {error}",
+  "failedToSetCastVolume": "Nabigong itakda ang dami ng cast: {error}",
+  "castControlsTitle": "{label} Mga kontrol",
   "deviceVolume": "Dami ng Device",
   "unavailable": "Hindi magagamit",
   "pause": "I-pause",
   "syncPosition": "Posisyon ng Pag-sync",
-  "stopCast": "Stop {label}",
+  "stopCast": "Huminto {label}",
   "queueIsEmpty": "Walang laman ang pila",
-  "trackNumber": "Track {number}",
+  "trackNumber": "Subaybayan ang {number}",
   "remotePlayback": "Remote Playback",
   "castingToGoogleCast": "Nag-cast sa Google Cast",
   "castingViaAirPlay": "Pag-cast sa pamamagitan ng AirPlay",
   "castingViaDlna": "Pag-cast sa pamamagitan ng DLNA",
-  "secondsCount": "{seconds} seconds",
+  "secondsCount": "{seconds} segundo",
   "longPressToUnlock": "Pindutin nang matagal upang i-unlock",
   "off": "Naka-off",
   "streamTypeFallback": "{streamType} {number}",
@@ -5060,36 +5060,36 @@
   "format": "Format",
   "external": "Panlabas",
   "embedded": "Naka-embed",
-  "castSessionError": "{protocol} session error",
-  "failedToLoadBookDetails": "Failed to load book details: {error}",
+  "castSessionError": "{protocol} error sa session",
+  "failedToLoadBookDetails": "Nabigong i-load ang mga detalye ng libro: {error}",
   "epubUnavailableOnPlatform": "Ang EPUB rendering in-app ay hindi pa available sa platform na ito.",
-  "formatCannotRenderInApp": "This format (.{extension}) cannot be rendered in-app yet.",
+  "formatCannotRenderInApp": "Ang format na ito (.{extension}) ay hindi pa maaaring i-render in-app.",
   "embeddedRenderingUnavailable": "Hindi available ang naka-embed na pag-render ng dokumento sa platform na ito.",
   "couldNotOpenExternalViewer": "Hindi mabuksan ang panlabas na viewer.",
-  "failedToOpenInAppReader": "Failed to open in-app reader: {error}",
-  "bookmarkAlreadySaved": "Bookmark already saved at {label}.",
-  "bookmarkAdded": "Bookmark added: {label}",
+  "failedToOpenInAppReader": "Nabigong buksan ang in-app reader: {error}",
+  "bookmarkAlreadySaved": "Nai-save na ang bookmark sa {label}.",
+  "bookmarkAdded": "Idinagdag ang bookmark: {label}",
   "noBookmarksYet": "Wala pang bookmark.\nI-tap ang icon ng bookmark habang nagbabasa para i-save ang iyong posisyon.",
   "noTableOfContentsAvailable": "Walang available na talaan ng nilalaman",
-  "pageLabel": "Page {number}",
+  "pageLabel": "Pahina {number}",
   "position": "Posisyon",
   "bookReader": "Book Reader",
   "formatExtension": "Format: .{extension}",
-  "percentRead": "{percent}% read",
+  "percentRead": "{percent}% nabasa",
   "updating": "Ina-update...",
   "markUnread": "Markahan na Hindi Nabasa",
   "markAsRead": "Markahan bilang Nabasa",
   "reloadReader": "I-reload ang Reader",
   "noPagesFound": "Walang nakitang pahina.",
   "failedToDecodePageImage": "Nabigong i-decode ang larawan ng pahina.",
-  "resetZoom": "Reset Zoom ({zoom}x)",
+  "resetZoom": "I-reset ang Zoom ({zoom}x)",
   "singlePage": "Isang Pahina",
   "twoPageSpread": "Dalawang-Pahina Spread",
   "addBookmark": "Magdagdag ng Bookmark",
   "bookmarksEllipsis": "Mga bookmark...",
   "markedAsRead": "Minarkahan bilang nabasa",
   "markedAsUnread": "Minarkahan bilang hindi pa nababasa",
-  "failedToUpdateReadState": "Failed to update read state: {error}",
+  "failedToUpdateReadState": "Nabigong i-update ang read state: {error}",
   "themeSystem": "Tema: Sistema",
   "themeLight": "Tema: Liwanag",
   "themeDark": "Tema: Madilim",
@@ -5099,7 +5099,7 @@
   "preparingInAppReader": "Inihahanda ang in-app reader...",
   "pdfDataNotAvailable": "Hindi available ang PDF data.",
   "readerFallbackModeActive": "Aktibo ang fallback mode ng reader",
-  "platformCannotHostDocumentEngine": "This platform cannot host the embedded document engine for {extension} files.",
+  "platformCannotHostDocumentEngine": "Hindi maaaring i-host ng platform na ito ang naka-embed na document engine para sa {extension} na mga file.",
   "reloadReaderPlatformHint": "Gamitin ang Reload Reader pagkatapos lumipat sa isang sinusuportahang platform target (Android, iOS, macOS).",
   "openExternally": "Buksan ang Panlabas",
   "noEpubChaptersFound": "Walang nakitang mga kabanata sa EPUB.",
@@ -5111,7 +5111,7 @@
   "kids": "Mga bata",
   "premiere": "Premiere",
   "guideTimeline": "Gabay sa Timeline",
-  "failedToLoadGuide": "Failed to load guide: {error}",
+  "failedToLoadGuide": "Nabigong i-load ang gabay: {error}",
   "noChannelsFound": "Walang nakitang mga channel",
   "liveBadge": "LIVE",
   "movie": "Pelikula",
@@ -5122,7 +5122,7 @@
   "favoriteChannel": "Paboritong Channel",
   "watch": "Panoorin",
   "close": "Isara",
-  "failedToPlayChannel": "Failed to play {name}",
+  "failedToPlayChannel": "Nabigong laruin ang {name}",
   "failedToLoadRecordings": "Nabigong i-load ang mga recording",
   "scheduledInNext24Hours": "Naka-iskedyul sa Susunod na 24 Oras",
   "recentRecordings": "Mga Kamakailang Pag-record",
@@ -5130,7 +5130,7 @@
   "failedToLoadSchedule": "Nabigong i-load ang iskedyul",
   "noScheduledRecordings": "Walang nakaiskedyul na pag-record",
   "cancelRecording": "Kanselahin ang Pagre-record?",
-  "cancelScheduledRecordingOf": "Cancel scheduled recording of \"{name}\"?",
+  "cancelScheduledRecordingOf": "Kanselahin ang nakaiskedyul na pag-record ng \"{name}\"?",
   "no": "Hindi",
   "yesCancel": "Oo, Kanselahin",
   "failedToCancelRecording": "Nabigong kanselahin ang pag-record",
@@ -5138,12 +5138,12 @@
   "noSeriesRecordings": "Walang mga pag-record ng serye",
   "cancelSeriesRecording": "Kanselahin ang Pagre-record ng Serye",
   "cancelSeriesRecordingQuestion": "Kanselahin ang Pagre-record ng Serye?",
-  "stopRecordingName": "Stop recording \"{name}\"?",
+  "stopRecordingName": "Ihinto ang pagre-record ng \"{name}\"?",
   "failedToCancelSeriesRecording": "Nabigong kanselahin ang pag-record ng serye",
   "searchThisLibrary": "Hanapin ang library na ito...",
   "searchEllipsis": "Hanapin...",
-  "noResultsForQuery": "No results for \"{query}\"",
-  "searchFailedError": "Search failed: {error}",
+  "noResultsForQuery": "Walang mga resulta para sa \"{query}\"",
+  "searchFailedError": "Nabigo ang paghahanap: {error}",
   "seerr": "Seerr",
   "savedMedia": "Naka-save na Media",
   "tvShows": "Mga Palabas sa TV",
@@ -5153,17 +5153,17 @@
   "noDownloadedMediaYet": "Wala pang na-download na media",
   "browseLibrary": "Mag-browse sa Library",
   "deleteDownload": "Tanggalin ang Download",
-  "removeItemAndFiles": "Remove \"{name}\" and its files?",
-  "tracksCount": "{count} tracks",
+  "removeItemAndFiles": "Alisin ang \"{name}\" at ang mga file nito?",
+  "tracksCount": "{count} mga track",
   "album": "Album",
   "playAlbum": "I-play ang Album",
-  "failedToLoadAlbum": "Failed to load album: {error}",
-  "noDownloadedTracksForAlbum": "No downloaded tracks found for {name}.",
+  "failedToLoadAlbum": "Nabigong i-load ang album: {error}",
+  "noDownloadedTracksForAlbum": "Walang nakitang na-download na mga track para sa {name}.",
   "season": "Season",
   "errorLoadingEpisodes": "Error sa paglo-load ng mga episode",
   "noDownloadedEpisodes": "Walang na-download na mga episode",
   "deleteEpisode": "Tanggalin ang Episode",
-  "removeName": "Remove \"{name}\"?",
+  "removeName": "Alisin ang \"{name}\"?",
   "durationMinutes": "{minutes} min",
   "seasonEpisodeLabel": "S{season} E{episode}",
   "episodeNumber": "Episode {number}",
@@ -5174,7 +5174,7 @@
   "seasonChip": "S{number}",
   "specials": "Mga espesyal",
   "deleteSeason": "Tanggalin ang Season",
-  "deleteAllEpisodesInSeason": "Delete all downloaded episodes in {season}?",
+  "deleteAllEpisodesInSeason": "Tanggalin ang lahat ng na-download na episode sa {season}?",
   "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
   "storageManagement": "Pamamahala ng Imbakan",
   "storageBreakdown": "Breakdown ng Storage",
@@ -5185,11 +5185,11 @@
   "deleteAllDownloadsWarning": "Aalisin nito ang lahat ng na-download na media file at hindi na maa-undo.",
   "deleteAll": "Tanggalin Lahat",
   "deleteSelected": "Tanggalin ang Napili",
-  "deleteSelectedCount": "Delete {count} downloaded items?",
+  "deleteSelectedCount": "Tanggalin ang {count} na-download na mga item?",
   "musicAndAudiobooks": "Musika at Audiobook",
   "images": "Mga imahe",
   "database": "Database",
-  "ofStorageLimit": "of {limit} limit",
+  "ofStorageLimit": "ng {limit} limitasyon",
   "settings": "Mga setting",
   "authentication": "Authentication",
   "autoLoginServerManagement": "Auto login, pamamahala ng server",
@@ -5215,7 +5215,7 @@
   "integrations": "Mga pagsasama",
   "pluginAndRequests": "Plugin at mga kahilingan",
   "customizeAccountPlaybackInterface": "I-customize ang account, pag-playback, at gawi ng interface",
-  "optionsCount": "{count} options",
+  "optionsCount": "{count} mga opsyon",
   "themeAndAppearance": "Tema at Hitsura",
   "focusBorderColor": "Kulay ng Border ng Focus",
   "watchedIndicators": "Mga Napanood na Indicator",
@@ -5308,7 +5308,7 @@
   "mediaQueuing": "Pagpila ng Media",
   "autoQueueNextEpisodes": "Auto-queue sa mga susunod na episode",
   "stillWatchingPrompt": "Nanonood pa rin ng Prompt",
-  "afterEpisodesAndHours": "After {episodes} episodes / {hours}h",
+  "afterEpisodesAndHours": "Pagkatapos ng {episodes} mga episode / {hours}h",
   "resumeAndSkip": "Ipagpatuloy at Laktawan",
   "resumeRewind": "Ipagpatuloy ang Rewind",
   "unpauseRewind": "I-unpause ang Rewind",
@@ -5350,9 +5350,9 @@
   "desktop": "Desktop",
   "mobile": "Mobile",
   "tv": "TV",
-  "loadedProfileSettings": "Loaded {profile} profile settings.",
-  "failedToLoadProfileSettings": "Failed to load {profile} profile settings.",
-  "syncedSettingsToProfile": "Synced local settings to {profile} profile.",
+  "loadedProfileSettings": "Na-load ang {profile} mga setting ng profile.",
+  "failedToLoadProfileSettings": "Nabigong i-load ang {profile} mga setting ng profile.",
+  "syncedSettingsToProfile": "Naka-sync na mga lokal na setting sa {profile} profile.",
   "customizationProfile": "Profile sa Pag-customize",
   "customizationProfileDescription": "Piliin ang profile na ilo-load, ie-edit, at isi-sync. Nalalapat ang pandaigdigan kahit saan maliban kung na-override ito ng profile ng device. Ang berdeng tuldok ay nagmamarka ng iyong kasalukuyang profile ng device.",
   "loadProfile": "I-load ang Profile",
@@ -5403,7 +5403,7 @@
   "brown": "kayumanggi",
   "darkRed": "Madilim na Pula",
   "darkGreen": "Madilim na Berde",
-  "slate": "Slate",
+  "slate": "slate",
   "indigo": "Indigo",
   "libraryDisplay": "Pagpapakita ng Aklatan",
   "posterLabel": "Poster",
@@ -5423,7 +5423,7 @@
   "sourceCollections": "Source Collections",
   "excludedGenres": "Mga Ibinukod na Genre",
   "selectAll": "Piliin ang Lahat",
-  "itemsSelected": "{count} selected",
+  "itemsSelected": "{count} napili",
   "mediaBar": "Media Bar",
   "mediaBarMode": "Estilo ng Media Bar",
   "mediaBarModeDescription": "Pumili sa pagitan ng Moonfin, MakD, o i-off ang media bar",
@@ -5528,7 +5528,7 @@
   "pluginNotDetected": "Hindi Natukoy ang Plugin",
   "pluginDetectedDescription": "Natukoy ang plugin ng server. Awtomatikong pinapagana ang pag-sync sa unang pagkakataon na matagpuan ang plugin.",
   "pluginNotDetectedDescription": "Kasalukuyang hindi natukoy ang plugin ng server. Ginagamit pa rin ng mga lokal na setting ang kanilang mga naka-save na halaga o mga built-in na default.",
-  "pluginStatusVersion": "{status}\nVersion: {version}",
+  "pluginStatusVersion": "{status}\nBersyon: {version}",
   "availableServices": "Mga Magagamit na Serbisyo",
   "serverPluginSync": "Pag-sync ng Plugin ng Server",
   "syncSettingsWithPlugin": "I-sync ang mga setting gamit ang server plugin",
@@ -5551,14 +5551,14 @@
   "seerrUnavailable": "Hindi available dahil naka-disable ang server plugin Seerr support.",
   "nsfwFilter": "Filter ng NSFW",
   "hideAdultContent": "Itago ang nilalamang pang-adulto sa mga resulta",
-  "loggedInAs": "Logged in as: {username}",
+  "loggedInAs": "Naka-log in bilang: {username}",
   "discoverRows": "Tuklasin ang Mga Row",
   "discoverRowsDescriptionPlugin": "I-drag upang muling ayusin. Paganahin o huwag paganahin ang mga hilera. Ang naka-enable na row order ay nagsi-sync sa Moonfin plugin.",
   "discoverRowsDescription": "I-drag upang muling ayusin. Paganahin o huwag paganahin ang mga hilera.",
   "enabled": "Pinagana",
   "hidden": "Nakatago",
   "aboutTitle": "Tungkol sa",
-  "versionValue": "Version {version}",
+  "versionValue": "Bersyon {version}",
   "openSourceLicenses": "Mga Lisensya sa Open Source",
   "sourceCode": "Source Code",
   "sourceCodeUrl": "https://github.com/Moonfin-Client/Mobile-Desktop",
@@ -6628,7 +6628,6 @@
   "settingsJoinDiscordSubtitle": "Makipag-chat sa komunidad",
   "settingsJoinTheDiscord": "Sumali sa Discord",
   "settingsSupportMoonfin": "Suportahan ang Moonfin",
-  "settingsSupportMoonfinSubtitle": "Lagyan ng star ang proyekto sa GitHub o mag-ambag",
   "settingsLegal": "LEGAL",
   "settingsLicenses": "Mga lisensya",
   "settingsOpenSourceLicenseNotices": "Open-source na mga paunawa sa lisensya",
@@ -6761,5 +6760,602 @@
   "localPreviews": "Mga Lokal na Preview",
   "localPreviewsDescription": "I-configure ang mga preview ng trailer, media, at audio.",
   "mediaPreview": "Preview ng Media",
-  "mediaPreviewDescription": "Magpatugtog ng 30 segundong inline na preview sa mga nakatutok, naka-hover, o matagal na pinindot na mga card"
+  "mediaPreviewDescription": "Magpatugtog ng 30 segundong inline na preview sa mga nakatutok, naka-hover, o matagal na pinindot na mga card",
+  "keyboardPreferSystemIme": "Mas gusto ang keyboard ng system",
+  "keyboardPreferSystemImeDescription": "Gamitin ang paraan ng pag-input ng iyong device bilang default para sa pagpasok ng text",
+  "musicVideos": "Mga Music Video",
+  "record": "Itala",
+  "cancelRecordingAction": "Kanselahin ang Pagre-record",
+  "programSetToRecord": "Nakatakdang i-record ang program",
+  "recordingCancelled": "Kinansela ang pagre-record",
+  "unableToCreateRecording": "Hindi makagawa ng recording",
+  "settingsAudioOutputMode": "Audio Output Mode",
+  "settingsAudioOutputModeAvrPassthrough": "AVR Passthrough",
+  "settingsAudioFallbackCodec": "Audio Fallback Codec",
+  "settingsAudioFallbackAacStereo": "AAC Stereo",
+  "settingsAudioFallbackAc35_1": "AC3 5.1",
+  "settingsAudioFallbackEac35_1": "EAC3 5.1",
+  "settingsAudioPassthroughAdvanced": "Passthrough (Advanced)",
+  "settingsAudioCodecPassthrough": "Codec Passthrough",
+  "settingsAudioCodecPassthroughDescription": "I-enable lang ang mga format na sinusuportahan ng iyong AVR o HDMI sink.",
+  "settingsAudioEac3Passthrough": "EAC3 Passthrough",
+  "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) Passthrough",
+  "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+  "settingsAudioDtsHdPassthrough": "DTS-HD MA Passthrough",
+  "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
+  "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+  "settingsAudioBitstreamEac3ToExternalDecoder": "Bitstream Dolby Digital Plus (EAC3) sa external decoder.",
+  "settingsAudioBitstreamEac3JocToExternalDecoder": "Bitstream Dolby Atmos sa EAC3 (JOC) sa external decoder.",
+  "settingsAudioBitstreamDtsHdToExternalDecoder": "Bitstream DTS-HD MA (kasama ang DTS core) sa external decoder.",
+  "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Bitstream Dolby TrueHD na may metadata ng Atmos sa external decoder.",
+  "settingsDetectedAudioCapabilities": "Natukoy na Mga Kakayahang Audio",
+  "settingsDetectedAudioCapabilitiesUnavailable": "Wala pang available na snapshot ng kakayahan sa runtime.",
+  "settingsAudioRouteLabel": "Ruta",
+  "settingsAudioDecodeLabel": "Mag-decode",
+  "settingsAudioPassthroughLabel": "Passthrough",
+  "settingsAudioHdRoute": "HD audio ruta",
+  "settingsAudioRouteHdmi": "HDMI",
+  "settingsAudioRouteArc": "ARC",
+  "settingsAudioRouteEarc": "eARC",
+  "settingsAudioRouteBluetooth": "Bluetooth",
+  "settingsAudioRouteSpeaker": "Tagapagsalita",
+  "settingsAudioPcmChannels": "{count}ch PCM",
+  "settingsAudioDiagnostics": "Mga diagnostic",
+  "settingsAudioDiagnosticsVideoLevel": "Antas ng Video",
+  "settingsAudioDiagnosticsVideoRange": "Saklaw ng Video",
+  "settingsAudioDiagnosticsSubtitleCodec": "Subtitle Codec",
+  "settingsAudioDiagnosticsAllowedAudioCodecs": "Pinapayagan ang Audio Codecs",
+  "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS Audio Codecs",
+  "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4 Audio Codecs",
+  "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif passthrough",
+  "settingsAudioDiagnosticsActiveAudioRoute": "Aktibong Ruta ng Audio",
+  "settingsAudioDiagnosticsRouteHdAudioSupport": "Suporta sa HD Audio ng Ruta",
+  "settingsPlaybackEngineMedia3Legacy": "Media3 (legacy)",
+  "settingsPlaybackEngineMpvRecommended": "mpv (recommended)",
+  "autoplayNextEpisode": "Autoplay Next Episode",
+  "autoplayNextEpisodeSubtitle": "Automatically play the next episode when available.",
+  "skipSilenceTitle": "Skip silence",
+  "skipSilenceSubtitle": "Automatically skip silent audio segments when supported by the stream.",
+  "allowExternalAudioEffectsTitle": "Allow external audio effects",
+  "allowExternalAudioEffectsSubtitle": "Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.",
+  "disableTunnelingTitle": "Disable tunneling",
+  "disableTunnelingSubtitle": "Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.",
+  "mapDolbyVisionP7Title": "Map Dolby Vision profile 7 to HEVC",
+  "mapDolbyVisionP7Subtitle": "Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.",
+  "subtitlesUseEmbeddedStyles": "Use embedded subtitle styles",
+  "subtitlesUseEmbeddedStylesSubtitle": "Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.",
+  "subtitlesUseEmbeddedFontSizes": "Use embedded subtitle font sizes",
+  "subtitlesUseEmbeddedFontSizesSubtitle": "Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.",
+  "useDetailedSubHeadings": "Use Detailed Sub-Headings",
+  "useDetailedSubHeadingsDescription": "Show detailed or minimal subrow on Library pages.",
+  "savedThemesDeleteDialogTitle": "Delete saved theme?",
+  "savedThemesDeleteDialogMessage": "Remove \"{themeName}\" from this device cache?",
+  "savedThemesDeletedMessage": "Deleted \"{themeName}\" from this device.",
+  "savedThemesDeleteFailedMessage": "Could not delete \"{themeName}\".",
+  "savedThemesTitle": "Saved themes",
+  "savedThemesDescription": "These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.",
+  "savedThemesEmpty": "No saved themes were found for this server.",
+  "savedThemesCurrentThemeId": "{themeId} • Currently active",
+  "savedThemesDeleteTooltip": "Delete saved theme",
+  "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
+  "kefinTweaksTitle": "KefinTweaks",
+  "homeScreenSectionsTitle": "Home Screen Sections",
+  "themeEditor": "Theme Editor",
+  "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
+  "homeScreen": "Home Screen",
+  "bottomBar": "Bottom Bar",
+  "homeRowsStyleClassic": "Classic",
+  "homeRowsStyleModern": "Modern",
+  "homeRowsSection": "Home Rows",
+  "rowsType": "Rows Type",
+  "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.",
+  "displayFavoritesRows": "Display Favorites Rows",
+  "displayFavoritesRowsSubtitle": "Show Favorite Movies, Series, and other favorite rows in Home Sections.",
+  "favoritesRowSorting": "Favorites Row Sorting",
+  "favoritesRowSortingDescription": "Sort Favorites rows by date added, release date, alphabetically, and more.",
+  "displayCollectionsRows": "Display Collections Rows",
+  "displayCollectionsRowsSubtitle": "Show Collections rows in Home Sections.",
+  "collectionsRowSorting": "Collections Row Sorting",
+  "collectionsRowSortingDescription": "Sort Collections rows by date added, release date, alphabetically, and more.",
+  "displayGenresRows": "Display Genres Rows",
+  "displayGenresRowsSubtitle": "Show Genres rows in Home Sections.",
+  "genresRowSorting": "Genres Row Sorting",
+  "genresRowSortingDescription": "Sort Genres rows by date added, release date, alphabetically, and more.",
+  "genresRowItems": "Genres Row Items",
+  "genresRowItemsDescription": "Show Movies, Series, or both in Genres rows.",
+  "appearance": "Appearance",
+  "cardSize": "Card Size",
+  "externalPlayerApp": "External player app",
+  "externalPlayerAskEachTimeSubtitle": "Show app chooser when playback starts.",
+  "loadingInstalledPlayers": "Loading installed players...",
+  "connection": "Connection",
+  "audioTranscodeTarget": "Audio Transcode Target",
+  "passthrough": "Passthrough",
+  "supportedOnThisDevice": "Supported on this device",
+  "notSupportedOnThisDevice": "Not Supported on this device",
+  "settingsAudioDtsXPassthrough": "DTS:X (DTS UHD) Passthrough",
+  "settingsAudioBitstreamDtsXToExternalDecoder": "Bitstream DTS:X (DTS UHD) to external decoder.",
+  "settingsAudioTrueHdJocPassthrough": "TrueHD with Atmos (JOC) Passthrough",
+  "mediaPlayerBehavior": "Media Player Behavior",
+  "playbackEnhancements": "Playback Enhancements",
+  "alwaysOn": "Always on.",
+  "replaceSkipOutroWithNextUpDisplay": "Replace Skip Outro with Next Up Display",
+  "replaceSkipOutroWithNextUpDisplaySubtitle": "Show the Next Up overlay instead of the Skip Outro button.",
+  "playerRouting": "Player Routing",
+  "preferSoftwareDecoders": "Prefer software decoders",
+  "preferSoftwareDecodersSubtitle": "Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.",
+  "useExternalPlayer": "Use external player",
+  "useExternalPlayerSubtitle": "Open video playback in your selected external app on Android TV.",
+  "automaticQueuing": "Automatic Queuing",
+  "preferSdhSubtitles": "Prefer SDH subtitles",
+  "preferSdhSubtitlesSubtitle": "Prioritize SDH/CC subtitle tracks when auto-selecting.",
+  "webDiagnostics": "Web diagnostics",
+  "webDiagnosticsTitle": "Moonfin Web Diagnostics",
+  "webDiagnosticsIntro": "Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).",
+  "webDiagnosticsDetectedMixedContentFailure": "Detected Mixed-Content Failure",
+  "webDiagnosticsDetectedCorsPreflightFailure": "Detected CORS/Preflight Failure",
+  "webDiagnosticsMixedContentFailureBody": "Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.",
+  "webDiagnosticsCorsFailureBody": "Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.",
+  "webDiagnosticsTargetUrl": "Target URL: {url}",
+  "webDiagnosticsDetail": "Detail: {detail}",
+  "webDiagnosticsCurrentRuntimeContext": "Current Runtime Context",
+  "webDiagnosticsOrigin": "Origin",
+  "webDiagnosticsScheme": "Scheme",
+  "webDiagnosticsPluginMode": "Plugin Mode",
+  "webDiagnosticsWebRtcScan": "WebRTC Scan",
+  "webDiagnosticsForcedServerUrl": "Forced Server URL",
+  "webDiagnosticsDefaultServerUrl": "Default Server URL",
+  "webDiagnosticsDiscoveryProxyUrl": "Discovery Proxy URL",
+  "notConfigured": "not configured",
+  "webDiagnosticsMixedContent": "Mixed Content",
+  "webDiagnosticsMixedContentDetected": "This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.",
+  "webDiagnosticsMixedContentFix": "Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.",
+  "webDiagnosticsNoMixedContentDetected": "No obvious mixed-content configuration detected from current runtime settings.",
+  "webDiagnosticsCorsChecklist": "CORS Checklist",
+  "webDiagnosticsCorsChecklistItem1": "• Allow the browser origin in Access-Control-Allow-Origin.",
+  "webDiagnosticsCorsChecklistItem2": "• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.",
+  "webDiagnosticsCorsChecklistItem3": "• Expose Content-Range and Accept-Ranges for streaming and seek behavior.",
+  "webDiagnosticsCorsChecklistItem4": "• Return 204 to OPTIONS preflight requests.",
+  "webDiagnosticsHeaderSnippetTitle": "Example Header Snippet (nginx-style)",
+  "note": "Note",
+  "webDiagnosticsNonWebNote": "This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.",
+  "backToServerSelect": "Back To Server Select",
+  "signOutAllUsers": "Sign Out All Users",
+  "voiceSearchPermissionPermanentlyDenied": "Microphone permission is permanently denied. Enable it in system settings.",
+  "voiceSearchPermissionRequired": "Microphone permission is required for voice search.",
+  "voiceSearchNoMatch": "Did not catch that. Try again.",
+  "voiceSearchNoSpeechDetected": "No speech detected.",
+  "voiceSearchMicrophoneError": "Microphone error.",
+  "voiceSearchNeedsInternet": "Voice search needs internet.",
+  "voiceSearchServiceBusy": "Voice service is busy. Try again.",
+  "microphonePermissionPermanentlyDenied": "Microphone permission is permanently denied.",
+  "microphonePermissionDenied": "Microphone permission is denied.",
+  "speechRecognitionUnavailable": "Speech recognition is unavailable on this device.",
+  "openIosRoutePicker": "Open iOS route picker",
+  "airPlayRoutePickerUnavailable": "AirPlay route picker is unavailable on this device.",
+  "videos": "Videos",
+  "trailers": "Trailers",
+  "programs": "Programs",
+  "songs": "Songs",
+  "photoAlbums": "Photo Albums",
+  "photos": "Photos",
+  "people": "People",
+  "recentlyReleasedEpisodes": "Recently Released Episodes",
+  "watchAgain": "Watch Again",
+  "guestAppearances": "Guest Appearances",
+  "appearancesSeerr": "Appearances (Seerr)",
+  "watchWithGroup": "Watch with group",
+  "errors": "Errors",
+  "warnings": "Warnings",
+  "disk": "Disk",
+  "openInBrowser": "Open in Browser",
+  "embeddedBrowserNotAvailable": "Embedded browser is not available on this platform.",
+  "adminRestartServerConfirmation": "Are you sure you want to restart the server?",
+  "adminShutdownServerConfirmation": "Are you sure you want to shut down the server? You will need to restart it manually.",
+  "internal": "Internal",
+  "idle": "Idle",
+  "os": "OS",
+  "adminNoUsersFound": "No users found",
+  "adminNoUsersMatchSearch": "No users match your search",
+  "adminNoDevicesFound": "No devices found",
+  "adminNoDevicesMatchCurrentFilters": "No devices match the current filters",
+  "passwordSet": "Password set",
+  "noPasswordConfigured": "No password configured",
+  "remoteAccess": "Remote Access",
+  "localOnly": "Local Only",
+  "adminMediaAnalyticsLoadFailed": "Failed to load media analytics",
+  "analyticsCombinedAcrossLibraries": "Combined analytics across all media libraries.",
+  "analyticsTopArtists": "Top Artists",
+  "analyticsTopAuthors": "Top Authors",
+  "analyticsTopContributors": "Top Contributors",
+  "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+  "analyticsNoIndexedMediaTotals": "No indexed media totals are available for this selection yet.",
+  "analyticsLibraryDetails": "Library Details",
+  "analyticsLibraryBreakdown": "Library Breakdown",
+  "analyticsNoLibrariesAvailable": "No libraries are available.",
+  "adminServerAdministrationTitle": "Server Administration",
+  "adminServerPathData": "Data",
+  "adminServerPathImageCache": "Image Cache",
+  "adminServerPathCache": "Cache",
+  "adminServerPathLogs": "Logs",
+  "adminServerPathMetadata": "Metadata",
+  "adminServerPathTranscode": "Transcode",
+  "adminServerPathWeb": "Web",
+  "adminNoServerPathsReturned": "No server paths returned by this server.",
+  "adminPercentUsed": "{percent}% used",
+  "userActivity": "User Activity",
+  "systemEvents": "System Events",
+  "needsAttention": "Needs Attention",
+  "adminDrawerSectionServer": "Server",
+  "adminDrawerSectionPlayback": "Playback",
+  "adminDrawerSectionDevices": "Devices",
+  "adminDrawerSectionAdvanced": "Advanced",
+  "adminDrawerSectionPlugins": "Plugins",
+  "adminDrawerSectionLiveTv": "Live TV",
+  "homeVideos": "Home Videos",
+  "mixedContent": "Mixed Content",
+  "homeVideosAndPhotos": "Home Videos & Photos",
+  "mixedMoviesAndShows": "Mixed Movies & Shows",
+  "intelQuickSync": "Intel Quick Sync",
+  "rockchipMpp": "Rockchip MPP",
+  "dolbyVision": "Dolby Vision",
+  "noRecordingsFound": "No recordings found",
+  "noImagePagesFoundInArchive": "No image pages found inside .{extension} archive.",
+  "embeddedRendererFailed": "Embedded renderer failed ({code}): {description}",
+  "epubRendererFailed": "EPUB renderer failed ({code}): {description}",
+  "missingLocalFileForReader": "Missing local file for reader: {uri}",
+  "httpStatusWhileOpeningBookData": "HTTP {status} while opening book data from {uri}",
+  "noReadableBookEndpointAvailable": "No readable book endpoint available",
+  "unsupportedComicArchiveFormat": "Unsupported comic archive format: .{extension}",
+  "cbrExtractionPluginUnavailable": "CBR extraction plugin is not available on this platform.",
+  "failedToExtractCbrArchive": "Failed to extract .cbr archive.",
+  "cb7ExtractionUnavailable": "CB7 extraction is not available on this platform.",
+  "cb7ExtractionPluginUnavailable": "CB7 extraction plugin is not available on this platform.",
+  "closeGenrePanel": "Close genre panel",
+  "loadingShuffle": "Loading shuffle...",
+  "libraryShuffleLabel": "LIBRARY SHUFFLE",
+  "randomShuffleLabel": "RANDOM SHUFFLE",
+  "genresShuffleLabel": "GENRES SHUFFLE",
+  "autoHdrSwitching": "Auto HDR Switching",
+  "autoHdrSwitchingDescription": "Automatically enable HDR for HDR video playback and restore display mode on exit.",
+  "whenFullscreen": "When fullscreen",
+  "transcodingLimits": "Transcoding Limits",
+  "@keyboardPreferSystemIme": {
+    "description": "Settings label for preferring the native system keyboard instead of the custom TV keyboard"
+  },
+  "@keyboardPreferSystemImeDescription": {
+    "description": "Settings subtitle for the system keyboard preference"
+  },
+  "@musicVideos": {
+    "description": "Section header for music videos filmography row"
+  },
+  "@record": {
+    "description": "Button label to schedule a live TV recording"
+  },
+  "@cancelRecordingAction": {
+    "description": "Button label to cancel a scheduled live TV recording"
+  },
+  "@programSetToRecord": {
+    "description": "Snackbar confirmation after scheduling a live TV program recording"
+  },
+  "@recordingCancelled": {
+    "description": "Snackbar confirmation after cancelling a live TV recording"
+  },
+  "@unableToCreateRecording": {
+    "description": "Error when creating a live TV recording fails"
+  },
+  "@seasonalEffectsDescription": {
+    "description": "Description for seasonal effects settings"
+  },
+  "@settingsAudioOutputMode": {
+    "description": "Setting for audio output mode"
+  },
+  "@settingsAudioOutputModeAvrPassthrough": {
+    "description": "Audio output mode option for AVR passthrough"
+  },
+  "@settingsAudioFallbackCodec": {
+    "description": "Setting for fallback audio codec"
+  },
+  "@settingsAudioFallbackAacStereo": {
+    "description": "Fallback codec option for AAC stereo"
+  },
+  "@settingsAudioFallbackAc35_1": {
+    "description": "Fallback codec option for AC3 5.1"
+  },
+  "@settingsAudioFallbackEac35_1": {
+    "description": "Fallback codec option for EAC3 5.1"
+  },
+  "@settingsAudioPassthroughAdvanced": {
+    "description": "Section title for advanced passthrough controls"
+  },
+  "@settingsAudioCodecPassthrough": {
+    "description": "Title for codec passthrough settings group"
+  },
+  "@settingsAudioCodecPassthroughDescription": {
+    "description": "Description for codec passthrough settings group"
+  },
+  "@settingsAudioEac3Passthrough": {
+    "description": "Setting for EAC3 passthrough"
+  },
+  "@settingsAudioEac3JocPassthrough": {
+    "description": "Setting for EAC3 JOC Atmos passthrough"
+  },
+  "@settingsAudioDtsCorePassthrough": {
+    "description": "Setting for DTS core passthrough"
+  },
+  "@settingsAudioDtsHdPassthrough": {
+    "description": "Setting for DTS-HD MA passthrough"
+  },
+  "@settingsAudioTrueHdPassthrough": {
+    "description": "Setting for TrueHD passthrough"
+  },
+  "@settingsAudioTrueHdAtmosPassthrough": {
+    "description": "Setting for TrueHD Atmos passthrough"
+  },
+  "@settingsAudioBitstreamEac3ToExternalDecoder": {
+    "description": "Description for EAC3 passthrough"
+  },
+  "@settingsAudioBitstreamEac3JocToExternalDecoder": {
+    "description": "Description for EAC3 JOC passthrough"
+  },
+  "@settingsAudioBitstreamDtsHdToExternalDecoder": {
+    "description": "Description for DTS-HD MA passthrough"
+  },
+  "@settingsAudioBitstreamTrueHdAtmosToExternalDecoder": {
+    "description": "Description for TrueHD Atmos passthrough"
+  },
+  "@settingsDetectedAudioCapabilities": {
+    "description": "Section title for detected runtime audio capabilities"
+  },
+  "@settingsDetectedAudioCapabilitiesUnavailable": {
+    "description": "Message shown when runtime audio capability snapshot is missing"
+  },
+  "@settingsAudioRouteLabel": {
+    "description": "Label for active audio route row"
+  },
+  "@settingsAudioDecodeLabel": {
+    "description": "Label for audio decode capability row"
+  },
+  "@settingsAudioPassthroughLabel": {
+    "description": "Label for audio passthrough capability row"
+  },
+  "@settingsAudioHdRoute": {
+    "description": "Label indicating the active route supports HD audio"
+  },
+  "@settingsAudioRouteHdmi": {
+    "description": "Audio route type HDMI"
+  },
+  "@settingsAudioRouteArc": {
+    "description": "Audio route type ARC"
+  },
+  "@settingsAudioRouteEarc": {
+    "description": "Audio route type eARC"
+  },
+  "@settingsAudioRouteBluetooth": {
+    "description": "Audio route type Bluetooth"
+  },
+  "@settingsAudioRouteSpeaker": {
+    "description": "Audio route type speaker"
+  },
+  "@settingsAudioPcmChannels": {
+    "description": "Audio route subtitle showing max PCM channels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@settingsAudioDiagnostics": {
+    "description": "Section title for playback diagnostics"
+  },
+  "@settingsAudioDiagnosticsVideoLevel": {
+    "description": "Diagnostics label for video level"
+  },
+  "@settingsAudioDiagnosticsVideoRange": {
+    "description": "Diagnostics label for video range"
+  },
+  "@settingsAudioDiagnosticsSubtitleCodec": {
+    "description": "Diagnostics label for subtitle codec"
+  },
+  "@settingsAudioDiagnosticsAllowedAudioCodecs": {
+    "description": "Diagnostics label for allowed audio codecs"
+  },
+  "@settingsAudioDiagnosticsHlsMpegTsAudioCodecs": {
+    "description": "Diagnostics label for HLS MPEG-TS audio codecs"
+  },
+  "@settingsAudioDiagnosticsHlsFmp4AudioCodecs": {
+    "description": "Diagnostics label for HLS fMP4 audio codecs"
+  },
+  "@settingsAudioDiagnosticsAudioSpdifPassthrough": {
+    "description": "Diagnostics label for audio-spdif passthrough codecs"
+  },
+  "@settingsAudioDiagnosticsActiveAudioRoute": {
+    "description": "Diagnostics label for active audio route"
+  },
+  "@settingsAudioDiagnosticsRouteHdAudioSupport": {
+    "description": "Diagnostics label for route HD audio support"
+  },
+  "@mediaSources": {
+    "description": "Section heading for media source options"
+  },
+  "@behavior": {
+    "description": "Section heading for behavior options"
+  },
+  "@seconds": {
+    "description": "Time unit label in seconds"
+  },
+  "@localPreviews": {
+    "description": "Local previews settings screen title"
+  },
+  "@localPreviewsDescription": {
+    "description": "Description for local previews settings"
+  },
+  "@mediaPreview": {
+    "description": "Setting for media preview"
+  },
+  "@mediaPreviewDescription": {
+    "description": "Description for media preview"
+  },
+  "@autoplayNextEpisode": {
+    "description": "Setting title: automatically start the next episode"
+  },
+  "@autoplayNextEpisodeSubtitle": {
+    "description": "Setting subtitle for autoplay next episode"
+  },
+  "@skipSilenceTitle": {
+    "description": "Setting title: skip silent audio segments during playback"
+  },
+  "@skipSilenceSubtitle": {
+    "description": "Setting subtitle for skip silence"
+  },
+  "@allowExternalAudioEffectsTitle": {
+    "description": "Setting title: allow equalizer apps to attach to Media3"
+  },
+  "@allowExternalAudioEffectsSubtitle": {
+    "description": "Setting subtitle for external audio effects"
+  },
+  "@disableTunnelingTitle": {
+    "description": "Setting title: force non-tunneled video playback"
+  },
+  "@disableTunnelingSubtitle": {
+    "description": "Setting subtitle for disable tunneling"
+  },
+  "@mapDolbyVisionP7Title": {
+    "description": "Setting title: play DV P7 as HDR10 HEVC on non-DV devices"
+  },
+  "@mapDolbyVisionP7Subtitle": {
+    "description": "Setting subtitle for DV P7 to HEVC mapping"
+  },
+  "@subtitlesUseEmbeddedStyles": {
+    "description": "Setting title: apply colours/positioning from the subtitle track"
+  },
+  "@subtitlesUseEmbeddedStylesSubtitle": {
+    "description": "Setting subtitle for embedded styles toggle"
+  },
+  "@subtitlesUseEmbeddedFontSizes": {
+    "description": "Setting title: apply font sizes from the subtitle track"
+  },
+  "@subtitlesUseEmbeddedFontSizesSubtitle": {
+    "description": "Setting subtitle for embedded font sizes toggle"
+  },
+  "@useDetailedSubHeadings": {
+    "description": "Label for setting to toggle detailed or minimal subrow on library pages"
+  },
+  "@useDetailedSubHeadingsDescription": {
+    "description": "Subtitle for the use detailed sub headings setting"
+  },
+  "@savedThemesDeleteDialogMessage": {
+    "description": "Confirmation message for deleting a saved custom theme",
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "@savedThemesDeletedMessage": {
+    "description": "Status message shown after deleting a saved custom theme",
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "@savedThemesDeleteFailedMessage": {
+    "description": "Status message shown when deleting a saved custom theme fails",
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "@savedThemesCurrentThemeId": {
+    "description": "Subtitle showing the saved theme id when it is currently selected",
+    "placeholders": {
+      "themeId": {
+        "type": "String"
+      }
+    }
+  },
+  "@webDiagnosticsTargetUrl": {
+    "description": "Target URL shown in diagnostics summary",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "@webDiagnosticsDetail": {
+    "description": "Error detail shown in diagnostics summary",
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@analyticsLibrariesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@adminPercentUsed": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@noImagePagesFoundInArchive": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "@embeddedRendererFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      },
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "@epubRendererFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      },
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "@missingLocalFileForReader": {
+    "placeholders": {
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "@httpStatusWhileOpeningBookData": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      },
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "@unsupportedComicArchiveFormat": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer"
 }

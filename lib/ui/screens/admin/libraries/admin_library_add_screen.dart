@@ -24,16 +24,39 @@ class _AdminLibraryAddScreenState
   final List<String> _paths = [];
   bool _saving = false;
 
-  static const _collectionTypes = <String, (String, IconData)>{
-    'movies': ('Movies', Icons.movie),
-    'tvshows': ('TV Shows', Icons.tv),
-    'music': ('Music', Icons.music_note),
-    'musicvideos': ('Music Videos', Icons.music_video),
-    'books': ('Books', Icons.book),
-    'photos': ('Photos', Icons.photo),
-    'homevideos': ('Home Videos', Icons.videocam),
-    'mixed': ('Mixed Content', Icons.folder),
+  static const _collectionTypes = <String, IconData>{
+    'movies': Icons.movie,
+    'tvshows': Icons.tv,
+    'music': Icons.music_note,
+    'musicvideos': Icons.music_video,
+    'books': Icons.book,
+    'photos': Icons.photo,
+    'homevideos': Icons.videocam,
+    'mixed': Icons.folder,
   };
+
+  String _collectionTypeLabel(String type, AppLocalizations l10n) {
+    switch (type) {
+      case 'movies':
+        return l10n.movies;
+      case 'tvshows':
+        return l10n.tvShows;
+      case 'music':
+        return l10n.music;
+      case 'musicvideos':
+        return l10n.musicVideos;
+      case 'books':
+        return l10n.books;
+      case 'photos':
+        return l10n.photos;
+      case 'homevideos':
+        return l10n.homeVideos;
+      case 'mixed':
+        return l10n.mixedContent;
+      default:
+        return type;
+    }
+  }
 
   @override
   void dispose() {
@@ -42,9 +65,10 @@ class _AdminLibraryAddScreenState
   }
 
   void _selectType(String type) {
+    final l10n = AppLocalizations.of(context);
     setState(() {
       _collectionType = type;
-      final label = _collectionTypes[type]?.$1 ?? type;
+      final label = _collectionTypeLabel(type, l10n);
       if (_nameController.text.isEmpty) {
         _nameController.text = label;
       }
@@ -115,7 +139,8 @@ class _AdminLibraryAddScreenState
   }
 
   Widget _buildStepper() {
-    const labels = ['Type', 'Name', 'Paths', 'Confirm'];
+    final l10n = AppLocalizations.of(context);
+    final labels = [l10n.type, l10n.name, l10n.paths, l10n.confirm];
     return Row(
       children: List.generate(labels.length, (i) {
         final isCurrent = i == _step;
@@ -177,6 +202,7 @@ class _AdminLibraryAddScreenState
       childAspectRatio: 2.5,
       children: _collectionTypes.entries.map((entry) {
         final isSelected = _collectionType == entry.key;
+        final l10n = AppLocalizations.of(context);
         return Card(
           color: isSelected
               ? Theme.of(context).colorScheme.primaryContainer
@@ -188,9 +214,9 @@ class _AdminLibraryAddScreenState
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Row(
                 children: [
-                  Icon(entry.value.$2, size: 28),
+                  Icon(entry.value, size: 28),
                   const SizedBox(width: 12),
-                  Flexible(child: Text(entry.value.$1)),
+                  Flexible(child: Text(_collectionTypeLabel(entry.key, l10n))),
                 ],
               ),
             ),
@@ -291,10 +317,14 @@ class _AdminLibraryAddScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _summaryRow('Type',
-                    _collectionTypes[_collectionType]?.$1 ?? 'Mixed Content'),
+                _summaryRow(
+                  l10n.type,
+                  _collectionType != null
+                      ? _collectionTypeLabel(_collectionType!, l10n)
+                      : l10n.mixedContent,
+                ),
                 const SizedBox(height: 8),
-                _summaryRow('Name', _nameController.text.trim()),
+                _summaryRow(l10n.name, _nameController.text.trim()),
                 const SizedBox(height: 8),
                 Text(l10n.paths,
                     style: Theme.of(context).textTheme.titleSmall),

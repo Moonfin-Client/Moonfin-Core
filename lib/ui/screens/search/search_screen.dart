@@ -21,6 +21,7 @@ import '../../navigation/destinations.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../util/search_group_title_localizer.dart';
 import '../../widgets/library_row.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/navigation_layout.dart';
@@ -551,26 +552,26 @@ class _SearchScreenState extends State<SearchScreen> {
     final code = (_voiceController.lastErrorCode ?? '').toLowerCase();
     if (_voiceController.permissionPermanentlyDenied ||
         code.contains('permission_permanently_denied')) {
-      return 'Microphone permission is permanently denied. Enable it in system settings.';
+      return l10n.voiceSearchPermissionPermanentlyDenied;
     }
     if (_voiceController.permissionDenied ||
         code.contains('permission_denied')) {
-      return 'Microphone permission is required for voice search.';
+      return l10n.voiceSearchPermissionRequired;
     }
     if (code.contains('error_no_match')) {
-      return 'Did not catch that. Try again.';
+      return l10n.voiceSearchNoMatch;
     }
     if (code.contains('error_speech_timeout')) {
-      return 'No speech detected.';
+      return l10n.voiceSearchNoSpeechDetected;
     }
     if (code.contains('error_audio')) {
-      return 'Microphone error.';
+      return l10n.voiceSearchMicrophoneError;
     }
     if (code.contains('error_network')) {
-      return 'Voice search needs internet.';
+      return l10n.voiceSearchNeedsInternet;
     }
     if (code.contains('error_busy') || code.contains('error_client')) {
-      return 'Voice service is busy. Try again.';
+      return l10n.voiceSearchServiceBusy;
     }
     final message = _voiceController.lastErrorMessage?.trim();
     if (message != null && message.isNotEmpty) {
@@ -592,7 +593,7 @@ class _SearchScreenState extends State<SearchScreen> {
         content: Text(message),
         action: showSettingsAction
             ? SnackBarAction(
-                label: 'Settings',
+                label: AppLocalizations.of(context).settings,
                 onPressed: () {
                   openAppSettings();
                 },
@@ -667,24 +668,38 @@ class _SearchScreenState extends State<SearchScreen> {
     return KeyEventResult.ignored;
   }
 
-  String? _imageUrl(AggregatedItem item) {
+  String? _imageUrl(
+    AggregatedItem item, {
+    int? maxWidth,
+    int? maxHeight,
+  }) {
     final api = _vm.imageApi;
     final type = item.type;
     if (type == 'Episode' || type == 'Program' || type == 'Recording') {
       if (item.backdropImageTags.isNotEmpty) {
         return api.getBackdropImageUrl(
           item.id,
+          maxWidth: maxWidth,
           tag: item.backdropImageTags.first,
         );
       }
       final parentId = item.parentBackdropItemId;
       final parentTags = item.parentBackdropImageTags;
       if (parentId != null && parentTags.isNotEmpty) {
-        return api.getBackdropImageUrl(parentId, tag: parentTags.first);
+        return api.getBackdropImageUrl(
+          parentId,
+          maxWidth: maxWidth,
+          tag: parentTags.first,
+        );
       }
     }
     if (item.primaryImageTag != null) {
-      return api.getPrimaryImageUrl(item.id, tag: item.primaryImageTag);
+      return api.getPrimaryImageUrl(
+        item.id,
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        tag: item.primaryImageTag,
+      );
     }
     return null;
   }
@@ -986,7 +1001,10 @@ class _SearchScreenState extends State<SearchScreen> {
           return Padding(
             padding: EdgeInsets.only(top: 8, left: rowLeftInset),
             child: LibraryRow(
-              title: group.title,
+              title: localizeSearchGroupTitle(
+                group.title,
+                AppLocalizations.of(context),
+              ),
               rowHeight: _rowHeight(group, posterSize),
               scrollController: PlatformDetection.isTV
                   ? _rowScrollController(rowIndex)
@@ -1000,7 +1018,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 return MediaCard(
                   title: item.name,
                   subtitle: _subtitle(item),
-                  imageUrl: _imageUrl(item),
+                  imageUrl: _imageUrl(
+                    item,
+                    maxWidth: width.toInt(),
+                    maxHeight: height.toInt(),
+                  ),
                   width: width,
                   aspectRatio: ar,
                   isFavorite: item.isFavorite,

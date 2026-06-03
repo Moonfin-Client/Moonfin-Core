@@ -113,13 +113,21 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     return base * _desktopUiScaleFactor();
   }
 
-  String? _imageUrl(AggregatedItem item) {
+  String? _imageUrl(
+    AggregatedItem item, {
+    int? maxWidth,
+    int? maxHeight,
+  }) {
     final api = _vm.imageApi;
     if (_vm.imageType == ImageType.thumb && item.backdropImageTags.isNotEmpty) {
-      return api.getBackdropImageUrl(item.id);
+      return api.getBackdropImageUrl(item.id, maxWidth: maxWidth);
     }
     return item.primaryImageTag != null
-        ? api.getPrimaryImageUrl(item.id)
+        ? api.getPrimaryImageUrl(
+            item.id,
+            maxWidth: maxWidth,
+            maxHeight: maxHeight,
+          )
         : null;
   }
 
@@ -237,7 +245,11 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               return MediaCard(
                 title: item.name,
                 subtitle: _cardSubtitle(item),
-                imageUrl: _imageUrl(item),
+                imageUrl: _imageUrl(
+                  item,
+                  maxWidth: width.toInt(),
+                  maxHeight: imageH.toInt(),
+                ),
                 width: width,
                 aspectRatio: ar,
                 isFavorite: item.isFavorite,
@@ -291,6 +303,11 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   String? _cardSubtitle(AggregatedItem item) {
     final parts = <String>[];
+    final useDetailed = _prefs.get(UserPreferences.useDetailedSubHeadings);
+    if (!useDetailed) {
+      return item.productionYear != null ? '${item.productionYear}' : null;
+    }
+
     if (item.productionYear != null) parts.add('${item.productionYear}');
     if (item.officialRating != null) parts.add(item.officialRating!);
     final rt = item.runtime;

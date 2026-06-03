@@ -14,7 +14,7 @@ class ServerInfoCard extends StatelessWidget {
     final os = _value(
       systemInfo,
       const ['OperatingSystemDisplayName', 'OperatingSystem'],
-      fallback: 'Unknown',
+      fallback: l10n.unknown,
     );
 
     return Card(
@@ -31,9 +31,9 @@ class ServerInfoCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            _row('Name', systemInfo['ServerName'] as String? ?? ''),
-            _row('Version', systemInfo['Version'] as String? ?? ''),
-            _row('OS', os),
+            _row(l10n.name, systemInfo['ServerName'] as String? ?? ''),
+            _row(l10n.version, systemInfo['Version'] as String? ?? ''),
+            _row(l10n.os, os),
             if (systemInfo['HasPendingRestart'] == true)
               Padding(
                 padding: const EdgeInsets.only(top: 8),

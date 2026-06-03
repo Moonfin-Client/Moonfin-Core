@@ -6,6 +6,7 @@ import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
 import 'download_progress_bar.dart';
 import 'left_sidebar.dart';
+import 'mobile_bottom_nav_bar.dart';
 import 'top_toolbar.dart';
 
 class NavigationLayout extends StatefulWidget {
@@ -14,9 +15,26 @@ class NavigationLayout extends StatefulWidget {
   final bool showBackButton;
   final bool showNavigationChrome;
 
-  /// Notifier that any screen can update to trigger a live position change.
+  static bool get allowBottomNavbar =>
+      PlatformDetection.useMobileUi && !PlatformDetection.isWeb;
+
+  static List<NavbarPosition> get availableNavbarPositions => <NavbarPosition>[
+    NavbarPosition.top,
+    NavbarPosition.left,
+    if (allowBottomNavbar) NavbarPosition.bottom,
+  ];
+
+  static NavbarPosition sanitizeNavbarPosition(NavbarPosition position) {
+    if (position == NavbarPosition.bottom && !allowBottomNavbar) {
+      return NavbarPosition.top;
+    }
+    return position;
+  }
+
   static final positionNotifier = ValueNotifier<NavbarPosition?>(
-    GetIt.instance<UserPreferences>().get(UserPreferences.navbarPosition),
+    sanitizeNavbarPosition(
+      GetIt.instance<UserPreferences>().get(UserPreferences.navbarPosition),
+    ),
   );
 
   static final focusNavbarNotifier = ValueNotifier<VoidCallback?>(null);
@@ -46,7 +64,11 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
   @override
   void initState() {
     super.initState();
-    _position = _prefs.get(UserPreferences.navbarPosition);
+    final storedPosition = _prefs.get(UserPreferences.navbarPosition);
+    _position = NavigationLayout.sanitizeNavbarPosition(storedPosition);
+    if (_position != storedPosition) {
+      _prefs.set(UserPreferences.navbarPosition, _position);
+    }
     WidgetsBinding.instance.addObserver(this);
     NavigationLayout.positionNotifier.addListener(_onPositionNotified);
   }
@@ -63,7 +85,16 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
   void _onPositionNotified() {
     final pos = NavigationLayout.positionNotifier.value;
     if (pos != null && pos != _position && mounted) {
-      setState(() => _position = pos);
+      final normalized = NavigationLayout.sanitizeNavbarPosition(pos);
+      if (normalized != pos) {
+        NavigationLayout.positionNotifier.value = normalized;
+      }
+      if (_prefs.get(UserPreferences.navbarPosition) != normalized) {
+        _prefs.set(UserPreferences.navbarPosition, normalized);
+      }
+      if (normalized != _position) {
+        setState(() => _position = normalized);
+      }
     }
   }
 
@@ -73,7 +104,12 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
   }
 
   void _refreshPosition() {
-    final pos = _prefs.get(UserPreferences.navbarPosition);
+    final storedPosition = _prefs.get(UserPreferences.navbarPosition);
+    final pos = NavigationLayout.sanitizeNavbarPosition(storedPosition);
+    if (storedPosition != pos) {
+      _prefs.set(UserPreferences.navbarPosition, pos);
+      NavigationLayout.positionNotifier.value = pos;
+    }
     if (pos != _position && mounted) setState(() => _position = pos);
   }
 
@@ -85,7 +121,24 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
     return switch (_position) {
       NavbarPosition.left => _buildSidebar(),
       NavbarPosition.top => _buildToolbar(),
+      NavbarPosition.bottom =>
+        NavigationLayout.allowBottomNavbar ? _buildBottomBar() : _buildToolbar(),
     };
+  }
+
+  Widget _buildBottomBar() {
+    final content = Focus(
+      focusNode: _contentFocusNode,
+      skipTraversal: true,
+      child: widget.child,
+    );
+    return Column(
+      children: [
+        Expanded(child: content),
+        const DownloadProgressBar(),
+        MobileBottomNavBar(activeRoute: widget.activeRoute),
+      ],
+    );
   }
 
   Widget _buildToolbar() {

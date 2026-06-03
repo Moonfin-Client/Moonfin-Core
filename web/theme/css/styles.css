@@ -1,6 +1,6 @@
 @font-face{font-family:'NeonPulseDisplay';src:url('assets/fonts/ScienceGothic-Regular.ttf') format('truetype');font-display:swap}
 @font-face{font-family:'Material Icons';src:url('../../assets/fonts/MaterialIcons-Regular.otf') format('opentype');font-display:block}
-:root{--e-bg:#0f1117;--e-surf:#1a1d27;--e-bdr:#2a2d3a;--e-txt:#e2e2e2;--e-dim:#8a8d9a;--e-acc:#00a4dc;--e-r:6px}
+:root{--e-bg:#0f1117;--e-surf:#1a1d27;--e-bdr:#2a2d3a;--e-txt:#e2e2e2;--e-dim:#8a8d9a;--e-acc:#00a4dc;--e-r:6px;--editor-width:360px;--editor-scale:1}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;background:var(--e-bg);color:var(--e-txt);display:flex;flex-direction:column;height:100vh;overflow:hidden}
 .mi{font-family:'Material Icons';font-weight:normal;font-style:normal;line-height:1;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
@@ -35,7 +35,11 @@ body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;background:va
 .layout{display:flex;flex:1;overflow:hidden}
 
 /* EDITOR */
-.editor{width:360px;flex-shrink:0;background:var(--e-surf);border-right:1px solid var(--e-bdr);display:flex;flex-direction:column;overflow:hidden}
+.editor{width:var(--editor-width);flex-shrink:0;background:var(--e-surf);border-right:1px solid var(--e-bdr);display:flex;flex-direction:column;overflow:hidden}
+.editor-resizer{width:10px;flex-shrink:0;cursor:col-resize;position:relative;background:transparent}
+.editor-resizer::before{content:'';position:absolute;left:4px;top:0;bottom:0;width:1px;background:var(--e-bdr)}
+.editor-resizer::after{content:'';position:absolute;left:1px;top:50%;transform:translateY(-50%);width:7px;height:54px;border-radius:999px;background:linear-gradient(to bottom,transparent,rgba(255,255,255,.18),transparent)}
+body.resizing{cursor:col-resize;user-select:none}
 .escroll{overflow-y:auto;flex:1;padding:6px}
 .escroll::-webkit-scrollbar{width:4px}
 .escroll::-webkit-scrollbar-thumb{background:var(--e-bdr);border-radius:2px}
@@ -45,7 +49,7 @@ body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;background:va
 .issue-list:empty{display:none}
 
 .sec{margin-bottom:3px;border-radius:var(--e-r);overflow:hidden;border:1px solid var(--e-bdr)}
-.sec-hd{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:rgba(255,255,255,.03);cursor:pointer;user-select:none;font-weight:600;font-size:11.5px}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;padding:calc(7px * var(--editor-scale)) calc(10px * var(--editor-scale));background:rgba(255,255,255,.03);cursor:pointer;user-select:none;font-weight:600;font-size:calc(11.5px * var(--editor-scale))}
 .sec-hd:hover{background:rgba(255,255,255,.06)}
 .sec-hd .ch{font-size:9px;color:var(--e-dim);transition:transform .15s}
 .sec.open .sec-hd .ch{transform:rotate(180deg)}
@@ -53,20 +57,20 @@ body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;background:va
 .sec.open .sec-bd{display:flex}
 
 /* TOKEN ROWS */
-.crow{display:flex;align-items:center;gap:5px;min-height:26px}
+.crow{display:flex;align-items:center;gap:calc(5px * var(--editor-scale));min-height:calc(26px * var(--editor-scale))}
 .clabel{width:190px;display:flex;flex-direction:column;justify-content:center;line-height:1.2;flex-shrink:0;min-width:0}
-.clabel-main{font-size:11px;color:var(--e-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.clabel-sub{font-size:9px;color:rgba(255,255,255,.42);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-.swatch{width:22px;height:22px;border-radius:4px;border:1px solid rgba(255,255,255,.15);cursor:pointer;flex-shrink:0;position:relative;overflow:hidden;background-image:linear-gradient(45deg,#888 25%,transparent 25%),linear-gradient(-45deg,#888 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#888 75%),linear-gradient(-45deg,transparent 75%,#888 75%);background-size:6px 6px;background-position:0 0,0 3px,3px -3px,-3px 0}
+.clabel-main{font-size:calc(11px * var(--editor-scale));color:var(--e-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.clabel-sub{font-size:calc(9px * var(--editor-scale));color:rgba(255,255,255,.42);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.swatch{width:calc(22px * var(--editor-scale));height:calc(22px * var(--editor-scale));border-radius:4px;border:1px solid rgba(255,255,255,.15);cursor:pointer;flex-shrink:0;position:relative;overflow:hidden;background-image:linear-gradient(45deg,#888 25%,transparent 25%),linear-gradient(-45deg,#888 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#888 75%),linear-gradient(-45deg,transparent 75%,#888 75%);background-size:6px 6px;background-position:0 0,0 3px,3px -3px,-3px 0}
 .swatch-inner{position:absolute;inset:0}
 .cpick-hidden{position:absolute;width:0;height:0;opacity:0;pointer-events:none}
-.hexin{flex:1;background:var(--e-bg);border:1px solid var(--e-bdr);color:var(--e-txt);padding:2px 5px;border-radius:4px;font-size:11px;font-family:monospace;min-width:0}
+.hexin{flex:1;background:var(--e-bg);border:1px solid var(--e-bdr);color:var(--e-txt);padding:calc(2px * var(--editor-scale)) calc(5px * var(--editor-scale));border-radius:4px;font-size:calc(11px * var(--editor-scale));font-family:monospace;min-width:0}
 .hexin:focus{outline:none;border-color:var(--e-acc)}
-.alphasl{width:52px;flex-shrink:0;accent-color:var(--e-acc);cursor:pointer}
-.alphalbl{font-size:10px;color:var(--e-dim);width:26px;text-align:right;flex-shrink:0}
+.alphasl{width:calc(52px * var(--editor-scale));flex-shrink:0;accent-color:var(--e-acc);cursor:pointer}
+.alphalbl{font-size:calc(10px * var(--editor-scale));color:var(--e-dim);width:calc(26px * var(--editor-scale));text-align:right;flex-shrink:0}
 
-.nrow{display:flex;align-items:center;gap:5px;min-height:26px}
-.ninput{width:68px;background:var(--e-bg);border:1px solid var(--e-bdr);color:var(--e-txt);padding:2px 6px;border-radius:4px;font-size:11px;text-align:right}
+.nrow{display:flex;align-items:center;gap:calc(5px * var(--editor-scale));min-height:calc(26px * var(--editor-scale))}
+.ninput{width:calc(68px * var(--editor-scale));background:var(--e-bg);border:1px solid var(--e-bdr);color:var(--e-txt);padding:calc(2px * var(--editor-scale)) calc(6px * var(--editor-scale));border-radius:4px;font-size:calc(11px * var(--editor-scale));text-align:right}
 .ninput:focus{outline:none;border-color:var(--e-acc)}
 
 .bsub{display:flex;flex-direction:column;gap:3px;padding:5px 7px;background:rgba(0,0,0,.25);border-radius:4px;margin-bottom:3px}
@@ -78,9 +82,9 @@ body{font-family:system-ui,-apple-system,sans-serif;font-size:13px;background:va
 .addbtn{display:inline-flex;align-items:center;gap:4px;background:none;border:1px solid var(--e-bdr);color:var(--e-dim);padding:3px 9px;border-radius:4px;font-size:11px;cursor:pointer;margin-top:2px}
 .addbtn:hover{border-color:var(--e-acc);color:var(--e-txt)}
 
-.trow{display:flex;align-items:center;justify-content:space-between;min-height:26px;gap:8px}
-.trow label{font-size:11px;color:var(--e-dim);flex:1}
-.trow select{background:var(--e-bg);border:1px solid var(--e-bdr);color:var(--e-txt);border-radius:4px;padding:2px 6px;font-size:11px;cursor:pointer}
+.trow{display:flex;align-items:center;justify-content:space-between;min-height:calc(26px * var(--editor-scale));gap:calc(8px * var(--editor-scale))}
+.trow label{font-size:calc(11px * var(--editor-scale));color:var(--e-dim);flex:1}
+.trow select{background:var(--e-bg);border:1px solid var(--e-bdr);color:var(--e-txt);border-radius:4px;padding:calc(2px * var(--editor-scale)) calc(6px * var(--editor-scale));font-size:calc(11px * var(--editor-scale));cursor:pointer}
 
 .preview{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#090910;min-width:0}
 .ptabs{display:flex;gap:2px;padding:8px 12px 0;border-bottom:1px solid #181825;flex-shrink:0;overflow-x:auto;scrollbar-width:thin}

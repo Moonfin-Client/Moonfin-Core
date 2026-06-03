@@ -14,6 +14,7 @@ import '../../di/modules/app_module.dart';
 import '../../di/modules/playback_module.dart';
 import '../../di/modules/server_module.dart';
 import '../../preference/preference_constants.dart';
+import '../../preference/user_preferences.dart';
 import '../store/authentication_preferences.dart';
 import '../store/authentication_store.dart';
 import '../store/credential_store.dart';
@@ -210,6 +211,12 @@ class SessionRepository {
         );
         await _authStore.putUser(updatedUser);
         _userRepository.setCurrentUser(updatedUser);
+      }
+
+       // init language prefs if not already set
+      if (serverUser.configuration != null) {
+        GetIt.instance<UserPreferences>()
+            .initLanguagePrefs(serverUser.configuration!);
       }
     } catch (_) {
     }

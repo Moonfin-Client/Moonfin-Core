@@ -745,7 +745,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       children: [
         ListTile(
           leading: const Icon(Icons.photo_size_select_large),
-          title: const Text('Card Size'),
+          title: Text(l10n.cardSize),
           subtitle: Text(_posterSizeLabel(_prefs.get(UserPreferences.posterSize), l10n)),
           trailing: const Icon(Icons.chevron_right),
           onTap: _showPosterSizeDialog,
@@ -753,7 +753,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         const Divider(),
         EnumPreferenceTile<HomeRowsStyle>(
           preference: UserPreferences.homeRowsStyle,
-          title: 'Rows Type',
+          title: l10n.rowsType,
           icon: Icons.view_carousel,
           description: _rowsTypeDescription,
           labelOf: _rowsStyleLabel,

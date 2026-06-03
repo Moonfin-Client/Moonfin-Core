@@ -44,7 +44,7 @@ class ServerActionsCard extends StatelessWidget {
                     onPressed: () => _confirmAction(
                       context,
                       title: l10n.adminRestartServer,
-                      message: 'Are you sure you want to restart the server?',
+                      message: l10n.adminRestartServerConfirmation,
                       onConfirm: () async {
                         await client.adminSystemApi.restartServer();
                         if (!context.mounted) return;
@@ -58,7 +58,7 @@ class ServerActionsCard extends StatelessWidget {
                   onPressed: () => _confirmAction(
                     context,
                     title: l10n.adminShutdownServer,
-                    message: 'Are you sure you want to shut down the server? You will need to restart it manually.',
+                    message: l10n.adminShutdownServerConfirmation,
                     onConfirm: () async {
                       await client.adminSystemApi.shutdownServer();
                     },

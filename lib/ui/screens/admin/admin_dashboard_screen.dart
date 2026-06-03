@@ -294,7 +294,7 @@ class _AdminAttentionCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Needs Attention',
+                  l10n.needsAttention,
                   style: theme.textTheme.titleMedium,
                 ),
               ],
@@ -352,6 +352,7 @@ class _DashboardKpiStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final fill = worstStorageFill;
     final Color storageColor = fill == null
@@ -367,7 +368,7 @@ class _DashboardKpiStrip extends StatelessWidget {
         Expanded(
           child: _StatCard(
             icon: Icons.people_alt_outlined,
-            label: 'Sessions',
+            label: l10n.sessions,
             value: '$sessionCount',
             color: theme.colorScheme.primary,
             theme: theme,
@@ -377,7 +378,7 @@ class _DashboardKpiStrip extends StatelessWidget {
         Expanded(
           child: _StatCard(
             icon: Icons.error_outline,
-            label: 'Errors',
+            label: l10n.errors,
             value: '$errorCount',
             color: errorCount > 0
                 ? theme.colorScheme.error
@@ -390,7 +391,7 @@ class _DashboardKpiStrip extends StatelessWidget {
         Expanded(
           child: _StatCard(
             icon: Icons.warning_amber_outlined,
-            label: 'Warnings',
+            label: l10n.warnings,
             value: '$warningCount',
             color: warningCount > 0
               ? AppColorScheme.statusPending
@@ -403,7 +404,7 @@ class _DashboardKpiStrip extends StatelessWidget {
         Expanded(
           child: _StatCard(
             icon: Icons.storage_outlined,
-            label: 'Disk',
+            label: l10n.disk,
             value: fill != null ? '${(fill * 100).round()}%' : '—',
             color: storageColor,
             highlight: (fill ?? 0) >= 0.90,

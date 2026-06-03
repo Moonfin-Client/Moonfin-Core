@@ -339,7 +339,7 @@ class _AccountDialogState extends State<_AccountDialog> {
                   child: SizedBox(
                     width: double.infinity,
                     child: _ActionButton(
-                      label: 'Sign Out All Users',
+                      label: l10n.signOutAllUsers,
                       onPressed: _busy ? null : _signOutAll,
                       focusColor: _danger,
                     ),

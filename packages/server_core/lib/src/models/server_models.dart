@@ -1,4 +1,5 @@
 import 'enums.dart';
+import 'system_models.dart';
 import 'user_policy.dart';
 
 class ServerUser {
@@ -8,6 +9,7 @@ class ServerUser {
   final String? primaryImageTag;
   final bool hasPassword;
   final UserPolicy? policy;
+  final UserConfiguration? configuration;
 
   const ServerUser({
     required this.id,
@@ -16,6 +18,7 @@ class ServerUser {
     this.primaryImageTag,
     this.hasPassword = false,
     this.policy,
+    this.configuration,
   });
 
   factory ServerUser.fromJson(Map<String, dynamic> json) => ServerUser(
@@ -26,6 +29,9 @@ class ServerUser {
         hasPassword: json['HasPassword'] as bool? ?? false,
         policy: json['Policy'] is Map<String, dynamic>
             ? UserPolicy.fromJson(json['Policy'] as Map<String, dynamic>)
+            : null,
+        configuration: json['Configuration'] is Map<String, dynamic>
+            ? UserConfiguration.fromJson(json['Configuration'] as Map<String, dynamic>)
             : null,
       );
 }

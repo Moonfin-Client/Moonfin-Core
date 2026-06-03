@@ -9,6 +9,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../../auth/repositories/session_repository.dart';
 import '../../../data/services/storage_path_service.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../theme/app_theme_controller.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -114,22 +115,23 @@ class _SavedThemesScreenState extends State<SavedThemesScreen> {
   }
 
   Future<void> _confirmDelete(_SavedThemeFile theme) async {
+    final l10n = AppLocalizations.of(context);
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Delete saved theme?'),
+          title: Text(l10n.savedThemesDeleteDialogTitle),
           content: Text(
-            'Remove "${theme.spec.displayName}" from this device cache?',
+            l10n.savedThemesDeleteDialogMessage(theme.spec.displayName),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('Delete'),
+              child: Text(l10n.delete),
             ),
           ],
         );
@@ -145,6 +147,7 @@ class _SavedThemesScreenState extends State<SavedThemesScreen> {
     if (_deletingThemeId != null) {
       return;
     }
+    final l10n = AppLocalizations.of(context);
 
     setState(() {
       _deletingThemeId = theme.spec.id;
@@ -173,15 +176,16 @@ class _SavedThemesScreenState extends State<SavedThemesScreen> {
 
       setState(() {
         _savedThemes.removeWhere((entry) => entry.spec.id == theme.spec.id);
-        _statusMessage =
-            'Deleted "${theme.spec.displayName}" from this device.';
+        _statusMessage = l10n.savedThemesDeletedMessage(theme.spec.displayName);
       });
     } catch (_) {
       if (!mounted) {
         return;
       }
       setState(() {
-        _statusMessage = 'Could not delete "${theme.spec.displayName}".';
+        _statusMessage = l10n.savedThemesDeleteFailedMessage(
+          theme.spec.displayName,
+        );
       });
     } finally {
       if (!mounted) {
@@ -196,6 +200,7 @@ class _SavedThemesScreenState extends State<SavedThemesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final selectedCustomId = _prefs.get(UserPreferences.customThemeId);
 
@@ -204,12 +209,12 @@ class _SavedThemesScreenState extends State<SavedThemesScreen> {
       Scaffold(
         appBar: buildSettingsAppBar(
           context,
-          const Text('Saved themes'),
+          Text(l10n.savedThemesTitle),
           actions: [
             IconButton(
               onPressed: _loading ? null : () => unawaited(_loadSavedThemes()),
               icon: const Icon(Icons.refresh),
-              tooltip: 'Refresh',
+              tooltip: l10n.refresh,
             ),
           ],
         ),
@@ -219,8 +224,7 @@ class _SavedThemesScreenState extends State<SavedThemesScreen> {
                 padding: const EdgeInsets.all(20),
                 children: [
                   Text(
-                    'These are themes downloaded from the Moonfin plugin for the current server. '
-                    'Deleting removes only this local copy.',
+                    l10n.savedThemesDescription,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurface.withValues(
                         alpha: 0.74,
@@ -241,7 +245,7 @@ class _SavedThemesScreenState extends State<SavedThemesScreen> {
                   const SizedBox(height: 20),
                   if (_savedThemes.isEmpty)
                     Text(
-                      'No saved themes were found for this server.',
+                      l10n.savedThemesEmpty,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface.withValues(
                           alpha: 0.74,
@@ -255,7 +259,7 @@ class _SavedThemesScreenState extends State<SavedThemesScreen> {
                         title: Text(entry.spec.displayName),
                         subtitle: Text(
                           selectedCustomId == entry.spec.id
-                              ? '${entry.spec.id} • Currently active'
+                          ? l10n.savedThemesCurrentThemeId(entry.spec.id)
                               : entry.spec.id,
                         ),
                         trailing: _deletingThemeId == entry.spec.id
@@ -270,7 +274,7 @@ class _SavedThemesScreenState extends State<SavedThemesScreen> {
                                 onPressed: () =>
                                     unawaited(_confirmDelete(entry)),
                                 icon: const Icon(Icons.delete_outline),
-                                tooltip: 'Delete saved theme',
+                                tooltip: l10n.savedThemesDeleteTooltip,
                               ),
                       ),
                     ),

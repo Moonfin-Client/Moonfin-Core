@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../navigation/destinations.dart';
@@ -55,7 +54,7 @@ class AdminShellScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Server Administration',
+                l10n.adminServerAdministrationTitle,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: isCompact ? theme.textTheme.titleMedium : theme.textTheme.titleLarge,

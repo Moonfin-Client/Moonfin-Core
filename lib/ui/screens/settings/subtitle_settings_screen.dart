@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../util/language_codes.dart';
+import '../../../util/platform_detection.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../widgets/settings/settings_panel.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -40,24 +42,7 @@ class SubtitleSettingsScreen extends StatelessWidget {
               icon: Icons.language,
               options: {
                 '': l10n.none,
-                'eng': l10n.english,
-                'spa': l10n.spanish,
-                'fra': l10n.french,
-                'deu': l10n.german,
-                'ita': l10n.italian,
-                'por': l10n.portuguese,
-                'jpn': l10n.japanese,
-                'kor': l10n.korean,
-                'zho': l10n.chinese,
-                'rus': l10n.russian,
-                'ara': l10n.arabic,
-                'hin': l10n.hindi,
-                'nld': l10n.dutch,
-                'swe': l10n.swedish,
-                'nor': l10n.norwegian,
-                'dan': l10n.danish,
-                'fin': l10n.finnish,
-                'pol': l10n.polish,
+                ...kIso6392Languages,
               },
             ),
             SwitchPreferenceTile(
@@ -68,8 +53,8 @@ class SubtitleSettingsScreen extends StatelessWidget {
             ),
             SwitchPreferenceTile(
               preference: UserPreferences.preferSdhSubtitles,
-              title: 'Prefer SDH subtitles',
-              subtitle: 'Prioritize SDH/CC subtitle tracks when auto-selecting.',
+              title: l10n.preferSdhSubtitles,
+              subtitle: l10n.preferSdhSubtitlesSubtitle,
               icon: Icons.hearing,
             ),
             TvFocusHighlight(
@@ -104,6 +89,21 @@ class SubtitleSettingsScreen extends StatelessWidget {
               subtitle: l10n.directPlayAssSsaSubtitles,
               icon: Icons.text_snippet,
             ),
+            // Embedded-style overrides are only meaningful on Android (Media3).
+            if (PlatformDetection.isAndroid) ...[
+              SwitchPreferenceTile(
+                preference: UserPreferences.subtitlesUseEmbeddedStyles,
+                title: l10n.subtitlesUseEmbeddedStyles,
+                subtitle: l10n.subtitlesUseEmbeddedStylesSubtitle,
+                icon: Icons.format_paint,
+              ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.subtitlesUseEmbeddedFontSizes,
+                title: l10n.subtitlesUseEmbeddedFontSizes,
+                subtitle: l10n.subtitlesUseEmbeddedFontSizesSubtitle,
+                icon: Icons.format_size,
+              ),
+            ],
           ],
         ),
       ),

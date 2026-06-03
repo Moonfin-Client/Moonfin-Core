@@ -168,19 +168,29 @@ class SettingsListTypography extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return ListTileTheme(
-      data: ListTileTheme.of(context).copyWith(
-        titleTextStyle:
-            theme.textTheme.bodyMedium?.merge(_kSettingsTitleTextStyle) ??
-            _kSettingsTitleTextStyle,
-        subtitleTextStyle:
-            theme.textTheme.bodySmall?.merge(_kSettingsSubtitleTextStyle) ??
-            _kSettingsSubtitleTextStyle,
-        contentPadding: _kSettingsTileContentPadding,
-        minLeadingWidth: _kSettingsIconShellSize,
-        horizontalTitleGap: 14,
+    return Theme(
+      data: theme.copyWith(
+        focusColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
       ),
-      child: child,
+      child: ListTileTheme(
+        tileColor: Colors.transparent,
+        selectedTileColor: Colors.transparent,
+        data: ListTileTheme.of(context).copyWith(
+          titleTextStyle:
+              theme.textTheme.bodyMedium?.merge(_kSettingsTitleTextStyle) ??
+              _kSettingsTitleTextStyle,
+          subtitleTextStyle:
+              theme.textTheme.bodySmall?.merge(_kSettingsSubtitleTextStyle) ??
+              _kSettingsSubtitleTextStyle,
+          contentPadding: _kSettingsTileContentPadding,
+          minLeadingWidth: _kSettingsIconShellSize,
+          horizontalTitleGap: 14,
+        ),
+        child: child,
+      ),
     );
   }
 }
@@ -275,6 +285,7 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
   final IconData? icon;
   final String Function(T value) labelOf;
   final VoidCallback? onChanged;
+  final List<T>? values;
 
   const EnumPreferenceTile({
     super.key,
@@ -284,6 +295,7 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
     this.description,
     this.icon,
     this.onChanged,
+    this.values,
   });
 
   @override
@@ -312,27 +324,29 @@ class _EnumPreferenceTileState<T extends Enum>
 
   @override
   Widget build(BuildContext context) {
+    final values = widget.values ?? widget.preference.values.toList();
     return TvFocusHighlight(
       builder: (context, focused) => ValueListenableBuilder<T>(
         valueListenable: _binding,
-        builder: (context, value, _) => ListTile(
-          focusColor: Colors.transparent,
-          hoverColor: Colors.transparent,
-          leading: widget.icon != null
-              ? buildSettingsLeadingIconShell(
-                  context,
-                  icon: Icon(widget.icon),
-                  focused: focused,
-                  iconColor: focused
-                      ? AppColors.black.withValues(alpha: 0.54)
-                      : AppColorScheme.onSurface.withValues(alpha: 0.78),
-                )
-              : null,
-          title: Text(widget.title, style: _kSettingsTitleTextStyle),
-          subtitle: _buildSubtitle(widget.labelOf(value), widget.description),
-          isThreeLine: widget.description != null,
-          onTap: () => _showPicker(context, value),
-        ),
+        builder: (context, value, _) {
+          final current = values.contains(value) ? value : values.first;
+          return ListTile(
+            leading: widget.icon != null
+                ? buildSettingsLeadingIconShell(
+                    context,
+                    icon: Icon(widget.icon),
+                    focused: focused,
+                    iconColor: focused
+                        ? AppColors.black.withValues(alpha: 0.54)
+                        : AppColorScheme.onSurface.withValues(alpha: 0.78),
+                  )
+                : null,
+            title: Text(widget.title, style: _kSettingsTitleTextStyle),
+            subtitle: _buildSubtitle(widget.labelOf(current), widget.description),
+            isThreeLine: widget.description != null,
+            onTap: () => _showPicker(context, current),
+          );
+        },
       ),
     );
   }
@@ -340,7 +354,7 @@ class _EnumPreferenceTileState<T extends Enum>
   void _showPicker(BuildContext context, T current) async {
     if (_pickerOpen) return;
     _pickerOpen = true;
-    final values = widget.preference.values.toList();
+    final values = widget.values ?? widget.preference.values.toList();
     final selectedIndex = values.indexOf(current);
     final autofocusIndex = selectedIndex >= 0 ? selectedIndex : 0;
     var picked = false;
@@ -502,8 +516,6 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
             child: ValueListenableBuilder<int>(
               valueListenable: _binding,
               builder: (context, value, _) => ListTile(
-                focusColor: Colors.transparent,
-                hoverColor: Colors.transparent,
                 leading: widget.icon != null
                     ? buildSettingsLeadingIconShell(
                         context,
@@ -598,8 +610,6 @@ class _StringPickerPreferenceTileState
       builder: (context, focused) => ValueListenableBuilder<String>(
         valueListenable: _binding,
         builder: (context, value, _) => ListTile(
-          focusColor: Colors.transparent,
-          hoverColor: Colors.transparent,
           leading: widget.icon != null
               ? buildSettingsLeadingIconShell(
                   context,
@@ -713,8 +723,6 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
       builder: (context, focused) => ValueListenableBuilder<int>(
         valueListenable: _binding,
         builder: (context, value, _) => ListTile(
-          focusColor: Colors.transparent,
-          hoverColor: Colors.transparent,
           leading: widget.icon != null
               ? buildSettingsLeadingIconShell(
                   context,
