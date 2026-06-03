@@ -358,7 +358,7 @@ Control other Jellyfin devices on your network directly from Moonfin.
 ## Installation
 
 ### Pre-built Releases
-Download platform artifacts from the [Releases page](https://github.com/Moonfin-Client/Mobile-Desktop/releases).
+Download platform artifacts from the [Releases page](https://github.com/Moonfin-Client/Moonfin-Core/releases).
 
 ### Arch Linux (AUR)
 Install from the AUR using any of these commands:
