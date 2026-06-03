@@ -182,22 +182,15 @@ class _AccountDialogState extends State<_AccountDialog> {
     required Widget second,
   }) {
     if (PlatformDetection.isMobile) {
-      return Row(
-        children: [
-          Expanded(
-            child: SizedBox(
-              height: 76,
-              child: first,
-            ),
-          ),
-          SizedBox(width: 10),
-          Expanded(
-            child: SizedBox(
-              height: 76,
-              child: second,
-            ),
-          ),
-        ],
+      return IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(child: first),
+            SizedBox(width: 10),
+            Expanded(child: second),
+          ],
+        ),
       );
     }
 
