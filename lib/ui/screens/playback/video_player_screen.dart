@@ -184,6 +184,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   StreamSubscription<Map<String, dynamic>>? _dlnaEventsSub;
   StreamSubscription<Map<String, dynamic>>? _airPlayEventsSub;
   StreamSubscription<Map<String, dynamic>>? _media3ActivityActionSub;
+  late final KeyEventCallback _desktopShortcutHandler;
   final Map<String, List<Map<String, dynamic>>> _media3CastPeopleCache = {};
 
   TrickplayInfo? _trickplayInfo;
@@ -671,6 +672,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _overlayFocus.requestFocus();
   }
 
+  bool _handleDesktopHardwareKeyEvent(KeyEvent event) {
+    if (!mounted || !PlatformDetection.useDesktopUi) return false;
+    if (_overlayFocus.hasFocus) return false;
+    return _handleKeyEvent(_overlayFocus, event) == KeyEventResult.handled;
+  }
+
   List<Map<String, dynamic>> _streamMaps(dynamic raw) {
     if (raw is! List) {
       return const <Map<String, dynamic>>[];
@@ -746,6 +753,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void initState() {
     super.initState();
     _screensaverController.setPlaybackActive(true);
+    _desktopShortcutHandler = _handleDesktopHardwareKeyEvent;
+    if (PlatformDetection.useDesktopUi) {
+      HardwareKeyboard.instance.addHandler(_desktopShortcutHandler);
+    }
     _screensaverPlayingSub = _state.playingStream.listen(
       _screensaverController.setPlaybackActive,
     );
@@ -910,6 +921,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     WidgetsBinding.instance.removeObserver(this);
     if (PlatformDetection.isDesktop) {
       windowManager.removeListener(this);
+    }
+    if (PlatformDetection.useDesktopUi) {
+      HardwareKeyboard.instance.removeHandler(_desktopShortcutHandler);
     }
     _cancelTvTemporarySpeedHold();
     _hideTimer?.cancel();
@@ -3417,8 +3431,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             height: constraints.maxHeight,
             fit: _zoomToFit(_zoomMode),
             fill: Colors.black,
-            pauseUponEnteringBackgroundMode:
-                !PlatformDetection.isIOS && !PlatformDetection.isAndroid,
+            pauseUponEnteringBackgroundMode: PlatformDetection.isMobile,
             subtitleViewConfiguration: _buildSubtitleConfig(),
           );
         },
