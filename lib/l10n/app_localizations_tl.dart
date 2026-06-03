@@ -16,7 +16,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String connectingToServer(String serverName) {
-    return 'Connecting to $serverName';
+    return 'Kumokonekta sa $serverName';
   }
 
   @override
@@ -49,12 +49,12 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect unavailable: $detail';
+    return 'Hindi available ang QuickConnect: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect unavailable ($status): $detail';
+    return 'Hindi available ang QuickConnect ($status): $detail';
   }
 
   @override
@@ -68,7 +68,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin version $version';
+    return 'Moonfin bersyon $version';
   }
 
   @override
@@ -94,7 +94,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String removeServerConfirmation(String serverName) {
-    return 'Remove \"$serverName\" from your servers?';
+    return 'Alisin ang \"$serverName\" sa iyong mga server?';
   }
 
   @override
@@ -134,11 +134,11 @@ class AppLocalizationsTl extends AppLocalizations {
       'Lumipat sa pagitan ng Moonfin at Neon Pulse nang hindi nire-restart ang app';
 
   @override
-  String get keyboardPreferSystemIme => 'Prefer system keyboard';
+  String get keyboardPreferSystemIme => 'Mas gusto ang keyboard ng system';
 
   @override
   String get keyboardPreferSystemImeDescription =>
-      'Use your device input method by default for text entry';
+      'Gamitin ang paraan ng pag-input ng iyong device bilang default para sa pagpasok ng text';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -202,7 +202,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String unableToConnectTo(String target) {
-    return 'Unable to connect to $target';
+    return 'Hindi makakonekta sa $target';
   }
 
   @override
@@ -285,7 +285,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return 'Failed to load folder: $error';
+    return 'Nabigong i-load ang folder: $error';
   }
 
   @override
@@ -293,7 +293,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return '$count items';
+    return '$count aytem';
   }
 
   @override
@@ -310,7 +310,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return '$count Items';
+    return '$count Mga Item';
   }
 
   @override
@@ -351,7 +351,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — Genres';
+    return '$name — Mga Genre';
   }
 
   @override
@@ -390,17 +390,17 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return '${count}m ago';
+    return '${count}m ang nakalipas';
   }
 
   @override
   String hoursAgo(int count) {
-    return '${count}h ago';
+    return '${count}h ang nakalipas';
   }
 
   @override
   String daysAgo(int count) {
-    return '${count}d ago';
+    return '${count}d ang nakalipas';
   }
 
   @override
@@ -435,7 +435,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String titlesCount(int count) {
-    return '$count titles';
+    return '$count mga pamagat';
   }
 
   @override
@@ -522,17 +522,17 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String authorsCount(int count) {
-    return '$count authors';
+    return '$count mga may-akda';
   }
 
   @override
   String genresCount(int count) {
-    return '$count genres';
+    return '$count mga genre';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '$percent% completed';
+    return '$percent% nakumpleto';
   }
 
   @override
@@ -549,7 +549,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count titles arranged for reading-first browsing.';
+    return '$count mga pamagat na inayos para sa pagbabasa-unang pagba-browse.';
   }
 
   @override
@@ -586,7 +586,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String noLabelFound(String label) {
-    return 'No $label found';
+    return 'Walang nakitang $label';
   }
 
   @override
@@ -658,12 +658,12 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String sectionCountLabel(int count) {
-    return '$count sections';
+    return '$count mga seksyon';
   }
 
   @override
   String firstPublished(int year) {
-    return 'First published $year';
+    return 'Unang na-publish $year';
   }
 
   @override
@@ -678,7 +678,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String booksCount(int count) {
-    return '$count books';
+    return '$count mga aklat';
   }
 
   @override
@@ -689,7 +689,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String authorsCountTitle(int count) {
-    return '$count Authors';
+    return '$count Mga May-akda';
   }
 
   @override
@@ -750,7 +750,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get movies => 'Mga pelikula';
 
   @override
-  String get musicVideos => 'Music Videos';
+  String get musicVideos => 'Mga Music Video';
 
   @override
   String get other => 'Iba pa';
@@ -796,7 +796,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String published(int year) {
-    return 'Published $year';
+    return 'Nai-publish $year';
   }
 
   @override
@@ -815,7 +815,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String endsAt(String time) {
-    return 'Ends at $time';
+    return 'Matatapos sa $time';
   }
 
   @override
@@ -829,7 +829,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return 'Resume from $position';
+    return 'Ipagpatuloy mula sa $position';
   }
 
   @override
@@ -928,7 +928,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return 'Delete downloaded tracks for \"$title\"?';
+    return 'Tanggalin ang mga na-download na track para sa \"$title\"?';
   }
 
   @override
@@ -944,17 +944,17 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return 'No $itemLabel loaded';
+    return 'Walang na-load na $itemLabel';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return 'Downloading $title ($count items)...';
+    return 'Dina-download ang $title ($count aytem)...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
+    return 'Sigurado ka bang gusto mong tanggalin ang \"$name\" mula sa server? Ang pagkilos na ito ay hindi maaaring i-undo.';
   }
 
   @override
@@ -966,7 +966,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String unsupportedBookFormat(String extension) {
-    return 'Unsupported book format: .$extension';
+    return 'Hindi sinusuportahang format ng aklat: .$extension';
   }
 
   @override
@@ -993,7 +993,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return 'Subtitle downloaded and selected: $name';
+    return 'Na-download at napili ang subtitle: $name';
   }
 
   @override
@@ -1002,7 +1002,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return 'No remote subtitles found for $language.';
+    return 'Walang nakitang malayuang subtitle para sa $language.';
   }
 
   @override
@@ -1010,7 +1010,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String versionNumber(int number) {
-    return 'Version $number';
+    return 'Bersyon $number';
   }
 
   @override
@@ -1032,7 +1032,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String downloadingItem(String name, String quality) {
-    return 'Downloading $name ($quality)...';
+    return 'Dina-download ang $name ($quality)...';
   }
 
   @override
@@ -1040,7 +1040,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
+    return 'Tanggalin ang mga lokal na file para sa $typeLabel?\n\nIto ay magpapalaya ng espasyo sa imbakan. Maaari mong muling i-download sa ibang pagkakataon.';
   }
 
   @override
@@ -1064,12 +1064,12 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String studioMoreCount(int count) {
-    return '+$count more';
+    return '+$count higit pa';
   }
 
   @override
   String totalEpisodes(int count) {
-    return '$count Episodes';
+    return '$count Mga Episode';
   }
 
   @override
@@ -1084,7 +1084,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String chapterNumber(int number) {
-    return 'Chapter $number';
+    return 'Kabanata $number';
   }
 
   @override
@@ -1111,17 +1111,17 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String born(String date) {
-    return 'Born $date';
+    return 'Ipinanganak $date';
   }
 
   @override
   String died(String date) {
-    return 'Died $date';
+    return 'Namatay $date';
   }
 
   @override
   String age(int age) {
-    return 'Age $age';
+    return 'Edad $age';
   }
 
   @override
@@ -1135,7 +1135,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String downloadsCount(int count) {
-    return '$count downloads';
+    return '$count mga pag-download';
   }
 
   @override
@@ -1154,32 +1154,32 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
+    return 'Ang malayuang subtitle na $action ay nangangailangan ng Jellyfin pahintulot sa pamamahala ng subtitle para sa user na ito.';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return 'This item could not be found on the server for remote subtitle $action.';
+    return 'Ang item na ito ay hindi mahanap sa server para sa malayuang subtitle $action.';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return 'Remote subtitle $action failed: $detail';
+    return 'Nabigo ang malayuang subtitle $action: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return 'Remote subtitle $action failed (HTTP $status).';
+    return 'Nabigo ang remote subtitle $action (HTTP $status).';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return 'Failed to $action remote subtitles.';
+    return 'Nabigo sa $action mga malayuang subtitle.';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return 'all downloaded episodes for \"$name\"';
+    return 'lahat ng na-download na episode para sa \"$name\"';
   }
 
   @override
@@ -1211,17 +1211,17 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String castActionFailed(String label, String error) {
-    return '$label action failed: $error';
+    return '$label nabigo ang pagkilos: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return 'Failed to set cast volume: $error';
+    return 'Nabigong itakda ang dami ng cast: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return '$label Controls';
+    return '$label Mga kontrol';
   }
 
   @override
@@ -1238,7 +1238,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String stopCast(String label) {
-    return 'Stop $label';
+    return 'Huminto $label';
   }
 
   @override
@@ -1246,7 +1246,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String trackNumber(int number) {
-    return 'Track $number';
+    return 'Subaybayan ang $number';
   }
 
   @override
@@ -1263,7 +1263,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String secondsCount(int seconds) {
-    return '$seconds seconds';
+    return '$seconds segundo';
   }
 
   @override
@@ -1378,12 +1378,12 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String castSessionError(String protocol) {
-    return '$protocol session error';
+    return '$protocol error sa session';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return 'Failed to load book details: $error';
+    return 'Nabigong i-load ang mga detalye ng libro: $error';
   }
 
   @override
@@ -1392,7 +1392,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return 'This format (.$extension) cannot be rendered in-app yet.';
+    return 'Ang format na ito (.$extension) ay hindi pa maaaring i-render in-app.';
   }
 
   @override
@@ -1405,17 +1405,17 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return 'Failed to open in-app reader: $error';
+    return 'Nabigong buksan ang in-app reader: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return 'Bookmark already saved at $label.';
+    return 'Nai-save na ang bookmark sa $label.';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return 'Bookmark added: $label';
+    return 'Idinagdag ang bookmark: $label';
   }
 
   @override
@@ -1428,7 +1428,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String pageLabel(int number) {
-    return 'Page $number';
+    return 'Pahina $number';
   }
 
   @override
@@ -1444,7 +1444,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String percentRead(String percent) {
-    return '$percent% read';
+    return '$percent% nabasa';
   }
 
   @override
@@ -1468,7 +1468,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String resetZoom(String zoom) {
-    return 'Reset Zoom (${zoom}x)';
+    return 'I-reset ang Zoom (${zoom}x)';
   }
 
   @override
@@ -1491,7 +1491,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String failedToUpdateReadState(String error) {
-    return 'Failed to update read state: $error';
+    return 'Nabigong i-update ang read state: $error';
   }
 
   @override
@@ -1524,7 +1524,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return 'This platform cannot host the embedded document engine for $extension files.';
+    return 'Hindi maaaring i-host ng platform na ito ang naka-embed na document engine para sa $extension na mga file.';
   }
 
   @override
@@ -1563,7 +1563,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String failedToLoadGuide(String error) {
-    return 'Failed to load guide: $error';
+    return 'Nabigong i-load ang gabay: $error';
   }
 
   @override
@@ -1592,19 +1592,19 @@ class AppLocalizationsTl extends AppLocalizations {
   String get favoriteChannel => 'Paboritong Channel';
 
   @override
-  String get record => 'Record';
+  String get record => 'Itala';
 
   @override
-  String get cancelRecordingAction => 'Cancel Recording';
+  String get cancelRecordingAction => 'Kanselahin ang Pagre-record';
 
   @override
-  String get programSetToRecord => 'Program set to record';
+  String get programSetToRecord => 'Nakatakdang i-record ang program';
 
   @override
-  String get recordingCancelled => 'Recording cancelled';
+  String get recordingCancelled => 'Kinansela ang pagre-record';
 
   @override
-  String get unableToCreateRecording => 'Unable to create recording';
+  String get unableToCreateRecording => 'Hindi makagawa ng recording';
 
   @override
   String get watch => 'Panoorin';
@@ -1614,7 +1614,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String failedToPlayChannel(String name) {
-    return 'Failed to play $name';
+    return 'Nabigong laruin ang $name';
   }
 
   @override
@@ -1640,7 +1640,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return 'Cancel scheduled recording of \"$name\"?';
+    return 'Kanselahin ang nakaiskedyul na pag-record ng \"$name\"?';
   }
 
   @override
@@ -1668,7 +1668,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String stopRecordingName(String name) {
-    return 'Stop recording \"$name\"?';
+    return 'Ihinto ang pagre-record ng \"$name\"?';
   }
 
   @override
@@ -1683,12 +1683,12 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String noResultsForQuery(String query) {
-    return 'No results for \"$query\"';
+    return 'Walang mga resulta para sa \"$query\"';
   }
 
   @override
   String searchFailedError(String error) {
-    return 'Search failed: $error';
+    return 'Nabigo ang paghahanap: $error';
   }
 
   @override
@@ -1729,12 +1729,12 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String removeItemAndFiles(String name) {
-    return 'Remove \"$name\" and its files?';
+    return 'Alisin ang \"$name\" at ang mga file nito?';
   }
 
   @override
   String tracksCount(int count) {
-    return '$count tracks';
+    return '$count mga track';
   }
 
   @override
@@ -1745,12 +1745,12 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return 'Failed to load album: $error';
+    return 'Nabigong i-load ang album: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return 'No downloaded tracks found for $name.';
+    return 'Walang nakitang na-download na mga track para sa $name.';
   }
 
   @override
@@ -1767,7 +1767,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return 'Remove \"$name\"?';
+    return 'Alisin ang \"$name\"?';
   }
 
   @override
@@ -1812,7 +1812,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return 'Delete all downloaded episodes in $season?';
+    return 'Tanggalin ang lahat ng na-download na episode sa $season?';
   }
 
   @override
@@ -1856,7 +1856,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return 'Delete $count downloaded items?';
+    return 'Tanggalin ang $count na-download na mga item?';
   }
 
   @override
@@ -1870,7 +1870,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String ofStorageLimit(String limit) {
-    return 'of $limit limit';
+    return 'ng $limit limitasyon';
   }
 
   @override
@@ -1954,7 +1954,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return '$count options';
+    return '$count mga opsyon';
   }
 
   @override
@@ -2230,7 +2230,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'Enable only formats your AVR or HDMI sink supports.';
+      'I-enable lang ang mga format na sinusuportahan ng iyong AVR o HDMI sink.';
 
   @override
   String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
@@ -2252,38 +2252,39 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
+      'Bitstream Dolby Digital Plus (EAC3) sa external decoder.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
+      'Bitstream Dolby Atmos sa EAC3 (JOC) sa external decoder.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
+      'Bitstream DTS-HD MA (kasama ang DTS core) sa external decoder.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
+      'Bitstream Dolby TrueHD na may metadata ng Atmos sa external decoder.';
 
   @override
-  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
+  String get settingsDetectedAudioCapabilities =>
+      'Natukoy na Mga Kakayahang Audio';
 
   @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
-      'No runtime capability snapshot available yet.';
+      'Wala pang available na snapshot ng kakayahan sa runtime.';
 
   @override
-  String get settingsAudioRouteLabel => 'Route';
+  String get settingsAudioRouteLabel => 'Ruta';
 
   @override
-  String get settingsAudioDecodeLabel => 'Decode';
+  String get settingsAudioDecodeLabel => 'Mag-decode';
 
   @override
   String get settingsAudioPassthroughLabel => 'Passthrough';
 
   @override
-  String get settingsAudioHdRoute => 'HD audio route';
+  String get settingsAudioHdRoute => 'HD audio ruta';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2298,7 +2299,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get settingsAudioRouteBluetooth => 'Bluetooth';
 
   @override
-  String get settingsAudioRouteSpeaker => 'Speaker';
+  String get settingsAudioRouteSpeaker => 'Tagapagsalita';
 
   @override
   String settingsAudioPcmChannels(int count) {
@@ -2306,20 +2307,20 @@ class AppLocalizationsTl extends AppLocalizations {
   }
 
   @override
-  String get settingsAudioDiagnostics => 'Diagnostics';
+  String get settingsAudioDiagnostics => 'Mga diagnostic';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
+  String get settingsAudioDiagnosticsVideoLevel => 'Antas ng Video';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
+  String get settingsAudioDiagnosticsVideoRange => 'Saklaw ng Video';
 
   @override
   String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
 
   @override
   String get settingsAudioDiagnosticsAllowedAudioCodecs =>
-      'Allowed Audio Codecs';
+      'Pinapayagan ang Audio Codecs';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
@@ -2334,11 +2335,12 @@ class AppLocalizationsTl extends AppLocalizations {
       'audio-spdif passthrough';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
+  String get settingsAudioDiagnosticsActiveAudioRoute =>
+      'Aktibong Ruta ng Audio';
 
   @override
   String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'Route HD Audio Support';
+      'Suporta sa HD Audio ng Ruta';
 
   @override
   String get nightMode => 'Night Mode';
@@ -2402,7 +2404,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return 'After $episodes episodes / ${hours}h';
+    return 'Pagkatapos ng $episodes mga episode / ${hours}h';
   }
 
   @override
@@ -2537,17 +2539,17 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String loadedProfileSettings(String profile) {
-    return 'Loaded $profile profile settings.';
+    return 'Na-load ang $profile mga setting ng profile.';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return 'Failed to load $profile profile settings.';
+    return 'Nabigong i-load ang $profile mga setting ng profile.';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return 'Synced local settings to $profile profile.';
+    return 'Naka-sync na mga lokal na setting sa $profile profile.';
   }
 
   @override
@@ -2709,7 +2711,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get darkGreen => 'Madilim na Berde';
 
   @override
-  String get slate => 'Slate';
+  String get slate => 'slate';
 
   @override
   String get indigo => 'Indigo';
@@ -2775,7 +2777,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '$count selected';
+    return '$count napili';
   }
 
   @override
@@ -3144,7 +3146,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String pluginStatusVersion(String status, String version) {
-    return '$status\nVersion: $version';
+    return '$status\nBersyon: $version';
   }
 
   @override
@@ -3220,7 +3222,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String loggedInAs(String username) {
-    return 'Logged in as: $username';
+    return 'Naka-log in bilang: $username';
   }
 
   @override
@@ -3245,7 +3247,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String versionValue(String version) {
-    return 'Version $version';
+    return 'Bersyon $version';
   }
 
   @override
@@ -6978,7 +6980,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'Lagyan ng star ang proyekto sa GitHub o mag-ambag';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'LEGAL';

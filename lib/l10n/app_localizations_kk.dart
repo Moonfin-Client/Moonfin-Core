@@ -6935,7 +6935,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'GitHub сайтында жобаны жұлдызшалаңыз немесе үлес қосыңыз';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'ЗАҢДЫ';

@@ -466,22 +466,12 @@ class PluginSyncService extends ChangeNotifier {
 
     try {
       final seerrRepo = await GetIt.instance.getAsync<SeerrRepository>();
-      final status = await seerrRepo.configureWithMoonfin(
+      await seerrRepo.bootstrapMoonfinSso(
         jellyfinBaseUrl: client.baseUrl,
         jellyfinToken: token,
+        username: username,
+        password: password,
       );
-
-      if (!status.authenticated &&
-          status.enabled &&
-          username != null &&
-          username.isNotEmpty &&
-          password != null &&
-          password.isNotEmpty) {
-        await seerrRepo.loginWithMoonfin(
-          username: username,
-          password: password,
-        );
-      }
     } catch (_) {}
   }
 

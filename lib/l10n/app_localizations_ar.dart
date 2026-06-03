@@ -16,7 +16,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String connectingToServer(String serverName) {
-    return 'Connecting to $serverName';
+    return 'الاتصال بـ $serverName';
   }
 
   @override
@@ -49,12 +49,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect unavailable: $detail';
+    return 'QuickConnect غير متاح: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect unavailable ($status): $detail';
+    return 'QuickConnect غير متاح ($status): $detail';
   }
 
   @override
@@ -68,7 +68,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin version $version';
+    return 'Moonfin الإصدار $version';
   }
 
   @override
@@ -94,7 +94,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String removeServerConfirmation(String serverName) {
-    return 'Remove \"$serverName\" from your servers?';
+    return 'هل تريد إزالة \"$serverName\" من خوادمك؟';
   }
 
   @override
@@ -120,7 +120,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get secureStorageUnavailableMessage =>
-      'تعذر على Moonfin الوصول إلى حلقة مفاتيح النظام لديك. يمكن متابعة تسجيل الدخول، ولكن قد لا يكون تخزين الرمز المميز متاحًا حتى يتم إلغاء قفل حلقة المفاتيح.';
+      'Moonfin تعذر الوصول إلى حلقة مفاتيح النظام. يمكن متابعة تسجيل الدخول، ولكن قد لا يكون تخزين الرمز المميز متاحًا حتى يتم إلغاء قفل حلقة المفاتيح.';
 
   @override
   String get ok => 'نعم';
@@ -133,17 +133,17 @@ class AppLocalizationsAr extends AppLocalizations {
       'قم بالتبديل بين Moonfin وNeon Pulse دون إعادة تشغيل التطبيق';
 
   @override
-  String get keyboardPreferSystemIme => 'Prefer system keyboard';
+  String get keyboardPreferSystemIme => 'تفضل لوحة مفاتيح النظام';
 
   @override
   String get keyboardPreferSystemImeDescription =>
-      'Use your device input method by default for text entry';
+      'استخدم طريقة إدخال جهازك بشكل افتراضي لإدخال النص';
 
   @override
   String get themeMoonfin => 'مونفين';
 
   @override
-  String get themeMoonfinSubtitle => 'مظهر Moonfin الحالي الذي تحبه جميعًا';
+  String get themeMoonfinSubtitle => 'المظهر الحالي Moonfin الذي أحببته جميعًا';
 
   @override
   String get themeNeonPulse => 'نبض النيون';
@@ -166,23 +166,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tryAgain => 'حاول ثانية';
 
   @override
-  String get noLinkedServers => 'لا توجد خوادم مرتبطة بحساب Emby Connect هذا';
+  String get noLinkedServers => 'لا توجد خوادم مرتبطة بحساب Connect Emby هذا';
 
   @override
   String get invalidEmbyConnectCredentials =>
-      'بيانات اعتماد Emby Connect غير صالحة';
+      'Emby بيانات اعتماد الاتصال غير صالحة';
 
   @override
   String get invalidEmbyConnectLogin =>
-      'اسم مستخدم أو كلمة مرور Emby Connect غير صالحة';
+      'Emby اسم المستخدم أو كلمة المرور غير صالحة';
 
   @override
   String get embyConnectExchangeNotSupported =>
-      'الخادم لا يدعم تبادل Emby Connect';
+      'الخادم لا يدعم Emby تبادل الاتصال';
 
   @override
   String get embyConnectNetworkError =>
-      'حدث خطأ في الشبكة أثناء الاتصال بـ Emby Connect أو الخادم المحدد';
+      'حدث خطأ في الشبكة أثناء الاتصال بـ Emby Connect أو بالخادم المحدد';
 
   @override
   String get loadingLinkedServers => 'جارٍ تحميل الخوادم المرتبطة...';
@@ -199,7 +199,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String unableToConnectTo(String target) {
-    return 'Unable to connect to $target';
+    return 'غير قادر على الاتصال بـ $target';
   }
 
   @override
@@ -279,7 +279,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return 'Failed to load folder: $error';
+    return 'فشل تحميل المجلد: $error';
   }
 
   @override
@@ -287,7 +287,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return '$count items';
+    return '$count العناصر';
   }
 
   @override
@@ -304,7 +304,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return '$count Items';
+    return '$count العناصر';
   }
 
   @override
@@ -345,7 +345,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — Genres';
+    return '$name — الأنواع';
   }
 
   @override
@@ -384,17 +384,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return '${count}m ago';
+    return '$countم مضت';
   }
 
   @override
   String hoursAgo(int count) {
-    return '${count}h ago';
+    return '$count منذ ساعة';
   }
 
   @override
   String daysAgo(int count) {
-    return '${count}d ago';
+    return '${count}d مضت';
   }
 
   @override
@@ -424,11 +424,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get discoverAudiobooks => 'اكتشف الكتب الصوتية';
 
   @override
-  String get librivoxDescription => 'عناوين المجال العام الشهيرة من LibriVox.';
+  String get librivoxDescription => 'عناوين النطاق العام الشهيرة من LibriVox.';
 
   @override
   String titlesCount(int count) {
-    return '$count titles';
+    return '$count العناوين';
   }
 
   @override
@@ -513,17 +513,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String authorsCount(int count) {
-    return '$count authors';
+    return '$count المؤلفون';
   }
 
   @override
   String genresCount(int count) {
-    return '$count genres';
+    return '$count الأنواع';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '$percent% completed';
+    return 'اكتمل $percent%';
   }
 
   @override
@@ -540,7 +540,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count titles arranged for reading-first browsing.';
+    return '$count العناوين مرتبة للتصفح بالقراءة أولاً.';
   }
 
   @override
@@ -577,7 +577,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String noLabelFound(String label) {
-    return 'No $label found';
+    return 'لم يتم العثور على $label';
   }
 
   @override
@@ -649,17 +649,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String sectionCountLabel(int count) {
-    return '$count sections';
+    return '$count الأقسام';
   }
 
   @override
   String firstPublished(int year) {
-    return 'First published $year';
+    return 'تم النشر لأول مرة $year';
   }
 
   @override
   String get noOpenLibraryOverview =>
-      'لا توجد نظرة عامة متاحة من Open Library لهذا العنوان حتى الآن.';
+      'لا تتوفر نظرة عامة من Open Library لهذا العنوان حتى الآن.';
 
   @override
   String get subjects => 'المواضيع';
@@ -669,7 +669,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String booksCount(int count) {
-    return '$count books';
+    return '$count الكتب';
   }
 
   @override
@@ -680,7 +680,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String authorsCountTitle(int count) {
-    return '$count Authors';
+    return '$count المؤلفون';
   }
 
   @override
@@ -740,7 +740,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get movies => 'أفلام';
 
   @override
-  String get musicVideos => 'Music Videos';
+  String get musicVideos => 'فيديوهات موسيقية';
 
   @override
   String get other => 'آخر';
@@ -759,7 +759,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String discNumber(int number) {
-    return 'Disc $number';
+    return 'القرص $number';
   }
 
   @override
@@ -784,7 +784,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String published(int year) {
-    return 'Published $year';
+    return 'تم النشر $year';
   }
 
   @override
@@ -803,7 +803,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String endsAt(String time) {
-    return 'Ends at $time';
+    return 'ينتهي عند $time';
   }
 
   @override
@@ -817,7 +817,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return 'Resume from $position';
+    return 'استئناف من $position';
   }
 
   @override
@@ -916,7 +916,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return 'Delete downloaded tracks for \"$title\"?';
+    return 'هل تريد حذف المسارات التي تم تنزيلها لـ \"$title\"؟';
   }
 
   @override
@@ -931,17 +931,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return 'No $itemLabel loaded';
+    return 'لم يتم تحميل $itemLabel';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return 'Downloading $title ($count items)...';
+    return 'جارٍ التنزيل $title ($count العناصر)...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
+    return 'هل أنت متأكد من أنك تريد حذف \"$name\" من الخادم؟ لا يمكن التراجع عن هذا الإجراء.';
   }
 
   @override
@@ -953,7 +953,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String unsupportedBookFormat(String extension) {
-    return 'Unsupported book format: .$extension';
+    return 'تنسيق الكتاب غير مدعوم: .$extension';
   }
 
   @override
@@ -980,7 +980,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return 'Subtitle downloaded and selected: $name';
+    return 'تم تنزيل الترجمة واختيارها: $name';
   }
 
   @override
@@ -989,7 +989,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return 'No remote subtitles found for $language.';
+    return 'لم يتم العثور على ترجمات بعيدة لـ $language.';
   }
 
   @override
@@ -997,7 +997,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String versionNumber(int number) {
-    return 'Version $number';
+    return 'الإصدار $number';
   }
 
   @override
@@ -1017,7 +1017,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String downloadingItem(String name, String quality) {
-    return 'Downloading $name ($quality)...';
+    return 'جارٍ التنزيل $name ($quality)...';
   }
 
   @override
@@ -1025,7 +1025,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
+    return 'هل تريد حذف الملفات المحلية لـ $typeLabel؟\n\nسيؤدي هذا إلى تحرير مساحة التخزين. يمكنك إعادة التحميل لاحقا.';
   }
 
   @override
@@ -1048,12 +1048,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String studioMoreCount(int count) {
-    return '+$count more';
+    return '+$count المزيد';
   }
 
   @override
   String totalEpisodes(int count) {
-    return '$count Episodes';
+    return '$count الحلقات';
   }
 
   @override
@@ -1063,12 +1063,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String episodeLabel(int number) {
-    return 'Episode $number';
+    return 'الحلقة $number';
   }
 
   @override
   String chapterNumber(int number) {
-    return 'Chapter $number';
+    return 'الفصل $number';
   }
 
   @override
@@ -1095,17 +1095,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String born(String date) {
-    return 'Born $date';
+    return 'ولد $date';
   }
 
   @override
   String died(String date) {
-    return 'Died $date';
+    return 'مات $date';
   }
 
   @override
   String age(int age) {
-    return 'Age $age';
+    return 'العمر $age';
   }
 
   @override
@@ -1119,7 +1119,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String downloadsCount(int count) {
-    return '$count downloads';
+    return '$count التنزيلات';
   }
 
   @override
@@ -1138,32 +1138,32 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
+    return 'تتطلب الترجمة عن بعد $action إذن إدارة الترجمة Jellyfin لهذا المستخدم.';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return 'This item could not be found on the server for remote subtitle $action.';
+    return 'تعذر العثور على هذا العنصر على الخادم للترجمة عن بعد $action.';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return 'Remote subtitle $action failed: $detail';
+    return 'فشل الترجمة عن بعد $action: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return 'Remote subtitle $action failed (HTTP $status).';
+    return 'فشل الترجمة عن بعد $action (HTTP $status).';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return 'Failed to $action remote subtitles.';
+    return 'فشل $action في الترجمة عن بعد.';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return 'all downloaded episodes for \"$name\"';
+    return 'جميع الحلقات التي تم تنزيلها لـ \"$name\"';
   }
 
   @override
@@ -1192,17 +1192,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String castActionFailed(String label, String error) {
-    return '$label action failed: $error';
+    return '$label فشل الإجراء: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return 'Failed to set cast volume: $error';
+    return 'فشل تعيين حجم الإرسال: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return '$label Controls';
+    return '$label عناصر التحكم';
   }
 
   @override
@@ -1219,7 +1219,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String stopCast(String label) {
-    return 'Stop $label';
+    return 'توقف $label';
   }
 
   @override
@@ -1227,7 +1227,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String trackNumber(int number) {
-    return 'Track $number';
+    return 'تتبع $number';
   }
 
   @override
@@ -1244,7 +1244,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String secondsCount(int seconds) {
-    return '$seconds seconds';
+    return '$seconds ثانية';
   }
 
   @override
@@ -1263,7 +1263,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String bitrateValueMbps(int mbps) {
-    return '$mbps Mbps';
+    return '$mbps ميجابت في الثانية';
   }
 
   @override
@@ -1359,12 +1359,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String castSessionError(String protocol) {
-    return '$protocol session error';
+    return '$protocol خطأ في الجلسة';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return 'Failed to load book details: $error';
+    return 'فشل تحميل تفاصيل الكتاب: $error';
   }
 
   @override
@@ -1373,7 +1373,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return 'This format (.$extension) cannot be rendered in-app yet.';
+    return 'لا يمكن عرض هذا التنسيق (.$extension) داخل التطبيق حتى الآن.';
   }
 
   @override
@@ -1385,17 +1385,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return 'Failed to open in-app reader: $error';
+    return 'فشل فتح القارئ داخل التطبيق: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return 'Bookmark already saved at $label.';
+    return 'تم حفظ الإشارة المرجعية بالفعل في $label.';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return 'Bookmark added: $label';
+    return 'تمت إضافة الإشارة المرجعية: $label';
   }
 
   @override
@@ -1407,7 +1407,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String pageLabel(int number) {
-    return 'Page $number';
+    return 'الصفحة $number';
   }
 
   @override
@@ -1418,12 +1418,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String formatExtension(String extension) {
-    return 'Format: .$extension';
+    return 'التنسيق: .$extension';
   }
 
   @override
   String percentRead(String percent) {
-    return '$percent% read';
+    return '$percent% قراءة';
   }
 
   @override
@@ -1446,7 +1446,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String resetZoom(String zoom) {
-    return 'Reset Zoom (${zoom}x)';
+    return 'إعادة ضبط التكبير/التصغير (${zoom}x)';
   }
 
   @override
@@ -1469,7 +1469,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String failedToUpdateReadState(String error) {
-    return 'Failed to update read state: $error';
+    return 'فشل تحديث حالة القراءة: $error';
   }
 
   @override
@@ -1501,12 +1501,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return 'This platform cannot host the embedded document engine for $extension files.';
+    return 'لا يمكن لهذا النظام الأساسي استضافة محرك المستندات المضمن لملفات $extension.';
   }
 
   @override
   String get reloadReaderPlatformHint =>
-      'استخدم Reload Reader بعد التبديل إلى نظام أساسي مستهدف مدعوم (Android وiOS وmacOS).';
+      'استخدم Reload Reader بعد التبديل إلى نظام أساسي مدعوم (Android وiOS وmacOS).';
 
   @override
   String get openExternally => 'فتح خارجيا';
@@ -1540,7 +1540,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String failedToLoadGuide(String error) {
-    return 'Failed to load guide: $error';
+    return 'فشل تحميل الدليل: $error';
   }
 
   @override
@@ -1568,19 +1568,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get favoriteChannel => 'القناة المفضلة';
 
   @override
-  String get record => 'Record';
+  String get record => 'سِجِلّ';
 
   @override
-  String get cancelRecordingAction => 'Cancel Recording';
+  String get cancelRecordingAction => 'إلغاء التسجيل';
 
   @override
-  String get programSetToRecord => 'Program set to record';
+  String get programSetToRecord => 'تم ضبط البرنامج للتسجيل';
 
   @override
-  String get recordingCancelled => 'Recording cancelled';
+  String get recordingCancelled => 'تم إلغاء التسجيل';
 
   @override
-  String get unableToCreateRecording => 'Unable to create recording';
+  String get unableToCreateRecording => 'غير قادر على إنشاء التسجيل';
 
   @override
   String get watch => 'يشاهد';
@@ -1590,7 +1590,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String failedToPlayChannel(String name) {
-    return 'Failed to play $name';
+    return 'فشل تشغيل $name';
   }
 
   @override
@@ -1616,7 +1616,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return 'Cancel scheduled recording of \"$name\"?';
+    return 'هل تريد إلغاء التسجيل المجدول لـ \"$name\"؟';
   }
 
   @override
@@ -1642,7 +1642,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String stopRecordingName(String name) {
-    return 'Stop recording \"$name\"?';
+    return 'هل تريد إيقاف التسجيل \"$name\"؟';
   }
 
   @override
@@ -1656,12 +1656,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String noResultsForQuery(String query) {
-    return 'No results for \"$query\"';
+    return 'لا توجد نتائج لـ \"$query\"';
   }
 
   @override
   String searchFailedError(String error) {
-    return 'Search failed: $error';
+    return 'فشل البحث: $error';
   }
 
   @override
@@ -1702,12 +1702,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String removeItemAndFiles(String name) {
-    return 'Remove \"$name\" and its files?';
+    return 'هل تريد إزالة \"$name\" وملفاته؟';
   }
 
   @override
   String tracksCount(int count) {
-    return '$count tracks';
+    return '$count المسارات';
   }
 
   @override
@@ -1718,12 +1718,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return 'Failed to load album: $error';
+    return 'فشل تحميل الألبوم: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return 'No downloaded tracks found for $name.';
+    return 'لم يتم العثور على مسارات تم تنزيلها لـ $name.';
   }
 
   @override
@@ -1740,12 +1740,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return 'Remove \"$name\"?';
+    return 'هل تريد إزالة \"$name\"؟';
   }
 
   @override
   String durationMinutes(int minutes) {
-    return '$minutes min';
+    return '$minutes دقيقة';
   }
 
   @override
@@ -1755,7 +1755,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String episodeNumber(int number) {
-    return 'Episode $number';
+    return 'الحلقة $number';
   }
 
   @override
@@ -1769,7 +1769,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String seasonNumber(int number) {
-    return 'Season $number';
+    return 'الموسم $number';
   }
 
   @override
@@ -1785,7 +1785,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return 'Delete all downloaded episodes in $season?';
+    return 'هل تريد حذف جميع الحلقات التي تم تنزيلها في $season؟';
   }
 
   @override
@@ -1829,7 +1829,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return 'Delete $count downloaded items?';
+    return 'هل تريد حذف $count العناصر التي تم تنزيلها؟';
   }
 
   @override
@@ -1843,7 +1843,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String ofStorageLimit(String limit) {
-    return 'of $limit limit';
+    return 'من $limit الحد';
   }
 
   @override
@@ -1927,7 +1927,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return '$count options';
+    return '$count الخيارات';
   }
 
   @override
@@ -2176,16 +2176,16 @@ class AppLocalizationsAr extends AppLocalizations {
       'تمكين صوت TrueHD (قد لا يعمل على جميع الأنظمة الأساسية)';
 
   @override
-  String get settingsAudioOutputMode => 'Audio Output Mode';
+  String get settingsAudioOutputMode => 'وضع إخراج الصوت';
 
   @override
-  String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
+  String get settingsAudioOutputModeAvrPassthrough => 'عبور AVR';
 
   @override
-  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
+  String get settingsAudioFallbackCodec => 'ترميز الصوت الاحتياطي';
 
   @override
-  String get settingsAudioFallbackAacStereo => 'AAC Stereo';
+  String get settingsAudioFallbackAacStereo => 'ستيريو AAC';
 
   @override
   String get settingsAudioFallbackAc35_1 => 'AC3 5.1';
@@ -2194,67 +2194,67 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsAudioFallbackEac35_1 => 'EAC3 5.1';
 
   @override
-  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
+  String get settingsAudioPassthroughAdvanced => 'العبور (متقدم)';
 
   @override
-  String get settingsAudioCodecPassthrough => 'Codec Passthrough';
+  String get settingsAudioCodecPassthrough => 'عبور الترميز';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'Enable only formats your AVR or HDMI sink supports.';
+      'قم بتمكين التنسيقات التي يدعمها حوض AVR أو HDMI فقط.';
 
   @override
-  String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
+  String get settingsAudioEac3Passthrough => 'عبور EAC3';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) Passthrough';
+  String get settingsAudioEac3JocPassthrough => 'عبور EAC3 JOC (أتموس).';
 
   @override
-  String get settingsAudioDtsCorePassthrough => 'DTS Core Passthrough';
+  String get settingsAudioDtsCorePassthrough => 'DTS الأساسية العبور';
 
   @override
-  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA Passthrough';
+  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA العبور';
 
   @override
-  String get settingsAudioTrueHdPassthrough => 'TrueHD Passthrough';
+  String get settingsAudioTrueHdPassthrough => 'عبور TrueHD';
 
   @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos Passthrough';
+  String get settingsAudioTrueHdAtmosPassthrough => 'عبور TrueHD Atmos';
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
+      'Bitstream Dolby Digital Plus (EAC3) إلى وحدة فك ترميز خارجية.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
+      'Bitstream Dolby Atmos عبر EAC3 (JOC) إلى وحدة فك ترميز خارجية.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
+      'Bitstream DTS-HD MA (يتضمن DTS core) إلى وحدة فك ترميز خارجية.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
+      'Bitstream Dolby TrueHD مع بيانات تعريف Atmos إلى وحدة فك ترميز خارجية.';
 
   @override
-  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
+  String get settingsDetectedAudioCapabilities => 'تم الكشف عن القدرات الصوتية';
 
   @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
-      'No runtime capability snapshot available yet.';
+      'لا تتوفر لقطة لقدرة وقت التشغيل حتى الآن.';
 
   @override
-  String get settingsAudioRouteLabel => 'Route';
+  String get settingsAudioRouteLabel => 'طريق';
 
   @override
-  String get settingsAudioDecodeLabel => 'Decode';
+  String get settingsAudioDecodeLabel => 'فك التشفير';
 
   @override
-  String get settingsAudioPassthroughLabel => 'Passthrough';
+  String get settingsAudioPassthroughLabel => 'العبور';
 
   @override
-  String get settingsAudioHdRoute => 'HD audio route';
+  String get settingsAudioHdRoute => 'مسار الصوت عالي الدقة';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2266,10 +2266,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsAudioRouteEarc => 'eARC';
 
   @override
-  String get settingsAudioRouteBluetooth => 'Bluetooth';
+  String get settingsAudioRouteBluetooth => 'بلوتوث';
 
   @override
-  String get settingsAudioRouteSpeaker => 'Speaker';
+  String get settingsAudioRouteSpeaker => 'المتحدث';
 
   @override
   String settingsAudioPcmChannels(int count) {
@@ -2277,39 +2277,39 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get settingsAudioDiagnostics => 'Diagnostics';
+  String get settingsAudioDiagnostics => 'التشخيص';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
+  String get settingsAudioDiagnosticsVideoLevel => 'مستوى الفيديو';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
+  String get settingsAudioDiagnosticsVideoRange => 'نطاق الفيديو';
 
   @override
-  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
+  String get settingsAudioDiagnosticsSubtitleCodec => 'برنامج ترميز الترجمة';
 
   @override
   String get settingsAudioDiagnosticsAllowedAudioCodecs =>
-      'Allowed Audio Codecs';
+      'برامج ترميز الصوت المسموح بها';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
-      'HLS MPEG-TS Audio Codecs';
+      'برنامج ترميز الصوت HLS MPEG-TS';
 
   @override
   String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
-      'HLS fMP4 Audio Codecs';
+      'برنامج ترميز الصوت HLS fMP4';
 
   @override
   String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
-      'audio-spdif passthrough';
+      'عبور الصوت spdif';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
+  String get settingsAudioDiagnosticsActiveAudioRoute => 'مسار الصوت النشط';
 
   @override
   String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'Route HD Audio Support';
+      'توجيه دعم الصوت عالي الدقة';
 
   @override
   String get nightMode => 'الوضع الليلي';
@@ -2332,7 +2332,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get unsafeMpvOptionsDescription =>
-      'السماح بمجموعة أوسع من خيارات mpv. قد يعطل سلوك التشغيل.';
+      'السماح بمجموعة أكبر من خيارات mpv. قد يعطل سلوك التشغيل.';
 
   @override
   String get hardwareDecoding => 'فك تشفير الأجهزة';
@@ -2373,7 +2373,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return 'After $episodes episodes / ${hours}h';
+    return 'بعد $episodes الحلقات / ${hours}h';
   }
 
   @override
@@ -2404,11 +2404,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get skipForwardLength => 'تخطي الطول للأمام';
 
   @override
-  String get customMpvConfPath => 'مسار mpv.conf المخصص';
+  String get customMpvConfPath => 'مسار mpv.conf مخصص';
 
   @override
   String get notSetMpvConf =>
-      'لم يتم ضبطه. سيحاول Moonfin استخدام ملف mpv.conf الافتراضي في مجلدات التطبيق/البيانات.';
+      'لم يتم ضبطه. Moonfin سيحاول mpv.conf الافتراضي في مجلدات التطبيق/البيانات.';
 
   @override
   String get selectMpvConf => 'حدد mpv.conf';
@@ -2504,17 +2504,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String loadedProfileSettings(String profile) {
-    return 'Loaded $profile profile settings.';
+    return 'تم تحميل $profile إعدادات الملف الشخصي.';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return 'Failed to load $profile profile settings.';
+    return 'فشل تحميل $profile إعدادات الملف الشخصي.';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return 'Synced local settings to $profile profile.';
+    return 'تمت مزامنة الإعدادات المحلية مع ملف تعريف $profile.';
   }
 
   @override
@@ -2578,7 +2578,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get downloadsVisibleToOtherApps =>
-      'التنزيلات/Moonfin — مرئية للتطبيقات الأخرى';
+      'التنزيلات/Moonfin - ​​مرئية للتطبيقات الأخرى';
 
   @override
   String get dangerZone => 'منطقة الخطر';
@@ -2609,7 +2609,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get saveToDownloadsFolderDescription =>
-      'سيتم حفظ الوسائط التي تم تنزيلها في Downloads/Moonfin على جهازك. ستكون هذه الملفات مرئية لتطبيقات أخرى مثل معرض الصور الخاص بك أو مشغل الموسيقى.\n\nستبقى التنزيلات الحالية في موقعها الحالي.';
+      'سيتم حفظ الوسائط التي تم تنزيلها في التنزيلات/Moonfin على جهازك. ستكون هذه الملفات مرئية لتطبيقات أخرى مثل معرض الصور الخاص بك أو مشغل الموسيقى.\n\nستبقى التنزيلات الحالية في موقعها الحالي.';
 
   @override
   String get enable => 'يُمكَِن';
@@ -2740,7 +2740,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '$count selected';
+    return '$count تم التحديد';
   }
 
   @override
@@ -2982,7 +2982,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String minutesShort(int minutes) {
-    return '$minutes min';
+    return '$minutes دقيقة';
   }
 
   @override
@@ -3097,7 +3097,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String pluginStatusVersion(String status, String version) {
-    return '$status\nVersion: $version';
+    return '$status\nالإصدار: $version';
   }
 
   @override
@@ -3173,7 +3173,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String loggedInAs(String username) {
-    return 'Logged in as: $username';
+    return 'تم تسجيل الدخول باسم: $username';
   }
 
   @override
@@ -3181,7 +3181,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get discoverRowsDescriptionPlugin =>
-      'اسحب لإعادة الترتيب. تمكين أو تعطيل الصفوف. يتزامن ترتيب الصفوف الممكّن مع المكون الإضافي Moonfin.';
+      'اسحب لإعادة الترتيب. تمكين أو تعطيل الصفوف. يتم مزامنة ترتيب الصفوف الممكّن مع المكون الإضافي Moonfin.';
 
   @override
   String get discoverRowsDescription =>
@@ -3198,7 +3198,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String versionValue(String version) {
-    return 'Version $version';
+    return 'الإصدار $version';
   }
 
   @override
@@ -3246,7 +3246,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String updateAvailableVersion(String version) {
-    return 'Update available: v$version';
+    return 'التحديث متاح: v$version';
   }
 
   @override
@@ -3257,7 +3257,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String updateAvailableTitle(String version) {
-    return 'v$version Available';
+    return 'v$version متاح';
   }
 
   @override
@@ -3322,7 +3322,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String itemsCount(int count) {
-    return '$count Items';
+    return '$count العناصر';
   }
 
   @override
@@ -3342,7 +3342,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String requestedByName(String name) {
-    return 'Requested by $name';
+    return 'تم الطلب بواسطة $name';
   }
 
   @override
@@ -3359,12 +3359,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String cancelRequestForTitle(String title) {
-    return 'Cancel request for \"$title\"?';
+    return 'إلغاء طلب \"$title\"؟';
   }
 
   @override
   String cancelCountRequestsForTitle(int count, String title) {
-    return 'Cancel $count requests for \"$title\"?';
+    return 'هل تريد إلغاء $count طلبات \"$title\"؟';
   }
 
   @override
@@ -3379,12 +3379,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String budgetAmount(String amount) {
-    return 'Budget: \$$amount';
+    return 'الميزانية: \$$amount';
   }
 
   @override
   String revenueAmount(String amount) {
-    return 'Revenue: \$$amount';
+    return 'الإيرادات: \$$amount';
   }
 
   @override
@@ -3394,7 +3394,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie(String type) {
-    return 'Request $type';
+    return 'طلب $type';
   }
 
   @override
@@ -3429,7 +3429,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String ageValue(int age) {
-    return 'age $age';
+    return 'العمر $age';
   }
 
   @override
@@ -3720,22 +3720,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminPluginUpdatesAvailable(int count) {
-    return 'Plugin updates available: $count';
+    return 'تحديثات البرنامج المساعد المتاحة: $count';
   }
 
   @override
   String adminPluginsRequiringRestart(int count) {
-    return 'Plugins requiring restart: $count';
+    return 'المكونات الإضافية التي تتطلب إعادة التشغيل: $count';
   }
 
   @override
   String adminFailedScheduledTasks(int count) {
-    return 'Failed scheduled tasks: $count';
+    return 'فشل المهام المجدولة: $count';
   }
 
   @override
   String adminRecentAlertEntries(int count) {
-    return 'Recent warning/error entries: $count';
+    return 'إدخالات التحذير/الخطأ الأخيرة: $count';
   }
 
   @override
@@ -3794,7 +3794,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String errorGeneric(String error) {
-    return 'Error: $error';
+    return 'خطأ: $error';
   }
 
   @override
@@ -3802,7 +3802,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adminServerRebootMessage =>
-      'جاري إعادة تشغيل الخادم، يرجى إعادة تشغيل Moonfin';
+      'جاري إعادة تشغيل الخادم، يرجى إعادة التشغيل Moonfin';
 
   @override
   String get adminActiveSessions => 'الجلسات النشطة';
@@ -3821,7 +3821,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'فشل الأمر: $error';
   }
 
   @override
@@ -3886,7 +3886,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminActivityLoadFailed(String error) {
-    return 'Failed to load activity log: $error';
+    return 'فشل تحميل سجل النشاط: $error';
   }
 
   @override
@@ -3903,7 +3903,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminDeviceUpdateFailed(String error) {
-    return 'Failed to update device: $error';
+    return 'فشل تحديث الجهاز: $error';
   }
 
   @override
@@ -3914,7 +3914,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminDeviceDeleteFailed(String error) {
-    return 'Failed to delete device: $error';
+    return 'فشل حذف الجهاز: $error';
   }
 
   @override
@@ -3943,7 +3943,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminScanFailed(String error) {
-    return 'Failed to start scan: $error';
+    return 'فشل بدء الفحص: $error';
   }
 
   @override
@@ -3954,12 +3954,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminLibraryRenamed(String name) {
-    return 'Library renamed to \"$name\"';
+    return 'تمت إعادة تسمية المكتبة إلى \"$name\"';
   }
 
   @override
   String adminRenameFailed(String error) {
-    return 'Failed to rename: $error';
+    return 'فشلت إعادة التسمية: $error';
   }
 
   @override
@@ -3967,17 +3967,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminLibraryDeleted(String name) {
-    return 'Library \"$name\" deleted';
+    return 'تم حذف المكتبة \"$name\".';
   }
 
   @override
   String adminLibraryDeleteFailed(String error) {
-    return 'Failed to delete library: $error';
+    return 'فشل حذف المكتبة: $error';
   }
 
   @override
   String adminAddPathFailed(String error) {
-    return 'Failed to add path: $error';
+    return 'فشلت إضافة المسار: $error';
   }
 
   @override
@@ -3985,12 +3985,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminRemovePathConfirm(String path) {
-    return 'Remove \"$path\" from this library?';
+    return 'هل تريد إزالة \"$path\" من هذه المكتبة؟';
   }
 
   @override
   String adminRemovePathFailed(String error) {
-    return 'Failed to remove path: $error';
+    return 'فشلت إزالة المسار: $error';
   }
 
   @override
@@ -3998,7 +3998,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminLibraryOptionsSaveFailed(String error) {
-    return 'Failed to save options: $error';
+    return 'فشل حفظ الخيارات: $error';
   }
 
   @override
@@ -4034,7 +4034,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminLibraryCreateFailed(String error) {
-    return 'Failed to create library: $error';
+    return 'فشل إنشاء المكتبة: $error';
   }
 
   @override
@@ -4061,27 +4061,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminDisableUserConfirm(String name) {
-    return 'Disable $name? They will not be able to sign in.';
+    return 'هل تريد تعطيل $name؟ لن يتمكنوا من تسجيل الدخول.';
   }
 
   @override
   String adminEnableUserConfirm(String name) {
-    return 'Enable $name? They will be able to sign in again.';
+    return 'تمكين $name؟ سيكونون قادرين على تسجيل الدخول مرة أخرى.';
   }
 
   @override
   String adminUserDisabled(String name) {
-    return 'User \"$name\" disabled';
+    return 'تم تعطيل المستخدم \"$name\".';
   }
 
   @override
   String adminUserEnabled(String name) {
-    return 'User \"$name\" enabled';
+    return 'تم تمكين المستخدم \"$name\".';
   }
 
   @override
   String adminUserPolicyUpdateFailed(String error) {
-    return 'Failed to update user policy: $error';
+    return 'فشل تحديث سياسة المستخدم: $error';
   }
 
   @override
@@ -4098,7 +4098,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminUserCreateFailed(String error) {
-    return 'Failed to create user: $error';
+    return 'فشل إنشاء المستخدم: $error';
   }
 
   @override
@@ -4118,7 +4118,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminSaveFailed(String error) {
-    return 'Failed to save: $error';
+    return 'فشل الحفظ: $error';
   }
 
   @override
@@ -4129,7 +4129,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminFailed(String error) {
-    return 'Failed: $error';
+    return 'فشل: $error';
   }
 
   @override
@@ -4270,22 +4270,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminServerReturnedHttp(int status) {
-    return 'Server returned HTTP $status';
+    return 'قام الخادم بإرجاع HTTP $status';
   }
 
   @override
   String adminDeleteUserConfirm(String name) {
-    return 'Are you sure you want to delete $name?';
+    return 'هل أنت متأكد أنك تريد حذف $name؟';
   }
 
   @override
   String adminUserDeleted(String name) {
-    return 'User \"$name\" deleted';
+    return 'تم حذف المستخدم \"$name\".';
   }
 
   @override
   String adminUserDeleteFailed(String error) {
-    return 'Failed to delete user: $error';
+    return 'فشل حذف المستخدم: $error';
   }
 
   @override
@@ -4306,7 +4306,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminApiKeyCreateFailed(String error) {
-    return 'Failed to create key: $error';
+    return 'فشل في إنشاء المفتاح: $error';
   }
 
   @override
@@ -4317,7 +4317,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminRevokeKeyConfirm(String name) {
-    return 'Revoke key for $name?';
+    return 'إبطال مفتاح $name؟';
   }
 
   @override
@@ -4325,7 +4325,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminApiKeyRevokeFailed(String error) {
-    return 'Failed to revoke key: $error';
+    return 'فشل في إبطال المفتاح: $error';
   }
 
   @override
@@ -4345,7 +4345,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminApiKeyTokenCreated(String token, String created) {
-    return 'Token: $token\\nCreated: $created';
+    return 'الرمز المميز: $token\\nتم الإنشاء: $created';
   }
 
   @override
@@ -4356,7 +4356,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminBackupCreateFailed(String error) {
-    return 'Failed to create backup: $error';
+    return 'فشل في إنشاء نسخة احتياطية: $error';
   }
 
   @override
@@ -4365,12 +4365,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminBackupManifest(String name) {
-    return 'Manifest: $name';
+    return 'البيان: $name';
   }
 
   @override
   String adminManifestLoadFailed(String error) {
-    return 'Failed to load manifest: $error';
+    return 'فشل تحميل البيان: $error';
   }
 
   @override
@@ -4381,7 +4381,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminRestoreFailed(String error) {
-    return 'Failed to restore backup: $error';
+    return 'فشلت استعادة النسخة الاحتياطية: $error';
   }
 
   @override
@@ -4413,17 +4413,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminSavedTo(String path) {
-    return 'Saved to $path';
+    return 'تم الحفظ في $path';
   }
 
   @override
   String adminFileSaveFailed(String error) {
-    return 'Failed to save file: $error';
+    return 'فشل حفظ الملف: $error';
   }
 
   @override
   String adminLogFileLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'فشل التحميل $fileName';
   }
 
   @override
@@ -4434,7 +4434,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminTasksLoadFailed(String error) {
-    return 'Failed to load tasks: $error';
+    return 'فشل تحميل المهام: $error';
   }
 
   @override
@@ -4446,17 +4446,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminTaskStartFailed(String error) {
-    return 'Failed to start task: $error';
+    return 'فشل بدء المهمة: $error';
   }
 
   @override
   String adminTaskStopFailed(String error) {
-    return 'Failed to stop task: $error';
+    return 'فشل في إيقاف المهمة: $error';
   }
 
   @override
   String adminTaskLoadFailed(String error) {
-    return 'Failed to load task: $error';
+    return 'فشل تحميل المهمة: $error';
   }
 
   @override
@@ -4464,12 +4464,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminTriggerRemoveFailed(String error) {
-    return 'Failed to remove trigger: $error';
+    return 'فشلت إزالة المشغل: $error';
   }
 
   @override
   String adminTriggerAddFailed(String error) {
-    return 'Failed to add trigger: $error';
+    return 'فشلت إضافة المشغل: $error';
   }
 
   @override
@@ -4495,7 +4495,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminHours(String hours) {
-    return '$hours hour(s)';
+    return '$hours ساعة (ساعات)';
   }
 
   @override
@@ -4506,7 +4506,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminPluginToggleFailed(String error) {
-    return 'Failed to toggle plugin: $error';
+    return 'فشل تبديل المكون الإضافي: $error';
   }
 
   @override
@@ -4514,27 +4514,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminUninstallPluginConfirm(String name) {
-    return 'Are you sure you want to uninstall \"$name\"?';
+    return 'هل أنت متأكد أنك تريد إلغاء تثبيت \"$name\"؟';
   }
 
   @override
   String adminPluginUninstallFailed(String error) {
-    return 'Failed to uninstall plugin: $error';
+    return 'فشل إلغاء تثبيت البرنامج المساعد: $error';
   }
 
   @override
   String adminPackageInstallFailed(String error) {
-    return 'Failed to install package: $error';
+    return 'فشل تثبيت الحزمة: $error';
   }
 
   @override
   String adminPluginUpdateFailed(String error) {
-    return 'Failed to install update: $error';
+    return 'فشل تثبيت التحديث: $error';
   }
 
   @override
   String adminPluginsLoadFailed(String error) {
-    return 'Failed to load plugins: $error';
+    return 'فشل تحميل المكونات الإضافية: $error';
   }
 
   @override
@@ -4545,12 +4545,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminInstallUpdate(String version) {
-    return 'Install update (v$version)';
+    return 'تثبيت التحديث (v$version)';
   }
 
   @override
   String adminCatalogLoadFailed(String error) {
-    return 'Failed to load catalog: $error';
+    return 'فشل تحميل الكتالوج: $error';
   }
 
   @override
@@ -4571,17 +4571,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminPluginRemoveAfterRestart(String name) {
-    return '\"$name\" will be removed after server restart';
+    return 'ستتم إزالة \"$name\" بعد إعادة تشغيل الخادم';
   }
 
   @override
   String adminUninstallFailed(String error) {
-    return 'Failed to uninstall: $error';
+    return 'فشل إلغاء التثبيت: $error';
   }
 
   @override
   String adminPluginUpdating(String name, String version) {
-    return 'Updating \"$name\" to v$version...';
+    return 'جارٍ تحديث \"$name\" إلى v$version...';
   }
 
   @override
@@ -4590,7 +4590,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminPluginLoadFailed(String error) {
-    return 'Failed to load plugin: $error';
+    return 'فشل تحميل البرنامج المساعد: $error';
   }
 
   @override
@@ -4598,7 +4598,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminPluginVersion(String version) {
-    return 'Version $version';
+    return 'الإصدار $version';
   }
 
   @override
@@ -4618,17 +4618,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminRemoveRepositoryConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'هل أنت متأكد من أنك تريد إزالة \"$name\"؟';
   }
 
   @override
   String adminRepositoriesSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'فشل في حفظ المستودعات: $error';
   }
 
   @override
   String adminRepositoriesLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'فشل تحميل المستودعات: $error';
   }
 
   @override
@@ -4645,12 +4645,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminPluginSettingsLoadFailed(String error) {
-    return 'Unable to load plugin settings: $error';
+    return 'غير قادر على تحميل إعدادات البرنامج المساعد: $error';
   }
 
   @override
   String adminCouldNotOpenUrl(String uri) {
-    return 'Could not open $uri';
+    return 'لا يمكن فتح $uri';
   }
 
   @override
@@ -4922,12 +4922,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminMetadataLoadFailed(String error) {
-    return 'Failed to load metadata: $error';
+    return 'فشل تحميل البيانات التعريفية: $error';
   }
 
   @override
   String adminMetadataSaveFailed(String error) {
-    return 'Failed to save metadata: $error';
+    return 'فشل حفظ البيانات التعريفية: $error';
   }
 
   @override
@@ -4947,7 +4947,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminMetadataRefreshFailed(String error) {
-    return 'Failed to refresh metadata: $error';
+    return 'فشل تحديث البيانات التعريفية: $error';
   }
 
   @override
@@ -4964,7 +4964,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminRemoteSearchFailed(String error) {
-    return 'Remote search failed: $error';
+    return 'فشل البحث عن بعد: $error';
   }
 
   @override
@@ -4978,7 +4978,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminContentTypeUpdateFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'فشل تحديث نوع المحتوى: $error';
   }
 
   @override
@@ -4992,12 +4992,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return '$imageType تم تحديث الصورة';
   }
 
   @override
   String adminImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'فشل تنزيل الصورة: $error';
   }
 
   @override
@@ -5008,27 +5008,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return '$imageType تم تحميل الصورة';
   }
 
   @override
   String adminImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'فشل تحميل الصورة: $error';
   }
 
   @override
   String adminDeleteImage(String imageType) {
-    return 'Delete $imageType image';
+    return 'احذف الصورة $imageType';
   }
 
   @override
   String adminImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return '$imageType تم حذف الصورة';
   }
 
   @override
   String adminImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'فشل حذف الصورة: $error';
   }
 
   @override
@@ -5039,7 +5039,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminTunerDiscoveryFailed(String error) {
-    return 'Tuner discovery failed: $error';
+    return 'فشل اكتشاف الموالف: $error';
   }
 
   @override
@@ -5062,7 +5062,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminTunerAddFailed(String error) {
-    return 'Failed to add tuner: $error';
+    return 'فشلت إضافة الموالف: $error';
   }
 
   @override
@@ -5085,12 +5085,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminProviderAddFailed(String error) {
-    return 'Failed to add provider: $error';
+    return 'فشلت إضافة الموفر: $error';
   }
 
   @override
   String adminTunerRemoveFailed(String error) {
-    return 'Failed to remove tuner: $error';
+    return 'فشلت إزالة الموالف: $error';
   }
 
   @override
@@ -5098,12 +5098,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminTunerResetFailed(String error) {
-    return 'Failed to reset tuner: $error';
+    return 'فشلت إعادة ضبط الموالف: $error';
   }
 
   @override
   String adminProviderRemoveFailed(String error) {
-    return 'Failed to remove provider: $error';
+    return 'فشلت إزالة الموفر: $error';
   }
 
   @override
@@ -5126,7 +5126,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminSettingsSaveFailed(String error) {
-    return 'Failed to save settings: $error';
+    return 'فشل حفظ الإعدادات: $error';
   }
 
   @override
@@ -5143,7 +5143,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'فشل تحديث التعيينات: $error';
   }
 
   @override
@@ -5166,22 +5166,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminRecordingPathDisplay(String path) {
-    return 'Recording path: $path';
+    return 'مسار التسجيل: $path';
   }
 
   @override
   String adminSeriesPathDisplay(String path) {
-    return 'Series path: $path';
+    return 'مسار السلسلة: $path';
   }
 
   @override
   String adminPrePaddingDisplay(int minutes) {
-    return 'Pre-padding: $minutes min';
+    return 'الحشو المسبق: $minutes دقيقة';
   }
 
   @override
   String adminPostPaddingDisplay(int minutes) {
-    return 'Post-padding: $minutes min';
+    return 'ما بعد الحشو: $minutes دقيقة';
   }
 
   @override
@@ -5213,7 +5213,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminRestoreConfirmMessage(String name) {
-    return 'Restore backup $name now?';
+    return 'هل تريد استعادة النسخة الاحتياطية $name الآن؟';
   }
 
   @override
@@ -5259,27 +5259,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminLogsMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '$minutesم مضت';
   }
 
   @override
   String adminLogsHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '$hours منذ ساعة';
   }
 
   @override
   String adminLogsDaysAgo(int days) {
-    return '${days}d ago';
+    return '${days}d مضت';
   }
 
   @override
   String adminLogViewerLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'فشل التحميل $fileName';
   }
 
   @override
   String adminLogViewerMatches(int count) {
-    return '$count matches';
+    return '$count يطابق';
   }
 
   @override
@@ -5389,22 +5389,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminMetadataImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return '$imageType تم تحديث الصورة';
   }
 
   @override
   String adminMetadataImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return '$imageType تم تحميل الصورة';
   }
 
   @override
   String adminMetadataImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return '$imageType تم حذف الصورة';
   }
 
   @override
   String adminMetadataImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'فشل تنزيل الصورة: $error';
   }
 
   @override
@@ -5412,12 +5412,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminMetadataImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'فشل تحميل الصورة: $error';
   }
 
   @override
   String adminMetadataDeleteImageTitle(String imageType) {
-    return 'Delete $imageType image';
+    return 'احذف الصورة $imageType';
   }
 
   @override
@@ -5426,12 +5426,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminMetadataImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'فشل حذف الصورة: $error';
   }
 
   @override
   String adminMetadataChooseImage(String imageType) {
-    return 'Choose $imageType image';
+    return 'اختر صورة $imageType';
   }
 
   @override
@@ -5463,7 +5463,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminPluginsUpdateAvailable(String version) {
-    return 'Update available: v$version';
+    return 'التحديث متاح: v$version';
   }
 
   @override
@@ -5487,7 +5487,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminPluginsInstallUpdateVersioned(String version) {
-    return 'Install update (v$version)';
+    return 'تثبيت التحديث (v$version)';
   }
 
   @override
@@ -5498,7 +5498,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminPluginsInstalling(String name) {
-    return '\"$name\" is being installed...';
+    return 'يتم الآن تثبيت \"$name\"...';
   }
 
   @override
@@ -5518,7 +5518,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminPluginDetailSettingsTitle(String name) {
-    return '$name Settings';
+    return '$name الإعدادات';
   }
 
   @override
@@ -5558,7 +5558,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminReposLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'فشل تحميل المستودعات: $error';
   }
 
   @override
@@ -5566,7 +5566,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminReposRemoveConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'هل أنت متأكد من أنك تريد إزالة \"$name\"؟';
   }
 
   @override
@@ -5574,7 +5574,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminReposSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'فشل في حفظ المستودعات: $error';
   }
 
   @override
@@ -5850,17 +5850,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return 'Daily at $time';
+    return 'يوميًا في $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return 'Every $day at $time';
+    return 'كل $day في $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return 'Every $duration';
+    return 'كل $duration';
   }
 
   @override
@@ -5927,17 +5927,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminActivityDaysAgo(int days) {
-    return '${days}d ago';
+    return '${days}d مضت';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '$hours منذ ساعة';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '$minutesم مضت';
   }
 
   @override
@@ -6053,7 +6053,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'فشل تحديث نوع المحتوى: $error';
   }
 
   @override
@@ -6077,12 +6077,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'فشل تحديث التعيينات: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return 'Time limit: $duration';
+    return 'الحد الزمني: $duration';
   }
 
   @override
@@ -6106,7 +6106,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get syncPlayServerUnsupportedMessage =>
-      'يتطلب SyncPlay خادم Jellyfin. الخادم الحالي لا يدعمه.';
+      'SyncPlay يتطلب خادم Jellyfin. الخادم الحالي لا يدعمه.';
 
   @override
   String get syncPlayGroupFallbackName => 'SyncPlay المجموعة';
@@ -6163,7 +6163,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String syncPlayQueueItemFallback(int index) {
-    return 'Item $index';
+    return 'العنصر $index';
   }
 
   @override
@@ -6176,7 +6176,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get syncPlayGroupName => 'اسم المجموعة';
 
   @override
-  String get syncPlayDefaultGroupName => 'مجموعة SyncPlay الخاصة بي';
+  String get syncPlayDefaultGroupName => 'مجموعتي SyncPlay مجموعتي';
 
   @override
   String get syncPlayCreateGroup => 'إنشاء مجموعة';
@@ -6188,7 +6188,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get syncPlayNoGroupsAvailable => 'لا توجد مجموعات متاحة';
 
   @override
-  String get syncPlayJoinGroupQuestion => 'الانضمام إلى مجموعة SyncPlay؟';
+  String get syncPlayJoinGroupQuestion => 'انضم إلى مجموعة SyncPlay؟';
 
   @override
   String get syncPlayJoinGroupWarning =>
@@ -6211,24 +6211,24 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName joined SyncPlay group';
+    return 'انضم $userName إلى مجموعة SyncPlay';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName left SyncPlay group';
+    return '$userName غادر المجموعة SyncPlay';
   }
 
   @override
-  String get syncPlayAccessDeniedTitle => 'تم رفض الوصول إلى SyncPlay';
+  String get syncPlayAccessDeniedTitle => 'SyncPlay تم رفض الوصول';
 
   @override
   String get syncPlayAccessDeniedMessage =>
-      'ليس لديك حق الوصول إلى عنصر واحد أو أكثر في مجموعة SyncPlay هذه. اطلب من مالك المجموعة التحقق من أذونات المكتبة أو اختيار قائمة انتظار مختلفة.';
+      'ليس لديك حق الوصول إلى عنصر واحد أو أكثر في هذه المجموعة SyncPlay. اطلب من مالك المجموعة التحقق من أذونات المكتبة أو اختيار قائمة انتظار مختلفة.';
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return 'Syncing playback to $groupName';
+    return 'جارٍ مزامنة التشغيل مع $groupName';
   }
 
   @override
@@ -6236,11 +6236,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dolbyVisionDirectPlayFailedTitle =>
-      'فشل تشغيل Dolby Vision Direct';
+      'Dolby Vision فشل اللعب المباشر';
 
   @override
   String get dolbyVisionDirectPlayFailedMessage =>
-      'فشل التشغيل المباشر في بدء بث Dolby Vision هذا. هل تريد إعادة محاولة استخدام تحويل ترميز الخادم؟';
+      'فشل التشغيل المباشر في بدء البث Dolby Vision هذا. هل تريد إعادة محاولة استخدام تحويل ترميز الخادم؟';
 
   @override
   String get retryWithTranscode => 'أعد المحاولة باستخدام رمز التحويل';
@@ -6250,13 +6250,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dolbyVisionNotSupportedMessage =>
-      'لا يمكن لهذا الجهاز فك تشفير محتوى Dolby Vision مباشرة. استخدم خيار HDR10 الاحتياطي أو اطلب تحويل ترميز الخادم.';
+      'لا يمكن لهذا الجهاز فك تشفير محتوى Dolby Vision مباشرة. استخدم HDR10 احتياطيًا أو اطلب تحويل ترميز الخادم.';
 
   @override
   String get rememberMyChoice => 'تذكر خياري';
 
   @override
-  String get playHdr10Fallback => 'تشغيل خيار HDR10 الاحتياطي';
+  String get playHdr10Fallback => 'تشغيل HDR10 احتياطي';
 
   @override
   String get requestTranscode => 'طلب تحويل الرمز';
@@ -6267,15 +6267,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get homeScreenSectionsIntegrationNoServers =>
-      'لا توجد خوادم Jellyfin تبلغ عن البرنامج المساعد حتى الآن.';
+      'لا توجد خوادم Jellyfin تقوم بالإبلاغ عن المكون الإضافي حتى الآن.';
 
   @override
   String get kefinTweaksIntegrationDescription =>
-      'اكتشاف الصفوف التي تم تكوينها عبر البرنامج المساعد \"KefinTweaks\" الخاص بـ ranaldsgift. يتم عكس الأقسام المخصصة، التي تم إصدارها مؤخرًا، ومشاهدتها مرة أخرى، والموسمية، والتي تمت إضافتها مؤخرًا في المكتبة من تكوين KefinTweaks على كل خادم Jellyfin.';
+      'اكتشاف الصفوف التي تم تكوينها عبر البرنامج المساعد \"KefinTweaks\" الخاص بـ ranaldsgift. يتم عكس الأقسام المخصصة، التي تم إصدارها مؤخرًا، والمشاهدة مرة أخرى، والموسمية، والتي تمت إضافتها مؤخرًا في المكتبة من تكوين KefinTweaks على كل خادم Jellyfin.';
 
   @override
   String get kefinTweaksIntegrationNoServers =>
-      'لا توجد خوادم Jellyfin تُبلغ عن KefinTweaks حتى الآن.';
+      'لا توجد خوادم Jellyfin تقوم بالإبلاغ عن KefinTweaks حتى الآن.';
 
   @override
   String get integrationOpenHomeSections => 'فتح الأقسام الرئيسية';
@@ -6364,12 +6364,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return 'Cast control failed: $error';
+    return 'فشل التحكم في الإرسال: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return '$kind Controls';
+    return '$kind عناصر التحكم';
   }
 
   @override
@@ -6380,7 +6380,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return 'Stop $kind';
+    return 'توقف $kind';
   }
 
   @override
@@ -6404,12 +6404,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String pinEnterNDigit(int length) {
-    return 'Enter a $length-digit PIN';
+    return 'أدخل $length رقم التعريف الشخصي المكون من أرقام';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return 'Enter your $length-digit PIN';
+    return 'أدخل $length رقم التعريف الشخصي الخاص بك';
   }
 
   @override
@@ -6454,7 +6454,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect failed: $message';
+    return 'فشل الاتصال السريع: $message';
   }
 
   @override
@@ -6465,7 +6465,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String remoteCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'فشل الأمر: $error';
   }
 
   @override
@@ -6494,7 +6494,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String castingFailed(String error) {
-    return 'Failed to start casting: $error';
+    return 'فشل بدء الإرسال: $error';
   }
 
   @override
@@ -6502,7 +6502,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noRemoteDevicesIos =>
-      'لا توجد أجهزة تشغيل عن بعد متاحة.\n\nعلى نظام التشغيل iOS، قد لا تكون أهداف AirPlay متاحة في جهاز المحاكاة.';
+      'لا توجد أجهزة تشغيل عن بعد متاحة.\n\nعلى نظام التشغيل iOS، قد لا تكون الأهداف AirPlay متاحة في جهاز المحاكاة.';
 
   @override
   String get trackActionPlayNext => 'العب التالي';
@@ -6539,7 +6539,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String trackActionDownloading(String name) {
-    return 'Downloading $name...';
+    return 'جارٍ التنزيل $name...';
   }
 
   @override
@@ -6625,7 +6625,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String skipSegment(String segment) {
-    return 'Skip $segment';
+    return 'تخطي $segment';
   }
 
   @override
@@ -6636,12 +6636,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return 'Downloading $current/$total — $fileName';
+    return 'جارٍ التنزيل $current/$total — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return 'Downloading $fileName';
+    return 'جارٍ التنزيل $fileName';
   }
 
   @override
@@ -6726,11 +6726,11 @@ class AppLocalizationsAr extends AppLocalizations {
       'شريط الوسائط والتراكبات المرئية';
 
   @override
-  String get settingsPlaybackSyncplay => 'التشغيل و SyncPlay';
+  String get settingsPlaybackSyncplay => 'التشغيل وSyncPlay';
 
   @override
   String get settingsPlaybackSyncplaySubtitle =>
-      'إعدادات الصوت/الفيديو، والترجمات، والتنزيلات، وعناصر التحكم في SyncPlay';
+      'إعدادات الصوت/الفيديو والترجمات والتنزيلات وعناصر التحكم SyncPlay';
 
   @override
   String get settingsIntegrationsSubtitle =>
@@ -6818,7 +6818,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsPluginScreenDescription =>
-      'تعمل Moonbase على تشغيل عمليات التكامل من جانب الخادم بما في ذلك مصادر التصنيف الإضافية وطلبات Seerr والتفضيلات المتزامنة.';
+      'Moonbase يدعم عمليات التكامل على جانب الخادم بما في ذلك مصادر التصنيف الإضافية وطلبات Seerr والتفضيلات المتزامنة.';
 
   @override
   String get settingsOfflineDownloads => 'التنزيلات دون اتصال';
@@ -6853,7 +6853,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'افتح أداة تعقب المشكلات على GitHub';
 
   @override
-  String get settingsJoinDiscord => 'انضم Discord';
+  String get settingsJoinDiscord => 'انضم إلى Discord';
 
   @override
   String get settingsJoinDiscordSubtitle => 'الدردشة مع المجتمع';
@@ -6865,8 +6865,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsSupportMoonfin => 'الدعم Moonfin';
 
   @override
-  String get settingsSupportMoonfinSubtitle =>
-      'قم بتمييز المشروع بنجمة على GitHub أو ساهم';
+  String get settingsSupportMoonfinSubtitle => 'تبرع بالقهوة للمطور';
 
   @override
   String get settingsLegal => 'قانوني';
@@ -6882,14 +6881,14 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsPrivacyPolicy => 'سياسة الخصوصية';
 
   @override
-  String get settingsPrivacyPolicySubtitle => 'كيف تتعامل Moonfin مع بياناتك';
+  String get settingsPrivacyPolicySubtitle => 'كيف يتعامل Moonfin مع بياناتك';
 
   @override
   String get settingsCheckForUpdates => 'التحقق من وجود تحديثات';
 
   @override
   String get settingsCheckForUpdatesSubtitle =>
-      'تحقق من وجود أحدث إصدار من Moonfin';
+      'تحقق من وجود أحدث إصدار Moonfin';
 
   @override
   String get settingsPoweredByFlutter => 'مدعوم من رفرفة';
@@ -6977,26 +6976,26 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsPlaybackEngineMedia3Recommended => 'Media3 (مستحسن)';
 
   @override
-  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (قديم)';
 
   @override
-  String get settingsPlaybackEngineMpvLegacy => 'mpv (تراث)';
+  String get settingsPlaybackEngineMpvLegacy => 'mpv (قديم)';
 
   @override
-  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (مستحسن)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Vision احتياطي';
 
   @override
   String get settingsDolbyVisionFallbackDescription =>
-      'سلوك عناوين Dolby Vision على الأجهزة التي لا تحتوي على فك تشفير Dolby Vision.';
+      'سلوك العناوين Dolby Vision على الأجهزة التي لا تحتوي على فك تشفير Dolby Vision.';
 
   @override
   String get settingsAskEachTime => 'اسأل في كل مرة';
 
   @override
-  String get settingsPreferHdr10Fallback => 'تفضل خيار HDR10 الاحتياطي';
+  String get settingsPreferHdr10Fallback => 'تفضل HDR10 الاحتياطي';
 
   @override
   String get settingsPreferServerTranscode => 'تفضل تحويل الخادم';
@@ -7007,7 +7006,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsDolbyVisionProfile7DirectPlayDescription =>
-      'يتحكم في ما إذا كان يجب تشغيل تدفقات طبقة التحسين الخاصة بملف تعريف Dolby Vision 7 بشكل مباشر.';
+      'يتحكم في ما إذا كان Dolby Vision يجب أن يقوم تدفقات طبقة التحسين الخاصة بالملف الشخصي 7 بالتشغيل المباشر.';
 
   @override
   String get settingsAutoAftkrtEnabled => 'تلقائي (تمكين AFTKRT)';
@@ -7090,7 +7089,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsOpenGroupsSubtitle =>
-      'إنشاء مجموعات SyncPlay أو الانضمام إليها أو إدارتها';
+      'قم بإنشاء مجموعات SyncPlay أو الانضمام إليها أو إدارتها';
 
   @override
   String get settingsSyncplayEnabled => 'SyncPlay ممكّن';
@@ -7103,7 +7102,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsSyncplayButtonSubtitle =>
-      'إظهار زر SyncPlay على شريط التنقل';
+      'أظهر الزر SyncPlay على شريط التنقل';
 
   @override
   String get settingsSyncplayAdvancedCorrection => 'التصحيح المتقدم';
@@ -7163,539 +7162,540 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String latestLibraryName(String libraryName) {
-    return 'Latest $libraryName';
+    return 'الأحدث $libraryName';
   }
 
   @override
-  String get autoplayNextEpisode => 'Autoplay Next Episode';
+  String get autoplayNextEpisode => 'التشغيل التلقائي للحلقة القادمة';
 
   @override
   String get autoplayNextEpisodeSubtitle =>
-      'Automatically play the next episode when available.';
+      'تشغيل الحلقة التالية تلقائيًا عندما تكون متاحة.';
 
   @override
-  String get skipSilenceTitle => 'Skip silence';
+  String get skipSilenceTitle => 'تخطي الصمت';
 
   @override
   String get skipSilenceSubtitle =>
-      'Automatically skip silent audio segments when supported by the stream.';
+      'تخطي مقاطع الصوت الصامتة تلقائيًا عندما يدعمها الدفق.';
 
   @override
-  String get allowExternalAudioEffectsTitle => 'Allow external audio effects';
+  String get allowExternalAudioEffectsTitle =>
+      'السماح بالمؤثرات الصوتية الخارجية';
 
   @override
   String get allowExternalAudioEffectsSubtitle =>
-      'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.';
+      'السماح لتطبيقات المعادل والتأثيرات (مثل Wavelet) بالإرفاق بجلسات التشغيل Media3.';
 
   @override
-  String get disableTunnelingTitle => 'Disable tunneling';
+  String get disableTunnelingTitle => 'تعطيل الأنفاق';
 
   @override
   String get disableTunnelingSubtitle =>
-      'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
+      'فرض التشغيل غير النفقي. مفيد على الأجهزة التي بها انقطاعات في الصوت/الفيديو.';
 
   @override
-  String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
+  String get mapDolbyVisionP7Title =>
+      'قم بتعيين Dolby Vision الملف الشخصي 7 إلى HEVC';
 
   @override
   String get mapDolbyVisionP7Subtitle =>
-      'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.';
+      'تشغيل Dolby Vision الملف الشخصي 7 تيارات كـ HDR10- متوافق مع HEVC على الأجهزة التي لا تحتوي على DV.';
 
   @override
-  String get subtitlesUseEmbeddedStyles => 'Use embedded subtitle styles';
+  String get subtitlesUseEmbeddedStyles => 'استخدم أنماط الترجمة المضمنة';
 
   @override
   String get subtitlesUseEmbeddedStylesSubtitle =>
-      'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.';
+      'قم بتطبيق الألوان والخطوط والموضع المضمن في مسار الترجمة. قم بتعطيل استخدام تفضيلات نمط التسميات التوضيحية الخاصة بك بدلاً من ذلك.';
 
   @override
   String get subtitlesUseEmbeddedFontSizes =>
-      'Use embedded subtitle font sizes';
+      'استخدم أحجام خطوط الترجمة المضمنة';
 
   @override
   String get subtitlesUseEmbeddedFontSizesSubtitle =>
-      'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
+      'قم بتطبيق تلميحات حجم الخط المضمنة في مسار الترجمة. قم بتعطيل استخدام حجم الترجمة من تفضيلات النمط الخاص بك.';
 
   @override
-  String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
+  String get useDetailedSubHeadings => 'استخدم العناوين الفرعية التفصيلية';
 
   @override
   String get useDetailedSubHeadingsDescription =>
-      'Show detailed or minimal subrow on Library pages.';
+      'إظهار الحواجب التفصيلية أو الحد الأدنى على صفحات المكتبة.';
 
   @override
-  String get savedThemesDeleteDialogTitle => 'Delete saved theme?';
+  String get savedThemesDeleteDialogTitle => 'هل تريد حذف المظهر المحفوظ؟';
 
   @override
   String savedThemesDeleteDialogMessage(String themeName) {
-    return 'Remove \"$themeName\" from this device cache?';
+    return 'هل تريد إزالة \"$themeName\" من ذاكرة التخزين المؤقت لهذا الجهاز؟';
   }
 
   @override
   String savedThemesDeletedMessage(String themeName) {
-    return 'Deleted \"$themeName\" from this device.';
+    return 'تم حذف \"$themeName\" من هذا الجهاز.';
   }
 
   @override
   String savedThemesDeleteFailedMessage(String themeName) {
-    return 'Could not delete \"$themeName\".';
+    return 'تعذر حذف \"$themeName\".';
   }
 
   @override
-  String get savedThemesTitle => 'Saved themes';
+  String get savedThemesTitle => 'المواضيع المحفوظة';
 
   @override
   String get savedThemesDescription =>
-      'These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.';
+      'هذه هي السمات التي تم تنزيلها من المكون الإضافي Moonfin للخادم الحالي. يؤدي الحذف إلى إزالة هذه النسخة المحلية فقط.';
 
   @override
-  String get savedThemesEmpty => 'No saved themes were found for this server.';
+  String get savedThemesEmpty => 'لم يتم العثور على سمات محفوظة لهذا الخادم.';
 
   @override
   String savedThemesCurrentThemeId(String themeId) {
-    return '$themeId • Currently active';
+    return '$themeId • نشط حاليًا';
   }
 
   @override
-  String get savedThemesDeleteTooltip => 'Delete saved theme';
+  String get savedThemesDeleteTooltip => 'حذف الموضوع المحفوظ';
 
   @override
   String get savedThemesManageSubtitle =>
-      'Manage downloaded plugin themes on this device';
+      'إدارة سمات المكونات الإضافية التي تم تنزيلها على هذا الجهاز';
 
   @override
   String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
+  String get homeScreenSectionsTitle => 'أقسام الشاشة الرئيسية';
 
   @override
-  String get themeEditor => 'Theme Editor';
+  String get themeEditor => 'محرر الموضوع';
 
   @override
-  String get themeEditorSubtitle =>
-      'Open the Moonfin Theme Editor in your browser';
+  String get themeEditorSubtitle => 'افتح Moonfin محرر السمات في متصفحك';
 
   @override
-  String get homeScreen => 'Home Screen';
+  String get homeScreen => 'الشاشة الرئيسية';
 
   @override
-  String get bottomBar => 'Bottom Bar';
+  String get bottomBar => 'شريط أسفل';
 
   @override
-  String get homeRowsStyleClassic => 'Classic';
+  String get homeRowsStyleClassic => 'كلاسيكي';
 
   @override
-  String get homeRowsStyleModern => 'Modern';
+  String get homeRowsStyleModern => 'حديث';
 
   @override
-  String get homeRowsSection => 'Home Rows';
+  String get homeRowsSection => 'صفوف المنزل';
 
   @override
-  String get rowsType => 'Rows Type';
+  String get rowsType => 'نوع الصفوف';
 
   @override
   String get rowsTypeDescription =>
-      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
+      'يحتفظ الإصدار الكلاسيكي بنوع الصورة وتراكب المعلومات لكل صف. يستخدم الحديث الصفوف العمودية للخلفية.';
 
   @override
-  String get displayFavoritesRows => 'Display Favorites Rows';
+  String get displayFavoritesRows => 'عرض صفوف المفضلة';
 
   @override
   String get displayFavoritesRowsSubtitle =>
-      'Show Favorite Movies, Series, and other favorite rows in Home Sections.';
+      'إظهار الأفلام والمسلسلات المفضلة والصفوف المفضلة الأخرى في الأقسام الرئيسية.';
 
   @override
-  String get favoritesRowSorting => 'Favorites Row Sorting';
+  String get favoritesRowSorting => 'فرز صف المفضلة';
 
   @override
   String get favoritesRowSortingDescription =>
-      'Sort Favorites rows by date added, release date, alphabetically, and more.';
+      'فرز صفوف المفضلة حسب تاريخ الإضافة، وتاريخ الإصدار، أبجديًا، والمزيد.';
 
   @override
-  String get displayCollectionsRows => 'Display Collections Rows';
+  String get displayCollectionsRows => 'عرض صفوف المجموعات';
 
   @override
   String get displayCollectionsRowsSubtitle =>
-      'Show Collections rows in Home Sections.';
+      'إظهار صفوف المجموعات في الأقسام الرئيسية.';
 
   @override
-  String get collectionsRowSorting => 'Collections Row Sorting';
+  String get collectionsRowSorting => 'فرز صف المجموعات';
 
   @override
   String get collectionsRowSortingDescription =>
-      'Sort Collections rows by date added, release date, alphabetically, and more.';
+      'فرز صفوف المجموعات حسب تاريخ الإضافة، وتاريخ الإصدار، أبجديًا، والمزيد.';
 
   @override
-  String get displayGenresRows => 'Display Genres Rows';
+  String get displayGenresRows => 'عرض صفوف الأنواع';
 
   @override
-  String get displayGenresRowsSubtitle => 'Show Genres rows in Home Sections.';
+  String get displayGenresRowsSubtitle =>
+      'إظهار صفوف الأنواع في الأقسام الرئيسية.';
 
   @override
-  String get genresRowSorting => 'Genres Row Sorting';
+  String get genresRowSorting => 'تصنيف الصف الأنواع';
 
   @override
   String get genresRowSortingDescription =>
-      'Sort Genres rows by date added, release date, alphabetically, and more.';
+      'فرز صفوف الأنواع حسب تاريخ الإضافة وتاريخ الإصدار أبجديًا والمزيد.';
 
   @override
-  String get genresRowItems => 'Genres Row Items';
+  String get genresRowItems => 'أنواع عناصر الصف';
 
   @override
   String get genresRowItemsDescription =>
-      'Show Movies, Series, or both in Genres rows.';
+      'عرض الأفلام أو المسلسلات أو كليهما في صفوف الأنواع.';
 
   @override
-  String get appearance => 'Appearance';
+  String get appearance => 'مظهر';
 
   @override
-  String get cardSize => 'Card Size';
+  String get cardSize => 'حجم البطاقة';
 
   @override
-  String get externalPlayerApp => 'External player app';
+  String get externalPlayerApp => 'تطبيق مشغل خارجي';
 
   @override
   String get externalPlayerAskEachTimeSubtitle =>
-      'Show app chooser when playback starts.';
+      'إظهار منتقي التطبيقات عند بدء التشغيل.';
 
   @override
-  String get loadingInstalledPlayers => 'Loading installed players...';
+  String get loadingInstalledPlayers => 'جارٍ تحميل اللاعبين المثبتين...';
 
   @override
-  String get connection => 'Connection';
+  String get connection => 'اتصال';
 
   @override
-  String get audioTranscodeTarget => 'Audio Transcode Target';
+  String get audioTranscodeTarget => 'هدف تحويل الصوت';
 
   @override
-  String get passthrough => 'Passthrough';
+  String get passthrough => 'العبور';
 
   @override
-  String get supportedOnThisDevice => 'Supported on this device';
+  String get supportedOnThisDevice => 'المدعومة على هذا الجهاز';
 
   @override
-  String get notSupportedOnThisDevice => 'Not Supported on this device';
+  String get notSupportedOnThisDevice => 'غير مدعوم على هذا الجهاز';
 
   @override
-  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) Passthrough';
+  String get settingsAudioDtsXPassthrough => 'عبور DTS:X (DTS UHD).';
 
   @override
   String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'Bitstream DTS:X (DTS UHD) to external decoder.';
+      'Bitstream DTS:X (DTS UHD) إلى وحدة فك ترميز خارجية.';
 
   @override
-  String get settingsAudioTrueHdJocPassthrough =>
-      'TrueHD with Atmos (JOC) Passthrough';
+  String get settingsAudioTrueHdJocPassthrough => 'TrueHD مع مرور Atmos (JOC).';
 
   @override
-  String get mediaPlayerBehavior => 'Media Player Behavior';
+  String get mediaPlayerBehavior => 'سلوك مشغل الوسائط';
 
   @override
-  String get playbackEnhancements => 'Playback Enhancements';
+  String get playbackEnhancements => 'تحسينات التشغيل';
 
   @override
-  String get alwaysOn => 'Always on.';
+  String get alwaysOn => 'دائما على.';
 
   @override
   String get replaceSkipOutroWithNextUpDisplay =>
-      'Replace Skip Outro with Next Up Display';
+      'استبدل Skip Outro بالعرض التالي';
 
   @override
   String get replaceSkipOutroWithNextUpDisplaySubtitle =>
-      'Show the Next Up overlay instead of the Skip Outro button.';
+      'قم بإظهار تراكب Next Up بدلاً من زر Skip Outro.';
 
   @override
-  String get playerRouting => 'Player Routing';
+  String get playerRouting => 'توجيه اللاعب';
 
   @override
-  String get preferSoftwareDecoders => 'Prefer software decoders';
+  String get preferSoftwareDecoders => 'تفضل برامج فك التشفير';
 
   @override
   String get preferSoftwareDecodersSubtitle =>
-      'Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.';
+      'استخدم FFmpeg (الصوت) وlibgav1 (AV1) قبل أجهزة فك ترميز الأجهزة. قم بالتعطيل في حالة انقطاع عبور الصوت عبر HDMI.';
 
   @override
-  String get useExternalPlayer => 'Use external player';
+  String get useExternalPlayer => 'استخدام مشغل خارجي';
 
   @override
   String get useExternalPlayerSubtitle =>
-      'Open video playback in your selected external app on Android TV.';
+      'افتح تشغيل الفيديو في تطبيقك الخارجي المحدد على Android TV.';
 
   @override
-  String get automaticQueuing => 'Automatic Queuing';
+  String get automaticQueuing => 'قائمة الانتظار التلقائية';
 
   @override
-  String get preferSdhSubtitles => 'Prefer SDH subtitles';
+  String get preferSdhSubtitles => 'تفضل ترجمات SDH';
 
   @override
   String get preferSdhSubtitlesSubtitle =>
-      'Prioritize SDH/CC subtitle tracks when auto-selecting.';
+      'قم بإعطاء الأولوية لمسارات الترجمة SDH/CC عند التحديد التلقائي.';
 
   @override
-  String get webDiagnostics => 'Web diagnostics';
+  String get webDiagnostics => 'تشخيص الويب';
 
   @override
-  String get webDiagnosticsTitle => 'Moonfin Web Diagnostics';
+  String get webDiagnosticsTitle => 'Moonfin تشخيص الويب';
 
   @override
   String get webDiagnosticsIntro =>
-      'Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).';
+      'استخدم هذه الصفحة لتشخيص مشكلات اتصال المتصفح (CORS والمحتوى المختلط وإعدادات الاكتشاف).';
 
   @override
   String get webDiagnosticsDetectedMixedContentFailure =>
-      'Detected Mixed-Content Failure';
+      'تم اكتشاف فشل المحتوى المختلط';
 
   @override
   String get webDiagnosticsDetectedCorsPreflightFailure =>
-      'Detected CORS/Preflight Failure';
+      'تم اكتشاف فشل CORS/التجربة المبدئية';
 
   @override
   String get webDiagnosticsMixedContentFailureBody =>
-      'Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.';
+      'اكتشف Moonfin صفحة HTTPS تحاول الاتصال بعنوان URL لخادم HTTP. تقوم المتصفحات بحظر هذا الطلب قبل أن يصل إلى الخادم الخاص بك.';
 
   @override
   String get webDiagnosticsCorsFailureBody =>
-      'Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.';
+      'اكتشف Moonfin فشل طلب على مستوى المستعرض والذي يحدث عادةً بسبب فقدان CORS أو رؤوس الاختبار المبدئي على خادم الوسائط.';
 
   @override
   String webDiagnosticsTargetUrl(String url) {
-    return 'Target URL: $url';
+    return 'عنوان URL المستهدف: $url';
   }
 
   @override
   String webDiagnosticsDetail(String detail) {
-    return 'Detail: $detail';
+    return 'التفاصيل: $detail';
   }
 
   @override
-  String get webDiagnosticsCurrentRuntimeContext => 'Current Runtime Context';
+  String get webDiagnosticsCurrentRuntimeContext => 'سياق وقت التشغيل الحالي';
 
   @override
-  String get webDiagnosticsOrigin => 'Origin';
+  String get webDiagnosticsOrigin => 'أصل';
 
   @override
-  String get webDiagnosticsScheme => 'Scheme';
+  String get webDiagnosticsScheme => 'مخطط';
 
   @override
-  String get webDiagnosticsPluginMode => 'Plugin Mode';
+  String get webDiagnosticsPluginMode => 'وضع البرنامج المساعد';
 
   @override
-  String get webDiagnosticsWebRtcScan => 'WebRTC Scan';
+  String get webDiagnosticsWebRtcScan => 'مسح WebRTC';
 
   @override
-  String get webDiagnosticsForcedServerUrl => 'Forced Server URL';
+  String get webDiagnosticsForcedServerUrl => 'عنوان URL للخادم القسري';
 
   @override
-  String get webDiagnosticsDefaultServerUrl => 'Default Server URL';
+  String get webDiagnosticsDefaultServerUrl => 'عنوان URL الافتراضي للخادم';
 
   @override
-  String get webDiagnosticsDiscoveryProxyUrl => 'Discovery Proxy URL';
+  String get webDiagnosticsDiscoveryProxyUrl => 'عنوان URL لوكيل الاكتشاف';
 
   @override
-  String get notConfigured => 'not configured';
+  String get notConfigured => 'لم يتم تكوينه';
 
   @override
-  String get webDiagnosticsMixedContent => 'Mixed Content';
+  String get webDiagnosticsMixedContent => 'محتوى مختلط';
 
   @override
   String get webDiagnosticsMixedContentDetected =>
-      'This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.';
+      'تم تحميل هذه الصفحة عبر HTTPS، ولكن هناك عنوان URL واحد أو أكثر تم تكوينه هو HTTP. تمنع المتصفحات صفحات HTTPS من الاتصال بواجهات برمجة تطبيقات HTTP.';
 
   @override
   String get webDiagnosticsMixedContentFix =>
-      'Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.';
+      'الإصلاح: خدمة خادم الوسائط أو نقطة نهاية الوكيل عبر HTTPS، أو تحميل Moonfin عبر HTTP على الشبكات المحلية الموثوقة فقط.';
 
   @override
   String get webDiagnosticsNoMixedContentDetected =>
-      'No obvious mixed-content configuration detected from current runtime settings.';
+      'لم يتم اكتشاف أي تكوين واضح للمحتوى المختلط من إعدادات وقت التشغيل الحالية.';
 
   @override
-  String get webDiagnosticsCorsChecklist => 'CORS Checklist';
+  String get webDiagnosticsCorsChecklist => 'قائمة مراجعة CORS';
 
   @override
   String get webDiagnosticsCorsChecklistItem1 =>
-      '• Allow the browser origin in Access-Control-Allow-Origin.';
+      '• السماح بأصل المتصفح في Access-Control-Allow-Origin.';
 
   @override
   String get webDiagnosticsCorsChecklistItem2 =>
-      '• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.';
+      '• تضمين التفويض، X-Emby-التفويض، وX-Emby-الرمز المميز في Access-Control-Allow-Headers.';
 
   @override
   String get webDiagnosticsCorsChecklistItem3 =>
-      '• Expose Content-Range and Accept-Ranges for streaming and seek behavior.';
+      '• فضح نطاق المحتوى وقبول النطاقات للتدفق والبحث عن السلوك.';
 
   @override
   String get webDiagnosticsCorsChecklistItem4 =>
-      '• Return 204 to OPTIONS preflight requests.';
+      '• إعادة 204 إلى طلبات الاختبار المبدئي للخيارات.';
 
   @override
   String get webDiagnosticsHeaderSnippetTitle =>
-      'Example Header Snippet (nginx-style)';
+      'مثال لمقتطف الرأس (نمط nginx)';
 
   @override
-  String get note => 'Note';
+  String get note => 'ملحوظة';
 
   @override
   String get webDiagnosticsNonWebNote =>
-      'This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.';
+      'مسار التشخيص هذا مخصص لبناء الويب. إذا كنت ترى هذا على نظام أساسي آخر، فقد لا يتم تطبيق عمليات التحقق هذه.';
 
   @override
-  String get backToServerSelect => 'Back To Server Select';
+  String get backToServerSelect => 'العودة إلى الخادم اختر';
 
   @override
-  String get signOutAllUsers => 'Sign Out All Users';
+  String get signOutAllUsers => 'تسجيل الخروج لجميع المستخدمين';
 
   @override
   String get voiceSearchPermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied. Enable it in system settings.';
+      'تم رفض إذن الميكروفون بشكل دائم. تمكينه في إعدادات النظام.';
 
   @override
   String get voiceSearchPermissionRequired =>
-      'Microphone permission is required for voice search.';
+      'مطلوب إذن الميكروفون للبحث الصوتي.';
 
   @override
-  String get voiceSearchNoMatch => 'Did not catch that. Try again.';
+  String get voiceSearchNoMatch => 'لم يمسك ذلك. حاول ثانية.';
 
   @override
-  String get voiceSearchNoSpeechDetected => 'No speech detected.';
+  String get voiceSearchNoSpeechDetected => 'لم يتم اكتشاف أي كلام.';
 
   @override
-  String get voiceSearchMicrophoneError => 'Microphone error.';
+  String get voiceSearchMicrophoneError => 'خطأ في الميكروفون.';
 
   @override
-  String get voiceSearchNeedsInternet => 'Voice search needs internet.';
+  String get voiceSearchNeedsInternet => 'البحث الصوتي يحتاج إلى الإنترنت.';
 
   @override
-  String get voiceSearchServiceBusy => 'Voice service is busy. Try again.';
+  String get voiceSearchServiceBusy => 'الخدمة الصوتية مشغولة. حاول ثانية.';
 
   @override
   String get microphonePermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied.';
+      'تم رفض إذن الميكروفون بشكل دائم.';
 
   @override
-  String get microphonePermissionDenied => 'Microphone permission is denied.';
+  String get microphonePermissionDenied => 'تم رفض إذن الميكروفون.';
 
   @override
   String get speechRecognitionUnavailable =>
-      'Speech recognition is unavailable on this device.';
+      'التعرف على الكلام غير متوفر على هذا الجهاز.';
 
   @override
-  String get openIosRoutePicker => 'Open iOS route picker';
+  String get openIosRoutePicker => 'افتح منتقي مسار iOS';
 
   @override
   String get airPlayRoutePickerUnavailable =>
-      'AirPlay route picker is unavailable on this device.';
+      'AirPlay منتقي المسار غير متوفر على هذا الجهاز.';
 
   @override
-  String get videos => 'Videos';
+  String get videos => 'فيديوهات';
 
   @override
-  String get trailers => 'Trailers';
+  String get trailers => 'مقطورات';
 
   @override
-  String get programs => 'Programs';
+  String get programs => 'البرامج';
 
   @override
-  String get songs => 'Songs';
+  String get songs => 'أغاني';
 
   @override
-  String get photoAlbums => 'Photo Albums';
+  String get photoAlbums => 'ألبومات الصور';
 
   @override
-  String get photos => 'Photos';
+  String get photos => 'صور';
 
   @override
-  String get people => 'People';
+  String get people => 'الناس';
 
   @override
-  String get recentlyReleasedEpisodes => 'Recently Released Episodes';
+  String get recentlyReleasedEpisodes => 'الحلقات التي تم إصدارها مؤخرًا';
 
   @override
-  String get watchAgain => 'Watch Again';
+  String get watchAgain => 'شاهد مرة أخرى';
 
   @override
-  String get guestAppearances => 'Guest Appearances';
+  String get guestAppearances => 'ظهورات الضيوف';
 
   @override
-  String get appearancesSeerr => 'Appearances (Seerr)';
+  String get appearancesSeerr => 'المظاهر (العراف)';
 
   @override
-  String get watchWithGroup => 'Watch with group';
+  String get watchWithGroup => 'شاهد مع المجموعة';
 
   @override
-  String get errors => 'Errors';
+  String get errors => 'أخطاء';
 
   @override
-  String get warnings => 'Warnings';
+  String get warnings => 'تحذيرات';
 
   @override
-  String get disk => 'Disk';
+  String get disk => 'القرص';
 
   @override
-  String get openInBrowser => 'Open in Browser';
+  String get openInBrowser => 'فتح في المتصفح';
 
   @override
   String get embeddedBrowserNotAvailable =>
-      'Embedded browser is not available on this platform.';
+      'المتصفح المضمن غير متوفر على هذا النظام الأساسي.';
 
   @override
   String get adminRestartServerConfirmation =>
-      'Are you sure you want to restart the server?';
+      'هل أنت متأكد أنك تريد إعادة تشغيل الخادم؟';
 
   @override
   String get adminShutdownServerConfirmation =>
-      'Are you sure you want to shut down the server? You will need to restart it manually.';
+      'هل أنت متأكد أنك تريد إيقاف تشغيل الخادم؟ سوف تحتاج إلى إعادة تشغيله يدويًا.';
 
   @override
-  String get internal => 'Internal';
+  String get internal => 'داخلي';
 
   @override
-  String get idle => 'Idle';
+  String get idle => 'عاطل';
 
   @override
   String get os => 'OS';
 
   @override
-  String get adminNoUsersFound => 'No users found';
+  String get adminNoUsersFound => 'لم يتم العثور على مستخدمين';
 
   @override
-  String get adminNoUsersMatchSearch => 'No users match your search';
+  String get adminNoUsersMatchSearch => 'لا يوجد مستخدمون يطابقون بحثك';
 
   @override
-  String get adminNoDevicesFound => 'No devices found';
+  String get adminNoDevicesFound => 'لم يتم العثور على أي أجهزة';
 
   @override
   String get adminNoDevicesMatchCurrentFilters =>
-      'No devices match the current filters';
+      'لا توجد أجهزة تتطابق مع المرشحات الحالية';
 
   @override
-  String get passwordSet => 'Password set';
+  String get passwordSet => 'تم تعيين كلمة المرور';
 
   @override
-  String get noPasswordConfigured => 'No password configured';
+  String get noPasswordConfigured => 'لم يتم تكوين كلمة مرور';
 
   @override
-  String get remoteAccess => 'Remote Access';
+  String get remoteAccess => 'الوصول عن بعد';
 
   @override
-  String get localOnly => 'Local Only';
+  String get localOnly => 'محلي فقط';
 
   @override
-  String get adminMediaAnalyticsLoadFailed => 'Failed to load media analytics';
+  String get adminMediaAnalyticsLoadFailed => 'فشل تحميل تحليلات الوسائط';
 
   @override
   String get analyticsCombinedAcrossLibraries =>
-      'Combined analytics across all media libraries.';
+      'التحليلات المجمعة عبر جميع مكتبات الوسائط.';
 
   @override
-  String get analyticsTopArtists => 'Top Artists';
+  String get analyticsTopArtists => 'كبار الفنانين';
 
   @override
-  String get analyticsTopAuthors => 'Top Authors';
+  String get analyticsTopAuthors => 'كبار المؤلفين';
 
   @override
-  String get analyticsTopContributors => 'Top Contributors';
+  String get analyticsTopContributors => 'المساهمين الأساسيين';
 
   @override
   String analyticsLibrariesCount(int count) {
@@ -7710,155 +7710,155 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get analyticsNoIndexedMediaTotals =>
-      'No indexed media totals are available for this selection yet.';
+      'لا تتوفر إجماليات الوسائط المفهرسة لهذا التحديد حتى الآن.';
 
   @override
-  String get analyticsLibraryDetails => 'Library Details';
+  String get analyticsLibraryDetails => 'تفاصيل المكتبة';
 
   @override
-  String get analyticsLibraryBreakdown => 'Library Breakdown';
+  String get analyticsLibraryBreakdown => 'انهيار المكتبة';
 
   @override
-  String get analyticsNoLibrariesAvailable => 'No libraries are available.';
+  String get analyticsNoLibrariesAvailable => 'لا توجد مكتبات متاحة.';
 
   @override
-  String get adminServerAdministrationTitle => 'Server Administration';
+  String get adminServerAdministrationTitle => 'إدارة الخادم';
 
   @override
-  String get adminServerPathData => 'Data';
+  String get adminServerPathData => 'بيانات';
 
   @override
-  String get adminServerPathImageCache => 'Image Cache';
+  String get adminServerPathImageCache => 'ذاكرة التخزين المؤقت للصورة';
 
   @override
-  String get adminServerPathCache => 'Cache';
+  String get adminServerPathCache => 'مخبأ';
 
   @override
-  String get adminServerPathLogs => 'Logs';
+  String get adminServerPathLogs => 'سجلات';
 
   @override
-  String get adminServerPathMetadata => 'Metadata';
+  String get adminServerPathMetadata => 'البيانات الوصفية';
 
   @override
-  String get adminServerPathTranscode => 'Transcode';
+  String get adminServerPathTranscode => 'تحويل الشفرة';
 
   @override
-  String get adminServerPathWeb => 'Web';
+  String get adminServerPathWeb => 'ويب';
 
   @override
   String get adminNoServerPathsReturned =>
-      'No server paths returned by this server.';
+      'لم يتم إرجاع أي مسارات خادم بواسطة هذا الخادم.';
 
   @override
   String adminPercentUsed(int percent) {
-    return '$percent% used';
+    return 'تم استخدام $percent%';
   }
 
   @override
-  String get userActivity => 'User Activity';
+  String get userActivity => 'نشاط المستخدم';
 
   @override
-  String get systemEvents => 'System Events';
+  String get systemEvents => 'أحداث النظام';
 
   @override
-  String get needsAttention => 'Needs Attention';
+  String get needsAttention => 'يحتاج إلى اهتمام';
 
   @override
-  String get adminDrawerSectionServer => 'Server';
+  String get adminDrawerSectionServer => 'الخادم';
 
   @override
-  String get adminDrawerSectionPlayback => 'Playback';
+  String get adminDrawerSectionPlayback => 'التشغيل';
 
   @override
-  String get adminDrawerSectionDevices => 'Devices';
+  String get adminDrawerSectionDevices => 'الأجهزة';
 
   @override
-  String get adminDrawerSectionAdvanced => 'Advanced';
+  String get adminDrawerSectionAdvanced => 'متقدم';
 
   @override
-  String get adminDrawerSectionPlugins => 'Plugins';
+  String get adminDrawerSectionPlugins => 'الإضافات';
 
   @override
-  String get adminDrawerSectionLiveTv => 'Live TV';
+  String get adminDrawerSectionLiveTv => 'البث التلفزيوني المباشر';
 
   @override
-  String get homeVideos => 'Home Videos';
+  String get homeVideos => 'فيديوهات منزلية';
 
   @override
-  String get mixedContent => 'Mixed Content';
+  String get mixedContent => 'محتوى مختلط';
 
   @override
-  String get homeVideosAndPhotos => 'Home Videos & Photos';
+  String get homeVideosAndPhotos => 'فيديو وصور منزلية';
 
   @override
-  String get mixedMoviesAndShows => 'Mixed Movies & Shows';
+  String get mixedMoviesAndShows => 'أفلام وعروض مختلطة';
 
   @override
-  String get intelQuickSync => 'Intel Quick Sync';
+  String get intelQuickSync => 'إنتل مزامنة سريعة';
 
   @override
-  String get rockchipMpp => 'Rockchip MPP';
+  String get rockchipMpp => 'روكشيب MPP';
 
   @override
   String get dolbyVision => 'Dolby Vision';
 
   @override
-  String get noRecordingsFound => 'No recordings found';
+  String get noRecordingsFound => 'لم يتم العثور على تسجيلات';
 
   @override
   String noImagePagesFoundInArchive(String extension) {
-    return 'No image pages found inside .$extension archive.';
+    return 'لم يتم العثور على صفحات صور داخل أرشيف .$extension.';
   }
 
   @override
   String embeddedRendererFailed(int code, String description) {
-    return 'Embedded renderer failed ($code): $description';
+    return 'فشل العارض المضمن ($code): $description';
   }
 
   @override
   String epubRendererFailed(int code, String description) {
-    return 'EPUB renderer failed ($code): $description';
+    return 'فشل عارض EPUB ($code): $description';
   }
 
   @override
   String missingLocalFileForReader(String uri) {
-    return 'Missing local file for reader: $uri';
+    return 'الملف المحلي المفقود للقارئ: $uri';
   }
 
   @override
   String httpStatusWhileOpeningBookData(int status, String uri) {
-    return 'HTTP $status while opening book data from $uri';
+    return 'HTTP $status أثناء فتح بيانات الكتاب من $uri';
   }
 
   @override
   String get noReadableBookEndpointAvailable =>
-      'No readable book endpoint available';
+      'لا تتوفر نقطة نهاية للكتاب القابل للقراءة';
 
   @override
   String unsupportedComicArchiveFormat(String extension) {
-    return 'Unsupported comic archive format: .$extension';
+    return 'تنسيق أرشيف القصص المصورة غير مدعوم: .$extension';
   }
 
   @override
   String get cbrExtractionPluginUnavailable =>
-      'CBR extraction plugin is not available on this platform.';
+      'البرنامج المساعد لاستخراج CBR غير متوفر على هذا النظام الأساسي.';
 
   @override
-  String get failedToExtractCbrArchive => 'Failed to extract .cbr archive.';
+  String get failedToExtractCbrArchive => 'فشل في استخراج أرشيف .cbr.';
 
   @override
   String get cb7ExtractionUnavailable =>
-      'CB7 extraction is not available on this platform.';
+      'استخراج CB7 غير متوفر على هذه المنصة.';
 
   @override
   String get cb7ExtractionPluginUnavailable =>
-      'CB7 extraction plugin is not available on this platform.';
+      'البرنامج المساعد لاستخراج CB7 غير متوفر على هذا النظام الأساسي.';
 
   @override
-  String get closeGenrePanel => 'Close genre panel';
+  String get closeGenrePanel => 'إغلاق لوحة النوع';
 
   @override
-  String get loadingShuffle => 'Loading shuffle...';
+  String get loadingShuffle => 'جارٍ التحميل العشوائي...';
 
   @override
   String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
@@ -7870,15 +7870,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get genresShuffleLabel => 'GENRES SHUFFLE';
 
   @override
-  String get autoHdrSwitching => 'Auto HDR Switching';
+  String get autoHdrSwitching => 'التبديل التلقائي لتقنية HDR';
 
   @override
   String get autoHdrSwitchingDescription =>
-      'Automatically enable HDR for HDR video playback and restore display mode on exit.';
+      'تمكين HDR تلقائيًا لتشغيل فيديو HDR واستعادة وضع العرض عند الخروج.';
 
   @override
-  String get whenFullscreen => 'When fullscreen';
+  String get whenFullscreen => 'عندما ملء الشاشة';
 
   @override
-  String get transcodingLimits => 'Transcoding Limits';
+  String get transcodingLimits => 'حدود تحويل الترميز';
 }

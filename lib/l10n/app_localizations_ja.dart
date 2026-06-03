@@ -6731,7 +6731,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'GitHub でプロジェクトにスターを付けるか、貢献してください';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => '法律上の';

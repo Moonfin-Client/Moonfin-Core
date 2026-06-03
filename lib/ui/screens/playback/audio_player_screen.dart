@@ -589,6 +589,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               child: Image.file(
                 File(localPoster),
                 fit: BoxFit.cover,
+                cacheWidth: 256,
                 color: AppColorScheme.scrim.withValues(alpha: 0.54),
                 colorBlendMode: BlendMode.darken,
               ),
@@ -601,6 +602,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               child: CachedNetworkImage(
                 imageUrl: artUrl,
                 fit: BoxFit.cover,
+                memCacheWidth: 256,
                 color: AppColorScheme.scrim.withValues(alpha: 0.54),
                 colorBlendMode: BlendMode.darken,
               ),

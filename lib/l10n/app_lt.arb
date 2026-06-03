@@ -5720,10 +5720,10 @@
   "adminMediaOverview": "Žiniasklaidos apžvalga",
   "adminMediaTotalsError": "Nepavyko įkelti serverio medijos sumų.",
   "adminMediaOverviewSubtitle": "Greitai perskaitykite, kiek turinio yra šiame serveryje.",
-  "adminPluginUpdatesAvailable": "Plugin updates available: {count}",
-  "adminPluginsRequiringRestart": "Plugins requiring restart: {count}",
-  "adminFailedScheduledTasks": "Failed scheduled tasks: {count}",
-  "adminRecentAlertEntries": "Recent warning/error entries: {count}",
+  "adminPluginUpdatesAvailable": "Galimi papildinio atnaujinimai: {count}",
+  "adminPluginsRequiringRestart": "Papildiniai, kuriuos reikia paleisti iš naujo: {count}",
+  "adminFailedScheduledTasks": "Nepavyko suplanuotos užduotys: {count}",
+  "adminRecentAlertEntries": "Naujausi įspėjimų / klaidų įrašai: {count}",
   "analyticsMediaDistribution": "Žiniasklaidos platinimas",
   "analyticsVideoCodecs": "Vaizdo kodekai",
   "analyticsAudioCodecs": "Garso kodekai",
@@ -5742,7 +5742,7 @@
   "adminShutdownServer": "Serverio išjungimas",
   "adminScanLibraries": "Nuskaityti bibliotekas",
   "adminLibraryScanStarted": "Pradėtas bibliotekos skenavimas",
-  "errorGeneric": "Error: {error}",
+  "errorGeneric": "Klaida: {error}",
   "adminServerRebootInProgress": "Vyksta serverio perkrovimas",
   "adminServerRebootMessage": "Serveris perkraunamas, iš naujo paleiskite „Moonfin“.",
   "adminActiveSessions": "Aktyvūs užsiėmimai",
@@ -5750,7 +5750,7 @@
   "adminNoActiveSessions": "Nėra aktyvių seansų",
   "adminRecentActivity": "Naujausia veikla",
   "adminNoRecentActivity": "Nėra pastarojo meto veiklos",
-  "adminCommandFailed": "Command failed: {error}",
+  "adminCommandFailed": "Komanda nepavyko: {error}",
   "adminSendMessage": "Siųsti žinutę",
   "adminMessageTextHint": "Pranešimo tekstas",
   "adminSetVolume": "Nustatykite garsumą",
@@ -5771,15 +5771,15 @@
   "direct": "Tiesioginis",
   "adminDisconnect": "Atsijungti",
   "adminClearDates": "Aiškios datos",
-  "adminActivityLoadFailed": "Failed to load activity log: {error}",
+  "adminActivityLoadFailed": "Nepavyko įkelti veiklos žurnalo: {error}",
   "adminNoActivityEntries": "Nėra veiklos įrašų",
   "adminEditDeviceName": "Redaguoti įrenginio pavadinimą",
   "adminCustomName": "Pasirinktinis pavadinimas",
   "adminDeviceNameUpdated": "Įrenginio pavadinimas atnaujintas",
-  "adminDeviceUpdateFailed": "Failed to update device: {error}",
+  "adminDeviceUpdateFailed": "Nepavyko atnaujinti įrenginio: {error}",
   "adminDeleteDevice": "Ištrinti įrenginį",
   "adminDeviceDeleted": "Įrenginys ištrintas",
-  "adminDeviceDeleteFailed": "Failed to delete device: {error}",
+  "adminDeviceDeleteFailed": "Nepavyko ištrinti įrenginio: {error}",
   "adminDevicesLoadFailed": "Nepavyko įkelti įrenginių",
   "adminSearchDevices": "Ieškokite įrenginių",
   "adminThisDevice": "Šis Įrenginys",
@@ -5788,20 +5788,20 @@
   "adminNoLibraries": "Nėra sukonfigūruotų bibliotekų",
   "adminScanAllLibraries": "Nuskaityti visas bibliotekas",
   "adminAddLibrary": "Pridėti biblioteką",
-  "adminScanFailed": "Failed to start scan: {error}",
+  "adminScanFailed": "Nepavyko pradėti nuskaitymo: {error}",
   "adminRenameLibrary": "Pervardyti biblioteką",
   "adminNewName": "Naujas vardas",
-  "adminLibraryRenamed": "Library renamed to \"{name}\"",
-  "adminRenameFailed": "Failed to rename: {error}",
+  "adminLibraryRenamed": "Biblioteka pervadinta į „{name}“",
+  "adminRenameFailed": "Nepavyko pervardyti: {error}",
   "adminDeleteLibrary": "Ištrinti biblioteką",
-  "adminLibraryDeleted": "Library \"{name}\" deleted",
-  "adminLibraryDeleteFailed": "Failed to delete library: {error}",
-  "adminAddPathFailed": "Failed to add path: {error}",
+  "adminLibraryDeleted": "Biblioteka „{name}“ ištrinta",
+  "adminLibraryDeleteFailed": "Nepavyko ištrinti bibliotekos: {error}",
+  "adminAddPathFailed": "Nepavyko pridėti kelio: {error}",
   "adminRemovePath": "Pašalinti kelią",
-  "adminRemovePathConfirm": "Remove \"{path}\" from this library?",
-  "adminRemovePathFailed": "Failed to remove path: {error}",
+  "adminRemovePathConfirm": "Pašalinti „{path}“ iš šios bibliotekos?",
+  "adminRemovePathFailed": "Nepavyko pašalinti kelio: {error}",
   "adminLibraryOptionsSaved": "Bibliotekos parinktys išsaugotos",
-  "adminLibraryOptionsSaveFailed": "Failed to save options: {error}",
+  "adminLibraryOptionsSaveFailed": "Nepavyko išsaugoti parinkčių: {error}",
   "adminLibraryLoadFailed": "Nepavyko įkelti bibliotekos",
   "adminNoMediaPaths": "Nesukonfigūruota medijos kelių",
   "adminAddPath": "Pridėti kelią",
@@ -5812,7 +5812,7 @@
   "adminMetadataCountryCode": "Metaduomenų šalies kodas",
   "adminMetadataCountryHint": "pvz. JAV, DE, FR",
   "adminLibraryNameRequired": "Būtinas bibliotekos pavadinimas",
-  "adminLibraryCreateFailed": "Failed to create library: {error}",
+  "adminLibraryCreateFailed": "Nepavyko sukurti bibliotekos: {error}",
   "adminLibraryName": "Bibliotekos pavadinimas",
   "adminSelectedPaths": "Pasirinkti keliai:",
   "adminNoPathsAdded": "Kelių nepridėta (galima pridėti vėliau)",
@@ -5820,25 +5820,25 @@
   "paths": "Keliai:",
   "adminDisableUser": "Išjungti vartotoją",
   "adminEnableUser": "Įgalinti vartotoją",
-  "adminDisableUserConfirm": "Disable {name}? They will not be able to sign in.",
-  "adminEnableUserConfirm": "Enable {name}? They will be able to sign in again.",
-  "adminUserDisabled": "User \"{name}\" disabled",
-  "adminUserEnabled": "User \"{name}\" enabled",
-  "adminUserPolicyUpdateFailed": "Failed to update user policy: {error}",
+  "adminDisableUserConfirm": "Išjungti {name}? Jie negalės prisijungti.",
+  "adminEnableUserConfirm": "Įgalinti {name}? Jie vėl galės prisijungti.",
+  "adminUserDisabled": "Naudotojas „{name}“ išjungtas",
+  "adminUserEnabled": "Vartotojas „{name}“ įjungtas",
+  "adminUserPolicyUpdateFailed": "Nepavyko atnaujinti naudotojo politikos: {error}",
   "adminUsersLoadFailed": "Nepavyko įkelti naudotojų",
   "adminSearchUsers": "Ieškoti vartotojų",
   "adminEditUser": "Redaguoti vartotoją",
   "adminAddUser": "Pridėti naudotoją",
-  "adminUserCreateFailed": "Failed to create user: {error}",
+  "adminUserCreateFailed": "Nepavyko sukurti vartotojo: {error}",
   "adminCreateUser": "Sukurti vartotoją",
   "adminPasswordOptional": "Slaptažodis (neprivaloma)",
   "adminUsernameRequired": "Vartotojo vardo laukas negali būti tuščias",
   "adminNoProfileChanges": "Nėra profilio pakeitimų, kuriuos būtų galima išsaugoti",
   "adminProfileSaved": "Profilis išsaugotas",
-  "adminSaveFailed": "Failed to save: {error}",
+  "adminSaveFailed": "Nepavyko išsaugoti: {error}",
   "adminPermissionsSaved": "Leidimai išsaugoti",
   "adminPasswordsMismatch": "Slaptažodžiai nesutampa",
-  "adminFailed": "Failed: {error}",
+  "adminFailed": "Nepavyko: {error}",
   "adminUserLoadFailed": "Nepavyko įkelti vartotojo",
   "adminBackToUsers": "Grįžti į Vartotojus",
   "adminSaveProfile": "Išsaugoti profilį",
@@ -5882,36 +5882,36 @@
   "adminEnableAllDevices": "Įgalinkite prieigą prie visų įrenginių",
   "adminEnableAllChannels": "Įgalinti prieigą prie visų kanalų",
   "adminResetPasswordWarning": "Tai pašalins slaptažodį. Vartotojas galės prisijungti be slaptažodžio.",
-  "adminServerReturnedHttp": "Server returned HTTP {status}",
-  "adminDeleteUserConfirm": "Are you sure you want to delete {name}?",
-  "adminUserDeleted": "User \"{name}\" deleted",
-  "adminUserDeleteFailed": "Failed to delete user: {error}",
+  "adminServerReturnedHttp": "Serveris grąžino HTTP {status}",
+  "adminDeleteUserConfirm": "Ar tikrai norite ištrinti {name}?",
+  "adminUserDeleted": "Naudotojas „{name}“ ištrintas",
+  "adminUserDeleteFailed": "Nepavyko ištrinti vartotojo: {error}",
   "adminCreateApiKey": "Sukurkite API raktą",
   "adminAppName": "Programos pavadinimas",
   "adminApiKeyCreated": "API raktas sukurtas",
   "adminApiKeyCreatedNoToken": "Raktas sėkmingai sukurtas. Serveris žetono negrąžino. Patikrinkite serverio API raktus.",
   "adminKeyCopied": "Raktas nukopijuotas į mainų sritį",
-  "adminApiKeyCreateFailed": "Failed to create key: {error}",
+  "adminApiKeyCreateFailed": "Nepavyko sukurti rakto: {error}",
   "adminKeyTokenMissing": "Serverio atsakyme trūksta rakto prieigos rakto",
   "adminRevokeApiKey": "Atšaukti API raktą",
-  "adminRevokeKeyConfirm": "Revoke key for {name}?",
+  "adminRevokeKeyConfirm": "Atšaukti {name} raktą?",
   "adminApiKeyRevoked": "API raktas atšauktas",
-  "adminApiKeyRevokeFailed": "Failed to revoke key: {error}",
+  "adminApiKeyRevokeFailed": "Nepavyko atšaukti rakto: {error}",
   "adminApiKeysLoadFailed": "Nepavyko įkelti API raktų",
   "adminApiKeysTitle": "API raktai",
   "adminCreateKey": "Sukurti raktą",
   "adminNoApiKeys": "API raktų nerasta",
   "adminUnknownApp": "Nežinoma programa",
-  "adminApiKeyTokenCreated": "Token: {token}\\nCreated: {created}",
+  "adminApiKeyTokenCreated": "Žetonas: {token}\\nSukurta: {created}",
   "adminCreatingBackup": "Kuriama atsarginė kopija...",
   "adminBackupCreated": "Atsarginė kopija sukurta sėkmingai",
-  "adminBackupCreateFailed": "Failed to create backup: {error}",
+  "adminBackupCreateFailed": "Nepavyko sukurti atsarginės kopijos: {error}",
   "adminBackupPathMissing": "Serverio atsakyme trūksta atsarginio kelio",
-  "adminBackupManifest": "Manifest: {name}",
-  "adminManifestLoadFailed": "Failed to load manifest: {error}",
+  "adminBackupManifest": "Manifestas: {name}",
+  "adminManifestLoadFailed": "Nepavyko įkelti aprašo: {error}",
   "adminConfirmRestore": "Patvirtinkite atkūrimą",
   "adminRestoringBackup": "Atkuriama atsarginė kopija...",
-  "adminRestoreFailed": "Failed to restore backup: {error}",
+  "adminRestoreFailed": "Nepavyko atkurti atsarginės kopijos: {error}",
   "adminBackupsLoadFailed": "Nepavyko įkelti atsarginių kopijų",
   "adminCreateBackup": "Sukurti atsarginę kopiją",
   "adminNoBackups": "Atsarginių kopijų nerasta",
@@ -5921,20 +5921,20 @@
   "adminNoLogFiles": "Žurnalo failų nerasta",
   "adminLogCopied": "Žurnalas nukopijuotas į mainų sritį",
   "adminSaveLogFile": "Išsaugoti žurnalo failą",
-  "adminSavedTo": "Saved to {path}",
-  "adminFileSaveFailed": "Failed to save file: {error}",
-  "adminLogFileLoadFailed": "Failed to load {fileName}",
+  "adminSavedTo": "Išsaugota {path}",
+  "adminFileSaveFailed": "Nepavyko išsaugoti failo: {error}",
+  "adminLogFileLoadFailed": "Nepavyko įkelti {fileName}",
   "adminSearchInLog": "Ieškoti žurnale",
   "adminNoMatchingLines": "Nėra atitinkančių eilučių",
-  "adminTasksLoadFailed": "Failed to load tasks: {error}",
+  "adminTasksLoadFailed": "Nepavyko įkelti užduočių: {error}",
   "adminNoScheduledTasks": "Suplanuotų užduočių nerasta",
   "adminNoTasksMatchFilter": "Nėra užduočių, atitinkančių dabartinį filtrą",
-  "adminTaskStartFailed": "Failed to start task: {error}",
-  "adminTaskStopFailed": "Failed to stop task: {error}",
-  "adminTaskLoadFailed": "Failed to load task: {error}",
+  "adminTaskStartFailed": "Nepavyko pradėti užduoties: {error}",
+  "adminTaskStopFailed": "Nepavyko sustabdyti užduoties: {error}",
+  "adminTaskLoadFailed": "Nepavyko įkelti užduoties: {error}",
   "adminRunNow": "Paleisti dabar",
-  "adminTriggerRemoveFailed": "Failed to remove trigger: {error}",
-  "adminTriggerAddFailed": "Failed to add trigger: {error}",
+  "adminTriggerRemoveFailed": "Nepavyko pašalinti aktyviklio: {error}",
+  "adminTriggerAddFailed": "Nepavyko pridėti aktyviklio: {error}",
   "adminLastExecution": "Paskutinis vykdymas",
   "adminTriggers": "Trigeriai",
   "adminAddTrigger": "Pridėti trigerį",
@@ -5942,46 +5942,46 @@
   "adminTriggerType": "Trigerio tipas",
   "adminTimeLimit": "Laiko limitas (neprivaloma)",
   "adminNoLimit": "Nėra limito",
-  "adminHours": "{hours} hour(s)",
+  "adminHours": "{hours} valanda(s)",
   "adminDayOfWeek": "Savaitės diena",
   "adminSearchPlugins": "Ieškoti papildinių...",
-  "adminPluginToggleFailed": "Failed to toggle plugin: {error}",
+  "adminPluginToggleFailed": "Nepavyko perjungti papildinio: {error}",
   "adminUninstallPlugin": "Pašalinkite papildinį",
-  "adminUninstallPluginConfirm": "Are you sure you want to uninstall \"{name}\"?",
-  "adminPluginUninstallFailed": "Failed to uninstall plugin: {error}",
-  "adminPackageInstallFailed": "Failed to install package: {error}",
-  "adminPluginUpdateFailed": "Failed to install update: {error}",
-  "adminPluginsLoadFailed": "Failed to load plugins: {error}",
+  "adminUninstallPluginConfirm": "Ar tikrai norite pašalinti „{name}“?",
+  "adminPluginUninstallFailed": "Nepavyko pašalinti papildinio: {error}",
+  "adminPackageInstallFailed": "Nepavyko įdiegti paketo: {error}",
+  "adminPluginUpdateFailed": "Nepavyko įdiegti naujinimo: {error}",
+  "adminPluginsLoadFailed": "Nepavyko įkelti papildinių: {error}",
   "adminNoPluginsMatchSearch": "Nėra jūsų paiešką atitinkančių papildinių",
   "adminNoPluginsInstalled": "Įskiepių nėra įdiegta",
-  "adminInstallUpdate": "Install update (v{version})",
-  "adminCatalogLoadFailed": "Failed to load catalog: {error}",
+  "adminInstallUpdate": "Įdiekite naujinimą (v{version})",
+  "adminCatalogLoadFailed": "Nepavyko įkelti katalogo: {error}",
   "adminNoPackagesMatchSearch": "Nėra jūsų paiešką atitinkančių paketų",
   "adminNoPackagesAvailable": "Nėra jokių paketų",
   "adminExperimentalIntegration": "Eksperimentinė integracija",
   "adminExperimentalWarning": "Papildinių nustatymų integravimas vis dar yra eksperimentinis. Kai kurie nustatymų puslapiai gali būti rodomi netinkamai.",
   "continueAction": "Tęsti",
-  "adminPluginRemoveAfterRestart": "\"{name}\" will be removed after server restart",
-  "adminUninstallFailed": "Failed to uninstall: {error}",
-  "adminPluginUpdating": "Updating \"{name}\" to v{version}...",
+  "adminPluginRemoveAfterRestart": "„{name}“ bus pašalintas paleidus serverį iš naujo",
+  "adminUninstallFailed": "Nepavyko pašalinti: {error}",
+  "adminPluginUpdating": "„{name}“ atnaujinama į v{version}...",
   "adminMissingAuthToken": "Neįmanoma atidaryti nustatymų: trūksta autentifikavimo prieigos rakto.",
-  "adminPluginLoadFailed": "Failed to load plugin: {error}",
+  "adminPluginLoadFailed": "Nepavyko įkelti papildinio: {error}",
   "adminPluginNotFound": "Papildinys nerastas",
-  "adminPluginVersion": "Version {version}",
+  "adminPluginVersion": "Versija {version}",
   "adminEnablePlugin": "Įjungti papildinį",
   "adminPluginSettingsPage": "Papildinio nustatymų puslapis",
   "adminRevisionHistory": "Revizijos istorija",
   "adminNoChangelog": "Nėra pakeitimų žurnalo.",
   "adminRemoveRepository": "Pašalinti saugyklą",
-  "adminRemoveRepositoryConfirm": "Are you sure you want to remove \"{name}\"?",
-  "adminRepositoriesSaveFailed": "Failed to save repositories: {error}",
-  "adminRepositoriesLoadFailed": "Failed to load repositories: {error}",
+  "adminRemoveRepositoryConfirm": "Ar tikrai norite pašalinti „{name}“?",
+  "adminRepositoriesSaveFailed": "Nepavyko išsaugoti saugyklų: {error}",
+  "adminRepositoriesLoadFailed": "Nepavyko įkelti saugyklų: {error}",
   "adminRepositoryNameHint": "pvz. Jellyfin stabilus",
   "adminRepositoryUrl": "Saugyklos URL",
   "adminAddEntry": "Pridėti įrašą",
   "adminInvalidUrl": "Netinkamas URL",
-  "adminPluginSettingsLoadFailed": "Unable to load plugin settings: {error}",
-  "adminCouldNotOpenUrl": "Could not open {uri}",
+  "adminPluginSettingsLoadFailed": "Nepavyko įkelti papildinio nustatymų: {error}",
+  "adminCouldNotOpenUrl": "Nepavyko atidaryti {uri}",
   "adminOpenInBrowser": "Atidaryti naršyklėje",
   "adminOpenExternally": "Atidaryti išoriškai",
   "adminGeneralSettings": "Bendrieji nustatymai",
@@ -6067,78 +6067,78 @@
   "blacklist": "Juodasis sąrašas",
   "notSet": "Nenustatyta",
   "adminMetadataSaved": "Metaduomenys išsaugoti",
-  "adminMetadataLoadFailed": "Failed to load metadata: {error}",
-  "adminMetadataSaveFailed": "Failed to save metadata: {error}",
+  "adminMetadataLoadFailed": "Nepavyko įkelti metaduomenų: {error}",
+  "adminMetadataSaveFailed": "Nepavyko išsaugoti metaduomenų: {error}",
   "adminRefreshMetadata": "Atnaujinkite metaduomenis",
   "recursive": "Rekursyvus",
   "adminReplaceAllMetadata": "Pakeiskite visus metaduomenis",
   "adminReplaceAllImages": "Pakeiskite visus vaizdus",
   "adminMetadataRefreshRequested": "Pateikta metaduomenų atnaujinimo užklausa",
-  "adminMetadataRefreshFailed": "Failed to refresh metadata: {error}",
+  "adminMetadataRefreshFailed": "Nepavyko atnaujinti metaduomenų: {error}",
   "adminSearchRemotePerson": "Ieškoti nuotolinio asmens",
   "adminNoRemoteMatches": "Nuotolinių atitikmenų nerasta",
   "adminRemoteResults": "Nuotoliniai rezultatai",
   "adminRemoteMetadataApplied": "Taikyti nuotoliniai metaduomenys",
-  "adminRemoteSearchFailed": "Remote search failed: {error}",
+  "adminRemoteSearchFailed": "Nuotolinė paieška nepavyko: {error}",
   "adminUpdateContentType": "Atnaujinti turinio tipą",
   "adminContentType": "Turinio tipas",
   "adminContentTypeUpdated": "Turinio tipas atnaujintas",
-  "adminContentTypeUpdateFailed": "Failed to update content type: {error}",
+  "adminContentTypeUpdateFailed": "Nepavyko atnaujinti turinio tipo: {error}",
   "adminMetadataEditorLoadFailed": "Nepavyko įkelti metaduomenų rengyklės",
   "adminNoPeopleEntries": "Nėra žmonių įrašų",
   "adminNoExternalIds": "Nėra išorinių ID",
-  "adminImageUpdated": "{imageType} image updated",
-  "adminImageDownloadFailed": "Failed to download image: {error}",
+  "adminImageUpdated": "{imageType} vaizdas atnaujintas",
+  "adminImageDownloadFailed": "Nepavyko atsisiųsti vaizdo: {error}",
   "adminUnsupportedImageFormat": "Nepalaikomas vaizdo formatas",
   "adminImageReadFailed": "Nepavyko nuskaityti pasirinkto vaizdo",
-  "adminImageUploaded": "{imageType} image uploaded",
-  "adminImageUploadFailed": "Failed to upload image: {error}",
-  "adminDeleteImage": "Delete {imageType} image",
-  "adminImageDeleted": "{imageType} image deleted",
-  "adminImageDeleteFailed": "Failed to delete image: {error}",
+  "adminImageUploaded": "{imageType} vaizdas įkeltas",
+  "adminImageUploadFailed": "Nepavyko įkelti vaizdo: {error}",
+  "adminDeleteImage": "Ištrinti {imageType} vaizdą",
+  "adminImageDeleted": "{imageType} vaizdas ištrintas",
+  "adminImageDeleteFailed": "Nepavyko ištrinti vaizdo: {error}",
   "adminAllProviders": "Visi tiekėjai",
   "adminNoRemoteImages": "Nuotolinių vaizdų nerasta",
-  "adminTunerDiscoveryFailed": "Tuner discovery failed: {error}",
+  "adminTunerDiscoveryFailed": "Derintuvo aptikimas nepavyko: {error}",
   "adminAddTuner": "Pridėti imtuvą",
   "adminTunerType": "Tunerio tipas",
   "adminTunerTypeHint": "HDHomeRun, M3U, kita",
   "adminUrlPath": "URL / kelias",
   "adminNameOptional": "Vardas (neprivaloma)",
   "adminTunerAdded": "Pridėtas derintuvas",
-  "adminTunerAddFailed": "Failed to add tuner: {error}",
+  "adminTunerAddFailed": "Nepavyko pridėti imtuvo: {error}",
   "adminAddGuideProvider": "Pridėti vadovo teikėją",
   "adminProviderType": "Teikėjo tipas",
   "adminProviderTypeHint": "SchedulesDirect arba XMLTV",
   "adminUsernameOptional": "Vartotojo vardas (neprivaloma)",
   "adminRefreshInterval": "Atnaujinimo intervalas (valandomis)",
   "adminProviderAdded": "Teikėjas pridėtas",
-  "adminProviderAddFailed": "Failed to add provider: {error}",
-  "adminTunerRemoveFailed": "Failed to remove tuner: {error}",
+  "adminProviderAddFailed": "Nepavyko pridėti teikėjo: {error}",
+  "adminTunerRemoveFailed": "Nepavyko pašalinti imtuvo: {error}",
   "adminTunerResetRequested": "Prašyta iš naujo nustatyti imtuvą",
-  "adminTunerResetFailed": "Failed to reset tuner: {error}",
-  "adminProviderRemoveFailed": "Failed to remove provider: {error}",
+  "adminTunerResetFailed": "Nepavyko iš naujo nustatyti imtuvo: {error}",
+  "adminProviderRemoveFailed": "Nepavyko pašalinti teikėjo: {error}",
   "adminRecordingSettings": "Įrašymo nustatymai",
   "adminPrePadding": "Išankstinis užpildymas (min.)",
   "adminPostPadding": "Papildomas užpildymas (minutės)",
   "adminRecordingPath": "Įrašymo kelias",
   "adminSeriesRecordingPath": "Serijos įrašymo kelias",
   "adminRecordingSettingsSaved": "Įrašymo nustatymai išsaugoti",
-  "adminSettingsSaveFailed": "Failed to save settings: {error}",
+  "adminSettingsSaveFailed": "Nepavyko išsaugoti nustatymų: {error}",
   "adminSetChannelMappings": "Nustatykite kanalų atvaizdavimą",
   "adminMappingJson": "JSON atvaizdavimas",
   "adminMappingJsonHint": "Pavyzdys: JSON naudingosios apkrovos susiejimas",
   "adminChannelMappingsUpdated": "Atnaujinti kanalų atvaizdai",
-  "adminMappingsUpdateFailed": "Failed to update mappings: {error}",
+  "adminMappingsUpdateFailed": "Nepavyko atnaujinti atvaizdų: {error}",
   "adminLiveTvLoadFailed": "Nepavyko įkelti tiesioginės TV administravimo",
   "adminTunerDevices": "Tuner įrenginiai",
   "adminNoTunerHosts": "Nekonfigūruota derintuvo priegloba",
   "adminGuideProviders": "Vadovų teikėjai",
   "adminAddProvider": "Pridėti teikėją",
   "adminNoListingProviders": "Nėra sukonfigūruotų sąrašų teikėjų",
-  "adminRecordingPathDisplay": "Recording path: {path}",
-  "adminSeriesPathDisplay": "Series path: {path}",
-  "adminPrePaddingDisplay": "Pre-padding: {minutes} min",
-  "adminPostPaddingDisplay": "Post-padding: {minutes} min",
+  "adminRecordingPathDisplay": "Įrašymo kelias: {path}",
+  "adminSeriesPathDisplay": "Serijos kelias: {path}",
+  "adminPrePaddingDisplay": "Išankstinis užpildymas: {minutes} min",
+  "adminPostPaddingDisplay": "Papildomas užpildymas: {minutes} min",
   "adminTunerDiscovery": "Derintuvo atradimas",
   "adminChannelMappings": "Kanalų atvaizdavimas",
   "adminNoDiscoveredTuners": "Dar nėra atrastų derintuvų",
@@ -6147,7 +6147,7 @@
   "adminRestoreWarning1": "Atkūrus VISUS esamus serverio duomenis pakeis atsarginės kopijos duomenys.",
   "adminRestoreWarning2": "Esami serverio nustatymai, vartotojai ir bibliotekos duomenys bus perrašyti.",
   "adminRestoreWarning3": "Po atkūrimo serveris bus paleistas iš naujo.",
-  "adminRestoreConfirmMessage": "Restore backup {name} now?",
+  "adminRestoreConfirmMessage": "Atkurti atsarginę kopiją {name} dabar?",
   "adminRestoreRequested": "Prašyta atkurti. Serverio paleidimas iš naujo gali atjungti šią sesiją.",
   "adminBackupsTitle": "Atsarginės kopijos",
   "adminUnknownDate": "Nežinoma data",
@@ -6161,11 +6161,11 @@
   "adminLogsNewestFirst": "Naujausi pirmiausia",
   "adminLogsOldestFirst": "Seniausi Pirma",
   "adminLogsJustNow": "Tik dabar",
-  "adminLogsMinutesAgo": "{minutes}m ago",
-  "adminLogsHoursAgo": "{hours}h ago",
-  "adminLogsDaysAgo": "{days}d ago",
-  "adminLogViewerLoadFailed": "Failed to load {fileName}",
-  "adminLogViewerMatches": "{count} matches",
+  "adminLogsMinutesAgo": "{minutes}@min",
+  "adminLogsHoursAgo": "{hours}@h",
+  "adminLogsDaysAgo": "{days}d prieš",
+  "adminLogViewerLoadFailed": "Nepavyko įkelti {fileName}",
+  "adminLogViewerMatches": "{count} atitinka",
   "adminLogViewerNoMatches": "Nėra atitinkančių eilučių",
   "adminMetadataEditorTitle": "Metaduomenų redaktorius",
   "adminMetadataRemote": "Nuotolinis",
@@ -6201,16 +6201,16 @@
   "adminMetadataImageThumb": "Nykštys",
   "adminMetadataRecursive": "Rekursyvus",
   "adminMetadataProvider": "Teikėjas",
-  "adminMetadataImageUpdated": "{imageType} image updated",
-  "adminMetadataImageUploaded": "{imageType} image uploaded",
-  "adminMetadataImageDeleted": "{imageType} image deleted",
-  "adminMetadataImageDownloadFailed": "Failed to download image: {error}",
+  "adminMetadataImageUpdated": "{imageType} vaizdas atnaujintas",
+  "adminMetadataImageUploaded": "{imageType} vaizdas įkeltas",
+  "adminMetadataImageDeleted": "{imageType} vaizdas ištrintas",
+  "adminMetadataImageDownloadFailed": "Nepavyko atsisiųsti vaizdo: {error}",
   "adminMetadataImageReadFailed": "Nepavyko nuskaityti pasirinkto vaizdo",
-  "adminMetadataImageUploadFailed": "Failed to upload image: {error}",
-  "adminMetadataDeleteImageTitle": "Delete {imageType} image",
+  "adminMetadataImageUploadFailed": "Nepavyko įkelti vaizdo: {error}",
+  "adminMetadataDeleteImageTitle": "Ištrinti {imageType} vaizdą",
   "adminMetadataDeleteImageContent": "Taip iš elemento pašalinamas dabartinis vaizdas.",
-  "adminMetadataImageDeleteFailed": "Failed to delete image: {error}",
-  "adminMetadataChooseImage": "Choose {imageType} image",
+  "adminMetadataImageDeleteFailed": "Nepavyko ištrinti vaizdo: {error}",
+  "adminMetadataChooseImage": "Pasirinkite {imageType} vaizdą",
   "adminMetadataUpload": "Įkelti",
   "adminMetadataUpdate": "Atnaujinti",
   "adminMetadataRemoteImage": "Nuotolinis vaizdas",
@@ -6220,22 +6220,22 @@
   "adminPluginsRestart": "Paleisti iš naujo",
   "adminPluginsNoSearchResults": "Nėra jūsų paiešką atitinkančių papildinių",
   "adminPluginsNoneInstalled": "Įskiepių nėra įdiegta",
-  "adminPluginsUpdateAvailable": "Update available: v{version}",
+  "adminPluginsUpdateAvailable": "Galimas atnaujinimas: v{version}",
   "adminPluginsUpdateAvailableGeneric": "Galimas atnaujinimas",
   "adminPluginsPendingRemoval": "Laukiama pašalinimo po paleidimo iš naujo",
   "adminPluginsChangesPending": "Pakeitimai laukia iš naujo",
   "adminPluginsEnable": "Įgalinti",
   "adminPluginsDisable": "Išjungti",
   "adminPluginsInstallUpdate": "Įdiekite naujinimą",
-  "adminPluginsInstallUpdateVersioned": "Install update (v{version})",
+  "adminPluginsInstallUpdateVersioned": "Įdiekite naujinimą (v{version})",
   "adminPluginsCatalogNoSearchResults": "Nėra jūsų paiešką atitinkančių paketų",
   "adminPluginsCatalogEmpty": "Nėra jokių paketų",
-  "adminPluginsInstalling": "\"{name}\" is being installed...",
+  "adminPluginsInstalling": "„{name}“ diegiamas...",
   "adminPluginDetailExperimental": "Eksperimentinė integracija",
   "adminPluginDetailExperimentalContent": "Papildinių nustatymų integravimas vis dar yra eksperimentinis. Kai kurie laukai arba maketai dar gali būti netinkamai pateikti.",
   "adminPluginDetailToggle404": "Nepavyko perjungti papildinio. Serveriui nepavyko rasti šios papildinio versijos. Pabandykite atnaujinti papildinius, tada bandykite dar kartą.",
   "adminPluginDetailToggleDioError": "Nepavyko perjungti papildinio. Norėdami gauti daugiau informacijos, patikrinkite serverio žurnalus.",
-  "adminPluginDetailSettingsTitle": "{name} Settings",
+  "adminPluginDetailSettingsTitle": "{name} Nustatymai",
   "adminPluginDetailDetails": "Detalės",
   "adminPluginDetailDeveloper": "Kūrėjas",
   "adminPluginDetailRepository": "Saugykla",
@@ -6246,11 +6246,11 @@
   "adminPluginDetailMalfunctioned": "Šis papildinys sugedo ir gali neveikti tinkamai.",
   "adminPluginDetailNotSupported": "Dabartinė serverio versija šio papildinio nepalaiko.",
   "adminPluginDetailSuperseded": "Šis papildinys buvo pakeistas naujesne versija.",
-  "adminReposLoadFailed": "Failed to load repositories: {error}",
+  "adminReposLoadFailed": "Nepavyko įkelti saugyklų: {error}",
   "adminReposRemoveTitle": "Pašalinti saugyklą",
-  "adminReposRemoveConfirm": "Are you sure you want to remove \"{name}\"?",
+  "adminReposRemoveConfirm": "Ar tikrai norite pašalinti „{name}“?",
   "adminReposRemove": "Pašalinti",
-  "adminReposSaveFailed": "Failed to save repositories: {error}",
+  "adminReposSaveFailed": "Nepavyko išsaugoti saugyklų: {error}",
   "adminReposEmpty": "Nėra sukonfigūruotų saugyklų",
   "adminReposEmptySubtitle": "Pridėkite saugyklą, kad galėtumėte naršyti galimus papildinius",
   "adminReposUnnamed": "(be vardo)",
@@ -6337,9 +6337,9 @@
   "adminTaskDetailEnded": "Baigėsi",
   "adminTaskDetailDuration": "Trukmė",
   "adminTaskDetailErrorLabel": "Klaida:",
-  "adminTaskTriggerDaily": "Daily at {time}",
-  "adminTaskTriggerWeekly": "Every {day} at {time}",
-  "adminTaskTriggerInterval": "Every {duration}",
+  "adminTaskTriggerDaily": "Kasdien {time}",
+  "adminTaskTriggerWeekly": "Kiekvieną {day} {time}",
+  "adminTaskTriggerInterval": "Kas {duration}",
   "adminTaskTriggerStartup": "Paleidus programą",
   "adminTaskTriggerTypeDaily": "Kasdien",
   "adminTaskTriggerTypeWeekly": "Kas savaitę",
@@ -6358,9 +6358,9 @@
   "adminActivityToday": "Šiandien",
   "adminActivityYesterday": "vakar",
   "adminActivityOlder": "Vyresni",
-  "adminActivityDaysAgo": "{days}d ago",
-  "adminActivityHoursAgo": "{hours}h ago",
-  "adminActivityMinutesAgo": "{minutes}m ago",
+  "adminActivityDaysAgo": "{days}d prieš",
+  "adminActivityHoursAgo": "{hours}@h",
+  "adminActivityMinutesAgo": "{minutes}@min",
   "adminActivityNow": "dabar",
   "adminActivityMinutesShort": "{minutes}m",
   "adminActivityHoursShort": "{hours}h",
@@ -6394,15 +6394,15 @@
   "adminTrickplayWidthResolutions": "Pločio raiškos",
   "adminMetadataDefault": "Numatytoji",
   "adminMetadataContentTypeUpdated": "Turinio tipas atnaujintas",
-  "adminMetadataContentTypeFailed": "Failed to update content type: {error}",
+  "adminMetadataContentTypeFailed": "Nepavyko atnaujinti turinio tipo: {error}",
   "adminGeneralSlowResponseThreshold": "Lėto atsako slenkstis (ms)",
   "adminGeneralCachePath": "Talpyklos kelias",
   "adminGeneralMetadataPath": "Metaduomenų kelias",
   "adminGeneralServerName": "Serverio pavadinimas",
   "adminSettingsLoadFailed": "Nepavyko įkelti nustatymų",
   "adminDiscover": "Atrask",
-  "adminChannelMappingsUpdateFailed": "Failed to update mappings: {error}",
-  "adminTimeLimitDuration": "Time limit: {duration}",
+  "adminChannelMappingsUpdateFailed": "Nepavyko atnaujinti atvaizdų: {error}",
+  "adminTimeLimitDuration": "Laiko limitas: {duration}",
   "folders": "Aplankai",
   "libraries": "Bibliotekos",
   "syncPlay": "SyncPlay",
@@ -6424,7 +6424,7 @@
   "syncPlaySyncCurrentQueueSubtitle": "Pakeiskite grupės eilę tuo, kas leidžiama vietoje",
   "syncPlayLeaveGroup": "Išeiti iš grupės",
   "syncPlayGroupQueue": "Grupės eilė",
-  "syncPlayQueueItemFallback": "Item {index}",
+  "syncPlayQueueItemFallback": "Elementas {index}",
   "syncPlayPlayNow": "Žaisti dabar",
   "syncPlayCreateNewGroup": "Sukurti naują grupę",
   "syncPlayGroupName": "Grupės pavadinimas",
@@ -6439,11 +6439,11 @@
   "syncPlayStateWaiting": "Laukia",
   "syncPlayStatePaused": "Pristabdyta",
   "syncPlayStatePlaying": "Žaidžia",
-  "syncPlayUserJoinedGroup": "{userName} joined SyncPlay group",
-  "syncPlayUserLeftGroup": "{userName} left SyncPlay group",
+  "syncPlayUserJoinedGroup": "{userName} prisijungė prie SyncPlay grupės",
+  "syncPlayUserLeftGroup": "{userName} paliko SyncPlay grupę",
   "syncPlayAccessDeniedTitle": "„SyncPlay“ prieiga uždrausta",
   "syncPlayAccessDeniedMessage": "Neturite prieigos prie vieno ar daugiau elementų šioje „SyncPlay“ grupėje. Paprašykite grupės savininko patvirtinti bibliotekos leidimus arba pasirinkti kitą eilę.",
-  "syncPlaySyncingPlaybackToGroup": "Syncing playback to {groupName}",
+  "syncPlaySyncingPlaybackToGroup": "Sinchronizuojamas atkūrimas su {groupName}",
   "voiceSearchUnavailable": "Paieška balsu nepasiekiama.",
   "dolbyVisionDirectPlayFailedTitle": "„Dolby Vision Direct Play“ nepavyko",
   "dolbyVisionDirectPlayFailedMessage": "Nepavyko pradėti tiesioginio šio „Dolby Vision“ srauto atkūrimo. Bandyti dar kartą naudoti serverio perkodavimą?",
@@ -6479,19 +6479,19 @@
   "castAirPlay": "AirPlay",
   "castDlna": "DLNA",
   "castRemotePlayback": "Nuotolinis atkūrimas",
-  "castControlFailed": "Cast control failed: {error}",
-  "castKindControls": "{kind} Controls",
+  "castControlFailed": "Nepavyko valdyti perdavimo: {error}",
+  "castKindControls": "{kind} Valdikliai",
   "castDeviceVolume": "Įrenginio garsumas",
   "castVolumeUnavailable": "Nepasiekiamas",
-  "castStopKind": "Stop {kind}",
+  "castStopKind": "Sustabdyti {kind}",
   "audioLabel": "Garsas",
   "subtitlesLabel": "Subtitrai",
   "pinConfirmTitle": "Patvirtinkite PIN kodą",
   "pinSetTitle": "Nustatyti PIN kodą",
   "pinEnterTitle": "Įveskite PIN kodą",
   "pinReenterToConfirm": "Dar kartą įveskite PIN kodą, kad patvirtintumėte",
-  "pinEnterNDigit": "Enter a {length}-digit PIN",
-  "pinEnterYourNDigit": "Enter your {length}-digit PIN",
+  "pinEnterNDigit": "Įveskite {length} skaitmenų PIN kodą",
+  "pinEnterYourNDigit": "Įveskite {length} skaitmenų PIN kodą",
   "pinIncorrect": "Neteisingas PIN kodas",
   "pinMismatch": "PIN kodai nesutampa",
   "pinForgot": "Pamiršote PIN kodą?",
@@ -6504,10 +6504,10 @@
   "quickConnectDisabled": "Greitasis prisijungimas šiame serveryje išjungtas.",
   "quickConnectForbidden": "Jūsų paskyra negali patvirtinti šios greitojo prisijungimo užklausos.",
   "quickConnectNotFound": "Greito prisijungimo kodas nerastas. Išbandykite naują kodą.",
-  "quickConnectFailedWithMessage": "Quick Connect failed: {message}",
+  "quickConnectFailedWithMessage": "Greitas prisijungimas nepavyko: {message}",
   "quickConnectEnterCode": "Įveskite kodą",
   "quickConnectAuthorize": "Įgalioti",
-  "remoteCommandFailed": "Command failed: {error}",
+  "remoteCommandFailed": "Komanda nepavyko: {error}",
   "remoteControlTitle": "Nuotolinio valdymo pultas",
   "remoteFailedToLoadSessions": "Nepavyko įkelti seansų",
   "remoteNoSessions": "Jokių kontroliuojamų seansų",
@@ -6516,7 +6516,7 @@
   "unknownItem": "Nežinoma",
   "remoteNothingPlaying": "Šioje sesijoje nieko negroja",
   "castingStarted": "Perdavimas pradėtas pasirinktame įrenginyje",
-  "castingFailed": "Failed to start casting: {error}",
+  "castingFailed": "Nepavyko pradėti perdavimo: {error}",
   "noRemoteDevices": "Nėra pasiekiamų nuotolinio atkūrimo įrenginių.",
   "noRemoteDevicesIos": "Nėra pasiekiamų nuotolinio atkūrimo įrenginių.\n\nJei naudojate „iOS“, „AirPlay“ taikiniai simuliatoriuje gali būti nepasiekiami.",
   "trackActionPlayNext": "Žaisti toliau",
@@ -6530,7 +6530,7 @@
   "trackActionAddToFavorites": "Pridėti prie mėgstamiausių",
   "trackActionGoToAlbum": "Eiti į albumą",
   "trackActionGoToArtist": "Eikite į atlikėją",
-  "trackActionDownloading": "Downloading {name}...",
+  "trackActionDownloading": "Atsisiunčiama {name}...",
   "trackActionDeletedFile": "Ištrintas atsisiųstas failas",
   "trackActionDeleteFileFailed": "Nepavyko ištrinti atsisiųsto failo",
   "shuffleBy": "Maišyti pagal",
@@ -6558,11 +6558,11 @@
   "stillWatchingContent": "Atkūrimas buvo pristabdytas. Ar vis dar žiūrite?",
   "stillWatchingStop": "Sustok",
   "stillWatchingContinue": "Tęsti",
-  "skipSegment": "Skip {segment}",
+  "skipSegment": "Praleisti {segment}",
   "liveTv": "Tiesioginė televizija",
   "continueWatchingAndNextUp": "Žiūrėti toliau ir toliau",
-  "downloadingBatchProgress": "Downloading {current}/{total} — {fileName}",
-  "downloadingFile": "Downloading {fileName}",
+  "downloadingBatchProgress": "Atsisiunčiama {current}/{total} — {fileName}",
+  "downloadingFile": "Atsisiunčiama {fileName}",
   "nextEpisode": "Kitas Epizodas",
   "moreFromThisSeason": "Daugiau iš šio sezono",
   "playerTooltipPlaybackSpeed": "Atkūrimo greitis",
@@ -6628,7 +6628,6 @@
   "settingsJoinDiscordSubtitle": "Kalbėkitės su bendruomene",
   "settingsJoinTheDiscord": "Prisijunkite prie Discord",
   "settingsSupportMoonfin": "Palaikykite Moonfin",
-  "settingsSupportMoonfinSubtitle": "Pažymėkite projektą „GitHub“ arba prisidėkite",
   "settingsLegal": "TEISINĖ",
   "settingsLicenses": "Licencijos",
   "settingsOpenSourceLicenseNotices": "Atvirojo kodo licencijos pranešimai",
@@ -6711,7 +6710,7 @@
   "collections": "Kolekcijos",
   "lastPlayed": "Paskutinį kartą žaidė",
   "libraryNameWithServer": "{libraryName} ({serverName})",
-  "latestLibraryName": "Latest {libraryName}",
+  "latestLibraryName": "Naujausias {libraryName}",
   "discNumber": "Disc {number}",
   "desktopUiScale": "Darbalaukio vartotojo sąsajos skalė",
   "nextUpDisplay": "Kitas ekranas",
@@ -6761,5 +6760,602 @@
   "localPreviews": "Vietinės peržiūros",
   "localPreviewsDescription": "Konfigūruokite anonsą, mediją ir garso peržiūras.",
   "mediaPreview": "Medijos peržiūra",
-  "mediaPreviewDescription": "Žaiskite 30 sekundžių eilutę sufokusuotomis, užvedus pelės žymeklį arba ilgai paspaustomis kortomis"
+  "mediaPreviewDescription": "Žaiskite 30 sekundžių eilutę sufokusuotomis, užvedus pelės žymeklį arba ilgai paspaustomis kortomis",
+  "keyboardPreferSystemIme": "Prefer system keyboard",
+  "keyboardPreferSystemImeDescription": "Use your device input method by default for text entry",
+  "musicVideos": "Music Videos",
+  "record": "Record",
+  "cancelRecordingAction": "Cancel Recording",
+  "programSetToRecord": "Program set to record",
+  "recordingCancelled": "Recording cancelled",
+  "unableToCreateRecording": "Unable to create recording",
+  "settingsAudioOutputMode": "Audio Output Mode",
+  "settingsAudioOutputModeAvrPassthrough": "AVR Passthrough",
+  "settingsAudioFallbackCodec": "Audio Fallback Codec",
+  "settingsAudioFallbackAacStereo": "AAC Stereo",
+  "settingsAudioFallbackAc35_1": "AC3 5.1",
+  "settingsAudioFallbackEac35_1": "EAC3 5.1",
+  "settingsAudioPassthroughAdvanced": "Passthrough (Advanced)",
+  "settingsAudioCodecPassthrough": "Codec Passthrough",
+  "settingsAudioCodecPassthroughDescription": "Enable only formats your AVR or HDMI sink supports.",
+  "settingsAudioEac3Passthrough": "EAC3 Passthrough",
+  "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) Passthrough",
+  "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+  "settingsAudioDtsHdPassthrough": "DTS-HD MA Passthrough",
+  "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
+  "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+  "settingsAudioBitstreamEac3ToExternalDecoder": "Bitstream Dolby Digital Plus (EAC3) to external decoder.",
+  "settingsAudioBitstreamEac3JocToExternalDecoder": "Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.",
+  "settingsAudioBitstreamDtsHdToExternalDecoder": "Bitstream DTS-HD MA (includes DTS core) to external decoder.",
+  "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Bitstream Dolby TrueHD with Atmos metadata to external decoder.",
+  "settingsDetectedAudioCapabilities": "Detected Audio Capabilities",
+  "settingsDetectedAudioCapabilitiesUnavailable": "No runtime capability snapshot available yet.",
+  "settingsAudioRouteLabel": "Route",
+  "settingsAudioDecodeLabel": "Decode",
+  "settingsAudioPassthroughLabel": "Passthrough",
+  "settingsAudioHdRoute": "HD audio route",
+  "settingsAudioRouteHdmi": "HDMI",
+  "settingsAudioRouteArc": "ARC",
+  "settingsAudioRouteEarc": "eARC",
+  "settingsAudioRouteBluetooth": "Bluetooth",
+  "settingsAudioRouteSpeaker": "Speaker",
+  "settingsAudioPcmChannels": "{count}ch PCM",
+  "settingsAudioDiagnostics": "Diagnostics",
+  "settingsAudioDiagnosticsVideoLevel": "Video Level",
+  "settingsAudioDiagnosticsVideoRange": "Video Range",
+  "settingsAudioDiagnosticsSubtitleCodec": "Subtitle Codec",
+  "settingsAudioDiagnosticsAllowedAudioCodecs": "Allowed Audio Codecs",
+  "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS Audio Codecs",
+  "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4 Audio Codecs",
+  "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif passthrough",
+  "settingsAudioDiagnosticsActiveAudioRoute": "Active Audio Route",
+  "settingsAudioDiagnosticsRouteHdAudioSupport": "Route HD Audio Support",
+  "settingsPlaybackEngineMedia3Legacy": "Media3 (senas)",
+  "settingsPlaybackEngineMpvRecommended": "mpv (rekomenduojama)",
+  "autoplayNextEpisode": "Automatiškai paleisti kitą seriją",
+  "autoplayNextEpisodeSubtitle": "Automatiškai paleisti kitą seriją, kai ji pasiekiama.",
+  "skipSilenceTitle": "Praleisti tylą",
+  "skipSilenceSubtitle": "Automatiškai praleiskite tylius garso segmentus, kai juos palaiko srautas.",
+  "allowExternalAudioEffectsTitle": "Leisti išorinius garso efektus",
+  "allowExternalAudioEffectsSubtitle": "Leisti ekvalaizerio ir efektų programoms (pvz., „Wavelet“) prisijungti prie Media3 atkūrimo seansų.",
+  "disableTunnelingTitle": "Išjungti tuneliavimą",
+  "disableTunnelingSubtitle": "Priverstinis netunelinis atkūrimas. Naudinga įrenginiuose su tuneliavimo garso / vaizdo pertrūkiais.",
+  "mapDolbyVisionP7Title": "Susieti Dolby Vision profilį 7 su HEVC",
+  "mapDolbyVisionP7Subtitle": "Leiskite Dolby Vision profilio 7 srautus kaip su HDR10 suderinamą HEVC ne DV įrenginiuose.",
+  "subtitlesUseEmbeddedStyles": "Naudokite įterptus subtitrų stilius",
+  "subtitlesUseEmbeddedStylesSubtitle": "Taikykite spalvas, šriftus ir padėtį, įterptą į subtitrų takelį. Išjunkite, kad galėtumėte naudoti antraščių stiliaus nuostatas.",
+  "subtitlesUseEmbeddedFontSizes": "Naudokite įterptųjų subtitrų šrifto dydžius",
+  "subtitlesUseEmbeddedFontSizesSubtitle": "Taikykite šrifto dydžio užuominas, įterptas į subtitrų takelį. Neleiskite naudoti subtitrų dydžio pagal savo stiliaus nuostatas.",
+  "useDetailedSubHeadings": "Naudokite išsamias antraštes",
+  "useDetailedSubHeadingsDescription": "Bibliotekos puslapiuose rodyti išsamią arba minimalią eilutę.",
+  "savedThemesDeleteDialogTitle": "Ištrinti išsaugotą temą?",
+  "savedThemesDeleteDialogMessage": "Pašalinti „{themeName}“ iš šio įrenginio talpyklos?",
+  "savedThemesDeletedMessage": "Ištrinta „{themeName}“ iš šio įrenginio.",
+  "savedThemesDeleteFailedMessage": "Nepavyko ištrinti „{themeName}“.",
+  "savedThemesTitle": "Išsaugotos temos",
+  "savedThemesDescription": "Tai temos, atsisiųstos iš Moonfin įskiepio dabartiniam serveriui. Ištrynus pašalinama tik ši vietinė kopija.",
+  "savedThemesEmpty": "Šiam serveriui išsaugotų temų nerasta.",
+  "savedThemesCurrentThemeId": "{themeId} • Šiuo metu aktyvus",
+  "savedThemesDeleteTooltip": "Ištrinti išsaugotą temą",
+  "savedThemesManageSubtitle": "Tvarkykite atsisiųstų papildinių temas šiame įrenginyje",
+  "kefinTweaksTitle": "KefinTweaks",
+  "homeScreenSectionsTitle": "Pagrindinio ekrano skyriai",
+  "themeEditor": "Temos redaktorius",
+  "themeEditorSubtitle": "Naršyklėje atidarykite Moonfin temų rengyklę",
+  "homeScreen": "Pagrindinis ekranas",
+  "bottomBar": "Apatinė juosta",
+  "homeRowsStyleClassic": "Klasikinis",
+  "homeRowsStyleModern": "Modernus",
+  "homeRowsSection": "Pradžios eilutės",
+  "rowsType": "Eilučių tipas",
+  "rowsTypeDescription": "„Classic“ išlaiko kiekvienos eilutės vaizdo tipą ir informacijos perdangą. Modernus naudoja portreto ir fono eilutes.",
+  "displayFavoritesRows": "Rodyti mėgstamiausių eilutes",
+  "displayFavoritesRowsSubtitle": "Rodyti mėgstamiausius filmus, serialus ir kitas mėgstamiausias eilutes pagrindinio puslapio skiltyse.",
+  "favoritesRowSorting": "Parankinių eilučių rūšiavimas",
+  "favoritesRowSortingDescription": "Rūšiuoti parankinių eilutes pagal pridėjimo datą, išleidimo datą, abėcėlės tvarka ir kt.",
+  "displayCollectionsRows": "Rodyti kolekcijų eilutes",
+  "displayCollectionsRowsSubtitle": "Rodyti kolekcijų eilutes pagrindinio puslapio skiltyse.",
+  "collectionsRowSorting": "Rinkinių eilučių rūšiavimas",
+  "collectionsRowSortingDescription": "Rūšiuoti kolekcijų eilutes pagal pridėjimo datą, išleidimo datą, abėcėlės tvarka ir kt.",
+  "displayGenresRows": "Rodyti žanrų eilutes",
+  "displayGenresRowsSubtitle": "Rodyti žanrų eilutes pagrindiniuose skyriuose.",
+  "genresRowSorting": "Žanrai Eilučių rūšiavimas",
+  "genresRowSortingDescription": "Rūšiuoti žanrų eilutes pagal pridėjimo datą, išleidimo datą, abėcėlės tvarka ir kt.",
+  "genresRowItems": "Žanrai Eilutės elementai",
+  "genresRowItemsDescription": "Rodyti filmus, serialus arba abu žanrų eilutėse.",
+  "appearance": "Išvaizda",
+  "cardSize": "Kortelės dydis",
+  "externalPlayerApp": "Išorinio grotuvo programa",
+  "externalPlayerAskEachTimeSubtitle": "Rodyti programos parinkiklį, kai prasideda atkūrimas.",
+  "loadingInstalledPlayers": "Įkeliami įdiegti grotuvai...",
+  "connection": "Ryšys",
+  "audioTranscodeTarget": "Garso perkodavimo tikslas",
+  "passthrough": "Praėjimas",
+  "supportedOnThisDevice": "Palaikomas šiame įrenginyje",
+  "notSupportedOnThisDevice": "Nepalaikomas šiame įrenginyje",
+  "settingsAudioDtsXPassthrough": "DTS:X (DTS UHD) pralaidumas",
+  "settingsAudioBitstreamDtsXToExternalDecoder": "Bitų srautas DTS:X (DTS UHD) į išorinį dekoderį.",
+  "settingsAudioTrueHdJocPassthrough": "„TrueHD“ su „Atmos“ (JOC) pralaidumu",
+  "mediaPlayerBehavior": "Media Player elgesys",
+  "playbackEnhancements": "Atkūrimo patobulinimai",
+  "alwaysOn": "Visada įjungta.",
+  "replaceSkipOutroWithNextUpDisplay": "Pakeiskite Skip Outro į kitą ekraną",
+  "replaceSkipOutroWithNextUpDisplaySubtitle": "Vietoj mygtuko Skip Outro rodyti perdangą Next Up.",
+  "playerRouting": "Žaidėjų maršrutas",
+  "preferSoftwareDecoders": "Pirmenybę teikite programiniams dekoderiams",
+  "preferSoftwareDecodersSubtitle": "Prieš aparatūros dekoderius naudokite FFmpeg (garso) ir libgav1 (AV1). Išjungti, jei nutrūksta HDMI garso perdavimas.",
+  "useExternalPlayer": "Naudokite išorinį grotuvą",
+  "useExternalPlayerSubtitle": "Atidarykite vaizdo įrašų atkūrimą pasirinktoje išorinėje programoje „Android TV“.",
+  "automaticQueuing": "Automatinis eilių sudarymas",
+  "preferSdhSubtitles": "Pirmenybė teikiama SDH subtitrams",
+  "preferSdhSubtitlesSubtitle": "Automatinio pasirinkimo metu pirmenybę teikite SDH/CC subtitrų takeliams.",
+  "webDiagnostics": "Interneto diagnostika",
+  "webDiagnosticsTitle": "Moonfin Žiniatinklio diagnostika",
+  "webDiagnosticsIntro": "Naudokite šį puslapį norėdami diagnozuoti naršyklės ryšio problemas (CORS, mišraus turinio ir atradimo nustatymus).",
+  "webDiagnosticsDetectedMixedContentFailure": "Aptiktas mišraus turinio gedimas",
+  "webDiagnosticsDetectedCorsPreflightFailure": "Aptiktas CORS / išankstinio skrydžio gedimas",
+  "webDiagnosticsMixedContentFailureBody": "Moonfin aptiko HTTPS puslapį, bandantį iškviesti HTTP serverio URL. Naršyklės blokuoja šią užklausą, kol ji pasiekia jūsų serverį.",
+  "webDiagnosticsCorsFailureBody": "Moonfin aptiko naršyklės lygio užklausos gedimą, kurį dažniausiai sukelia trūkstamos CORS arba išankstinio patikrinimo antraštės medijos serveryje.",
+  "webDiagnosticsTargetUrl": "Tikslinis URL: {url}",
+  "webDiagnosticsDetail": "Išsami informacija: {detail}",
+  "webDiagnosticsCurrentRuntimeContext": "Dabartinis vykdymo kontekstas",
+  "webDiagnosticsOrigin": "Kilmė",
+  "webDiagnosticsScheme": "Schema",
+  "webDiagnosticsPluginMode": "Papildinio režimas",
+  "webDiagnosticsWebRtcScan": "WebRTC nuskaitymas",
+  "webDiagnosticsForcedServerUrl": "Priverstinis serverio URL",
+  "webDiagnosticsDefaultServerUrl": "Numatytasis serverio URL",
+  "webDiagnosticsDiscoveryProxyUrl": "Atradimo tarpinio serverio URL",
+  "notConfigured": "nesukonfigūruotas",
+  "webDiagnosticsMixedContent": "Mišrus turinys",
+  "webDiagnosticsMixedContentDetected": "Šis puslapis įkeltas per HTTPS, bet vienas ar daugiau sukonfigūruotų URL yra HTTP. Naršyklės blokuoja HTTPS puslapius, kad jie negalėtų iškviesti HTTP API.",
+  "webDiagnosticsMixedContentFix": "Pataisymas: aptarnaukite medijos serverį arba tarpinį serverį per HTTPS arba įkelkite Moonfin per HTTP tik patikimuose vietiniuose tinkluose.",
+  "webDiagnosticsNoMixedContentDetected": "Iš dabartinių vykdymo laiko nustatymų neaptikta jokios akivaizdžios mišraus turinio konfigūracijos.",
+  "webDiagnosticsCorsChecklist": "CORS kontrolinis sąrašas",
+  "webDiagnosticsCorsChecklistItem1": "• Leisti naršyklės kilmę Access-Control-Allow-Origin.",
+  "webDiagnosticsCorsChecklistItem2": "• Įtraukite įgaliojimą, X-Emby-Authorization ir X-Emby-Token į Access-Control-Allow-Headers.",
+  "webDiagnosticsCorsChecklistItem3": "• Atskleisti turinio diapazoną ir priimti diapazoną, kad galėtumėte perduoti srautą ir ieškoti elgsenos.",
+  "webDiagnosticsCorsChecklistItem4": "• Grąžinkite 204 į OPTIONS išankstinio patikrinimo užklausas.",
+  "webDiagnosticsHeaderSnippetTitle": "Antraštės fragmento pavyzdys (nginx stiliaus)",
+  "note": "Pastaba",
+  "webDiagnosticsNonWebNote": "Šis diagnostikos maršrutas skirtas žiniatinklio kūrimui. Jei tai matote kitoje platformoje, šie patikrinimai gali būti netaikomi.",
+  "backToServerSelect": "Atgal į serverį Pasirinkite",
+  "signOutAllUsers": "Atsijungti nuo visų vartotojų",
+  "voiceSearchPermissionPermanentlyDenied": "Mikrofono leidimas visam laikui atmestas. Įjunkite jį sistemos nustatymuose.",
+  "voiceSearchPermissionRequired": "Norint atlikti paiešką balsu, reikalingas mikrofono leidimas.",
+  "voiceSearchNoMatch": "Nepagavo to. Bandykite dar kartą.",
+  "voiceSearchNoSpeechDetected": "Kalbos neaptikta.",
+  "voiceSearchMicrophoneError": "Mikrofono klaida.",
+  "voiceSearchNeedsInternet": "Balso paieškai reikia interneto.",
+  "voiceSearchServiceBusy": "Balso paslauga užimta. Bandykite dar kartą.",
+  "microphonePermissionPermanentlyDenied": "Mikrofono leidimas visam laikui atmestas.",
+  "microphonePermissionDenied": "Mikrofono leidimas atmestas.",
+  "speechRecognitionUnavailable": "Kalbos atpažinimo funkcija šiame įrenginyje nepasiekiama.",
+  "openIosRoutePicker": "Atidarykite „iOS“ maršruto parinkiklį",
+  "airPlayRoutePickerUnavailable": "AirPlay maršruto parinkiklis nepasiekiamas šiame įrenginyje.",
+  "videos": "Vaizdo įrašai",
+  "trailers": "Priekabos",
+  "programs": "Programos",
+  "songs": "Dainos",
+  "photoAlbums": "Nuotraukų albumai",
+  "photos": "Nuotraukos",
+  "people": "Žmonės",
+  "recentlyReleasedEpisodes": "Neseniai išleisti epizodai",
+  "watchAgain": "Žiūrėti dar kartą",
+  "guestAppearances": "Svečių pasirodymai",
+  "appearancesSeerr": "Pasirodymai (Serr)",
+  "watchWithGroup": "Žiūrėkite su grupe",
+  "errors": "Klaidos",
+  "warnings": "Įspėjimai",
+  "disk": "Diskas",
+  "openInBrowser": "Atidaryti naršyklėje",
+  "embeddedBrowserNotAvailable": "Įterptoji naršyklė šioje platformoje nepasiekiama.",
+  "adminRestartServerConfirmation": "Ar tikrai norite iš naujo paleisti serverį?",
+  "adminShutdownServerConfirmation": "Ar tikrai norite išjungti serverį? Turėsite jį iš naujo paleisti rankiniu būdu.",
+  "internal": "Vidinis",
+  "idle": "Tuščia eiga",
+  "os": "OS",
+  "adminNoUsersFound": "Nerasta jokių vartotojų",
+  "adminNoUsersMatchSearch": "Jūsų paiešką atitinkančių naudotojų nėra",
+  "adminNoDevicesFound": "Nerasta jokių įrenginių",
+  "adminNoDevicesMatchCurrentFilters": "Nė vienas įrenginys neatitinka dabartinių filtrų",
+  "passwordSet": "Slaptažodis nustatytas",
+  "noPasswordConfigured": "Nekonfigūruotas slaptažodis",
+  "remoteAccess": "Nuotolinė prieiga",
+  "localOnly": "Tik vietinis",
+  "adminMediaAnalyticsLoadFailed": "Nepavyko įkelti medijos analizės",
+  "analyticsCombinedAcrossLibraries": "Kombinuota analizė visose medijos bibliotekose.",
+  "analyticsTopArtists": "Geriausi atlikėjai",
+  "analyticsTopAuthors": "Geriausi autoriai",
+  "analyticsTopContributors": "Geriausi bendradarbiai",
+  "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+  "analyticsNoIndexedMediaTotals": "Šiam pasirinkimui dar nėra jokių indeksuotų medijos sumų.",
+  "analyticsLibraryDetails": "Bibliotekos informacija",
+  "analyticsLibraryBreakdown": "Bibliotekos suskirstymas",
+  "analyticsNoLibrariesAvailable": "Bibliotekų nėra.",
+  "adminServerAdministrationTitle": "Serverio administravimas",
+  "adminServerPathData": "Duomenys",
+  "adminServerPathImageCache": "Vaizdo talpykla",
+  "adminServerPathCache": "Talpykla",
+  "adminServerPathLogs": "Rąstai",
+  "adminServerPathMetadata": "Metaduomenys",
+  "adminServerPathTranscode": "Perkoduoti",
+  "adminServerPathWeb": "Žiniatinklis",
+  "adminNoServerPathsReturned": "Šis serveris nepateikė jokių serverio kelių.",
+  "adminPercentUsed": "{percent}% panaudota",
+  "userActivity": "Vartotojo veikla",
+  "systemEvents": "Sistemos įvykiai",
+  "needsAttention": "Reikia dėmesio",
+  "adminDrawerSectionServer": "Serveris",
+  "adminDrawerSectionPlayback": "Atkūrimas",
+  "adminDrawerSectionDevices": "Prietaisai",
+  "adminDrawerSectionAdvanced": "Išplėstinė",
+  "adminDrawerSectionPlugins": "Papildiniai",
+  "adminDrawerSectionLiveTv": "Tiesioginė televizija",
+  "homeVideos": "Namų vaizdo įrašai",
+  "mixedContent": "Mišrus turinys",
+  "homeVideosAndPhotos": "Namų vaizdo įrašai ir nuotraukos",
+  "mixedMoviesAndShows": "Mišrūs filmai ir laidos",
+  "intelQuickSync": "„Intel“ greitasis sinchronizavimas",
+  "rockchipMpp": "Rockchip MPP",
+  "dolbyVision": "Dolby Vision",
+  "noRecordingsFound": "Įrašų nerasta",
+  "noImagePagesFoundInArchive": ".{extension} archyve vaizdų puslapių nerasta.",
+  "embeddedRendererFailed": "Įterptasis atvaizdavimo įrenginys nepavyko ({code}): {description}",
+  "epubRendererFailed": "Nepavyko pateikti EPUB ({code}): {description}",
+  "missingLocalFileForReader": "Trūksta vietinio skaitytuvo failo: {uri}",
+  "httpStatusWhileOpeningBookData": "HTTP {status} atidarant knygos duomenis iš {uri}",
+  "noReadableBookEndpointAvailable": "Nėra skaitomos knygos galutinio taško",
+  "unsupportedComicArchiveFormat": "Nepalaikomas komiksų archyvo formatas: .{extension}",
+  "cbrExtractionPluginUnavailable": "CBR ištraukimo papildinio šioje platformoje nėra.",
+  "failedToExtractCbrArchive": "Nepavyko išskleisti .cbr archyvo.",
+  "cb7ExtractionUnavailable": "CB7 ištraukimas šioje platformoje negalimas.",
+  "cb7ExtractionPluginUnavailable": "CB7 ištraukimo įskiepis nepasiekiamas šioje platformoje.",
+  "closeGenrePanel": "Uždaryti žanro skydelį",
+  "loadingShuffle": "Įkeliamas maišymas...",
+  "libraryShuffleLabel": "LIBRARY SHUFFLE",
+  "randomShuffleLabel": "RANDOM SHUFFLE",
+  "genresShuffleLabel": "GENRES SHUFFLE",
+  "autoHdrSwitching": "Automatinis HDR perjungimas",
+  "autoHdrSwitchingDescription": "Automatiškai įgalinkite HDR HDR vaizdo įrašams atkurti ir atkurkite rodymo režimą išėjus.",
+  "whenFullscreen": "Kai per visą ekraną",
+  "transcodingLimits": "Perkodavimo ribos",
+  "@keyboardPreferSystemIme": {
+    "description": "Settings label for preferring the native system keyboard instead of the custom TV keyboard"
+  },
+  "@keyboardPreferSystemImeDescription": {
+    "description": "Settings subtitle for the system keyboard preference"
+  },
+  "@musicVideos": {
+    "description": "Section header for music videos filmography row"
+  },
+  "@record": {
+    "description": "Button label to schedule a live TV recording"
+  },
+  "@cancelRecordingAction": {
+    "description": "Button label to cancel a scheduled live TV recording"
+  },
+  "@programSetToRecord": {
+    "description": "Snackbar confirmation after scheduling a live TV program recording"
+  },
+  "@recordingCancelled": {
+    "description": "Snackbar confirmation after cancelling a live TV recording"
+  },
+  "@unableToCreateRecording": {
+    "description": "Error when creating a live TV recording fails"
+  },
+  "@seasonalEffectsDescription": {
+    "description": "Description for seasonal effects settings"
+  },
+  "@settingsAudioOutputMode": {
+    "description": "Setting for audio output mode"
+  },
+  "@settingsAudioOutputModeAvrPassthrough": {
+    "description": "Audio output mode option for AVR passthrough"
+  },
+  "@settingsAudioFallbackCodec": {
+    "description": "Setting for fallback audio codec"
+  },
+  "@settingsAudioFallbackAacStereo": {
+    "description": "Fallback codec option for AAC stereo"
+  },
+  "@settingsAudioFallbackAc35_1": {
+    "description": "Fallback codec option for AC3 5.1"
+  },
+  "@settingsAudioFallbackEac35_1": {
+    "description": "Fallback codec option for EAC3 5.1"
+  },
+  "@settingsAudioPassthroughAdvanced": {
+    "description": "Section title for advanced passthrough controls"
+  },
+  "@settingsAudioCodecPassthrough": {
+    "description": "Title for codec passthrough settings group"
+  },
+  "@settingsAudioCodecPassthroughDescription": {
+    "description": "Description for codec passthrough settings group"
+  },
+  "@settingsAudioEac3Passthrough": {
+    "description": "Setting for EAC3 passthrough"
+  },
+  "@settingsAudioEac3JocPassthrough": {
+    "description": "Setting for EAC3 JOC Atmos passthrough"
+  },
+  "@settingsAudioDtsCorePassthrough": {
+    "description": "Setting for DTS core passthrough"
+  },
+  "@settingsAudioDtsHdPassthrough": {
+    "description": "Setting for DTS-HD MA passthrough"
+  },
+  "@settingsAudioTrueHdPassthrough": {
+    "description": "Setting for TrueHD passthrough"
+  },
+  "@settingsAudioTrueHdAtmosPassthrough": {
+    "description": "Setting for TrueHD Atmos passthrough"
+  },
+  "@settingsAudioBitstreamEac3ToExternalDecoder": {
+    "description": "Description for EAC3 passthrough"
+  },
+  "@settingsAudioBitstreamEac3JocToExternalDecoder": {
+    "description": "Description for EAC3 JOC passthrough"
+  },
+  "@settingsAudioBitstreamDtsHdToExternalDecoder": {
+    "description": "Description for DTS-HD MA passthrough"
+  },
+  "@settingsAudioBitstreamTrueHdAtmosToExternalDecoder": {
+    "description": "Description for TrueHD Atmos passthrough"
+  },
+  "@settingsDetectedAudioCapabilities": {
+    "description": "Section title for detected runtime audio capabilities"
+  },
+  "@settingsDetectedAudioCapabilitiesUnavailable": {
+    "description": "Message shown when runtime audio capability snapshot is missing"
+  },
+  "@settingsAudioRouteLabel": {
+    "description": "Label for active audio route row"
+  },
+  "@settingsAudioDecodeLabel": {
+    "description": "Label for audio decode capability row"
+  },
+  "@settingsAudioPassthroughLabel": {
+    "description": "Label for audio passthrough capability row"
+  },
+  "@settingsAudioHdRoute": {
+    "description": "Label indicating the active route supports HD audio"
+  },
+  "@settingsAudioRouteHdmi": {
+    "description": "Audio route type HDMI"
+  },
+  "@settingsAudioRouteArc": {
+    "description": "Audio route type ARC"
+  },
+  "@settingsAudioRouteEarc": {
+    "description": "Audio route type eARC"
+  },
+  "@settingsAudioRouteBluetooth": {
+    "description": "Audio route type Bluetooth"
+  },
+  "@settingsAudioRouteSpeaker": {
+    "description": "Audio route type speaker"
+  },
+  "@settingsAudioPcmChannels": {
+    "description": "Audio route subtitle showing max PCM channels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@settingsAudioDiagnostics": {
+    "description": "Section title for playback diagnostics"
+  },
+  "@settingsAudioDiagnosticsVideoLevel": {
+    "description": "Diagnostics label for video level"
+  },
+  "@settingsAudioDiagnosticsVideoRange": {
+    "description": "Diagnostics label for video range"
+  },
+  "@settingsAudioDiagnosticsSubtitleCodec": {
+    "description": "Diagnostics label for subtitle codec"
+  },
+  "@settingsAudioDiagnosticsAllowedAudioCodecs": {
+    "description": "Diagnostics label for allowed audio codecs"
+  },
+  "@settingsAudioDiagnosticsHlsMpegTsAudioCodecs": {
+    "description": "Diagnostics label for HLS MPEG-TS audio codecs"
+  },
+  "@settingsAudioDiagnosticsHlsFmp4AudioCodecs": {
+    "description": "Diagnostics label for HLS fMP4 audio codecs"
+  },
+  "@settingsAudioDiagnosticsAudioSpdifPassthrough": {
+    "description": "Diagnostics label for audio-spdif passthrough codecs"
+  },
+  "@settingsAudioDiagnosticsActiveAudioRoute": {
+    "description": "Diagnostics label for active audio route"
+  },
+  "@settingsAudioDiagnosticsRouteHdAudioSupport": {
+    "description": "Diagnostics label for route HD audio support"
+  },
+  "@mediaSources": {
+    "description": "Section heading for media source options"
+  },
+  "@behavior": {
+    "description": "Section heading for behavior options"
+  },
+  "@seconds": {
+    "description": "Time unit label in seconds"
+  },
+  "@localPreviews": {
+    "description": "Local previews settings screen title"
+  },
+  "@localPreviewsDescription": {
+    "description": "Description for local previews settings"
+  },
+  "@mediaPreview": {
+    "description": "Setting for media preview"
+  },
+  "@mediaPreviewDescription": {
+    "description": "Description for media preview"
+  },
+  "@autoplayNextEpisode": {
+    "description": "Setting title: automatically start the next episode"
+  },
+  "@autoplayNextEpisodeSubtitle": {
+    "description": "Setting subtitle for autoplay next episode"
+  },
+  "@skipSilenceTitle": {
+    "description": "Setting title: skip silent audio segments during playback"
+  },
+  "@skipSilenceSubtitle": {
+    "description": "Setting subtitle for skip silence"
+  },
+  "@allowExternalAudioEffectsTitle": {
+    "description": "Setting title: allow equalizer apps to attach to Media3"
+  },
+  "@allowExternalAudioEffectsSubtitle": {
+    "description": "Setting subtitle for external audio effects"
+  },
+  "@disableTunnelingTitle": {
+    "description": "Setting title: force non-tunneled video playback"
+  },
+  "@disableTunnelingSubtitle": {
+    "description": "Setting subtitle for disable tunneling"
+  },
+  "@mapDolbyVisionP7Title": {
+    "description": "Setting title: play DV P7 as HDR10 HEVC on non-DV devices"
+  },
+  "@mapDolbyVisionP7Subtitle": {
+    "description": "Setting subtitle for DV P7 to HEVC mapping"
+  },
+  "@subtitlesUseEmbeddedStyles": {
+    "description": "Setting title: apply colours/positioning from the subtitle track"
+  },
+  "@subtitlesUseEmbeddedStylesSubtitle": {
+    "description": "Setting subtitle for embedded styles toggle"
+  },
+  "@subtitlesUseEmbeddedFontSizes": {
+    "description": "Setting title: apply font sizes from the subtitle track"
+  },
+  "@subtitlesUseEmbeddedFontSizesSubtitle": {
+    "description": "Setting subtitle for embedded font sizes toggle"
+  },
+  "@useDetailedSubHeadings": {
+    "description": "Label for setting to toggle detailed or minimal subrow on library pages"
+  },
+  "@useDetailedSubHeadingsDescription": {
+    "description": "Subtitle for the use detailed sub headings setting"
+  },
+  "@savedThemesDeleteDialogMessage": {
+    "description": "Confirmation message for deleting a saved custom theme",
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "@savedThemesDeletedMessage": {
+    "description": "Status message shown after deleting a saved custom theme",
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "@savedThemesDeleteFailedMessage": {
+    "description": "Status message shown when deleting a saved custom theme fails",
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "@savedThemesCurrentThemeId": {
+    "description": "Subtitle showing the saved theme id when it is currently selected",
+    "placeholders": {
+      "themeId": {
+        "type": "String"
+      }
+    }
+  },
+  "@webDiagnosticsTargetUrl": {
+    "description": "Target URL shown in diagnostics summary",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "@webDiagnosticsDetail": {
+    "description": "Error detail shown in diagnostics summary",
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@analyticsLibrariesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@adminPercentUsed": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@noImagePagesFoundInArchive": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "@embeddedRendererFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      },
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "@epubRendererFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      },
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "@missingLocalFileForReader": {
+    "placeholders": {
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "@httpStatusWhileOpeningBookData": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      },
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "@unsupportedComicArchiveFormat": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer"
 }

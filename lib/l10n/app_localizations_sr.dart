@@ -6927,7 +6927,7 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'Означите пројекат звездицом на __АРБ_ТЕРМ_0__ или дајте допринос';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'ЛЕГАЛ';

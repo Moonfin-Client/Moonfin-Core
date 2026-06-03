@@ -6884,7 +6884,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'प्रोजेक्ट को GitHub पर तारांकित करें या योगदान दें';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'कानूनी';

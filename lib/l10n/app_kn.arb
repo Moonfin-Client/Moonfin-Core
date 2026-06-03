@@ -6628,7 +6628,6 @@
   "settingsJoinDiscordSubtitle": "ಸಮುದಾಯದೊಂದಿಗೆ ಚಾಟ್ ಮಾಡಿ",
   "settingsJoinTheDiscord": "Discord ಸೇರಿ",
   "settingsSupportMoonfin": "ಬೆಂಬಲ Moonfin",
-  "settingsSupportMoonfinSubtitle": "GitHub ನಲ್ಲಿ ಪ್ರಾಜೆಕ್ಟ್ ಅನ್ನು ಸ್ಟಾರ್ ಮಾಡಿ ಅಥವಾ ಕೊಡುಗೆ ನೀಡಿ",
   "settingsLegal": "ಕಾನೂನುಬದ್ಧ",
   "settingsLicenses": "ಪರವಾನಗಿಗಳು",
   "settingsOpenSourceLicenseNotices": "ಓಪನ್ ಸೋರ್ಸ್ ಪರವಾನಗಿ ಸೂಚನೆಗಳು",
@@ -6761,5 +6760,602 @@
   "localPreviews": "ಸ್ಥಳೀಯ ಮುನ್ನೋಟಗಳು",
   "localPreviewsDescription": "ಟ್ರೇಲರ್, ಮಾಧ್ಯಮ ಮತ್ತು ಆಡಿಯೊ ಪೂರ್ವವೀಕ್ಷಣೆಗಳನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿ.",
   "mediaPreview": "ಮಾಧ್ಯಮ ಮುನ್ನೋಟ",
-  "mediaPreviewDescription": "ಕೇಂದ್ರೀಕರಿಸಿದ, ಸುಳಿದಾಡಿದ ಅಥವಾ ದೀರ್ಘ-ಒತ್ತಿದ ಕಾರ್ಡ್‌ಗಳಲ್ಲಿ 30-ಸೆಕೆಂಡ್ ಇನ್‌ಲೈನ್ ಪೂರ್ವವೀಕ್ಷಣೆಯನ್ನು ಪ್ಲೇ ಮಾಡಿ"
+  "mediaPreviewDescription": "ಕೇಂದ್ರೀಕರಿಸಿದ, ಸುಳಿದಾಡಿದ ಅಥವಾ ದೀರ್ಘ-ಒತ್ತಿದ ಕಾರ್ಡ್‌ಗಳಲ್ಲಿ 30-ಸೆಕೆಂಡ್ ಇನ್‌ಲೈನ್ ಪೂರ್ವವೀಕ್ಷಣೆಯನ್ನು ಪ್ಲೇ ಮಾಡಿ",
+  "keyboardPreferSystemIme": "Prefer system keyboard",
+  "keyboardPreferSystemImeDescription": "Use your device input method by default for text entry",
+  "musicVideos": "Music Videos",
+  "record": "Record",
+  "cancelRecordingAction": "Cancel Recording",
+  "programSetToRecord": "Program set to record",
+  "recordingCancelled": "Recording cancelled",
+  "unableToCreateRecording": "Unable to create recording",
+  "settingsAudioOutputMode": "Audio Output Mode",
+  "settingsAudioOutputModeAvrPassthrough": "AVR Passthrough",
+  "settingsAudioFallbackCodec": "Audio Fallback Codec",
+  "settingsAudioFallbackAacStereo": "AAC Stereo",
+  "settingsAudioFallbackAc35_1": "AC3 5.1",
+  "settingsAudioFallbackEac35_1": "EAC3 5.1",
+  "settingsAudioPassthroughAdvanced": "Passthrough (Advanced)",
+  "settingsAudioCodecPassthrough": "Codec Passthrough",
+  "settingsAudioCodecPassthroughDescription": "Enable only formats your AVR or HDMI sink supports.",
+  "settingsAudioEac3Passthrough": "EAC3 Passthrough",
+  "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) Passthrough",
+  "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+  "settingsAudioDtsHdPassthrough": "DTS-HD MA Passthrough",
+  "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
+  "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+  "settingsAudioBitstreamEac3ToExternalDecoder": "Bitstream Dolby Digital Plus (EAC3) to external decoder.",
+  "settingsAudioBitstreamEac3JocToExternalDecoder": "Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.",
+  "settingsAudioBitstreamDtsHdToExternalDecoder": "Bitstream DTS-HD MA (includes DTS core) to external decoder.",
+  "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Bitstream Dolby TrueHD with Atmos metadata to external decoder.",
+  "settingsDetectedAudioCapabilities": "Detected Audio Capabilities",
+  "settingsDetectedAudioCapabilitiesUnavailable": "No runtime capability snapshot available yet.",
+  "settingsAudioRouteLabel": "Route",
+  "settingsAudioDecodeLabel": "Decode",
+  "settingsAudioPassthroughLabel": "Passthrough",
+  "settingsAudioHdRoute": "HD audio route",
+  "settingsAudioRouteHdmi": "HDMI",
+  "settingsAudioRouteArc": "ARC",
+  "settingsAudioRouteEarc": "eARC",
+  "settingsAudioRouteBluetooth": "Bluetooth",
+  "settingsAudioRouteSpeaker": "Speaker",
+  "settingsAudioPcmChannels": "{count}ch PCM",
+  "settingsAudioDiagnostics": "Diagnostics",
+  "settingsAudioDiagnosticsVideoLevel": "Video Level",
+  "settingsAudioDiagnosticsVideoRange": "Video Range",
+  "settingsAudioDiagnosticsSubtitleCodec": "Subtitle Codec",
+  "settingsAudioDiagnosticsAllowedAudioCodecs": "Allowed Audio Codecs",
+  "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS Audio Codecs",
+  "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4 Audio Codecs",
+  "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif passthrough",
+  "settingsAudioDiagnosticsActiveAudioRoute": "Active Audio Route",
+  "settingsAudioDiagnosticsRouteHdAudioSupport": "Route HD Audio Support",
+  "settingsPlaybackEngineMedia3Legacy": "Media3 (legacy)",
+  "settingsPlaybackEngineMpvRecommended": "mpv (recommended)",
+  "autoplayNextEpisode": "Autoplay Next Episode",
+  "autoplayNextEpisodeSubtitle": "Automatically play the next episode when available.",
+  "skipSilenceTitle": "Skip silence",
+  "skipSilenceSubtitle": "Automatically skip silent audio segments when supported by the stream.",
+  "allowExternalAudioEffectsTitle": "Allow external audio effects",
+  "allowExternalAudioEffectsSubtitle": "Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.",
+  "disableTunnelingTitle": "Disable tunneling",
+  "disableTunnelingSubtitle": "Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.",
+  "mapDolbyVisionP7Title": "Map Dolby Vision profile 7 to HEVC",
+  "mapDolbyVisionP7Subtitle": "Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.",
+  "subtitlesUseEmbeddedStyles": "Use embedded subtitle styles",
+  "subtitlesUseEmbeddedStylesSubtitle": "Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.",
+  "subtitlesUseEmbeddedFontSizes": "Use embedded subtitle font sizes",
+  "subtitlesUseEmbeddedFontSizesSubtitle": "Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.",
+  "useDetailedSubHeadings": "Use Detailed Sub-Headings",
+  "useDetailedSubHeadingsDescription": "Show detailed or minimal subrow on Library pages.",
+  "savedThemesDeleteDialogTitle": "Delete saved theme?",
+  "savedThemesDeleteDialogMessage": "Remove \"{themeName}\" from this device cache?",
+  "savedThemesDeletedMessage": "Deleted \"{themeName}\" from this device.",
+  "savedThemesDeleteFailedMessage": "Could not delete \"{themeName}\".",
+  "savedThemesTitle": "Saved themes",
+  "savedThemesDescription": "These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.",
+  "savedThemesEmpty": "No saved themes were found for this server.",
+  "savedThemesCurrentThemeId": "{themeId} • Currently active",
+  "savedThemesDeleteTooltip": "Delete saved theme",
+  "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
+  "kefinTweaksTitle": "KefinTweaks",
+  "homeScreenSectionsTitle": "Home Screen Sections",
+  "themeEditor": "Theme Editor",
+  "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
+  "homeScreen": "Home Screen",
+  "bottomBar": "Bottom Bar",
+  "homeRowsStyleClassic": "Classic",
+  "homeRowsStyleModern": "Modern",
+  "homeRowsSection": "Home Rows",
+  "rowsType": "Rows Type",
+  "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.",
+  "displayFavoritesRows": "Display Favorites Rows",
+  "displayFavoritesRowsSubtitle": "Show Favorite Movies, Series, and other favorite rows in Home Sections.",
+  "favoritesRowSorting": "Favorites Row Sorting",
+  "favoritesRowSortingDescription": "Sort Favorites rows by date added, release date, alphabetically, and more.",
+  "displayCollectionsRows": "Display Collections Rows",
+  "displayCollectionsRowsSubtitle": "Show Collections rows in Home Sections.",
+  "collectionsRowSorting": "Collections Row Sorting",
+  "collectionsRowSortingDescription": "Sort Collections rows by date added, release date, alphabetically, and more.",
+  "displayGenresRows": "Display Genres Rows",
+  "displayGenresRowsSubtitle": "Show Genres rows in Home Sections.",
+  "genresRowSorting": "Genres Row Sorting",
+  "genresRowSortingDescription": "Sort Genres rows by date added, release date, alphabetically, and more.",
+  "genresRowItems": "Genres Row Items",
+  "genresRowItemsDescription": "Show Movies, Series, or both in Genres rows.",
+  "appearance": "Appearance",
+  "cardSize": "Card Size",
+  "externalPlayerApp": "External player app",
+  "externalPlayerAskEachTimeSubtitle": "Show app chooser when playback starts.",
+  "loadingInstalledPlayers": "Loading installed players...",
+  "connection": "Connection",
+  "audioTranscodeTarget": "Audio Transcode Target",
+  "passthrough": "Passthrough",
+  "supportedOnThisDevice": "Supported on this device",
+  "notSupportedOnThisDevice": "Not Supported on this device",
+  "settingsAudioDtsXPassthrough": "DTS:X (DTS UHD) Passthrough",
+  "settingsAudioBitstreamDtsXToExternalDecoder": "Bitstream DTS:X (DTS UHD) to external decoder.",
+  "settingsAudioTrueHdJocPassthrough": "TrueHD with Atmos (JOC) Passthrough",
+  "mediaPlayerBehavior": "Media Player Behavior",
+  "playbackEnhancements": "Playback Enhancements",
+  "alwaysOn": "Always on.",
+  "replaceSkipOutroWithNextUpDisplay": "Replace Skip Outro with Next Up Display",
+  "replaceSkipOutroWithNextUpDisplaySubtitle": "Show the Next Up overlay instead of the Skip Outro button.",
+  "playerRouting": "Player Routing",
+  "preferSoftwareDecoders": "Prefer software decoders",
+  "preferSoftwareDecodersSubtitle": "Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.",
+  "useExternalPlayer": "Use external player",
+  "useExternalPlayerSubtitle": "Open video playback in your selected external app on Android TV.",
+  "automaticQueuing": "Automatic Queuing",
+  "preferSdhSubtitles": "Prefer SDH subtitles",
+  "preferSdhSubtitlesSubtitle": "Prioritize SDH/CC subtitle tracks when auto-selecting.",
+  "webDiagnostics": "Web diagnostics",
+  "webDiagnosticsTitle": "Moonfin Web Diagnostics",
+  "webDiagnosticsIntro": "Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).",
+  "webDiagnosticsDetectedMixedContentFailure": "Detected Mixed-Content Failure",
+  "webDiagnosticsDetectedCorsPreflightFailure": "Detected CORS/Preflight Failure",
+  "webDiagnosticsMixedContentFailureBody": "Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.",
+  "webDiagnosticsCorsFailureBody": "Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.",
+  "webDiagnosticsTargetUrl": "Target URL: {url}",
+  "webDiagnosticsDetail": "Detail: {detail}",
+  "webDiagnosticsCurrentRuntimeContext": "Current Runtime Context",
+  "webDiagnosticsOrigin": "Origin",
+  "webDiagnosticsScheme": "Scheme",
+  "webDiagnosticsPluginMode": "Plugin Mode",
+  "webDiagnosticsWebRtcScan": "WebRTC Scan",
+  "webDiagnosticsForcedServerUrl": "Forced Server URL",
+  "webDiagnosticsDefaultServerUrl": "Default Server URL",
+  "webDiagnosticsDiscoveryProxyUrl": "Discovery Proxy URL",
+  "notConfigured": "not configured",
+  "webDiagnosticsMixedContent": "Mixed Content",
+  "webDiagnosticsMixedContentDetected": "This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.",
+  "webDiagnosticsMixedContentFix": "Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.",
+  "webDiagnosticsNoMixedContentDetected": "No obvious mixed-content configuration detected from current runtime settings.",
+  "webDiagnosticsCorsChecklist": "CORS Checklist",
+  "webDiagnosticsCorsChecklistItem1": "• Allow the browser origin in Access-Control-Allow-Origin.",
+  "webDiagnosticsCorsChecklistItem2": "• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.",
+  "webDiagnosticsCorsChecklistItem3": "• Expose Content-Range and Accept-Ranges for streaming and seek behavior.",
+  "webDiagnosticsCorsChecklistItem4": "• Return 204 to OPTIONS preflight requests.",
+  "webDiagnosticsHeaderSnippetTitle": "Example Header Snippet (nginx-style)",
+  "note": "Note",
+  "webDiagnosticsNonWebNote": "This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.",
+  "backToServerSelect": "Back To Server Select",
+  "signOutAllUsers": "Sign Out All Users",
+  "voiceSearchPermissionPermanentlyDenied": "Microphone permission is permanently denied. Enable it in system settings.",
+  "voiceSearchPermissionRequired": "Microphone permission is required for voice search.",
+  "voiceSearchNoMatch": "Did not catch that. Try again.",
+  "voiceSearchNoSpeechDetected": "No speech detected.",
+  "voiceSearchMicrophoneError": "Microphone error.",
+  "voiceSearchNeedsInternet": "Voice search needs internet.",
+  "voiceSearchServiceBusy": "Voice service is busy. Try again.",
+  "microphonePermissionPermanentlyDenied": "Microphone permission is permanently denied.",
+  "microphonePermissionDenied": "Microphone permission is denied.",
+  "speechRecognitionUnavailable": "Speech recognition is unavailable on this device.",
+  "openIosRoutePicker": "Open iOS route picker",
+  "airPlayRoutePickerUnavailable": "AirPlay route picker is unavailable on this device.",
+  "videos": "Videos",
+  "trailers": "Trailers",
+  "programs": "Programs",
+  "songs": "Songs",
+  "photoAlbums": "Photo Albums",
+  "photos": "Photos",
+  "people": "People",
+  "recentlyReleasedEpisodes": "Recently Released Episodes",
+  "watchAgain": "Watch Again",
+  "guestAppearances": "Guest Appearances",
+  "appearancesSeerr": "Appearances (Seerr)",
+  "watchWithGroup": "Watch with group",
+  "errors": "Errors",
+  "warnings": "Warnings",
+  "disk": "Disk",
+  "openInBrowser": "Open in Browser",
+  "embeddedBrowserNotAvailable": "Embedded browser is not available on this platform.",
+  "adminRestartServerConfirmation": "Are you sure you want to restart the server?",
+  "adminShutdownServerConfirmation": "Are you sure you want to shut down the server? You will need to restart it manually.",
+  "internal": "Internal",
+  "idle": "Idle",
+  "os": "OS",
+  "adminNoUsersFound": "No users found",
+  "adminNoUsersMatchSearch": "No users match your search",
+  "adminNoDevicesFound": "No devices found",
+  "adminNoDevicesMatchCurrentFilters": "No devices match the current filters",
+  "passwordSet": "Password set",
+  "noPasswordConfigured": "No password configured",
+  "remoteAccess": "Remote Access",
+  "localOnly": "Local Only",
+  "adminMediaAnalyticsLoadFailed": "Failed to load media analytics",
+  "analyticsCombinedAcrossLibraries": "Combined analytics across all media libraries.",
+  "analyticsTopArtists": "Top Artists",
+  "analyticsTopAuthors": "Top Authors",
+  "analyticsTopContributors": "Top Contributors",
+  "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+  "analyticsNoIndexedMediaTotals": "No indexed media totals are available for this selection yet.",
+  "analyticsLibraryDetails": "Library Details",
+  "analyticsLibraryBreakdown": "Library Breakdown",
+  "analyticsNoLibrariesAvailable": "No libraries are available.",
+  "adminServerAdministrationTitle": "Server Administration",
+  "adminServerPathData": "Data",
+  "adminServerPathImageCache": "Image Cache",
+  "adminServerPathCache": "Cache",
+  "adminServerPathLogs": "Logs",
+  "adminServerPathMetadata": "Metadata",
+  "adminServerPathTranscode": "Transcode",
+  "adminServerPathWeb": "Web",
+  "adminNoServerPathsReturned": "No server paths returned by this server.",
+  "adminPercentUsed": "{percent}% used",
+  "userActivity": "User Activity",
+  "systemEvents": "System Events",
+  "needsAttention": "Needs Attention",
+  "adminDrawerSectionServer": "Server",
+  "adminDrawerSectionPlayback": "Playback",
+  "adminDrawerSectionDevices": "Devices",
+  "adminDrawerSectionAdvanced": "Advanced",
+  "adminDrawerSectionPlugins": "Plugins",
+  "adminDrawerSectionLiveTv": "Live TV",
+  "homeVideos": "Home Videos",
+  "mixedContent": "Mixed Content",
+  "homeVideosAndPhotos": "Home Videos & Photos",
+  "mixedMoviesAndShows": "Mixed Movies & Shows",
+  "intelQuickSync": "Intel Quick Sync",
+  "rockchipMpp": "Rockchip MPP",
+  "dolbyVision": "Dolby Vision",
+  "noRecordingsFound": "No recordings found",
+  "noImagePagesFoundInArchive": "No image pages found inside .{extension} archive.",
+  "embeddedRendererFailed": "Embedded renderer failed ({code}): {description}",
+  "epubRendererFailed": "EPUB renderer failed ({code}): {description}",
+  "missingLocalFileForReader": "Missing local file for reader: {uri}",
+  "httpStatusWhileOpeningBookData": "HTTP {status} while opening book data from {uri}",
+  "noReadableBookEndpointAvailable": "No readable book endpoint available",
+  "unsupportedComicArchiveFormat": "Unsupported comic archive format: .{extension}",
+  "cbrExtractionPluginUnavailable": "CBR extraction plugin is not available on this platform.",
+  "failedToExtractCbrArchive": "Failed to extract .cbr archive.",
+  "cb7ExtractionUnavailable": "CB7 extraction is not available on this platform.",
+  "cb7ExtractionPluginUnavailable": "CB7 extraction plugin is not available on this platform.",
+  "closeGenrePanel": "Close genre panel",
+  "loadingShuffle": "Loading shuffle...",
+  "libraryShuffleLabel": "LIBRARY SHUFFLE",
+  "randomShuffleLabel": "RANDOM SHUFFLE",
+  "genresShuffleLabel": "GENRES SHUFFLE",
+  "autoHdrSwitching": "Auto HDR Switching",
+  "autoHdrSwitchingDescription": "Automatically enable HDR for HDR video playback and restore display mode on exit.",
+  "whenFullscreen": "When fullscreen",
+  "transcodingLimits": "Transcoding Limits",
+  "@keyboardPreferSystemIme": {
+    "description": "Settings label for preferring the native system keyboard instead of the custom TV keyboard"
+  },
+  "@keyboardPreferSystemImeDescription": {
+    "description": "Settings subtitle for the system keyboard preference"
+  },
+  "@musicVideos": {
+    "description": "Section header for music videos filmography row"
+  },
+  "@record": {
+    "description": "Button label to schedule a live TV recording"
+  },
+  "@cancelRecordingAction": {
+    "description": "Button label to cancel a scheduled live TV recording"
+  },
+  "@programSetToRecord": {
+    "description": "Snackbar confirmation after scheduling a live TV program recording"
+  },
+  "@recordingCancelled": {
+    "description": "Snackbar confirmation after cancelling a live TV recording"
+  },
+  "@unableToCreateRecording": {
+    "description": "Error when creating a live TV recording fails"
+  },
+  "@seasonalEffectsDescription": {
+    "description": "Description for seasonal effects settings"
+  },
+  "@settingsAudioOutputMode": {
+    "description": "Setting for audio output mode"
+  },
+  "@settingsAudioOutputModeAvrPassthrough": {
+    "description": "Audio output mode option for AVR passthrough"
+  },
+  "@settingsAudioFallbackCodec": {
+    "description": "Setting for fallback audio codec"
+  },
+  "@settingsAudioFallbackAacStereo": {
+    "description": "Fallback codec option for AAC stereo"
+  },
+  "@settingsAudioFallbackAc35_1": {
+    "description": "Fallback codec option for AC3 5.1"
+  },
+  "@settingsAudioFallbackEac35_1": {
+    "description": "Fallback codec option for EAC3 5.1"
+  },
+  "@settingsAudioPassthroughAdvanced": {
+    "description": "Section title for advanced passthrough controls"
+  },
+  "@settingsAudioCodecPassthrough": {
+    "description": "Title for codec passthrough settings group"
+  },
+  "@settingsAudioCodecPassthroughDescription": {
+    "description": "Description for codec passthrough settings group"
+  },
+  "@settingsAudioEac3Passthrough": {
+    "description": "Setting for EAC3 passthrough"
+  },
+  "@settingsAudioEac3JocPassthrough": {
+    "description": "Setting for EAC3 JOC Atmos passthrough"
+  },
+  "@settingsAudioDtsCorePassthrough": {
+    "description": "Setting for DTS core passthrough"
+  },
+  "@settingsAudioDtsHdPassthrough": {
+    "description": "Setting for DTS-HD MA passthrough"
+  },
+  "@settingsAudioTrueHdPassthrough": {
+    "description": "Setting for TrueHD passthrough"
+  },
+  "@settingsAudioTrueHdAtmosPassthrough": {
+    "description": "Setting for TrueHD Atmos passthrough"
+  },
+  "@settingsAudioBitstreamEac3ToExternalDecoder": {
+    "description": "Description for EAC3 passthrough"
+  },
+  "@settingsAudioBitstreamEac3JocToExternalDecoder": {
+    "description": "Description for EAC3 JOC passthrough"
+  },
+  "@settingsAudioBitstreamDtsHdToExternalDecoder": {
+    "description": "Description for DTS-HD MA passthrough"
+  },
+  "@settingsAudioBitstreamTrueHdAtmosToExternalDecoder": {
+    "description": "Description for TrueHD Atmos passthrough"
+  },
+  "@settingsDetectedAudioCapabilities": {
+    "description": "Section title for detected runtime audio capabilities"
+  },
+  "@settingsDetectedAudioCapabilitiesUnavailable": {
+    "description": "Message shown when runtime audio capability snapshot is missing"
+  },
+  "@settingsAudioRouteLabel": {
+    "description": "Label for active audio route row"
+  },
+  "@settingsAudioDecodeLabel": {
+    "description": "Label for audio decode capability row"
+  },
+  "@settingsAudioPassthroughLabel": {
+    "description": "Label for audio passthrough capability row"
+  },
+  "@settingsAudioHdRoute": {
+    "description": "Label indicating the active route supports HD audio"
+  },
+  "@settingsAudioRouteHdmi": {
+    "description": "Audio route type HDMI"
+  },
+  "@settingsAudioRouteArc": {
+    "description": "Audio route type ARC"
+  },
+  "@settingsAudioRouteEarc": {
+    "description": "Audio route type eARC"
+  },
+  "@settingsAudioRouteBluetooth": {
+    "description": "Audio route type Bluetooth"
+  },
+  "@settingsAudioRouteSpeaker": {
+    "description": "Audio route type speaker"
+  },
+  "@settingsAudioPcmChannels": {
+    "description": "Audio route subtitle showing max PCM channels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@settingsAudioDiagnostics": {
+    "description": "Section title for playback diagnostics"
+  },
+  "@settingsAudioDiagnosticsVideoLevel": {
+    "description": "Diagnostics label for video level"
+  },
+  "@settingsAudioDiagnosticsVideoRange": {
+    "description": "Diagnostics label for video range"
+  },
+  "@settingsAudioDiagnosticsSubtitleCodec": {
+    "description": "Diagnostics label for subtitle codec"
+  },
+  "@settingsAudioDiagnosticsAllowedAudioCodecs": {
+    "description": "Diagnostics label for allowed audio codecs"
+  },
+  "@settingsAudioDiagnosticsHlsMpegTsAudioCodecs": {
+    "description": "Diagnostics label for HLS MPEG-TS audio codecs"
+  },
+  "@settingsAudioDiagnosticsHlsFmp4AudioCodecs": {
+    "description": "Diagnostics label for HLS fMP4 audio codecs"
+  },
+  "@settingsAudioDiagnosticsAudioSpdifPassthrough": {
+    "description": "Diagnostics label for audio-spdif passthrough codecs"
+  },
+  "@settingsAudioDiagnosticsActiveAudioRoute": {
+    "description": "Diagnostics label for active audio route"
+  },
+  "@settingsAudioDiagnosticsRouteHdAudioSupport": {
+    "description": "Diagnostics label for route HD audio support"
+  },
+  "@mediaSources": {
+    "description": "Section heading for media source options"
+  },
+  "@behavior": {
+    "description": "Section heading for behavior options"
+  },
+  "@seconds": {
+    "description": "Time unit label in seconds"
+  },
+  "@localPreviews": {
+    "description": "Local previews settings screen title"
+  },
+  "@localPreviewsDescription": {
+    "description": "Description for local previews settings"
+  },
+  "@mediaPreview": {
+    "description": "Setting for media preview"
+  },
+  "@mediaPreviewDescription": {
+    "description": "Description for media preview"
+  },
+  "@autoplayNextEpisode": {
+    "description": "Setting title: automatically start the next episode"
+  },
+  "@autoplayNextEpisodeSubtitle": {
+    "description": "Setting subtitle for autoplay next episode"
+  },
+  "@skipSilenceTitle": {
+    "description": "Setting title: skip silent audio segments during playback"
+  },
+  "@skipSilenceSubtitle": {
+    "description": "Setting subtitle for skip silence"
+  },
+  "@allowExternalAudioEffectsTitle": {
+    "description": "Setting title: allow equalizer apps to attach to Media3"
+  },
+  "@allowExternalAudioEffectsSubtitle": {
+    "description": "Setting subtitle for external audio effects"
+  },
+  "@disableTunnelingTitle": {
+    "description": "Setting title: force non-tunneled video playback"
+  },
+  "@disableTunnelingSubtitle": {
+    "description": "Setting subtitle for disable tunneling"
+  },
+  "@mapDolbyVisionP7Title": {
+    "description": "Setting title: play DV P7 as HDR10 HEVC on non-DV devices"
+  },
+  "@mapDolbyVisionP7Subtitle": {
+    "description": "Setting subtitle for DV P7 to HEVC mapping"
+  },
+  "@subtitlesUseEmbeddedStyles": {
+    "description": "Setting title: apply colours/positioning from the subtitle track"
+  },
+  "@subtitlesUseEmbeddedStylesSubtitle": {
+    "description": "Setting subtitle for embedded styles toggle"
+  },
+  "@subtitlesUseEmbeddedFontSizes": {
+    "description": "Setting title: apply font sizes from the subtitle track"
+  },
+  "@subtitlesUseEmbeddedFontSizesSubtitle": {
+    "description": "Setting subtitle for embedded font sizes toggle"
+  },
+  "@useDetailedSubHeadings": {
+    "description": "Label for setting to toggle detailed or minimal subrow on library pages"
+  },
+  "@useDetailedSubHeadingsDescription": {
+    "description": "Subtitle for the use detailed sub headings setting"
+  },
+  "@savedThemesDeleteDialogMessage": {
+    "description": "Confirmation message for deleting a saved custom theme",
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "@savedThemesDeletedMessage": {
+    "description": "Status message shown after deleting a saved custom theme",
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "@savedThemesDeleteFailedMessage": {
+    "description": "Status message shown when deleting a saved custom theme fails",
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "@savedThemesCurrentThemeId": {
+    "description": "Subtitle showing the saved theme id when it is currently selected",
+    "placeholders": {
+      "themeId": {
+        "type": "String"
+      }
+    }
+  },
+  "@webDiagnosticsTargetUrl": {
+    "description": "Target URL shown in diagnostics summary",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "@webDiagnosticsDetail": {
+    "description": "Error detail shown in diagnostics summary",
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@analyticsLibrariesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@adminPercentUsed": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@noImagePagesFoundInArchive": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "@embeddedRendererFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      },
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "@epubRendererFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      },
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "@missingLocalFileForReader": {
+    "placeholders": {
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "@httpStatusWhileOpeningBookData": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      },
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "@unsupportedComicArchiveFormat": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer"
 }

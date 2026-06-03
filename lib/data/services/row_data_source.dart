@@ -11,6 +11,7 @@ import '../../l10n/app_localizations.dart';
 import '../../l10n/current_app_localizations.dart';
 import '../models/aggregated_item.dart';
 import '../models/home_row.dart';
+import '../utils/bounded_concurrency.dart';
 import '../utils/latest_media_row_normalizer.dart';
 import '../utils/genre_browse_utils.dart';
 import '../utils/playlist_utils.dart';
@@ -22,7 +23,7 @@ class RowDataSource {
   static const _maxItems = 100;
   static const _defaultSortBy = 'SortName';
   static const _defaultSortOrder = 'Ascending';
-  static const _genreArtworkConcurrency = 4;
+  static const _genreArtworkConcurrency = 6;
 
   static const _fields =
       'Type,UserData,Overview,Genres,CommunityRating,CriticRating,'
@@ -300,19 +301,15 @@ class RowDataSource {
       };
     }
 
-    final enriched = <Map<String, dynamic>>[];
-    for (var i = 0; i < genres.length; i += _genreArtworkConcurrency) {
-      final batch = genres.skip(i).take(_genreArtworkConcurrency);
-      final resolved = await Future.wait(
-        batch.map(
-          (genre) => _enrichSingleGenreForBrowse(
-            genre,
-            includeItemTypes: includeItemTypes,
-          ),
-        ),
-      );
-      enriched.addAll(resolved.whereType<Map<String, dynamic>>());
-    }
+    final resolved = await mapBounded(
+      genres,
+      _genreArtworkConcurrency,
+      (genre) => _enrichSingleGenreForBrowse(
+        genre,
+        includeItemTypes: includeItemTypes,
+      ),
+    );
+    final enriched = resolved.whereType<Map<String, dynamic>>().toList();
 
     return {
       ...response,

@@ -41,7 +41,7 @@ class JellyfinMediaServerClient extends MediaServerClient {
          baseUrl: baseUrl,
          followRedirects: false,
          connectTimeout: const Duration(seconds: 30),
-         receiveTimeout: const Duration(minutes: 3),
+         receiveTimeout: const Duration(seconds: 30),
        )) {
     _baseUrl = baseUrl;
     configureServerDio(_dio);

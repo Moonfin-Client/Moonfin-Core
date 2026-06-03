@@ -6966,7 +6966,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'Csillagozza meg a projektet a következőn: GitHub, vagy járuljon hozzá';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'JOGI';

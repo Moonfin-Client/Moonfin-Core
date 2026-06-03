@@ -12314,7 +12314,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsSupportMoonfinSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Star the project on GitHub or contribute'**
+  /// **'Donate a coffee to the developer'**
   String get settingsSupportMoonfinSubtitle;
 
   /// No description provided for @settingsLegal.

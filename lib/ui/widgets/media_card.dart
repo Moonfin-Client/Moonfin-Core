@@ -192,7 +192,8 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
       onSecondaryTap: widget.onLongPress == null
           ? null
           : () => widget.onLongPress!(),
-      child: AnimatedScale(
+      child: RepaintBoundary(
+        child: AnimatedScale(
         scale:
             widget.cardFocusExpansion &&
                 (externallyDriven ? effectiveFocused : showFocusBorder)
@@ -257,6 +258,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                       ),
               ),
           ],
+        ),
         ),
       ),
     );

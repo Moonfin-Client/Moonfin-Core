@@ -16,7 +16,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String connectingToServer(String serverName) {
-    return 'Connecting to $serverName';
+    return 'Se conectează la $serverName';
   }
 
   @override
@@ -49,12 +49,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect unavailable: $detail';
+    return 'QuickConnect indisponibil: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect unavailable ($status): $detail';
+    return 'QuickConnect indisponibil ($status): $detail';
   }
 
   @override
@@ -68,7 +68,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin version $version';
+    return 'Moonfin versiunea $version';
   }
 
   @override
@@ -94,7 +94,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String removeServerConfirmation(String serverName) {
-    return 'Remove \"$serverName\" from your servers?';
+    return 'Eliminați „$serverName” de pe serverele dvs.?';
   }
 
   @override
@@ -133,11 +133,11 @@ class AppLocalizationsRo extends AppLocalizations {
       'Comutați între Moonfin și Neon Pulse fără a reporni aplicația';
 
   @override
-  String get keyboardPreferSystemIme => 'Prefer system keyboard';
+  String get keyboardPreferSystemIme => 'Prefer tastatura de sistem';
 
   @override
   String get keyboardPreferSystemImeDescription =>
-      'Use your device input method by default for text entry';
+      'Utilizați metoda de introducere a dispozitivului în mod implicit pentru introducerea textului';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -201,7 +201,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String unableToConnectTo(String target) {
-    return 'Unable to connect to $target';
+    return 'Nu se poate conecta la $target';
   }
 
   @override
@@ -283,7 +283,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return 'Failed to load folder: $error';
+    return 'Nu s-a putut încărca dosarul: $error';
   }
 
   @override
@@ -291,7 +291,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return '$count items';
+    return '$count articole';
   }
 
   @override
@@ -308,7 +308,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return '$count Items';
+    return '$count Articole';
   }
 
   @override
@@ -349,7 +349,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — Genres';
+    return '$name — Genuri';
   }
 
   @override
@@ -388,17 +388,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return '${count}m ago';
+    return '${count}m în urmă';
   }
 
   @override
   String hoursAgo(int count) {
-    return '${count}h ago';
+    return '${count}h în urmă';
   }
 
   @override
   String daysAgo(int count) {
-    return '${count}d ago';
+    return '${count}d acum';
   }
 
   @override
@@ -433,7 +433,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String titlesCount(int count) {
-    return '$count titles';
+    return '$count titluri';
   }
 
   @override
@@ -520,17 +520,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String authorsCount(int count) {
-    return '$count authors';
+    return '$count autori';
   }
 
   @override
   String genresCount(int count) {
-    return '$count genres';
+    return '$count genuri';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '$percent% completed';
+    return '$percent% finalizat';
   }
 
   @override
@@ -547,7 +547,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count titles arranged for reading-first browsing.';
+    return '$count titluri aranjate pentru a le citi mai întâi.';
   }
 
   @override
@@ -584,7 +584,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String noLabelFound(String label) {
-    return 'No $label found';
+    return 'Nu s-a găsit $label';
   }
 
   @override
@@ -656,12 +656,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String sectionCountLabel(int count) {
-    return '$count sections';
+    return '$count secțiuni';
   }
 
   @override
   String firstPublished(int year) {
-    return 'First published $year';
+    return 'Prima publicat $year';
   }
 
   @override
@@ -676,7 +676,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String booksCount(int count) {
-    return '$count books';
+    return '$count cărți';
   }
 
   @override
@@ -687,7 +687,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String authorsCountTitle(int count) {
-    return '$count Authors';
+    return '$count Autori';
   }
 
   @override
@@ -747,7 +747,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get movies => 'Filme';
 
   @override
-  String get musicVideos => 'Music Videos';
+  String get musicVideos => 'Videoclipuri muzicale';
 
   @override
   String get other => 'Alte';
@@ -762,7 +762,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get tableOfContents => 'Cuprins';
 
   @override
-  String get tracklist => 'Tracklist';
+  String get tracklist => 'Lista de melodii';
 
   @override
   String discNumber(int number) {
@@ -792,7 +792,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String published(int year) {
-    return 'Published $year';
+    return 'Publicat $year';
   }
 
   @override
@@ -811,7 +811,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String endsAt(String time) {
-    return 'Ends at $time';
+    return 'Se termină la $time';
   }
 
   @override
@@ -825,7 +825,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return 'Resume from $position';
+    return 'Reluați de la $position';
   }
 
   @override
@@ -924,7 +924,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return 'Delete downloaded tracks for \"$title\"?';
+    return 'Ștergeți melodiile descărcate pentru „$title”?';
   }
 
   @override
@@ -939,17 +939,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return 'No $itemLabel loaded';
+    return 'Nu s-a încărcat $itemLabel';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return 'Downloading $title ($count items)...';
+    return 'Se descarcă $title ($count articole)...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
+    return 'Sigur doriți să ștergeți „$name” de pe server? Această acțiune nu poate fi anulată.';
   }
 
   @override
@@ -961,7 +961,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String unsupportedBookFormat(String extension) {
-    return 'Unsupported book format: .$extension';
+    return 'Format de carte neacceptat: .$extension';
   }
 
   @override
@@ -988,7 +988,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return 'Subtitle downloaded and selected: $name';
+    return 'Subtitrare descărcată și selectată: $name';
   }
 
   @override
@@ -997,7 +997,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return 'No remote subtitles found for $language.';
+    return 'Nu s-au găsit subtitrări la distanță pentru $language.';
   }
 
   @override
@@ -1005,7 +1005,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String versionNumber(int number) {
-    return 'Version $number';
+    return 'Versiunea $number';
   }
 
   @override
@@ -1026,7 +1026,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String downloadingItem(String name, String quality) {
-    return 'Downloading $name ($quality)...';
+    return 'Se descarcă $name ($quality)...';
   }
 
   @override
@@ -1034,7 +1034,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
+    return 'Ștergeți fișierele locale pentru $typeLabel?\n\nAcest lucru va elibera spațiu de stocare. Puteți descărca din nou mai târziu.';
   }
 
   @override
@@ -1057,12 +1057,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String studioMoreCount(int count) {
-    return '+$count more';
+    return '+$count mai multe';
   }
 
   @override
   String totalEpisodes(int count) {
-    return '$count Episodes';
+    return '$count Episoade';
   }
 
   @override
@@ -1072,12 +1072,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String episodeLabel(int number) {
-    return 'Episode $number';
+    return 'Episodul $number';
   }
 
   @override
   String chapterNumber(int number) {
-    return 'Chapter $number';
+    return 'Capitolul $number';
   }
 
   @override
@@ -1104,17 +1104,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String born(String date) {
-    return 'Born $date';
+    return 'Născut $date';
   }
 
   @override
   String died(String date) {
-    return 'Died $date';
+    return 'A murit $date';
   }
 
   @override
   String age(int age) {
-    return 'Age $age';
+    return 'Vârsta $age';
   }
 
   @override
@@ -1128,7 +1128,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String downloadsCount(int count) {
-    return '$count downloads';
+    return '$count descărcări';
   }
 
   @override
@@ -1147,32 +1147,32 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
+    return 'Subtitrarea la distanță $action necesită permisiunea de gestionare a subtitrarilor Jellyfin pentru acest utilizator.';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return 'This item could not be found on the server for remote subtitle $action.';
+    return 'Acest articol nu a putut fi găsit pe server pentru subtitrarea la distanță $action.';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return 'Remote subtitle $action failed: $detail';
+    return 'Subtitrarea la distanță $action a eșuat: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return 'Remote subtitle $action failed (HTTP $status).';
+    return 'Subtitrarea la distanță $action a eșuat (HTTP $status).';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return 'Failed to $action remote subtitles.';
+    return 'Subtitrarea la distanță a $action nu a reușit.';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return 'all downloaded episodes for \"$name\"';
+    return 'toate episoadele descărcate pentru „$name”';
   }
 
   @override
@@ -1204,17 +1204,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String castActionFailed(String label, String error) {
-    return '$label action failed: $error';
+    return 'Acțiunea $label a eșuat: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return 'Failed to set cast volume: $error';
+    return 'Nu s-a putut seta volumul de difuzare: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return '$label Controls';
+    return '$label Comenzi';
   }
 
   @override
@@ -1231,7 +1231,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String stopCast(String label) {
-    return 'Stop $label';
+    return 'Opriți $label';
   }
 
   @override
@@ -1239,7 +1239,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String trackNumber(int number) {
-    return 'Track $number';
+    return 'Urmăriți $number';
   }
 
   @override
@@ -1256,7 +1256,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String secondsCount(int seconds) {
-    return '$seconds seconds';
+    return '$seconds secunde';
   }
 
   @override
@@ -1371,12 +1371,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String castSessionError(String protocol) {
-    return '$protocol session error';
+    return '$protocol eroare de sesiune';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return 'Failed to load book details: $error';
+    return 'Nu s-au încărcat detaliile cărții: $error';
   }
 
   @override
@@ -1385,7 +1385,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return 'This format (.$extension) cannot be rendered in-app yet.';
+    return 'Acest format (.$extension) nu poate fi redat încă în aplicație.';
   }
 
   @override
@@ -1398,17 +1398,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return 'Failed to open in-app reader: $error';
+    return 'Nu s-a putut deschide cititorul în aplicație: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return 'Bookmark already saved at $label.';
+    return 'Marcaj salvat deja la $label.';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return 'Bookmark added: $label';
+    return 'Marcaj adăugat: $label';
   }
 
   @override
@@ -1420,7 +1420,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String pageLabel(int number) {
-    return 'Page $number';
+    return 'Pagina $number';
   }
 
   @override
@@ -1436,7 +1436,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String percentRead(String percent) {
-    return '$percent% read';
+    return '$percent% citit';
   }
 
   @override
@@ -1459,7 +1459,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String resetZoom(String zoom) {
-    return 'Reset Zoom (${zoom}x)';
+    return 'Resetați zoom-ul (${zoom}x)';
   }
 
   @override
@@ -1482,7 +1482,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String failedToUpdateReadState(String error) {
-    return 'Failed to update read state: $error';
+    return 'Nu s-a putut actualiza starea de citire: $error';
   }
 
   @override
@@ -1514,7 +1514,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return 'This platform cannot host the embedded document engine for $extension files.';
+    return 'Această platformă nu poate găzdui motorul de documente încorporat pentru fișierele $extension.';
   }
 
   @override
@@ -1553,7 +1553,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String failedToLoadGuide(String error) {
-    return 'Failed to load guide: $error';
+    return 'Nu s-a încărcat ghidul: $error';
   }
 
   @override
@@ -1582,19 +1582,19 @@ class AppLocalizationsRo extends AppLocalizations {
   String get favoriteChannel => 'Canalul preferat';
 
   @override
-  String get record => 'Record';
+  String get record => 'Înregistra';
 
   @override
-  String get cancelRecordingAction => 'Cancel Recording';
+  String get cancelRecordingAction => 'Anulează înregistrarea';
 
   @override
-  String get programSetToRecord => 'Program set to record';
+  String get programSetToRecord => 'Program setat pentru înregistrare';
 
   @override
-  String get recordingCancelled => 'Recording cancelled';
+  String get recordingCancelled => 'Înregistrare anulată';
 
   @override
-  String get unableToCreateRecording => 'Unable to create recording';
+  String get unableToCreateRecording => 'Nu se poate crea înregistrarea';
 
   @override
   String get watch => 'Ceas';
@@ -1604,7 +1604,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String failedToPlayChannel(String name) {
-    return 'Failed to play $name';
+    return 'Nu s-a putut juca $name';
   }
 
   @override
@@ -1631,7 +1631,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return 'Cancel scheduled recording of \"$name\"?';
+    return 'Anulați înregistrarea programată a „$name”?';
   }
 
   @override
@@ -1658,7 +1658,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String stopRecordingName(String name) {
-    return 'Stop recording \"$name\"?';
+    return 'Opriți înregistrarea „$name”?';
   }
 
   @override
@@ -1673,12 +1673,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String noResultsForQuery(String query) {
-    return 'No results for \"$query\"';
+    return 'Niciun rezultat pentru „$query”';
   }
 
   @override
   String searchFailedError(String error) {
-    return 'Search failed: $error';
+    return 'Căutarea eșuată: $error';
   }
 
   @override
@@ -1719,12 +1719,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String removeItemAndFiles(String name) {
-    return 'Remove \"$name\" and its files?';
+    return 'Eliminați „$name” și fișierele sale?';
   }
 
   @override
   String tracksCount(int count) {
-    return '$count tracks';
+    return '$count piese';
   }
 
   @override
@@ -1735,12 +1735,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return 'Failed to load album: $error';
+    return 'Nu s-a putut încărca albumul: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return 'No downloaded tracks found for $name.';
+    return 'Nu s-au găsit piese descărcate pentru $name.';
   }
 
   @override
@@ -1757,7 +1757,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return 'Remove \"$name\"?';
+    return 'Eliminați „$name”?';
   }
 
   @override
@@ -1772,7 +1772,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String episodeNumber(int number) {
-    return 'Episode $number';
+    return 'Episodul $number';
   }
 
   @override
@@ -1786,7 +1786,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String seasonNumber(int number) {
-    return 'Season $number';
+    return 'Sezon $number';
   }
 
   @override
@@ -1802,7 +1802,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return 'Delete all downloaded episodes in $season?';
+    return 'Ștergeți toate episoadele descărcate din $season?';
   }
 
   @override
@@ -1846,7 +1846,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return 'Delete $count downloaded items?';
+    return 'Ștergeți $count articolele descărcate?';
   }
 
   @override
@@ -1860,7 +1860,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String ofStorageLimit(String limit) {
-    return 'of $limit limit';
+    return 'din limita $limit';
   }
 
   @override
@@ -1945,7 +1945,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return '$count options';
+    return '$count opțiuni';
   }
 
   @override
@@ -2197,16 +2197,16 @@ class AppLocalizationsRo extends AppLocalizations {
       'Activați audio TrueHD (s-ar putea să nu funcționeze pe toate platformele)';
 
   @override
-  String get settingsAudioOutputMode => 'Audio Output Mode';
+  String get settingsAudioOutputMode => 'Modul de ieșire audio';
 
   @override
   String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
 
   @override
-  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
+  String get settingsAudioFallbackCodec => 'Codec de rezervă audio';
 
   @override
-  String get settingsAudioFallbackAacStereo => 'AAC Stereo';
+  String get settingsAudioFallbackAacStereo => 'Stereo AAC';
 
   @override
   String get settingsAudioFallbackAc35_1 => 'AC3 5.1';
@@ -2215,14 +2215,14 @@ class AppLocalizationsRo extends AppLocalizations {
   String get settingsAudioFallbackEac35_1 => 'EAC3 5.1';
 
   @override
-  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
+  String get settingsAudioPassthroughAdvanced => 'Passthrough (avansat)';
 
   @override
   String get settingsAudioCodecPassthrough => 'Codec Passthrough';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'Enable only formats your AVR or HDMI sink supports.';
+      'Activați numai formatele pe care le acceptă AVR sau HDMI.';
 
   @override
   String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
@@ -2244,38 +2244,39 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
+      'Bitstream Dolby Digital Plus (EAC3) către un decodor extern.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
+      'Bitstream Dolby Atmos prin EAC3 (JOC) către decodor extern.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
+      'Bitstream DTS-HD MA (include nucleul DTS) către decodor extern.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
+      'Bitstream Dolby TrueHD cu metadate Atmos către decodor extern.';
 
   @override
-  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
+  String get settingsDetectedAudioCapabilities =>
+      'Capabilități audio detectate';
 
   @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
-      'No runtime capability snapshot available yet.';
+      'Nu este disponibil încă un instantaneu al capacității de rulare.';
 
   @override
-  String get settingsAudioRouteLabel => 'Route';
+  String get settingsAudioRouteLabel => 'Traseu';
 
   @override
-  String get settingsAudioDecodeLabel => 'Decode';
+  String get settingsAudioDecodeLabel => 'Decodați';
 
   @override
-  String get settingsAudioPassthroughLabel => 'Passthrough';
+  String get settingsAudioPassthroughLabel => 'trecere';
 
   @override
-  String get settingsAudioHdRoute => 'HD audio route';
+  String get settingsAudioHdRoute => 'Traseu audio HD';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2290,7 +2291,7 @@ class AppLocalizationsRo extends AppLocalizations {
   String get settingsAudioRouteBluetooth => 'Bluetooth';
 
   @override
-  String get settingsAudioRouteSpeaker => 'Speaker';
+  String get settingsAudioRouteSpeaker => 'Difuzor';
 
   @override
   String settingsAudioPcmChannels(int count) {
@@ -2298,39 +2299,39 @@ class AppLocalizationsRo extends AppLocalizations {
   }
 
   @override
-  String get settingsAudioDiagnostics => 'Diagnostics';
+  String get settingsAudioDiagnostics => 'Diagnosticare';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
+  String get settingsAudioDiagnosticsVideoLevel => 'Nivelul video';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
+  String get settingsAudioDiagnosticsVideoRange => 'Gama video';
 
   @override
-  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
+  String get settingsAudioDiagnosticsSubtitleCodec => 'Codec de subtitrare';
 
   @override
   String get settingsAudioDiagnosticsAllowedAudioCodecs =>
-      'Allowed Audio Codecs';
+      'Codecuri audio permise';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
-      'HLS MPEG-TS Audio Codecs';
+      'Codecuri audio HLS MPEG-TS';
 
   @override
   String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
-      'HLS fMP4 Audio Codecs';
+      'Codecuri audio HLS fMP4';
 
   @override
   String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
-      'audio-spdif passthrough';
+      'trecere audio-spdif';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
+  String get settingsAudioDiagnosticsActiveAudioRoute => 'Rută audio activă';
 
   @override
   String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'Route HD Audio Support';
+      'Suport audio HD Route';
 
   @override
   String get nightMode => 'Modul noapte';
@@ -2394,7 +2395,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return 'After $episodes episodes / ${hours}h';
+    return 'După episoadele $episodes / ${hours}h';
   }
 
   @override
@@ -2526,17 +2527,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String loadedProfileSettings(String profile) {
-    return 'Loaded $profile profile settings.';
+    return 'Au fost încărcate setările profilului $profile.';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return 'Failed to load $profile profile settings.';
+    return 'Nu s-au încărcat setările profilului $profile.';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return 'Synced local settings to $profile profile.';
+    return 'Setări locale sincronizate cu profilul $profile.';
   }
 
   @override
@@ -2764,7 +2765,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '$count selected';
+    return '$count selectat';
   }
 
   @override
@@ -3132,7 +3133,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String pluginStatusVersion(String status, String version) {
-    return '$status\nVersion: $version';
+    return '$status\nVersiune: $version';
   }
 
   @override
@@ -3208,7 +3209,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String loggedInAs(String username) {
-    return 'Logged in as: $username';
+    return 'Conectat ca: $username';
   }
 
   @override
@@ -3233,7 +3234,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String versionValue(String version) {
-    return 'Version $version';
+    return 'Versiunea $version';
   }
 
   @override
@@ -3285,7 +3286,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String updateAvailableVersion(String version) {
-    return 'Update available: v$version';
+    return 'Actualizare disponibilă: v$version';
   }
 
   @override
@@ -3297,7 +3298,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String updateAvailableTitle(String version) {
-    return 'v$version Available';
+    return 'v$version Disponibil';
   }
 
   @override
@@ -3363,7 +3364,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String itemsCount(int count) {
-    return '$count Items';
+    return '$count Articole';
   }
 
   @override
@@ -3383,7 +3384,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String requestedByName(String name) {
-    return 'Requested by $name';
+    return 'Solicitat de $name';
   }
 
   @override
@@ -3400,12 +3401,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String cancelRequestForTitle(String title) {
-    return 'Cancel request for \"$title\"?';
+    return 'Anulați cererea pentru „$title”?';
   }
 
   @override
   String cancelCountRequestsForTitle(int count, String title) {
-    return 'Cancel $count requests for \"$title\"?';
+    return 'Anulați cererile $count pentru „$title”?';
   }
 
   @override
@@ -3420,12 +3421,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String budgetAmount(String amount) {
-    return 'Budget: \$$amount';
+    return 'Buget: \$$amount';
   }
 
   @override
   String revenueAmount(String amount) {
-    return 'Revenue: \$$amount';
+    return 'Venituri: \$$amount';
   }
 
   @override
@@ -3435,7 +3436,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie(String type) {
-    return 'Request $type';
+    return 'Solicitați $type';
   }
 
   @override
@@ -3471,7 +3472,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String ageValue(int age) {
-    return 'age $age';
+    return 'vârsta $age';
   }
 
   @override
@@ -3763,22 +3764,22 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminPluginUpdatesAvailable(int count) {
-    return 'Plugin updates available: $count';
+    return 'Actualizări de plugin disponibile: $count';
   }
 
   @override
   String adminPluginsRequiringRestart(int count) {
-    return 'Plugins requiring restart: $count';
+    return 'Pluginuri care necesită repornire: $count';
   }
 
   @override
   String adminFailedScheduledTasks(int count) {
-    return 'Failed scheduled tasks: $count';
+    return 'Sarcini programate eșuate: $count';
   }
 
   @override
   String adminRecentAlertEntries(int count) {
-    return 'Recent warning/error entries: $count';
+    return 'Intrări recente de avertisment/erori: $count';
   }
 
   @override
@@ -3837,7 +3838,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String errorGeneric(String error) {
-    return 'Error: $error';
+    return 'Eroare: $error';
   }
 
   @override
@@ -3865,7 +3866,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Comanda a eșuat: $error';
   }
 
   @override
@@ -3930,7 +3931,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminActivityLoadFailed(String error) {
-    return 'Failed to load activity log: $error';
+    return 'Nu s-a încărcat jurnalul de activitate: $error';
   }
 
   @override
@@ -3948,7 +3949,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminDeviceUpdateFailed(String error) {
-    return 'Failed to update device: $error';
+    return 'Nu s-a putut actualiza dispozitivul: $error';
   }
 
   @override
@@ -3959,7 +3960,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminDeviceDeleteFailed(String error) {
-    return 'Failed to delete device: $error';
+    return 'Dispozitivul nu a fost șters: $error';
   }
 
   @override
@@ -3988,7 +3989,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminScanFailed(String error) {
-    return 'Failed to start scan: $error';
+    return 'Nu s-a pornit scanarea: $error';
   }
 
   @override
@@ -3999,12 +4000,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminLibraryRenamed(String name) {
-    return 'Library renamed to \"$name\"';
+    return 'Biblioteca redenumită în „$name”';
   }
 
   @override
   String adminRenameFailed(String error) {
-    return 'Failed to rename: $error';
+    return 'Nu s-a putut redenumi: $error';
   }
 
   @override
@@ -4012,17 +4013,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminLibraryDeleted(String name) {
-    return 'Library \"$name\" deleted';
+    return 'Biblioteca „$name” a fost ștearsă';
   }
 
   @override
   String adminLibraryDeleteFailed(String error) {
-    return 'Failed to delete library: $error';
+    return 'Nu s-a șters biblioteca: $error';
   }
 
   @override
   String adminAddPathFailed(String error) {
-    return 'Failed to add path: $error';
+    return 'Nu s-a putut adăuga calea: $error';
   }
 
   @override
@@ -4030,12 +4031,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminRemovePathConfirm(String path) {
-    return 'Remove \"$path\" from this library?';
+    return 'Eliminați „$path” din această bibliotecă?';
   }
 
   @override
   String adminRemovePathFailed(String error) {
-    return 'Failed to remove path: $error';
+    return 'Nu s-a putut elimina calea: $error';
   }
 
   @override
@@ -4044,7 +4045,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminLibraryOptionsSaveFailed(String error) {
-    return 'Failed to save options: $error';
+    return 'Opțiunile nu au fost salvate: $error';
   }
 
   @override
@@ -4080,7 +4081,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminLibraryCreateFailed(String error) {
-    return 'Failed to create library: $error';
+    return 'Nu s-a putut crea biblioteca: $error';
   }
 
   @override
@@ -4107,27 +4108,27 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminDisableUserConfirm(String name) {
-    return 'Disable $name? They will not be able to sign in.';
+    return 'Dezactivați $name? Nu se vor putea conecta.';
   }
 
   @override
   String adminEnableUserConfirm(String name) {
-    return 'Enable $name? They will be able to sign in again.';
+    return 'Activați $name? Se vor putea conecta din nou.';
   }
 
   @override
   String adminUserDisabled(String name) {
-    return 'User \"$name\" disabled';
+    return 'Utilizatorul „$name” a fost dezactivat';
   }
 
   @override
   String adminUserEnabled(String name) {
-    return 'User \"$name\" enabled';
+    return 'Utilizatorul „$name” a fost activat';
   }
 
   @override
   String adminUserPolicyUpdateFailed(String error) {
-    return 'Failed to update user policy: $error';
+    return 'Nu s-a putut actualiza politica utilizatorului: $error';
   }
 
   @override
@@ -4144,7 +4145,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminUserCreateFailed(String error) {
-    return 'Failed to create user: $error';
+    return 'Nu s-a putut crea utilizatorul: $error';
   }
 
   @override
@@ -4164,7 +4165,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminSaveFailed(String error) {
-    return 'Failed to save: $error';
+    return 'Salvare eșuată: $error';
   }
 
   @override
@@ -4175,7 +4176,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminFailed(String error) {
-    return 'Failed: $error';
+    return 'Eșuat: $error';
   }
 
   @override
@@ -4318,22 +4319,22 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminServerReturnedHttp(int status) {
-    return 'Server returned HTTP $status';
+    return 'Serverul a returnat HTTP $status';
   }
 
   @override
   String adminDeleteUserConfirm(String name) {
-    return 'Are you sure you want to delete $name?';
+    return 'Sigur doriți să ștergeți $name?';
   }
 
   @override
   String adminUserDeleted(String name) {
-    return 'User \"$name\" deleted';
+    return 'Utilizatorul „$name” a fost șters';
   }
 
   @override
   String adminUserDeleteFailed(String error) {
-    return 'Failed to delete user: $error';
+    return 'Nu s-a șters utilizatorul: $error';
   }
 
   @override
@@ -4354,7 +4355,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminApiKeyCreateFailed(String error) {
-    return 'Failed to create key: $error';
+    return 'Nu s-a putut crea cheia: $error';
   }
 
   @override
@@ -4366,7 +4367,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminRevokeKeyConfirm(String name) {
-    return 'Revoke key for $name?';
+    return 'Revocați cheia pentru $name?';
   }
 
   @override
@@ -4374,7 +4375,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminApiKeyRevokeFailed(String error) {
-    return 'Failed to revoke key: $error';
+    return 'Nu s-a revocat cheia: $error';
   }
 
   @override
@@ -4394,7 +4395,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminApiKeyTokenCreated(String token, String created) {
-    return 'Token: $token\\nCreated: $created';
+    return 'Indicativ: $token\\nCreat: $created';
   }
 
   @override
@@ -4405,7 +4406,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminBackupCreateFailed(String error) {
-    return 'Failed to create backup: $error';
+    return 'Nu s-a putut crea backup: $error';
   }
 
   @override
@@ -4419,7 +4420,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminManifestLoadFailed(String error) {
-    return 'Failed to load manifest: $error';
+    return 'Nu s-a încărcat manifestul: $error';
   }
 
   @override
@@ -4430,7 +4431,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminRestoreFailed(String error) {
-    return 'Failed to restore backup: $error';
+    return 'Nu s-a restabilit backupul: $error';
   }
 
   @override
@@ -4462,17 +4463,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminSavedTo(String path) {
-    return 'Saved to $path';
+    return 'Salvat în $path';
   }
 
   @override
   String adminFileSaveFailed(String error) {
-    return 'Failed to save file: $error';
+    return 'Nu s-a putut salva fișierul: $error';
   }
 
   @override
   String adminLogFileLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'Nu s-a putut încărca $fileName';
   }
 
   @override
@@ -4483,7 +4484,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminTasksLoadFailed(String error) {
-    return 'Failed to load tasks: $error';
+    return 'Nu s-au încărcat sarcinile: $error';
   }
 
   @override
@@ -4495,17 +4496,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminTaskStartFailed(String error) {
-    return 'Failed to start task: $error';
+    return 'Nu s-a putut porni sarcina: $error';
   }
 
   @override
   String adminTaskStopFailed(String error) {
-    return 'Failed to stop task: $error';
+    return 'Sarcina nu s-a oprit: $error';
   }
 
   @override
   String adminTaskLoadFailed(String error) {
-    return 'Failed to load task: $error';
+    return 'Sarcina nu s-a încărcat: $error';
   }
 
   @override
@@ -4513,12 +4514,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminTriggerRemoveFailed(String error) {
-    return 'Failed to remove trigger: $error';
+    return 'Nu s-a putut elimina declanșatorul: $error';
   }
 
   @override
   String adminTriggerAddFailed(String error) {
-    return 'Failed to add trigger: $error';
+    return 'Nu s-a putut adăuga declanșatorul: $error';
   }
 
   @override
@@ -4544,7 +4545,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminHours(String hours) {
-    return '$hours hour(s)';
+    return '$hours oră(e)';
   }
 
   @override
@@ -4555,7 +4556,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminPluginToggleFailed(String error) {
-    return 'Failed to toggle plugin: $error';
+    return 'Nu s-a putut comuta pluginul: $error';
   }
 
   @override
@@ -4563,27 +4564,27 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminUninstallPluginConfirm(String name) {
-    return 'Are you sure you want to uninstall \"$name\"?';
+    return 'Sigur doriți să dezinstalați „$name”?';
   }
 
   @override
   String adminPluginUninstallFailed(String error) {
-    return 'Failed to uninstall plugin: $error';
+    return 'Nu s-a putut dezinstala pluginul: $error';
   }
 
   @override
   String adminPackageInstallFailed(String error) {
-    return 'Failed to install package: $error';
+    return 'Pachetul nu s-a instalat: $error';
   }
 
   @override
   String adminPluginUpdateFailed(String error) {
-    return 'Failed to install update: $error';
+    return 'Nu s-a instalat actualizarea: $error';
   }
 
   @override
   String adminPluginsLoadFailed(String error) {
-    return 'Failed to load plugins: $error';
+    return 'Nu s-au încărcat pluginurile: $error';
   }
 
   @override
@@ -4595,12 +4596,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminInstallUpdate(String version) {
-    return 'Install update (v$version)';
+    return 'Instalați actualizarea (v$version)';
   }
 
   @override
   String adminCatalogLoadFailed(String error) {
-    return 'Failed to load catalog: $error';
+    return 'Nu s-a încărcat catalogul: $error';
   }
 
   @override
@@ -4622,17 +4623,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminPluginRemoveAfterRestart(String name) {
-    return '\"$name\" will be removed after server restart';
+    return '„$name” va fi eliminat după repornirea serverului';
   }
 
   @override
   String adminUninstallFailed(String error) {
-    return 'Failed to uninstall: $error';
+    return 'Dezinstalare eșuată: $error';
   }
 
   @override
   String adminPluginUpdating(String name, String version) {
-    return 'Updating \"$name\" to v$version...';
+    return 'Se actualizează „$name” la v$version...';
   }
 
   @override
@@ -4641,7 +4642,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminPluginLoadFailed(String error) {
-    return 'Failed to load plugin: $error';
+    return 'Nu s-a încărcat pluginul: $error';
   }
 
   @override
@@ -4649,7 +4650,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminPluginVersion(String version) {
-    return 'Version $version';
+    return 'Versiunea $version';
   }
 
   @override
@@ -4669,17 +4670,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminRemoveRepositoryConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Sigur doriți să eliminați „$name”?';
   }
 
   @override
   String adminRepositoriesSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Nu s-au salvat depozitele: $error';
   }
 
   @override
   String adminRepositoriesLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Nu s-a putut încărca depozitele: $error';
   }
 
   @override
@@ -4696,12 +4697,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminPluginSettingsLoadFailed(String error) {
-    return 'Unable to load plugin settings: $error';
+    return 'Nu se pot încărca setările pluginului: $error';
   }
 
   @override
   String adminCouldNotOpenUrl(String uri) {
-    return 'Could not open $uri';
+    return 'Nu s-a putut deschide $uri';
   }
 
   @override
@@ -4979,12 +4980,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminMetadataLoadFailed(String error) {
-    return 'Failed to load metadata: $error';
+    return 'Nu s-a putut încărca metadatele: $error';
   }
 
   @override
   String adminMetadataSaveFailed(String error) {
-    return 'Failed to save metadata: $error';
+    return 'Nu s-au salvat metadatele: $error';
   }
 
   @override
@@ -5005,7 +5006,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminMetadataRefreshFailed(String error) {
-    return 'Failed to refresh metadata: $error';
+    return 'Nu s-au reîmprospătat metadatele: $error';
   }
 
   @override
@@ -5023,7 +5024,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminRemoteSearchFailed(String error) {
-    return 'Remote search failed: $error';
+    return 'Căutarea de la distanță a eșuat: $error';
   }
 
   @override
@@ -5037,7 +5038,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminContentTypeUpdateFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Nu s-a putut actualiza tipul de conținut: $error';
   }
 
   @override
@@ -5052,12 +5053,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return 'Imaginea $imageType a fost actualizată';
   }
 
   @override
   String adminImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Nu s-a putut descărca imaginea: $error';
   }
 
   @override
@@ -5068,27 +5069,27 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return 'Imaginea $imageType a fost încărcată';
   }
 
   @override
   String adminImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Nu s-a putut încărca imaginea: $error';
   }
 
   @override
   String adminDeleteImage(String imageType) {
-    return 'Delete $imageType image';
+    return 'Șterge $imageType imaginea';
   }
 
   @override
   String adminImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return 'Imaginea $imageType a fost ștearsă';
   }
 
   @override
   String adminImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Nu s-a șters imaginea: $error';
   }
 
   @override
@@ -5099,7 +5100,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminTunerDiscoveryFailed(String error) {
-    return 'Tuner discovery failed: $error';
+    return 'Descoperirea tunerului a eșuat: $error';
   }
 
   @override
@@ -5122,7 +5123,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminTunerAddFailed(String error) {
-    return 'Failed to add tuner: $error';
+    return 'Nu s-a putut adăuga tuner: $error';
   }
 
   @override
@@ -5145,12 +5146,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminProviderAddFailed(String error) {
-    return 'Failed to add provider: $error';
+    return 'Nu s-a putut adăuga furnizorul: $error';
   }
 
   @override
   String adminTunerRemoveFailed(String error) {
-    return 'Failed to remove tuner: $error';
+    return 'Tunerul nu a fost eliminat: $error';
   }
 
   @override
@@ -5159,12 +5160,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminTunerResetFailed(String error) {
-    return 'Failed to reset tuner: $error';
+    return 'Tunerul nu a fost resetat: $error';
   }
 
   @override
   String adminProviderRemoveFailed(String error) {
-    return 'Failed to remove provider: $error';
+    return 'Nu s-a putut elimina furnizorul: $error';
   }
 
   @override
@@ -5188,7 +5189,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminSettingsSaveFailed(String error) {
-    return 'Failed to save settings: $error';
+    return 'Nu s-au salvat setările: $error';
   }
 
   @override
@@ -5206,7 +5207,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Nu s-au actualizat mapările: $error';
   }
 
   @override
@@ -5230,17 +5231,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminRecordingPathDisplay(String path) {
-    return 'Recording path: $path';
+    return 'Cale de înregistrare: $path';
   }
 
   @override
   String adminSeriesPathDisplay(String path) {
-    return 'Series path: $path';
+    return 'Calea seriei: $path';
   }
 
   @override
   String adminPrePaddingDisplay(int minutes) {
-    return 'Pre-padding: $minutes min';
+    return 'Umplutură preliminară: $minutes min';
   }
 
   @override
@@ -5277,7 +5278,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminRestoreConfirmMessage(String name) {
-    return 'Restore backup $name now?';
+    return 'Restabiliți backupul $name acum?';
   }
 
   @override
@@ -5323,27 +5324,27 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminLogsMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '${minutes}m în urmă';
   }
 
   @override
   String adminLogsHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '${hours}h în urmă';
   }
 
   @override
   String adminLogsDaysAgo(int days) {
-    return '${days}d ago';
+    return '${days}d acum';
   }
 
   @override
   String adminLogViewerLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'Nu s-a putut încărca $fileName';
   }
 
   @override
   String adminLogViewerMatches(int count) {
-    return '$count matches';
+    return '$count se potrivește';
   }
 
   @override
@@ -5453,22 +5454,22 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminMetadataImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return 'Imaginea $imageType a fost actualizată';
   }
 
   @override
   String adminMetadataImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return 'Imaginea $imageType a fost încărcată';
   }
 
   @override
   String adminMetadataImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return 'Imaginea $imageType a fost ștearsă';
   }
 
   @override
   String adminMetadataImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Nu s-a putut descărca imaginea: $error';
   }
 
   @override
@@ -5477,12 +5478,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminMetadataImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Nu s-a putut încărca imaginea: $error';
   }
 
   @override
   String adminMetadataDeleteImageTitle(String imageType) {
-    return 'Delete $imageType image';
+    return 'Șterge $imageType imaginea';
   }
 
   @override
@@ -5491,12 +5492,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminMetadataImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Nu s-a șters imaginea: $error';
   }
 
   @override
   String adminMetadataChooseImage(String imageType) {
-    return 'Choose $imageType image';
+    return 'Alege imaginea $imageType';
   }
 
   @override
@@ -5529,7 +5530,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminPluginsUpdateAvailable(String version) {
-    return 'Update available: v$version';
+    return 'Actualizare disponibilă: v$version';
   }
 
   @override
@@ -5554,7 +5555,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminPluginsInstallUpdateVersioned(String version) {
-    return 'Install update (v$version)';
+    return 'Instalați actualizarea (v$version)';
   }
 
   @override
@@ -5566,7 +5567,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminPluginsInstalling(String name) {
-    return '\"$name\" is being installed...';
+    return '„$name” este în curs de instalare...';
   }
 
   @override
@@ -5586,7 +5587,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminPluginDetailSettingsTitle(String name) {
-    return '$name Settings';
+    return '$name Setări';
   }
 
   @override
@@ -5626,7 +5627,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminReposLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Nu s-a putut încărca depozitele: $error';
   }
 
   @override
@@ -5634,7 +5635,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminReposRemoveConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Sigur doriți să eliminați „$name”?';
   }
 
   @override
@@ -5642,7 +5643,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminReposSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Nu s-au salvat depozitele: $error';
   }
 
   @override
@@ -5922,17 +5923,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return 'Daily at $time';
+    return 'Zilnic la $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return 'Every $day at $time';
+    return 'Fiecare $day la $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return 'Every $duration';
+    return 'Fiecare $duration';
   }
 
   @override
@@ -5999,17 +6000,17 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminActivityDaysAgo(int days) {
-    return '${days}d ago';
+    return '${days}d acum';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '${hours}h în urmă';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '${minutes}m în urmă';
   }
 
   @override
@@ -6125,7 +6126,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Nu s-a putut actualiza tipul de conținut: $error';
   }
 
   @override
@@ -6148,12 +6149,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Nu s-au actualizat mapările: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return 'Time limit: $duration';
+    return 'Limită de timp: $duration';
   }
 
   @override
@@ -6234,7 +6235,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String syncPlayQueueItemFallback(int index) {
-    return 'Item $index';
+    return 'Articol $index';
   }
 
   @override
@@ -6282,12 +6283,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName joined SyncPlay group';
+    return '$userName s-a alăturat grupului SyncPlay';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName left SyncPlay group';
+    return '$userName a părăsit grupul SyncPlay';
   }
 
   @override
@@ -6299,7 +6300,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return 'Syncing playback to $groupName';
+    return 'Se sincronizează redarea cu $groupName';
   }
 
   @override
@@ -6435,12 +6436,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return 'Cast control failed: $error';
+    return 'Controlul proiecției a eșuat: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return '$kind Controls';
+    return '$kind Comenzi';
   }
 
   @override
@@ -6451,7 +6452,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return 'Stop $kind';
+    return 'Opriți $kind';
   }
 
   @override
@@ -6474,12 +6475,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String pinEnterNDigit(int length) {
-    return 'Enter a $length-digit PIN';
+    return 'Introduceți un cod PIN din $length';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return 'Enter your $length-digit PIN';
+    return 'Introduceți codul PIN din $length';
   }
 
   @override
@@ -6527,7 +6528,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect failed: $message';
+    return 'Conectarea rapidă a eșuat: $message';
   }
 
   @override
@@ -6538,7 +6539,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String remoteCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Comanda a eșuat: $error';
   }
 
   @override
@@ -6567,7 +6568,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String castingFailed(String error) {
-    return 'Failed to start casting: $error';
+    return 'Nu s-a putut începe proiectarea: $error';
   }
 
   @override
@@ -6613,7 +6614,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String trackActionDownloading(String name) {
-    return 'Downloading $name...';
+    return 'Se descarcă $name...';
   }
 
   @override
@@ -6702,7 +6703,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String skipSegment(String segment) {
-    return 'Skip $segment';
+    return 'Omite $segment';
   }
 
   @override
@@ -6713,12 +6714,12 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return 'Downloading $current/$total — $fileName';
+    return 'Se descarcă $current/$total — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return 'Downloading $fileName';
+    return 'Se descarcă $fileName';
   }
 
   @override
@@ -6946,7 +6947,7 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'Vedeți proiectul pe GitHub sau contribuiți';
+      'Donează o cafea dezvoltatorului';
 
   @override
   String get settingsLegal => 'LEGALE';
@@ -7062,13 +7063,13 @@ class AppLocalizationsRo extends AppLocalizations {
   String get settingsPlaybackEngineMedia3Recommended => 'Media3 (recomandat)';
 
   @override
-  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (moștenire)';
 
   @override
   String get settingsPlaybackEngineMpvLegacy => 'mpv (moștenire)';
 
   @override
-  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (recomandat)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Vision De rezervă';
@@ -7252,111 +7253,113 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String latestLibraryName(String libraryName) {
-    return 'Latest $libraryName';
+    return 'Cel mai recent $libraryName';
   }
 
   @override
-  String get autoplayNextEpisode => 'Autoplay Next Episode';
+  String get autoplayNextEpisode => 'Redare automată episodul următor';
 
   @override
   String get autoplayNextEpisodeSubtitle =>
-      'Automatically play the next episode when available.';
+      'Redați automat episodul următor când este disponibil.';
 
   @override
-  String get skipSilenceTitle => 'Skip silence';
+  String get skipSilenceTitle => 'Sari peste tăcere';
 
   @override
   String get skipSilenceSubtitle =>
-      'Automatically skip silent audio segments when supported by the stream.';
+      'Omite automat segmentele audio silențioase atunci când este acceptat de flux.';
 
   @override
-  String get allowExternalAudioEffectsTitle => 'Allow external audio effects';
+  String get allowExternalAudioEffectsTitle => 'Permite efecte audio externe';
 
   @override
   String get allowExternalAudioEffectsSubtitle =>
-      'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.';
+      'Permiteți aplicațiilor de egalizare și efecte (de exemplu, Wavelet) să se atașeze la sesiunile de redare Media3.';
 
   @override
-  String get disableTunnelingTitle => 'Disable tunneling';
+  String get disableTunnelingTitle => 'Dezactivați tunelul';
 
   @override
   String get disableTunnelingSubtitle =>
-      'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
+      'Forțați redarea fără tunel. Util pe dispozitive cu discontinuități audio/video de tunel.';
 
   @override
-  String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
+  String get mapDolbyVisionP7Title => 'Hartați Dolby Vision profilul 7 la HEVC';
 
   @override
   String get mapDolbyVisionP7Subtitle =>
-      'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.';
+      'Redați 7 fluxuri de profil Dolby Vision ca HEVC compatibil HDR10 pe dispozitive care nu sunt DV.';
 
   @override
-  String get subtitlesUseEmbeddedStyles => 'Use embedded subtitle styles';
+  String get subtitlesUseEmbeddedStyles =>
+      'Utilizați stiluri de subtitrare încorporate';
 
   @override
   String get subtitlesUseEmbeddedStylesSubtitle =>
-      'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.';
+      'Aplicați culori, fonturi și poziționare încorporate în pista de subtitrare. Dezactivați pentru a utiliza preferințele pentru stilul subtitrării.';
 
   @override
   String get subtitlesUseEmbeddedFontSizes =>
-      'Use embedded subtitle font sizes';
+      'Folosiți dimensiunile fontului de subtitrare încorporate';
 
   @override
   String get subtitlesUseEmbeddedFontSizesSubtitle =>
-      'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
+      'Aplicați indicii privind dimensiunea fontului încorporate în pista de subtitrare. Dezactivați utilizarea dimensiunii subtitrarilor din preferințele dvs. de stil.';
 
   @override
-  String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
+  String get useDetailedSubHeadings => 'Utilizați subtitluri detaliate';
 
   @override
   String get useDetailedSubHeadingsDescription =>
-      'Show detailed or minimal subrow on Library pages.';
+      'Afișați subrândurile detaliate sau minime pe paginile Bibliotecii.';
 
   @override
-  String get savedThemesDeleteDialogTitle => 'Delete saved theme?';
+  String get savedThemesDeleteDialogTitle => 'Ștergeți tema salvată?';
 
   @override
   String savedThemesDeleteDialogMessage(String themeName) {
-    return 'Remove \"$themeName\" from this device cache?';
+    return 'Eliminați „$themeName” din memoria cache a dispozitivului?';
   }
 
   @override
   String savedThemesDeletedMessage(String themeName) {
-    return 'Deleted \"$themeName\" from this device.';
+    return '„$themeName” a fost șters de pe acest dispozitiv.';
   }
 
   @override
   String savedThemesDeleteFailedMessage(String themeName) {
-    return 'Could not delete \"$themeName\".';
+    return 'Nu s-a putut șterge „$themeName”.';
   }
 
   @override
-  String get savedThemesTitle => 'Saved themes';
+  String get savedThemesTitle => 'Teme salvate';
 
   @override
   String get savedThemesDescription =>
-      'These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.';
+      'Acestea sunt teme descărcate din pluginul Moonfin pentru serverul curent. Ștergerea elimină numai această copie locală.';
 
   @override
-  String get savedThemesEmpty => 'No saved themes were found for this server.';
+  String get savedThemesEmpty =>
+      'Nu au fost găsite teme salvate pentru acest server.';
 
   @override
   String savedThemesCurrentThemeId(String themeId) {
-    return '$themeId • Currently active';
+    return '$themeId • Activ în prezent';
   }
 
   @override
-  String get savedThemesDeleteTooltip => 'Delete saved theme';
+  String get savedThemesDeleteTooltip => 'Ștergeți tema salvată';
 
   @override
   String get savedThemesManageSubtitle =>
-      'Manage downloaded plugin themes on this device';
+      'Gestionați temele de plugin descărcate pe acest dispozitiv';
 
   @override
   String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
+  String get homeScreenSectionsTitle => 'Secțiunile ecranului de pornire';
 
   @override
   String get themeEditor => 'Theme Editor';

@@ -6962,7 +6962,7 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'Ylloni projektin në GitHub ose kontribuoni';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'LIGJORE';

@@ -7,6 +7,7 @@ import 'package:server_core/server_core.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/home_row.dart';
 import '../../../data/repositories/multi_server_repository.dart';
+import '../../../data/services/home_row_cache_store.dart';
 import '../../../data/services/row_data_source.dart';
 import '../../../data/viewmodels/media_bar_view_model.dart';
 import '../../../l10n/app_localizations.dart';
@@ -21,6 +22,7 @@ class HomeViewModel extends ChangeNotifier {
   final MediaServerClient _client;
   final MediaBarViewModel _mediaBarViewModel;
   final MultiServerRepository _multiServerRepo;
+  final HomeRowCacheStore _cacheStore = HomeRowCacheStore();
 
   List<HomeRow> _rows = [];
   List<HomeRow> get rows => _rows;
@@ -36,6 +38,14 @@ class HomeViewModel extends ChangeNotifier {
 
   bool get _multiServerEnabled =>
       _prefs.get(UserPreferences.enableMultiServerLibraries);
+
+  String _homeCacheKey() {
+    final sections = _prefs.get(UserPreferences.homeSectionsJson);
+    final multiServer = _prefs.get(UserPreferences.enableMultiServerLibraries);
+    final merge = _prefs.get(UserPreferences.mergeContinueWatchingNextUp);
+    final blocked = _prefs.get(UserPreferences.blockedParentalRatings);
+    return '$_serverId|$sections|$multiServer|$merge|$blocked';
+  }
 
   static bool _isFavoriteSectionType(HomeSectionType type) {
     return switch (type) {
@@ -86,6 +96,16 @@ class HomeViewModel extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
+      var hydratedFromCache = false;
+      if (_rows.isEmpty) {
+        final cached = await _cacheStore.read(_homeCacheKey());
+        if (cached != null && _rows.isEmpty) {
+          _rows = cached;
+          hydratedFromCache = true;
+          notifyListeners();
+        }
+      }
+
       final activeConfigs = _prefs.activeHomeSectionConfigs;
       final fallbackUsed = activeConfigs.isEmpty;
       final configs = fallbackUsed
@@ -168,7 +188,7 @@ class HomeViewModel extends ChangeNotifier {
             (c) => c.isBuiltin && c.type == HomeSectionType.resume,
           );
 
-      if (!preserveExisting || _rows.isEmpty) {
+      if ((!preserveExisting && !hydratedFromCache) || _rows.isEmpty) {
         final placeholders = <HomeRow>[];
         for (final cfg in effectiveConfigs) {
           final placeholder = _placeholderForConfig(cfg);
@@ -224,6 +244,8 @@ class HomeViewModel extends ChangeNotifier {
       }
 
       await Future.wait(completers);
+
+      unawaited(_cacheStore.write(_homeCacheKey(), _rows));
 
       if (showMergedResume) {
         _loadResumeAndNextUpInBackground();
@@ -655,14 +677,15 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<List<HomeRow>> _loadLatestMediaRows() async {
-    final viewsResponse = await _client.userViewsApi.getUserViews();
-    final views = viewsResponse['Items'] as List? ?? [];
+    final viewsFuture = _client.userViewsApi.getUserViews();
+    final configFuture = _client.usersApi
+        .getUserConfiguration()
+        .then<Set<String>>((config) => config.latestItemsExcludes.toSet())
+        .catchError((_) => const <String>{});
 
-    Set<String> latestExcludes = const {};
-    try {
-      final config = await _client.usersApi.getUserConfiguration();
-      latestExcludes = config.latestItemsExcludes.toSet();
-    } catch (_) {}
+    final viewsResponse = await viewsFuture;
+    final views = viewsResponse['Items'] as List? ?? [];
+    final Set<String> latestExcludes = await configFuture;
 
     final filteredViews = views
         .cast<Map<String, dynamic>>()

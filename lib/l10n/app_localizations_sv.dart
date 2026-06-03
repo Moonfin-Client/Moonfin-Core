@@ -6913,7 +6913,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'Stjärnmärk projektet på GitHub eller bidra';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'RÄTTSLIG';

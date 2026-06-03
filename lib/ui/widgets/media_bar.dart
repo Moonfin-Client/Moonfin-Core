@@ -65,8 +65,7 @@ class MediaBar extends StatefulWidget {
   State<MediaBar> createState() => _MediaBarState();
 }
 
-class _MediaBarState extends State<MediaBar>
-    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+class _MediaBarState extends State<MediaBar> with WidgetsBindingObserver {
   static const _openTimeout = Duration(seconds: 10);
   static const _previewRevealDelay = Duration(seconds: 3);
   static const _trailerResolveTimeout = Duration(seconds: 10);
@@ -121,8 +120,6 @@ class _MediaBarState extends State<MediaBar>
   final Set<String> _failedTrailerItemIds = <String>{};
   late bool _lastHardwareDecodingEnabled;
   late bool _lastUseMedia3TrailerEngine;
-  late final AnimationController _makdKenBurnsController;
-  late final Animation<double> _makdKenBurnsScale;
 
   bool get _hideLeftNavArrowForSidebar {
     if (PlatformDetection.useMobileUi) return false;
@@ -146,14 +143,6 @@ class _MediaBarState extends State<MediaBar>
   @override
   void initState() {
     super.initState();
-    _makdKenBurnsController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 10),
-    );
-    _makdKenBurnsScale = Tween<double>(begin: 1.0, end: 1.08).animate(
-      CurvedAnimation(parent: _makdKenBurnsController, curve: Curves.easeOut),
-    );
-    _makdKenBurnsController.forward();
     _lastHardwareDecodingEnabled = widget.prefs.get(
       UserPreferences.hardwareDecoding,
     );
@@ -183,7 +172,6 @@ class _MediaBarState extends State<MediaBar>
     _mainPlaybackSub?.cancel();
     _media3EventSub?.cancel();
     _disposeTrailerPlayer();
-    _makdKenBurnsController.dispose();
     _pageController.dispose();
     widget.viewModel.removeListener(_onStateChanged);
     widget.prefs.removeListener(_onPrefsChanged);
@@ -492,7 +480,6 @@ class _MediaBarState extends State<MediaBar>
 
   void _onPageChanged(int index) {
     setState(() => _currentIndex = index);
-    _makdKenBurnsController.forward(from: 0);
     _syncMakdBackdropWithCurrentSlide();
     _startAutoAdvance();
     _cancelTrailerPreview();
@@ -707,11 +694,11 @@ class _MediaBarState extends State<MediaBar>
           if (useYouTubeHeaders)
             'headers': YouTubeStreamResolver.youtubeHeaders,
         };
-        await _media3TrailerBackend!.play(payload).timeout(_openTimeout);
+        await _media3TrailerBackend.play(payload).timeout(_openTimeout);
         if (!mounted ||
             resolveId != _trailerResolveId ||
             !_isHomeRouteCurrent()) {
-          await _media3TrailerBackend!.stop();
+          await _media3TrailerBackend.stop();
           return;
         }
       } else {
@@ -789,9 +776,9 @@ class _MediaBarState extends State<MediaBar>
         await _media3TrailerBackend!.setVolume(audioEnabled ? 100 : 0);
         if (!mounted || resolveId != _trailerResolveId) return;
 
-        await _media3TrailerBackend!.resume();
+        await _media3TrailerBackend.resume();
         if (!mounted || resolveId != _trailerResolveId) {
-          unawaited(_media3TrailerBackend!.stop());
+          unawaited(_media3TrailerBackend.stop());
           return;
         }
       } catch (_) {
@@ -804,7 +791,7 @@ class _MediaBarState extends State<MediaBar>
       _autoAdvanceTimer?.cancel();
       await _waitForMedia3TrailerReady(resolveId);
       if (!mounted || resolveId != _trailerResolveId) {
-        unawaited(_media3TrailerBackend!.stop());
+        unawaited(_media3TrailerBackend.stop());
         return;
       }
 
@@ -850,9 +837,9 @@ class _MediaBarState extends State<MediaBar>
     if (!mounted || resolveId != _trailerResolveId) return false;
 
     var isPlaying = _media3TrailerBackend!.isPlaying;
-    var isBuffering = _media3TrailerBackend!.isBuffering;
-    var buffered = _media3TrailerBackend!.buffer;
-    var position = _media3TrailerBackend!.position;
+    var isBuffering = _media3TrailerBackend.isBuffering;
+    var buffered = _media3TrailerBackend.buffer;
+    var position = _media3TrailerBackend.position;
     if (isPlaying &&
         (!isBuffering ||
             buffered > Duration.zero ||
@@ -876,19 +863,19 @@ class _MediaBarState extends State<MediaBar>
       }
     }
 
-    playingSub = _media3TrailerBackend!.playingStream.listen((value) {
+    playingSub = _media3TrailerBackend.playingStream.listen((value) {
       isPlaying = value;
       checkReady();
     });
-    bufferingSub = _media3TrailerBackend!.bufferingStream.listen((value) {
+    bufferingSub = _media3TrailerBackend.bufferingStream.listen((value) {
       isBuffering = value;
       checkReady();
     });
-    bufferSub = _media3TrailerBackend!.bufferStream.listen((value) {
+    bufferSub = _media3TrailerBackend.bufferStream.listen((value) {
       buffered = value;
       checkReady();
     });
-    positionSub = _media3TrailerBackend!.positionStream.listen((value) {
+    positionSub = _media3TrailerBackend.positionStream.listen((value) {
       position = value;
       checkReady();
     });
@@ -1623,20 +1610,10 @@ class _MediaBarState extends State<MediaBar>
                     AnimatedOpacity(
                       opacity: hasVisibleTrailerVideo ? 0 : 1,
                       duration: const Duration(milliseconds: 250),
-                      child: AnimatedBuilder(
-                        animation: _makdKenBurnsScale,
-                        builder: (context, child) {
-                          return Transform.scale(
-                            scale: _makdKenBurnsScale.value,
-                            alignment: Alignment.center,
-                            child: child,
-                          );
-                        },
-                        child: _BackdropLayer(
-                          items: items,
-                          pageController: _pageController,
-                          onPageChanged: _onPageChanged,
-                        ),
+                      child: _BackdropLayer(
+                        items: items,
+                        pageController: _pageController,
+                        onPageChanged: _onPageChanged,
                       ),
                     ),
                   if (!isMobile) ..._buildVideoOverlays(),
