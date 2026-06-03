@@ -16,7 +16,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String connectingToServer(String serverName) {
-    return 'Connecting to $serverName';
+    return 'Savienojuma izveide ar $serverName';
   }
 
   @override
@@ -49,12 +49,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect unavailable: $detail';
+    return 'QuickConnect nav pieejams: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect unavailable ($status): $detail';
+    return 'QuickConnect nav pieejams ($status): $detail';
   }
 
   @override
@@ -68,7 +68,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin version $version';
+    return 'Moonfin versija $version';
   }
 
   @override
@@ -94,7 +94,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String removeServerConfirmation(String serverName) {
-    return 'Remove \"$serverName\" from your servers?';
+    return 'Vai noņemt \"$serverName\" no saviem serveriem?';
   }
 
   @override
@@ -133,11 +133,11 @@ class AppLocalizationsLv extends AppLocalizations {
       'Pārslēdzieties starp Moonfin un Neon Pulse, nerestartējot lietotni';
 
   @override
-  String get keyboardPreferSystemIme => 'Prefer system keyboard';
+  String get keyboardPreferSystemIme => 'Dod priekšroku sistēmas tastatūrai';
 
   @override
   String get keyboardPreferSystemImeDescription =>
-      'Use your device input method by default for text entry';
+      'Teksta ievadei pēc noklusējuma izmantojiet ierīces ievades metodi';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -202,7 +202,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String unableToConnectTo(String target) {
-    return 'Unable to connect to $target';
+    return 'Nevar izveidot savienojumu ar $target';
   }
 
   @override
@@ -284,7 +284,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return 'Failed to load folder: $error';
+    return 'Neizdevās ielādēt mapi: $error';
   }
 
   @override
@@ -292,7 +292,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return '$count items';
+    return '$count vienumus';
   }
 
   @override
@@ -309,7 +309,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return '$count Items';
+    return '$count Vienumi';
   }
 
   @override
@@ -350,7 +350,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — Genres';
+    return '$name — Žanri';
   }
 
   @override
@@ -389,17 +389,17 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return '${count}m ago';
+    return 'Pirms $count@min';
   }
 
   @override
   String hoursAgo(int count) {
-    return '${count}h ago';
+    return 'Pirms $count@h';
   }
 
   @override
   String daysAgo(int count) {
-    return '${count}d ago';
+    return '${count}d pirms';
   }
 
   @override
@@ -434,7 +434,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String titlesCount(int count) {
-    return '$count titles';
+    return '$count virsraksti';
   }
 
   @override
@@ -521,17 +521,17 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String authorsCount(int count) {
-    return '$count authors';
+    return '$count autori';
   }
 
   @override
   String genresCount(int count) {
-    return '$count genres';
+    return '$count žanri';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '$percent% completed';
+    return '$percent% pabeigts';
   }
 
   @override
@@ -548,7 +548,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count titles arranged for reading-first browsing.';
+    return '$count virsraksti, kas sakārtoti lasīšanai vispirms.';
   }
 
   @override
@@ -585,7 +585,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String noLabelFound(String label) {
-    return 'No $label found';
+    return 'Nav atrasts neviens $label';
   }
 
   @override
@@ -657,12 +657,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String sectionCountLabel(int count) {
-    return '$count sections';
+    return '$count sadaļas';
   }
 
   @override
   String firstPublished(int year) {
-    return 'First published $year';
+    return 'Pirmo reizi publicēts $year';
   }
 
   @override
@@ -677,7 +677,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String booksCount(int count) {
-    return '$count books';
+    return '$count grāmatas';
   }
 
   @override
@@ -688,7 +688,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String authorsCountTitle(int count) {
-    return '$count Authors';
+    return '$count Autori';
   }
 
   @override
@@ -749,7 +749,7 @@ class AppLocalizationsLv extends AppLocalizations {
   String get movies => 'Filmas';
 
   @override
-  String get musicVideos => 'Music Videos';
+  String get musicVideos => 'Mūzikas video';
 
   @override
   String get other => 'Cits';
@@ -768,7 +768,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String discNumber(int number) {
-    return 'Disc $number';
+    return 'Disks $number';
   }
 
   @override
@@ -793,7 +793,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String published(int year) {
-    return 'Published $year';
+    return 'Publicēts $year';
   }
 
   @override
@@ -812,7 +812,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String endsAt(String time) {
-    return 'Ends at $time';
+    return 'Beidzas $time';
   }
 
   @override
@@ -826,7 +826,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return 'Resume from $position';
+    return 'Atsākt no $position';
   }
 
   @override
@@ -926,7 +926,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return 'Delete downloaded tracks for \"$title\"?';
+    return 'Vai dzēst \"$title\" lejupielādētos ierakstus?';
   }
 
   @override
@@ -941,17 +941,17 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return 'No $itemLabel loaded';
+    return 'Nav ielādēts neviens $itemLabel';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return 'Downloading $title ($count items)...';
+    return 'Notiek $title ($count vienumu) lejupielāde...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
+    return 'Vai tiešām vēlaties dzēst \"$name\" no servera? Šo darbību nevar atsaukt.';
   }
 
   @override
@@ -963,7 +963,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String unsupportedBookFormat(String extension) {
-    return 'Unsupported book format: .$extension';
+    return 'Neatbalstīts grāmatas formāts: .$extension';
   }
 
   @override
@@ -990,7 +990,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return 'Subtitle downloaded and selected: $name';
+    return 'Subtitri lejupielādēti un atlasīti: $name';
   }
 
   @override
@@ -999,7 +999,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return 'No remote subtitles found for $language.';
+    return 'Nav atrasti attālināti subtitri vaicājumam $language.';
   }
 
   @override
@@ -1007,7 +1007,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String versionNumber(int number) {
-    return 'Version $number';
+    return 'Versija $number';
   }
 
   @override
@@ -1029,7 +1029,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String downloadingItem(String name, String quality) {
-    return 'Downloading $name ($quality)...';
+    return 'Notiek lejupielāde $name ($quality)...';
   }
 
   @override
@@ -1037,7 +1037,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
+    return 'Vai dzēst vietējos failus $typeLabel?\n\nTas atbrīvos vietu krātuvē. Vēlāk varat atkārtoti lejupielādēt.';
   }
 
   @override
@@ -1060,12 +1060,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String studioMoreCount(int count) {
-    return '+$count more';
+    return '+$count vairāk';
   }
 
   @override
   String totalEpisodes(int count) {
-    return '$count Episodes';
+    return '$count Epizodes';
   }
 
   @override
@@ -1075,12 +1075,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String episodeLabel(int number) {
-    return 'Episode $number';
+    return 'Sērija $number';
   }
 
   @override
   String chapterNumber(int number) {
-    return 'Chapter $number';
+    return 'nodaļa $number';
   }
 
   @override
@@ -1107,17 +1107,17 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String born(String date) {
-    return 'Born $date';
+    return 'Dzimis $date';
   }
 
   @override
   String died(String date) {
-    return 'Died $date';
+    return 'Miris $date';
   }
 
   @override
   String age(int age) {
-    return 'Age $age';
+    return 'Vecums $age';
   }
 
   @override
@@ -1131,7 +1131,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String downloadsCount(int count) {
-    return '$count downloads';
+    return '$count lejupielādes';
   }
 
   @override
@@ -1150,32 +1150,32 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
+    return 'Lai izmantotu attālo apakšvirsrakstu $action, šim lietotājam ir nepieciešama Jellyfin subtitru pārvaldības atļauja.';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return 'This item could not be found on the server for remote subtitle $action.';
+    return 'Šo vienumu nevarēja atrast serverī attālajam apakšvirsrakstam $action.';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return 'Remote subtitle $action failed: $detail';
+    return 'Tālvadības apakšvirsraksts $action neizdevās: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return 'Remote subtitle $action failed (HTTP $status).';
+    return 'Attālais apakšvirsraksts $action neizdevās (HTTP $status).';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return 'Failed to $action remote subtitles.';
+    return 'Neizdevās izveidot $action attālos subtitrus.';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return 'all downloaded episodes for \"$name\"';
+    return 'visas lejupielādētās sērijas \"$name\"';
   }
 
   @override
@@ -1205,17 +1205,17 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String castActionFailed(String label, String error) {
-    return '$label action failed: $error';
+    return '$label darbība neizdevās: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return 'Failed to set cast volume: $error';
+    return 'Neizdevās iestatīt apraides skaļumu: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return '$label Controls';
+    return '$label vadīklas';
   }
 
   @override
@@ -1232,7 +1232,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String stopCast(String label) {
-    return 'Stop $label';
+    return 'Apturēt $label';
   }
 
   @override
@@ -1240,7 +1240,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String trackNumber(int number) {
-    return 'Track $number';
+    return 'Izsekot $number';
   }
 
   @override
@@ -1257,7 +1257,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String secondsCount(int seconds) {
-    return '$seconds seconds';
+    return '$seconds sekundes';
   }
 
   @override
@@ -1276,7 +1276,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String bitrateValueMbps(int mbps) {
-    return '$mbps Mbps';
+    return '$mbps Mb/s';
   }
 
   @override
@@ -1372,12 +1372,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String castSessionError(String protocol) {
-    return '$protocol session error';
+    return '$protocol sesijas kļūda';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return 'Failed to load book details: $error';
+    return 'Neizdevās ielādēt grāmatas informāciju: $error';
   }
 
   @override
@@ -1386,7 +1386,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return 'This format (.$extension) cannot be rendered in-app yet.';
+    return 'Šo formātu (.$extension) vēl nevar renderēt lietotnē.';
   }
 
   @override
@@ -1398,17 +1398,17 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return 'Failed to open in-app reader: $error';
+    return 'Neizdevās atvērt lietotnes lasītāju: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return 'Bookmark already saved at $label.';
+    return 'Grāmatzīme jau ir saglabāta $label.';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return 'Bookmark added: $label';
+    return 'Pievienota grāmatzīme: $label';
   }
 
   @override
@@ -1420,7 +1420,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String pageLabel(int number) {
-    return 'Page $number';
+    return 'Lapa $number';
   }
 
   @override
@@ -1431,12 +1431,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String formatExtension(String extension) {
-    return 'Format: .$extension';
+    return 'Formāts: .$extension';
   }
 
   @override
   String percentRead(String percent) {
-    return '$percent% read';
+    return '$percent% lasīts';
   }
 
   @override
@@ -1459,7 +1459,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String resetZoom(String zoom) {
-    return 'Reset Zoom (${zoom}x)';
+    return 'Atiestatīt tālummaiņu (${zoom}x)';
   }
 
   @override
@@ -1482,7 +1482,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String failedToUpdateReadState(String error) {
-    return 'Failed to update read state: $error';
+    return 'Neizdevās atjaunināt lasīšanas stāvokli: $error';
   }
 
   @override
@@ -1515,7 +1515,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return 'This platform cannot host the embedded document engine for $extension files.';
+    return 'Šī platforma nevar mitināt iegulto dokumentu programmu $extension failiem.';
   }
 
   @override
@@ -1554,7 +1554,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String failedToLoadGuide(String error) {
-    return 'Failed to load guide: $error';
+    return 'Neizdevās ielādēt rokasgrāmatu: $error';
   }
 
   @override
@@ -1584,19 +1584,19 @@ class AppLocalizationsLv extends AppLocalizations {
   String get favoriteChannel => 'Mīļākais kanāls';
 
   @override
-  String get record => 'Record';
+  String get record => 'Ieraksts';
 
   @override
-  String get cancelRecordingAction => 'Cancel Recording';
+  String get cancelRecordingAction => 'Atcelt ierakstīšanu';
 
   @override
-  String get programSetToRecord => 'Program set to record';
+  String get programSetToRecord => 'Programma iestatīta ierakstīšanai';
 
   @override
-  String get recordingCancelled => 'Recording cancelled';
+  String get recordingCancelled => 'Ieraksts atcelts';
 
   @override
-  String get unableToCreateRecording => 'Unable to create recording';
+  String get unableToCreateRecording => 'Nevar izveidot ierakstu';
 
   @override
   String get watch => 'Skatīties';
@@ -1606,7 +1606,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String failedToPlayChannel(String name) {
-    return 'Failed to play $name';
+    return 'Neizdevās atskaņot $name';
   }
 
   @override
@@ -1632,7 +1632,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return 'Cancel scheduled recording of \"$name\"?';
+    return 'Vai atcelt ieplānoto \"$name\" ierakstīšanu?';
   }
 
   @override
@@ -1660,7 +1660,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String stopRecordingName(String name) {
-    return 'Stop recording \"$name\"?';
+    return 'Vai pārtraukt ierakstīšanu \"$name\"?';
   }
 
   @override
@@ -1675,12 +1675,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String noResultsForQuery(String query) {
-    return 'No results for \"$query\"';
+    return 'Nav rezultātu vaicājumam \"$query\"';
   }
 
   @override
   String searchFailedError(String error) {
-    return 'Search failed: $error';
+    return 'Meklēšana neizdevās: $error';
   }
 
   @override
@@ -1721,12 +1721,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String removeItemAndFiles(String name) {
-    return 'Remove \"$name\" and its files?';
+    return 'Vai noņemt \"$name\" un tā failus?';
   }
 
   @override
   String tracksCount(int count) {
-    return '$count tracks';
+    return '$count dziesmas';
   }
 
   @override
@@ -1737,12 +1737,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return 'Failed to load album: $error';
+    return 'Neizdevās ielādēt albumu: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return 'No downloaded tracks found for $name.';
+    return '$name nav atrasts neviens lejupielādēts ieraksts.';
   }
 
   @override
@@ -1759,7 +1759,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return 'Remove \"$name\"?';
+    return 'Vai noņemt \"$name\"?';
   }
 
   @override
@@ -1774,7 +1774,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String episodeNumber(int number) {
-    return 'Episode $number';
+    return 'Sērija $number';
   }
 
   @override
@@ -1788,7 +1788,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String seasonNumber(int number) {
-    return 'Season $number';
+    return 'Sezona $number';
   }
 
   @override
@@ -1804,7 +1804,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return 'Delete all downloaded episodes in $season?';
+    return 'Vai dzēst visas lejupielādētās sērijas $season?';
   }
 
   @override
@@ -1848,7 +1848,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return 'Delete $count downloaded items?';
+    return 'Vai dzēst $count lejupielādētos vienumus?';
   }
 
   @override
@@ -1862,7 +1862,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String ofStorageLimit(String limit) {
-    return 'of $limit limit';
+    return 'no $limit ierobežojuma';
   }
 
   @override
@@ -1947,7 +1947,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return '$count options';
+    return '$count opcijas';
   }
 
   @override
@@ -2197,16 +2197,16 @@ class AppLocalizationsLv extends AppLocalizations {
       'Iespējot TrueHD audio (var nedarboties visās platformās)';
 
   @override
-  String get settingsAudioOutputMode => 'Audio Output Mode';
+  String get settingsAudioOutputMode => 'Audio izvades režīms';
 
   @override
-  String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
+  String get settingsAudioOutputModeAvrPassthrough => 'AVR caurlaide';
 
   @override
-  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
+  String get settingsAudioFallbackCodec => 'Audio atkāpšanās kodeks';
 
   @override
-  String get settingsAudioFallbackAacStereo => 'AAC Stereo';
+  String get settingsAudioFallbackAacStereo => 'AAC stereo';
 
   @override
   String get settingsAudioFallbackAc35_1 => 'AC3 5.1';
@@ -2215,67 +2215,67 @@ class AppLocalizationsLv extends AppLocalizations {
   String get settingsAudioFallbackEac35_1 => 'EAC3 5.1';
 
   @override
-  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
+  String get settingsAudioPassthroughAdvanced => 'Passthrough (papildu)';
 
   @override
-  String get settingsAudioCodecPassthrough => 'Codec Passthrough';
+  String get settingsAudioCodecPassthrough => 'Kodeku caurlaide';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'Enable only formats your AVR or HDMI sink supports.';
+      'Iespējojiet tikai tos formātus, kurus atbalsta jūsu AVR vai HDMI izlietne.';
 
   @override
-  String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
+  String get settingsAudioEac3Passthrough => 'EAC3 caurlaide';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) Passthrough';
+  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) caurlaide';
 
   @override
   String get settingsAudioDtsCorePassthrough => 'DTS Core Passthrough';
 
   @override
-  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA Passthrough';
+  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA caurlaide';
 
   @override
-  String get settingsAudioTrueHdPassthrough => 'TrueHD Passthrough';
+  String get settingsAudioTrueHdPassthrough => 'TrueHD caurlaide';
 
   @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos Passthrough';
+  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos caurlaide';
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
+      'Bitu plūsma Dolby Digital Plus (EAC3) uz ārējo dekodētāju.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
+      'Bitu plūsma Dolby Atmos, izmantojot EAC3 (JOC), uz ārējo dekodētāju.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
+      'Bitu plūsmas DTS-HD MA (ietver DTS kodolu) uz ārējo dekodētāju.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
+      'Bitu plūsma Dolby TrueHD ar Atmos metadatiem uz ārējo dekodētāju.';
 
   @override
-  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
+  String get settingsDetectedAudioCapabilities => 'Atklātas audio iespējas';
 
   @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
-      'No runtime capability snapshot available yet.';
+      'Vēl nav pieejams izpildlaika iespēju momentuzņēmums.';
 
   @override
-  String get settingsAudioRouteLabel => 'Route';
+  String get settingsAudioRouteLabel => 'Maršruts';
 
   @override
-  String get settingsAudioDecodeLabel => 'Decode';
+  String get settingsAudioDecodeLabel => 'Atšifrēt';
 
   @override
-  String get settingsAudioPassthroughLabel => 'Passthrough';
+  String get settingsAudioPassthroughLabel => 'Caurlaide';
 
   @override
-  String get settingsAudioHdRoute => 'HD audio route';
+  String get settingsAudioHdRoute => 'HD audio maršruts';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2290,7 +2290,7 @@ class AppLocalizationsLv extends AppLocalizations {
   String get settingsAudioRouteBluetooth => 'Bluetooth';
 
   @override
-  String get settingsAudioRouteSpeaker => 'Speaker';
+  String get settingsAudioRouteSpeaker => 'Skaļrunis';
 
   @override
   String settingsAudioPcmChannels(int count) {
@@ -2298,39 +2298,40 @@ class AppLocalizationsLv extends AppLocalizations {
   }
 
   @override
-  String get settingsAudioDiagnostics => 'Diagnostics';
+  String get settingsAudioDiagnostics => 'Diagnostika';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
+  String get settingsAudioDiagnosticsVideoLevel => 'Video līmenis';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
+  String get settingsAudioDiagnosticsVideoRange => 'Video diapazons';
 
   @override
-  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
+  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitru kodeks';
 
   @override
   String get settingsAudioDiagnosticsAllowedAudioCodecs =>
-      'Allowed Audio Codecs';
+      'Atļautie audio kodeki';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
-      'HLS MPEG-TS Audio Codecs';
+      'HLS MPEG-TS audio kodeki';
 
   @override
   String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
-      'HLS fMP4 Audio Codecs';
+      'HLS fMP4 audio kodeki';
 
   @override
   String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
-      'audio-spdif passthrough';
+      'audio-spdif caurlaide';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
+  String get settingsAudioDiagnosticsActiveAudioRoute =>
+      'Aktīvais audio maršruts';
 
   @override
   String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'Route HD Audio Support';
+      'Maršruta HD audio atbalsts';
 
   @override
   String get nightMode => 'Nakts režīms';
@@ -2393,7 +2394,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return 'After $episodes episodes / ${hours}h';
+    return 'Pēc $episodes epizodēm / ${hours}h';
   }
 
   @override
@@ -2525,17 +2526,17 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String loadedProfileSettings(String profile) {
-    return 'Loaded $profile profile settings.';
+    return 'Ielādēti $profile profila iestatījumi.';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return 'Failed to load $profile profile settings.';
+    return 'Neizdevās ielādēt $profile profila iestatījumus.';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return 'Synced local settings to $profile profile.';
+    return 'Vietējie iestatījumi sinhronizēti ar $profile profilu.';
   }
 
   @override
@@ -2762,7 +2763,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '$count selected';
+    return '$count atlasīts';
   }
 
   @override
@@ -3123,7 +3124,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String pluginStatusVersion(String status, String version) {
-    return '$status\nVersion: $version';
+    return '$status\nVersija: $version';
   }
 
   @override
@@ -3200,7 +3201,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String loggedInAs(String username) {
-    return 'Logged in as: $username';
+    return 'Pieteicies kā: $username';
   }
 
   @override
@@ -3225,7 +3226,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String versionValue(String version) {
-    return 'Version $version';
+    return 'Versija $version';
   }
 
   @override
@@ -3277,7 +3278,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String updateAvailableVersion(String version) {
-    return 'Update available: v$version';
+    return 'Atjauninājums pieejams: v$version';
   }
 
   @override
@@ -3288,7 +3289,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String updateAvailableTitle(String version) {
-    return 'v$version Available';
+    return 'v$version Pieejams';
   }
 
   @override
@@ -3353,7 +3354,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String itemsCount(int count) {
-    return '$count Items';
+    return '$count Vienumi';
   }
 
   @override
@@ -3373,7 +3374,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String requestedByName(String name) {
-    return 'Requested by $name';
+    return 'Pieprasīja $name';
   }
 
   @override
@@ -3390,12 +3391,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String cancelRequestForTitle(String title) {
-    return 'Cancel request for \"$title\"?';
+    return 'Vai atcelt pieprasījumu “$title”?';
   }
 
   @override
   String cancelCountRequestsForTitle(int count, String title) {
-    return 'Cancel $count requests for \"$title\"?';
+    return 'Vai atcelt $count pieprasījumus par \"$title\"?';
   }
 
   @override
@@ -3410,12 +3411,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String budgetAmount(String amount) {
-    return 'Budget: \$$amount';
+    return 'Budžets: \$$amount';
   }
 
   @override
   String revenueAmount(String amount) {
-    return 'Revenue: \$$amount';
+    return 'Ieņēmumi: \$$amount';
   }
 
   @override
@@ -3425,7 +3426,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie(String type) {
-    return 'Request $type';
+    return 'Pieprasīt $type';
   }
 
   @override
@@ -3461,7 +3462,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String ageValue(int age) {
-    return 'age $age';
+    return 'vecums $age';
   }
 
   @override
@@ -3754,22 +3755,22 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminPluginUpdatesAvailable(int count) {
-    return 'Plugin updates available: $count';
+    return 'Pieejami spraudņa atjauninājumi: $count';
   }
 
   @override
   String adminPluginsRequiringRestart(int count) {
-    return 'Plugins requiring restart: $count';
+    return 'Spraudņi, kuriem nepieciešama restartēšana: $count';
   }
 
   @override
   String adminFailedScheduledTasks(int count) {
-    return 'Failed scheduled tasks: $count';
+    return 'Neizdevās ieplānotie uzdevumi: $count';
   }
 
   @override
   String adminRecentAlertEntries(int count) {
-    return 'Recent warning/error entries: $count';
+    return 'Jaunākie brīdinājumu/kļūdu ieraksti: $count';
   }
 
   @override
@@ -3828,7 +3829,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String errorGeneric(String error) {
-    return 'Error: $error';
+    return 'Kļūda: $error';
   }
 
   @override
@@ -3855,7 +3856,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Komanda neizdevās: $error';
   }
 
   @override
@@ -3920,7 +3921,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminActivityLoadFailed(String error) {
-    return 'Failed to load activity log: $error';
+    return 'Neizdevās ielādēt darbību žurnālu: $error';
   }
 
   @override
@@ -3937,7 +3938,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminDeviceUpdateFailed(String error) {
-    return 'Failed to update device: $error';
+    return 'Neizdevās atjaunināt ierīci: $error';
   }
 
   @override
@@ -3948,7 +3949,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminDeviceDeleteFailed(String error) {
-    return 'Failed to delete device: $error';
+    return 'Neizdevās izdzēst ierīci: $error';
   }
 
   @override
@@ -3977,7 +3978,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminScanFailed(String error) {
-    return 'Failed to start scan: $error';
+    return 'Neizdevās sākt skenēšanu: $error';
   }
 
   @override
@@ -3988,12 +3989,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminLibraryRenamed(String name) {
-    return 'Library renamed to \"$name\"';
+    return 'Bibliotēka pārdēvēta par $name';
   }
 
   @override
   String adminRenameFailed(String error) {
-    return 'Failed to rename: $error';
+    return 'Neizdevās pārdēvēt: $error';
   }
 
   @override
@@ -4001,17 +4002,17 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminLibraryDeleted(String name) {
-    return 'Library \"$name\" deleted';
+    return 'Bibliotēka \"$name\" ir izdzēsta';
   }
 
   @override
   String adminLibraryDeleteFailed(String error) {
-    return 'Failed to delete library: $error';
+    return 'Neizdevās izdzēst bibliotēku: $error';
   }
 
   @override
   String adminAddPathFailed(String error) {
-    return 'Failed to add path: $error';
+    return 'Neizdevās pievienot ceļu: $error';
   }
 
   @override
@@ -4019,12 +4020,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminRemovePathConfirm(String path) {
-    return 'Remove \"$path\" from this library?';
+    return 'Vai noņemt \"$path\" no šīs bibliotēkas?';
   }
 
   @override
   String adminRemovePathFailed(String error) {
-    return 'Failed to remove path: $error';
+    return 'Neizdevās noņemt ceļu: $error';
   }
 
   @override
@@ -4032,7 +4033,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminLibraryOptionsSaveFailed(String error) {
-    return 'Failed to save options: $error';
+    return 'Neizdevās saglabāt opcijas: $error';
   }
 
   @override
@@ -4067,7 +4068,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminLibraryCreateFailed(String error) {
-    return 'Failed to create library: $error';
+    return 'Neizdevās izveidot bibliotēku: $error';
   }
 
   @override
@@ -4094,27 +4095,27 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminDisableUserConfirm(String name) {
-    return 'Disable $name? They will not be able to sign in.';
+    return 'Vai atspējot $name? Viņi nevarēs pierakstīties.';
   }
 
   @override
   String adminEnableUserConfirm(String name) {
-    return 'Enable $name? They will be able to sign in again.';
+    return 'Vai iespējot $name? Viņi varēs pierakstīties vēlreiz.';
   }
 
   @override
   String adminUserDisabled(String name) {
-    return 'User \"$name\" disabled';
+    return 'Lietotājs \"$name\" ir atspējots';
   }
 
   @override
   String adminUserEnabled(String name) {
-    return 'User \"$name\" enabled';
+    return 'Lietotājs \"$name\" ir iespējots';
   }
 
   @override
   String adminUserPolicyUpdateFailed(String error) {
-    return 'Failed to update user policy: $error';
+    return 'Neizdevās atjaunināt lietotāja politiku: $error';
   }
 
   @override
@@ -4131,7 +4132,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminUserCreateFailed(String error) {
-    return 'Failed to create user: $error';
+    return 'Neizdevās izveidot lietotāju: $error';
   }
 
   @override
@@ -4151,7 +4152,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminSaveFailed(String error) {
-    return 'Failed to save: $error';
+    return 'Neizdevās saglabāt: $error';
   }
 
   @override
@@ -4162,7 +4163,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminFailed(String error) {
-    return 'Failed: $error';
+    return 'Neizdevās: $error';
   }
 
   @override
@@ -4303,22 +4304,22 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminServerReturnedHttp(int status) {
-    return 'Server returned HTTP $status';
+    return 'Serveris atgrieza HTTP $status';
   }
 
   @override
   String adminDeleteUserConfirm(String name) {
-    return 'Are you sure you want to delete $name?';
+    return 'Vai tiešām vēlaties dzēst $name?';
   }
 
   @override
   String adminUserDeleted(String name) {
-    return 'User \"$name\" deleted';
+    return 'Lietotājs \"$name\" ir izdzēsts';
   }
 
   @override
   String adminUserDeleteFailed(String error) {
-    return 'Failed to delete user: $error';
+    return 'Neizdevās izdzēst lietotāju: $error';
   }
 
   @override
@@ -4339,7 +4340,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminApiKeyCreateFailed(String error) {
-    return 'Failed to create key: $error';
+    return 'Neizdevās izveidot atslēgu: $error';
   }
 
   @override
@@ -4350,7 +4351,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminRevokeKeyConfirm(String name) {
-    return 'Revoke key for $name?';
+    return 'Vai atsaukt $name atslēgu?';
   }
 
   @override
@@ -4358,7 +4359,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminApiKeyRevokeFailed(String error) {
-    return 'Failed to revoke key: $error';
+    return 'Neizdevās atsaukt atslēgu: $error';
   }
 
   @override
@@ -4378,7 +4379,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminApiKeyTokenCreated(String token, String created) {
-    return 'Token: $token\\nCreated: $created';
+    return 'Tokens: $token\\nIzveidots: $created';
   }
 
   @override
@@ -4389,7 +4390,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminBackupCreateFailed(String error) {
-    return 'Failed to create backup: $error';
+    return 'Neizdevās izveidot dublējumu: $error';
   }
 
   @override
@@ -4397,12 +4398,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminBackupManifest(String name) {
-    return 'Manifest: $name';
+    return 'Manifests: $name';
   }
 
   @override
   String adminManifestLoadFailed(String error) {
-    return 'Failed to load manifest: $error';
+    return 'Neizdevās ielādēt manifestu: $error';
   }
 
   @override
@@ -4413,7 +4414,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminRestoreFailed(String error) {
-    return 'Failed to restore backup: $error';
+    return 'Neizdevās atjaunot dublējumu: $error';
   }
 
   @override
@@ -4445,17 +4446,17 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminSavedTo(String path) {
-    return 'Saved to $path';
+    return 'Saglabāts $path';
   }
 
   @override
   String adminFileSaveFailed(String error) {
-    return 'Failed to save file: $error';
+    return 'Neizdevās saglabāt failu: $error';
   }
 
   @override
   String adminLogFileLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'Neizdevās ielādēt $fileName';
   }
 
   @override
@@ -4466,7 +4467,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminTasksLoadFailed(String error) {
-    return 'Failed to load tasks: $error';
+    return 'Neizdevās ielādēt uzdevumus: $error';
   }
 
   @override
@@ -4478,17 +4479,17 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminTaskStartFailed(String error) {
-    return 'Failed to start task: $error';
+    return 'Neizdevās sākt uzdevumu: $error';
   }
 
   @override
   String adminTaskStopFailed(String error) {
-    return 'Failed to stop task: $error';
+    return 'Neizdevās apturēt uzdevumu: $error';
   }
 
   @override
   String adminTaskLoadFailed(String error) {
-    return 'Failed to load task: $error';
+    return 'Neizdevās ielādēt uzdevumu: $error';
   }
 
   @override
@@ -4496,12 +4497,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminTriggerRemoveFailed(String error) {
-    return 'Failed to remove trigger: $error';
+    return 'Neizdevās noņemt aktivizētāju: $error';
   }
 
   @override
   String adminTriggerAddFailed(String error) {
-    return 'Failed to add trigger: $error';
+    return 'Neizdevās pievienot aktivizētāju: $error';
   }
 
   @override
@@ -4527,7 +4528,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminHours(String hours) {
-    return '$hours hour(s)';
+    return '$hours stunda(s)';
   }
 
   @override
@@ -4538,7 +4539,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminPluginToggleFailed(String error) {
-    return 'Failed to toggle plugin: $error';
+    return 'Neizdevās pārslēgt spraudni: $error';
   }
 
   @override
@@ -4546,27 +4547,27 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminUninstallPluginConfirm(String name) {
-    return 'Are you sure you want to uninstall \"$name\"?';
+    return 'Vai tiešām vēlaties atinstalēt \"$name\"?';
   }
 
   @override
   String adminPluginUninstallFailed(String error) {
-    return 'Failed to uninstall plugin: $error';
+    return 'Neizdevās atinstalēt spraudni: $error';
   }
 
   @override
   String adminPackageInstallFailed(String error) {
-    return 'Failed to install package: $error';
+    return 'Neizdevās instalēt pakotni: $error';
   }
 
   @override
   String adminPluginUpdateFailed(String error) {
-    return 'Failed to install update: $error';
+    return 'Neizdevās instalēt atjauninājumu: $error';
   }
 
   @override
   String adminPluginsLoadFailed(String error) {
-    return 'Failed to load plugins: $error';
+    return 'Neizdevās ielādēt spraudņus: $error';
   }
 
   @override
@@ -4578,12 +4579,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminInstallUpdate(String version) {
-    return 'Install update (v$version)';
+    return 'Instalējiet atjauninājumu (v$version)';
   }
 
   @override
   String adminCatalogLoadFailed(String error) {
-    return 'Failed to load catalog: $error';
+    return 'Neizdevās ielādēt katalogu: $error';
   }
 
   @override
@@ -4605,17 +4606,17 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminPluginRemoveAfterRestart(String name) {
-    return '\"$name\" will be removed after server restart';
+    return '\"$name\" tiks noņemts pēc servera restartēšanas';
   }
 
   @override
   String adminUninstallFailed(String error) {
-    return 'Failed to uninstall: $error';
+    return 'Neizdevās atinstalēt: $error';
   }
 
   @override
   String adminPluginUpdating(String name, String version) {
-    return 'Updating \"$name\" to v$version...';
+    return 'Notiek \"$name\" atjaunināšana uz v$version...';
   }
 
   @override
@@ -4624,7 +4625,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminPluginLoadFailed(String error) {
-    return 'Failed to load plugin: $error';
+    return 'Neizdevās ielādēt spraudni: $error';
   }
 
   @override
@@ -4632,7 +4633,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminPluginVersion(String version) {
-    return 'Version $version';
+    return 'Versija $version';
   }
 
   @override
@@ -4652,17 +4653,17 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminRemoveRepositoryConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Vai tiešām vēlaties noņemt \"$name\"?';
   }
 
   @override
   String adminRepositoriesSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Neizdevās saglabāt krātuves: $error';
   }
 
   @override
   String adminRepositoriesLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Neizdevās ielādēt krātuves: $error';
   }
 
   @override
@@ -4679,12 +4680,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminPluginSettingsLoadFailed(String error) {
-    return 'Unable to load plugin settings: $error';
+    return 'Nevar ielādēt spraudņa iestatījumus: $error';
   }
 
   @override
   String adminCouldNotOpenUrl(String uri) {
-    return 'Could not open $uri';
+    return 'Nevarēja atvērt $uri';
   }
 
   @override
@@ -4968,12 +4969,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminMetadataLoadFailed(String error) {
-    return 'Failed to load metadata: $error';
+    return 'Neizdevās ielādēt metadatus: $error';
   }
 
   @override
   String adminMetadataSaveFailed(String error) {
-    return 'Failed to save metadata: $error';
+    return 'Neizdevās saglabāt metadatus: $error';
   }
 
   @override
@@ -4994,7 +4995,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminMetadataRefreshFailed(String error) {
-    return 'Failed to refresh metadata: $error';
+    return 'Neizdevās atsvaidzināt metadatus: $error';
   }
 
   @override
@@ -5012,7 +5013,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminRemoteSearchFailed(String error) {
-    return 'Remote search failed: $error';
+    return 'Attālā meklēšana neizdevās: $error';
   }
 
   @override
@@ -5026,7 +5027,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminContentTypeUpdateFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Neizdevās atjaunināt satura veidu: $error';
   }
 
   @override
@@ -5041,12 +5042,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return '$imageType attēls ir atjaunināts';
   }
 
   @override
   String adminImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Neizdevās lejupielādēt attēlu: $error';
   }
 
   @override
@@ -5057,27 +5058,27 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return '$imageType attēls ir augšupielādēts';
   }
 
   @override
   String adminImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Neizdevās augšupielādēt attēlu: $error';
   }
 
   @override
   String adminDeleteImage(String imageType) {
-    return 'Delete $imageType image';
+    return 'Dzēst $imageType attēlu';
   }
 
   @override
   String adminImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return '$imageType attēls ir izdzēsts';
   }
 
   @override
   String adminImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Neizdevās izdzēst attēlu: $error';
   }
 
   @override
@@ -5088,7 +5089,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminTunerDiscoveryFailed(String error) {
-    return 'Tuner discovery failed: $error';
+    return 'Uztvērēja atklāšana neizdevās: $error';
   }
 
   @override
@@ -5111,7 +5112,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminTunerAddFailed(String error) {
-    return 'Failed to add tuner: $error';
+    return 'Neizdevās pievienot uztvērēju: $error';
   }
 
   @override
@@ -5134,12 +5135,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminProviderAddFailed(String error) {
-    return 'Failed to add provider: $error';
+    return 'Neizdevās pievienot pakalpojumu sniedzēju: $error';
   }
 
   @override
   String adminTunerRemoveFailed(String error) {
-    return 'Failed to remove tuner: $error';
+    return 'Neizdevās noņemt uztvērēju: $error';
   }
 
   @override
@@ -5147,12 +5148,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminTunerResetFailed(String error) {
-    return 'Failed to reset tuner: $error';
+    return 'Neizdevās atiestatīt uztvērēju: $error';
   }
 
   @override
   String adminProviderRemoveFailed(String error) {
-    return 'Failed to remove provider: $error';
+    return 'Neizdevās noņemt pakalpojumu sniedzēju: $error';
   }
 
   @override
@@ -5176,7 +5177,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminSettingsSaveFailed(String error) {
-    return 'Failed to save settings: $error';
+    return 'Neizdevās saglabāt iestatījumus: $error';
   }
 
   @override
@@ -5194,7 +5195,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Neizdevās atjaunināt kartējumus: $error';
   }
 
   @override
@@ -5220,22 +5221,22 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminRecordingPathDisplay(String path) {
-    return 'Recording path: $path';
+    return 'Ierakstīšanas ceļš: $path';
   }
 
   @override
   String adminSeriesPathDisplay(String path) {
-    return 'Series path: $path';
+    return 'Sērijas ceļš: $path';
   }
 
   @override
   String adminPrePaddingDisplay(int minutes) {
-    return 'Pre-padding: $minutes min';
+    return 'Iepriekšējais pildījums: $minutes min';
   }
 
   @override
   String adminPostPaddingDisplay(int minutes) {
-    return 'Post-padding: $minutes min';
+    return 'Pēcpildījums: $minutes min';
   }
 
   @override
@@ -5268,7 +5269,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminRestoreConfirmMessage(String name) {
-    return 'Restore backup $name now?';
+    return 'Vai atjaunot dublējumu $name tūlīt?';
   }
 
   @override
@@ -5314,27 +5315,27 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminLogsMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return 'Pirms $minutes@min';
   }
 
   @override
   String adminLogsHoursAgo(int hours) {
-    return '${hours}h ago';
+    return 'Pirms $hours@h';
   }
 
   @override
   String adminLogsDaysAgo(int days) {
-    return '${days}d ago';
+    return '${days}d pirms';
   }
 
   @override
   String adminLogViewerLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'Neizdevās ielādēt $fileName';
   }
 
   @override
   String adminLogViewerMatches(int count) {
-    return '$count matches';
+    return '$count atbilst';
   }
 
   @override
@@ -5445,22 +5446,22 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminMetadataImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return '$imageType attēls ir atjaunināts';
   }
 
   @override
   String adminMetadataImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return '$imageType attēls ir augšupielādēts';
   }
 
   @override
   String adminMetadataImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return '$imageType attēls ir izdzēsts';
   }
 
   @override
   String adminMetadataImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Neizdevās lejupielādēt attēlu: $error';
   }
 
   @override
@@ -5469,12 +5470,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminMetadataImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Neizdevās augšupielādēt attēlu: $error';
   }
 
   @override
   String adminMetadataDeleteImageTitle(String imageType) {
-    return 'Delete $imageType image';
+    return 'Dzēst $imageType attēlu';
   }
 
   @override
@@ -5483,12 +5484,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminMetadataImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Neizdevās izdzēst attēlu: $error';
   }
 
   @override
   String adminMetadataChooseImage(String imageType) {
-    return 'Choose $imageType image';
+    return 'Izvēlieties $imageType attēlu';
   }
 
   @override
@@ -5521,7 +5522,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminPluginsUpdateAvailable(String version) {
-    return 'Update available: v$version';
+    return 'Atjauninājums pieejams: v$version';
   }
 
   @override
@@ -5544,7 +5545,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminPluginsInstallUpdateVersioned(String version) {
-    return 'Install update (v$version)';
+    return 'Instalējiet atjauninājumu (v$version)';
   }
 
   @override
@@ -5556,7 +5557,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminPluginsInstalling(String name) {
-    return '\"$name\" is being installed...';
+    return '\"$name\" tiek instalēts...';
   }
 
   @override
@@ -5576,7 +5577,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminPluginDetailSettingsTitle(String name) {
-    return '$name Settings';
+    return '$name Iestatījumi';
   }
 
   @override
@@ -5616,7 +5617,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminReposLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Neizdevās ielādēt krātuves: $error';
   }
 
   @override
@@ -5624,7 +5625,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminReposRemoveConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Vai tiešām vēlaties noņemt \"$name\"?';
   }
 
   @override
@@ -5632,7 +5633,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminReposSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Neizdevās saglabāt krātuves: $error';
   }
 
   @override
@@ -5910,17 +5911,17 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return 'Daily at $time';
+    return 'Katru dienu $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return 'Every $day at $time';
+    return 'Ik pēc $day $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return 'Every $duration';
+    return 'Katru $duration';
   }
 
   @override
@@ -5987,17 +5988,17 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminActivityDaysAgo(int days) {
-    return '${days}d ago';
+    return '${days}d pirms';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return '${hours}h ago';
+    return 'Pirms $hours@h';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return 'Pirms $minutes@min';
   }
 
   @override
@@ -6114,7 +6115,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Neizdevās atjaunināt satura veidu: $error';
   }
 
   @override
@@ -6138,12 +6139,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Neizdevās atjaunināt kartējumus: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return 'Time limit: $duration';
+    return 'Laika ierobežojums: $duration';
   }
 
   @override
@@ -6225,7 +6226,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String syncPlayQueueItemFallback(int index) {
-    return 'Item $index';
+    return 'Vienums $index';
   }
 
   @override
@@ -6273,12 +6274,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName joined SyncPlay group';
+    return '$userName pievienojās SyncPlay grupai';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName left SyncPlay group';
+    return '$userName pameta SyncPlay grupu';
   }
 
   @override
@@ -6290,7 +6291,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return 'Syncing playback to $groupName';
+    return 'Notiek atskaņošanas sinhronizēšana ar $groupName';
   }
 
   @override
@@ -6426,12 +6427,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return 'Cast control failed: $error';
+    return 'Apraides vadība neizdevās: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return '$kind Controls';
+    return '$kind vadīklas';
   }
 
   @override
@@ -6442,7 +6443,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return 'Stop $kind';
+    return 'Apturēt $kind';
   }
 
   @override
@@ -6466,12 +6467,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String pinEnterNDigit(int length) {
-    return 'Enter a $length-digit PIN';
+    return 'Ievadiet $length ciparu PIN';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return 'Enter your $length-digit PIN';
+    return 'Ievadiet savu $length ciparu PIN';
   }
 
   @override
@@ -6519,7 +6520,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect failed: $message';
+    return 'Ātrais savienojums neizdevās: $message';
   }
 
   @override
@@ -6530,7 +6531,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String remoteCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Komanda neizdevās: $error';
   }
 
   @override
@@ -6559,7 +6560,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String castingFailed(String error) {
-    return 'Failed to start casting: $error';
+    return 'Neizdevās sākt apraidi: $error';
   }
 
   @override
@@ -6604,7 +6605,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String trackActionDownloading(String name) {
-    return 'Downloading $name...';
+    return 'Notiek lejupielāde $name...';
   }
 
   @override
@@ -6693,7 +6694,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String skipSegment(String segment) {
-    return 'Skip $segment';
+    return 'Izlaist $segment';
   }
 
   @override
@@ -6704,12 +6705,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return 'Downloading $current/$total — $fileName';
+    return 'Notiek lejupielāde $current/$total — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return 'Downloading $fileName';
+    return 'Notiek lejupielāde $fileName';
   }
 
   @override
@@ -6936,7 +6937,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'Atzīmējiet projektu vietnē GitHub vai sniedziet ieguldījumu';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'JURIDISKĀS';
@@ -7051,13 +7052,13 @@ class AppLocalizationsLv extends AppLocalizations {
   String get settingsPlaybackEngineMedia3Recommended => 'Media3 (ieteicams)';
 
   @override
-  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (mantots)';
 
   @override
   String get settingsPlaybackEngineMpvLegacy => 'mpv (mantots)';
 
   @override
-  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (ieteicams)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Vision atkāpšanās';
@@ -7241,539 +7242,550 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String latestLibraryName(String libraryName) {
-    return 'Latest $libraryName';
+    return 'Jaunākais $libraryName';
   }
 
   @override
-  String get autoplayNextEpisode => 'Autoplay Next Episode';
+  String get autoplayNextEpisode => 'Automātiski atskaņot nākamo sēriju';
 
   @override
   String get autoplayNextEpisodeSubtitle =>
-      'Automatically play the next episode when available.';
+      'Automātiski atskaņot nākamo sēriju, kad tā ir pieejama.';
 
   @override
-  String get skipSilenceTitle => 'Skip silence';
+  String get skipSilenceTitle => 'Izlaist klusumu';
 
   @override
   String get skipSilenceSubtitle =>
-      'Automatically skip silent audio segments when supported by the stream.';
+      'Automātiski izlaist klusos audio segmentus, ja to atbalsta straume.';
 
   @override
-  String get allowExternalAudioEffectsTitle => 'Allow external audio effects';
+  String get allowExternalAudioEffectsTitle => 'Atļaut ārējos audio efektus';
 
   @override
   String get allowExternalAudioEffectsSubtitle =>
-      'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.';
+      'Atļaut ekvalaizera un efektu lietotnēm (piem., Wavelet) pievienoties Media3 atskaņošanas sesijām.';
 
   @override
-  String get disableTunnelingTitle => 'Disable tunneling';
+  String get disableTunnelingTitle => 'Atspējot tunelēšanu';
 
   @override
   String get disableTunnelingSubtitle =>
-      'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
+      'Piespiedu atskaņošana bez tunelēšanas. Noderīga ierīcēm ar tunelēšanas audio/video pārtraukumiem.';
 
   @override
-  String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
+  String get mapDolbyVisionP7Title => 'Kartē Dolby Vision profilu 7 ar HEVC';
 
   @override
   String get mapDolbyVisionP7Subtitle =>
-      'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.';
+      'Atskaņojiet Dolby Vision profila 7 straumes kā ar HDR10 saderīgu HEVC ierīcēs, kas nav DV.';
 
   @override
-  String get subtitlesUseEmbeddedStyles => 'Use embedded subtitle styles';
+  String get subtitlesUseEmbeddedStyles =>
+      'Izmantojiet iegultos subtitru stilus';
 
   @override
   String get subtitlesUseEmbeddedStylesSubtitle =>
-      'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.';
+      'Lietojiet subtitru celiņā iegultās krāsas, fontus un novietojumu. Atspējojiet, lai tā vietā izmantotu subtitru stila preferences.';
 
   @override
   String get subtitlesUseEmbeddedFontSizes =>
-      'Use embedded subtitle font sizes';
+      'Izmantojiet iegultos subtitru fontu izmērus';
 
   @override
   String get subtitlesUseEmbeddedFontSizesSubtitle =>
-      'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
+      'Lietojiet subtitru celiņā iegultos fonta lieluma ieteikumus. Atspējojiet, lai izmantotu subtitru izmēru no jūsu stila preferencēm.';
 
   @override
-  String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
+  String get useDetailedSubHeadings =>
+      'Izmantojiet detalizētus apakšvirsrakstus';
 
   @override
   String get useDetailedSubHeadingsDescription =>
-      'Show detailed or minimal subrow on Library pages.';
+      'Rādīt detalizētu vai minimālu apakšrindu bibliotēkas lapās.';
 
   @override
-  String get savedThemesDeleteDialogTitle => 'Delete saved theme?';
+  String get savedThemesDeleteDialogTitle => 'Vai dzēst saglabāto motīvu?';
 
   @override
   String savedThemesDeleteDialogMessage(String themeName) {
-    return 'Remove \"$themeName\" from this device cache?';
+    return 'Vai noņemt \"$themeName\" no šīs ierīces kešatmiņas?';
   }
 
   @override
   String savedThemesDeletedMessage(String themeName) {
-    return 'Deleted \"$themeName\" from this device.';
+    return 'Izdzēsts \"$themeName\" no šīs ierīces.';
   }
 
   @override
   String savedThemesDeleteFailedMessage(String themeName) {
-    return 'Could not delete \"$themeName\".';
+    return 'Nevarēja izdzēst \"$themeName\".';
   }
 
   @override
-  String get savedThemesTitle => 'Saved themes';
+  String get savedThemesTitle => 'Saglabātie motīvi';
 
   @override
   String get savedThemesDescription =>
-      'These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.';
+      'Tie ir motīvi, kas lejupielādēti no pašreizējā servera spraudņa Moonfin. Dzēšot, tiek noņemta tikai šī vietējā kopija.';
 
   @override
-  String get savedThemesEmpty => 'No saved themes were found for this server.';
+  String get savedThemesEmpty =>
+      'Šim serverim netika atrasts neviens saglabāts motīvs.';
 
   @override
   String savedThemesCurrentThemeId(String themeId) {
-    return '$themeId • Currently active';
+    return '$themeId • Pašlaik aktīvs';
   }
 
   @override
-  String get savedThemesDeleteTooltip => 'Delete saved theme';
+  String get savedThemesDeleteTooltip => 'Dzēst saglabāto motīvu';
 
   @override
   String get savedThemesManageSubtitle =>
-      'Manage downloaded plugin themes on this device';
+      'Pārvaldiet šajā ierīcē lejupielādētos spraudņu motīvus';
 
   @override
   String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
+  String get homeScreenSectionsTitle => 'Sākuma ekrāna sadaļas';
 
   @override
-  String get themeEditor => 'Theme Editor';
+  String get themeEditor => 'Tēmas redaktors';
 
   @override
   String get themeEditorSubtitle =>
-      'Open the Moonfin Theme Editor in your browser';
+      'Pārlūkprogrammā atveriet Moonfin motīvu redaktoru';
 
   @override
-  String get homeScreen => 'Home Screen';
+  String get homeScreen => 'Sākuma ekrāns';
 
   @override
-  String get bottomBar => 'Bottom Bar';
+  String get bottomBar => 'Apakšējā josla';
 
   @override
-  String get homeRowsStyleClassic => 'Classic';
+  String get homeRowsStyleClassic => 'Klasika';
 
   @override
-  String get homeRowsStyleModern => 'Modern';
+  String get homeRowsStyleModern => 'Mūsdienīgs';
 
   @override
-  String get homeRowsSection => 'Home Rows';
+  String get homeRowsSection => 'Sākuma rindas';
 
   @override
-  String get rowsType => 'Rows Type';
+  String get rowsType => 'Rindu veids';
 
   @override
   String get rowsTypeDescription =>
-      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
+      'Classic saglabā katras rindas attēla veidu un informācijas pārklājumu. Modern izmanto rindas no portreta uz fonu.';
 
   @override
-  String get displayFavoritesRows => 'Display Favorites Rows';
+  String get displayFavoritesRows => 'Parādīt izlases rindas';
 
   @override
   String get displayFavoritesRowsSubtitle =>
-      'Show Favorite Movies, Series, and other favorite rows in Home Sections.';
+      'Rādīt iecienītākās filmas, seriālus un citas iecienītākās rindas sākuma sadaļās.';
 
   @override
-  String get favoritesRowSorting => 'Favorites Row Sorting';
+  String get favoritesRowSorting => 'Izlases rindu kārtošana';
 
   @override
   String get favoritesRowSortingDescription =>
-      'Sort Favorites rows by date added, release date, alphabetically, and more.';
+      'Kārtot izlases rindas pēc pievienošanas datuma, izlaišanas datuma, alfabēta un daudz ko citu.';
 
   @override
-  String get displayCollectionsRows => 'Display Collections Rows';
+  String get displayCollectionsRows => 'Parādīt kolekciju rindas';
 
   @override
   String get displayCollectionsRowsSubtitle =>
-      'Show Collections rows in Home Sections.';
+      'Rādīt kolekciju rindas sākuma sadaļās.';
 
   @override
-  String get collectionsRowSorting => 'Collections Row Sorting';
+  String get collectionsRowSorting => 'Kolekciju rindu šķirošana';
 
   @override
   String get collectionsRowSortingDescription =>
-      'Sort Collections rows by date added, release date, alphabetically, and more.';
+      'Kārtot kolekciju rindas pēc pievienošanas datuma, izlaišanas datuma, alfabēta un daudz ko citu.';
 
   @override
-  String get displayGenresRows => 'Display Genres Rows';
+  String get displayGenresRows => 'Rādīt žanru rindas';
 
   @override
-  String get displayGenresRowsSubtitle => 'Show Genres rows in Home Sections.';
+  String get displayGenresRowsSubtitle => 'Rādīt Žanru rindas sākuma sadaļās.';
 
   @override
-  String get genresRowSorting => 'Genres Row Sorting';
+  String get genresRowSorting => 'Žanri rindu šķirošana';
 
   @override
   String get genresRowSortingDescription =>
-      'Sort Genres rows by date added, release date, alphabetically, and more.';
+      'Kārtot Žanru rindas pēc pievienošanas datuma, izlaišanas datuma, alfabēta un daudz ko citu.';
 
   @override
-  String get genresRowItems => 'Genres Row Items';
+  String get genresRowItems => 'Žanri Rindas vienumi';
 
   @override
   String get genresRowItemsDescription =>
-      'Show Movies, Series, or both in Genres rows.';
+      'Rādīt filmas, seriālus vai abus rindās Žanri.';
 
   @override
-  String get appearance => 'Appearance';
+  String get appearance => 'Izskats';
 
   @override
-  String get cardSize => 'Card Size';
+  String get cardSize => 'Kartes izmērs';
 
   @override
-  String get externalPlayerApp => 'External player app';
+  String get externalPlayerApp => 'Ārējā atskaņotāja lietotne';
 
   @override
   String get externalPlayerAskEachTimeSubtitle =>
-      'Show app chooser when playback starts.';
+      'Rādīt lietotņu atlasītāju, kad sākas atskaņošana.';
 
   @override
-  String get loadingInstalledPlayers => 'Loading installed players...';
+  String get loadingInstalledPlayers =>
+      'Notiek instalēto atskaņotāju ielāde...';
 
   @override
-  String get connection => 'Connection';
+  String get connection => 'Savienojums';
 
   @override
-  String get audioTranscodeTarget => 'Audio Transcode Target';
+  String get audioTranscodeTarget => 'Audio pārkodēšanas mērķis';
 
   @override
-  String get passthrough => 'Passthrough';
+  String get passthrough => 'Caurlaide';
 
   @override
-  String get supportedOnThisDevice => 'Supported on this device';
+  String get supportedOnThisDevice => 'Atbalstīts šajā ierīcē';
 
   @override
-  String get notSupportedOnThisDevice => 'Not Supported on this device';
+  String get notSupportedOnThisDevice => 'Netiek atbalstīts šajā ierīcē';
 
   @override
-  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) Passthrough';
+  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) caurlaide';
 
   @override
   String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'Bitstream DTS:X (DTS UHD) to external decoder.';
+      'Bitu plūsma DTS:X (DTS UHD) uz ārējo dekodētāju.';
 
   @override
   String get settingsAudioTrueHdJocPassthrough =>
-      'TrueHD with Atmos (JOC) Passthrough';
+      'TrueHD ar Atmos (JOC) caurlaidi';
 
   @override
-  String get mediaPlayerBehavior => 'Media Player Behavior';
+  String get mediaPlayerBehavior => 'Multivides atskaņotāja uzvedība';
 
   @override
-  String get playbackEnhancements => 'Playback Enhancements';
+  String get playbackEnhancements => 'Atskaņošanas uzlabojumi';
 
   @override
-  String get alwaysOn => 'Always on.';
+  String get alwaysOn => 'Vienmēr ieslēgts.';
 
   @override
   String get replaceSkipOutroWithNextUpDisplay =>
-      'Replace Skip Outro with Next Up Display';
+      'Nomainiet Skip Outro ar nākamo displeju';
 
   @override
   String get replaceSkipOutroWithNextUpDisplaySubtitle =>
-      'Show the Next Up overlay instead of the Skip Outro button.';
+      'Rādīt pārklājumu Next Up, nevis pogu Izlaist Outro.';
 
   @override
-  String get playerRouting => 'Player Routing';
+  String get playerRouting => 'Spēlētāja maršrutēšana';
 
   @override
-  String get preferSoftwareDecoders => 'Prefer software decoders';
+  String get preferSoftwareDecoders =>
+      'Dodiet priekšroku programmatūras dekodētājiem';
 
   @override
   String get preferSoftwareDecodersSubtitle =>
-      'Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.';
+      'Pirms aparatūras dekodētājiem izmantojiet FFmpeg (audio) un libgav1 (AV1). Atspējot, ja pārtrūkst HDMI audio caurlaide.';
 
   @override
-  String get useExternalPlayer => 'Use external player';
+  String get useExternalPlayer => 'Izmantojiet ārējo atskaņotāju';
 
   @override
   String get useExternalPlayerSubtitle =>
-      'Open video playback in your selected external app on Android TV.';
+      'Atveriet video atskaņošanu Android TV atlasītajā ārējā lietotnē.';
 
   @override
-  String get automaticQueuing => 'Automatic Queuing';
+  String get automaticQueuing => 'Automātiskā rindā';
 
   @override
-  String get preferSdhSubtitles => 'Prefer SDH subtitles';
+  String get preferSdhSubtitles => 'Dodiet priekšroku SDH subtitriem';
 
   @override
   String get preferSdhSubtitlesSubtitle =>
-      'Prioritize SDH/CC subtitle tracks when auto-selecting.';
+      'Veicot automātisko atlasi, piešķiriet prioritāti SDH/CC subtitru celiņiem.';
 
   @override
-  String get webDiagnostics => 'Web diagnostics';
+  String get webDiagnostics => 'Web diagnostika';
 
   @override
-  String get webDiagnosticsTitle => 'Moonfin Web Diagnostics';
+  String get webDiagnosticsTitle => 'Moonfin Tīmekļa diagnostika';
 
   @override
   String get webDiagnosticsIntro =>
-      'Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).';
+      'Izmantojiet šo lapu, lai diagnosticētu pārlūkprogrammas savienojamības problēmas (CORS, jaukts saturs un atklāšanas iestatījumi).';
 
   @override
   String get webDiagnosticsDetectedMixedContentFailure =>
-      'Detected Mixed-Content Failure';
+      'Konstatēta jaukta satura kļūme';
 
   @override
   String get webDiagnosticsDetectedCorsPreflightFailure =>
-      'Detected CORS/Preflight Failure';
+      'Konstatēta CORS/pirmslidojuma kļūme';
 
   @override
   String get webDiagnosticsMixedContentFailureBody =>
-      'Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.';
+      'Moonfin atklāja HTTPS lapu, kas mēģina izsaukt HTTP servera URL. Pārlūkprogrammas bloķē šo pieprasījumu, pirms tas sasniedz jūsu serveri.';
 
   @override
   String get webDiagnosticsCorsFailureBody =>
-      'Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.';
+      'Moonfin atklāja pārlūkprogrammas līmeņa pieprasījuma kļūmi, ko parasti izraisa trūkstošas ​​CORS vai pirmspārbaudes galvenes multivides serverī.';
 
   @override
   String webDiagnosticsTargetUrl(String url) {
-    return 'Target URL: $url';
+    return 'Mērķa URL: $url';
   }
 
   @override
   String webDiagnosticsDetail(String detail) {
-    return 'Detail: $detail';
+    return 'Detalizēta informācija: $detail';
   }
 
   @override
-  String get webDiagnosticsCurrentRuntimeContext => 'Current Runtime Context';
+  String get webDiagnosticsCurrentRuntimeContext =>
+      'Pašreizējais izpildlaika konteksts';
 
   @override
-  String get webDiagnosticsOrigin => 'Origin';
+  String get webDiagnosticsOrigin => 'Izcelsme';
 
   @override
-  String get webDiagnosticsScheme => 'Scheme';
+  String get webDiagnosticsScheme => 'Shēma';
 
   @override
-  String get webDiagnosticsPluginMode => 'Plugin Mode';
+  String get webDiagnosticsPluginMode => 'Spraudņa režīms';
 
   @override
-  String get webDiagnosticsWebRtcScan => 'WebRTC Scan';
+  String get webDiagnosticsWebRtcScan => 'WebRTC skenēšana';
 
   @override
-  String get webDiagnosticsForcedServerUrl => 'Forced Server URL';
+  String get webDiagnosticsForcedServerUrl => 'Piespiedu servera URL';
 
   @override
-  String get webDiagnosticsDefaultServerUrl => 'Default Server URL';
+  String get webDiagnosticsDefaultServerUrl => 'Noklusējuma servera URL';
 
   @override
-  String get webDiagnosticsDiscoveryProxyUrl => 'Discovery Proxy URL';
+  String get webDiagnosticsDiscoveryProxyUrl =>
+      'Atklāšanas starpniekservera URL';
 
   @override
-  String get notConfigured => 'not configured';
+  String get notConfigured => 'nav konfigurēts';
 
   @override
-  String get webDiagnosticsMixedContent => 'Mixed Content';
+  String get webDiagnosticsMixedContent => 'Jaukts saturs';
 
   @override
   String get webDiagnosticsMixedContentDetected =>
-      'This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.';
+      'Šī lapa tiek ielādēta, izmantojot HTTPS, bet viens vai vairāki konfigurētie URL ir HTTP. Pārlūkprogrammas neļauj HTTPS lapām izsaukt HTTP API.';
 
   @override
   String get webDiagnosticsMixedContentFix =>
-      'Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.';
+      'Labojums: apkalpojiet multivides serveri vai starpniekservera galapunktu, izmantojot HTTPS, vai ielādējiet Moonfin, izmantojot HTTP, tikai uzticamos lokālos tīklos.';
 
   @override
   String get webDiagnosticsNoMixedContentDetected =>
-      'No obvious mixed-content configuration detected from current runtime settings.';
+      'Pašreizējos izpildlaika iestatījumos nav konstatēta acīmredzama jaukta satura konfigurācija.';
 
   @override
-  String get webDiagnosticsCorsChecklist => 'CORS Checklist';
+  String get webDiagnosticsCorsChecklist => 'CORS kontrolsaraksts';
 
   @override
   String get webDiagnosticsCorsChecklistItem1 =>
-      '• Allow the browser origin in Access-Control-Allow-Origin.';
+      '• Atļaut pārlūkprogrammas izcelsmi sadaļā Access-Control-Allow-Origin.';
 
   @override
   String get webDiagnosticsCorsChecklistItem2 =>
-      '• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.';
+      '• Sadaļā Access-Control-Allow-Headers iekļaujiet autorizāciju, X-Emby-Authorization un X-Emby-Token.';
 
   @override
   String get webDiagnosticsCorsChecklistItem3 =>
-      '• Expose Content-Range and Accept-Ranges for streaming and seek behavior.';
+      '• Atklājiet satura diapazonu un akceptēt diapazonus straumēšanai un meklēšanai.';
 
   @override
   String get webDiagnosticsCorsChecklistItem4 =>
-      '• Return 204 to OPTIONS preflight requests.';
+      '• Atgrieziet 204. pie OPTIONS pirmslidojuma pieprasījumiem.';
 
   @override
   String get webDiagnosticsHeaderSnippetTitle =>
-      'Example Header Snippet (nginx-style)';
+      'Galvenes fragmenta piemērs (nginx stilā)';
 
   @override
-  String get note => 'Note';
+  String get note => 'Piezīme';
 
   @override
   String get webDiagnosticsNonWebNote =>
-      'This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.';
+      'Šis diagnostikas maršruts ir paredzēts tīmekļa būvēšanai. Ja to redzat citā platformā, šīs pārbaudes var nebūt spēkā.';
 
   @override
-  String get backToServerSelect => 'Back To Server Select';
+  String get backToServerSelect => 'Atpakaļ uz serveri Izvēlieties';
 
   @override
-  String get signOutAllUsers => 'Sign Out All Users';
+  String get signOutAllUsers => 'Izrakstīties no visiem lietotājiem';
 
   @override
   String get voiceSearchPermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied. Enable it in system settings.';
+      'Mikrofona atļauja ir neatgriezeniski liegta. Iespējojiet to sistēmas iestatījumos.';
 
   @override
   String get voiceSearchPermissionRequired =>
-      'Microphone permission is required for voice search.';
+      'Balss meklēšanai ir nepieciešama mikrofona atļauja.';
 
   @override
-  String get voiceSearchNoMatch => 'Did not catch that. Try again.';
+  String get voiceSearchNoMatch => 'To nesapratu. Mēģiniet vēlreiz.';
 
   @override
-  String get voiceSearchNoSpeechDetected => 'No speech detected.';
+  String get voiceSearchNoSpeechDetected => 'Runa nav konstatēta.';
 
   @override
-  String get voiceSearchMicrophoneError => 'Microphone error.';
+  String get voiceSearchMicrophoneError => 'Mikrofona kļūda.';
 
   @override
-  String get voiceSearchNeedsInternet => 'Voice search needs internet.';
+  String get voiceSearchNeedsInternet =>
+      'Balss meklēšanai nepieciešams internets.';
 
   @override
-  String get voiceSearchServiceBusy => 'Voice service is busy. Try again.';
+  String get voiceSearchServiceBusy =>
+      'Balss pakalpojums ir aizņemts. Mēģiniet vēlreiz.';
 
   @override
   String get microphonePermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied.';
+      'Mikrofona atļauja ir neatgriezeniski liegta.';
 
   @override
-  String get microphonePermissionDenied => 'Microphone permission is denied.';
+  String get microphonePermissionDenied => 'Mikrofona atļauja ir liegta.';
 
   @override
   String get speechRecognitionUnavailable =>
-      'Speech recognition is unavailable on this device.';
+      'Runas atpazīšana šajā ierīcē nav pieejama.';
 
   @override
-  String get openIosRoutePicker => 'Open iOS route picker';
+  String get openIosRoutePicker => 'Atveriet iOS maršruta atlasītāju';
 
   @override
   String get airPlayRoutePickerUnavailable =>
-      'AirPlay route picker is unavailable on this device.';
+      'AirPlay maršruta atlasītājs šajā ierīcē nav pieejams.';
 
   @override
-  String get videos => 'Videos';
+  String get videos => 'Videoklipi';
 
   @override
-  String get trailers => 'Trailers';
+  String get trailers => 'Piekabes';
 
   @override
-  String get programs => 'Programs';
+  String get programs => 'Programmas';
 
   @override
-  String get songs => 'Songs';
+  String get songs => 'Dziesmas';
 
   @override
-  String get photoAlbums => 'Photo Albums';
+  String get photoAlbums => 'Fotoalbumi';
 
   @override
-  String get photos => 'Photos';
+  String get photos => 'Fotogrāfijas';
 
   @override
-  String get people => 'People';
+  String get people => 'Cilvēki';
 
   @override
-  String get recentlyReleasedEpisodes => 'Recently Released Episodes';
+  String get recentlyReleasedEpisodes => 'Nesen iznākušās sērijas';
 
   @override
-  String get watchAgain => 'Watch Again';
+  String get watchAgain => 'Skatīties vēlreiz';
 
   @override
-  String get guestAppearances => 'Guest Appearances';
+  String get guestAppearances => 'Viesu uzstāšanās';
 
   @override
-  String get appearancesSeerr => 'Appearances (Seerr)';
+  String get appearancesSeerr => 'Izskati (Serr)';
 
   @override
-  String get watchWithGroup => 'Watch with group';
+  String get watchWithGroup => 'Skatieties kopā ar grupu';
 
   @override
-  String get errors => 'Errors';
+  String get errors => 'Kļūdas';
 
   @override
-  String get warnings => 'Warnings';
+  String get warnings => 'Brīdinājumi';
 
   @override
-  String get disk => 'Disk';
+  String get disk => 'Disks';
 
   @override
-  String get openInBrowser => 'Open in Browser';
+  String get openInBrowser => 'Atvērt pārlūkprogrammā';
 
   @override
   String get embeddedBrowserNotAvailable =>
-      'Embedded browser is not available on this platform.';
+      'Iegultā pārlūkprogramma šajā platformā nav pieejama.';
 
   @override
   String get adminRestartServerConfirmation =>
-      'Are you sure you want to restart the server?';
+      'Vai tiešām vēlaties restartēt serveri?';
 
   @override
   String get adminShutdownServerConfirmation =>
-      'Are you sure you want to shut down the server? You will need to restart it manually.';
+      'Vai tiešām vēlaties izslēgt serveri? Jums tas būs jārestartē manuāli.';
 
   @override
-  String get internal => 'Internal';
+  String get internal => 'Iekšējā';
 
   @override
-  String get idle => 'Idle';
+  String get idle => 'Dīkstāvē';
 
   @override
   String get os => 'OS';
 
   @override
-  String get adminNoUsersFound => 'No users found';
+  String get adminNoUsersFound => 'Nav atrasts neviens lietotājs';
 
   @override
-  String get adminNoUsersMatchSearch => 'No users match your search';
+  String get adminNoUsersMatchSearch =>
+      'Neviens lietotājs neatbilst jūsu meklēšanas vaicājumam';
 
   @override
-  String get adminNoDevicesFound => 'No devices found';
+  String get adminNoDevicesFound => 'Netika atrasta neviena ierīce';
 
   @override
   String get adminNoDevicesMatchCurrentFilters =>
-      'No devices match the current filters';
+      'Neviena ierīce neatbilst pašreizējiem filtriem';
 
   @override
-  String get passwordSet => 'Password set';
+  String get passwordSet => 'Parole iestatīta';
 
   @override
-  String get noPasswordConfigured => 'No password configured';
+  String get noPasswordConfigured => 'Parole nav konfigurēta';
 
   @override
-  String get remoteAccess => 'Remote Access';
+  String get remoteAccess => 'Attālā piekļuve';
 
   @override
-  String get localOnly => 'Local Only';
+  String get localOnly => 'Tikai vietējais';
 
   @override
-  String get adminMediaAnalyticsLoadFailed => 'Failed to load media analytics';
+  String get adminMediaAnalyticsLoadFailed =>
+      'Neizdevās ielādēt multivides analīzi';
 
   @override
   String get analyticsCombinedAcrossLibraries =>
-      'Combined analytics across all media libraries.';
+      'Apvienotā analīze visās multivides bibliotēkās.';
 
   @override
-  String get analyticsTopArtists => 'Top Artists';
+  String get analyticsTopArtists => 'Labākie mākslinieki';
 
   @override
-  String get analyticsTopAuthors => 'Top Authors';
+  String get analyticsTopAuthors => 'Populārākie autori';
 
   @override
-  String get analyticsTopContributors => 'Top Contributors';
+  String get analyticsTopContributors => 'Aktīvākie līdzstrādnieki';
 
   @override
   String analyticsLibrariesCount(int count) {
@@ -7788,64 +7800,64 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String get analyticsNoIndexedMediaTotals =>
-      'No indexed media totals are available for this selection yet.';
+      'Šai atlasei vēl nav pieejama neviena indeksētā multivides kopsumma.';
 
   @override
-  String get analyticsLibraryDetails => 'Library Details';
+  String get analyticsLibraryDetails => 'Bibliotēkas informācija';
 
   @override
-  String get analyticsLibraryBreakdown => 'Library Breakdown';
+  String get analyticsLibraryBreakdown => 'Bibliotēkas sadalījums';
 
   @override
-  String get analyticsNoLibrariesAvailable => 'No libraries are available.';
+  String get analyticsNoLibrariesAvailable => 'Bibliotēkas nav pieejamas.';
 
   @override
-  String get adminServerAdministrationTitle => 'Server Administration';
+  String get adminServerAdministrationTitle => 'Servera administrēšana';
 
   @override
-  String get adminServerPathData => 'Data';
+  String get adminServerPathData => 'Dati';
 
   @override
-  String get adminServerPathImageCache => 'Image Cache';
+  String get adminServerPathImageCache => 'Attēlu kešatmiņa';
 
   @override
-  String get adminServerPathCache => 'Cache';
+  String get adminServerPathCache => 'Kešatmiņa';
 
   @override
-  String get adminServerPathLogs => 'Logs';
+  String get adminServerPathLogs => 'Baļķi';
 
   @override
-  String get adminServerPathMetadata => 'Metadata';
+  String get adminServerPathMetadata => 'Metadati';
 
   @override
-  String get adminServerPathTranscode => 'Transcode';
+  String get adminServerPathTranscode => 'Pārkodēt';
 
   @override
   String get adminServerPathWeb => 'Web';
 
   @override
   String get adminNoServerPathsReturned =>
-      'No server paths returned by this server.';
+      'Šis serveris neatgrieza nevienu servera ceļu.';
 
   @override
   String adminPercentUsed(int percent) {
-    return '$percent% used';
+    return '$percent% izmantoti';
   }
 
   @override
-  String get userActivity => 'User Activity';
+  String get userActivity => 'Lietotāja darbība';
 
   @override
-  String get systemEvents => 'System Events';
+  String get systemEvents => 'Sistēmas notikumi';
 
   @override
-  String get needsAttention => 'Needs Attention';
+  String get needsAttention => 'Nepieciešama uzmanība';
 
   @override
-  String get adminDrawerSectionServer => 'Server';
+  String get adminDrawerSectionServer => 'Serveris';
 
   @override
-  String get adminDrawerSectionPlayback => 'Playback';
+  String get adminDrawerSectionPlayback => 'Atskaņošana';
 
   @override
   String get adminDrawerSectionDevices => 'Devices';

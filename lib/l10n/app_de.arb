@@ -8,7 +8,7 @@
   "@signIn": {
     "description": "Sign in heading and button label"
   },
-  "connectingToServer": "Connecting to {serverName}",
+  "connectingToServer": "Verbindung zu {serverName} herstellen",
   "@connectingToServer": {
     "description": "Subtitle showing which server the user is connecting to",
     "placeholders": {
@@ -49,7 +49,7 @@
   "@loginFailed": {
     "description": "Generic login failure message"
   },
-  "quickConnectUnavailable": "QuickConnect unavailable: {detail}",
+  "quickConnectUnavailable": "QuickConnect nicht verfügbar: {detail}",
   "@quickConnectUnavailable": {
     "description": "Quick Connect generic error message",
     "placeholders": {
@@ -58,7 +58,7 @@
       }
     }
   },
-  "quickConnectUnavailableWithStatus": "QuickConnect unavailable ({status}): {detail}",
+  "quickConnectUnavailableWithStatus": "QuickConnect nicht verfügbar ({status}): {detail}",
   "@quickConnectUnavailableWithStatus": {
     "description": "Quick Connect error message with HTTP status info",
     "placeholders": {
@@ -82,7 +82,7 @@
   "@selectServer": {
     "description": "Button to navigate back to server selection"
   },
-  "appVersionFooter": "Moonfin version {version}",
+  "appVersionFooter": "Moonfin Version {version}",
   "@appVersionFooter": {
     "description": "App version shown in footer",
     "placeholders": {
@@ -119,7 +119,7 @@
   "@removeServer": {
     "description": "Dialog title for removing a saved server"
   },
-  "removeServerConfirmation": "Remove \"{serverName}\" from your servers?",
+  "removeServerConfirmation": "„{serverName}“ von Ihren Servern entfernen?",
   "@removeServerConfirmation": {
     "description": "Confirmation message when removing a saved server",
     "placeholders": {
@@ -240,7 +240,7 @@
   "@invalidServerExchangeResponse": {
     "description": "Error when server exchange returns invalid data"
   },
-  "unableToConnectTo": "Unable to connect to {target}",
+  "unableToConnectTo": "Es kann keine Verbindung zu {target} hergestellt werden.",
   "@unableToConnectTo": {
     "description": "Error when connection to a specific server or address fails",
     "placeholders": {
@@ -349,7 +349,7 @@
   "@noGenresFound": {
     "description": "Empty state when no genres are available"
   },
-  "failedToLoadFolderError": "Failed to load folder: {error}",
+  "failedToLoadFolderError": "Ordner konnte nicht geladen werden: {error}",
   "@failedToLoadFolderError": {
     "description": "Error when a folder cannot be loaded",
     "placeholders": {
@@ -362,7 +362,7 @@
   "@thisFolderIsEmpty": {
     "description": "Empty state for folder browse screen"
   },
-  "itemCountLabel": "{count} items",
+  "itemCountLabel": "{count} Elemente",
   "@itemCountLabel": {
     "description": "Subtitle showing number of items in a folder or collection",
     "placeholders": {
@@ -387,7 +387,7 @@
   "@favorites": {
     "description": "Favorites section heading and filter label"
   },
-  "totalCountItems": "{count} Items",
+  "totalCountItems": "{count} Elemente",
   "@totalCountItems": {
     "description": "Header showing total item count",
     "placeholders": {
@@ -444,7 +444,7 @@
   "@extraLarge": {
     "description": "Size option: extra large"
   },
-  "libraryGenresTitle": "{name} — Genres",
+  "libraryGenresTitle": "{name} – Genres",
   "@libraryGenresTitle": {
     "description": "Header title showing library name with genres suffix",
     "placeholders": {
@@ -497,7 +497,7 @@
   "@justNow": {
     "description": "Relative time for less than a minute ago"
   },
-  "minutesAgo": "{count}m ago",
+  "minutesAgo": "Vor {count}m",
   "@minutesAgo": {
     "description": "Relative time in minutes",
     "placeholders": {
@@ -506,7 +506,7 @@
       }
     }
   },
-  "hoursAgo": "{count}h ago",
+  "hoursAgo": "Vor {count}h",
   "@hoursAgo": {
     "description": "Relative time in hours",
     "placeholders": {
@@ -515,7 +515,7 @@
       }
     }
   },
-  "daysAgo": "{count}d ago",
+  "daysAgo": "Vor {count}d",
   "@daysAgo": {
     "description": "Relative time in days",
     "placeholders": {
@@ -552,7 +552,7 @@
   "@librivoxDescription": {
     "description": "Subtitle for audiobook discovery section"
   },
-  "titlesCount": "{count} titles",
+  "titlesCount": "{count} Titel",
   "@titlesCount": {
     "description": "Label showing number of titles",
     "placeholders": {
@@ -661,7 +661,7 @@
   "@savedPlacesChapters": {
     "description": "Hero card subtitle for bookmarks section"
   },
-  "authorsCount": "{count} authors",
+  "authorsCount": "{count} Autoren",
   "@authorsCount": {
     "description": "Metric pill showing author count",
     "placeholders": {
@@ -670,7 +670,7 @@
       }
     }
   },
-  "genresCount": "{count} genres",
+  "genresCount": "{count} Genres",
   "@genresCount": {
     "description": "Metric pill showing genre count",
     "placeholders": {
@@ -679,7 +679,7 @@
       }
     }
   },
-  "percentCompleted": "{percent}% completed",
+  "percentCompleted": "{percent}% abgeschlossen",
   "@percentCompleted": {
     "description": "Reading progress percentage label",
     "placeholders": {
@@ -704,7 +704,7 @@
   "@bookmarksAndProgress": {
     "description": "Panel header for bookmarks section"
   },
-  "titlesArrangedForBrowsing": "{count} titles arranged for reading-first browsing.",
+  "titlesArrangedForBrowsing": "{count} Titel so angeordnet, dass sie zuerst gelesen werden können.",
   "@titlesArrangedForBrowsing": {
     "description": "Panel subtitle showing total titles",
     "placeholders": {
@@ -753,7 +753,7 @@
   "@audiobooks": {
     "description": "Audiobooks navigation and tab label"
   },
-  "noLabelFound": "No {label} found",
+  "noLabelFound": "Kein {label} gefunden",
   "@noLabelFound": {
     "description": "Empty state with dynamic label like books or audiobooks",
     "placeholders": {
@@ -850,7 +850,7 @@
   "@downloadZip": {
     "description": "Button label for zip download external link"
   },
-  "sectionCountLabel": "{count} sections",
+  "sectionCountLabel": "{count} Abschnitte",
   "@sectionCountLabel": {
     "description": "Detail chip showing number of sections in audiobook",
     "placeholders": {
@@ -859,7 +859,7 @@
       }
     }
   },
-  "firstPublished": "First published {year}",
+  "firstPublished": "Erstveröffentlichung {year}",
   "@firstPublished": {
     "description": "Publication year for a book",
     "placeholders": {
@@ -880,7 +880,7 @@
   "@all": {
     "description": "Filter option for showing all items"
   },
-  "booksCount": "{count} books",
+  "booksCount": "{count} Bücher",
   "@booksCount": {
     "description": "Label showing number of books in a discover row",
     "placeholders": {
@@ -897,7 +897,7 @@
   "@audiobookDetails": {
     "description": "AppBar title for LibriVox audiobook detail screen"
   },
-  "authorsCountTitle": "{count} Authors",
+  "authorsCountTitle": "{count} Autoren",
   "@authorsCountTitle": {
     "description": "AppBar title for LibriVox authors list screen",
     "placeholders": {
@@ -1028,7 +1028,7 @@
   "@unableToLoadAuthorDetails": {
     "description": "Error message when author details fail to load"
   },
-  "published": "Published {year}",
+  "published": "Veröffentlicht {year}",
   "@published": {
     "description": "Publication year for an author book tile",
     "placeholders": {
@@ -1050,7 +1050,7 @@
       }
     }
   },
-  "endsAt": "Ends at {time}",
+  "endsAt": "Endet bei {time}",
   "@endsAt": {
     "description": "Label showing when media will end",
     "placeholders": {
@@ -1071,7 +1071,7 @@
   "@read": {
     "description": "Action button label to start reading a book"
   },
-  "resumeFrom": "Resume from {position}",
+  "resumeFrom": "Fortsetzen von {position}",
   "@resumeFrom": {
     "description": "Action button label showing resume position",
     "placeholders": {
@@ -1204,7 +1204,7 @@
   "@deleteDownloadedAlbum": {
     "description": "Dialog title for deleting downloaded album tracks"
   },
-  "deleteDownloadedTracksMessage": "Delete downloaded tracks for \"{title}\"?",
+  "deleteDownloadedTracksMessage": "Heruntergeladene Titel für „{title}“ löschen?",
   "@deleteDownloadedTracksMessage": {
     "description": "Confirmation message for deleting downloaded album tracks",
     "placeholders": {
@@ -1225,7 +1225,7 @@
   "@noTracksLoaded": {
     "description": "Message when no tracks are available"
   },
-  "noItemsLoaded": "No {itemLabel} loaded",
+  "noItemsLoaded": "Kein {itemLabel} geladen",
   "@noItemsLoaded": {
     "description": "Message when no items are loaded for download",
     "placeholders": {
@@ -1234,7 +1234,7 @@
       }
     }
   },
-  "downloadingTitle": "Downloading {title} ({count} items)...",
+  "downloadingTitle": "{title} ({count} Elemente werden heruntergeladen)...",
   "@downloadingTitle": {
     "description": "Snackbar message when downloading album tracks",
     "placeholders": {
@@ -1246,7 +1246,7 @@
       }
     }
   },
-  "deleteConfirmMessage": "Are you sure you want to delete \"{name}\" from the server? This action cannot be undone.",
+  "deleteConfirmMessage": "Sind Sie sicher, dass Sie „{name}“ vom Server löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
   "@deleteConfirmMessage": {
     "description": "Confirmation message for permanently deleting an item",
     "placeholders": {
@@ -1263,7 +1263,7 @@
   "@noPlayableTrailerFound": {
     "description": "Error message when no trailer can be played"
   },
-  "unsupportedBookFormat": "Unsupported book format: .{extension}",
+  "unsupportedBookFormat": "Nicht unterstütztes Buchformat: .{extension}",
   "@unsupportedBookFormat": {
     "description": "Error message for unsupported book file format",
     "placeholders": {
@@ -1300,7 +1300,7 @@
   "@selectedSubtitleInvalid": {
     "description": "Error message when a selected subtitle is invalid"
   },
-  "subtitleDownloadedSelected": "Subtitle downloaded and selected: {name}",
+  "subtitleDownloadedSelected": "Untertitel heruntergeladen und ausgewählt: {name}",
   "@subtitleDownloadedSelected": {
     "description": "Success message after downloading and selecting a subtitle",
     "placeholders": {
@@ -1313,7 +1313,7 @@
   "@subtitleDownloadedPending": {
     "description": "Message when subtitle was downloaded but not yet visible"
   },
-  "noRemoteSubtitlesFound": "No remote subtitles found for {language}.",
+  "noRemoteSubtitlesFound": "Für {language} wurden keine Remote-Untertitel gefunden.",
   "@noRemoteSubtitlesFound": {
     "description": "Message when no remote subtitles were found",
     "placeholders": {
@@ -1355,7 +1355,7 @@
   "@noEpisodesLoaded": {
     "description": "Message when no episodes are available for download"
   },
-  "downloadingItem": "Downloading {name} ({quality})...",
+  "downloadingItem": "{name} ({quality}) wird heruntergeladen...",
   "@downloadingItem": {
     "description": "Snackbar message when downloading an item",
     "placeholders": {
@@ -1371,7 +1371,7 @@
   "@deleteDownloadedFiles": {
     "description": "Dialog title for deleting downloaded files"
   },
-  "deleteLocalFilesMessage": "Delete local files for {typeLabel}?\n\nThis will free up storage space. You can re-download later.",
+  "deleteLocalFilesMessage": "Lokale Dateien für {typeLabel} löschen?\n\nDadurch wird Speicherplatz frei. Sie können es später erneut herunterladen.",
   "@deleteLocalFilesMessage": {
     "description": "Confirmation message for deleting local downloaded files",
     "placeholders": {
@@ -1404,7 +1404,7 @@
   "@studio": {
     "description": "Metadata label for studio"
   },
-  "studioMoreCount": "+{count} more",
+  "studioMoreCount": "+{count} mehr",
   "@studioMoreCount": {
     "description": "Label showing additional studio count",
     "placeholders": {
@@ -1413,7 +1413,7 @@
       }
     }
   },
-  "totalEpisodes": "{count} Episodes",
+  "totalEpisodes": "{count} Episoden",
   "@totalEpisodes": {
     "description": "Season progress label showing total episodes",
     "placeholders": {
@@ -1434,7 +1434,7 @@
       }
     }
   },
-  "episodeLabel": "Episode {number}",
+  "episodeLabel": "Folge {number}",
   "@episodeLabel": {
     "description": "Label for an episode number",
     "placeholders": {
@@ -1443,7 +1443,7 @@
       }
     }
   },
-  "chapterNumber": "Chapter {number}",
+  "chapterNumber": "Kapitel {number}",
   "@chapterNumber": {
     "description": "Default name for a chapter",
     "placeholders": {
@@ -1470,7 +1470,7 @@
       }
     }
   },
-  "born": "Born {date}",
+  "born": "Geboren {date}",
   "@born": {
     "description": "Person birth date label",
     "placeholders": {
@@ -1479,7 +1479,7 @@
       }
     }
   },
-  "died": "Died {date}",
+  "died": "Gestorben {date}",
   "@died": {
     "description": "Person death date label",
     "placeholders": {
@@ -1488,7 +1488,7 @@
       }
     }
   },
-  "age": "Age {age}",
+  "age": "Alter {age}",
   "@age": {
     "description": "Person age label",
     "placeholders": {
@@ -1509,7 +1509,7 @@
   "@shuffle": {
     "description": "Action button label for shuffle playback"
   },
-  "downloadsCount": "{count} downloads",
+  "downloadsCount": "{count} Downloads",
   "@downloadsCount": {
     "description": "Subtitle showing number of downloads for a remote subtitle",
     "placeholders": {
@@ -1539,7 +1539,7 @@
   "@stereo": {
     "description": "Audio channel layout label for stereo"
   },
-  "remoteSubtitlePermissionError": "Remote subtitle {action} requires the Jellyfin subtitle management permission for this user.",
+  "remoteSubtitlePermissionError": "Remote-Untertitel {action} erfordert die Jellyfin Untertitelverwaltungsberechtigung für diesen Benutzer.",
   "@remoteSubtitlePermissionError": {
     "description": "Error message when user lacks subtitle management permission",
     "placeholders": {
@@ -1548,7 +1548,7 @@
       }
     }
   },
-  "remoteSubtitleNotFoundError": "This item could not be found on the server for remote subtitle {action}.",
+  "remoteSubtitleNotFoundError": "Dieses Element konnte auf dem Server für den Remote-Untertitel {action} nicht gefunden werden.",
   "@remoteSubtitleNotFoundError": {
     "description": "Error message when item not found for subtitle operation",
     "placeholders": {
@@ -1557,7 +1557,7 @@
       }
     }
   },
-  "remoteSubtitleDetailError": "Remote subtitle {action} failed: {detail}",
+  "remoteSubtitleDetailError": "Remote-Untertitel {action} fehlgeschlagen: {detail}",
   "@remoteSubtitleDetailError": {
     "description": "Error message with detail for subtitle operation",
     "placeholders": {
@@ -1569,7 +1569,7 @@
       }
     }
   },
-  "remoteSubtitleHttpError": "Remote subtitle {action} failed (HTTP {status}).",
+  "remoteSubtitleHttpError": "Remote-Untertitel {action} fehlgeschlagen (HTTP {status}).",
   "@remoteSubtitleHttpError": {
     "description": "Error message with HTTP status for subtitle operation",
     "placeholders": {
@@ -1581,7 +1581,7 @@
       }
     }
   },
-  "remoteSubtitleGenericError": "Failed to {action} remote subtitles.",
+  "remoteSubtitleGenericError": "{action} Remote-Untertitel fehlgeschlagen.",
   "@remoteSubtitleGenericError": {
     "description": "Generic error message for subtitle operation",
     "placeholders": {
@@ -1590,7 +1590,7 @@
       }
     }
   },
-  "deleteSeriesFiles": "all downloaded episodes for \"{name}\"",
+  "deleteSeriesFiles": "alle heruntergeladenen Episoden für „{name}“",
   "@deleteSeriesFiles": {
     "description": "Type label for series file deletion",
     "placeholders": {
@@ -1635,7 +1635,7 @@
   "@castingUnavailableOffline": {
     "description": "Snackbar message when casting is unavailable offline"
   },
-  "castActionFailed": "{label} action failed: {error}",
+  "castActionFailed": "{label} Aktion fehlgeschlagen: {error}",
   "@castActionFailed": {
     "description": "Error when a cast action fails",
     "placeholders": {
@@ -1647,7 +1647,7 @@
       }
     }
   },
-  "failedToSetCastVolume": "Failed to set cast volume: {error}",
+  "failedToSetCastVolume": "Übertragungsvolumen konnte nicht festgelegt werden: {error}",
   "@failedToSetCastVolume": {
     "description": "Error when setting cast volume fails",
     "placeholders": {
@@ -1656,7 +1656,7 @@
       }
     }
   },
-  "castControlsTitle": "{label} Controls",
+  "castControlsTitle": "{label} Steuerelemente",
   "@castControlsTitle": {
     "description": "Title for cast controls dialog",
     "placeholders": {
@@ -1681,7 +1681,7 @@
   "@syncPosition": {
     "description": "Cast control action to sync playback position"
   },
-  "stopCast": "Stop {label}",
+  "stopCast": "Stoppen Sie {label}",
   "@stopCast": {
     "description": "Cast control action to stop casting",
     "placeholders": {
@@ -1694,7 +1694,7 @@
   "@queueIsEmpty": {
     "description": "Empty state text for playback queue"
   },
-  "trackNumber": "Track {number}",
+  "trackNumber": "Verfolgen Sie {number}",
   "@trackNumber": {
     "description": "Fallback track name in queue",
     "placeholders": {
@@ -1719,7 +1719,7 @@
   "@castingViaDlna": {
     "description": "Cast mini bar label for DLNA"
   },
-  "secondsCount": "{seconds} seconds",
+  "secondsCount": "{seconds} Sekunden",
   "@secondsCount": {
     "description": "Double-tap skip overlay duration label",
     "placeholders": {
@@ -1752,7 +1752,7 @@
   "@auto": {
     "description": "Label for automatic bitrate selection"
   },
-  "bitrateValueMbps": "{mbps} Mbps",
+  "bitrateValueMbps": "{mbps} Mbit/s",
   "@bitrateValueMbps": {
     "description": "Bitrate option label in Mbps",
     "placeholders": {
@@ -1869,7 +1869,7 @@
   "@embedded": {
     "description": "Subtitle type label for embedded subtitles"
   },
-  "castSessionError": "{protocol} session error",
+  "castSessionError": "{protocol} Sitzungsfehler",
   "@castSessionError": {
     "description": "Fallback error message for cast session errors",
     "placeholders": {
@@ -1878,7 +1878,7 @@
       }
     }
   },
-  "failedToLoadBookDetails": "Failed to load book details: {error}",
+  "failedToLoadBookDetails": "Buchdetails konnten nicht geladen werden: {error}",
   "@failedToLoadBookDetails": {
     "description": "Error when loading book details fails",
     "placeholders": {
@@ -1891,7 +1891,7 @@
   "@epubUnavailableOnPlatform": {
     "description": "Fallback message when EPUB cannot render on current platform"
   },
-  "formatCannotRenderInApp": "This format (.{extension}) cannot be rendered in-app yet.",
+  "formatCannotRenderInApp": "Dieses Format (.{extension}) kann noch nicht in der App gerendert werden.",
   "@formatCannotRenderInApp": {
     "description": "Fallback message for unsupported document format",
     "placeholders": {
@@ -1908,7 +1908,7 @@
   "@couldNotOpenExternalViewer": {
     "description": "Error when external viewer fails to open"
   },
-  "failedToOpenInAppReader": "Failed to open in-app reader: {error}",
+  "failedToOpenInAppReader": "Fehler beim Öffnen des In-App-Readers: {error}",
   "@failedToOpenInAppReader": {
     "description": "Error when in-app reader fails to open",
     "placeholders": {
@@ -1917,7 +1917,7 @@
       }
     }
   },
-  "bookmarkAlreadySaved": "Bookmark already saved at {label}.",
+  "bookmarkAlreadySaved": "Lesezeichen wurde bereits unter {label} gespeichert.",
   "@bookmarkAlreadySaved": {
     "description": "Snackbar when bookmark already exists",
     "placeholders": {
@@ -1926,7 +1926,7 @@
       }
     }
   },
-  "bookmarkAdded": "Bookmark added: {label}",
+  "bookmarkAdded": "Lesezeichen hinzugefügt: {label}",
   "@bookmarkAdded": {
     "description": "Snackbar confirming bookmark was added",
     "placeholders": {
@@ -1943,7 +1943,7 @@
   "@noTableOfContentsAvailable": {
     "description": "Empty state for table of contents panel"
   },
-  "pageLabel": "Page {number}",
+  "pageLabel": "Seite {number}",
   "@pageLabel": {
     "description": "Page number label in TOC or position",
     "placeholders": {
@@ -1969,7 +1969,7 @@
       }
     }
   },
-  "percentRead": "{percent}% read",
+  "percentRead": "{percent}% gelesen",
   "@percentRead": {
     "description": "Chip label showing reading progress",
     "placeholders": {
@@ -2002,7 +2002,7 @@
   "@failedToDecodePageImage": {
     "description": "Error when comic page image cannot be decoded"
   },
-  "resetZoom": "Reset Zoom ({zoom}x)",
+  "resetZoom": "Zoom zurücksetzen ({zoom}x)",
   "@resetZoom": {
     "description": "Tooltip for reset zoom button",
     "placeholders": {
@@ -2035,7 +2035,7 @@
   "@markedAsUnread": {
     "description": "Snackbar confirming item marked as unread"
   },
-  "failedToUpdateReadState": "Failed to update read state: {error}",
+  "failedToUpdateReadState": "Lesestatus konnte nicht aktualisiert werden: {error}",
   "@failedToUpdateReadState": {
     "description": "Error when marking read/unread fails",
     "placeholders": {
@@ -2080,7 +2080,7 @@
   "@readerFallbackModeActive": {
     "description": "Title for fallback reader mode"
   },
-  "platformCannotHostDocumentEngine": "This platform cannot host the embedded document engine for {extension} files.",
+  "platformCannotHostDocumentEngine": "Diese Plattform kann die eingebettete Dokument-Engine für {extension}-Dateien nicht hosten.",
   "@platformCannotHostDocumentEngine": {
     "description": "Fallback description when platform lacks document engine",
     "placeholders": {
@@ -2133,7 +2133,7 @@
   "@guideTimeline": {
     "description": "Section title for the TV guide timeline"
   },
-  "failedToLoadGuide": "Failed to load guide: {error}",
+  "failedToLoadGuide": "Leitfaden konnte nicht geladen werden: {error}",
   "@failedToLoadGuide": {
     "description": "Error when guide data fails to load",
     "placeholders": {
@@ -2182,7 +2182,7 @@
   "@close": {
     "description": "Button label to close a dialog"
   },
-  "failedToPlayChannel": "Failed to play {name}",
+  "failedToPlayChannel": "{name} konnte nicht abgespielt werden",
   "@failedToPlayChannel": {
     "description": "Error when live TV channel playback fails",
     "placeholders": {
@@ -2219,7 +2219,7 @@
   "@cancelRecording": {
     "description": "Dialog title for cancelling a recording"
   },
-  "cancelScheduledRecordingOf": "Cancel scheduled recording of \"{name}\"?",
+  "cancelScheduledRecordingOf": "Geplante Aufnahme von „{name}“ abbrechen?",
   "@cancelScheduledRecordingOf": {
     "description": "Confirmation message for cancelling a scheduled recording",
     "placeholders": {
@@ -2256,7 +2256,7 @@
   "@cancelSeriesRecordingQuestion": {
     "description": "Dialog title for cancelling a series recording"
   },
-  "stopRecordingName": "Stop recording \"{name}\"?",
+  "stopRecordingName": "Aufzeichnung „{name}“ beenden?",
   "@stopRecordingName": {
     "description": "Confirmation message for stopping a series recording",
     "placeholders": {
@@ -2277,7 +2277,7 @@
   "@searchEllipsis": {
     "description": "Search hint placeholder"
   },
-  "noResultsForQuery": "No results for \"{query}\"",
+  "noResultsForQuery": "Keine Ergebnisse für „{query}“",
   "@noResultsForQuery": {
     "description": "Shown when search returns no results",
     "placeholders": {
@@ -2286,7 +2286,7 @@
       }
     }
   },
-  "searchFailedError": "Search failed: {error}",
+  "searchFailedError": "Suche fehlgeschlagen: {error}",
   "@searchFailedError": {
     "description": "Shown when search encounters an error",
     "placeholders": {
@@ -2331,7 +2331,7 @@
   "@deleteDownload": {
     "description": "Dialog title for deleting a download"
   },
-  "removeItemAndFiles": "Remove \"{name}\" and its files?",
+  "removeItemAndFiles": "„{name}“ und seine Dateien entfernen?",
   "@removeItemAndFiles": {
     "description": "Confirmation to delete a downloaded item and its files",
     "placeholders": {
@@ -2340,7 +2340,7 @@
       }
     }
   },
-  "tracksCount": "{count} tracks",
+  "tracksCount": "{count} Spuren",
   "@tracksCount": {
     "description": "Number of tracks in an album",
     "placeholders": {
@@ -2357,7 +2357,7 @@
   "@playAlbum": {
     "description": "Button to play an album"
   },
-  "failedToLoadAlbum": "Failed to load album: {error}",
+  "failedToLoadAlbum": "Album konnte nicht geladen werden: {error}",
   "@failedToLoadAlbum": {
     "description": "Error when loading an album fails",
     "placeholders": {
@@ -2366,7 +2366,7 @@
       }
     }
   },
-  "noDownloadedTracksForAlbum": "No downloaded tracks found for {name}.",
+  "noDownloadedTracksForAlbum": "Für {name} wurden keine heruntergeladenen Titel gefunden.",
   "@noDownloadedTracksForAlbum": {
     "description": "Shown when an album has no downloaded tracks",
     "placeholders": {
@@ -2391,7 +2391,7 @@
   "@deleteEpisode": {
     "description": "Dialog title for deleting an episode"
   },
-  "removeName": "Remove \"{name}\"?",
+  "removeName": "„{name}“ entfernen?",
   "@removeName": {
     "description": "Confirmation to remove an item by name",
     "placeholders": {
@@ -2421,7 +2421,7 @@
       }
     }
   },
-  "episodeNumber": "Episode {number}",
+  "episodeNumber": "Folge {number}",
   "@episodeNumber": {
     "description": "Episode label with number",
     "placeholders": {
@@ -2442,7 +2442,7 @@
   "@downloadedEpisodes": {
     "description": "Section title for downloaded episodes"
   },
-  "seasonNumber": "Season {number}",
+  "seasonNumber": "Staffel {number}",
   "@seasonNumber": {
     "description": "Season label with number",
     "placeholders": {
@@ -2459,7 +2459,7 @@
   "@deleteSeason": {
     "description": "Dialog title for deleting a season"
   },
-  "deleteAllEpisodesInSeason": "Delete all downloaded episodes in {season}?",
+  "deleteAllEpisodesInSeason": "Alle heruntergeladenen Episoden in {season} löschen?",
   "@deleteAllEpisodesInSeason": {
     "description": "Confirmation to delete all episodes in a season",
     "placeholders": {
@@ -2513,7 +2513,7 @@
   "@deleteSelected": {
     "description": "Dialog title for deleting selected items"
   },
-  "deleteSelectedCount": "Delete {count} downloaded items?",
+  "deleteSelectedCount": "{count} heruntergeladene Elemente löschen?",
   "@deleteSelectedCount": {
     "description": "Confirmation to delete selected downloaded items",
     "placeholders": {
@@ -2534,7 +2534,7 @@
   "@database": {
     "description": "Storage breakdown label for database"
   },
-  "ofStorageLimit": "of {limit} limit",
+  "ofStorageLimit": "von {limit} Limit",
   "@ofStorageLimit": {
     "description": "Text showing storage used of total limit",
     "placeholders": {
@@ -2643,7 +2643,7 @@
   "@customizeAccountPlaybackInterface": {
     "description": "Settings screen subtitle"
   },
-  "optionsCount": "{count} options",
+  "optionsCount": "{count} Optionen",
   "@optionsCount": {
     "description": "Number of options in a settings section",
     "placeholders": {
@@ -3031,7 +3031,7 @@
   "@stillWatchingPrompt": {
     "description": "Setting for still watching prompt"
   },
-  "afterEpisodesAndHours": "After {episodes} episodes / {hours}h",
+  "afterEpisodesAndHours": "Nach {episodes} Episoden / {hours}h",
   "@afterEpisodesAndHours": {
     "description": "Still watching prompt interval",
     "placeholders": {
@@ -3183,7 +3183,7 @@
   "@tv": {
     "description": "Profile: TV"
   },
-  "loadedProfileSettings": "Loaded {profile} profile settings.",
+  "loadedProfileSettings": "{profile} Profileinstellungen geladen.",
   "@loadedProfileSettings": {
     "description": "Message when profile settings are loaded",
     "placeholders": {
@@ -3192,7 +3192,7 @@
       }
     }
   },
-  "failedToLoadProfileSettings": "Failed to load {profile} profile settings.",
+  "failedToLoadProfileSettings": "{profile} Profileinstellungen konnten nicht geladen werden.",
   "@failedToLoadProfileSettings": {
     "description": "Error when profile settings fail to load",
     "placeholders": {
@@ -3201,7 +3201,7 @@
       }
     }
   },
-  "syncedSettingsToProfile": "Synced local settings to {profile} profile.",
+  "syncedSettingsToProfile": "Lokale Einstellungen mit dem Profil {profile} synchronisiert.",
   "@syncedSettingsToProfile": {
     "description": "Message when settings are synced to a profile",
     "placeholders": {
@@ -3486,7 +3486,7 @@
   "@selectAll": {
     "description": "Button to select all items"
   },
-  "itemsSelected": "{count} selected",
+  "itemsSelected": "{count} ausgewählt",
   "@itemsSelected": {
     "description": "Number of selected items",
     "placeholders": {
@@ -4021,7 +4021,7 @@
   "@hideAdultContent": {
     "description": "Description for NSFW filter"
   },
-  "loggedInAs": "Logged in as: {username}",
+  "loggedInAs": "Angemeldet als: {username}",
   "@loggedInAs": {
     "description": "Label showing logged in username",
     "placeholders": {
@@ -4111,7 +4111,7 @@
   "@updateAvailable": {
     "description": "Message when an update is available"
   },
-  "updateAvailableVersion": "Update available: v{version}",
+  "updateAvailableVersion": "Update verfügbar: v{version}",
   "@updateAvailableVersion": {
     "description": "Message with specific update version",
     "placeholders": {
@@ -4189,7 +4189,7 @@
   "@seerrRequestedStatus": {
     "description": "Seerr media status when item has been requested"
   },
-  "itemsCount": "{count} Items",
+  "itemsCount": "{count} Elemente",
   "@itemsCount": {
     "description": "Status bar item count",
     "placeholders": {
@@ -4218,7 +4218,7 @@
   "@playInMoonfin": {
     "description": "Button to play available media in Moonfin"
   },
-  "requestedByName": "Requested by {name}",
+  "requestedByName": "Angefordert von {name}",
   "@requestedByName": {
     "description": "Label showing who requested media",
     "placeholders": {
@@ -4243,7 +4243,7 @@
   "@recommendations": {
     "description": "Section title for recommended media"
   },
-  "cancelRequestForTitle": "Cancel request for \"{title}\"?",
+  "cancelRequestForTitle": "Anfrage für „{title}“ abbrechen?",
   "@cancelRequestForTitle": {
     "description": "Confirmation message for single request cancellation",
     "placeholders": {
@@ -4252,7 +4252,7 @@
       }
     }
   },
-  "cancelCountRequestsForTitle": "Cancel {count} requests for \"{title}\"?",
+  "cancelCountRequestsForTitle": "{count} Anfragen für „{title}“ abbrechen?",
   "@cancelCountRequestsForTitle": {
     "description": "Confirmation message for multiple request cancellation",
     "placeholders": {
@@ -4285,7 +4285,7 @@
       }
     }
   },
-  "revenueAmount": "Revenue: ${amount}",
+  "revenueAmount": "Umsatz: ${amount}",
   "@revenueAmount": {
     "description": "Movie revenue display",
     "placeholders": {
@@ -4306,7 +4306,7 @@
       }
     }
   },
-  "requestSeriesOrMovie": "Request {type}",
+  "requestSeriesOrMovie": "Anfrage {type}",
   "@requestSeriesOrMovie": {
     "description": "Bottom sheet title for requesting media",
     "placeholders": {
@@ -4355,7 +4355,7 @@
   "@crewSection": {
     "description": "Section title for crew credits"
   },
-  "ageValue": "age {age}",
+  "ageValue": "Alter {age}",
   "@ageValue": {
     "description": "Person age display",
     "placeholders": {
@@ -4465,7 +4465,7 @@
   "adminMediaOverview": "Medienübersicht",
   "adminMediaTotalsError": "Server-Medienstatistiken konnten nicht geladen werden.",
   "adminMediaOverviewSubtitle": "Ein kurzer Überblick über die Inhalte auf diesem Server.",
-  "adminPluginUpdatesAvailable": "Plugin updates available: {count}",
+  "adminPluginUpdatesAvailable": "Plugin-Updates verfügbar: {count}",
   "@adminPluginUpdatesAvailable": {
     "placeholders": {
       "count": {
@@ -4473,7 +4473,7 @@
       }
     }
   },
-  "adminPluginsRequiringRestart": "Plugins requiring restart: {count}",
+  "adminPluginsRequiringRestart": "Plugins, die einen Neustart erfordern: {count}",
   "@adminPluginsRequiringRestart": {
     "placeholders": {
       "count": {
@@ -4481,7 +4481,7 @@
       }
     }
   },
-  "adminFailedScheduledTasks": "Failed scheduled tasks: {count}",
+  "adminFailedScheduledTasks": "Fehlgeschlagene geplante Aufgaben: {count}",
   "@adminFailedScheduledTasks": {
     "placeholders": {
       "count": {
@@ -4489,7 +4489,7 @@
       }
     }
   },
-  "adminRecentAlertEntries": "Recent warning/error entries: {count}",
+  "adminRecentAlertEntries": "Aktuelle Warnungs-/Fehlereinträge: {count}",
   "@adminRecentAlertEntries": {
     "placeholders": {
       "count": {
@@ -4515,7 +4515,7 @@
   "adminShutdownServer": "Server herunterfahren",
   "adminScanLibraries": "Bibliotheken scannen",
   "adminLibraryScanStarted": "Bibliotheksscan gestartet",
-  "errorGeneric": "Error: {error}",
+  "errorGeneric": "Fehler: {error}",
   "@errorGeneric": {
     "placeholders": {
       "error": {
@@ -4530,7 +4530,7 @@
   "adminNoActiveSessions": "Keine aktiven Sitzungen",
   "adminRecentActivity": "Letzte Aktivität",
   "adminNoRecentActivity": "Keine aktuelle Aktivität",
-  "adminCommandFailed": "Command failed: {error}",
+  "adminCommandFailed": "Befehl fehlgeschlagen: {error}",
   "@adminCommandFailed": {
     "placeholders": {
       "error": {
@@ -4557,7 +4557,7 @@
   "direct": "Direkt",
   "adminDisconnect": "Trennen",
   "adminClearDates": "Daten löschen",
-  "adminActivityLoadFailed": "Failed to load activity log: {error}",
+  "adminActivityLoadFailed": "Aktivitätsprotokoll konnte nicht geladen werden: {error}",
   "@adminActivityLoadFailed": {
     "placeholders": {
       "error": {
@@ -4569,7 +4569,7 @@
   "adminEditDeviceName": "Gerätename bearbeiten",
   "adminCustomName": "Benutzerdefinierter Name",
   "adminDeviceNameUpdated": "Gerätename aktualisiert",
-  "adminDeviceUpdateFailed": "Failed to update device: {error}",
+  "adminDeviceUpdateFailed": "Gerät konnte nicht aktualisiert werden: {error}",
   "@adminDeviceUpdateFailed": {
     "placeholders": {
       "error": {
@@ -4579,7 +4579,7 @@
   },
   "adminDeleteDevice": "Gerät löschen",
   "adminDeviceDeleted": "Gerät gelöscht",
-  "adminDeviceDeleteFailed": "Failed to delete device: {error}",
+  "adminDeviceDeleteFailed": "Gerät konnte nicht gelöscht werden: {error}",
   "@adminDeviceDeleteFailed": {
     "placeholders": {
       "error": {
@@ -4595,7 +4595,7 @@
   "adminNoLibraries": "Keine Bibliotheken konfiguriert",
   "adminScanAllLibraries": "Alle Bibliotheken scannen",
   "adminAddLibrary": "Bibliothek hinzufügen",
-  "adminScanFailed": "Failed to start scan: {error}",
+  "adminScanFailed": "Scan konnte nicht gestartet werden: {error}",
   "@adminScanFailed": {
     "placeholders": {
       "error": {
@@ -4605,7 +4605,7 @@
   },
   "adminRenameLibrary": "Bibliothek umbenennen",
   "adminNewName": "Neuer Name",
-  "adminLibraryRenamed": "Library renamed to \"{name}\"",
+  "adminLibraryRenamed": "Bibliothek umbenannt in „{name}“",
   "@adminLibraryRenamed": {
     "placeholders": {
       "name": {
@@ -4613,7 +4613,7 @@
       }
     }
   },
-  "adminRenameFailed": "Failed to rename: {error}",
+  "adminRenameFailed": "Umbenennen fehlgeschlagen: {error}",
   "@adminRenameFailed": {
     "placeholders": {
       "error": {
@@ -4622,7 +4622,7 @@
     }
   },
   "adminDeleteLibrary": "Bibliothek löschen",
-  "adminLibraryDeleted": "Library \"{name}\" deleted",
+  "adminLibraryDeleted": "Bibliothek „{name}“ gelöscht",
   "@adminLibraryDeleted": {
     "placeholders": {
       "name": {
@@ -4630,7 +4630,7 @@
       }
     }
   },
-  "adminLibraryDeleteFailed": "Failed to delete library: {error}",
+  "adminLibraryDeleteFailed": "Bibliothek konnte nicht gelöscht werden: {error}",
   "@adminLibraryDeleteFailed": {
     "placeholders": {
       "error": {
@@ -4638,7 +4638,7 @@
       }
     }
   },
-  "adminAddPathFailed": "Failed to add path: {error}",
+  "adminAddPathFailed": "Pfad konnte nicht hinzugefügt werden: {error}",
   "@adminAddPathFailed": {
     "placeholders": {
       "error": {
@@ -4647,7 +4647,7 @@
     }
   },
   "adminRemovePath": "Pfad entfernen",
-  "adminRemovePathConfirm": "Remove \"{path}\" from this library?",
+  "adminRemovePathConfirm": "„{path}“ aus dieser Bibliothek entfernen?",
   "@adminRemovePathConfirm": {
     "placeholders": {
       "path": {
@@ -4655,7 +4655,7 @@
       }
     }
   },
-  "adminRemovePathFailed": "Failed to remove path: {error}",
+  "adminRemovePathFailed": "Pfad konnte nicht entfernt werden: {error}",
   "@adminRemovePathFailed": {
     "placeholders": {
       "error": {
@@ -4664,7 +4664,7 @@
     }
   },
   "adminLibraryOptionsSaved": "Bibliotheksoptionen gespeichert",
-  "adminLibraryOptionsSaveFailed": "Failed to save options: {error}",
+  "adminLibraryOptionsSaveFailed": "Optionen konnten nicht gespeichert werden: {error}",
   "@adminLibraryOptionsSaveFailed": {
     "placeholders": {
       "error": {
@@ -4682,7 +4682,7 @@
   "adminMetadataCountryCode": "Metadaten-Ländercode",
   "adminMetadataCountryHint": "z. B. US, DE, FR",
   "adminLibraryNameRequired": "Bibliotheksname ist erforderlich",
-  "adminLibraryCreateFailed": "Failed to create library: {error}",
+  "adminLibraryCreateFailed": "Bibliothek konnte nicht erstellt werden: {error}",
   "@adminLibraryCreateFailed": {
     "placeholders": {
       "error": {
@@ -4697,7 +4697,7 @@
   "paths": "Pfade:",
   "adminDisableUser": "Benutzer deaktivieren",
   "adminEnableUser": "Benutzer aktivieren",
-  "adminDisableUserConfirm": "Disable {name}? They will not be able to sign in.",
+  "adminDisableUserConfirm": "{name} deaktivieren? Sie können sich nicht anmelden.",
   "@adminDisableUserConfirm": {
     "placeholders": {
       "name": {
@@ -4705,7 +4705,7 @@
       }
     }
   },
-  "adminEnableUserConfirm": "Enable {name}? They will be able to sign in again.",
+  "adminEnableUserConfirm": "{name} aktivieren? Sie können sich erneut anmelden.",
   "@adminEnableUserConfirm": {
     "placeholders": {
       "name": {
@@ -4713,7 +4713,7 @@
       }
     }
   },
-  "adminUserDisabled": "User \"{name}\" disabled",
+  "adminUserDisabled": "Benutzer „{name}“ deaktiviert",
   "@adminUserDisabled": {
     "placeholders": {
       "name": {
@@ -4721,7 +4721,7 @@
       }
     }
   },
-  "adminUserEnabled": "User \"{name}\" enabled",
+  "adminUserEnabled": "Benutzer „{name}“ aktiviert",
   "@adminUserEnabled": {
     "placeholders": {
       "name": {
@@ -4729,7 +4729,7 @@
       }
     }
   },
-  "adminUserPolicyUpdateFailed": "Failed to update user policy: {error}",
+  "adminUserPolicyUpdateFailed": "Benutzerrichtlinie konnte nicht aktualisiert werden: {error}",
   "@adminUserPolicyUpdateFailed": {
     "placeholders": {
       "error": {
@@ -4741,7 +4741,7 @@
   "adminSearchUsers": "Benutzer suchen",
   "adminEditUser": "Benutzer bearbeiten",
   "adminAddUser": "Benutzer hinzufügen",
-  "adminUserCreateFailed": "Failed to create user: {error}",
+  "adminUserCreateFailed": "Benutzer konnte nicht erstellt werden: {error}",
   "@adminUserCreateFailed": {
     "placeholders": {
       "error": {
@@ -4754,7 +4754,7 @@
   "adminUsernameRequired": "Benutzername darf nicht leer sein",
   "adminNoProfileChanges": "Keine Profiländerungen zu speichern",
   "adminProfileSaved": "Profil gespeichert",
-  "adminSaveFailed": "Failed to save: {error}",
+  "adminSaveFailed": "Speichern fehlgeschlagen: {error}",
   "@adminSaveFailed": {
     "placeholders": {
       "error": {
@@ -4764,7 +4764,7 @@
   },
   "adminPermissionsSaved": "Berechtigungen gespeichert",
   "adminPasswordsMismatch": "Passwörter stimmen nicht überein",
-  "adminFailed": "Failed: {error}",
+  "adminFailed": "Fehlgeschlagen: {error}",
   "@adminFailed": {
     "placeholders": {
       "error": {
@@ -4807,7 +4807,7 @@
   "adminConfirmPassword": "Passwort bestätigen",
   "adminSetPassword": "Passwort festlegen",
   "adminResetPassword": "Passwort zurücksetzen",
-  "adminDeleteUserConfirm": "Are you sure you want to delete {name}?",
+  "adminDeleteUserConfirm": "Sind Sie sicher, dass Sie {name} löschen möchten?",
   "@adminDeleteUserConfirm": {
     "placeholders": {
       "name": {
@@ -4815,7 +4815,7 @@
       }
     }
   },
-  "adminUserDeleted": "User \"{name}\" deleted",
+  "adminUserDeleted": "Benutzer „{name}“ gelöscht",
   "@adminUserDeleted": {
     "placeholders": {
       "name": {
@@ -4823,7 +4823,7 @@
       }
     }
   },
-  "adminUserDeleteFailed": "Failed to delete user: {error}",
+  "adminUserDeleteFailed": "Benutzer konnte nicht gelöscht werden: {error}",
   "@adminUserDeleteFailed": {
     "placeholders": {
       "error": {
@@ -4836,7 +4836,7 @@
   "adminApiKeyCreated": "API-Schlüssel erstellt",
   "adminApiKeyCreatedNoToken": "Schlüssel erfolgreich erstellt. Der Server hat das Token nicht zurückgegeben. Prüfe die Server-API-Schlüssel.",
   "adminKeyCopied": "Schlüssel in Zwischenablage kopiert",
-  "adminApiKeyCreateFailed": "Failed to create key: {error}",
+  "adminApiKeyCreateFailed": "Fehler beim Erstellen des Schlüssels: {error}",
   "@adminApiKeyCreateFailed": {
     "placeholders": {
       "error": {
@@ -4846,7 +4846,7 @@
   },
   "adminKeyTokenMissing": "Schlüssel-Token fehlt in der Serverantwort",
   "adminRevokeApiKey": "API-Schlüssel widerrufen",
-  "adminRevokeKeyConfirm": "Revoke key for {name}?",
+  "adminRevokeKeyConfirm": "Schlüssel für {name} widerrufen?",
   "@adminRevokeKeyConfirm": {
     "placeholders": {
       "name": {
@@ -4855,7 +4855,7 @@
     }
   },
   "adminApiKeyRevoked": "API-Schlüssel widerrufen",
-  "adminApiKeyRevokeFailed": "Failed to revoke key: {error}",
+  "adminApiKeyRevokeFailed": "Schlüssel konnte nicht widerrufen werden: {error}",
   "@adminApiKeyRevokeFailed": {
     "placeholders": {
       "error": {
@@ -4868,7 +4868,7 @@
   "adminNoApiKeys": "Keine API-Schlüssel gefunden",
   "adminCreatingBackup": "Backup wird erstellt...",
   "adminBackupCreated": "Backup erfolgreich erstellt",
-  "adminBackupCreateFailed": "Failed to create backup: {error}",
+  "adminBackupCreateFailed": "Backup konnte nicht erstellt werden: {error}",
   "@adminBackupCreateFailed": {
     "placeholders": {
       "error": {
@@ -4885,7 +4885,7 @@
       }
     }
   },
-  "adminManifestLoadFailed": "Failed to load manifest: {error}",
+  "adminManifestLoadFailed": "Manifest konnte nicht geladen werden: {error}",
   "@adminManifestLoadFailed": {
     "placeholders": {
       "error": {
@@ -4895,7 +4895,7 @@
   },
   "adminConfirmRestore": "Wiederherstellung bestätigen",
   "adminRestoringBackup": "Backup wird wiederhergestellt...",
-  "adminRestoreFailed": "Failed to restore backup: {error}",
+  "adminRestoreFailed": "Sicherung konnte nicht wiederhergestellt werden: {error}",
   "@adminRestoreFailed": {
     "placeholders": {
       "error": {
@@ -4912,7 +4912,7 @@
   "adminNoLogFiles": "Keine Protokolldateien gefunden",
   "adminLogCopied": "Protokoll in Zwischenablage kopiert",
   "adminSaveLogFile": "Protokolldatei speichern",
-  "adminSavedTo": "Saved to {path}",
+  "adminSavedTo": "Gespeichert unter {path}",
   "@adminSavedTo": {
     "placeholders": {
       "path": {
@@ -4920,7 +4920,7 @@
       }
     }
   },
-  "adminFileSaveFailed": "Failed to save file: {error}",
+  "adminFileSaveFailed": "Datei konnte nicht gespeichert werden: {error}",
   "@adminFileSaveFailed": {
     "placeholders": {
       "error": {
@@ -4928,7 +4928,7 @@
       }
     }
   },
-  "adminLogFileLoadFailed": "Failed to load {fileName}",
+  "adminLogFileLoadFailed": "{fileName} konnte nicht geladen werden",
   "@adminLogFileLoadFailed": {
     "placeholders": {
       "fileName": {
@@ -4938,7 +4938,7 @@
   },
   "adminSearchInLog": "Im Protokoll suchen",
   "adminNoMatchingLines": "Keine übereinstimmenden Zeilen",
-  "adminTasksLoadFailed": "Failed to load tasks: {error}",
+  "adminTasksLoadFailed": "Aufgaben konnten nicht geladen werden: {error}",
   "@adminTasksLoadFailed": {
     "placeholders": {
       "error": {
@@ -4948,7 +4948,7 @@
   },
   "adminNoScheduledTasks": "Keine geplanten Aufgaben gefunden",
   "adminNoTasksMatchFilter": "Keine Aufgaben stimmen mit dem aktuellen Filter überein",
-  "adminTaskStartFailed": "Failed to start task: {error}",
+  "adminTaskStartFailed": "Aufgabe konnte nicht gestartet werden: {error}",
   "@adminTaskStartFailed": {
     "placeholders": {
       "error": {
@@ -4956,7 +4956,7 @@
       }
     }
   },
-  "adminTaskStopFailed": "Failed to stop task: {error}",
+  "adminTaskStopFailed": "Aufgabe konnte nicht gestoppt werden: {error}",
   "@adminTaskStopFailed": {
     "placeholders": {
       "error": {
@@ -4964,7 +4964,7 @@
       }
     }
   },
-  "adminTaskLoadFailed": "Failed to load task: {error}",
+  "adminTaskLoadFailed": "Aufgabe konnte nicht geladen werden: {error}",
   "@adminTaskLoadFailed": {
     "placeholders": {
       "error": {
@@ -4973,7 +4973,7 @@
     }
   },
   "adminRunNow": "Jetzt ausführen",
-  "adminTriggerRemoveFailed": "Failed to remove trigger: {error}",
+  "adminTriggerRemoveFailed": "Auslöser konnte nicht entfernt werden: {error}",
   "@adminTriggerRemoveFailed": {
     "placeholders": {
       "error": {
@@ -4981,7 +4981,7 @@
       }
     }
   },
-  "adminTriggerAddFailed": "Failed to add trigger: {error}",
+  "adminTriggerAddFailed": "Auslöser konnte nicht hinzugefügt werden: {error}",
   "@adminTriggerAddFailed": {
     "placeholders": {
       "error": {
@@ -4996,7 +4996,7 @@
   "adminTriggerType": "Auslösertyp",
   "adminTimeLimit": "Zeitlimit (optional)",
   "adminNoLimit": "Kein Limit",
-  "adminHours": "{hours} hour(s)",
+  "adminHours": "{hours} Stunde(n)",
   "@adminHours": {
     "placeholders": {
       "hours": {
@@ -5006,7 +5006,7 @@
   },
   "adminDayOfWeek": "Wochentag",
   "adminSearchPlugins": "Plugins suchen...",
-  "adminPluginToggleFailed": "Failed to toggle plugin: {error}",
+  "adminPluginToggleFailed": "Plugin konnte nicht umgeschaltet werden: {error}",
   "@adminPluginToggleFailed": {
     "placeholders": {
       "error": {
@@ -5015,7 +5015,7 @@
     }
   },
   "adminUninstallPlugin": "Plugin deinstallieren",
-  "adminUninstallPluginConfirm": "Are you sure you want to uninstall \"{name}\"?",
+  "adminUninstallPluginConfirm": "Sind Sie sicher, dass Sie „{name}“ deinstallieren möchten?",
   "@adminUninstallPluginConfirm": {
     "placeholders": {
       "name": {
@@ -5023,7 +5023,7 @@
       }
     }
   },
-  "adminPluginUninstallFailed": "Failed to uninstall plugin: {error}",
+  "adminPluginUninstallFailed": "Plugin konnte nicht deinstalliert werden: {error}",
   "@adminPluginUninstallFailed": {
     "placeholders": {
       "error": {
@@ -5031,7 +5031,7 @@
       }
     }
   },
-  "adminPackageInstallFailed": "Failed to install package: {error}",
+  "adminPackageInstallFailed": "Paket konnte nicht installiert werden: {error}",
   "@adminPackageInstallFailed": {
     "placeholders": {
       "error": {
@@ -5039,7 +5039,7 @@
       }
     }
   },
-  "adminPluginUpdateFailed": "Failed to install update: {error}",
+  "adminPluginUpdateFailed": "Update konnte nicht installiert werden: {error}",
   "@adminPluginUpdateFailed": {
     "placeholders": {
       "error": {
@@ -5047,7 +5047,7 @@
       }
     }
   },
-  "adminPluginsLoadFailed": "Failed to load plugins: {error}",
+  "adminPluginsLoadFailed": "Plugins konnten nicht geladen werden: {error}",
   "@adminPluginsLoadFailed": {
     "placeholders": {
       "error": {
@@ -5057,7 +5057,7 @@
   },
   "adminNoPluginsMatchSearch": "Keine Plugins stimmen mit deiner Suche überein",
   "adminNoPluginsInstalled": "Keine Plugins installiert",
-  "adminInstallUpdate": "Install update (v{version})",
+  "adminInstallUpdate": "Update installieren (v{version})",
   "@adminInstallUpdate": {
     "placeholders": {
       "version": {
@@ -5065,7 +5065,7 @@
       }
     }
   },
-  "adminCatalogLoadFailed": "Failed to load catalog: {error}",
+  "adminCatalogLoadFailed": "Katalog konnte nicht geladen werden: {error}",
   "@adminCatalogLoadFailed": {
     "placeholders": {
       "error": {
@@ -5078,7 +5078,7 @@
   "adminExperimentalIntegration": "Experimentelle Integration",
   "adminExperimentalWarning": "Plugin-Einstellungsintegration ist noch experimentell. Einige Einstellungsseiten werden möglicherweise nicht korrekt dargestellt.",
   "continueAction": "Fortfahren",
-  "adminPluginRemoveAfterRestart": "\"{name}\" will be removed after server restart",
+  "adminPluginRemoveAfterRestart": "„{name}“ wird nach dem Neustart des Servers entfernt",
   "@adminPluginRemoveAfterRestart": {
     "placeholders": {
       "name": {
@@ -5086,7 +5086,7 @@
       }
     }
   },
-  "adminUninstallFailed": "Failed to uninstall: {error}",
+  "adminUninstallFailed": "Deinstallation fehlgeschlagen: {error}",
   "@adminUninstallFailed": {
     "placeholders": {
       "error": {
@@ -5094,7 +5094,7 @@
       }
     }
   },
-  "adminPluginUpdating": "Updating \"{name}\" to v{version}...",
+  "adminPluginUpdating": "Aktualisierung von „{name}“ auf v{version}...",
   "@adminPluginUpdating": {
     "placeholders": {
       "name": {
@@ -5106,7 +5106,7 @@
     }
   },
   "adminMissingAuthToken": "Einstellungen können nicht geöffnet werden: Auth-Token fehlt.",
-  "adminPluginLoadFailed": "Failed to load plugin: {error}",
+  "adminPluginLoadFailed": "Plugin konnte nicht geladen werden: {error}",
   "@adminPluginLoadFailed": {
     "placeholders": {
       "error": {
@@ -5128,7 +5128,7 @@
   "adminRevisionHistory": "Änderungshistorie",
   "adminNoChangelog": "Kein Änderungsprotokoll verfügbar.",
   "adminRemoveRepository": "Repository entfernen",
-  "adminRemoveRepositoryConfirm": "Are you sure you want to remove \"{name}\"?",
+  "adminRemoveRepositoryConfirm": "Sind Sie sicher, dass Sie „{name}“ entfernen möchten?",
   "@adminRemoveRepositoryConfirm": {
     "placeholders": {
       "name": {
@@ -5136,7 +5136,7 @@
       }
     }
   },
-  "adminRepositoriesSaveFailed": "Failed to save repositories: {error}",
+  "adminRepositoriesSaveFailed": "Repositorys konnten nicht gespeichert werden: {error}",
   "@adminRepositoriesSaveFailed": {
     "placeholders": {
       "error": {
@@ -5144,7 +5144,7 @@
       }
     }
   },
-  "adminRepositoriesLoadFailed": "Failed to load repositories: {error}",
+  "adminRepositoriesLoadFailed": "Repositorys konnten nicht geladen werden: {error}",
   "@adminRepositoriesLoadFailed": {
     "placeholders": {
       "error": {
@@ -5156,7 +5156,7 @@
   "adminRepositoryUrl": "Repository-URL",
   "adminAddEntry": "Eintrag hinzufügen",
   "adminInvalidUrl": "Ungültige URL",
-  "adminPluginSettingsLoadFailed": "Unable to load plugin settings: {error}",
+  "adminPluginSettingsLoadFailed": "Plugin-Einstellungen können nicht geladen werden: {error}",
   "@adminPluginSettingsLoadFailed": {
     "placeholders": {
       "error": {
@@ -5164,7 +5164,7 @@
       }
     }
   },
-  "adminCouldNotOpenUrl": "Could not open {uri}",
+  "adminCouldNotOpenUrl": "{uri} konnte nicht geöffnet werden",
   "@adminCouldNotOpenUrl": {
     "placeholders": {
       "uri": {
@@ -5257,7 +5257,7 @@
   "blacklist": "Schwarze Liste",
   "notSet": "Nicht gesetzt",
   "adminMetadataSaved": "Metadaten gespeichert",
-  "adminMetadataLoadFailed": "Failed to load metadata: {error}",
+  "adminMetadataLoadFailed": "Metadaten konnten nicht geladen werden: {error}",
   "@adminMetadataLoadFailed": {
     "placeholders": {
       "error": {
@@ -5265,7 +5265,7 @@
       }
     }
   },
-  "adminMetadataSaveFailed": "Failed to save metadata: {error}",
+  "adminMetadataSaveFailed": "Metadaten konnten nicht gespeichert werden: {error}",
   "@adminMetadataSaveFailed": {
     "placeholders": {
       "error": {
@@ -5278,7 +5278,7 @@
   "adminReplaceAllMetadata": "Alle Metadaten ersetzen",
   "adminReplaceAllImages": "Alle Bilder ersetzen",
   "adminMetadataRefreshRequested": "Metadatenaktualisierung angefordert",
-  "adminMetadataRefreshFailed": "Failed to refresh metadata: {error}",
+  "adminMetadataRefreshFailed": "Metadaten konnten nicht aktualisiert werden: {error}",
   "@adminMetadataRefreshFailed": {
     "placeholders": {
       "error": {
@@ -5290,7 +5290,7 @@
   "adminNoRemoteMatches": "Keine Remote-Treffer gefunden",
   "adminRemoteResults": "Remote-Ergebnisse",
   "adminRemoteMetadataApplied": "Remote-Metadaten angewendet",
-  "adminRemoteSearchFailed": "Remote search failed: {error}",
+  "adminRemoteSearchFailed": "Remote-Suche fehlgeschlagen: {error}",
   "@adminRemoteSearchFailed": {
     "placeholders": {
       "error": {
@@ -5301,7 +5301,7 @@
   "adminUpdateContentType": "Inhaltstyp aktualisieren",
   "adminContentType": "Inhaltstyp",
   "adminContentTypeUpdated": "Inhaltstyp aktualisiert",
-  "adminContentTypeUpdateFailed": "Failed to update content type: {error}",
+  "adminContentTypeUpdateFailed": "Inhaltstyp konnte nicht aktualisiert werden: {error}",
   "@adminContentTypeUpdateFailed": {
     "placeholders": {
       "error": {
@@ -5312,7 +5312,7 @@
   "adminMetadataEditorLoadFailed": "Metadaten-Editor konnte nicht geladen werden",
   "adminNoPeopleEntries": "Keine Personeneinträge",
   "adminNoExternalIds": "Keine externen IDs verfügbar",
-  "adminImageUpdated": "{imageType} image updated",
+  "adminImageUpdated": "{imageType} Bild aktualisiert",
   "@adminImageUpdated": {
     "placeholders": {
       "imageType": {
@@ -5320,7 +5320,7 @@
       }
     }
   },
-  "adminImageDownloadFailed": "Failed to download image: {error}",
+  "adminImageDownloadFailed": "Bild konnte nicht heruntergeladen werden: {error}",
   "@adminImageDownloadFailed": {
     "placeholders": {
       "error": {
@@ -5330,7 +5330,7 @@
   },
   "adminUnsupportedImageFormat": "Nicht unterstütztes Bildformat",
   "adminImageReadFailed": "Ausgewähltes Bild konnte nicht gelesen werden",
-  "adminImageUploaded": "{imageType} image uploaded",
+  "adminImageUploaded": "{imageType} Bild hochgeladen",
   "@adminImageUploaded": {
     "placeholders": {
       "imageType": {
@@ -5338,7 +5338,7 @@
       }
     }
   },
-  "adminImageUploadFailed": "Failed to upload image: {error}",
+  "adminImageUploadFailed": "Bild konnte nicht hochgeladen werden: {error}",
   "@adminImageUploadFailed": {
     "placeholders": {
       "error": {
@@ -5346,7 +5346,7 @@
       }
     }
   },
-  "adminDeleteImage": "Delete {imageType} image",
+  "adminDeleteImage": "{imageType} Bild löschen",
   "@adminDeleteImage": {
     "placeholders": {
       "imageType": {
@@ -5354,7 +5354,7 @@
       }
     }
   },
-  "adminImageDeleted": "{imageType} image deleted",
+  "adminImageDeleted": "{imageType} Bild gelöscht",
   "@adminImageDeleted": {
     "placeholders": {
       "imageType": {
@@ -5362,7 +5362,7 @@
       }
     }
   },
-  "adminImageDeleteFailed": "Failed to delete image: {error}",
+  "adminImageDeleteFailed": "Bild konnte nicht gelöscht werden: {error}",
   "@adminImageDeleteFailed": {
     "placeholders": {
       "error": {
@@ -5372,7 +5372,7 @@
   },
   "adminAllProviders": "Alle Anbieter",
   "adminNoRemoteImages": "Keine Remote-Bilder gefunden",
-  "adminTunerDiscoveryFailed": "Tuner discovery failed: {error}",
+  "adminTunerDiscoveryFailed": "Tuner-Erkennung fehlgeschlagen: {error}",
   "@adminTunerDiscoveryFailed": {
     "placeholders": {
       "error": {
@@ -5386,7 +5386,7 @@
   "adminUrlPath": "URL / Pfad",
   "adminNameOptional": "Name (optional)",
   "adminTunerAdded": "Tuner hinzugefügt",
-  "adminTunerAddFailed": "Failed to add tuner: {error}",
+  "adminTunerAddFailed": "Tuner konnte nicht hinzugefügt werden: {error}",
   "@adminTunerAddFailed": {
     "placeholders": {
       "error": {
@@ -5400,7 +5400,7 @@
   "adminUsernameOptional": "Benutzername (optional)",
   "adminRefreshInterval": "Aktualisierungsintervall (Stunden)",
   "adminProviderAdded": "Anbieter hinzugefügt",
-  "adminProviderAddFailed": "Failed to add provider: {error}",
+  "adminProviderAddFailed": "Anbieter konnte nicht hinzugefügt werden: {error}",
   "@adminProviderAddFailed": {
     "placeholders": {
       "error": {
@@ -5408,7 +5408,7 @@
       }
     }
   },
-  "adminTunerRemoveFailed": "Failed to remove tuner: {error}",
+  "adminTunerRemoveFailed": "Tuner konnte nicht entfernt werden: {error}",
   "@adminTunerRemoveFailed": {
     "placeholders": {
       "error": {
@@ -5417,7 +5417,7 @@
     }
   },
   "adminTunerResetRequested": "Tuner-Zurücksetzung angefordert",
-  "adminTunerResetFailed": "Failed to reset tuner: {error}",
+  "adminTunerResetFailed": "Tuner konnte nicht zurückgesetzt werden: {error}",
   "@adminTunerResetFailed": {
     "placeholders": {
       "error": {
@@ -5425,7 +5425,7 @@
       }
     }
   },
-  "adminProviderRemoveFailed": "Failed to remove provider: {error}",
+  "adminProviderRemoveFailed": "Anbieter konnte nicht entfernt werden: {error}",
   "@adminProviderRemoveFailed": {
     "placeholders": {
       "error": {
@@ -5439,7 +5439,7 @@
   "adminRecordingPath": "Aufnahmepfad",
   "adminSeriesRecordingPath": "Serienaufnahmepfad",
   "adminRecordingSettingsSaved": "Aufnahme-Einstellungen gespeichert",
-  "adminSettingsSaveFailed": "Failed to save settings: {error}",
+  "adminSettingsSaveFailed": "Einstellungen konnten nicht gespeichert werden: {error}",
   "@adminSettingsSaveFailed": {
     "placeholders": {
       "error": {
@@ -5450,7 +5450,7 @@
   "adminSetChannelMappings": "Kanalzuordnungen festlegen",
   "adminMappingJson": "Zuordnungs-JSON",
   "adminChannelMappingsUpdated": "Kanalzuordnungen aktualisiert",
-  "adminMappingsUpdateFailed": "Failed to update mappings: {error}",
+  "adminMappingsUpdateFailed": "Zuordnungen konnten nicht aktualisiert werden: {error}",
   "@adminMappingsUpdateFailed": {
     "placeholders": {
       "error": {
@@ -5464,7 +5464,7 @@
   "adminGuideProviders": "Programmführer-Anbieter",
   "adminAddProvider": "Anbieter hinzufügen",
   "adminNoListingProviders": "Keine Listing-Anbieter konfiguriert",
-  "adminRecordingPathDisplay": "Recording path: {path}",
+  "adminRecordingPathDisplay": "Aufnahmepfad: {path}",
   "@adminRecordingPathDisplay": {
     "placeholders": {
       "path": {
@@ -5472,7 +5472,7 @@
       }
     }
   },
-  "adminSeriesPathDisplay": "Series path: {path}",
+  "adminSeriesPathDisplay": "Serienpfad: {path}",
   "@adminSeriesPathDisplay": {
     "placeholders": {
       "path": {
@@ -5480,7 +5480,7 @@
       }
     }
   },
-  "adminPrePaddingDisplay": "Pre-padding: {minutes} min",
+  "adminPrePaddingDisplay": "Vorabfüllung: {minutes} min",
   "@adminPrePaddingDisplay": {
     "placeholders": {
       "minutes": {
@@ -5488,7 +5488,7 @@
       }
     }
   },
-  "adminPostPaddingDisplay": "Post-padding: {minutes} min",
+  "adminPostPaddingDisplay": "Post-Padding: {minutes} min",
   "@adminPostPaddingDisplay": {
     "placeholders": {
       "minutes": {
@@ -5504,7 +5504,7 @@
   "adminRestoreWarning1": "Die Wiederherstellung ersetzt ALLE aktuellen Serverdaten durch die Backup-Daten.",
   "adminRestoreWarning2": "Aktuelle Servereinstellungen, Benutzer und Bibliotheksdaten werden überschrieben.",
   "adminRestoreWarning3": "Der Server wird nach der Wiederherstellung neu gestartet.",
-  "adminRestoreConfirmMessage": "Restore backup {name} now?",
+  "adminRestoreConfirmMessage": "Backup {name} jetzt wiederherstellen?",
   "@adminRestoreConfirmMessage": {
     "placeholders": {
       "name": {
@@ -5525,7 +5525,7 @@
   "adminLogsNewestFirst": "Neueste zuerst",
   "adminLogsOldestFirst": "Älteste zuerst",
   "adminLogsJustNow": "Gerade eben",
-  "adminLogsMinutesAgo": "{minutes}m ago",
+  "adminLogsMinutesAgo": "Vor {minutes}m",
   "@adminLogsMinutesAgo": {
     "placeholders": {
       "minutes": {
@@ -5533,7 +5533,7 @@
       }
     }
   },
-  "adminLogsHoursAgo": "{hours}h ago",
+  "adminLogsHoursAgo": "Vor {hours}h",
   "@adminLogsHoursAgo": {
     "placeholders": {
       "hours": {
@@ -5541,7 +5541,7 @@
       }
     }
   },
-  "adminLogsDaysAgo": "{days}d ago",
+  "adminLogsDaysAgo": "Vor {days}d",
   "@adminLogsDaysAgo": {
     "placeholders": {
       "days": {
@@ -5549,7 +5549,7 @@
       }
     }
   },
-  "adminLogViewerLoadFailed": "Failed to load {fileName}",
+  "adminLogViewerLoadFailed": "{fileName} konnte nicht geladen werden",
   "@adminLogViewerLoadFailed": {
     "placeholders": {
       "fileName": {
@@ -5557,7 +5557,7 @@
       }
     }
   },
-  "adminLogViewerMatches": "{count} matches",
+  "adminLogViewerMatches": "{count} stimmt überein",
   "@adminLogViewerMatches": {
     "placeholders": {
       "count": {
@@ -5600,7 +5600,7 @@
   "adminMetadataImageThumb": "Miniaturansicht",
   "adminMetadataRecursive": "Rekursiv",
   "adminMetadataProvider": "Anbieter",
-  "adminMetadataImageUpdated": "{imageType} image updated",
+  "adminMetadataImageUpdated": "{imageType} Bild aktualisiert",
   "@adminMetadataImageUpdated": {
     "placeholders": {
       "imageType": {
@@ -5608,7 +5608,7 @@
       }
     }
   },
-  "adminMetadataImageUploaded": "{imageType} image uploaded",
+  "adminMetadataImageUploaded": "{imageType} Bild hochgeladen",
   "@adminMetadataImageUploaded": {
     "placeholders": {
       "imageType": {
@@ -5616,7 +5616,7 @@
       }
     }
   },
-  "adminMetadataImageDeleted": "{imageType} image deleted",
+  "adminMetadataImageDeleted": "{imageType} Bild gelöscht",
   "@adminMetadataImageDeleted": {
     "placeholders": {
       "imageType": {
@@ -5624,7 +5624,7 @@
       }
     }
   },
-  "adminMetadataImageDownloadFailed": "Failed to download image: {error}",
+  "adminMetadataImageDownloadFailed": "Bild konnte nicht heruntergeladen werden: {error}",
   "@adminMetadataImageDownloadFailed": {
     "placeholders": {
       "error": {
@@ -5633,7 +5633,7 @@
     }
   },
   "adminMetadataImageReadFailed": "Ausgewähltes Bild konnte nicht gelesen werden",
-  "adminMetadataImageUploadFailed": "Failed to upload image: {error}",
+  "adminMetadataImageUploadFailed": "Bild konnte nicht hochgeladen werden: {error}",
   "@adminMetadataImageUploadFailed": {
     "placeholders": {
       "error": {
@@ -5641,7 +5641,7 @@
       }
     }
   },
-  "adminMetadataDeleteImageTitle": "Delete {imageType} image",
+  "adminMetadataDeleteImageTitle": "{imageType} Bild löschen",
   "@adminMetadataDeleteImageTitle": {
     "placeholders": {
       "imageType": {
@@ -5650,7 +5650,7 @@
     }
   },
   "adminMetadataDeleteImageContent": "Dadurch wird das aktuelle Bild vom Element entfernt.",
-  "adminMetadataImageDeleteFailed": "Failed to delete image: {error}",
+  "adminMetadataImageDeleteFailed": "Bild konnte nicht gelöscht werden: {error}",
   "@adminMetadataImageDeleteFailed": {
     "placeholders": {
       "error": {
@@ -5658,7 +5658,7 @@
       }
     }
   },
-  "adminMetadataChooseImage": "Choose {imageType} image",
+  "adminMetadataChooseImage": "Wählen Sie das Bild {imageType}",
   "@adminMetadataChooseImage": {
     "placeholders": {
       "imageType": {
@@ -5675,7 +5675,7 @@
   "adminPluginsRestart": "Neustart",
   "adminPluginsNoSearchResults": "Keine Plugins stimmen mit deiner Suche überein",
   "adminPluginsNoneInstalled": "Keine Plugins installiert",
-  "adminPluginsUpdateAvailable": "Update available: v{version}",
+  "adminPluginsUpdateAvailable": "Update verfügbar: v{version}",
   "@adminPluginsUpdateAvailable": {
     "placeholders": {
       "version": {
@@ -5689,7 +5689,7 @@
   "adminPluginsEnable": "Aktivieren",
   "adminPluginsDisable": "Deaktivieren",
   "adminPluginsInstallUpdate": "Update installieren",
-  "adminPluginsInstallUpdateVersioned": "Install update (v{version})",
+  "adminPluginsInstallUpdateVersioned": "Update installieren (v{version})",
   "@adminPluginsInstallUpdateVersioned": {
     "placeholders": {
       "version": {
@@ -5699,7 +5699,7 @@
   },
   "adminPluginsCatalogNoSearchResults": "Keine Pakete stimmen mit deiner Suche überein",
   "adminPluginsCatalogEmpty": "Keine Pakete verfügbar",
-  "adminPluginsInstalling": "\"{name}\" is being installed...",
+  "adminPluginsInstalling": "„{name}“ wird installiert...",
   "@adminPluginsInstalling": {
     "placeholders": {
       "name": {
@@ -5711,7 +5711,7 @@
   "adminPluginDetailExperimentalContent": "Plugin-Einstellungsintegration ist noch experimentell. Einige Felder oder Layouts werden möglicherweise noch nicht korrekt dargestellt.",
   "adminPluginDetailToggle404": "Plugin konnte nicht umgeschaltet werden. Der Server konnte diese Plugin-Version nicht finden. Versuche die Plugins zu aktualisieren und dann erneut.",
   "adminPluginDetailToggleDioError": "Plugin konnte nicht umgeschaltet werden. Bitte prüfe die Serverprotokolle für Details.",
-  "adminPluginDetailSettingsTitle": "{name} Settings",
+  "adminPluginDetailSettingsTitle": "{name} Einstellungen",
   "@adminPluginDetailSettingsTitle": {
     "placeholders": {
       "name": {
@@ -5729,7 +5729,7 @@
   "adminPluginDetailMalfunctioned": "Dieses Plugin hat eine Fehlfunktion und funktioniert möglicherweise nicht korrekt.",
   "adminPluginDetailNotSupported": "Dieses Plugin wird von der aktuellen Serverversion nicht unterstützt.",
   "adminPluginDetailSuperseded": "Dieses Plugin wurde durch eine neuere Version ersetzt.",
-  "adminReposLoadFailed": "Failed to load repositories: {error}",
+  "adminReposLoadFailed": "Repositorys konnten nicht geladen werden: {error}",
   "@adminReposLoadFailed": {
     "placeholders": {
       "error": {
@@ -5738,7 +5738,7 @@
     }
   },
   "adminReposRemoveTitle": "Repository entfernen",
-  "adminReposRemoveConfirm": "Are you sure you want to remove \"{name}\"?",
+  "adminReposRemoveConfirm": "Sind Sie sicher, dass Sie „{name}“ entfernen möchten?",
   "@adminReposRemoveConfirm": {
     "placeholders": {
       "name": {
@@ -5747,7 +5747,7 @@
     }
   },
   "adminReposRemove": "Entfernen",
-  "adminReposSaveFailed": "Failed to save repositories: {error}",
+  "adminReposSaveFailed": "Repositorys konnten nicht gespeichert werden: {error}",
   "@adminReposSaveFailed": {
     "placeholders": {
       "error": {
@@ -5841,7 +5841,7 @@
   "adminTaskDetailEnded": "Beendet",
   "adminTaskDetailDuration": "Dauer",
   "adminTaskDetailErrorLabel": "Fehler:",
-  "adminTaskTriggerDaily": "Daily at {time}",
+  "adminTaskTriggerDaily": "Täglich unter {time}",
   "@adminTaskTriggerDaily": {
     "placeholders": {
       "time": {
@@ -5849,7 +5849,7 @@
       }
     }
   },
-  "adminTaskTriggerWeekly": "Every {day} at {time}",
+  "adminTaskTriggerWeekly": "Jeder {day} bei {time}",
   "@adminTaskTriggerWeekly": {
     "placeholders": {
       "day": {
@@ -5860,7 +5860,7 @@
       }
     }
   },
-  "adminTaskTriggerInterval": "Every {duration}",
+  "adminTaskTriggerInterval": "Alle {duration}",
   "@adminTaskTriggerInterval": {
     "placeholders": {
       "duration": {
@@ -5893,7 +5893,7 @@
   "adminActivityToday": "Heute",
   "adminActivityYesterday": "Gestern",
   "adminActivityOlder": "Älter",
-  "adminActivityDaysAgo": "{days}d ago",
+  "adminActivityDaysAgo": "Vor {days}d",
   "@adminActivityDaysAgo": {
     "placeholders": {
       "days": {
@@ -5901,7 +5901,7 @@
       }
     }
   },
-  "adminActivityHoursAgo": "{hours}h ago",
+  "adminActivityHoursAgo": "Vor {hours}h",
   "@adminActivityHoursAgo": {
     "placeholders": {
       "hours": {
@@ -5909,7 +5909,7 @@
       }
     }
   },
-  "adminActivityMinutesAgo": "{minutes}m ago",
+  "adminActivityMinutesAgo": "Vor {minutes}m",
   "@adminActivityMinutesAgo": {
     "placeholders": {
       "minutes": {
@@ -5981,7 +5981,7 @@
   "adminTrickplayWidthResolutions": "Breitenauflösungen",
   "adminMetadataDefault": "Standard",
   "adminMetadataContentTypeUpdated": "Inhaltstyp aktualisiert",
-  "adminMetadataContentTypeFailed": "Failed to update content type: {error}",
+  "adminMetadataContentTypeFailed": "Inhaltstyp konnte nicht aktualisiert werden: {error}",
   "@adminMetadataContentTypeFailed": {
     "placeholders": {
       "error": {
@@ -5995,7 +5995,7 @@
   "adminGeneralServerName": "Servername",
   "adminSettingsLoadFailed": "Einstellungen konnten nicht geladen werden",
   "adminDiscover": "Entdecken",
-  "adminChannelMappingsUpdateFailed": "Failed to update mappings: {error}",
+  "adminChannelMappingsUpdateFailed": "Zuordnungen konnten nicht aktualisiert werden: {error}",
   "@adminChannelMappingsUpdateFailed": {
     "placeholders": {
       "error": {
@@ -6003,7 +6003,7 @@
       }
     }
   },
-  "adminTimeLimitDuration": "Time limit: {duration}",
+  "adminTimeLimitDuration": "Zeitlimit: {duration}",
   "@adminTimeLimitDuration": {
     "placeholders": {
       "duration": {
@@ -6029,7 +6029,7 @@
   "castAirPlay": "AirPlay",
   "castDlna": "DLNA",
   "castRemotePlayback": "Remote-Wiedergabe",
-  "castControlFailed": "Cast control failed: {error}",
+  "castControlFailed": "Umwandlungskontrolle fehlgeschlagen: {error}",
   "@castControlFailed": {
     "placeholders": {
       "error": {
@@ -6037,7 +6037,7 @@
       }
     }
   },
-  "castKindControls": "{kind} Controls",
+  "castKindControls": "{kind} Steuerelemente",
   "@castKindControls": {
     "placeholders": {
       "kind": {
@@ -6047,7 +6047,7 @@
   },
   "castDeviceVolume": "Gerätelautstärke",
   "castVolumeUnavailable": "Nicht verfügbar",
-  "castStopKind": "Stop {kind}",
+  "castStopKind": "Stoppen Sie {kind}",
   "@castStopKind": {
     "placeholders": {
       "kind": {
@@ -6061,7 +6061,7 @@
   "pinSetTitle": "PIN festlegen",
   "pinEnterTitle": "PIN eingeben",
   "pinReenterToConfirm": "Gib deine PIN zur Bestätigung erneut ein",
-  "pinEnterNDigit": "Enter a {length}-digit PIN",
+  "pinEnterNDigit": "Geben Sie eine {length}-stellige PIN ein",
   "@pinEnterNDigit": {
     "placeholders": {
       "length": {
@@ -6069,7 +6069,7 @@
       }
     }
   },
-  "pinEnterYourNDigit": "Enter your {length}-digit PIN",
+  "pinEnterYourNDigit": "Geben Sie Ihre {length}-stellige PIN ein",
   "@pinEnterYourNDigit": {
     "placeholders": {
       "length": {
@@ -6089,7 +6089,7 @@
   "quickConnectDisabled": "Schnellverbindung ist auf diesem Server deaktiviert.",
   "quickConnectForbidden": "Dein Konto kann diese Schnellverbindungs-Anfrage nicht autorisieren.",
   "quickConnectNotFound": "Schnellverbindungs-Code wurde nicht gefunden. Versuche einen neuen Code.",
-  "quickConnectFailedWithMessage": "Quick Connect failed: {message}",
+  "quickConnectFailedWithMessage": "Schnellverbindung fehlgeschlagen: {message}",
   "@quickConnectFailedWithMessage": {
     "placeholders": {
       "message": {
@@ -6099,7 +6099,7 @@
   },
   "quickConnectEnterCode": "Code eingeben",
   "quickConnectAuthorize": "Autorisieren",
-  "remoteCommandFailed": "Command failed: {error}",
+  "remoteCommandFailed": "Befehl fehlgeschlagen: {error}",
   "@remoteCommandFailed": {
     "placeholders": {
       "error": {
@@ -6115,7 +6115,7 @@
   "unknownItem": "Unbekannt",
   "remoteNothingPlaying": "Auf dieser Sitzung wird nichts wiedergegeben",
   "castingStarted": "Streaming auf ausgewähltem Gerät gestartet",
-  "castingFailed": "Failed to start casting: {error}",
+  "castingFailed": "Casting konnte nicht gestartet werden: {error}",
   "@castingFailed": {
     "placeholders": {
       "error": {
@@ -6136,7 +6136,7 @@
   "trackActionAddToFavorites": "Zu Favoriten hinzufügen",
   "trackActionGoToAlbum": "Zum Album",
   "trackActionGoToArtist": "Zum Interpreten",
-  "trackActionDownloading": "Downloading {name}...",
+  "trackActionDownloading": "{name} wird heruntergeladen...",
   "@trackActionDownloading": {
     "placeholders": {
       "name": {
@@ -6171,7 +6171,7 @@
   "stillWatchingContent": "Die Wiedergabe wurde angehalten. Schaust du noch?",
   "stillWatchingStop": "Stoppen",
   "stillWatchingContinue": "Fortsetzen",
-  "skipSegment": "Skip {segment}",
+  "skipSegment": "Überspringen {segment}",
   "@skipSegment": {
     "placeholders": {
       "segment": {
@@ -6181,7 +6181,7 @@
   },
   "liveTv": "Live-TV",
   "continueWatchingAndNextUp": "Weiterschauen & Als Nächstes",
-  "downloadingBatchProgress": "Downloading {current}/{total} — {fileName}",
+  "downloadingBatchProgress": "Herunterladen von {current}/{total} — {fileName}",
   "@downloadingBatchProgress": {
     "placeholders": {
       "current": {
@@ -6195,7 +6195,7 @@
       }
     }
   },
-  "downloadingFile": "Downloading {fileName}",
+  "downloadingFile": "{fileName} wird heruntergeladen",
   "@downloadingFile": {
     "placeholders": {
       "fileName": {
@@ -6257,7 +6257,7 @@
   "subtitlePreviewText": "Der schnelle Braunfuchs springt über den faulen Hund",
   "libraryVisibilityDescription": "Schalten Sie die Sichtbarkeit der Startseite pro Bibliothek um. Starten Sie Moonfin neu, damit die Änderungen wirksam werden.",
   "sourceCodeUrl": "https://github.com/Moonfin-Client/Mobile-Desktop",
-  "updateAvailableTitle": "v{version} Available",
+  "updateAvailableTitle": "v{version} Verfügbar",
   "readReleaseNotes": "Lesen Sie die Versionshinweise",
   "downloadingUpdate": "Update wird heruntergeladen...",
   "updateDownloadFailed": "Der Update-Download ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
@@ -6283,10 +6283,10 @@
   "adminEnableAllDevices": "Ermöglichen Sie den Zugriff auf alle Geräte",
   "adminEnableAllChannels": "Ermöglichen Sie den Zugriff auf alle Kanäle",
   "adminResetPasswordWarning": "Dadurch wird das Passwort entfernt. Der Benutzer kann sich ohne Passwort anmelden.",
-  "adminServerReturnedHttp": "Server returned HTTP {status}",
+  "adminServerReturnedHttp": "Der Server hat HTTP {status} zurückgegeben.",
   "adminApiKeysTitle": "API-Schlüssel",
   "adminUnknownApp": "Unbekannte App",
-  "adminApiKeyTokenCreated": "Token: {token}\\nCreated: {created}",
+  "adminApiKeyTokenCreated": "Token: {token}\\nErstellt: {created}",
   "adminMappingJsonHint": "Beispiel: Mappings der JSON-Nutzlast",
   "syncPlayDisabledTitle": "SyncPlay deaktiviert",
   "syncPlayDisabledMessage": "Aktivieren Sie SyncPlay in den Einstellungen, um die synchronisierte Wiedergabe zu verwenden.",
@@ -6306,7 +6306,7 @@
   "syncPlaySyncCurrentQueueSubtitle": "Ersetzen Sie die Gruppenwarteschlange durch das, was lokal abgespielt wird",
   "syncPlayLeaveGroup": "Gruppe verlassen",
   "syncPlayGroupQueue": "Gruppenwarteschlange",
-  "syncPlayQueueItemFallback": "Item {index}",
+  "syncPlayQueueItemFallback": "Artikel {index}",
   "syncPlayPlayNow": "Jetzt spielen",
   "syncPlayCreateNewGroup": "Erstellen Sie eine neue Gruppe",
   "syncPlayGroupName": "Gruppenname",
@@ -6321,11 +6321,11 @@
   "syncPlayStateWaiting": "Warten",
   "syncPlayStatePaused": "Angehalten",
   "syncPlayStatePlaying": "Spielen",
-  "syncPlayUserJoinedGroup": "{userName} joined SyncPlay group",
-  "syncPlayUserLeftGroup": "{userName} left SyncPlay group",
+  "syncPlayUserJoinedGroup": "{userName} ist der Gruppe SyncPlay beigetreten",
+  "syncPlayUserLeftGroup": "{userName} hat die SyncPlay Gruppe verlassen",
   "syncPlayAccessDeniedTitle": "SyncPlay-Zugriff verweigert",
   "syncPlayAccessDeniedMessage": "Sie haben keinen Zugriff auf ein oder mehrere Elemente in dieser SyncPlay-Gruppe. Bitten Sie den Gruppenbesitzer, die Bibliotheksberechtigungen zu überprüfen oder eine andere Warteschlange auszuwählen.",
-  "syncPlaySyncingPlaybackToGroup": "Syncing playback to {groupName}",
+  "syncPlaySyncingPlaybackToGroup": "Synchronisierung der Wiedergabe mit {groupName}",
   "voiceSearchUnavailable": "Die Sprachsuche ist nicht verfügbar.",
   "dolbyVisionDirectPlayFailedTitle": "Dolby Vision Direct-Wiedergabe fehlgeschlagen",
   "dolbyVisionDirectPlayFailedMessage": "Die direkte Wiedergabe dieses Dolby Vision-Streams konnte nicht gestartet werden. Mit Server-Transkodierung erneut versuchen?",
@@ -6396,7 +6396,6 @@
   "settingsJoinDiscordSubtitle": "Chatten Sie mit der Community",
   "settingsJoinTheDiscord": "Treten Sie dem Discord bei",
   "settingsSupportMoonfin": "Unterstützen Sie Moonfin",
-  "settingsSupportMoonfinSubtitle": "Markieren Sie das Projekt auf GitHub oder leisten Sie einen Beitrag",
   "settingsLegal": "RECHTLICH",
   "settingsLicenses": "Lizenzen",
   "settingsOpenSourceLicenseNotices": "Hinweise zur Open-Source-Lizenz",
@@ -6480,7 +6479,7 @@
   "collections": "Sammlungen",
   "lastPlayed": "Zuletzt gespielt",
   "libraryNameWithServer": "{libraryName} ({serverName})",
-  "latestLibraryName": "Latest {libraryName}",
+  "latestLibraryName": "Neueste {libraryName}",
   "@openLink": {
     "description": "Action label to open a URL externally"
   },
@@ -6761,5 +6760,602 @@
   "localPreviews": "Lokale Vorschauen",
   "localPreviewsDescription": "Konfigurieren Sie Trailer-, Medien- und Audiovorschauen.",
   "mediaPreview": "Medienvorschau",
-  "mediaPreviewDescription": "Spielen Sie eine 30-sekündige Inline-Vorschau auf fokussierten, schwebenden oder lange gedrückten Karten ab"
+  "mediaPreviewDescription": "Spielen Sie eine 30-sekündige Inline-Vorschau auf fokussierten, schwebenden oder lange gedrückten Karten ab",
+  "keyboardPreferSystemIme": "Bevorzugen Sie eine Systemtastatur",
+  "keyboardPreferSystemImeDescription": "Verwenden Sie für die Texteingabe standardmäßig die Eingabemethode Ihres Geräts",
+  "musicVideos": "Musikvideos",
+  "record": "Aufzeichnen",
+  "cancelRecordingAction": "Aufnahme abbrechen",
+  "programSetToRecord": "Programm ist auf Aufnahme eingestellt",
+  "recordingCancelled": "Aufnahme abgebrochen",
+  "unableToCreateRecording": "Aufnahme kann nicht erstellt werden",
+  "settingsAudioOutputMode": "Audio-Ausgabemodus",
+  "settingsAudioOutputModeAvrPassthrough": "AVR-Passthrough",
+  "settingsAudioFallbackCodec": "Audio-Fallback-Codec",
+  "settingsAudioFallbackAacStereo": "AAC-Stereo",
+  "settingsAudioFallbackAc35_1": "AC3 5.1",
+  "settingsAudioFallbackEac35_1": "EAC3 5.1",
+  "settingsAudioPassthroughAdvanced": "Passthrough (Erweitert)",
+  "settingsAudioCodecPassthrough": "Codec-Passthrough",
+  "settingsAudioCodecPassthroughDescription": "Aktivieren Sie nur Formate, die Ihr AVR- oder HDMI-Empfänger unterstützt.",
+  "settingsAudioEac3Passthrough": "EAC3-Passthrough",
+  "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) Passthrough",
+  "settingsAudioDtsCorePassthrough": "DTS-Core-Passthrough",
+  "settingsAudioDtsHdPassthrough": "DTS-HD MA Passthrough",
+  "settingsAudioTrueHdPassthrough": "TrueHD-Passthrough",
+  "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+  "settingsAudioBitstreamEac3ToExternalDecoder": "Bitstream Dolby Digital Plus (EAC3) an externen Decoder.",
+  "settingsAudioBitstreamEac3JocToExternalDecoder": "Bitstream Dolby Atmos über EAC3 (JOC) an externen Decoder.",
+  "settingsAudioBitstreamDtsHdToExternalDecoder": "Bitstream DTS-HD MA (einschließlich DTS-Kern) an externen Decoder.",
+  "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Bitstream Dolby TrueHD mit Atmos-Metadaten an externen Decoder.",
+  "settingsDetectedAudioCapabilities": "Erkannte Audiofunktionen",
+  "settingsDetectedAudioCapabilitiesUnavailable": "Es ist noch kein Snapshot der Laufzeitfähigkeit verfügbar.",
+  "settingsAudioRouteLabel": "Route",
+  "settingsAudioDecodeLabel": "Dekodieren",
+  "settingsAudioPassthroughLabel": "Passthrough",
+  "settingsAudioHdRoute": "HD-Audioroute",
+  "settingsAudioRouteHdmi": "HDMI",
+  "settingsAudioRouteArc": "ARC",
+  "settingsAudioRouteEarc": "eARC",
+  "settingsAudioRouteBluetooth": "Bluetooth",
+  "settingsAudioRouteSpeaker": "Lautsprecher",
+  "settingsAudioPcmChannels": "{count}ch PCM",
+  "settingsAudioDiagnostics": "Diagnose",
+  "settingsAudioDiagnosticsVideoLevel": "Videopegel",
+  "settingsAudioDiagnosticsVideoRange": "Videobereich",
+  "settingsAudioDiagnosticsSubtitleCodec": "Untertitel-Codec",
+  "settingsAudioDiagnosticsAllowedAudioCodecs": "Zulässige Audio-Codecs",
+  "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS Audio-Codecs",
+  "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4 Audio-Codecs",
+  "settingsAudioDiagnosticsAudioSpdifPassthrough": "Audio-SPDIF-Passthrough",
+  "settingsAudioDiagnosticsActiveAudioRoute": "Aktive Audioroute",
+  "settingsAudioDiagnosticsRouteHdAudioSupport": "Route HD Audio-Unterstützung",
+  "settingsPlaybackEngineMedia3Legacy": "Media3 (alt)",
+  "settingsPlaybackEngineMpvRecommended": "mpv (empfohlen)",
+  "autoplayNextEpisode": "Nächste Episode automatisch abspielen",
+  "autoplayNextEpisodeSubtitle": "Spielen Sie automatisch die nächste Episode ab, wenn verfügbar.",
+  "skipSilenceTitle": "Überspringen Sie die Stille",
+  "skipSilenceSubtitle": "Stumme Audiosegmente automatisch überspringen, wenn dies vom Stream unterstützt wird.",
+  "allowExternalAudioEffectsTitle": "Externe Audioeffekte zulassen",
+  "allowExternalAudioEffectsSubtitle": "Erlauben Sie Equalizer- und Effekt-Apps (z. B. Wavelet), sich an Media3 Wiedergabesitzungen anzuhängen.",
+  "disableTunnelingTitle": "Tunneling deaktivieren",
+  "disableTunnelingSubtitle": "Nicht getunnelte Wiedergabe erzwingen. Nützlich bei Geräten mit Tunnel-Audio-/Video-Diskontinuitäten.",
+  "mapDolbyVisionP7Title": "Ordnen Sie Dolby Vision Profil 7 HEVC zu",
+  "mapDolbyVisionP7Subtitle": "Spielen Sie Dolby Vision Profil 7-Streams als HDR10-kompatibles HEVC auf Nicht-DV-Geräten ab.",
+  "subtitlesUseEmbeddedStyles": "Verwenden Sie eingebettete Untertitelstile",
+  "subtitlesUseEmbeddedStylesSubtitle": "Wenden Sie Farben, Schriftarten und Positionierung an, die in die Untertitelspur eingebettet sind. Deaktivieren Sie die Option, um stattdessen Ihre Einstellungen für den Untertitelstil zu verwenden.",
+  "subtitlesUseEmbeddedFontSizes": "Verwenden Sie die Schriftgrößen für eingebettete Untertitel",
+  "subtitlesUseEmbeddedFontSizesSubtitle": "Wenden Sie Hinweise zur Schriftgröße an, die in die Untertitelspur eingebettet sind. Deaktivieren Sie die Verwendung der Untertitelgröße aus Ihren Stileinstellungen.",
+  "useDetailedSubHeadings": "Verwenden Sie detaillierte Unterüberschriften",
+  "useDetailedSubHeadingsDescription": "Detaillierte oder minimale Unterzeile auf Bibliotheksseiten anzeigen.",
+  "savedThemesDeleteDialogTitle": "Gespeichertes Theme löschen?",
+  "savedThemesDeleteDialogMessage": "„{themeName}“ aus diesem Gerätecache entfernen?",
+  "savedThemesDeletedMessage": "„{themeName}“ wurde von diesem Gerät gelöscht.",
+  "savedThemesDeleteFailedMessage": "„{themeName}“ konnte nicht gelöscht werden.",
+  "savedThemesTitle": "Gespeicherte Themen",
+  "savedThemesDescription": "Dabei handelt es sich um Themes, die vom Moonfin-Plugin für den aktuellen Server heruntergeladen wurden. Beim Löschen wird nur diese lokale Kopie entfernt.",
+  "savedThemesEmpty": "Für diesen Server wurden keine gespeicherten Themes gefunden.",
+  "savedThemesCurrentThemeId": "{themeId} • Derzeit aktiv",
+  "savedThemesDeleteTooltip": "Gespeichertes Thema löschen",
+  "savedThemesManageSubtitle": "Verwalten Sie heruntergeladene Plugin-Themes auf diesem Gerät",
+  "kefinTweaksTitle": "KefinTweaks",
+  "homeScreenSectionsTitle": "Abschnitte des Startbildschirms",
+  "themeEditor": "Theme-Editor",
+  "themeEditorSubtitle": "Öffnen Sie den Moonfin Theme-Editor in Ihrem Browser",
+  "homeScreen": "Startbildschirm",
+  "bottomBar": "Untere Leiste",
+  "homeRowsStyleClassic": "Klassiker",
+  "homeRowsStyleModern": "Modern",
+  "homeRowsSection": "Home-Reihen",
+  "rowsType": "Zeilentyp",
+  "rowsTypeDescription": "Classic behält den Bildtyp und die Informationsüberlagerung pro Zeile bei. Modern verwendet Hochformat-zu-Hintergrund-Reihen.",
+  "displayFavoritesRows": "Favoritenzeilen anzeigen",
+  "displayFavoritesRowsSubtitle": "Zeigen Sie Lieblingsfilme, -serien und andere Lieblingszeilen in den Home-Bereichen an.",
+  "favoritesRowSorting": "Sortierung der Favoritenzeilen",
+  "favoritesRowSortingDescription": "Sortieren Sie die Favoritenzeilen nach Hinzufügungsdatum, Veröffentlichungsdatum, alphabetisch und mehr.",
+  "displayCollectionsRows": "Sammlungszeilen anzeigen",
+  "displayCollectionsRowsSubtitle": "Sammlungszeilen in Home-Abschnitten anzeigen.",
+  "collectionsRowSorting": "Sortierung der Sammlungszeilen",
+  "collectionsRowSortingDescription": "Sortieren Sie die Sammlungszeilen nach Hinzufügungsdatum, Veröffentlichungsdatum, alphabetisch und mehr.",
+  "displayGenresRows": "Genrezeilen anzeigen",
+  "displayGenresRowsSubtitle": "Zeigen Sie Genrezeilen in den Home-Abschnitten an.",
+  "genresRowSorting": "Zeilensortierung nach Genres",
+  "genresRowSortingDescription": "Sortieren Sie die Genrezeilen nach Hinzufügungsdatum, Veröffentlichungsdatum, alphabetisch und mehr.",
+  "genresRowItems": "Zeilenelemente „Genres“.",
+  "genresRowItemsDescription": "Zeigen Sie Filme, Serien oder beides in den Genrezeilen an.",
+  "appearance": "Aussehen",
+  "cardSize": "Kartengröße",
+  "externalPlayerApp": "Externe Player-App",
+  "externalPlayerAskEachTimeSubtitle": "App-Auswahl anzeigen, wenn die Wiedergabe beginnt.",
+  "loadingInstalledPlayers": "Installierte Player werden geladen...",
+  "connection": "Verbindung",
+  "audioTranscodeTarget": "Audio-Transkodierungsziel",
+  "passthrough": "Passthrough",
+  "supportedOnThisDevice": "Wird auf diesem Gerät unterstützt",
+  "notSupportedOnThisDevice": "Auf diesem Gerät nicht unterstützt",
+  "settingsAudioDtsXPassthrough": "DTS:X (DTS UHD) Passthrough",
+  "settingsAudioBitstreamDtsXToExternalDecoder": "Bitstream DTS:X (DTS UHD) zum externen Decoder.",
+  "settingsAudioTrueHdJocPassthrough": "TrueHD mit Atmos (JOC) Passthrough",
+  "mediaPlayerBehavior": "Verhalten des Mediaplayers",
+  "playbackEnhancements": "Verbesserungen bei der Wiedergabe",
+  "alwaysOn": "Immer an.",
+  "replaceSkipOutroWithNextUpDisplay": "Ersetzen Sie Skip Outro durch Next Up Display",
+  "replaceSkipOutroWithNextUpDisplaySubtitle": "Zeigen Sie das Next Up-Overlay anstelle der Schaltfläche „Outro überspringen“ an.",
+  "playerRouting": "Spielerrouting",
+  "preferSoftwareDecoders": "Bevorzugen Sie Software-Decoder",
+  "preferSoftwareDecodersSubtitle": "Verwenden Sie FFmpeg (Audio) und libgav1 (AV1) vor Hardware-Decodern. Deaktivieren, wenn HDMI-Audio-Passthrough unterbrochen wird.",
+  "useExternalPlayer": "Verwenden Sie einen externen Player",
+  "useExternalPlayerSubtitle": "Öffnen Sie die Videowiedergabe in Ihrer ausgewählten externen App auf Android TV.",
+  "automaticQueuing": "Automatische Warteschlange",
+  "preferSdhSubtitles": "Bevorzugen Sie SDH-Untertitel",
+  "preferSdhSubtitlesSubtitle": "Priorisieren Sie SDH/CC-Untertitelspuren bei der automatischen Auswahl.",
+  "webDiagnostics": "Webdiagnose",
+  "webDiagnosticsTitle": "Moonfin Webdiagnose",
+  "webDiagnosticsIntro": "Verwenden Sie diese Seite, um Browser-Konnektivitätsprobleme (CORS, gemischte Inhalte und Erkennungseinstellungen) zu diagnostizieren.",
+  "webDiagnosticsDetectedMixedContentFailure": "Fehler bei gemischten Inhalten erkannt",
+  "webDiagnosticsDetectedCorsPreflightFailure": "CORS/Preflight-Fehler erkannt",
+  "webDiagnosticsMixedContentFailureBody": "Moonfin hat eine HTTPS-Seite erkannt, die versucht, eine HTTP-Server-URL aufzurufen. Browser blockieren diese Anfrage, bevor sie Ihren Server erreicht.",
+  "webDiagnosticsCorsFailureBody": "Moonfin hat einen Anforderungsfehler auf Browserebene erkannt, der häufig durch fehlende CORS- oder Preflight-Header auf dem Medienserver verursacht wird.",
+  "webDiagnosticsTargetUrl": "Ziel-URL: {url}",
+  "webDiagnosticsDetail": "Detail: {detail}",
+  "webDiagnosticsCurrentRuntimeContext": "Aktueller Laufzeitkontext",
+  "webDiagnosticsOrigin": "Herkunft",
+  "webDiagnosticsScheme": "Schema",
+  "webDiagnosticsPluginMode": "Plugin-Modus",
+  "webDiagnosticsWebRtcScan": "WebRTC-Scan",
+  "webDiagnosticsForcedServerUrl": "Erzwungene Server-URL",
+  "webDiagnosticsDefaultServerUrl": "Standardserver-URL",
+  "webDiagnosticsDiscoveryProxyUrl": "Discovery-Proxy-URL",
+  "notConfigured": "nicht konfiguriert",
+  "webDiagnosticsMixedContent": "Gemischter Inhalt",
+  "webDiagnosticsMixedContentDetected": "Diese Seite wird über HTTPS geladen, aber eine oder mehrere konfigurierte URLs sind HTTP. Browser blockieren den Aufruf von HTTP-APIs durch HTTPS-Seiten.",
+  "webDiagnosticsMixedContentFix": "Fix: Stellen Sie Ihren Medienserver oder Proxy-Endpunkt über HTTPS bereit oder laden Sie Moonfin über HTTP nur in vertrauenswürdigen lokalen Netzwerken.",
+  "webDiagnosticsNoMixedContentDetected": "In den aktuellen Laufzeiteinstellungen wurde keine offensichtliche Mixed-Content-Konfiguration erkannt.",
+  "webDiagnosticsCorsChecklist": "CORS-Checkliste",
+  "webDiagnosticsCorsChecklistItem1": "• Erlauben Sie den Browser-Ursprung in Access-Control-Allow-Origin.",
+  "webDiagnosticsCorsChecklistItem2": "• Fügen Sie Autorisierung, X-Emby-Autorisierung und X-Emby-Token in Access-Control-Allow-Header ein.",
+  "webDiagnosticsCorsChecklistItem3": "• Content-Range- und Accept-Ranges für Streaming- und Suchverhalten verfügbar machen.",
+  "webDiagnosticsCorsChecklistItem4": "• Geben Sie 204 an OPTIONS Preflight-Anfragen zurück.",
+  "webDiagnosticsHeaderSnippetTitle": "Beispiel-Header-Snippet (Nginx-Stil)",
+  "note": "Notiz",
+  "webDiagnosticsNonWebNote": "Diese Diagnoseroute ist für Webbuilds gedacht. Wenn Sie dies auf einer anderen Plattform sehen, gelten diese Überprüfungen möglicherweise nicht.",
+  "backToServerSelect": "Zurück zur Serverauswahl",
+  "signOutAllUsers": "Melden Sie alle Benutzer ab",
+  "voiceSearchPermissionPermanentlyDenied": "Die Mikrofonberechtigung wird dauerhaft verweigert. Aktivieren Sie es in den Systemeinstellungen.",
+  "voiceSearchPermissionRequired": "Für die Sprachsuche ist eine Mikrofonberechtigung erforderlich.",
+  "voiceSearchNoMatch": "Habe das nicht verstanden. Versuchen Sie es erneut.",
+  "voiceSearchNoSpeechDetected": "Keine Sprache erkannt.",
+  "voiceSearchMicrophoneError": "Mikrofonfehler.",
+  "voiceSearchNeedsInternet": "Sprachsuche braucht Internet.",
+  "voiceSearchServiceBusy": "Der Sprachdienst ist ausgelastet. Versuchen Sie es erneut.",
+  "microphonePermissionPermanentlyDenied": "Die Mikrofonberechtigung wird dauerhaft verweigert.",
+  "microphonePermissionDenied": "Die Mikrofonberechtigung wurde verweigert.",
+  "speechRecognitionUnavailable": "Die Spracherkennung ist auf diesem Gerät nicht verfügbar.",
+  "openIosRoutePicker": "Öffnen Sie die iOS-Routenauswahl",
+  "airPlayRoutePickerUnavailable": "AirPlay Routenauswahl ist auf diesem Gerät nicht verfügbar.",
+  "videos": "Videos",
+  "trailers": "Anhänger",
+  "programs": "Programme",
+  "songs": "Lieder",
+  "photoAlbums": "Fotoalben",
+  "photos": "Fotos",
+  "people": "Menschen",
+  "recentlyReleasedEpisodes": "Kürzlich veröffentlichte Episoden",
+  "watchAgain": "Nochmal ansehen",
+  "guestAppearances": "Gastauftritte",
+  "appearancesSeerr": "Auftritte (Seerr)",
+  "watchWithGroup": "Mit der Gruppe ansehen",
+  "errors": "Fehler",
+  "warnings": "Warnungen",
+  "disk": "Scheibe",
+  "openInBrowser": "Im Browser öffnen",
+  "embeddedBrowserNotAvailable": "Ein eingebetteter Browser ist auf dieser Plattform nicht verfügbar.",
+  "adminRestartServerConfirmation": "Sind Sie sicher, dass Sie den Server neu starten möchten?",
+  "adminShutdownServerConfirmation": "Sind Sie sicher, dass Sie den Server herunterfahren möchten? Sie müssen es manuell neu starten.",
+  "internal": "Intern",
+  "idle": "Leerlauf",
+  "os": "OS",
+  "adminNoUsersFound": "Keine Benutzer gefunden",
+  "adminNoUsersMatchSearch": "Keine Benutzer entsprechen Ihrer Suche",
+  "adminNoDevicesFound": "Keine Geräte gefunden",
+  "adminNoDevicesMatchCurrentFilters": "Kein Gerät entspricht den aktuellen Filtern",
+  "passwordSet": "Passwort festgelegt",
+  "noPasswordConfigured": "Kein Passwort konfiguriert",
+  "remoteAccess": "Fernzugriff",
+  "localOnly": "Nur lokal",
+  "adminMediaAnalyticsLoadFailed": "Die Medienanalyse konnte nicht geladen werden",
+  "analyticsCombinedAcrossLibraries": "Kombinierte Analyse aller Medienbibliotheken.",
+  "analyticsTopArtists": "Top-Künstler",
+  "analyticsTopAuthors": "Top-Autoren",
+  "analyticsTopContributors": "Top-Mitwirkende",
+  "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+  "analyticsNoIndexedMediaTotals": "Für diese Auswahl sind noch keine indizierten Mediensummen verfügbar.",
+  "analyticsLibraryDetails": "Details zur Bibliothek",
+  "analyticsLibraryBreakdown": "Aufschlüsselung der Bibliothek",
+  "analyticsNoLibrariesAvailable": "Es sind keine Bibliotheken verfügbar.",
+  "adminServerAdministrationTitle": "Serveradministration",
+  "adminServerPathData": "Daten",
+  "adminServerPathImageCache": "Bildcache",
+  "adminServerPathCache": "Cache",
+  "adminServerPathLogs": "Protokolle",
+  "adminServerPathMetadata": "Metadaten",
+  "adminServerPathTranscode": "Transkodieren",
+  "adminServerPathWeb": "Web",
+  "adminNoServerPathsReturned": "Von diesem Server wurden keine Serverpfade zurückgegeben.",
+  "adminPercentUsed": "{percent}% verwendet",
+  "userActivity": "Benutzeraktivität",
+  "systemEvents": "Systemereignisse",
+  "needsAttention": "Braucht Aufmerksamkeit",
+  "adminDrawerSectionServer": "Server",
+  "adminDrawerSectionPlayback": "Wiedergabe",
+  "adminDrawerSectionDevices": "Geräte",
+  "adminDrawerSectionAdvanced": "Fortschrittlich",
+  "adminDrawerSectionPlugins": "Plugins",
+  "adminDrawerSectionLiveTv": "Live-TV",
+  "homeVideos": "Heimvideos",
+  "mixedContent": "Gemischter Inhalt",
+  "homeVideosAndPhotos": "Heimvideos und Fotos",
+  "mixedMoviesAndShows": "Gemischte Filme und Shows",
+  "intelQuickSync": "Intel Quick Sync",
+  "rockchipMpp": "Rockchip MPP",
+  "dolbyVision": "Dolby Vision",
+  "noRecordingsFound": "Keine Aufnahmen gefunden",
+  "noImagePagesFoundInArchive": "Keine Bildseiten im .{extension} Archiv gefunden.",
+  "embeddedRendererFailed": "Eingebetteter Renderer fehlgeschlagen ({code}): {description}",
+  "epubRendererFailed": "EPUB-Renderer fehlgeschlagen ({code}): {description}",
+  "missingLocalFileForReader": "Fehlende lokale Datei für Leser: {uri}",
+  "httpStatusWhileOpeningBookData": "HTTP {status} beim Öffnen von Buchdaten von {uri}",
+  "noReadableBookEndpointAvailable": "Kein lesbarer Buchendpunkt verfügbar",
+  "unsupportedComicArchiveFormat": "Nicht unterstütztes Comic-Archivformat: .{extension}",
+  "cbrExtractionPluginUnavailable": "Das CBR-Extraktions-Plugin ist auf dieser Plattform nicht verfügbar.",
+  "failedToExtractCbrArchive": "Das Extrahieren des .cbr-Archivs ist fehlgeschlagen.",
+  "cb7ExtractionUnavailable": "Die CB7-Extraktion ist auf dieser Plattform nicht verfügbar.",
+  "cb7ExtractionPluginUnavailable": "Das CB7-Extraktions-Plugin ist auf dieser Plattform nicht verfügbar.",
+  "closeGenrePanel": "Schließen Sie das Genre-Panel",
+  "loadingShuffle": "Zufallswiedergabe wird geladen...",
+  "libraryShuffleLabel": "LIBRARY SHUFFLE",
+  "randomShuffleLabel": "RANDOM SHUFFLE",
+  "genresShuffleLabel": "GENRES SHUFFLE",
+  "autoHdrSwitching": "Automatische HDR-Umschaltung",
+  "autoHdrSwitchingDescription": "Aktivieren Sie HDR automatisch für die HDR-Videowiedergabe und stellen Sie den Anzeigemodus beim Beenden wieder her.",
+  "whenFullscreen": "Im Vollbildmodus",
+  "transcodingLimits": "Transkodierungsgrenzen",
+  "@keyboardPreferSystemIme": {
+    "description": "Settings label for preferring the native system keyboard instead of the custom TV keyboard"
+  },
+  "@keyboardPreferSystemImeDescription": {
+    "description": "Settings subtitle for the system keyboard preference"
+  },
+  "@musicVideos": {
+    "description": "Section header for music videos filmography row"
+  },
+  "@record": {
+    "description": "Button label to schedule a live TV recording"
+  },
+  "@cancelRecordingAction": {
+    "description": "Button label to cancel a scheduled live TV recording"
+  },
+  "@programSetToRecord": {
+    "description": "Snackbar confirmation after scheduling a live TV program recording"
+  },
+  "@recordingCancelled": {
+    "description": "Snackbar confirmation after cancelling a live TV recording"
+  },
+  "@unableToCreateRecording": {
+    "description": "Error when creating a live TV recording fails"
+  },
+  "@seasonalEffectsDescription": {
+    "description": "Description for seasonal effects settings"
+  },
+  "@settingsAudioOutputMode": {
+    "description": "Setting for audio output mode"
+  },
+  "@settingsAudioOutputModeAvrPassthrough": {
+    "description": "Audio output mode option for AVR passthrough"
+  },
+  "@settingsAudioFallbackCodec": {
+    "description": "Setting for fallback audio codec"
+  },
+  "@settingsAudioFallbackAacStereo": {
+    "description": "Fallback codec option for AAC stereo"
+  },
+  "@settingsAudioFallbackAc35_1": {
+    "description": "Fallback codec option for AC3 5.1"
+  },
+  "@settingsAudioFallbackEac35_1": {
+    "description": "Fallback codec option for EAC3 5.1"
+  },
+  "@settingsAudioPassthroughAdvanced": {
+    "description": "Section title for advanced passthrough controls"
+  },
+  "@settingsAudioCodecPassthrough": {
+    "description": "Title for codec passthrough settings group"
+  },
+  "@settingsAudioCodecPassthroughDescription": {
+    "description": "Description for codec passthrough settings group"
+  },
+  "@settingsAudioEac3Passthrough": {
+    "description": "Setting for EAC3 passthrough"
+  },
+  "@settingsAudioEac3JocPassthrough": {
+    "description": "Setting for EAC3 JOC Atmos passthrough"
+  },
+  "@settingsAudioDtsCorePassthrough": {
+    "description": "Setting for DTS core passthrough"
+  },
+  "@settingsAudioDtsHdPassthrough": {
+    "description": "Setting for DTS-HD MA passthrough"
+  },
+  "@settingsAudioTrueHdPassthrough": {
+    "description": "Setting for TrueHD passthrough"
+  },
+  "@settingsAudioTrueHdAtmosPassthrough": {
+    "description": "Setting for TrueHD Atmos passthrough"
+  },
+  "@settingsAudioBitstreamEac3ToExternalDecoder": {
+    "description": "Description for EAC3 passthrough"
+  },
+  "@settingsAudioBitstreamEac3JocToExternalDecoder": {
+    "description": "Description for EAC3 JOC passthrough"
+  },
+  "@settingsAudioBitstreamDtsHdToExternalDecoder": {
+    "description": "Description for DTS-HD MA passthrough"
+  },
+  "@settingsAudioBitstreamTrueHdAtmosToExternalDecoder": {
+    "description": "Description for TrueHD Atmos passthrough"
+  },
+  "@settingsDetectedAudioCapabilities": {
+    "description": "Section title for detected runtime audio capabilities"
+  },
+  "@settingsDetectedAudioCapabilitiesUnavailable": {
+    "description": "Message shown when runtime audio capability snapshot is missing"
+  },
+  "@settingsAudioRouteLabel": {
+    "description": "Label for active audio route row"
+  },
+  "@settingsAudioDecodeLabel": {
+    "description": "Label for audio decode capability row"
+  },
+  "@settingsAudioPassthroughLabel": {
+    "description": "Label for audio passthrough capability row"
+  },
+  "@settingsAudioHdRoute": {
+    "description": "Label indicating the active route supports HD audio"
+  },
+  "@settingsAudioRouteHdmi": {
+    "description": "Audio route type HDMI"
+  },
+  "@settingsAudioRouteArc": {
+    "description": "Audio route type ARC"
+  },
+  "@settingsAudioRouteEarc": {
+    "description": "Audio route type eARC"
+  },
+  "@settingsAudioRouteBluetooth": {
+    "description": "Audio route type Bluetooth"
+  },
+  "@settingsAudioRouteSpeaker": {
+    "description": "Audio route type speaker"
+  },
+  "@settingsAudioPcmChannels": {
+    "description": "Audio route subtitle showing max PCM channels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@settingsAudioDiagnostics": {
+    "description": "Section title for playback diagnostics"
+  },
+  "@settingsAudioDiagnosticsVideoLevel": {
+    "description": "Diagnostics label for video level"
+  },
+  "@settingsAudioDiagnosticsVideoRange": {
+    "description": "Diagnostics label for video range"
+  },
+  "@settingsAudioDiagnosticsSubtitleCodec": {
+    "description": "Diagnostics label for subtitle codec"
+  },
+  "@settingsAudioDiagnosticsAllowedAudioCodecs": {
+    "description": "Diagnostics label for allowed audio codecs"
+  },
+  "@settingsAudioDiagnosticsHlsMpegTsAudioCodecs": {
+    "description": "Diagnostics label for HLS MPEG-TS audio codecs"
+  },
+  "@settingsAudioDiagnosticsHlsFmp4AudioCodecs": {
+    "description": "Diagnostics label for HLS fMP4 audio codecs"
+  },
+  "@settingsAudioDiagnosticsAudioSpdifPassthrough": {
+    "description": "Diagnostics label for audio-spdif passthrough codecs"
+  },
+  "@settingsAudioDiagnosticsActiveAudioRoute": {
+    "description": "Diagnostics label for active audio route"
+  },
+  "@settingsAudioDiagnosticsRouteHdAudioSupport": {
+    "description": "Diagnostics label for route HD audio support"
+  },
+  "@mediaSources": {
+    "description": "Section heading for media source options"
+  },
+  "@behavior": {
+    "description": "Section heading for behavior options"
+  },
+  "@seconds": {
+    "description": "Time unit label in seconds"
+  },
+  "@localPreviews": {
+    "description": "Local previews settings screen title"
+  },
+  "@localPreviewsDescription": {
+    "description": "Description for local previews settings"
+  },
+  "@mediaPreview": {
+    "description": "Setting for media preview"
+  },
+  "@mediaPreviewDescription": {
+    "description": "Description for media preview"
+  },
+  "@autoplayNextEpisode": {
+    "description": "Setting title: automatically start the next episode"
+  },
+  "@autoplayNextEpisodeSubtitle": {
+    "description": "Setting subtitle for autoplay next episode"
+  },
+  "@skipSilenceTitle": {
+    "description": "Setting title: skip silent audio segments during playback"
+  },
+  "@skipSilenceSubtitle": {
+    "description": "Setting subtitle for skip silence"
+  },
+  "@allowExternalAudioEffectsTitle": {
+    "description": "Setting title: allow equalizer apps to attach to Media3"
+  },
+  "@allowExternalAudioEffectsSubtitle": {
+    "description": "Setting subtitle for external audio effects"
+  },
+  "@disableTunnelingTitle": {
+    "description": "Setting title: force non-tunneled video playback"
+  },
+  "@disableTunnelingSubtitle": {
+    "description": "Setting subtitle for disable tunneling"
+  },
+  "@mapDolbyVisionP7Title": {
+    "description": "Setting title: play DV P7 as HDR10 HEVC on non-DV devices"
+  },
+  "@mapDolbyVisionP7Subtitle": {
+    "description": "Setting subtitle for DV P7 to HEVC mapping"
+  },
+  "@subtitlesUseEmbeddedStyles": {
+    "description": "Setting title: apply colours/positioning from the subtitle track"
+  },
+  "@subtitlesUseEmbeddedStylesSubtitle": {
+    "description": "Setting subtitle for embedded styles toggle"
+  },
+  "@subtitlesUseEmbeddedFontSizes": {
+    "description": "Setting title: apply font sizes from the subtitle track"
+  },
+  "@subtitlesUseEmbeddedFontSizesSubtitle": {
+    "description": "Setting subtitle for embedded font sizes toggle"
+  },
+  "@useDetailedSubHeadings": {
+    "description": "Label for setting to toggle detailed or minimal subrow on library pages"
+  },
+  "@useDetailedSubHeadingsDescription": {
+    "description": "Subtitle for the use detailed sub headings setting"
+  },
+  "@savedThemesDeleteDialogMessage": {
+    "description": "Confirmation message for deleting a saved custom theme",
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "@savedThemesDeletedMessage": {
+    "description": "Status message shown after deleting a saved custom theme",
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "@savedThemesDeleteFailedMessage": {
+    "description": "Status message shown when deleting a saved custom theme fails",
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "@savedThemesCurrentThemeId": {
+    "description": "Subtitle showing the saved theme id when it is currently selected",
+    "placeholders": {
+      "themeId": {
+        "type": "String"
+      }
+    }
+  },
+  "@webDiagnosticsTargetUrl": {
+    "description": "Target URL shown in diagnostics summary",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "@webDiagnosticsDetail": {
+    "description": "Error detail shown in diagnostics summary",
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@analyticsLibrariesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@adminPercentUsed": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@noImagePagesFoundInArchive": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "@embeddedRendererFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      },
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "@epubRendererFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      },
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "@missingLocalFileForReader": {
+    "placeholders": {
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "@httpStatusWhileOpeningBookData": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      },
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "@unsupportedComicArchiveFormat": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSupportMoonfinSubtitle": "Spenden Sie dem Entwickler einen Kaffee"
 }

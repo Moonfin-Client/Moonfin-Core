@@ -16,7 +16,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String connectingToServer(String serverName) {
-    return 'Connecting to $serverName';
+    return 'Σύνδεση στο $serverName';
   }
 
   @override
@@ -49,12 +49,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect unavailable: $detail';
+    return 'Το QuickConnect δεν είναι διαθέσιμο: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect unavailable ($status): $detail';
+    return 'Το QuickConnect δεν είναι διαθέσιμο ($status): $detail';
   }
 
   @override
@@ -68,7 +68,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin version $version';
+    return 'Moonfin έκδοση $version';
   }
 
   @override
@@ -88,14 +88,14 @@ class AppLocalizationsEl extends AppLocalizations {
   String get addServer => 'Προσθήκη διακομιστή';
 
   @override
-  String get embyConnect => 'Emby Σύνδεση';
+  String get embyConnect => 'Emby Συνδεθείτε';
 
   @override
   String get removeServer => 'Κατάργηση διακομιστή';
 
   @override
   String removeServerConfirmation(String serverName) {
-    return 'Remove \"$serverName\" from your servers?';
+    return 'Κατάργηση του \"$serverName\" από τους διακομιστές σας;';
   }
 
   @override
@@ -122,7 +122,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get secureStorageUnavailableMessage =>
-      'Το Moonfin δεν μπόρεσε να αποκτήσει πρόσβαση στο μπρελόκ του συστήματός σας. Η σύνδεση μπορεί να συνεχιστεί, αλλά η ασφαλής αποθήκευση διακριτικών ενδέχεται να μην είναι διαθέσιμη μέχρι να ξεκλειδωθεί το μπρελόκ.';
+      'Ο Moonfin δεν μπόρεσε να αποκτήσει πρόσβαση στο μπρελόκ του συστήματός σας. Η σύνδεση μπορεί να συνεχιστεί, αλλά η ασφαλής αποθήκευση διακριτικών ενδέχεται να μην είναι διαθέσιμη μέχρι να ξεκλειδωθεί το μπρελόκ.';
 
   @override
   String get ok => 'ΕΝΤΑΞΕΙ';
@@ -135,11 +135,11 @@ class AppLocalizationsEl extends AppLocalizations {
       'Εναλλαγή μεταξύ Moonfin και Neon Pulse χωρίς επανεκκίνηση της εφαρμογής';
 
   @override
-  String get keyboardPreferSystemIme => 'Prefer system keyboard';
+  String get keyboardPreferSystemIme => 'Προτιμήστε το πληκτρολόγιο συστήματος';
 
   @override
   String get keyboardPreferSystemImeDescription =>
-      'Use your device input method by default for text entry';
+      'Χρησιμοποιήστε τη μέθοδο εισαγωγής της συσκευής σας από προεπιλογή για την εισαγωγή κειμένου';
 
   @override
   String get themeMoonfin => 'Moonfin';
@@ -157,7 +157,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get embyConnectSignInSubtitle =>
-      'Συνδεθείτε με τον λογαριασμό σας Emby Connect';
+      'Συνδεθείτε με τον λογαριασμό σας Emby Σύνδεση';
 
   @override
   String get emailOrUsername => 'email ή όνομα χρήστη';
@@ -170,23 +170,23 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get noLinkedServers =>
-      'Δεν υπάρχουν διακομιστές συνδεδεμένοι με αυτόν τον λογαριασμό Emby Connect';
+      'Δεν υπάρχουν διακομιστές συνδεδεμένοι σε αυτόν τον λογαριασμό Emby Σύνδεση';
 
   @override
   String get invalidEmbyConnectCredentials =>
-      'Μη έγκυρα διαπιστευτήρια Emby Connect';
+      'Μη έγκυρα Emby Διαπιστευτήρια σύνδεσης';
 
   @override
   String get invalidEmbyConnectLogin =>
-      'Μη έγκυρο όνομα χρήστη ή κωδικός πρόσβασης Emby Connect';
+      'Μη έγκυρο Emby Σύνδεση ονόματος χρήστη ή κωδικού πρόσβασης';
 
   @override
   String get embyConnectExchangeNotSupported =>
-      'Ο διακομιστής δεν υποστηρίζει ανταλλαγή Emby Connect';
+      'Ο διακομιστής δεν υποστηρίζει Emby Συνδέστε την ανταλλαγή';
 
   @override
   String get embyConnectNetworkError =>
-      'Σφάλμα δικτύου κατά την επικοινωνία με το Emby Connect ή τον επιλεγμένο διακομιστή';
+      'Σφάλμα δικτύου κατά την επικοινωνία με τον Emby Σύνδεση ή τον επιλεγμένο διακομιστή';
 
   @override
   String get loadingLinkedServers => 'Φόρτωση συνδεδεμένων διακομιστών...';
@@ -203,11 +203,11 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String unableToConnectTo(String target) {
-    return 'Unable to connect to $target';
+    return 'Δεν είναι δυνατή η σύνδεση στο $target';
   }
 
   @override
-  String get exitApp => 'Έξοδος από το Moonfin;';
+  String get exitApp => 'Έξοδος από Moonfin;';
 
   @override
   String get exitAppConfirmation => 'Είστε βέβαιοι ότι θέλετε να βγείτε;';
@@ -287,7 +287,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return 'Failed to load folder: $error';
+    return 'Η φόρτωση του φακέλου απέτυχε: $error';
   }
 
   @override
@@ -295,7 +295,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return '$count items';
+    return '$count αντικείμενα';
   }
 
   @override
@@ -312,7 +312,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return '$count Items';
+    return '$count Είδη';
   }
 
   @override
@@ -353,7 +353,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — Genres';
+    return '$name — Είδη';
   }
 
   @override
@@ -392,17 +392,17 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return '${count}m ago';
+    return '${count}m πριν';
   }
 
   @override
   String hoursAgo(int count) {
-    return '${count}h ago';
+    return '${count}h πριν';
   }
 
   @override
   String daysAgo(int count) {
-    return '${count}d ago';
+    return '${count}d πριν';
   }
 
   @override
@@ -433,11 +433,11 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get librivoxDescription =>
-      'Δημοφιλείς τίτλοι δημόσιου τομέα από το LibriVox.';
+      'Δημοφιλείς τίτλοι δημόσιου τομέα από LibriVox.';
 
   @override
   String titlesCount(int count) {
-    return '$count titles';
+    return '$count τίτλοι';
   }
 
   @override
@@ -525,17 +525,17 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String authorsCount(int count) {
-    return '$count authors';
+    return '$count συγγραφείς';
   }
 
   @override
   String genresCount(int count) {
-    return '$count genres';
+    return '$count είδη';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '$percent% completed';
+    return 'Το $percent% ολοκληρώθηκε';
   }
 
   @override
@@ -552,7 +552,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count titles arranged for reading-first browsing.';
+    return '$count οι τίτλοι είναι διατεταγμένοι για ανάγνωση-πρώτη περιήγηση.';
   }
 
   @override
@@ -589,7 +589,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String noLabelFound(String label) {
-    return 'No $label found';
+    return 'Δεν βρέθηκε $label';
   }
 
   @override
@@ -639,7 +639,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get noLibrivoxDescription =>
-      'Δεν παρέχεται ακόμη περιγραφή από το LibriVox για αυτόν τον τίτλο.';
+      'Δεν παρέχεται ακόμη περιγραφή από τον LibriVox για αυτόν τον τίτλο.';
 
   @override
   String get readers => 'Αναγνώστες';
@@ -661,17 +661,17 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String sectionCountLabel(int count) {
-    return '$count sections';
+    return 'ενότητες $count';
   }
 
   @override
   String firstPublished(int year) {
-    return 'First published $year';
+    return 'Πρώτη δημοσίευση $year';
   }
 
   @override
   String get noOpenLibraryOverview =>
-      'Δεν διατίθεται ακόμη επισκόπηση από την Open Library για αυτόν τον τίτλο.';
+      'Δεν διατίθεται ακόμη επισκόπηση από τον Open Library για αυτόν τον τίτλο.';
 
   @override
   String get subjects => 'Θέματα';
@@ -681,7 +681,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String booksCount(int count) {
-    return '$count books';
+    return '$count βιβλία';
   }
 
   @override
@@ -693,7 +693,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String authorsCountTitle(int count) {
-    return '$count Authors';
+    return '$count Συγγραφείς';
   }
 
   @override
@@ -754,7 +754,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get movies => 'Κινηματογράφος';
 
   @override
-  String get musicVideos => 'Music Videos';
+  String get musicVideos => 'Μουσικά βίντεο';
 
   @override
   String get other => 'Αλλος';
@@ -773,7 +773,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String discNumber(int number) {
-    return 'Disc $number';
+    return 'Δίσκος $number';
   }
 
   @override
@@ -799,7 +799,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String published(int year) {
-    return 'Published $year';
+    return 'Δημοσιεύτηκε $year';
   }
 
   @override
@@ -818,7 +818,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String endsAt(String time) {
-    return 'Ends at $time';
+    return 'Λήγει στο $time';
   }
 
   @override
@@ -832,7 +832,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return 'Resume from $position';
+    return 'Βιογραφικό από $position';
   }
 
   @override
@@ -933,7 +933,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return 'Delete downloaded tracks for \"$title\"?';
+    return 'Να διαγραφούν τα ληφθέντα κομμάτια για το \"$title\";';
   }
 
   @override
@@ -948,17 +948,17 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return 'No $itemLabel loaded';
+    return 'Δεν έχει φορτωθεί το $itemLabel';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return 'Downloading $title ($count items)...';
+    return 'Λήψη $title ($count στοιχεία)...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
+    return 'Είστε βέβαιοι ότι θέλετε να διαγράψετε το \"$name\" από τον διακομιστή; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.';
   }
 
   @override
@@ -970,7 +970,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String unsupportedBookFormat(String extension) {
-    return 'Unsupported book format: .$extension';
+    return 'Μη υποστηριζόμενη μορφή βιβλίου: .$extension';
   }
 
   @override
@@ -998,7 +998,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return 'Subtitle downloaded and selected: $name';
+    return 'Έγινε λήψη και επιλεγμένος υπότιτλος: $name';
   }
 
   @override
@@ -1007,7 +1007,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return 'No remote subtitles found for $language.';
+    return 'Δεν βρέθηκαν απομακρυσμένοι υπότιτλοι για το $language.';
   }
 
   @override
@@ -1015,7 +1015,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String versionNumber(int number) {
-    return 'Version $number';
+    return 'Έκδοση $number';
   }
 
   @override
@@ -1037,7 +1037,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String downloadingItem(String name, String quality) {
-    return 'Downloading $name ($quality)...';
+    return 'Λήψη $name ($quality)...';
   }
 
   @override
@@ -1045,7 +1045,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
+    return 'Διαγραφή τοπικών αρχείων για $typeLabel;\n\nΑυτό θα ελευθερώσει χώρο αποθήκευσης. Μπορείτε να κάνετε ξανά λήψη αργότερα.';
   }
 
   @override
@@ -1068,12 +1068,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String studioMoreCount(int count) {
-    return '+$count more';
+    return '+$count περισσότερα';
   }
 
   @override
   String totalEpisodes(int count) {
-    return '$count Episodes';
+    return '$count Επεισόδια';
   }
 
   @override
@@ -1083,12 +1083,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String episodeLabel(int number) {
-    return 'Episode $number';
+    return 'Επεισόδιο $number';
   }
 
   @override
   String chapterNumber(int number) {
-    return 'Chapter $number';
+    return 'Κεφάλαιο $number';
   }
 
   @override
@@ -1115,17 +1115,17 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String born(String date) {
-    return 'Born $date';
+    return 'Γεννήθηκε $date';
   }
 
   @override
   String died(String date) {
-    return 'Died $date';
+    return 'Πέθανε $date';
   }
 
   @override
   String age(int age) {
-    return 'Age $age';
+    return 'Ηλικία $age';
   }
 
   @override
@@ -1139,7 +1139,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String downloadsCount(int count) {
-    return '$count downloads';
+    return '$count λήψεις';
   }
 
   @override
@@ -1158,32 +1158,32 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
+    return 'Ο απομακρυσμένος υπότιτλος $action απαιτεί την άδεια διαχείρισης υποτίτλων Jellyfin για αυτόν τον χρήστη.';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return 'This item could not be found on the server for remote subtitle $action.';
+    return 'Αυτό το στοιχείο δεν βρέθηκε στον διακομιστή για απομακρυσμένους υπότιτλους $action.';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return 'Remote subtitle $action failed: $detail';
+    return 'Ο απομακρυσμένος υπότιτλος $action απέτυχε: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return 'Remote subtitle $action failed (HTTP $status).';
+    return 'Ο απομακρυσμένος υπότιτλος $action απέτυχε (HTTP $status).';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return 'Failed to $action remote subtitles.';
+    return 'Απέτυχε ο απομακρυσμένος υπότιτλος $action.';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return 'all downloaded episodes for \"$name\"';
+    return 'όλα τα ληφθέντα επεισόδια για το \"$name\"';
   }
 
   @override
@@ -1215,17 +1215,17 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String castActionFailed(String label, String error) {
-    return '$label action failed: $error';
+    return 'Η ενέργεια $label απέτυχε: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return 'Failed to set cast volume: $error';
+    return 'Αποτυχία ορισμού έντασης μετάδοσης: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return '$label Controls';
+    return '$label Στοιχεία ελέγχου';
   }
 
   @override
@@ -1242,7 +1242,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String stopCast(String label) {
-    return 'Stop $label';
+    return 'Διακοπή $label';
   }
 
   @override
@@ -1250,7 +1250,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String trackNumber(int number) {
-    return 'Track $number';
+    return 'Παρακολούθηση $number';
   }
 
   @override
@@ -1263,11 +1263,11 @@ class AppLocalizationsEl extends AppLocalizations {
   String get castingViaAirPlay => 'Μετάδοση μέσω AirPlay';
 
   @override
-  String get castingViaDlna => 'Casting μέσω DLNA';
+  String get castingViaDlna => 'Μετάδοση μέσω DLNA';
 
   @override
   String secondsCount(int seconds) {
-    return '$seconds seconds';
+    return '$seconds δευτερόλεπτα';
   }
 
   @override
@@ -1382,12 +1382,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String castSessionError(String protocol) {
-    return '$protocol session error';
+    return 'Σφάλμα συνεδρίας $protocol';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return 'Failed to load book details: $error';
+    return 'Η φόρτωση των λεπτομερειών του βιβλίου απέτυχε: $error';
   }
 
   @override
@@ -1396,7 +1396,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return 'This format (.$extension) cannot be rendered in-app yet.';
+    return 'Αυτή η μορφή (.$extension) δεν μπορεί ακόμη να αποδοθεί εντός εφαρμογής.';
   }
 
   @override
@@ -1409,17 +1409,17 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return 'Failed to open in-app reader: $error';
+    return 'Απέτυχε το άνοιγμα του προγράμματος ανάγνωσης εντός εφαρμογής: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return 'Bookmark already saved at $label.';
+    return 'Ο σελιδοδείκτης έχει ήδη αποθηκευτεί στο $label.';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return 'Bookmark added: $label';
+    return 'Προστέθηκε σελιδοδείκτης: $label';
   }
 
   @override
@@ -1432,7 +1432,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String pageLabel(int number) {
-    return 'Page $number';
+    return 'Σελίδα $number';
   }
 
   @override
@@ -1443,12 +1443,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String formatExtension(String extension) {
-    return 'Format: .$extension';
+    return 'Μορφή: .$extension';
   }
 
   @override
   String percentRead(String percent) {
-    return '$percent% read';
+    return '$percent% διαβάστηκε';
   }
 
   @override
@@ -1472,7 +1472,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String resetZoom(String zoom) {
-    return 'Reset Zoom (${zoom}x)';
+    return 'Επαναφορά ζουμ (${zoom}x)';
   }
 
   @override
@@ -1495,7 +1495,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String failedToUpdateReadState(String error) {
-    return 'Failed to update read state: $error';
+    return 'Απέτυχε η ενημέρωση της κατάστασης ανάγνωσης: $error';
   }
 
   @override
@@ -1529,7 +1529,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return 'This platform cannot host the embedded document engine for $extension files.';
+    return 'Αυτή η πλατφόρμα δεν μπορεί να φιλοξενήσει τη μηχανή ενσωματωμένων εγγράφων για αρχεία $extension.';
   }
 
   @override
@@ -1568,7 +1568,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String failedToLoadGuide(String error) {
-    return 'Failed to load guide: $error';
+    return 'Η φόρτωση του οδηγού απέτυχε: $error';
   }
 
   @override
@@ -1598,19 +1598,20 @@ class AppLocalizationsEl extends AppLocalizations {
   String get favoriteChannel => 'Αγαπημένο κανάλι';
 
   @override
-  String get record => 'Record';
+  String get record => 'Ρεκόρ';
 
   @override
-  String get cancelRecordingAction => 'Cancel Recording';
+  String get cancelRecordingAction => 'Ακύρωση εγγραφής';
 
   @override
-  String get programSetToRecord => 'Program set to record';
+  String get programSetToRecord => 'Το πρόγραμμα έχει ρυθμιστεί για εγγραφή';
 
   @override
-  String get recordingCancelled => 'Recording cancelled';
+  String get recordingCancelled => 'Η εγγραφή ακυρώθηκε';
 
   @override
-  String get unableToCreateRecording => 'Unable to create recording';
+  String get unableToCreateRecording =>
+      'Δεν είναι δυνατή η δημιουργία εγγραφής';
 
   @override
   String get watch => 'Ρολόι';
@@ -1620,7 +1621,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String failedToPlayChannel(String name) {
-    return 'Failed to play $name';
+    return 'Αποτυχία αναπαραγωγής $name';
   }
 
   @override
@@ -1646,7 +1647,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return 'Cancel scheduled recording of \"$name\"?';
+    return 'Να ακυρωθεί η προγραμματισμένη εγγραφή του \"$name\";';
   }
 
   @override
@@ -1673,7 +1674,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String stopRecordingName(String name) {
-    return 'Stop recording \"$name\"?';
+    return 'Διακοπή εγγραφής \"$name\";';
   }
 
   @override
@@ -1688,12 +1689,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String noResultsForQuery(String query) {
-    return 'No results for \"$query\"';
+    return 'Δεν υπάρχουν αποτελέσματα για \"$query\"';
   }
 
   @override
   String searchFailedError(String error) {
-    return 'Search failed: $error';
+    return 'Η αναζήτηση απέτυχε: $error';
   }
 
   @override
@@ -1734,12 +1735,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String removeItemAndFiles(String name) {
-    return 'Remove \"$name\" and its files?';
+    return 'Κατάργηση του \"$name\" και των αρχείων του;';
   }
 
   @override
   String tracksCount(int count) {
-    return '$count tracks';
+    return '$count κομμάτια';
   }
 
   @override
@@ -1750,12 +1751,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return 'Failed to load album: $error';
+    return 'Η φόρτωση του άλμπουμ απέτυχε: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return 'No downloaded tracks found for $name.';
+    return 'Δεν βρέθηκαν ληφθέντα κομμάτια για $name.';
   }
 
   @override
@@ -1772,12 +1773,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return 'Remove \"$name\"?';
+    return 'Κατάργηση του \"$name\";';
   }
 
   @override
   String durationMinutes(int minutes) {
-    return '$minutes min';
+    return '$minutes ελάχ';
   }
 
   @override
@@ -1787,7 +1788,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String episodeNumber(int number) {
-    return 'Episode $number';
+    return 'Επεισόδιο $number';
   }
 
   @override
@@ -1801,7 +1802,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String seasonNumber(int number) {
-    return 'Season $number';
+    return 'Σεζόν $number';
   }
 
   @override
@@ -1817,7 +1818,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return 'Delete all downloaded episodes in $season?';
+    return 'Διαγραφή όλων των ληφθέντων επεισοδίων στο $season;';
   }
 
   @override
@@ -1861,7 +1862,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return 'Delete $count downloaded items?';
+    return 'Διαγραφή $count ληφθέντων στοιχείων;';
   }
 
   @override
@@ -1875,7 +1876,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String ofStorageLimit(String limit) {
-    return 'of $limit limit';
+    return 'του ορίου $limit';
   }
 
   @override
@@ -1960,7 +1961,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return '$count options';
+    return 'Επιλογές $count';
   }
 
   @override
@@ -2212,16 +2213,16 @@ class AppLocalizationsEl extends AppLocalizations {
       'Ενεργοποίηση ήχου TrueHD (ενδέχεται να μην λειτουργεί σε όλες τις πλατφόρμες)';
 
   @override
-  String get settingsAudioOutputMode => 'Audio Output Mode';
+  String get settingsAudioOutputMode => 'Λειτουργία εξόδου ήχου';
 
   @override
   String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
 
   @override
-  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
+  String get settingsAudioFallbackCodec => 'Εναλλακτικός κωδικοποιητής ήχου';
 
   @override
-  String get settingsAudioFallbackAacStereo => 'AAC Stereo';
+  String get settingsAudioFallbackAacStereo => 'Στερεοφωνικό AAC';
 
   @override
   String get settingsAudioFallbackAc35_1 => 'AC3 5.1';
@@ -2230,14 +2231,15 @@ class AppLocalizationsEl extends AppLocalizations {
   String get settingsAudioFallbackEac35_1 => 'EAC3 5.1';
 
   @override
-  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
+  String get settingsAudioPassthroughAdvanced =>
+      'Passthrough (Για προχωρημένους)';
 
   @override
   String get settingsAudioCodecPassthrough => 'Codec Passthrough';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'Enable only formats your AVR or HDMI sink supports.';
+      'Ενεργοποίηση μόνο μορφών που υποστηρίζει ο νεροχύτης AVR ή HDMI.';
 
   @override
   String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
@@ -2259,38 +2261,39 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
+      'Bitstream Dolby Digital Plus (EAC3) σε εξωτερικό αποκωδικοποιητή.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
+      'Bitstream Dolby Atmos μέσω EAC3 (JOC) σε εξωτερικό αποκωδικοποιητή.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
+      'Bitstream DTS-HD MA (περιλαμβάνει πυρήνα DTS) σε εξωτερικό αποκωδικοποιητή.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
+      'Bitstream Dolby TrueHD με μεταδεδομένα Atmos σε εξωτερικό αποκωδικοποιητή.';
 
   @override
-  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
+  String get settingsDetectedAudioCapabilities =>
+      'Εντοπισμένες δυνατότητες ήχου';
 
   @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
-      'No runtime capability snapshot available yet.';
+      'Δεν διατίθεται ακόμη στιγμιότυπο δυνατότητας χρόνου εκτέλεσης.';
 
   @override
-  String get settingsAudioRouteLabel => 'Route';
+  String get settingsAudioRouteLabel => 'Διαδρομή';
 
   @override
-  String get settingsAudioDecodeLabel => 'Decode';
+  String get settingsAudioDecodeLabel => 'Αποκρυπτογραφώ';
 
   @override
   String get settingsAudioPassthroughLabel => 'Passthrough';
 
   @override
-  String get settingsAudioHdRoute => 'HD audio route';
+  String get settingsAudioHdRoute => 'Διαδρομή ήχου HD';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2305,7 +2308,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get settingsAudioRouteBluetooth => 'Bluetooth';
 
   @override
-  String get settingsAudioRouteSpeaker => 'Speaker';
+  String get settingsAudioRouteSpeaker => 'Ομιλητής';
 
   @override
   String settingsAudioPcmChannels(int count) {
@@ -2313,39 +2316,39 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
-  String get settingsAudioDiagnostics => 'Diagnostics';
+  String get settingsAudioDiagnostics => 'Διαγνωστικά';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
+  String get settingsAudioDiagnosticsVideoLevel => 'Επίπεδο βίντεο';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
+  String get settingsAudioDiagnosticsVideoRange => 'Εύρος βίντεο';
 
   @override
-  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
+  String get settingsAudioDiagnosticsSubtitleCodec => 'Κωδικοποιητής υποτίτλων';
 
   @override
   String get settingsAudioDiagnosticsAllowedAudioCodecs =>
-      'Allowed Audio Codecs';
+      'Επιτρεπόμενοι κωδικοποιητές ήχου';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
-      'HLS MPEG-TS Audio Codecs';
+      'Κωδικοποιητές ήχου HLS MPEG-TS';
 
   @override
   String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
-      'HLS fMP4 Audio Codecs';
+      'Κωδικοποιητές ήχου HLS fMP4';
 
   @override
   String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
       'audio-spdif passthrough';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
+  String get settingsAudioDiagnosticsActiveAudioRoute => 'Ενεργή διαδρομή ήχου';
 
   @override
   String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'Route HD Audio Support';
+      'Υποστήριξη ήχου διαδρομής HD';
 
   @override
   String get nightMode => 'Νυχτερινή λειτουργία';
@@ -2354,17 +2357,17 @@ class AppLocalizationsEl extends AppLocalizations {
   String get compressDynamicRange => 'Συμπίεση δυναμικού εύρους';
 
   @override
-  String get advancedMpv => 'Προηγμένο mpv';
+  String get advancedMpv => 'Για προχωρημένους mpv';
 
   @override
-  String get enableCustomMpvConf => 'Ενεργοποιήστε την προσαρμοσμένη mpv.conf';
+  String get enableCustomMpvConf => 'Ενεργοποίηση Προσαρμοσμένης mpv.conf';
 
   @override
   String get applyMpvConfBeforePlayback =>
       'Εφαρμόστε ένα mpv.conf που καθορίζεται από το χρήστη πριν από την έναρξη της αναπαραγωγής';
 
   @override
-  String get unsafeAdvancedMpvOptions => 'Μη ασφαλείς προηγμένες επιλογές mpv';
+  String get unsafeAdvancedMpvOptions => 'Μη ασφαλείς σύνθετες επιλογές mpv';
 
   @override
   String get unsafeMpvOptionsDescription =>
@@ -2378,7 +2381,7 @@ class AppLocalizationsEl extends AppLocalizations {
       'Μπορεί να βελτιώσει την απόδοση, αλλά μπορεί να προκαλέσει προβλήματα αναπαραγωγής σε ορισμένες συσκευές.';
 
   @override
-  String get nextUpAndQueuing => 'Επόμενο Up & Ουρά';
+  String get nextUpAndQueuing => 'Επόμενο Up & ουρά';
 
   @override
   String get nextUpDisplay => 'Επόμενη Επόμενη Εμφάνιση';
@@ -2408,7 +2411,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return 'After $episodes episodes / ${hours}h';
+    return 'Μετά από $episodes επεισόδια / ${hours}h';
   }
 
   @override
@@ -2443,7 +2446,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get notSetMpvConf =>
-      'Δεν έχει οριστεί. Το Moonfin θα δοκιμάσει ένα προεπιλεγμένο mpv.conf σε φακέλους εφαρμογών/δεδομένων.';
+      'Δεν έχει οριστεί. Το Moonfin θα δοκιμάσει ένα προεπιλεγμένο mpv.conf στους φακέλους εφαρμογής/δεδομένων.';
 
   @override
   String get selectMpvConf => 'Επιλέξτε mpv.conf';
@@ -2542,17 +2545,17 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String loadedProfileSettings(String profile) {
-    return 'Loaded $profile profile settings.';
+    return 'Φορτώθηκαν οι ρυθμίσεις προφίλ $profile.';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return 'Failed to load $profile profile settings.';
+    return 'Η φόρτωση των ρυθμίσεων προφίλ $profile απέτυχε.';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return 'Synced local settings to $profile profile.';
+    return 'Συγχρονίστηκαν οι τοπικές ρυθμίσεις με το προφίλ $profile.';
   }
 
   @override
@@ -2616,7 +2619,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get downloadsVisibleToOtherApps =>
-      'Λήψεις/Moonfin — ορατό σε άλλες εφαρμογές';
+      'Λήψεις/Moonfin — ορατές σε άλλες εφαρμογές';
 
   @override
   String get dangerZone => 'Επικίνδυνη Ζώνη';
@@ -2647,7 +2650,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get saveToDownloadsFolderDescription =>
-      'Τα ληφθέντα πολυμέσα θα αποθηκευτούν στο Downloads/Moonfin της συσκευής σας. Αυτά τα αρχεία θα είναι ορατά σε άλλες εφαρμογές, όπως η γκαλερί ή το πρόγραμμα αναπαραγωγής μουσικής.\n\nΟι υπάρχουσες λήψεις θα παραμείνουν στην τρέχουσα θέση τους.';
+      'Τα ληφθέντα πολυμέσα θα αποθηκευτούν στο Downloads/Moonfin στη συσκευή σας. Αυτά τα αρχεία θα είναι ορατά σε άλλες εφαρμογές, όπως η γκαλερί ή το πρόγραμμα αναπαραγωγής μουσικής.\n\nΟι υπάρχουσες λήψεις θα παραμείνουν στην τρέχουσα θέση τους.';
 
   @override
   String get enable => 'Καθιστώ ικανό';
@@ -2779,7 +2782,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '$count selected';
+    return 'Επιλέχτηκε το $count';
   }
 
   @override
@@ -3027,7 +3030,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String minutesShort(int minutes) {
-    return '$minutes min';
+    return '$minutes ελάχ';
   }
 
   @override
@@ -3148,7 +3151,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String pluginStatusVersion(String status, String version) {
-    return '$status\nVersion: $version';
+    return '$status\nΈκδοση: $version';
   }
 
   @override
@@ -3224,7 +3227,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String loggedInAs(String username) {
-    return 'Logged in as: $username';
+    return 'Συνδεθήκατε ως: $username';
   }
 
   @override
@@ -3232,7 +3235,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get discoverRowsDescriptionPlugin =>
-      'Σύρετε για αναδιάταξη. Ενεργοποίηση ή απενεργοποίηση σειρών. Ενεργοποιημένος συγχρονισμός σειράς σειράς με την προσθήκη Moonfin.';
+      'Σύρετε για αναδιάταξη. Ενεργοποίηση ή απενεργοποίηση σειρών. Η ενεργοποιημένη σειρά σειρών συγχρονίζεται με την προσθήκη Moonfin.';
 
   @override
   String get discoverRowsDescription =>
@@ -3249,7 +3252,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String versionValue(String version) {
-    return 'Version $version';
+    return 'Έκδοση $version';
   }
 
   @override
@@ -3300,7 +3303,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String updateAvailableVersion(String version) {
-    return 'Update available: v$version';
+    return 'Διαθέσιμη ενημέρωση: v$version';
   }
 
   @override
@@ -3312,7 +3315,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String updateAvailableTitle(String version) {
-    return 'v$version Available';
+    return 'v$version Διαθέσιμο';
   }
 
   @override
@@ -3377,7 +3380,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String itemsCount(int count) {
-    return '$count Items';
+    return '$count Είδη';
   }
 
   @override
@@ -3397,7 +3400,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String requestedByName(String name) {
-    return 'Requested by $name';
+    return 'Ζητήθηκε από $name';
   }
 
   @override
@@ -3414,12 +3417,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String cancelRequestForTitle(String title) {
-    return 'Cancel request for \"$title\"?';
+    return 'Ακύρωση αιτήματος για \"$title\";';
   }
 
   @override
   String cancelCountRequestsForTitle(int count, String title) {
-    return 'Cancel $count requests for \"$title\"?';
+    return 'Να ακυρωθούν τα αιτήματα $count για \"$title\";';
   }
 
   @override
@@ -3434,12 +3437,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String budgetAmount(String amount) {
-    return 'Budget: \$$amount';
+    return 'Προϋπολογισμός: \$$amount';
   }
 
   @override
   String revenueAmount(String amount) {
-    return 'Revenue: \$$amount';
+    return 'Έσοδα: \$$amount';
   }
 
   @override
@@ -3449,7 +3452,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie(String type) {
-    return 'Request $type';
+    return 'Αίτημα $type';
   }
 
   @override
@@ -3485,7 +3488,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String ageValue(int age) {
-    return 'age $age';
+    return 'ηλικία $age';
   }
 
   @override
@@ -3777,22 +3780,22 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminPluginUpdatesAvailable(int count) {
-    return 'Plugin updates available: $count';
+    return 'Διαθέσιμες ενημερώσεις προσθηκών: $count';
   }
 
   @override
   String adminPluginsRequiringRestart(int count) {
-    return 'Plugins requiring restart: $count';
+    return 'Πρόσθετα που απαιτούν επανεκκίνηση: $count';
   }
 
   @override
   String adminFailedScheduledTasks(int count) {
-    return 'Failed scheduled tasks: $count';
+    return 'Αποτυχημένες προγραμματισμένες εργασίες: $count';
   }
 
   @override
   String adminRecentAlertEntries(int count) {
-    return 'Recent warning/error entries: $count';
+    return 'Πρόσφατες καταχωρίσεις προειδοποίησης/λάθους: $count';
   }
 
   @override
@@ -3851,7 +3854,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String errorGeneric(String error) {
-    return 'Error: $error';
+    return 'Σφάλμα: $error';
   }
 
   @override
@@ -3860,7 +3863,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get adminServerRebootMessage =>
-      'Η επανεκκίνηση του διακομιστή βρίσκεται σε εξέλιξη, επανεκκινήστε το Moonfin';
+      'Επανεκκίνηση διακομιστή σε εξέλιξη, κάντε επανεκκίνηση Moonfin';
 
   @override
   String get adminActiveSessions => 'Ενεργές συνεδρίες';
@@ -3879,7 +3882,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Η εντολή απέτυχε: $error';
   }
 
   @override
@@ -3944,7 +3947,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminActivityLoadFailed(String error) {
-    return 'Failed to load activity log: $error';
+    return 'Η φόρτωση του αρχείου καταγραφής δραστηριότητας απέτυχε: $error';
   }
 
   @override
@@ -3962,7 +3965,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminDeviceUpdateFailed(String error) {
-    return 'Failed to update device: $error';
+    return 'Η ενημέρωση της συσκευής απέτυχε: $error';
   }
 
   @override
@@ -3973,7 +3976,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminDeviceDeleteFailed(String error) {
-    return 'Failed to delete device: $error';
+    return 'Αποτυχία διαγραφής συσκευής: $error';
   }
 
   @override
@@ -4002,7 +4005,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminScanFailed(String error) {
-    return 'Failed to start scan: $error';
+    return 'Αποτυχία έναρξης σάρωσης: $error';
   }
 
   @override
@@ -4013,12 +4016,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminLibraryRenamed(String name) {
-    return 'Library renamed to \"$name\"';
+    return 'Η βιβλιοθήκη μετονομάστηκε σε \"$name\"';
   }
 
   @override
   String adminRenameFailed(String error) {
-    return 'Failed to rename: $error';
+    return 'Αποτυχία μετονομασίας: $error';
   }
 
   @override
@@ -4026,17 +4029,17 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminLibraryDeleted(String name) {
-    return 'Library \"$name\" deleted';
+    return 'Η βιβλιοθήκη \"$name\" διαγράφηκε';
   }
 
   @override
   String adminLibraryDeleteFailed(String error) {
-    return 'Failed to delete library: $error';
+    return 'Απέτυχε η διαγραφή της βιβλιοθήκης: $error';
   }
 
   @override
   String adminAddPathFailed(String error) {
-    return 'Failed to add path: $error';
+    return 'Αποτυχία προσθήκης διαδρομής: $error';
   }
 
   @override
@@ -4044,12 +4047,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminRemovePathConfirm(String path) {
-    return 'Remove \"$path\" from this library?';
+    return 'Κατάργηση του \"$path\" από αυτήν τη βιβλιοθήκη;';
   }
 
   @override
   String adminRemovePathFailed(String error) {
-    return 'Failed to remove path: $error';
+    return 'Αποτυχία κατάργησης διαδρομής: $error';
   }
 
   @override
@@ -4058,7 +4061,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminLibraryOptionsSaveFailed(String error) {
-    return 'Failed to save options: $error';
+    return 'Αποτυχία αποθήκευσης επιλογών: $error';
   }
 
   @override
@@ -4095,7 +4098,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminLibraryCreateFailed(String error) {
-    return 'Failed to create library: $error';
+    return 'Αποτυχία δημιουργίας βιβλιοθήκης: $error';
   }
 
   @override
@@ -4122,27 +4125,27 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminDisableUserConfirm(String name) {
-    return 'Disable $name? They will not be able to sign in.';
+    return 'Απενεργοποίηση $name; Δεν θα μπορούν να συνδεθούν.';
   }
 
   @override
   String adminEnableUserConfirm(String name) {
-    return 'Enable $name? They will be able to sign in again.';
+    return 'Ενεργοποίηση $name; Θα μπορούν να συνδεθούν ξανά.';
   }
 
   @override
   String adminUserDisabled(String name) {
-    return 'User \"$name\" disabled';
+    return 'Ο χρήστης \"$name\" απενεργοποιήθηκε';
   }
 
   @override
   String adminUserEnabled(String name) {
-    return 'User \"$name\" enabled';
+    return 'Ο χρήστης \"$name\" ενεργοποιήθηκε';
   }
 
   @override
   String adminUserPolicyUpdateFailed(String error) {
-    return 'Failed to update user policy: $error';
+    return 'Η ενημέρωση της πολιτικής χρήστη απέτυχε: $error';
   }
 
   @override
@@ -4159,7 +4162,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminUserCreateFailed(String error) {
-    return 'Failed to create user: $error';
+    return 'Αποτυχία δημιουργίας χρήστη: $error';
   }
 
   @override
@@ -4181,7 +4184,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminSaveFailed(String error) {
-    return 'Failed to save: $error';
+    return 'Αποτυχία αποθήκευσης: $error';
   }
 
   @override
@@ -4192,7 +4195,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminFailed(String error) {
-    return 'Failed: $error';
+    return 'Απέτυχε: $error';
   }
 
   @override
@@ -4344,22 +4347,22 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminServerReturnedHttp(int status) {
-    return 'Server returned HTTP $status';
+    return 'Ο διακομιστής επέστρεψε HTTP $status';
   }
 
   @override
   String adminDeleteUserConfirm(String name) {
-    return 'Are you sure you want to delete $name?';
+    return 'Είστε βέβαιοι ότι θέλετε να διαγράψετε το $name;';
   }
 
   @override
   String adminUserDeleted(String name) {
-    return 'User \"$name\" deleted';
+    return 'Ο χρήστης \"$name\" διαγράφηκε';
   }
 
   @override
   String adminUserDeleteFailed(String error) {
-    return 'Failed to delete user: $error';
+    return 'Αποτυχία διαγραφής χρήστη: $error';
   }
 
   @override
@@ -4380,7 +4383,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminApiKeyCreateFailed(String error) {
-    return 'Failed to create key: $error';
+    return 'Αποτυχία δημιουργίας κλειδιού: $error';
   }
 
   @override
@@ -4392,7 +4395,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminRevokeKeyConfirm(String name) {
-    return 'Revoke key for $name?';
+    return 'Ανάκληση κλειδιού για $name;';
   }
 
   @override
@@ -4400,7 +4403,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminApiKeyRevokeFailed(String error) {
-    return 'Failed to revoke key: $error';
+    return 'Απέτυχε η ανάκληση του κλειδιού: $error';
   }
 
   @override
@@ -4420,7 +4423,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminApiKeyTokenCreated(String token, String created) {
-    return 'Token: $token\\nCreated: $created';
+    return 'Token: $token\\nΔημιουργήθηκε: $created';
   }
 
   @override
@@ -4432,7 +4435,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminBackupCreateFailed(String error) {
-    return 'Failed to create backup: $error';
+    return 'Αποτυχία δημιουργίας αντιγράφου ασφαλείας: $error';
   }
 
   @override
@@ -4441,12 +4444,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminBackupManifest(String name) {
-    return 'Manifest: $name';
+    return 'Μανιφέστο: $name';
   }
 
   @override
   String adminManifestLoadFailed(String error) {
-    return 'Failed to load manifest: $error';
+    return 'Η φόρτωση της δήλωσης απέτυχε: $error';
   }
 
   @override
@@ -4457,7 +4460,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminRestoreFailed(String error) {
-    return 'Failed to restore backup: $error';
+    return 'Αποτυχία επαναφοράς του αντιγράφου ασφαλείας: $error';
   }
 
   @override
@@ -4490,17 +4493,17 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminSavedTo(String path) {
-    return 'Saved to $path';
+    return 'Αποθηκεύτηκε στο $path';
   }
 
   @override
   String adminFileSaveFailed(String error) {
-    return 'Failed to save file: $error';
+    return 'Αποτυχία αποθήκευσης του αρχείου: $error';
   }
 
   @override
   String adminLogFileLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'Αποτυχία φόρτωσης $fileName';
   }
 
   @override
@@ -4511,7 +4514,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminTasksLoadFailed(String error) {
-    return 'Failed to load tasks: $error';
+    return 'Αποτυχία φόρτωσης εργασιών: $error';
   }
 
   @override
@@ -4523,17 +4526,17 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminTaskStartFailed(String error) {
-    return 'Failed to start task: $error';
+    return 'Απέτυχε η έναρξη της εργασίας: $error';
   }
 
   @override
   String adminTaskStopFailed(String error) {
-    return 'Failed to stop task: $error';
+    return 'Η διακοπή της εργασίας απέτυχε: $error';
   }
 
   @override
   String adminTaskLoadFailed(String error) {
-    return 'Failed to load task: $error';
+    return 'Η φόρτωση της εργασίας απέτυχε: $error';
   }
 
   @override
@@ -4541,12 +4544,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminTriggerRemoveFailed(String error) {
-    return 'Failed to remove trigger: $error';
+    return 'Αποτυχία κατάργησης κανόνα ετικέτας: $error';
   }
 
   @override
   String adminTriggerAddFailed(String error) {
-    return 'Failed to add trigger: $error';
+    return 'Αποτυχία προσθήκης κανόνα ετικέτας: $error';
   }
 
   @override
@@ -4572,7 +4575,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminHours(String hours) {
-    return '$hours hour(s)';
+    return '$hours ώρα(ες)';
   }
 
   @override
@@ -4583,7 +4586,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminPluginToggleFailed(String error) {
-    return 'Failed to toggle plugin: $error';
+    return 'Αποτυχία εναλλαγής προσθήκης: $error';
   }
 
   @override
@@ -4591,27 +4594,27 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminUninstallPluginConfirm(String name) {
-    return 'Are you sure you want to uninstall \"$name\"?';
+    return 'Είστε βέβαιοι ότι θέλετε να απεγκαταστήσετε το \"$name\";';
   }
 
   @override
   String adminPluginUninstallFailed(String error) {
-    return 'Failed to uninstall plugin: $error';
+    return 'Η απεγκατάσταση της προσθήκης απέτυχε: $error';
   }
 
   @override
   String adminPackageInstallFailed(String error) {
-    return 'Failed to install package: $error';
+    return 'Αποτυχία εγκατάστασης πακέτου: $error';
   }
 
   @override
   String adminPluginUpdateFailed(String error) {
-    return 'Failed to install update: $error';
+    return 'Η εγκατάσταση της ενημέρωσης απέτυχε: $error';
   }
 
   @override
   String adminPluginsLoadFailed(String error) {
-    return 'Failed to load plugins: $error';
+    return 'Αποτυχία φόρτωσης προσθηκών: $error';
   }
 
   @override
@@ -4623,12 +4626,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminInstallUpdate(String version) {
-    return 'Install update (v$version)';
+    return 'Εγκατάσταση ενημέρωσης (v$version)';
   }
 
   @override
   String adminCatalogLoadFailed(String error) {
-    return 'Failed to load catalog: $error';
+    return 'Η φόρτωση του καταλόγου απέτυχε: $error';
   }
 
   @override
@@ -4650,17 +4653,17 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminPluginRemoveAfterRestart(String name) {
-    return '\"$name\" will be removed after server restart';
+    return 'Το \"$name\" θα αφαιρεθεί μετά την επανεκκίνηση του διακομιστή';
   }
 
   @override
   String adminUninstallFailed(String error) {
-    return 'Failed to uninstall: $error';
+    return 'Η απεγκατάσταση απέτυχε: $error';
   }
 
   @override
   String adminPluginUpdating(String name, String version) {
-    return 'Updating \"$name\" to v$version...';
+    return 'Ενημέρωση \"$name\" σε v$version...';
   }
 
   @override
@@ -4669,7 +4672,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminPluginLoadFailed(String error) {
-    return 'Failed to load plugin: $error';
+    return 'Η φόρτωση της προσθήκης απέτυχε: $error';
   }
 
   @override
@@ -4677,7 +4680,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminPluginVersion(String version) {
-    return 'Version $version';
+    return 'Έκδοση $version';
   }
 
   @override
@@ -4698,21 +4701,21 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminRemoveRepositoryConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Είστε βέβαιοι ότι θέλετε να καταργήσετε το \"$name\";';
   }
 
   @override
   String adminRepositoriesSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Αποτυχία αποθήκευσης αποθετηρίων: $error';
   }
 
   @override
   String adminRepositoriesLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Απέτυχε η φόρτωση των αποθετηρίων: $error';
   }
 
   @override
-  String get adminRepositoryNameHint => 'π.χ. Jellyfin Stable';
+  String get adminRepositoryNameHint => 'π.χ. Jellyfin Σταθερό';
 
   @override
   String get adminRepositoryUrl => 'URL αποθετηρίου';
@@ -4725,12 +4728,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminPluginSettingsLoadFailed(String error) {
-    return 'Unable to load plugin settings: $error';
+    return 'Δεν είναι δυνατή η φόρτωση ρυθμίσεων προσθήκης: $error';
   }
 
   @override
   String adminCouldNotOpenUrl(String uri) {
-    return 'Could not open $uri';
+    return 'Δεν ήταν δυνατό το άνοιγμα $uri';
   }
 
   @override
@@ -5014,12 +5017,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminMetadataLoadFailed(String error) {
-    return 'Failed to load metadata: $error';
+    return 'Αποτυχία φόρτωσης μεταδεδομένων: $error';
   }
 
   @override
   String adminMetadataSaveFailed(String error) {
-    return 'Failed to save metadata: $error';
+    return 'Αποτυχία αποθήκευσης μεταδεδομένων: $error';
   }
 
   @override
@@ -5039,7 +5042,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminMetadataRefreshFailed(String error) {
-    return 'Failed to refresh metadata: $error';
+    return 'Αποτυχία ανανέωσης μεταδεδομένων: $error';
   }
 
   @override
@@ -5058,7 +5061,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminRemoteSearchFailed(String error) {
-    return 'Remote search failed: $error';
+    return 'Η απομακρυσμένη αναζήτηση απέτυχε: $error';
   }
 
   @override
@@ -5072,7 +5075,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminContentTypeUpdateFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Αποτυχία ενημέρωσης τύπου περιεχομένου: $error';
   }
 
   @override
@@ -5088,12 +5091,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return 'Η εικόνα $imageType ενημερώθηκε';
   }
 
   @override
   String adminImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Η λήψη της εικόνας απέτυχε: $error';
   }
 
   @override
@@ -5105,27 +5108,27 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return 'Η εικόνα $imageType ανέβηκε';
   }
 
   @override
   String adminImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Αποτυχία μεταφόρτωσης εικόνας: $error';
   }
 
   @override
   String adminDeleteImage(String imageType) {
-    return 'Delete $imageType image';
+    return 'Διαγραφή εικόνας $imageType';
   }
 
   @override
   String adminImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return 'Η εικόνα $imageType διαγράφηκε';
   }
 
   @override
   String adminImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Αποτυχία διαγραφής εικόνας: $error';
   }
 
   @override
@@ -5136,7 +5139,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminTunerDiscoveryFailed(String error) {
-    return 'Tuner discovery failed: $error';
+    return 'Η ανακάλυψη δέκτη απέτυχε: $error';
   }
 
   @override
@@ -5159,7 +5162,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminTunerAddFailed(String error) {
-    return 'Failed to add tuner: $error';
+    return 'Αποτυχία προσθήκης δέκτη: $error';
   }
 
   @override
@@ -5182,12 +5185,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminProviderAddFailed(String error) {
-    return 'Failed to add provider: $error';
+    return 'Αποτυχία προσθήκης παρόχου: $error';
   }
 
   @override
   String adminTunerRemoveFailed(String error) {
-    return 'Failed to remove tuner: $error';
+    return 'Αποτυχία κατάργησης του δέκτη: $error';
   }
 
   @override
@@ -5195,12 +5198,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminTunerResetFailed(String error) {
-    return 'Failed to reset tuner: $error';
+    return 'Η επαναφορά του δέκτη απέτυχε: $error';
   }
 
   @override
   String adminProviderRemoveFailed(String error) {
-    return 'Failed to remove provider: $error';
+    return 'Αποτυχία κατάργησης παρόχου: $error';
   }
 
   @override
@@ -5210,7 +5213,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get adminPrePadding => 'Προκατασκευή (λεπτά)';
 
   @override
-  String get adminPostPadding => 'Post-padding (λεπτά)';
+  String get adminPostPadding => 'Μετά την πλήρωση (λεπτά)';
 
   @override
   String get adminRecordingPath => 'Διαδρομή εγγραφής';
@@ -5224,7 +5227,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminSettingsSaveFailed(String error) {
-    return 'Failed to save settings: $error';
+    return 'Αποτυχία αποθήκευσης ρυθμίσεων: $error';
   }
 
   @override
@@ -5243,7 +5246,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Αποτυχία ενημέρωσης αντιστοιχίσεων: $error';
   }
 
   @override
@@ -5269,22 +5272,22 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminRecordingPathDisplay(String path) {
-    return 'Recording path: $path';
+    return 'Διαδρομή εγγραφής: $path';
   }
 
   @override
   String adminSeriesPathDisplay(String path) {
-    return 'Series path: $path';
+    return 'Διαδρομή σειράς: $path';
   }
 
   @override
   String adminPrePaddingDisplay(int minutes) {
-    return 'Pre-padding: $minutes min';
+    return 'Προκατασκευή: $minutes ελάχ';
   }
 
   @override
   String adminPostPaddingDisplay(int minutes) {
-    return 'Post-padding: $minutes min';
+    return 'Post-padding: $minutes ελάχ';
   }
 
   @override
@@ -5317,7 +5320,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminRestoreConfirmMessage(String name) {
-    return 'Restore backup $name now?';
+    return 'Επαναφορά αντιγράφου ασφαλείας $name τώρα;';
   }
 
   @override
@@ -5363,27 +5366,27 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminLogsMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '${minutes}m πριν';
   }
 
   @override
   String adminLogsHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '${hours}h πριν';
   }
 
   @override
   String adminLogsDaysAgo(int days) {
-    return '${days}d ago';
+    return '${days}d πριν';
   }
 
   @override
   String adminLogViewerLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'Αποτυχία φόρτωσης $fileName';
   }
 
   @override
   String adminLogViewerMatches(int count) {
-    return '$count matches';
+    return '$count ταιριάζει';
   }
 
   @override
@@ -5494,22 +5497,22 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminMetadataImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return 'Η εικόνα $imageType ενημερώθηκε';
   }
 
   @override
   String adminMetadataImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return 'Η εικόνα $imageType ανέβηκε';
   }
 
   @override
   String adminMetadataImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return 'Η εικόνα $imageType διαγράφηκε';
   }
 
   @override
   String adminMetadataImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Η λήψη της εικόνας απέτυχε: $error';
   }
 
   @override
@@ -5518,12 +5521,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminMetadataImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Αποτυχία μεταφόρτωσης εικόνας: $error';
   }
 
   @override
   String adminMetadataDeleteImageTitle(String imageType) {
-    return 'Delete $imageType image';
+    return 'Διαγραφή εικόνας $imageType';
   }
 
   @override
@@ -5532,12 +5535,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminMetadataImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Αποτυχία διαγραφής εικόνας: $error';
   }
 
   @override
   String adminMetadataChooseImage(String imageType) {
-    return 'Choose $imageType image';
+    return 'Επιλέξτε την εικόνα $imageType';
   }
 
   @override
@@ -5570,7 +5573,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminPluginsUpdateAvailable(String version) {
-    return 'Update available: v$version';
+    return 'Διαθέσιμη ενημέρωση: v$version';
   }
 
   @override
@@ -5595,7 +5598,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminPluginsInstallUpdateVersioned(String version) {
-    return 'Install update (v$version)';
+    return 'Εγκατάσταση ενημέρωσης (v$version)';
   }
 
   @override
@@ -5607,7 +5610,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminPluginsInstalling(String name) {
-    return '\"$name\" is being installed...';
+    return 'Το \"$name\" εγκαθίσταται...';
   }
 
   @override
@@ -5627,7 +5630,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminPluginDetailSettingsTitle(String name) {
-    return '$name Settings';
+    return '$name Ρυθμίσεις';
   }
 
   @override
@@ -5667,7 +5670,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminReposLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Απέτυχε η φόρτωση των αποθετηρίων: $error';
   }
 
   @override
@@ -5675,7 +5678,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminReposRemoveConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Είστε βέβαιοι ότι θέλετε να καταργήσετε το \"$name\";';
   }
 
   @override
@@ -5683,7 +5686,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminReposSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Αποτυχία αποθήκευσης αποθετηρίων: $error';
   }
 
   @override
@@ -5706,7 +5709,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get adminReposUrl => 'URL αποθετηρίου';
 
   @override
-  String get adminReposNameHint => 'π.χ. Jellyfin Stable';
+  String get adminReposNameHint => 'π.χ. Jellyfin Σταθερό';
 
   @override
   String get adminPluginSettingsInvalidUrl => 'Μη έγκυρη διεύθυνση URL';
@@ -5966,17 +5969,17 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return 'Daily at $time';
+    return 'Καθημερινά στο $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return 'Every $day at $time';
+    return 'Κάθε $day στο $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return 'Every $duration';
+    return 'Κάθε $duration';
   }
 
   @override
@@ -6043,17 +6046,17 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminActivityDaysAgo(int days) {
-    return '${days}d ago';
+    return '${days}d πριν';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '${hours}h πριν';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '${minutes}m πριν';
   }
 
   @override
@@ -6173,7 +6176,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Αποτυχία ενημέρωσης τύπου περιεχομένου: $error';
   }
 
   @override
@@ -6197,12 +6200,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Αποτυχία ενημέρωσης αντιστοιχίσεων: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return 'Time limit: $duration';
+    return 'Χρονικό όριο: $duration';
   }
 
   @override
@@ -6215,7 +6218,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get syncPlay => 'SyncPlay';
 
   @override
-  String get syncPlayDisabledTitle => 'Το SyncPlay είναι απενεργοποιημένο';
+  String get syncPlayDisabledTitle => 'Το SyncPlay απενεργοποιήθηκε';
 
   @override
   String get syncPlayDisabledMessage =>
@@ -6230,10 +6233,10 @@ class AppLocalizationsEl extends AppLocalizations {
       'Το SyncPlay απαιτεί διακομιστή Jellyfin. Ο τρέχων διακομιστής δεν το υποστηρίζει.';
 
   @override
-  String get syncPlayGroupFallbackName => 'Ομάδα SyncPlay';
+  String get syncPlayGroupFallbackName => 'SyncPlay Ομάδα';
 
   @override
-  String get syncPlayGroupTooltip => 'Ομάδα SyncPlay';
+  String get syncPlayGroupTooltip => 'SyncPlay ομάδα';
 
   @override
   String syncPlayParticipantCount(int count) {
@@ -6285,7 +6288,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String syncPlayQueueItemFallback(int index) {
-    return 'Item $index';
+    return 'Αντικείμενο $index';
   }
 
   @override
@@ -6298,7 +6301,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get syncPlayGroupName => 'Όνομα ομάδας';
 
   @override
-  String get syncPlayDefaultGroupName => 'Η Ομάδα μου SyncPlay';
+  String get syncPlayDefaultGroupName => 'Η ομάδα μου SyncPlay';
 
   @override
   String get syncPlayCreateGroup => 'Δημιουργία ομάδας';
@@ -6310,7 +6313,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get syncPlayNoGroupsAvailable => 'Δεν υπάρχουν διαθέσιμες ομάδες';
 
   @override
-  String get syncPlayJoinGroupQuestion => 'Συμμετοχή στην ομάδα SyncPlay;';
+  String get syncPlayJoinGroupQuestion => 'Εγγραφείτε στην ομάδα SyncPlay;';
 
   @override
   String get syncPlayJoinGroupWarning =>
@@ -6333,17 +6336,16 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName joined SyncPlay group';
+    return 'Ο $userName έγινε μέλος της ομάδας SyncPlay';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName left SyncPlay group';
+    return '$userName αριστερά από την ομάδα SyncPlay';
   }
 
   @override
-  String get syncPlayAccessDeniedTitle =>
-      'Δεν επιτρέπεται η πρόσβαση στο SyncPlay';
+  String get syncPlayAccessDeniedTitle => 'Δεν επιτρέπεται η πρόσβαση SyncPlay';
 
   @override
   String get syncPlayAccessDeniedMessage =>
@@ -6351,7 +6353,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return 'Syncing playback to $groupName';
+    return 'Συγχρονισμός αναπαραγωγής με $groupName';
   }
 
   @override
@@ -6360,7 +6362,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get dolbyVisionDirectPlayFailedTitle =>
-      'Το Dolby Vision Direct Play απέτυχε';
+      'Dolby Vision Η άμεση αναπαραγωγή απέτυχε';
 
   @override
   String get dolbyVisionDirectPlayFailedMessage =>
@@ -6370,8 +6372,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get retryWithTranscode => 'Δοκιμάστε ξανά με transcode';
 
   @override
-  String get dolbyVisionNotSupportedTitle =>
-      'Το Dolby Vision δεν υποστηρίζεται';
+  String get dolbyVisionNotSupportedTitle => 'Dolby Vision Δεν υποστηρίζεται';
 
   @override
   String get dolbyVisionNotSupportedMessage =>
@@ -6381,7 +6382,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get rememberMyChoice => 'Θυμηθείτε την επιλογή μου';
 
   @override
-  String get playHdr10Fallback => 'Παίξτε εναλλακτικό HDR10';
+  String get playHdr10Fallback => 'Παίξτε εναλλακτικά HDR10';
 
   @override
   String get requestTranscode => 'Ζητήστε διακωδικοποίηση';
@@ -6396,7 +6397,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get kefinTweaksIntegrationDescription =>
-      'Εντοπίστε σειρές που έχουν διαμορφωθεί μέσω της προσθήκης \"KefinTweaks\" του ranaldsgift. Οι προσαρμοσμένες ενότητες, που κυκλοφόρησαν πρόσφατα, ξανά παρακολούθηση, εποχιακές και προστέθηκαν πρόσφατα στη βιβλιοθήκη αντικατοπτρίζονται από τη διαμόρφωση KefinTweaks σε κάθε διακομιστή Jellyfin.';
+      'Εντοπίστε σειρές που έχουν διαμορφωθεί μέσω της προσθήκης \"KefinTweaks\" του ranaldsgift. Οι προσαρμοσμένες ενότητες, που κυκλοφόρησαν πρόσφατα, παρακολουθήστε ξανά, εποχιακά και προστέθηκαν πρόσφατα στη βιβλιοθήκη αντικατοπτρίζονται από τη διαμόρφωση KefinTweaks σε κάθε διακομιστή Jellyfin.';
 
   @override
   String get kefinTweaksIntegrationNoServers =>
@@ -6490,12 +6491,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return 'Cast control failed: $error';
+    return 'Ο έλεγχος μετάδοσης απέτυχε: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return '$kind Controls';
+    return '$kind Στοιχεία ελέγχου';
   }
 
   @override
@@ -6506,7 +6507,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return 'Stop $kind';
+    return 'Διακοπή $kind';
   }
 
   @override
@@ -6530,12 +6531,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String pinEnterNDigit(int length) {
-    return 'Enter a $length-digit PIN';
+    return 'Εισαγάγετε ένα ψηφίο PIN $length';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return 'Enter your $length-digit PIN';
+    return 'Εισαγάγετε το $length-ψηφίο PIN σας';
   }
 
   @override
@@ -6582,7 +6583,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect failed: $message';
+    return 'Η γρήγορη σύνδεση απέτυχε: $message';
   }
 
   @override
@@ -6593,7 +6594,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String remoteCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Η εντολή απέτυχε: $error';
   }
 
   @override
@@ -6622,7 +6623,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String castingFailed(String error) {
-    return 'Failed to start casting: $error';
+    return 'Αποτυχία έναρξης μετάδοσης: $error';
   }
 
   @override
@@ -6631,7 +6632,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get noRemoteDevicesIos =>
-      'Δεν υπάρχουν διαθέσιμες συσκευές απομακρυσμένης αναπαραγωγής.\n\nΣτο iOS, οι στόχοι του AirPlay ενδέχεται να μην είναι διαθέσιμοι στον προσομοιωτή.';
+      'Δεν υπάρχουν διαθέσιμες συσκευές απομακρυσμένης αναπαραγωγής.\n\nΣε iOS, οι στόχοι AirPlay ενδέχεται να μην είναι διαθέσιμοι στον προσομοιωτή.';
 
   @override
   String get trackActionPlayNext => 'Παίξτε Επόμενο';
@@ -6669,7 +6670,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String trackActionDownloading(String name) {
-    return 'Downloading $name...';
+    return 'Λήψη $name...';
   }
 
   @override
@@ -6759,7 +6760,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String skipSegment(String segment) {
-    return 'Skip $segment';
+    return 'Παράλειψη $segment';
   }
 
   @override
@@ -6771,12 +6772,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return 'Downloading $current/$total — $fileName';
+    return 'Λήψη $current/$total — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return 'Downloading $fileName';
+    return 'Λήψη $fileName';
   }
 
   @override
@@ -6955,7 +6956,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get settingsPluginScreenDescription =>
-      'Το Moonbase εξουσιοδοτεί ενσωματώσεις από την πλευρά του διακομιστή, συμπεριλαμβανομένων πρόσθετων πηγών αξιολόγησης, αιτημάτων Seerr και συγχρονισμένων προτιμήσεων.';
+      'Το Moonbase παρέχει ενσωματώσεις από την πλευρά του διακομιστή, συμπεριλαμβανομένων πρόσθετων πηγών αξιολόγησης, αιτημάτων Seerr και συγχρονισμένων προτιμήσεων.';
 
   @override
   String get settingsOfflineDownloads => 'Λήψεις εκτός σύνδεσης';
@@ -6991,7 +6992,7 @@ class AppLocalizationsEl extends AppLocalizations {
       'Ανοίξτε το πρόγραμμα παρακολούθησης προβλημάτων στο GitHub';
 
   @override
-  String get settingsJoinDiscord => 'Εγγραφείτε στο Discord';
+  String get settingsJoinDiscord => 'Εγγραφείτε Discord';
 
   @override
   String get settingsJoinDiscordSubtitle => 'Συζήτηση με την κοινότητα';
@@ -7004,7 +7005,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'αστέρι στο έργο στο GitHub ή συνεισφέρετε';
+      'Δωρίστε έναν καφέ στον προγραμματιστή';
 
   @override
   String get settingsLegal => 'ΝΟΜΙΚΟΣ';
@@ -7021,14 +7022,14 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get settingsPrivacyPolicySubtitle =>
-      'Πώς χειρίζεται η Moonfin τα δεδομένα σας';
+      'Πώς χειρίζεται ο Moonfin τα δεδομένα σας';
 
   @override
   String get settingsCheckForUpdates => 'Ελέγξτε για Ενημερώσεις';
 
   @override
   String get settingsCheckForUpdatesSubtitle =>
-      'Ελέγξτε για την πιο πρόσφατη έκδοση του Moonfin';
+      'Ελέγξτε για την πιο πρόσφατη έκδοση Moonfin';
 
   @override
   String get settingsPoweredByFlutter => 'Με την υποστήριξη του Flutter';
@@ -7118,16 +7119,16 @@ class AppLocalizationsEl extends AppLocalizations {
       'Επιλέξτε την προεπιλεγμένη μηχανή αναπαραγωγής σε συσκευές Android TV. Οι αλλαγές ισχύουν για την επόμενη περίοδο λειτουργίας αναπαραγωγής.';
 
   @override
-  String get settingsPlaybackEngineMedia3Recommended => 'Media3 (συνιστάται)';
+  String get settingsPlaybackEngineMedia3Recommended => 'Media3 (προτείνεται)';
 
   @override
-  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (παλαιού τύπου)';
 
   @override
-  String get settingsPlaybackEngineMpvLegacy => 'mpv (κληρονομιά)';
+  String get settingsPlaybackEngineMpvLegacy => 'mpv (παλαιού τύπου)';
 
   @override
-  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (προτείνεται)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dolby Vision Επιστροφή';
@@ -7140,7 +7141,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get settingsAskEachTime => 'Ρωτήστε κάθε φορά';
 
   @override
-  String get settingsPreferHdr10Fallback => 'Προτιμήστε εναλλακτικό HDR10';
+  String get settingsPreferHdr10Fallback => 'Προτιμήστε το εναλλακτικό HDR10';
 
   @override
   String get settingsPreferServerTranscode =>
@@ -7148,11 +7149,11 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get settingsDolbyVisionProfile7DirectPlay =>
-      'Dolby Vision Profile 7 Απευθείας αναπαραγωγή';
+      'Dolby Vision Προφίλ 7 Απευθείας αναπαραγωγή';
 
   @override
   String get settingsDolbyVisionProfile7DirectPlayDescription =>
-      'Ελέγχει εάν οι ροές επιπέδου βελτίωσης του προφίλ Dolby Vision 7 θα πρέπει να κατευθύνουν την αναπαραγωγή.';
+      'Ελέγχει εάν οι ροές επιπέδου βελτίωσης προφίλ 7 Dolby Vision θα πρέπει να κατευθύνουν την αναπαραγωγή.';
 
   @override
   String get settingsAutoAftkrtEnabled => 'Αυτόματο (AFTKRT ενεργοποιημένο)';
@@ -7240,7 +7241,7 @@ class AppLocalizationsEl extends AppLocalizations {
       'Δημιουργήστε, εγγραφείτε ή διαχειριστείτε ομάδες SyncPlay';
 
   @override
-  String get settingsSyncplayEnabled => 'Ενεργοποιήθηκε το SyncPlay';
+  String get settingsSyncplayEnabled => 'SyncPlay Ενεργοποιήθηκε';
 
   @override
   String get settingsSyncplayEnabledSubtitle =>
@@ -7251,7 +7252,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get settingsSyncplayButtonSubtitle =>
-      'Εμφάνιση του κουμπιού SyncPlay στη γραμμή πλοήγησης';
+      'Εμφανίστε το κουμπί SyncPlay στη γραμμή πλοήγησης';
 
   @override
   String get settingsSyncplayAdvancedCorrection => 'Προηγμένη διόρθωση';
@@ -7315,539 +7316,558 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String latestLibraryName(String libraryName) {
-    return 'Latest $libraryName';
+    return 'Τελευταία $libraryName';
   }
 
   @override
-  String get autoplayNextEpisode => 'Autoplay Next Episode';
+  String get autoplayNextEpisode =>
+      'Αυτόματη αναπαραγωγή του επόμενου επεισοδίου';
 
   @override
   String get autoplayNextEpisodeSubtitle =>
-      'Automatically play the next episode when available.';
+      'Παίξτε αυτόματα το επόμενο επεισόδιο όταν είναι διαθέσιμο.';
 
   @override
-  String get skipSilenceTitle => 'Skip silence';
+  String get skipSilenceTitle => 'Παράλειψη σιωπής';
 
   @override
   String get skipSilenceSubtitle =>
-      'Automatically skip silent audio segments when supported by the stream.';
+      'Αυτόματη παράβλεψη σιωπηρών τμημάτων ήχου όταν υποστηρίζονται από τη ροή.';
 
   @override
-  String get allowExternalAudioEffectsTitle => 'Allow external audio effects';
+  String get allowExternalAudioEffectsTitle =>
+      'Επιτρέψτε εξωτερικά ηχητικά εφέ';
 
   @override
   String get allowExternalAudioEffectsSubtitle =>
-      'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.';
+      'Να επιτρέπεται στις εφαρμογές ισοσταθμιστή και εφέ (π.χ. Wavelet) να προσαρτώνται σε περιόδους αναπαραγωγής Media3.';
 
   @override
-  String get disableTunnelingTitle => 'Disable tunneling';
+  String get disableTunnelingTitle => 'Απενεργοποίηση σήραγγας';
 
   @override
   String get disableTunnelingSubtitle =>
-      'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
+      'Αναγκαστική αναπαραγωγή χωρίς σήραγγα. Χρήσιμο σε συσκευές με ασυνέχειες ήχου/εικόνας με σήραγγα.';
 
   @override
-  String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
+  String get mapDolbyVisionP7Title =>
+      'Χαρτογράφηση Dolby Vision προφίλ 7 στο HEVC';
 
   @override
   String get mapDolbyVisionP7Subtitle =>
-      'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.';
+      'Παίξτε ροές προφίλ Dolby Vision 7 ως HDR10 συμβατό HEVC σε συσκευές που δεν είναι DV.';
 
   @override
-  String get subtitlesUseEmbeddedStyles => 'Use embedded subtitle styles';
+  String get subtitlesUseEmbeddedStyles =>
+      'Χρησιμοποιήστε ενσωματωμένα στυλ υπότιτλων';
 
   @override
   String get subtitlesUseEmbeddedStylesSubtitle =>
-      'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.';
+      'Εφαρμόστε χρώματα, γραμματοσειρές και τοποθέτηση ενσωματωμένων στο κομμάτι υπότιτλων. Απενεργοποιήστε τη χρήση των προτιμήσεων στυλ υπότιτλων.';
 
   @override
   String get subtitlesUseEmbeddedFontSizes =>
-      'Use embedded subtitle font sizes';
+      'Χρησιμοποιήστε ενσωματωμένα μεγέθη γραμματοσειράς υπότιτλων';
 
   @override
   String get subtitlesUseEmbeddedFontSizesSubtitle =>
-      'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
+      'Εφαρμόστε υποδείξεις μεγέθους γραμματοσειράς που είναι ενσωματωμένες στο κομμάτι υπότιτλων. Απενεργοποιήστε τη χρήση του μεγέθους υποτίτλων από τις προτιμήσεις στυλ σας.';
 
   @override
-  String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
+  String get useDetailedSubHeadings =>
+      'Χρησιμοποιήστε λεπτομερείς υποεπικεφαλίδες';
 
   @override
   String get useDetailedSubHeadingsDescription =>
-      'Show detailed or minimal subrow on Library pages.';
+      'Εμφάνιση λεπτομερούς ή ελάχιστου υπογράμματος στις σελίδες της Βιβλιοθήκης.';
 
   @override
-  String get savedThemesDeleteDialogTitle => 'Delete saved theme?';
+  String get savedThemesDeleteDialogTitle => 'Διαγραφή αποθηκευμένου θέματος;';
 
   @override
   String savedThemesDeleteDialogMessage(String themeName) {
-    return 'Remove \"$themeName\" from this device cache?';
+    return 'Κατάργηση του \"$themeName\" από αυτήν την προσωρινή μνήμη της συσκευής;';
   }
 
   @override
   String savedThemesDeletedMessage(String themeName) {
-    return 'Deleted \"$themeName\" from this device.';
+    return 'Διαγράφηκε το \"$themeName\" από αυτήν τη συσκευή.';
   }
 
   @override
   String savedThemesDeleteFailedMessage(String themeName) {
-    return 'Could not delete \"$themeName\".';
+    return 'Δεν ήταν δυνατή η διαγραφή του \"$themeName\".';
   }
 
   @override
-  String get savedThemesTitle => 'Saved themes';
+  String get savedThemesTitle => 'Αποθηκευμένα θέματα';
 
   @override
   String get savedThemesDescription =>
-      'These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.';
+      'Αυτά είναι θέματα που έχουν ληφθεί από την προσθήκη Moonfin για τον τρέχοντα διακομιστή. Η διαγραφή καταργεί μόνο αυτό το τοπικό αντίγραφο.';
 
   @override
-  String get savedThemesEmpty => 'No saved themes were found for this server.';
+  String get savedThemesEmpty =>
+      'Δεν βρέθηκαν αποθηκευμένα θέματα για αυτόν τον διακομιστή.';
 
   @override
   String savedThemesCurrentThemeId(String themeId) {
-    return '$themeId • Currently active';
+    return '$themeId • Αυτήν τη στιγμή ενεργό';
   }
 
   @override
-  String get savedThemesDeleteTooltip => 'Delete saved theme';
+  String get savedThemesDeleteTooltip => 'Διαγραφή αποθηκευμένου θέματος';
 
   @override
   String get savedThemesManageSubtitle =>
-      'Manage downloaded plugin themes on this device';
+      'Διαχειριστείτε τα ληφθέντα θέματα προσθηκών σε αυτήν τη συσκευή';
 
   @override
   String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
+  String get homeScreenSectionsTitle => 'Ενότητες αρχικής οθόνης';
 
   @override
-  String get themeEditor => 'Theme Editor';
+  String get themeEditor => 'Επεξεργαστής θεμάτων';
 
   @override
   String get themeEditorSubtitle =>
-      'Open the Moonfin Theme Editor in your browser';
+      'Ανοίξτε το πρόγραμμα επεξεργασίας θεμάτων Moonfin στο πρόγραμμα περιήγησής σας';
 
   @override
-  String get homeScreen => 'Home Screen';
+  String get homeScreen => 'Αρχική οθόνη';
 
   @override
-  String get bottomBar => 'Bottom Bar';
+  String get bottomBar => 'Μπάρα κάτω';
 
   @override
-  String get homeRowsStyleClassic => 'Classic';
+  String get homeRowsStyleClassic => 'Κλασσικός';
 
   @override
-  String get homeRowsStyleModern => 'Modern';
+  String get homeRowsStyleModern => 'Σύγχρονος';
 
   @override
-  String get homeRowsSection => 'Home Rows';
+  String get homeRowsSection => 'Αρχικές Σειρές';
 
   @override
-  String get rowsType => 'Rows Type';
+  String get rowsType => 'Τύπος σειρών';
 
   @override
   String get rowsTypeDescription =>
-      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
+      'Το Classic διατηρεί τον τύπο εικόνας ανά σειρά και την επικάλυψη πληροφοριών. Το Modern χρησιμοποιεί σειρές από πορτραίτο σε φόντο.';
 
   @override
-  String get displayFavoritesRows => 'Display Favorites Rows';
+  String get displayFavoritesRows => 'Εμφάνιση αγαπημένων σειρών';
 
   @override
   String get displayFavoritesRowsSubtitle =>
-      'Show Favorite Movies, Series, and other favorite rows in Home Sections.';
+      'Εμφάνιση αγαπημένων ταινιών, σειρών και άλλων αγαπημένων σειρών στις Αρχικές ενότητες.';
 
   @override
-  String get favoritesRowSorting => 'Favorites Row Sorting';
+  String get favoritesRowSorting => 'Ταξινόμηση σειρών αγαπημένων';
 
   @override
   String get favoritesRowSortingDescription =>
-      'Sort Favorites rows by date added, release date, alphabetically, and more.';
+      'Ταξινομήστε τις αγαπημένες σειρές κατά ημερομηνία προσθήκης, ημερομηνία κυκλοφορίας, αλφαβητικά και άλλα.';
 
   @override
-  String get displayCollectionsRows => 'Display Collections Rows';
+  String get displayCollectionsRows => 'Εμφάνιση σειρών συλλογών';
 
   @override
   String get displayCollectionsRowsSubtitle =>
-      'Show Collections rows in Home Sections.';
+      'Εμφάνιση σειρών Συλλογών στις Αρχικές ενότητες.';
 
   @override
-  String get collectionsRowSorting => 'Collections Row Sorting';
+  String get collectionsRowSorting => 'Συλλογές Ταξινόμηση σειρών';
 
   @override
   String get collectionsRowSortingDescription =>
-      'Sort Collections rows by date added, release date, alphabetically, and more.';
+      'Ταξινόμηση σειρών Συλλογών κατά ημερομηνία προσθήκης, ημερομηνία κυκλοφορίας, αλφαβητικά και άλλα.';
 
   @override
-  String get displayGenresRows => 'Display Genres Rows';
+  String get displayGenresRows => 'Εμφάνιση σειρών ειδών';
 
   @override
-  String get displayGenresRowsSubtitle => 'Show Genres rows in Home Sections.';
+  String get displayGenresRowsSubtitle =>
+      'Εμφάνιση σειρών Ειδών στις Αρχικές ενότητες.';
 
   @override
-  String get genresRowSorting => 'Genres Row Sorting';
+  String get genresRowSorting => 'Είδη Ταξινόμηση σειρών';
 
   @override
   String get genresRowSortingDescription =>
-      'Sort Genres rows by date added, release date, alphabetically, and more.';
+      'Ταξινόμηση σειρών Ειδών κατά ημερομηνία προσθήκης, ημερομηνία κυκλοφορίας, αλφαβητικά και άλλα.';
 
   @override
-  String get genresRowItems => 'Genres Row Items';
+  String get genresRowItems => 'Είδη Στοιχείων σειρών';
 
   @override
   String get genresRowItemsDescription =>
-      'Show Movies, Series, or both in Genres rows.';
+      'Εμφάνιση Ταινιών, Σειρών ή και των δύο στις σειρές Ειδών.';
 
   @override
-  String get appearance => 'Appearance';
+  String get appearance => 'Εμφάνιση';
 
   @override
-  String get cardSize => 'Card Size';
+  String get cardSize => 'Μέγεθος κάρτας';
 
   @override
-  String get externalPlayerApp => 'External player app';
+  String get externalPlayerApp => 'Εξωτερική εφαρμογή αναπαραγωγής';
 
   @override
   String get externalPlayerAskEachTimeSubtitle =>
-      'Show app chooser when playback starts.';
+      'Εμφάνιση του επιλογέα εφαρμογής κατά την έναρξη της αναπαραγωγής.';
 
   @override
-  String get loadingInstalledPlayers => 'Loading installed players...';
+  String get loadingInstalledPlayers => 'Φόρτωση εγκατεστημένων παικτών...';
 
   @override
-  String get connection => 'Connection';
+  String get connection => 'Σύνδεση';
 
   @override
-  String get audioTranscodeTarget => 'Audio Transcode Target';
+  String get audioTranscodeTarget => 'Στόχος διακωδικοποίησης ήχου';
 
   @override
   String get passthrough => 'Passthrough';
 
   @override
-  String get supportedOnThisDevice => 'Supported on this device';
+  String get supportedOnThisDevice => 'Υποστηρίζεται σε αυτήν τη συσκευή';
 
   @override
-  String get notSupportedOnThisDevice => 'Not Supported on this device';
+  String get notSupportedOnThisDevice =>
+      'Δεν υποστηρίζεται σε αυτήν τη συσκευή';
 
   @override
   String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) Passthrough';
 
   @override
   String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'Bitstream DTS:X (DTS UHD) to external decoder.';
+      'Bitstream DTS:X (DTS UHD) σε εξωτερικό αποκωδικοποιητή.';
 
   @override
   String get settingsAudioTrueHdJocPassthrough =>
       'TrueHD with Atmos (JOC) Passthrough';
 
   @override
-  String get mediaPlayerBehavior => 'Media Player Behavior';
+  String get mediaPlayerBehavior => 'Συμπεριφορά Media Player';
 
   @override
-  String get playbackEnhancements => 'Playback Enhancements';
+  String get playbackEnhancements => 'Βελτιώσεις αναπαραγωγής';
 
   @override
-  String get alwaysOn => 'Always on.';
+  String get alwaysOn => 'Πάντα αναμμένο.';
 
   @override
   String get replaceSkipOutroWithNextUpDisplay =>
-      'Replace Skip Outro with Next Up Display';
+      'Αντικαταστήστε το Skip Outro με το Next Up Display';
 
   @override
   String get replaceSkipOutroWithNextUpDisplaySubtitle =>
-      'Show the Next Up overlay instead of the Skip Outro button.';
+      'Εμφάνιση της επικάλυψης Next Up αντί για το κουμπί Skip Outro.';
 
   @override
-  String get playerRouting => 'Player Routing';
+  String get playerRouting => 'Δρομολόγηση παίκτη';
 
   @override
-  String get preferSoftwareDecoders => 'Prefer software decoders';
+  String get preferSoftwareDecoders =>
+      'Προτιμήστε τους αποκωδικοποιητές λογισμικού';
 
   @override
   String get preferSoftwareDecodersSubtitle =>
-      'Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.';
+      'Χρησιμοποιήστε FFmpeg (ήχος) και libgav1 (AV1) πριν από αποκωδικοποιητές υλικού. Απενεργοποιήστε εάν διακοπεί η μετάδοση ήχου HDMI.';
 
   @override
-  String get useExternalPlayer => 'Use external player';
+  String get useExternalPlayer =>
+      'Χρησιμοποιήστε εξωτερική συσκευή αναπαραγωγής';
 
   @override
   String get useExternalPlayerSubtitle =>
-      'Open video playback in your selected external app on Android TV.';
+      'Ανοίξτε την αναπαραγωγή βίντεο στην επιλεγμένη εξωτερική εφαρμογή στο Android TV.';
 
   @override
-  String get automaticQueuing => 'Automatic Queuing';
+  String get automaticQueuing => 'Αυτόματη ουρά';
 
   @override
-  String get preferSdhSubtitles => 'Prefer SDH subtitles';
+  String get preferSdhSubtitles => 'Προτιμήστε υπότιτλους SDH';
 
   @override
   String get preferSdhSubtitlesSubtitle =>
-      'Prioritize SDH/CC subtitle tracks when auto-selecting.';
+      'Δώστε προτεραιότητα στα κομμάτια υποτίτλων SDH/CC κατά την αυτόματη επιλογή.';
 
   @override
-  String get webDiagnostics => 'Web diagnostics';
+  String get webDiagnostics => 'Διαγνωστικά Web';
 
   @override
-  String get webDiagnosticsTitle => 'Moonfin Web Diagnostics';
+  String get webDiagnosticsTitle => 'Moonfin Διαγνωστικά Ιστού';
 
   @override
   String get webDiagnosticsIntro =>
-      'Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).';
+      'Χρησιμοποιήστε αυτήν τη σελίδα για να διαγνώσετε προβλήματα συνδεσιμότητας του προγράμματος περιήγησης (CORS, μικτό περιεχόμενο και ρυθμίσεις εντοπισμού).';
 
   @override
   String get webDiagnosticsDetectedMixedContentFailure =>
-      'Detected Mixed-Content Failure';
+      'Εντοπίστηκε αποτυχία μικτού περιεχομένου';
 
   @override
   String get webDiagnosticsDetectedCorsPreflightFailure =>
-      'Detected CORS/Preflight Failure';
+      'Εντοπίστηκε αποτυχία CORS/Προκαταρκτικής πτήσης';
 
   @override
   String get webDiagnosticsMixedContentFailureBody =>
-      'Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.';
+      'Ο Moonfin εντόπισε μια σελίδα HTTPS που προσπαθεί να καλέσει μια διεύθυνση URL διακομιστή HTTP. Τα προγράμματα περιήγησης αποκλείουν αυτό το αίτημα πριν φτάσει στον διακομιστή σας.';
 
   @override
   String get webDiagnosticsCorsFailureBody =>
-      'Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.';
+      'Ο Moonfin εντόπισε μια αποτυχία αιτήματος σε επίπεδο προγράμματος περιήγησης που συνήθως προκαλείται από έλλειψη κεφαλίδων CORS ή προκαταρκτικής πτήσης στον διακομιστή πολυμέσων.';
 
   @override
   String webDiagnosticsTargetUrl(String url) {
-    return 'Target URL: $url';
+    return 'Διεύθυνση URL στόχου: $url';
   }
 
   @override
   String webDiagnosticsDetail(String detail) {
-    return 'Detail: $detail';
+    return 'Λεπτομέρεια: $detail';
   }
 
   @override
-  String get webDiagnosticsCurrentRuntimeContext => 'Current Runtime Context';
+  String get webDiagnosticsCurrentRuntimeContext =>
+      'Τρέχον περιβάλλον χρόνου εκτέλεσης';
 
   @override
-  String get webDiagnosticsOrigin => 'Origin';
+  String get webDiagnosticsOrigin => 'Προέλευση';
 
   @override
-  String get webDiagnosticsScheme => 'Scheme';
+  String get webDiagnosticsScheme => 'Σχέδιο';
 
   @override
-  String get webDiagnosticsPluginMode => 'Plugin Mode';
+  String get webDiagnosticsPluginMode => 'Λειτουργία προσθήκης';
 
   @override
-  String get webDiagnosticsWebRtcScan => 'WebRTC Scan';
+  String get webDiagnosticsWebRtcScan => 'Σάρωση WebRTC';
 
   @override
-  String get webDiagnosticsForcedServerUrl => 'Forced Server URL';
+  String get webDiagnosticsForcedServerUrl =>
+      'Αναγκαστική διεύθυνση URL διακομιστή';
 
   @override
-  String get webDiagnosticsDefaultServerUrl => 'Default Server URL';
+  String get webDiagnosticsDefaultServerUrl =>
+      'Προεπιλεγμένη διεύθυνση URL διακομιστή';
 
   @override
-  String get webDiagnosticsDiscoveryProxyUrl => 'Discovery Proxy URL';
+  String get webDiagnosticsDiscoveryProxyUrl =>
+      'Διεύθυνση URL διακομιστή μεσολάβησης Discovery';
 
   @override
-  String get notConfigured => 'not configured';
+  String get notConfigured => 'δεν έχει ρυθμιστεί';
 
   @override
-  String get webDiagnosticsMixedContent => 'Mixed Content';
+  String get webDiagnosticsMixedContent => 'Μικτό Περιεχόμενο';
 
   @override
   String get webDiagnosticsMixedContentDetected =>
-      'This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.';
+      'Αυτή η σελίδα φορτώνεται μέσω HTTPS, αλλά μία ή περισσότερες διαμορφωμένες διευθύνσεις URL είναι HTTP. Τα προγράμματα περιήγησης εμποδίζουν τις σελίδες HTTPS να καλούν HTTP API.';
 
   @override
   String get webDiagnosticsMixedContentFix =>
-      'Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.';
+      'Διόρθωση: εξυπηρετήστε τον διακομιστή πολυμέσων ή το τελικό σημείο του διακομιστή μεσολάβησης μέσω HTTPS ή φορτώστε το Moonfin μέσω HTTP μόνο σε αξιόπιστα τοπικά δίκτυα.';
 
   @override
   String get webDiagnosticsNoMixedContentDetected =>
-      'No obvious mixed-content configuration detected from current runtime settings.';
+      'Δεν εντοπίστηκε προφανής διαμόρφωση μικτού περιεχομένου από τις τρέχουσες ρυθμίσεις χρόνου εκτέλεσης.';
 
   @override
-  String get webDiagnosticsCorsChecklist => 'CORS Checklist';
+  String get webDiagnosticsCorsChecklist => 'Λίστα ελέγχου CORS';
 
   @override
   String get webDiagnosticsCorsChecklistItem1 =>
-      '• Allow the browser origin in Access-Control-Allow-Origin.';
+      '• Να επιτρέπεται η προέλευση του προγράμματος περιήγησης στο Access-Control-Allow-Origin.';
 
   @override
   String get webDiagnosticsCorsChecklistItem2 =>
-      '• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.';
+      '• Συμπεριλάβετε Εξουσιοδότηση, X-Emby-Εξουσιοδότηση και X-Emby-Token στο Access-Control-Allow-Headers.';
 
   @override
   String get webDiagnosticsCorsChecklistItem3 =>
-      '• Expose Content-Range and Accept-Ranges for streaming and seek behavior.';
+      '• Εκθέστε το Content-Range και το Accept-Ranges για συμπεριφορά ροής και αναζήτησης.';
 
   @override
   String get webDiagnosticsCorsChecklistItem4 =>
-      '• Return 204 to OPTIONS preflight requests.';
+      '• Επιστροφή 204 στις OPTIONS αιτήματα προκαταρκτικής πτήσης.';
 
   @override
   String get webDiagnosticsHeaderSnippetTitle =>
-      'Example Header Snippet (nginx-style)';
+      'Παράδειγμα αποσπάσματος κεφαλίδας (στυλ nginx)';
 
   @override
-  String get note => 'Note';
+  String get note => 'Σημείωμα';
 
   @override
   String get webDiagnosticsNonWebNote =>
-      'This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.';
+      'Αυτή η διαδρομή διάγνωσης προορίζεται για εκδόσεις ιστού. Εάν το βλέπετε σε άλλη πλατφόρμα, αυτοί οι έλεγχοι ενδέχεται να μην ισχύουν.';
 
   @override
-  String get backToServerSelect => 'Back To Server Select';
+  String get backToServerSelect => 'Επιστροφή στον διακομιστή Επιλογή';
 
   @override
-  String get signOutAllUsers => 'Sign Out All Users';
+  String get signOutAllUsers => 'Αποσύνδεση όλων των χρηστών';
 
   @override
   String get voiceSearchPermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied. Enable it in system settings.';
+      'Η άδεια μικροφώνου απορρίπτεται οριστικά. Ενεργοποιήστε το στις ρυθμίσεις συστήματος.';
 
   @override
   String get voiceSearchPermissionRequired =>
-      'Microphone permission is required for voice search.';
+      'Απαιτείται άδεια μικροφώνου για φωνητική αναζήτηση.';
 
   @override
-  String get voiceSearchNoMatch => 'Did not catch that. Try again.';
+  String get voiceSearchNoMatch => 'Δεν το έπιασα. Προσπαθήστε ξανά.';
 
   @override
-  String get voiceSearchNoSpeechDetected => 'No speech detected.';
+  String get voiceSearchNoSpeechDetected => 'Δεν εντοπίστηκε ομιλία.';
 
   @override
-  String get voiceSearchMicrophoneError => 'Microphone error.';
+  String get voiceSearchMicrophoneError => 'Σφάλμα μικροφώνου.';
 
   @override
-  String get voiceSearchNeedsInternet => 'Voice search needs internet.';
+  String get voiceSearchNeedsInternet =>
+      'Η φωνητική αναζήτηση χρειάζεται διαδίκτυο.';
 
   @override
-  String get voiceSearchServiceBusy => 'Voice service is busy. Try again.';
+  String get voiceSearchServiceBusy =>
+      'Η φωνητική υπηρεσία είναι απασχολημένη. Προσπαθήστε ξανά.';
 
   @override
   String get microphonePermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied.';
+      'Η άδεια μικροφώνου απορρίπτεται οριστικά.';
 
   @override
-  String get microphonePermissionDenied => 'Microphone permission is denied.';
+  String get microphonePermissionDenied =>
+      'Η άδεια μικροφώνου δεν επιτρέπεται.';
 
   @override
   String get speechRecognitionUnavailable =>
-      'Speech recognition is unavailable on this device.';
+      'Η αναγνώριση ομιλίας δεν είναι διαθέσιμη σε αυτήν τη συσκευή.';
 
   @override
-  String get openIosRoutePicker => 'Open iOS route picker';
+  String get openIosRoutePicker => 'Ανοίξτε το εργαλείο επιλογής διαδρομής iOS';
 
   @override
   String get airPlayRoutePickerUnavailable =>
-      'AirPlay route picker is unavailable on this device.';
+      'Το εργαλείο επιλογής διαδρομής AirPlay δεν είναι διαθέσιμο σε αυτήν τη συσκευή.';
 
   @override
-  String get videos => 'Videos';
+  String get videos => 'Βίντεο';
 
   @override
-  String get trailers => 'Trailers';
+  String get trailers => 'Ρυμουλκούμενα';
 
   @override
-  String get programs => 'Programs';
+  String get programs => 'Προγράμματα';
 
   @override
-  String get songs => 'Songs';
+  String get songs => 'Τραγούδια';
 
   @override
-  String get photoAlbums => 'Photo Albums';
+  String get photoAlbums => 'Άλμπουμ φωτογραφιών';
 
   @override
-  String get photos => 'Photos';
+  String get photos => 'Φωτογραφίες';
 
   @override
-  String get people => 'People';
+  String get people => 'Ανθρωποι';
 
   @override
-  String get recentlyReleasedEpisodes => 'Recently Released Episodes';
+  String get recentlyReleasedEpisodes => 'Επεισόδια που κυκλοφόρησαν πρόσφατα';
 
   @override
-  String get watchAgain => 'Watch Again';
+  String get watchAgain => 'Παρακολουθήστε ξανά';
 
   @override
-  String get guestAppearances => 'Guest Appearances';
+  String get guestAppearances => 'Εμφανίσεις καλεσμένων';
 
   @override
-  String get appearancesSeerr => 'Appearances (Seerr)';
+  String get appearancesSeerr => 'Εμφανίσεις (Seerr)';
 
   @override
-  String get watchWithGroup => 'Watch with group';
+  String get watchWithGroup => 'Παρακολουθήστε με ομάδα';
 
   @override
-  String get errors => 'Errors';
+  String get errors => 'Σφάλματα';
 
   @override
-  String get warnings => 'Warnings';
+  String get warnings => 'Προειδοποιήσεις';
 
   @override
-  String get disk => 'Disk';
+  String get disk => 'Δίσκος';
 
   @override
-  String get openInBrowser => 'Open in Browser';
+  String get openInBrowser => 'Άνοιγμα στο πρόγραμμα περιήγησης';
 
   @override
   String get embeddedBrowserNotAvailable =>
-      'Embedded browser is not available on this platform.';
+      'Το ενσωματωμένο πρόγραμμα περιήγησης δεν είναι διαθέσιμο σε αυτήν την πλατφόρμα.';
 
   @override
   String get adminRestartServerConfirmation =>
-      'Are you sure you want to restart the server?';
+      'Είστε βέβαιοι ότι θέλετε να κάνετε επανεκκίνηση του διακομιστή;';
 
   @override
   String get adminShutdownServerConfirmation =>
-      'Are you sure you want to shut down the server? You will need to restart it manually.';
+      'Είστε βέβαιοι ότι θέλετε να τερματίσετε τη λειτουργία του διακομιστή; Θα χρειαστεί να το επανεκκινήσετε χειροκίνητα.';
 
   @override
-  String get internal => 'Internal';
+  String get internal => 'Εσωτερικός';
 
   @override
-  String get idle => 'Idle';
+  String get idle => 'Αεργος';
 
   @override
   String get os => 'OS';
 
   @override
-  String get adminNoUsersFound => 'No users found';
+  String get adminNoUsersFound => 'Δεν βρέθηκαν χρήστες';
 
   @override
-  String get adminNoUsersMatchSearch => 'No users match your search';
+  String get adminNoUsersMatchSearch =>
+      'Κανένας χρήστης δεν αντιστοιχεί στην αναζήτησή σας';
 
   @override
-  String get adminNoDevicesFound => 'No devices found';
+  String get adminNoDevicesFound => 'Δεν βρέθηκαν συσκευές';
 
   @override
   String get adminNoDevicesMatchCurrentFilters =>
-      'No devices match the current filters';
+      'Καμία συσκευή δεν ταιριάζει με τα τρέχοντα φίλτρα';
 
   @override
-  String get passwordSet => 'Password set';
+  String get passwordSet => 'Σύνολο κωδικών πρόσβασης';
 
   @override
-  String get noPasswordConfigured => 'No password configured';
+  String get noPasswordConfigured => 'Δεν έχει διαμορφωθεί κωδικός πρόσβασης';
 
   @override
-  String get remoteAccess => 'Remote Access';
+  String get remoteAccess => 'Απομακρυσμένη πρόσβαση';
 
   @override
-  String get localOnly => 'Local Only';
+  String get localOnly => 'Μόνο τοπικά';
 
   @override
-  String get adminMediaAnalyticsLoadFailed => 'Failed to load media analytics';
+  String get adminMediaAnalyticsLoadFailed =>
+      'Η φόρτωση των αναλυτικών στοιχείων πολυμέσων απέτυχε';
 
   @override
   String get analyticsCombinedAcrossLibraries =>
-      'Combined analytics across all media libraries.';
+      'Συνδυασμένα αναλυτικά στοιχεία σε όλες τις βιβλιοθήκες πολυμέσων.';
 
   @override
-  String get analyticsTopArtists => 'Top Artists';
+  String get analyticsTopArtists => 'Κορυφαίοι καλλιτέχνες';
 
   @override
-  String get analyticsTopAuthors => 'Top Authors';
+  String get analyticsTopAuthors => 'Κορυφαίοι Συγγραφείς';
 
   @override
-  String get analyticsTopContributors => 'Top Contributors';
+  String get analyticsTopContributors => 'Κορυφαίοι Συντελεστές';
 
   @override
   String analyticsLibrariesCount(int count) {
@@ -7862,88 +7882,89 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get analyticsNoIndexedMediaTotals =>
-      'No indexed media totals are available for this selection yet.';
+      'Δεν υπάρχουν ακόμη διαθέσιμα σύνολα μέσων με ευρετήριο για αυτήν την επιλογή.';
 
   @override
-  String get analyticsLibraryDetails => 'Library Details';
+  String get analyticsLibraryDetails => 'Στοιχεία βιβλιοθήκης';
 
   @override
-  String get analyticsLibraryBreakdown => 'Library Breakdown';
+  String get analyticsLibraryBreakdown => 'Ανάλυση βιβλιοθήκης';
 
   @override
-  String get analyticsNoLibrariesAvailable => 'No libraries are available.';
+  String get analyticsNoLibrariesAvailable =>
+      'Δεν υπάρχουν διαθέσιμες βιβλιοθήκες.';
 
   @override
-  String get adminServerAdministrationTitle => 'Server Administration';
+  String get adminServerAdministrationTitle => 'Διαχείριση διακομιστή';
 
   @override
-  String get adminServerPathData => 'Data';
+  String get adminServerPathData => 'Δεδομένα';
 
   @override
-  String get adminServerPathImageCache => 'Image Cache';
+  String get adminServerPathImageCache => 'Προσωρινή μνήμη εικόνων';
 
   @override
-  String get adminServerPathCache => 'Cache';
+  String get adminServerPathCache => 'Κρύπτη';
 
   @override
-  String get adminServerPathLogs => 'Logs';
+  String get adminServerPathLogs => 'κούτσουρα';
 
   @override
-  String get adminServerPathMetadata => 'Metadata';
+  String get adminServerPathMetadata => 'Μεταδεδομένα';
 
   @override
-  String get adminServerPathTranscode => 'Transcode';
+  String get adminServerPathTranscode => 'Διακωδικοποίηση';
 
   @override
-  String get adminServerPathWeb => 'Web';
+  String get adminServerPathWeb => 'Ιστός';
 
   @override
   String get adminNoServerPathsReturned =>
-      'No server paths returned by this server.';
+      'Δεν επιστράφηκαν διαδρομές διακομιστή από αυτόν τον διακομιστή.';
 
   @override
   String adminPercentUsed(int percent) {
-    return '$percent% used';
+    return 'Χρησιμοποιείται $percent%';
   }
 
   @override
-  String get userActivity => 'User Activity';
+  String get userActivity => 'Δραστηριότητα χρήστη';
 
   @override
-  String get systemEvents => 'System Events';
+  String get systemEvents => 'Συμβάντα συστήματος';
 
   @override
-  String get needsAttention => 'Needs Attention';
+  String get needsAttention => 'Χρειάζεται προσοχή';
 
   @override
-  String get adminDrawerSectionServer => 'Server';
+  String get adminDrawerSectionServer => 'Υπηρέτης';
 
   @override
-  String get adminDrawerSectionPlayback => 'Playback';
+  String get adminDrawerSectionPlayback => 'Αναπαραγωγή';
 
   @override
-  String get adminDrawerSectionDevices => 'Devices';
+  String get adminDrawerSectionDevices => 'Συσκευές';
 
   @override
-  String get adminDrawerSectionAdvanced => 'Advanced';
+  String get adminDrawerSectionAdvanced => 'Προχωρημένος';
 
   @override
-  String get adminDrawerSectionPlugins => 'Plugins';
+  String get adminDrawerSectionPlugins => 'Πρόσθετα';
 
   @override
-  String get adminDrawerSectionLiveTv => 'Live TV';
+  String get adminDrawerSectionLiveTv => 'Ζωντανή τηλεόραση';
 
   @override
-  String get homeVideos => 'Home Videos';
+  String get homeVideos => 'Αρχική Βίντεο';
 
   @override
-  String get mixedContent => 'Mixed Content';
+  String get mixedContent => 'Μικτό Περιεχόμενο';
 
   @override
-  String get homeVideosAndPhotos => 'Home Videos & Photos';
+  String get homeVideosAndPhotos => 'Αρχική Βίντεο & Φωτογραφίες';
 
   @override
-  String get mixedMoviesAndShows => 'Mixed Movies & Shows';
+  String get mixedMoviesAndShows => 'Μικτές ταινίες και εκπομπές';
 
   @override
   String get intelQuickSync => 'Intel Quick Sync';
@@ -7955,62 +7976,62 @@ class AppLocalizationsEl extends AppLocalizations {
   String get dolbyVision => 'Dolby Vision';
 
   @override
-  String get noRecordingsFound => 'No recordings found';
+  String get noRecordingsFound => 'Δεν βρέθηκαν εγγραφές';
 
   @override
   String noImagePagesFoundInArchive(String extension) {
-    return 'No image pages found inside .$extension archive.';
+    return 'Δεν βρέθηκαν σελίδες εικόνων μέσα στο αρχείο .$extension.';
   }
 
   @override
   String embeddedRendererFailed(int code, String description) {
-    return 'Embedded renderer failed ($code): $description';
+    return 'Η ενσωματωμένη απόδοση απόδοσης απέτυχε ($code): $description';
   }
 
   @override
   String epubRendererFailed(int code, String description) {
-    return 'EPUB renderer failed ($code): $description';
+    return 'Η απόδοση EPUB απέτυχε ($code): $description';
   }
 
   @override
   String missingLocalFileForReader(String uri) {
-    return 'Missing local file for reader: $uri';
+    return 'Λείπει τοπικό αρχείο για τον αναγνώστη: $uri';
   }
 
   @override
   String httpStatusWhileOpeningBookData(int status, String uri) {
-    return 'HTTP $status while opening book data from $uri';
+    return 'HTTP $status κατά το άνοιγμα δεδομένων βιβλίου από $uri';
   }
 
   @override
   String get noReadableBookEndpointAvailable =>
-      'No readable book endpoint available';
+      'Δεν υπάρχει διαθέσιμο τελικό σημείο αναγνώσιμου βιβλίου';
 
   @override
   String unsupportedComicArchiveFormat(String extension) {
-    return 'Unsupported comic archive format: .$extension';
+    return 'Μη υποστηριζόμενη μορφή αρχείου κόμικ: .$extension';
   }
 
   @override
   String get cbrExtractionPluginUnavailable =>
-      'CBR extraction plugin is not available on this platform.';
+      'Το πρόσθετο εξαγωγής CBR δεν είναι διαθέσιμο σε αυτήν την πλατφόρμα.';
 
   @override
-  String get failedToExtractCbrArchive => 'Failed to extract .cbr archive.';
+  String get failedToExtractCbrArchive => 'Απέτυχε η εξαγωγή του αρχείου .cbr.';
 
   @override
   String get cb7ExtractionUnavailable =>
-      'CB7 extraction is not available on this platform.';
+      'Η εξαγωγή CB7 δεν είναι διαθέσιμη σε αυτήν την πλατφόρμα.';
 
   @override
   String get cb7ExtractionPluginUnavailable =>
-      'CB7 extraction plugin is not available on this platform.';
+      'Το πρόσθετο εξαγωγής CB7 δεν είναι διαθέσιμο σε αυτήν την πλατφόρμα.';
 
   @override
-  String get closeGenrePanel => 'Close genre panel';
+  String get closeGenrePanel => 'Κλείσιμο του πίνακα ειδών';
 
   @override
-  String get loadingShuffle => 'Loading shuffle...';
+  String get loadingShuffle => 'Φόρτωση τυχαίας αναπαραγωγής...';
 
   @override
   String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
@@ -8022,15 +8043,15 @@ class AppLocalizationsEl extends AppLocalizations {
   String get genresShuffleLabel => 'GENRES SHUFFLE';
 
   @override
-  String get autoHdrSwitching => 'Auto HDR Switching';
+  String get autoHdrSwitching => 'Αυτόματη εναλλαγή HDR';
 
   @override
   String get autoHdrSwitchingDescription =>
-      'Automatically enable HDR for HDR video playback and restore display mode on exit.';
+      'Ενεργοποιήστε αυτόματα το HDR για αναπαραγωγή βίντεο HDR και επαναφέρετε τη λειτουργία προβολής κατά την έξοδο.';
 
   @override
-  String get whenFullscreen => 'When fullscreen';
+  String get whenFullscreen => 'Σε πλήρη οθόνη';
 
   @override
-  String get transcodingLimits => 'Transcoding Limits';
+  String get transcodingLimits => 'Όρια διακωδικοποίησης';
 }

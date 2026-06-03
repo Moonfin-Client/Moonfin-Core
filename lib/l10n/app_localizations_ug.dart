@@ -6912,7 +6912,7 @@ class AppLocalizationsUg extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'GitHub دىكى تۈرنى باشلاڭ ياكى تۆھپە قوشۇڭ';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'LEGAL';

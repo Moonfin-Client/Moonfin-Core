@@ -6895,7 +6895,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'GitHub හි ව්‍යාපෘතිය තරු කරන්න හෝ දායක වන්න';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'නීතිමය';

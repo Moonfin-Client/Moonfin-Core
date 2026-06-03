@@ -6952,7 +6952,7 @@ class AppLocalizationsKn extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'GitHub ನಲ್ಲಿ ಪ್ರಾಜೆಕ್ಟ್ ಅನ್ನು ಸ್ಟಾರ್ ಮಾಡಿ ಅಥವಾ ಕೊಡುಗೆ ನೀಡಿ';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'ಕಾನೂನುಬದ್ಧ';

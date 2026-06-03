@@ -6905,7 +6905,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'Projeye GitHub tarihinde yıldız ekleyin veya katkıda bulunun';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'YASAL';

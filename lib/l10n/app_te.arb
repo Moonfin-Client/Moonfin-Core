@@ -6628,7 +6628,6 @@
   "settingsJoinDiscordSubtitle": "సంఘంతో చాట్ చేయండి",
   "settingsJoinTheDiscord": "Discordలో చేరండి",
   "settingsSupportMoonfin": "మద్దతు Moonfin",
-  "settingsSupportMoonfinSubtitle": "GitHubలో ప్రాజెక్ట్‌కు స్టార్ చేయండి లేదా సహకరించండి",
   "settingsLegal": "చట్టపరమైన",
   "settingsLicenses": "లైసెన్స్‌లు",
   "settingsOpenSourceLicenseNotices": "ఓపెన్ సోర్స్ లైసెన్స్ నోటీసులు",
@@ -6666,7 +6665,7 @@
   "settingsPreferHdr10Fallback": "HDR10 ఫాల్‌బ్యాక్‌కు ప్రాధాన్యత ఇవ్వండి",
   "settingsPreferServerTranscode": "సర్వర్ ట్రాన్స్‌కోడ్‌కు ప్రాధాన్యత ఇవ్వండి",
   "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision ప్రొఫైల్ 7 డైరెక్ట్ ప్లే",
-  "settingsDolbyVisionProfile7DirectPlayDescription": "Dolby Vision ప్రొఫైల్ 7 మెరుగుదల-లేయర్ స్ట్రీమ్‌లు డైరెక్ట్ ప్లే చేయాలా వద్దా అని నియంత్రిస్తుంది.",
+  "settingsDolbyVisionProfile7DirectPlayDescription": "Dolby Vision ప్రొఫైల్ 7 మెరుగుదల-లేయర్ స్ట్రీమ్‌లు డైరెక్ట్ ప్లే చేయాలా వద్దా అనేది నియంత్రిస్తుంది.",
   "settingsAutoAftkrtEnabled": "ఆటో (AFTKRT ప్రారంభించబడింది)",
   "settingsEnabledOnThisDevice": "ఈ పరికరంలో ప్రారంభించబడింది",
   "settingsDisabledPreferTranscode": "డిసేబుల్ చేయబడింది (ట్రాన్స్‌కోడ్‌కు ప్రాధాన్యత ఇవ్వండి)",
@@ -6711,7 +6710,7 @@
   "collections": "సేకరణలు",
   "lastPlayed": "చివరిగా ఆడింది",
   "libraryNameWithServer": "{libraryName} ({serverName})",
-  "latestLibraryName": "Latest {libraryName}",
+  "latestLibraryName": "తాజా {libraryName}",
   "discNumber": "Disc {number}",
   "desktopUiScale": "డెస్క్‌టాప్ UI స్కేల్",
   "nextUpDisplay": "తదుపరి ప్రదర్శన",
@@ -6761,5 +6760,602 @@
   "localPreviews": "స్థానిక ప్రివ్యూలు",
   "localPreviewsDescription": "ట్రైలర్, మీడియా మరియు ఆడియో ప్రివ్యూలను కాన్ఫిగర్ చేయండి.",
   "mediaPreview": "మీడియా ప్రివ్యూ",
-  "mediaPreviewDescription": "ఫోకస్ చేయబడిన, హోవర్ చేయబడిన లేదా ఎక్కువసేపు నొక్కిన కార్డ్‌లపై 30-సెకన్ల ఇన్‌లైన్ ప్రివ్యూని ప్లే చేయండి"
+  "mediaPreviewDescription": "ఫోకస్ చేయబడిన, హోవర్ చేయబడిన లేదా ఎక్కువసేపు నొక్కిన కార్డ్‌లపై 30-సెకన్ల ఇన్‌లైన్ ప్రివ్యూని ప్లే చేయండి",
+  "keyboardPreferSystemIme": "Prefer system keyboard",
+  "keyboardPreferSystemImeDescription": "Use your device input method by default for text entry",
+  "musicVideos": "Music Videos",
+  "record": "Record",
+  "cancelRecordingAction": "Cancel Recording",
+  "programSetToRecord": "Program set to record",
+  "recordingCancelled": "Recording cancelled",
+  "unableToCreateRecording": "Unable to create recording",
+  "settingsAudioOutputMode": "Audio Output Mode",
+  "settingsAudioOutputModeAvrPassthrough": "AVR Passthrough",
+  "settingsAudioFallbackCodec": "Audio Fallback Codec",
+  "settingsAudioFallbackAacStereo": "AAC Stereo",
+  "settingsAudioFallbackAc35_1": "AC3 5.1",
+  "settingsAudioFallbackEac35_1": "EAC3 5.1",
+  "settingsAudioPassthroughAdvanced": "Passthrough (Advanced)",
+  "settingsAudioCodecPassthrough": "Codec Passthrough",
+  "settingsAudioCodecPassthroughDescription": "Enable only formats your AVR or HDMI sink supports.",
+  "settingsAudioEac3Passthrough": "EAC3 Passthrough",
+  "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) Passthrough",
+  "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+  "settingsAudioDtsHdPassthrough": "DTS-HD MA Passthrough",
+  "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
+  "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+  "settingsAudioBitstreamEac3ToExternalDecoder": "Bitstream Dolby Digital Plus (EAC3) to external decoder.",
+  "settingsAudioBitstreamEac3JocToExternalDecoder": "Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.",
+  "settingsAudioBitstreamDtsHdToExternalDecoder": "Bitstream DTS-HD MA (includes DTS core) to external decoder.",
+  "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Bitstream Dolby TrueHD with Atmos metadata to external decoder.",
+  "settingsDetectedAudioCapabilities": "Detected Audio Capabilities",
+  "settingsDetectedAudioCapabilitiesUnavailable": "No runtime capability snapshot available yet.",
+  "settingsAudioRouteLabel": "Route",
+  "settingsAudioDecodeLabel": "Decode",
+  "settingsAudioPassthroughLabel": "Passthrough",
+  "settingsAudioHdRoute": "HD audio route",
+  "settingsAudioRouteHdmi": "HDMI",
+  "settingsAudioRouteArc": "ARC",
+  "settingsAudioRouteEarc": "eARC",
+  "settingsAudioRouteBluetooth": "Bluetooth",
+  "settingsAudioRouteSpeaker": "Speaker",
+  "settingsAudioPcmChannels": "{count}ch PCM",
+  "settingsAudioDiagnostics": "Diagnostics",
+  "settingsAudioDiagnosticsVideoLevel": "Video Level",
+  "settingsAudioDiagnosticsVideoRange": "Video Range",
+  "settingsAudioDiagnosticsSubtitleCodec": "Subtitle Codec",
+  "settingsAudioDiagnosticsAllowedAudioCodecs": "Allowed Audio Codecs",
+  "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS Audio Codecs",
+  "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4 Audio Codecs",
+  "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif passthrough",
+  "settingsAudioDiagnosticsActiveAudioRoute": "Active Audio Route",
+  "settingsAudioDiagnosticsRouteHdAudioSupport": "Route HD Audio Support",
+  "settingsPlaybackEngineMedia3Legacy": "Media3 (legacy)",
+  "settingsPlaybackEngineMpvRecommended": "mpv (recommended)",
+  "autoplayNextEpisode": "తదుపరి ఎపిసోడ్‌ను ఆటోప్లే చేయండి",
+  "autoplayNextEpisodeSubtitle": "అందుబాటులో ఉన్నప్పుడు తదుపరి ఎపిసోడ్‌ని స్వయంచాలకంగా ప్లే చేయండి.",
+  "skipSilenceTitle": "నిశ్శబ్దాన్ని దాటవేయి",
+  "skipSilenceSubtitle": "స్ట్రీమ్ మద్దతు ఇచ్చినప్పుడు స్వయంచాలకంగా నిశ్శబ్ద ఆడియో విభాగాలను దాటవేయండి.",
+  "allowExternalAudioEffectsTitle": "బాహ్య ఆడియో ప్రభావాలను అనుమతించండి",
+  "allowExternalAudioEffectsSubtitle": "Media3 ప్లేబ్యాక్ సెషన్‌లకు జోడించడానికి ఈక్వలైజర్ మరియు ఎఫెక్ట్స్ యాప్‌లను (ఉదా. వేవ్‌లెట్) అనుమతించండి.",
+  "disableTunnelingTitle": "టన్నెలింగ్‌ని నిలిపివేయండి",
+  "disableTunnelingSubtitle": "ఫోర్స్ నాన్-టన్నల్ ప్లేబ్యాక్. టన్నెలింగ్ ఆడియో/వీడియో నిలిపివేతలు ఉన్న పరికరాలలో ఉపయోగకరంగా ఉంటుంది.",
+  "mapDolbyVisionP7Title": "Dolby Vision ప్రొఫైల్ 7 నుండి HEVCకి మ్యాప్ చేయండి",
+  "mapDolbyVisionP7Subtitle": "DV యేతర పరికరాలలో Dolby Vision ప్రొఫైల్ 7 స్ట్రీమ్‌లను HDR10-అనుకూలమైన HEVCగా ప్లే చేయండి.",
+  "subtitlesUseEmbeddedStyles": "పొందుపరిచిన ఉపశీర్షిక శైలులను ఉపయోగించండి",
+  "subtitlesUseEmbeddedStylesSubtitle": "ఉపశీర్షిక ట్రాక్‌లో పొందుపరిచిన రంగులు, ఫాంట్‌లు మరియు స్థానాలను వర్తింపజేయండి. బదులుగా మీ శీర్షిక శైలి ప్రాధాన్యతలను ఉపయోగించడాన్ని నిలిపివేయండి.",
+  "subtitlesUseEmbeddedFontSizes": "పొందుపరిచిన ఉపశీర్షిక ఫాంట్ పరిమాణాలను ఉపయోగించండి",
+  "subtitlesUseEmbeddedFontSizesSubtitle": "ఉపశీర్షిక ట్రాక్‌లో పొందుపరిచిన ఫాంట్-పరిమాణ సూచనలను వర్తింపజేయండి. మీ శైలి ప్రాధాన్యతల నుండి ఉపశీర్షిక పరిమాణాన్ని ఉపయోగించడాన్ని నిలిపివేయండి.",
+  "useDetailedSubHeadings": "వివరణాత్మక ఉపశీర్షికలను ఉపయోగించండి",
+  "useDetailedSubHeadingsDescription": "లైబ్రరీ పేజీలలో వివరణాత్మక లేదా కనిష్ట సబ్‌రోను చూపండి.",
+  "savedThemesDeleteDialogTitle": "సేవ్ చేసిన థీమ్‌ను తొలగించాలా?",
+  "savedThemesDeleteDialogMessage": "ఈ పరికర కాష్ నుండి \"{themeName}\"ని తీసివేయాలా?",
+  "savedThemesDeletedMessage": "ఈ పరికరం నుండి \"{themeName}\" తొలగించబడింది.",
+  "savedThemesDeleteFailedMessage": "\"{themeName}\"ని తొలగించడం సాధ్యపడలేదు.",
+  "savedThemesTitle": "సేవ్ చేసిన థీమ్‌లు",
+  "savedThemesDescription": "ఇవి ప్రస్తుత సర్వర్ కోసం Moonfin ప్లగిన్ నుండి డౌన్‌లోడ్ చేయబడిన థీమ్‌లు. తొలగించడం వలన ఈ స్థానిక కాపీ మాత్రమే తీసివేయబడుతుంది.",
+  "savedThemesEmpty": "ఈ సర్వర్ కోసం సేవ్ చేయబడిన థీమ్‌లు ఏవీ కనుగొనబడలేదు.",
+  "savedThemesCurrentThemeId": "{themeId} • ప్రస్తుతం సక్రియంగా ఉంది",
+  "savedThemesDeleteTooltip": "సేవ్ చేసిన థీమ్‌ను తొలగించండి",
+  "savedThemesManageSubtitle": "ఈ పరికరంలో డౌన్‌లోడ్ చేయబడిన ప్లగిన్ థీమ్‌లను నిర్వహించండి",
+  "kefinTweaksTitle": "కెఫిన్‌ట్వీక్స్",
+  "homeScreenSectionsTitle": "హోమ్ స్క్రీన్ విభాగాలు",
+  "themeEditor": "థీమ్ ఎడిటర్",
+  "themeEditorSubtitle": "మీ బ్రౌజర్‌లో Moonfin థీమ్ ఎడిటర్‌ను తెరవండి",
+  "homeScreen": "హోమ్ స్క్రీన్",
+  "bottomBar": "దిగువ బార్",
+  "homeRowsStyleClassic": "క్లాసిక్",
+  "homeRowsStyleModern": "ఆధునిక",
+  "homeRowsSection": "హోమ్ వరుసలు",
+  "rowsType": "అడ్డు వరుసల రకం",
+  "rowsTypeDescription": "క్లాసిక్ ప్రతి వరుస చిత్ర రకాన్ని మరియు సమాచార అతివ్యాప్తిని ఉంచుతుంది. ఆధునిక పోర్ట్రెయిట్-టు-బ్యాక్‌డ్రాప్ అడ్డు వరుసలను ఉపయోగిస్తుంది.",
+  "displayFavoritesRows": "ఇష్టమైన వరుసలను ప్రదర్శించు",
+  "displayFavoritesRowsSubtitle": "హోమ్ విభాగాలలో ఇష్టమైన సినిమాలు, సిరీస్ మరియు ఇతర ఇష్టమైన అడ్డు వరుసలను చూపండి.",
+  "favoritesRowSorting": "ఇష్టమైనవి వరుస క్రమబద్ధీకరణ",
+  "favoritesRowSortingDescription": "జోడించిన తేదీ, విడుదల తేదీ, అక్షర క్రమంలో మరియు మరిన్నింటి ద్వారా ఇష్టమైన వరుసలను క్రమబద్ధీకరించండి.",
+  "displayCollectionsRows": "సేకరణల వరుసలను ప్రదర్శించు",
+  "displayCollectionsRowsSubtitle": "హోమ్ విభాగాలలో సేకరణల అడ్డు వరుసలను చూపండి.",
+  "collectionsRowSorting": "సేకరణల వరుస క్రమబద్ధీకరణ",
+  "collectionsRowSortingDescription": "జోడించిన తేదీ, విడుదల తేదీ, అక్షర క్రమంలో మరియు మరిన్నింటి ఆధారంగా సేకరణల వరుసలను క్రమబద్ధీకరించండి.",
+  "displayGenresRows": "ప్రదర్శన శైలుల వరుసలు",
+  "displayGenresRowsSubtitle": "హోమ్ విభాగాలలో జెనర్‌ల అడ్డు వరుసలను చూపండి.",
+  "genresRowSorting": "శైలుల వరుస క్రమబద్ధీకరణ",
+  "genresRowSortingDescription": "జోడించిన తేదీ, విడుదల తేదీ, అక్షరక్రమం మరియు మరిన్నింటి ఆధారంగా జెనర్‌ల అడ్డు వరుసలను క్రమబద్ధీకరించండి.",
+  "genresRowItems": "జానర్స్ వరుస అంశాలు",
+  "genresRowItemsDescription": "చలన చిత్రాలను, సిరీస్‌లను లేదా రెండింటినీ జెనర్‌ల వరుసలలో చూపండి.",
+  "appearance": "స్వరూపం",
+  "cardSize": "కార్డ్ పరిమాణం",
+  "externalPlayerApp": "బాహ్య ప్లేయర్ యాప్",
+  "externalPlayerAskEachTimeSubtitle": "ప్లేబ్యాక్ ప్రారంభమైనప్పుడు యాప్ ఎంపికను చూపండి.",
+  "loadingInstalledPlayers": "ఇన్‌స్టాల్ చేయబడిన ప్లేయర్‌లను లోడ్ చేస్తోంది...",
+  "connection": "కనెక్షన్",
+  "audioTranscodeTarget": "ఆడియో ట్రాన్స్‌కోడ్ లక్ష్యం",
+  "passthrough": "పాస్త్రూ",
+  "supportedOnThisDevice": "ఈ పరికరంలో మద్దతు ఉంది",
+  "notSupportedOnThisDevice": "ఈ పరికరంలో మద్దతు లేదు",
+  "settingsAudioDtsXPassthrough": "DTS:X (DTS UHD) పాస్‌త్రూ",
+  "settingsAudioBitstreamDtsXToExternalDecoder": "బాహ్య డీకోడర్‌కు బిట్‌స్ట్రీమ్ DTS:X (DTS UHD).",
+  "settingsAudioTrueHdJocPassthrough": "Atmos (JOC) పాస్‌త్రూతో TrueHD",
+  "mediaPlayerBehavior": "మీడియా ప్లేయర్ ప్రవర్తన",
+  "playbackEnhancements": "ప్లేబ్యాక్ మెరుగుదలలు",
+  "alwaysOn": "ఎల్లప్పుడూ ఆన్‌లో ఉంటుంది.",
+  "replaceSkipOutroWithNextUpDisplay": "తదుపరి ప్రదర్శనతో స్కిప్ అవుట్రోను భర్తీ చేయండి",
+  "replaceSkipOutroWithNextUpDisplaySubtitle": "స్కిప్ అవుట్‌రో బటన్‌కు బదులుగా తదుపరి పైకి అతివ్యాప్తిని చూపండి.",
+  "playerRouting": "ప్లేయర్ రూటింగ్",
+  "preferSoftwareDecoders": "సాఫ్ట్‌వేర్ డీకోడర్‌లను ఇష్టపడండి",
+  "preferSoftwareDecodersSubtitle": "హార్డ్‌వేర్ డీకోడర్‌ల ముందు FFmpeg (ఆడియో) మరియు libgav1 (AV1) ఉపయోగించండి. HDMI ఆడియో పాస్‌త్రూ విచ్ఛిన్నమైతే నిలిపివేయండి.",
+  "useExternalPlayer": "బాహ్య ప్లేయర్ ఉపయోగించండి",
+  "useExternalPlayerSubtitle": "Android TVలో మీరు ఎంచుకున్న బాహ్య యాప్‌లో వీడియో ప్లేబ్యాక్‌ని తెరవండి.",
+  "automaticQueuing": "ఆటోమేటిక్ క్యూయింగ్",
+  "preferSdhSubtitles": "SDH ఉపశీర్షికలకు ప్రాధాన్యత ఇవ్వండి",
+  "preferSdhSubtitlesSubtitle": "స్వీయ-ఎంపిక చేసేటప్పుడు SDH/CC ఉపశీర్షిక ట్రాక్‌లకు ప్రాధాన్యత ఇవ్వండి.",
+  "webDiagnostics": "వెబ్ డయాగ్నస్టిక్స్",
+  "webDiagnosticsTitle": "Moonfin వెబ్ డయాగ్నోస్టిక్స్",
+  "webDiagnosticsIntro": "బ్రౌజర్ కనెక్టివిటీ సమస్యలను (CORS, మిశ్రమ కంటెంట్ మరియు ఆవిష్కరణ సెట్టింగ్‌లు) నిర్ధారించడానికి ఈ పేజీని ఉపయోగించండి.",
+  "webDiagnosticsDetectedMixedContentFailure": "మిశ్రమ-కంటెంట్ వైఫల్యం గుర్తించబడింది",
+  "webDiagnosticsDetectedCorsPreflightFailure": "CORS/ప్రీఫ్లైట్ వైఫల్యం గుర్తించబడింది",
+  "webDiagnosticsMixedContentFailureBody": "Moonfin HTTP సర్వర్ URLకి కాల్ చేయడానికి ప్రయత్నిస్తున్న HTTPS పేజీని గుర్తించింది. ఈ అభ్యర్థన మీ సర్వర్‌ను చేరుకోవడానికి ముందే బ్రౌజర్‌లు బ్లాక్ చేస్తాయి.",
+  "webDiagnosticsCorsFailureBody": "Moonfin మీడియా సర్వర్‌లో CORS లేదా ప్రీఫ్లైట్ హెడర్‌లు మిస్ కావడం వల్ల సాధారణంగా సంభవించే బ్రౌజర్-స్థాయి అభ్యర్థన వైఫల్యాన్ని గుర్తించింది.",
+  "webDiagnosticsTargetUrl": "లక్ష్య URL: {url}",
+  "webDiagnosticsDetail": "వివరాలు: {detail}",
+  "webDiagnosticsCurrentRuntimeContext": "ప్రస్తుత రన్‌టైమ్ సందర్భం",
+  "webDiagnosticsOrigin": "మూలం",
+  "webDiagnosticsScheme": "పథకం",
+  "webDiagnosticsPluginMode": "ప్లగిన్ మోడ్",
+  "webDiagnosticsWebRtcScan": "WebRTC స్కాన్",
+  "webDiagnosticsForcedServerUrl": "నిర్బంధ సర్వర్ URL",
+  "webDiagnosticsDefaultServerUrl": "డిఫాల్ట్ సర్వర్ URL",
+  "webDiagnosticsDiscoveryProxyUrl": "డిస్కవరీ ప్రాక్సీ URL",
+  "notConfigured": "కాన్ఫిగర్ చేయబడలేదు",
+  "webDiagnosticsMixedContent": "మిశ్రమ కంటెంట్",
+  "webDiagnosticsMixedContentDetected": "ఈ పేజీ HTTPS ద్వారా లోడ్ చేయబడింది, కానీ ఒకటి లేదా అంతకంటే ఎక్కువ కాన్ఫిగర్ చేయబడిన URLలు HTTP. HTTP APIలకు కాల్ చేయకుండా బ్రౌజర్‌లు HTTPS పేజీలను బ్లాక్ చేస్తాయి.",
+  "webDiagnosticsMixedContentFix": "పరిష్కరించండి: HTTPS ద్వారా మీ మీడియా సర్వర్ లేదా ప్రాక్సీ ఎండ్‌పాయింట్‌ను అందించండి లేదా విశ్వసనీయ స్థానిక నెట్‌వర్క్‌లలో మాత్రమే HTTP ద్వారా Moonfinని లోడ్ చేయండి.",
+  "webDiagnosticsNoMixedContentDetected": "ప్రస్తుత రన్‌టైమ్ సెట్టింగ్‌ల నుండి స్పష్టమైన మిశ్రమ-కంటెంట్ కాన్ఫిగరేషన్ కనుగొనబడలేదు.",
+  "webDiagnosticsCorsChecklist": "CORS చెక్‌లిస్ట్",
+  "webDiagnosticsCorsChecklistItem1": "• Access-Control-Allow-Originలో బ్రౌజర్ మూలాన్ని అనుమతించండి.",
+  "webDiagnosticsCorsChecklistItem2": "• Access-Control-Allow-Headersలో ఆథరైజేషన్, X-Emby-ఆథరైజేషన్ మరియు X-Emby-టోకెన్‌ని చేర్చండి.",
+  "webDiagnosticsCorsChecklistItem3": "• స్ట్రీమింగ్ కోసం కంటెంట్-రేంజ్ మరియు యాక్సెప్ట్-రేంజ్‌లను బహిర్గతం చేయండి మరియు ప్రవర్తనను కోరుకోండి.",
+  "webDiagnosticsCorsChecklistItem4": "• OPTIONS ప్రీఫ్లైట్ అభ్యర్థనలకు 204ని తిరిగి ఇవ్వండి.",
+  "webDiagnosticsHeaderSnippetTitle": "ఉదాహరణ హెడర్ స్నిప్పెట్ (nginx-శైలి)",
+  "note": "గమనిక",
+  "webDiagnosticsNonWebNote": "ఈ డయాగ్నస్టిక్స్ మార్గం వెబ్ బిల్డ్‌ల కోసం ఉద్దేశించబడింది. మీరు దీన్ని మరొక ప్లాట్‌ఫారమ్‌లో చూస్తున్నట్లయితే, ఈ తనిఖీలు వర్తించకపోవచ్చు.",
+  "backToServerSelect": "సర్వర్‌కి తిరిగి వెళ్లు ఎంచుకోండి",
+  "signOutAllUsers": "వినియోగదారులందరినీ సైన్ అవుట్ చేయండి",
+  "voiceSearchPermissionPermanentlyDenied": "మైక్రోఫోన్ అనుమతి శాశ్వతంగా తిరస్కరించబడింది. సిస్టమ్ సెట్టింగ్‌లలో దీన్ని ప్రారంభించండి.",
+  "voiceSearchPermissionRequired": "వాయిస్ శోధన కోసం మైక్రోఫోన్ అనుమతి అవసరం.",
+  "voiceSearchNoMatch": "అది పట్టలేదు. మళ్లీ ప్రయత్నించండి.",
+  "voiceSearchNoSpeechDetected": "ప్రసంగం కనుగొనబడలేదు.",
+  "voiceSearchMicrophoneError": "మైక్రోఫోన్ లోపం.",
+  "voiceSearchNeedsInternet": "వాయిస్ శోధనకు ఇంటర్నెట్ అవసరం.",
+  "voiceSearchServiceBusy": "వాయిస్ సర్వీస్ బిజీగా ఉంది. మళ్లీ ప్రయత్నించండి.",
+  "microphonePermissionPermanentlyDenied": "మైక్రోఫోన్ అనుమతి శాశ్వతంగా తిరస్కరించబడింది.",
+  "microphonePermissionDenied": "మైక్రోఫోన్ అనుమతి నిరాకరించబడింది.",
+  "speechRecognitionUnavailable": "ఈ పరికరంలో స్పీచ్ రికగ్నిషన్ అందుబాటులో లేదు.",
+  "openIosRoutePicker": "iOS రూట్ పికర్‌ని తెరవండి",
+  "airPlayRoutePickerUnavailable": "AirPlay రూట్ పికర్ ఈ పరికరంలో అందుబాటులో లేదు.",
+  "videos": "వీడియోలు",
+  "trailers": "ట్రైలర్స్",
+  "programs": "కార్యక్రమాలు",
+  "songs": "పాటలు",
+  "photoAlbums": "ఫోటో ఆల్బమ్‌లు",
+  "photos": "ఫోటోలు",
+  "people": "ప్రజలు",
+  "recentlyReleasedEpisodes": "ఇటీవల విడుదలైన ఎపిసోడ్స్",
+  "watchAgain": "మళ్ళీ చూడండి",
+  "guestAppearances": "అతిథి ప్రదర్శనలు",
+  "appearancesSeerr": "ప్రదర్శనలు (సీర్)",
+  "watchWithGroup": "సమూహంతో చూడండి",
+  "errors": "లోపాలు",
+  "warnings": "హెచ్చరికలు",
+  "disk": "డిస్క్",
+  "openInBrowser": "బ్రౌజర్‌లో తెరవండి",
+  "embeddedBrowserNotAvailable": "ఈ ప్లాట్‌ఫారమ్‌లో పొందుపరిచిన బ్రౌజర్ అందుబాటులో లేదు.",
+  "adminRestartServerConfirmation": "మీరు ఖచ్చితంగా సర్వర్‌ని పునఃప్రారంభించాలనుకుంటున్నారా?",
+  "adminShutdownServerConfirmation": "మీరు ఖచ్చితంగా సర్వర్‌ని షట్ డౌన్ చేయాలనుకుంటున్నారా? మీరు దీన్ని మాన్యువల్‌గా రీస్టార్ట్ చేయాలి.",
+  "internal": "అంతర్గత",
+  "idle": "పనిలేకుండా",
+  "os": "OS",
+  "adminNoUsersFound": "వినియోగదారులు కనుగొనబడలేదు",
+  "adminNoUsersMatchSearch": "మీ శోధనకు సరిపోలే వినియోగదారులు ఎవరూ లేరు",
+  "adminNoDevicesFound": "పరికరాలు ఏవీ కనుగొనబడలేదు",
+  "adminNoDevicesMatchCurrentFilters": "ప్రస్తుత ఫిల్టర్‌లకు ఏ పరికరాలు సరిపోలడం లేదు",
+  "passwordSet": "పాస్వర్డ్ సెట్",
+  "noPasswordConfigured": "పాస్‌వర్డ్ కాన్ఫిగర్ చేయబడలేదు",
+  "remoteAccess": "రిమోట్ యాక్సెస్",
+  "localOnly": "స్థానికంగా మాత్రమే",
+  "adminMediaAnalyticsLoadFailed": "మీడియా విశ్లేషణలను లోడ్ చేయడంలో విఫలమైంది",
+  "analyticsCombinedAcrossLibraries": "అన్ని మీడియా లైబ్రరీలలో కలిపి విశ్లేషణలు.",
+  "analyticsTopArtists": "అగ్ర కళాకారులు",
+  "analyticsTopAuthors": "అగ్ర రచయితలు",
+  "analyticsTopContributors": "అగ్ర సహకారులు",
+  "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
+  "analyticsNoIndexedMediaTotals": "ఈ ఎంపిక కోసం ఇంకా ఇండెక్స్ చేయబడిన మీడియా మొత్తాలు ఏవీ అందుబాటులో లేవు.",
+  "analyticsLibraryDetails": "లైబ్రరీ వివరాలు",
+  "analyticsLibraryBreakdown": "లైబ్రరీ విచ్ఛిన్నం",
+  "analyticsNoLibrariesAvailable": "లైబ్రరీలు అందుబాటులో లేవు.",
+  "adminServerAdministrationTitle": "సర్వర్ అడ్మినిస్ట్రేషన్",
+  "adminServerPathData": "డేటా",
+  "adminServerPathImageCache": "చిత్రం కాష్",
+  "adminServerPathCache": "కాష్",
+  "adminServerPathLogs": "లాగ్‌లు",
+  "adminServerPathMetadata": "మెటాడేటా",
+  "adminServerPathTranscode": "ట్రాన్స్‌కోడ్",
+  "adminServerPathWeb": "వెబ్",
+  "adminNoServerPathsReturned": "ఈ సర్వర్ ద్వారా అందించబడిన సర్వర్ మార్గాలు ఏవీ లేవు.",
+  "adminPercentUsed": "{percent}% ఉపయోగించబడింది",
+  "userActivity": "వినియోగదారు కార్యాచరణ",
+  "systemEvents": "సిస్టమ్ ఈవెంట్‌లు",
+  "needsAttention": "శ్రద్ధ అవసరం",
+  "adminDrawerSectionServer": "సర్వర్",
+  "adminDrawerSectionPlayback": "ప్లేబ్యాక్",
+  "adminDrawerSectionDevices": "పరికరాలు",
+  "adminDrawerSectionAdvanced": "అధునాతనమైనది",
+  "adminDrawerSectionPlugins": "ప్లగిన్లు",
+  "adminDrawerSectionLiveTv": "ప్రత్యక్ష TV",
+  "homeVideos": "హోమ్ వీడియోలు",
+  "mixedContent": "మిశ్రమ కంటెంట్",
+  "homeVideosAndPhotos": "హోమ్ వీడియోలు & ఫోటోలు",
+  "mixedMoviesAndShows": "మిశ్రమ చలనచిత్రాలు & ప్రదర్శనలు",
+  "intelQuickSync": "ఇంటెల్ త్వరిత సమకాలీకరణ",
+  "rockchipMpp": "రాక్‌చిప్ MPP",
+  "dolbyVision": "Dolby Vision",
+  "noRecordingsFound": "రికార్డింగ్‌లు ఏవీ కనుగొనబడలేదు",
+  "noImagePagesFoundInArchive": ".{extension} ఆర్కైవ్ లోపల చిత్ర పేజీలు ఏవీ కనుగొనబడలేదు.",
+  "embeddedRendererFailed": "పొందుపరిచిన రెండరర్ విఫలమైంది ({code}): {description}",
+  "epubRendererFailed": "EPUB రెండరర్ విఫలమైంది ({code}): {description}",
+  "missingLocalFileForReader": "రీడర్ కోసం స్థానిక ఫైల్ లేదు: {uri}",
+  "httpStatusWhileOpeningBookData": "{uri} నుండి బుక్ డేటాను తెరిచేటప్పుడు HTTP {status}",
+  "noReadableBookEndpointAvailable": "చదవగలిగే పుస్తక ముగింపు స్థానం అందుబాటులో లేదు",
+  "unsupportedComicArchiveFormat": "మద్దతు లేని కామిక్ ఆర్కైవ్ ఫార్మాట్: .{extension}",
+  "cbrExtractionPluginUnavailable": "ఈ ప్లాట్‌ఫారమ్‌లో CBR వెలికితీత ప్లగ్ఇన్ అందుబాటులో లేదు.",
+  "failedToExtractCbrArchive": ".cbr ఆర్కైవ్‌ని సంగ్రహించడంలో విఫలమైంది.",
+  "cb7ExtractionUnavailable": "ఈ ప్లాట్‌ఫారమ్‌లో CB7 వెలికితీత అందుబాటులో లేదు.",
+  "cb7ExtractionPluginUnavailable": "ఈ ప్లాట్‌ఫారమ్‌లో CB7 వెలికితీత ప్లగ్ఇన్ అందుబాటులో లేదు.",
+  "closeGenrePanel": "కళా ప్రక్రియ ప్యానెల్‌ను మూసివేయండి",
+  "loadingShuffle": "షఫుల్ లోడ్ అవుతోంది...",
+  "libraryShuffleLabel": "LIBRARY SHUFFLE",
+  "randomShuffleLabel": "RANDOM SHUFFLE",
+  "genresShuffleLabel": "GENRES SHUFFLE",
+  "autoHdrSwitching": "ఆటో HDR స్విచింగ్",
+  "autoHdrSwitchingDescription": "HDR వీడియో ప్లేబ్యాక్ కోసం HDRని స్వయంచాలకంగా ప్రారంభించండి మరియు నిష్క్రమణలో ప్రదర్శన మోడ్‌ని పునరుద్ధరించండి.",
+  "whenFullscreen": "పూర్తి స్క్రీన్‌లో ఉన్నప్పుడు",
+  "transcodingLimits": "ట్రాన్స్‌కోడింగ్ పరిమితులు",
+  "@keyboardPreferSystemIme": {
+    "description": "Settings label for preferring the native system keyboard instead of the custom TV keyboard"
+  },
+  "@keyboardPreferSystemImeDescription": {
+    "description": "Settings subtitle for the system keyboard preference"
+  },
+  "@musicVideos": {
+    "description": "Section header for music videos filmography row"
+  },
+  "@record": {
+    "description": "Button label to schedule a live TV recording"
+  },
+  "@cancelRecordingAction": {
+    "description": "Button label to cancel a scheduled live TV recording"
+  },
+  "@programSetToRecord": {
+    "description": "Snackbar confirmation after scheduling a live TV program recording"
+  },
+  "@recordingCancelled": {
+    "description": "Snackbar confirmation after cancelling a live TV recording"
+  },
+  "@unableToCreateRecording": {
+    "description": "Error when creating a live TV recording fails"
+  },
+  "@seasonalEffectsDescription": {
+    "description": "Description for seasonal effects settings"
+  },
+  "@settingsAudioOutputMode": {
+    "description": "Setting for audio output mode"
+  },
+  "@settingsAudioOutputModeAvrPassthrough": {
+    "description": "Audio output mode option for AVR passthrough"
+  },
+  "@settingsAudioFallbackCodec": {
+    "description": "Setting for fallback audio codec"
+  },
+  "@settingsAudioFallbackAacStereo": {
+    "description": "Fallback codec option for AAC stereo"
+  },
+  "@settingsAudioFallbackAc35_1": {
+    "description": "Fallback codec option for AC3 5.1"
+  },
+  "@settingsAudioFallbackEac35_1": {
+    "description": "Fallback codec option for EAC3 5.1"
+  },
+  "@settingsAudioPassthroughAdvanced": {
+    "description": "Section title for advanced passthrough controls"
+  },
+  "@settingsAudioCodecPassthrough": {
+    "description": "Title for codec passthrough settings group"
+  },
+  "@settingsAudioCodecPassthroughDescription": {
+    "description": "Description for codec passthrough settings group"
+  },
+  "@settingsAudioEac3Passthrough": {
+    "description": "Setting for EAC3 passthrough"
+  },
+  "@settingsAudioEac3JocPassthrough": {
+    "description": "Setting for EAC3 JOC Atmos passthrough"
+  },
+  "@settingsAudioDtsCorePassthrough": {
+    "description": "Setting for DTS core passthrough"
+  },
+  "@settingsAudioDtsHdPassthrough": {
+    "description": "Setting for DTS-HD MA passthrough"
+  },
+  "@settingsAudioTrueHdPassthrough": {
+    "description": "Setting for TrueHD passthrough"
+  },
+  "@settingsAudioTrueHdAtmosPassthrough": {
+    "description": "Setting for TrueHD Atmos passthrough"
+  },
+  "@settingsAudioBitstreamEac3ToExternalDecoder": {
+    "description": "Description for EAC3 passthrough"
+  },
+  "@settingsAudioBitstreamEac3JocToExternalDecoder": {
+    "description": "Description for EAC3 JOC passthrough"
+  },
+  "@settingsAudioBitstreamDtsHdToExternalDecoder": {
+    "description": "Description for DTS-HD MA passthrough"
+  },
+  "@settingsAudioBitstreamTrueHdAtmosToExternalDecoder": {
+    "description": "Description for TrueHD Atmos passthrough"
+  },
+  "@settingsDetectedAudioCapabilities": {
+    "description": "Section title for detected runtime audio capabilities"
+  },
+  "@settingsDetectedAudioCapabilitiesUnavailable": {
+    "description": "Message shown when runtime audio capability snapshot is missing"
+  },
+  "@settingsAudioRouteLabel": {
+    "description": "Label for active audio route row"
+  },
+  "@settingsAudioDecodeLabel": {
+    "description": "Label for audio decode capability row"
+  },
+  "@settingsAudioPassthroughLabel": {
+    "description": "Label for audio passthrough capability row"
+  },
+  "@settingsAudioHdRoute": {
+    "description": "Label indicating the active route supports HD audio"
+  },
+  "@settingsAudioRouteHdmi": {
+    "description": "Audio route type HDMI"
+  },
+  "@settingsAudioRouteArc": {
+    "description": "Audio route type ARC"
+  },
+  "@settingsAudioRouteEarc": {
+    "description": "Audio route type eARC"
+  },
+  "@settingsAudioRouteBluetooth": {
+    "description": "Audio route type Bluetooth"
+  },
+  "@settingsAudioRouteSpeaker": {
+    "description": "Audio route type speaker"
+  },
+  "@settingsAudioPcmChannels": {
+    "description": "Audio route subtitle showing max PCM channels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@settingsAudioDiagnostics": {
+    "description": "Section title for playback diagnostics"
+  },
+  "@settingsAudioDiagnosticsVideoLevel": {
+    "description": "Diagnostics label for video level"
+  },
+  "@settingsAudioDiagnosticsVideoRange": {
+    "description": "Diagnostics label for video range"
+  },
+  "@settingsAudioDiagnosticsSubtitleCodec": {
+    "description": "Diagnostics label for subtitle codec"
+  },
+  "@settingsAudioDiagnosticsAllowedAudioCodecs": {
+    "description": "Diagnostics label for allowed audio codecs"
+  },
+  "@settingsAudioDiagnosticsHlsMpegTsAudioCodecs": {
+    "description": "Diagnostics label for HLS MPEG-TS audio codecs"
+  },
+  "@settingsAudioDiagnosticsHlsFmp4AudioCodecs": {
+    "description": "Diagnostics label for HLS fMP4 audio codecs"
+  },
+  "@settingsAudioDiagnosticsAudioSpdifPassthrough": {
+    "description": "Diagnostics label for audio-spdif passthrough codecs"
+  },
+  "@settingsAudioDiagnosticsActiveAudioRoute": {
+    "description": "Diagnostics label for active audio route"
+  },
+  "@settingsAudioDiagnosticsRouteHdAudioSupport": {
+    "description": "Diagnostics label for route HD audio support"
+  },
+  "@mediaSources": {
+    "description": "Section heading for media source options"
+  },
+  "@behavior": {
+    "description": "Section heading for behavior options"
+  },
+  "@seconds": {
+    "description": "Time unit label in seconds"
+  },
+  "@localPreviews": {
+    "description": "Local previews settings screen title"
+  },
+  "@localPreviewsDescription": {
+    "description": "Description for local previews settings"
+  },
+  "@mediaPreview": {
+    "description": "Setting for media preview"
+  },
+  "@mediaPreviewDescription": {
+    "description": "Description for media preview"
+  },
+  "@autoplayNextEpisode": {
+    "description": "Setting title: automatically start the next episode"
+  },
+  "@autoplayNextEpisodeSubtitle": {
+    "description": "Setting subtitle for autoplay next episode"
+  },
+  "@skipSilenceTitle": {
+    "description": "Setting title: skip silent audio segments during playback"
+  },
+  "@skipSilenceSubtitle": {
+    "description": "Setting subtitle for skip silence"
+  },
+  "@allowExternalAudioEffectsTitle": {
+    "description": "Setting title: allow equalizer apps to attach to Media3"
+  },
+  "@allowExternalAudioEffectsSubtitle": {
+    "description": "Setting subtitle for external audio effects"
+  },
+  "@disableTunnelingTitle": {
+    "description": "Setting title: force non-tunneled video playback"
+  },
+  "@disableTunnelingSubtitle": {
+    "description": "Setting subtitle for disable tunneling"
+  },
+  "@mapDolbyVisionP7Title": {
+    "description": "Setting title: play DV P7 as HDR10 HEVC on non-DV devices"
+  },
+  "@mapDolbyVisionP7Subtitle": {
+    "description": "Setting subtitle for DV P7 to HEVC mapping"
+  },
+  "@subtitlesUseEmbeddedStyles": {
+    "description": "Setting title: apply colours/positioning from the subtitle track"
+  },
+  "@subtitlesUseEmbeddedStylesSubtitle": {
+    "description": "Setting subtitle for embedded styles toggle"
+  },
+  "@subtitlesUseEmbeddedFontSizes": {
+    "description": "Setting title: apply font sizes from the subtitle track"
+  },
+  "@subtitlesUseEmbeddedFontSizesSubtitle": {
+    "description": "Setting subtitle for embedded font sizes toggle"
+  },
+  "@useDetailedSubHeadings": {
+    "description": "Label for setting to toggle detailed or minimal subrow on library pages"
+  },
+  "@useDetailedSubHeadingsDescription": {
+    "description": "Subtitle for the use detailed sub headings setting"
+  },
+  "@savedThemesDeleteDialogMessage": {
+    "description": "Confirmation message for deleting a saved custom theme",
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "@savedThemesDeletedMessage": {
+    "description": "Status message shown after deleting a saved custom theme",
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "@savedThemesDeleteFailedMessage": {
+    "description": "Status message shown when deleting a saved custom theme fails",
+    "placeholders": {
+      "themeName": {
+        "type": "String"
+      }
+    }
+  },
+  "@savedThemesCurrentThemeId": {
+    "description": "Subtitle showing the saved theme id when it is currently selected",
+    "placeholders": {
+      "themeId": {
+        "type": "String"
+      }
+    }
+  },
+  "@webDiagnosticsTargetUrl": {
+    "description": "Target URL shown in diagnostics summary",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "@webDiagnosticsDetail": {
+    "description": "Error detail shown in diagnostics summary",
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "@analyticsLibrariesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@adminPercentUsed": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@noImagePagesFoundInArchive": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "@embeddedRendererFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      },
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "@epubRendererFailed": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      },
+      "description": {
+        "type": "String"
+      }
+    }
+  },
+  "@missingLocalFileForReader": {
+    "placeholders": {
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "@httpStatusWhileOpeningBookData": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      },
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "@unsupportedComicArchiveFormat": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer"
 }

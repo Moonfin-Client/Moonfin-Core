@@ -6958,7 +6958,7 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'திட்டத்திற்கு GitHub இல் நட்சத்திரமிடுங்கள் அல்லது பங்களிக்கவும்';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'சட்டபூர்வமானது';

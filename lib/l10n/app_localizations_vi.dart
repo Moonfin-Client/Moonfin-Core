@@ -16,7 +16,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String connectingToServer(String serverName) {
-    return 'Connecting to $serverName';
+    return 'Đang kết nối với $serverName';
   }
 
   @override
@@ -49,12 +49,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect unavailable: $detail';
+    return 'QuickConnect không có sẵn: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect unavailable ($status): $detail';
+    return 'QuickConnect không khả dụng ($status): $detail';
   }
 
   @override
@@ -68,7 +68,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin version $version';
+    return 'Moonfin phiên bản $version';
   }
 
   @override
@@ -94,7 +94,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String removeServerConfirmation(String serverName) {
-    return 'Remove \"$serverName\" from your servers?';
+    return 'Xóa \"$serverName\" khỏi máy chủ của bạn?';
   }
 
   @override
@@ -133,11 +133,11 @@ class AppLocalizationsVi extends AppLocalizations {
       'Chuyển đổi giữa Moonfin và Neon Pulse mà không cần khởi động lại ứng dụng';
 
   @override
-  String get keyboardPreferSystemIme => 'Prefer system keyboard';
+  String get keyboardPreferSystemIme => 'Ưu tiên bàn phím hệ thống';
 
   @override
   String get keyboardPreferSystemImeDescription =>
-      'Use your device input method by default for text entry';
+      'Sử dụng phương thức nhập thiết bị của bạn theo mặc định để nhập văn bản';
 
   @override
   String get themeMoonfin => 'Vây trăng';
@@ -202,7 +202,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String unableToConnectTo(String target) {
-    return 'Unable to connect to $target';
+    return 'Không thể kết nối với $target';
   }
 
   @override
@@ -286,7 +286,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return 'Failed to load folder: $error';
+    return 'Không tải được thư mục: $error';
   }
 
   @override
@@ -294,7 +294,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return '$count items';
+    return '$count các mục';
   }
 
   @override
@@ -311,7 +311,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return '$count Items';
+    return '$count Vật phẩm';
   }
 
   @override
@@ -352,7 +352,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — Genres';
+    return '$name — Thể loại';
   }
 
   @override
@@ -391,17 +391,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return '${count}m ago';
+    return '${count}m trước';
   }
 
   @override
   String hoursAgo(int count) {
-    return '${count}h ago';
+    return '${count}h trước';
   }
 
   @override
   String daysAgo(int count) {
-    return '${count}d ago';
+    return '${count}d trước';
   }
 
   @override
@@ -436,7 +436,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String titlesCount(int count) {
-    return '$count titles';
+    return 'tiêu đề $count';
   }
 
   @override
@@ -523,17 +523,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String authorsCount(int count) {
-    return '$count authors';
+    return '$count tác giả';
   }
 
   @override
   String genresCount(int count) {
-    return '$count genres';
+    return 'thể loại $count';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '$percent% completed';
+    return '$percent% đã hoàn thành';
   }
 
   @override
@@ -550,7 +550,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count titles arranged for reading-first browsing.';
+    return 'Các tiêu đề $count được sắp xếp để duyệt lần đầu tiên.';
   }
 
   @override
@@ -587,7 +587,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String noLabelFound(String label) {
-    return 'No $label found';
+    return 'Không tìm thấy $label';
   }
 
   @override
@@ -659,12 +659,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String sectionCountLabel(int count) {
-    return '$count sections';
+    return 'phần $count';
   }
 
   @override
   String firstPublished(int year) {
-    return 'First published $year';
+    return 'Được xuất bản lần đầu tiên $year';
   }
 
   @override
@@ -679,7 +679,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String booksCount(int count) {
-    return '$count books';
+    return '$count sách';
   }
 
   @override
@@ -690,7 +690,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String authorsCountTitle(int count) {
-    return '$count Authors';
+    return '$count Tác giả';
   }
 
   @override
@@ -751,7 +751,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get movies => 'Phim';
 
   @override
-  String get musicVideos => 'Music Videos';
+  String get musicVideos => 'Video Nhạc';
 
   @override
   String get other => 'Khác';
@@ -770,7 +770,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String discNumber(int number) {
-    return 'Disc $number';
+    return 'Đĩa $number';
   }
 
   @override
@@ -795,7 +795,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String published(int year) {
-    return 'Published $year';
+    return 'Đã xuất bản $year';
   }
 
   @override
@@ -814,7 +814,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String endsAt(String time) {
-    return 'Ends at $time';
+    return 'Kết thúc lúc $time';
   }
 
   @override
@@ -828,7 +828,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return 'Resume from $position';
+    return 'Tiếp tục từ $position';
   }
 
   @override
@@ -926,7 +926,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return 'Delete downloaded tracks for \"$title\"?';
+    return 'Xóa các bản nhạc đã tải xuống cho \"$title\"?';
   }
 
   @override
@@ -941,17 +941,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return 'No $itemLabel loaded';
+    return 'Chưa tải $itemLabel';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return 'Downloading $title ($count items)...';
+    return 'Đang tải xuống các mục $title ($count)...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
+    return 'Bạn có chắc chắn muốn xóa \"$name\" khỏi máy chủ không? Không thể hoàn tác hành động này.';
   }
 
   @override
@@ -963,7 +963,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String unsupportedBookFormat(String extension) {
-    return 'Unsupported book format: .$extension';
+    return 'Định dạng sách không được hỗ trợ: .$extension';
   }
 
   @override
@@ -989,7 +989,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return 'Subtitle downloaded and selected: $name';
+    return 'Phụ đề đã tải và chọn: $name';
   }
 
   @override
@@ -998,7 +998,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return 'No remote subtitles found for $language.';
+    return 'Không tìm thấy phụ đề từ xa cho $language.';
   }
 
   @override
@@ -1006,7 +1006,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String versionNumber(int number) {
-    return 'Version $number';
+    return 'Phiên bản $number';
   }
 
   @override
@@ -1026,7 +1026,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String downloadingItem(String name, String quality) {
-    return 'Downloading $name ($quality)...';
+    return 'Đang tải xuống $name ($quality)...';
   }
 
   @override
@@ -1034,7 +1034,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
+    return 'Xóa các tệp cục bộ cho $typeLabel?\n\nĐiều này sẽ giải phóng không gian lưu trữ. Bạn có thể tải lại sau.';
   }
 
   @override
@@ -1057,12 +1057,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String studioMoreCount(int count) {
-    return '+$count more';
+    return '+$count thêm';
   }
 
   @override
   String totalEpisodes(int count) {
-    return '$count Episodes';
+    return '$count Các tập';
   }
 
   @override
@@ -1072,12 +1072,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String episodeLabel(int number) {
-    return 'Episode $number';
+    return 'Tập $number';
   }
 
   @override
   String chapterNumber(int number) {
-    return 'Chapter $number';
+    return 'Chương $number';
   }
 
   @override
@@ -1104,17 +1104,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String born(String date) {
-    return 'Born $date';
+    return 'Sinh ra $date';
   }
 
   @override
   String died(String date) {
-    return 'Died $date';
+    return 'Đã chết $date';
   }
 
   @override
   String age(int age) {
-    return 'Age $age';
+    return 'Tuổi $age';
   }
 
   @override
@@ -1128,7 +1128,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String downloadsCount(int count) {
-    return '$count downloads';
+    return '$count lượt tải xuống';
   }
 
   @override
@@ -1147,32 +1147,32 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
+    return 'Phụ đề từ xa $action yêu cầu quyền quản lý phụ đề Jellyfin cho người dùng này.';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return 'This item could not be found on the server for remote subtitle $action.';
+    return 'Không thể tìm thấy mục này trên máy chủ cho phụ đề từ xa $action.';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return 'Remote subtitle $action failed: $detail';
+    return 'Phụ đề từ xa $action không thành công: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return 'Remote subtitle $action failed (HTTP $status).';
+    return 'Phụ đề từ xa $action không thành công (HTTP $status).';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return 'Failed to $action remote subtitles.';
+    return 'Không thể tạo phụ đề từ xa $action.';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return 'all downloaded episodes for \"$name\"';
+    return 'tất cả các tập đã tải xuống cho \"$name\"';
   }
 
   @override
@@ -1203,17 +1203,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String castActionFailed(String label, String error) {
-    return '$label action failed: $error';
+    return '$label hành động không thành công: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return 'Failed to set cast volume: $error';
+    return 'Không thể đặt âm lượng truyền: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return '$label Controls';
+    return '$label Điều khiển';
   }
 
   @override
@@ -1230,7 +1230,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String stopCast(String label) {
-    return 'Stop $label';
+    return 'Dừng $label';
   }
 
   @override
@@ -1238,7 +1238,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String trackNumber(int number) {
-    return 'Track $number';
+    return 'Theo dõi $number';
   }
 
   @override
@@ -1255,7 +1255,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String secondsCount(int seconds) {
-    return '$seconds seconds';
+    return '$seconds giây';
   }
 
   @override
@@ -1370,12 +1370,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String castSessionError(String protocol) {
-    return '$protocol session error';
+    return 'Lỗi phiên $protocol';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return 'Failed to load book details: $error';
+    return 'Không tải được chi tiết sách: $error';
   }
 
   @override
@@ -1384,7 +1384,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return 'This format (.$extension) cannot be rendered in-app yet.';
+    return 'Định dạng này (.$extension) chưa thể hiển thị trong ứng dụng.';
   }
 
   @override
@@ -1396,17 +1396,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return 'Failed to open in-app reader: $error';
+    return 'Không mở được trình đọc trong ứng dụng: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return 'Bookmark already saved at $label.';
+    return 'Dấu trang đã được lưu tại $label.';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return 'Bookmark added: $label';
+    return 'Đã thêm dấu trang: $label';
   }
 
   @override
@@ -1418,7 +1418,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String pageLabel(int number) {
-    return 'Page $number';
+    return 'Trang $number';
   }
 
   @override
@@ -1429,12 +1429,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String formatExtension(String extension) {
-    return 'Format: .$extension';
+    return 'Định dạng: .$extension';
   }
 
   @override
   String percentRead(String percent) {
-    return '$percent% read';
+    return '$percent% đã đọc';
   }
 
   @override
@@ -1457,7 +1457,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String resetZoom(String zoom) {
-    return 'Reset Zoom (${zoom}x)';
+    return 'Đặt lại thu phóng (${zoom}x)';
   }
 
   @override
@@ -1480,7 +1480,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String failedToUpdateReadState(String error) {
-    return 'Failed to update read state: $error';
+    return 'Không cập nhật được trạng thái đọc: $error';
   }
 
   @override
@@ -1514,7 +1514,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return 'This platform cannot host the embedded document engine for $extension files.';
+    return 'Nền tảng này không thể lưu trữ công cụ tài liệu được nhúng cho các tệp $extension.';
   }
 
   @override
@@ -1553,7 +1553,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String failedToLoadGuide(String error) {
-    return 'Failed to load guide: $error';
+    return 'Không tải được hướng dẫn: $error';
   }
 
   @override
@@ -1582,19 +1582,19 @@ class AppLocalizationsVi extends AppLocalizations {
   String get favoriteChannel => 'Kênh yêu thích';
 
   @override
-  String get record => 'Record';
+  String get record => 'Ghi';
 
   @override
-  String get cancelRecordingAction => 'Cancel Recording';
+  String get cancelRecordingAction => 'Hủy ghi âm';
 
   @override
-  String get programSetToRecord => 'Program set to record';
+  String get programSetToRecord => 'Chương trình được thiết lập để ghi';
 
   @override
-  String get recordingCancelled => 'Recording cancelled';
+  String get recordingCancelled => 'Đã hủy ghi âm';
 
   @override
-  String get unableToCreateRecording => 'Unable to create recording';
+  String get unableToCreateRecording => 'Không thể tạo bản ghi';
 
   @override
   String get watch => 'Đồng hồ';
@@ -1604,7 +1604,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String failedToPlayChannel(String name) {
-    return 'Failed to play $name';
+    return 'Không chơi được $name';
   }
 
   @override
@@ -1630,7 +1630,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return 'Cancel scheduled recording of \"$name\"?';
+    return 'Hủy ghi âm theo lịch của \"$name\"?';
   }
 
   @override
@@ -1656,7 +1656,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String stopRecordingName(String name) {
-    return 'Stop recording \"$name\"?';
+    return 'Dừng ghi \"$name\"?';
   }
 
   @override
@@ -1670,12 +1670,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String noResultsForQuery(String query) {
-    return 'No results for \"$query\"';
+    return 'Không có kết quả nào cho \"$query\"';
   }
 
   @override
   String searchFailedError(String error) {
-    return 'Search failed: $error';
+    return 'Tìm kiếm không thành công: $error';
   }
 
   @override
@@ -1716,12 +1716,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String removeItemAndFiles(String name) {
-    return 'Remove \"$name\" and its files?';
+    return 'Xóa \"$name\" và các tệp trong đó?';
   }
 
   @override
   String tracksCount(int count) {
-    return '$count tracks';
+    return 'bài hát $count';
   }
 
   @override
@@ -1732,12 +1732,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return 'Failed to load album: $error';
+    return 'Không tải được album: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return 'No downloaded tracks found for $name.';
+    return 'Không tìm thấy bản nhạc đã tải xuống nào cho $name.';
   }
 
   @override
@@ -1754,12 +1754,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return 'Remove \"$name\"?';
+    return 'Xóa \"$name\"?';
   }
 
   @override
   String durationMinutes(int minutes) {
-    return '$minutes min';
+    return '$minutes phút';
   }
 
   @override
@@ -1769,7 +1769,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String episodeNumber(int number) {
-    return 'Episode $number';
+    return 'Tập $number';
   }
 
   @override
@@ -1783,7 +1783,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String seasonNumber(int number) {
-    return 'Season $number';
+    return 'Mùa $number';
   }
 
   @override
@@ -1799,7 +1799,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return 'Delete all downloaded episodes in $season?';
+    return 'Xóa tất cả các tập đã tải xuống trong $season?';
   }
 
   @override
@@ -1843,7 +1843,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return 'Delete $count downloaded items?';
+    return 'Xóa $count các mục đã tải xuống?';
   }
 
   @override
@@ -1857,7 +1857,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String ofStorageLimit(String limit) {
-    return 'of $limit limit';
+    return 'giới hạn $limit';
   }
 
   @override
@@ -1940,7 +1940,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return '$count options';
+    return 'tùy chọn $count';
   }
 
   @override
@@ -2190,16 +2190,16 @@ class AppLocalizationsVi extends AppLocalizations {
       'Bật âm thanh TrueHD (có thể không hoạt động trên tất cả các nền tảng)';
 
   @override
-  String get settingsAudioOutputMode => 'Audio Output Mode';
+  String get settingsAudioOutputMode => 'Chế độ đầu ra âm thanh';
 
   @override
-  String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
+  String get settingsAudioOutputModeAvrPassthrough => 'Truyền qua AVR';
 
   @override
-  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
+  String get settingsAudioFallbackCodec => 'Codec dự phòng âm thanh';
 
   @override
-  String get settingsAudioFallbackAacStereo => 'AAC Stereo';
+  String get settingsAudioFallbackAacStereo => 'Âm thanh nổi AAC';
 
   @override
   String get settingsAudioFallbackAc35_1 => 'AC3 5.1';
@@ -2208,67 +2208,69 @@ class AppLocalizationsVi extends AppLocalizations {
   String get settingsAudioFallbackEac35_1 => 'EAC3 5.1';
 
   @override
-  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
+  String get settingsAudioPassthroughAdvanced => 'Truyền qua (Nâng cao)';
 
   @override
-  String get settingsAudioCodecPassthrough => 'Codec Passthrough';
+  String get settingsAudioCodecPassthrough => 'Truyền qua Codec';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'Enable only formats your AVR or HDMI sink supports.';
+      'Chỉ kích hoạt các định dạng mà bồn AVR hoặc HDMI của bạn hỗ trợ.';
 
   @override
-  String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
+  String get settingsAudioEac3Passthrough => 'Truyền qua EAC3';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) Passthrough';
+  String get settingsAudioEac3JocPassthrough => 'Truyền qua EAC3 JOC (Atmos)';
 
   @override
-  String get settingsAudioDtsCorePassthrough => 'DTS Core Passthrough';
+  String get settingsAudioDtsCorePassthrough => 'Truyền qua lõi DTS';
 
   @override
-  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA Passthrough';
+  String get settingsAudioDtsHdPassthrough => 'Truyền qua DTS-HD MA';
 
   @override
-  String get settingsAudioTrueHdPassthrough => 'TrueHD Passthrough';
+  String get settingsAudioTrueHdPassthrough => 'Truyền qua TrueHD';
 
   @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos Passthrough';
+  String get settingsAudioTrueHdAtmosPassthrough =>
+      'Dòng bit Dolby Digital Plus (EAC3) tới bộ giải mã bên ngoài.';
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
+      'Dòng bit Dolby Digital Plus (EAC3) tới bộ giải mã bên ngoài.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
+      'Dòng bit Dolby Atmos qua EAC3 (JOC) tới bộ giải mã bên ngoài.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
+      'Dòng bit DTS-HD MA (bao gồm lõi DTS) tới bộ giải mã bên ngoài.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
+      'Dòng bit Dolby TrueHD với siêu dữ liệu Atmos tới bộ giải mã bên ngoài.';
 
   @override
-  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
+  String get settingsDetectedAudioCapabilities =>
+      'Khả năng âm thanh được phát hiện';
 
   @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
-      'No runtime capability snapshot available yet.';
+      'Chưa có ảnh chụp nhanh khả năng thời gian chạy.';
 
   @override
-  String get settingsAudioRouteLabel => 'Route';
+  String get settingsAudioRouteLabel => 'Tuyến đường';
 
   @override
-  String get settingsAudioDecodeLabel => 'Decode';
+  String get settingsAudioDecodeLabel => 'Giải mã';
 
   @override
-  String get settingsAudioPassthroughLabel => 'Passthrough';
+  String get settingsAudioPassthroughLabel => 'Truyền qua';
 
   @override
-  String get settingsAudioHdRoute => 'HD audio route';
+  String get settingsAudioHdRoute => 'Tuyến âm thanh HD';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2283,7 +2285,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get settingsAudioRouteBluetooth => 'Bluetooth';
 
   @override
-  String get settingsAudioRouteSpeaker => 'Speaker';
+  String get settingsAudioRouteSpeaker => 'Loa';
 
   @override
   String settingsAudioPcmChannels(int count) {
@@ -2291,39 +2293,40 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get settingsAudioDiagnostics => 'Diagnostics';
+  String get settingsAudioDiagnostics => 'Chẩn đoán';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
+  String get settingsAudioDiagnosticsVideoLevel => 'Cấp độ video';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
+  String get settingsAudioDiagnosticsVideoRange => 'Phạm vi video';
 
   @override
-  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
+  String get settingsAudioDiagnosticsSubtitleCodec => 'Codec phụ đề';
 
   @override
   String get settingsAudioDiagnosticsAllowedAudioCodecs =>
-      'Allowed Audio Codecs';
+      'Codec âm thanh được phép';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
-      'HLS MPEG-TS Audio Codecs';
+      'Bộ giải mã âm thanh HLS MPEG-TS';
 
   @override
   String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
-      'HLS fMP4 Audio Codecs';
+      'Bộ giải mã âm thanh HLS fMP4';
 
   @override
   String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
-      'audio-spdif passthrough';
+      'truyền qua âm thanh-spdif';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
+  String get settingsAudioDiagnosticsActiveAudioRoute =>
+      'Tuyến âm thanh hoạt động';
 
   @override
   String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'Route HD Audio Support';
+      'Định tuyến hỗ trợ âm thanh HD';
 
   @override
   String get nightMode => 'Chế độ ban đêm';
@@ -2386,7 +2389,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return 'After $episodes episodes / ${hours}h';
+    return 'Sau các tập $episodes / ${hours}h';
   }
 
   @override
@@ -2516,17 +2519,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String loadedProfileSettings(String profile) {
-    return 'Loaded $profile profile settings.';
+    return 'Đã tải cài đặt cấu hình $profile.';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return 'Failed to load $profile profile settings.';
+    return 'Không tải được cài đặt hồ sơ $profile.';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return 'Synced local settings to $profile profile.';
+    return 'Đã đồng bộ hóa cài đặt cục bộ với hồ sơ $profile.';
   }
 
   @override
@@ -2752,7 +2755,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '$count selected';
+    return '$count đã chọn';
   }
 
   @override
@@ -2999,7 +3002,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String minutesShort(int minutes) {
-    return '$minutes min';
+    return '$minutes phút';
   }
 
   @override
@@ -3118,7 +3121,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String pluginStatusVersion(String status, String version) {
-    return '$status\nVersion: $version';
+    return '$status\nPhiên bản: $version';
   }
 
   @override
@@ -3192,7 +3195,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String loggedInAs(String username) {
-    return 'Logged in as: $username';
+    return 'Đã đăng nhập với tên: $username';
   }
 
   @override
@@ -3217,7 +3220,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String versionValue(String version) {
-    return 'Version $version';
+    return 'Phiên bản $version';
   }
 
   @override
@@ -3266,7 +3269,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String updateAvailableVersion(String version) {
-    return 'Update available: v$version';
+    return 'Đã có bản cập nhật: v$version';
   }
 
   @override
@@ -3277,7 +3280,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String updateAvailableTitle(String version) {
-    return 'v$version Available';
+    return 'v$version Có sẵn';
   }
 
   @override
@@ -3342,7 +3345,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String itemsCount(int count) {
-    return '$count Items';
+    return '$count Vật phẩm';
   }
 
   @override
@@ -3362,7 +3365,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String requestedByName(String name) {
-    return 'Requested by $name';
+    return 'Được yêu cầu bởi $name';
   }
 
   @override
@@ -3379,12 +3382,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String cancelRequestForTitle(String title) {
-    return 'Cancel request for \"$title\"?';
+    return 'Hủy yêu cầu cho \"$title\"?';
   }
 
   @override
   String cancelCountRequestsForTitle(int count, String title) {
-    return 'Cancel $count requests for \"$title\"?';
+    return 'Hủy các yêu cầu $count cho \"$title\"?';
   }
 
   @override
@@ -3399,12 +3402,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String budgetAmount(String amount) {
-    return 'Budget: \$$amount';
+    return 'Ngân sách: \$$amount';
   }
 
   @override
   String revenueAmount(String amount) {
-    return 'Revenue: \$$amount';
+    return 'Doanh thu: \$$amount';
   }
 
   @override
@@ -3414,7 +3417,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie(String type) {
-    return 'Request $type';
+    return 'Yêu cầu $type';
   }
 
   @override
@@ -3450,7 +3453,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String ageValue(int age) {
-    return 'age $age';
+    return 'tuổi $age';
   }
 
   @override
@@ -3742,22 +3745,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminPluginUpdatesAvailable(int count) {
-    return 'Plugin updates available: $count';
+    return 'Đã có bản cập nhật plugin: $count';
   }
 
   @override
   String adminPluginsRequiringRestart(int count) {
-    return 'Plugins requiring restart: $count';
+    return 'Các plugin yêu cầu khởi động lại: $count';
   }
 
   @override
   String adminFailedScheduledTasks(int count) {
-    return 'Failed scheduled tasks: $count';
+    return 'Nhiệm vụ đã lên lịch không thành công: $count';
   }
 
   @override
   String adminRecentAlertEntries(int count) {
-    return 'Recent warning/error entries: $count';
+    return 'Các mục cảnh báo/lỗi gần đây: $count';
   }
 
   @override
@@ -3816,7 +3819,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String errorGeneric(String error) {
-    return 'Error: $error';
+    return 'Lỗi: $error';
   }
 
   @override
@@ -3843,7 +3846,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Lệnh không thành công: $error';
   }
 
   @override
@@ -3908,7 +3911,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminActivityLoadFailed(String error) {
-    return 'Failed to load activity log: $error';
+    return 'Không tải được nhật ký hoạt động: $error';
   }
 
   @override
@@ -3925,7 +3928,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminDeviceUpdateFailed(String error) {
-    return 'Failed to update device: $error';
+    return 'Không cập nhật được thiết bị: $error';
   }
 
   @override
@@ -3936,7 +3939,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminDeviceDeleteFailed(String error) {
-    return 'Failed to delete device: $error';
+    return 'Không xóa được thiết bị: $error';
   }
 
   @override
@@ -3965,7 +3968,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminScanFailed(String error) {
-    return 'Failed to start scan: $error';
+    return 'Không thể bắt đầu quét: $error';
   }
 
   @override
@@ -3976,12 +3979,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminLibraryRenamed(String name) {
-    return 'Library renamed to \"$name\"';
+    return 'Thư viện được đổi tên thành \"$name\"';
   }
 
   @override
   String adminRenameFailed(String error) {
-    return 'Failed to rename: $error';
+    return 'Không đổi tên được: $error';
   }
 
   @override
@@ -3989,17 +3992,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminLibraryDeleted(String name) {
-    return 'Library \"$name\" deleted';
+    return 'Đã xóa thư viện \"$name\"';
   }
 
   @override
   String adminLibraryDeleteFailed(String error) {
-    return 'Failed to delete library: $error';
+    return 'Không xóa được thư viện: $error';
   }
 
   @override
   String adminAddPathFailed(String error) {
-    return 'Failed to add path: $error';
+    return 'Không thêm được đường dẫn: $error';
   }
 
   @override
@@ -4007,12 +4010,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminRemovePathConfirm(String path) {
-    return 'Remove \"$path\" from this library?';
+    return 'Xóa \"$path\" khỏi thư viện này?';
   }
 
   @override
   String adminRemovePathFailed(String error) {
-    return 'Failed to remove path: $error';
+    return 'Không xóa được đường dẫn: $error';
   }
 
   @override
@@ -4020,7 +4023,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminLibraryOptionsSaveFailed(String error) {
-    return 'Failed to save options: $error';
+    return 'Không lưu được tùy chọn: $error';
   }
 
   @override
@@ -4056,7 +4059,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminLibraryCreateFailed(String error) {
-    return 'Failed to create library: $error';
+    return 'Không tạo được thư viện: $error';
   }
 
   @override
@@ -4083,27 +4086,27 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminDisableUserConfirm(String name) {
-    return 'Disable $name? They will not be able to sign in.';
+    return 'Tắt $name? Họ sẽ không thể đăng nhập.';
   }
 
   @override
   String adminEnableUserConfirm(String name) {
-    return 'Enable $name? They will be able to sign in again.';
+    return 'Bật $name? Họ sẽ có thể đăng nhập lại.';
   }
 
   @override
   String adminUserDisabled(String name) {
-    return 'User \"$name\" disabled';
+    return 'Người dùng \"$name\" đã bị vô hiệu hóa';
   }
 
   @override
   String adminUserEnabled(String name) {
-    return 'User \"$name\" enabled';
+    return 'Người dùng \"$name\" đã bật';
   }
 
   @override
   String adminUserPolicyUpdateFailed(String error) {
-    return 'Failed to update user policy: $error';
+    return 'Không cập nhật được chính sách người dùng: $error';
   }
 
   @override
@@ -4120,7 +4123,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminUserCreateFailed(String error) {
-    return 'Failed to create user: $error';
+    return 'Không tạo được người dùng: $error';
   }
 
   @override
@@ -4140,7 +4143,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminSaveFailed(String error) {
-    return 'Failed to save: $error';
+    return 'Không lưu được: $error';
   }
 
   @override
@@ -4151,7 +4154,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminFailed(String error) {
-    return 'Failed: $error';
+    return 'Không thành công: $error';
   }
 
   @override
@@ -4294,22 +4297,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminServerReturnedHttp(int status) {
-    return 'Server returned HTTP $status';
+    return 'Máy chủ trả về HTTP $status';
   }
 
   @override
   String adminDeleteUserConfirm(String name) {
-    return 'Are you sure you want to delete $name?';
+    return 'Bạn có chắc chắn muốn xóa $name không?';
   }
 
   @override
   String adminUserDeleted(String name) {
-    return 'User \"$name\" deleted';
+    return 'Đã xóa người dùng \"$name\"';
   }
 
   @override
   String adminUserDeleteFailed(String error) {
-    return 'Failed to delete user: $error';
+    return 'Không xóa được người dùng: $error';
   }
 
   @override
@@ -4330,7 +4333,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminApiKeyCreateFailed(String error) {
-    return 'Failed to create key: $error';
+    return 'Không tạo được khóa: $error';
   }
 
   @override
@@ -4342,7 +4345,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminRevokeKeyConfirm(String name) {
-    return 'Revoke key for $name?';
+    return 'Thu hồi khóa cho $name?';
   }
 
   @override
@@ -4350,7 +4353,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminApiKeyRevokeFailed(String error) {
-    return 'Failed to revoke key: $error';
+    return 'Không thu hồi được khóa: $error';
   }
 
   @override
@@ -4370,7 +4373,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminApiKeyTokenCreated(String token, String created) {
-    return 'Token: $token\\nCreated: $created';
+    return 'Mã thông báo: $token\\nĐã tạo: $created';
   }
 
   @override
@@ -4381,7 +4384,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminBackupCreateFailed(String error) {
-    return 'Failed to create backup: $error';
+    return 'Không tạo được bản sao lưu: $error';
   }
 
   @override
@@ -4390,12 +4393,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminBackupManifest(String name) {
-    return 'Manifest: $name';
+    return 'Bản kê khai: $name';
   }
 
   @override
   String adminManifestLoadFailed(String error) {
-    return 'Failed to load manifest: $error';
+    return 'Không tải được bảng kê khai: $error';
   }
 
   @override
@@ -4406,7 +4409,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminRestoreFailed(String error) {
-    return 'Failed to restore backup: $error';
+    return 'Không khôi phục được bản sao lưu: $error';
   }
 
   @override
@@ -4438,17 +4441,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminSavedTo(String path) {
-    return 'Saved to $path';
+    return 'Đã lưu vào $path';
   }
 
   @override
   String adminFileSaveFailed(String error) {
-    return 'Failed to save file: $error';
+    return 'Không lưu được tệp: $error';
   }
 
   @override
   String adminLogFileLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'Không tải được $fileName';
   }
 
   @override
@@ -4459,7 +4462,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminTasksLoadFailed(String error) {
-    return 'Failed to load tasks: $error';
+    return 'Không tải được tác vụ: $error';
   }
 
   @override
@@ -4471,17 +4474,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminTaskStartFailed(String error) {
-    return 'Failed to start task: $error';
+    return 'Không thể bắt đầu tác vụ: $error';
   }
 
   @override
   String adminTaskStopFailed(String error) {
-    return 'Failed to stop task: $error';
+    return 'Không dừng được tác vụ: $error';
   }
 
   @override
   String adminTaskLoadFailed(String error) {
-    return 'Failed to load task: $error';
+    return 'Không tải được tác vụ: $error';
   }
 
   @override
@@ -4489,12 +4492,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminTriggerRemoveFailed(String error) {
-    return 'Failed to remove trigger: $error';
+    return 'Không xóa được trình kích hoạt: $error';
   }
 
   @override
   String adminTriggerAddFailed(String error) {
-    return 'Failed to add trigger: $error';
+    return 'Không thêm được trình kích hoạt: $error';
   }
 
   @override
@@ -4521,7 +4524,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminHours(String hours) {
-    return '$hours hour(s)';
+    return '$hours giờ';
   }
 
   @override
@@ -4532,7 +4535,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminPluginToggleFailed(String error) {
-    return 'Failed to toggle plugin: $error';
+    return 'Không chuyển đổi được plugin: $error';
   }
 
   @override
@@ -4540,27 +4543,27 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminUninstallPluginConfirm(String name) {
-    return 'Are you sure you want to uninstall \"$name\"?';
+    return 'Bạn có chắc chắn muốn gỡ cài đặt \"$name\" không?';
   }
 
   @override
   String adminPluginUninstallFailed(String error) {
-    return 'Failed to uninstall plugin: $error';
+    return 'Không thể gỡ cài đặt plugin: $error';
   }
 
   @override
   String adminPackageInstallFailed(String error) {
-    return 'Failed to install package: $error';
+    return 'Không cài đặt được gói: $error';
   }
 
   @override
   String adminPluginUpdateFailed(String error) {
-    return 'Failed to install update: $error';
+    return 'Không cài đặt được bản cập nhật: $error';
   }
 
   @override
   String adminPluginsLoadFailed(String error) {
-    return 'Failed to load plugins: $error';
+    return 'Không tải được plugin: $error';
   }
 
   @override
@@ -4572,12 +4575,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminInstallUpdate(String version) {
-    return 'Install update (v$version)';
+    return 'Cài đặt bản cập nhật (v$version)';
   }
 
   @override
   String adminCatalogLoadFailed(String error) {
-    return 'Failed to load catalog: $error';
+    return 'Không tải được danh mục: $error';
   }
 
   @override
@@ -4599,17 +4602,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminPluginRemoveAfterRestart(String name) {
-    return '\"$name\" will be removed after server restart';
+    return '\"$name\" sẽ bị xóa sau khi khởi động lại máy chủ';
   }
 
   @override
   String adminUninstallFailed(String error) {
-    return 'Failed to uninstall: $error';
+    return 'Không thể gỡ cài đặt: $error';
   }
 
   @override
   String adminPluginUpdating(String name, String version) {
-    return 'Updating \"$name\" to v$version...';
+    return 'Đang cập nhật \"$name\" thành v$version...';
   }
 
   @override
@@ -4618,7 +4621,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminPluginLoadFailed(String error) {
-    return 'Failed to load plugin: $error';
+    return 'Không tải được plugin: $error';
   }
 
   @override
@@ -4626,7 +4629,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminPluginVersion(String version) {
-    return 'Version $version';
+    return 'Phiên bản $version';
   }
 
   @override
@@ -4646,17 +4649,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminRemoveRepositoryConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Bạn có chắc chắn muốn xóa \"$name\" không?';
   }
 
   @override
   String adminRepositoriesSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Không lưu được kho lưu trữ: $error';
   }
 
   @override
   String adminRepositoriesLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Không thể tải kho lưu trữ: $error';
   }
 
   @override
@@ -4673,12 +4676,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminPluginSettingsLoadFailed(String error) {
-    return 'Unable to load plugin settings: $error';
+    return 'Không thể tải cài đặt plugin: $error';
   }
 
   @override
   String adminCouldNotOpenUrl(String uri) {
-    return 'Could not open $uri';
+    return 'Không thể mở $uri';
   }
 
   @override
@@ -4952,12 +4955,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminMetadataLoadFailed(String error) {
-    return 'Failed to load metadata: $error';
+    return 'Không tải được siêu dữ liệu: $error';
   }
 
   @override
   String adminMetadataSaveFailed(String error) {
-    return 'Failed to save metadata: $error';
+    return 'Không lưu được siêu dữ liệu: $error';
   }
 
   @override
@@ -4977,7 +4980,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminMetadataRefreshFailed(String error) {
-    return 'Failed to refresh metadata: $error';
+    return 'Không làm mới được siêu dữ liệu: $error';
   }
 
   @override
@@ -4994,7 +4997,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminRemoteSearchFailed(String error) {
-    return 'Remote search failed: $error';
+    return 'Tìm kiếm từ xa không thành công: $error';
   }
 
   @override
@@ -5008,7 +5011,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminContentTypeUpdateFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Không thể cập nhật loại nội dung: $error';
   }
 
   @override
@@ -5023,12 +5026,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return 'Đã cập nhật hình ảnh $imageType';
   }
 
   @override
   String adminImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Không tải được hình ảnh: $error';
   }
 
   @override
@@ -5040,27 +5043,27 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return 'Đã tải lên hình ảnh $imageType';
   }
 
   @override
   String adminImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Không thể tải hình ảnh lên: $error';
   }
 
   @override
   String adminDeleteImage(String imageType) {
-    return 'Delete $imageType image';
+    return 'Xóa hình ảnh $imageType';
   }
 
   @override
   String adminImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return '$imageType đã xóa hình ảnh';
   }
 
   @override
   String adminImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Không xóa được hình ảnh: $error';
   }
 
   @override
@@ -5071,7 +5074,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminTunerDiscoveryFailed(String error) {
-    return 'Tuner discovery failed: $error';
+    return 'Phát hiện bộ điều chỉnh không thành công: $error';
   }
 
   @override
@@ -5094,7 +5097,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminTunerAddFailed(String error) {
-    return 'Failed to add tuner: $error';
+    return 'Không thể thêm bộ điều chỉnh: $error';
   }
 
   @override
@@ -5117,12 +5120,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminProviderAddFailed(String error) {
-    return 'Failed to add provider: $error';
+    return 'Không thể thêm nhà cung cấp: $error';
   }
 
   @override
   String adminTunerRemoveFailed(String error) {
-    return 'Failed to remove tuner: $error';
+    return 'Không xóa được bộ dò sóng: $error';
   }
 
   @override
@@ -5130,12 +5133,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminTunerResetFailed(String error) {
-    return 'Failed to reset tuner: $error';
+    return 'Không đặt lại được bộ dò sóng: $error';
   }
 
   @override
   String adminProviderRemoveFailed(String error) {
-    return 'Failed to remove provider: $error';
+    return 'Không xóa được nhà cung cấp: $error';
   }
 
   @override
@@ -5158,7 +5161,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminSettingsSaveFailed(String error) {
-    return 'Failed to save settings: $error';
+    return 'Không lưu được cài đặt: $error';
   }
 
   @override
@@ -5175,7 +5178,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Không cập nhật được ánh xạ: $error';
   }
 
   @override
@@ -5201,22 +5204,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminRecordingPathDisplay(String path) {
-    return 'Recording path: $path';
+    return 'Đường dẫn ghi: $path';
   }
 
   @override
   String adminSeriesPathDisplay(String path) {
-    return 'Series path: $path';
+    return 'Đường dẫn chuỗi: $path';
   }
 
   @override
   String adminPrePaddingDisplay(int minutes) {
-    return 'Pre-padding: $minutes min';
+    return 'Đệm trước: $minutes phút';
   }
 
   @override
   String adminPostPaddingDisplay(int minutes) {
-    return 'Post-padding: $minutes min';
+    return 'Đệm sau: $minutes phút';
   }
 
   @override
@@ -5250,7 +5253,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminRestoreConfirmMessage(String name) {
-    return 'Restore backup $name now?';
+    return 'Khôi phục bản sao lưu $name ngay bây giờ?';
   }
 
   @override
@@ -5296,27 +5299,27 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminLogsMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '${minutes}m trước';
   }
 
   @override
   String adminLogsHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '${hours}h trước';
   }
 
   @override
   String adminLogsDaysAgo(int days) {
-    return '${days}d ago';
+    return '${days}d trước';
   }
 
   @override
   String adminLogViewerLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'Không tải được $fileName';
   }
 
   @override
   String adminLogViewerMatches(int count) {
-    return '$count matches';
+    return '$count trùng khớp';
   }
 
   @override
@@ -5426,22 +5429,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminMetadataImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return 'Đã cập nhật hình ảnh $imageType';
   }
 
   @override
   String adminMetadataImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return 'Đã tải lên hình ảnh $imageType';
   }
 
   @override
   String adminMetadataImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return '$imageType đã xóa hình ảnh';
   }
 
   @override
   String adminMetadataImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Không tải được hình ảnh: $error';
   }
 
   @override
@@ -5450,12 +5453,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminMetadataImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Không thể tải hình ảnh lên: $error';
   }
 
   @override
   String adminMetadataDeleteImageTitle(String imageType) {
-    return 'Delete $imageType image';
+    return 'Xóa hình ảnh $imageType';
   }
 
   @override
@@ -5464,12 +5467,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminMetadataImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Không xóa được hình ảnh: $error';
   }
 
   @override
   String adminMetadataChooseImage(String imageType) {
-    return 'Choose $imageType image';
+    return 'Chọn hình ảnh $imageType';
   }
 
   @override
@@ -5502,7 +5505,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminPluginsUpdateAvailable(String version) {
-    return 'Update available: v$version';
+    return 'Đã có bản cập nhật: v$version';
   }
 
   @override
@@ -5526,7 +5529,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminPluginsInstallUpdateVersioned(String version) {
-    return 'Install update (v$version)';
+    return 'Cài đặt bản cập nhật (v$version)';
   }
 
   @override
@@ -5538,7 +5541,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminPluginsInstalling(String name) {
-    return '\"$name\" is being installed...';
+    return '\"$name\" đang được cài đặt...';
   }
 
   @override
@@ -5558,7 +5561,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminPluginDetailSettingsTitle(String name) {
-    return '$name Settings';
+    return '$name Cài đặt';
   }
 
   @override
@@ -5598,7 +5601,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminReposLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Không thể tải kho lưu trữ: $error';
   }
 
   @override
@@ -5606,7 +5609,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminReposRemoveConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Bạn có chắc chắn muốn xóa \"$name\" không?';
   }
 
   @override
@@ -5614,7 +5617,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminReposSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Không lưu được kho lưu trữ: $error';
   }
 
   @override
@@ -5889,17 +5892,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return 'Daily at $time';
+    return 'Hàng ngày tại $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return 'Every $day at $time';
+    return 'Mọi $day tại $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return 'Every $duration';
+    return 'Mọi $duration';
   }
 
   @override
@@ -5966,17 +5969,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminActivityDaysAgo(int days) {
-    return '${days}d ago';
+    return '${days}d trước';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '${hours}h trước';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '${minutes}m trước';
   }
 
   @override
@@ -6092,7 +6095,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Không thể cập nhật loại nội dung: $error';
   }
 
   @override
@@ -6115,12 +6118,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Không cập nhật được ánh xạ: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return 'Time limit: $duration';
+    return 'Giới hạn thời gian: $duration';
   }
 
   @override
@@ -6202,7 +6205,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String syncPlayQueueItemFallback(int index) {
-    return 'Item $index';
+    return 'Mục $index';
   }
 
   @override
@@ -6250,12 +6253,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName joined SyncPlay group';
+    return '$userName đã tham gia nhóm SyncPlay';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName left SyncPlay group';
+    return '$userName đã rời khỏi nhóm SyncPlay';
   }
 
   @override
@@ -6267,7 +6270,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return 'Syncing playback to $groupName';
+    return 'Đang đồng bộ hóa quá trình phát lại với $groupName';
   }
 
   @override
@@ -6404,12 +6407,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return 'Cast control failed: $error';
+    return 'Điều khiển truyền không thành công: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return '$kind Controls';
+    return '$kind Điều khiển';
   }
 
   @override
@@ -6420,7 +6423,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return 'Stop $kind';
+    return 'Dừng $kind';
   }
 
   @override
@@ -6443,12 +6446,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String pinEnterNDigit(int length) {
-    return 'Enter a $length-digit PIN';
+    return 'Nhập mã PIN $length-chữ số';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return 'Enter your $length-digit PIN';
+    return 'Nhập mã PIN $length-chữ số của bạn';
   }
 
   @override
@@ -6494,7 +6497,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect failed: $message';
+    return 'Kết nối nhanh không thành công: $message';
   }
 
   @override
@@ -6505,7 +6508,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String remoteCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Lệnh không thành công: $error';
   }
 
   @override
@@ -6534,7 +6537,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String castingFailed(String error) {
-    return 'Failed to start casting: $error';
+    return 'Không thể bắt đầu truyền: $error';
   }
 
   @override
@@ -6579,7 +6582,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String trackActionDownloading(String name) {
-    return 'Downloading $name...';
+    return 'Đang tải xuống $name...';
   }
 
   @override
@@ -6668,7 +6671,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String skipSegment(String segment) {
-    return 'Skip $segment';
+    return 'Bỏ qua $segment';
   }
 
   @override
@@ -6679,12 +6682,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return 'Downloading $current/$total — $fileName';
+    return 'Đang tải xuống $current/$total — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return 'Downloading $fileName';
+    return 'Đang tải xuống $fileName';
   }
 
   @override
@@ -6909,7 +6912,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'Gắn dấu sao cho dự án trên GitHub hoặc đóng góp';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'HỢP PHÁP';
@@ -7024,13 +7027,13 @@ class AppLocalizationsVi extends AppLocalizations {
       'Media3 (được khuyến nghị)';
 
   @override
-  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
+  String get settingsPlaybackEngineMedia3Legacy => 'Media3 (cũ)';
 
   @override
   String get settingsPlaybackEngineMpvLegacy => 'mpv (cũ)';
 
   @override
-  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (được khuyến nghị)';
 
   @override
   String get settingsDolbyVisionFallback => 'Dự phòng Dolby Vision';
@@ -7211,539 +7214,547 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String latestLibraryName(String libraryName) {
-    return 'Latest $libraryName';
+    return 'Mới nhất $libraryName';
   }
 
   @override
-  String get autoplayNextEpisode => 'Autoplay Next Episode';
+  String get autoplayNextEpisode => 'Tự động phát tập tiếp theo';
 
   @override
   String get autoplayNextEpisodeSubtitle =>
-      'Automatically play the next episode when available.';
+      'Tự động phát tập tiếp theo khi có sẵn.';
 
   @override
-  String get skipSilenceTitle => 'Skip silence';
+  String get skipSilenceTitle => 'Bỏ qua sự im lặng';
 
   @override
   String get skipSilenceSubtitle =>
-      'Automatically skip silent audio segments when supported by the stream.';
+      'Tự động bỏ qua các đoạn âm thanh im lặng khi được luồng hỗ trợ.';
 
   @override
-  String get allowExternalAudioEffectsTitle => 'Allow external audio effects';
+  String get allowExternalAudioEffectsTitle =>
+      'Cho phép hiệu ứng âm thanh bên ngoài';
 
   @override
   String get allowExternalAudioEffectsSubtitle =>
-      'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.';
+      'Cho phép các ứng dụng bộ chỉnh âm và hiệu ứng (ví dụ: Wavelet) đính kèm vào các phiên phát lại Media3.';
 
   @override
-  String get disableTunnelingTitle => 'Disable tunneling';
+  String get disableTunnelingTitle => 'Vô hiệu hóa đường hầm';
 
   @override
   String get disableTunnelingSubtitle =>
-      'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
+      'Buộc phát lại không theo đường hầm. Hữu ích trên các thiết bị có sự gián đoạn về âm thanh/video trong đường hầm.';
 
   @override
-  String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
+  String get mapDolbyVisionP7Title => 'Ánh xạ hồ sơ Dolby Vision 7 tới HEVC';
 
   @override
   String get mapDolbyVisionP7Subtitle =>
-      'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.';
+      'Phát các luồng hồ sơ 7 Dolby Vision dưới dạng HEVC tương thích HDR10 trên các thiết bị không phải DV.';
 
   @override
-  String get subtitlesUseEmbeddedStyles => 'Use embedded subtitle styles';
+  String get subtitlesUseEmbeddedStyles => 'Sử dụng kiểu phụ đề được nhúng';
 
   @override
   String get subtitlesUseEmbeddedStylesSubtitle =>
-      'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.';
+      'Áp dụng màu sắc, phông chữ và vị trí được nhúng trong bản phụ đề. Thay vào đó, hãy tắt sử dụng tùy chọn kiểu chú thích của bạn.';
 
   @override
   String get subtitlesUseEmbeddedFontSizes =>
-      'Use embedded subtitle font sizes';
+      'Sử dụng kích thước phông chữ phụ đề được nhúng';
 
   @override
   String get subtitlesUseEmbeddedFontSizesSubtitle =>
-      'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
+      'Áp dụng gợi ý về kích thước phông chữ được nhúng trong phụ đề. Tắt để sử dụng kích thước phụ đề từ tùy chọn kiểu của bạn.';
 
   @override
-  String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
+  String get useDetailedSubHeadings => 'Sử dụng các tiêu đề phụ chi tiết';
 
   @override
   String get useDetailedSubHeadingsDescription =>
-      'Show detailed or minimal subrow on Library pages.';
+      'Hiển thị subrow chi tiết hoặc tối thiểu trên các trang Thư viện.';
 
   @override
-  String get savedThemesDeleteDialogTitle => 'Delete saved theme?';
+  String get savedThemesDeleteDialogTitle => 'Xóa chủ đề đã lưu?';
 
   @override
   String savedThemesDeleteDialogMessage(String themeName) {
-    return 'Remove \"$themeName\" from this device cache?';
+    return 'Xóa \"$themeName\" khỏi bộ đệm của thiết bị này?';
   }
 
   @override
   String savedThemesDeletedMessage(String themeName) {
-    return 'Deleted \"$themeName\" from this device.';
+    return 'Đã xóa \"$themeName\" khỏi thiết bị này.';
   }
 
   @override
   String savedThemesDeleteFailedMessage(String themeName) {
-    return 'Could not delete \"$themeName\".';
+    return 'Không thể xóa \"$themeName\".';
   }
 
   @override
-  String get savedThemesTitle => 'Saved themes';
+  String get savedThemesTitle => 'Chủ đề đã lưu';
 
   @override
   String get savedThemesDescription =>
-      'These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.';
+      'Đây là các chủ đề được tải xuống từ plugin Moonfin cho máy chủ hiện tại. Việc xóa chỉ xóa bản sao cục bộ này.';
 
   @override
-  String get savedThemesEmpty => 'No saved themes were found for this server.';
+  String get savedThemesEmpty =>
+      'Không tìm thấy chủ đề đã lưu nào cho máy chủ này.';
 
   @override
   String savedThemesCurrentThemeId(String themeId) {
-    return '$themeId • Currently active';
+    return '$themeId • Hiện đang hoạt động';
   }
 
   @override
-  String get savedThemesDeleteTooltip => 'Delete saved theme';
+  String get savedThemesDeleteTooltip => 'Xóa chủ đề đã lưu';
 
   @override
   String get savedThemesManageSubtitle =>
-      'Manage downloaded plugin themes on this device';
+      'Quản lý các chủ đề plugin đã tải xuống trên thiết bị này';
 
   @override
-  String get kefinTweaksTitle => 'KefinTweaks';
+  String get kefinTweaksTitle => 'KefinTinh chỉnh';
 
   @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
+  String get homeScreenSectionsTitle => 'Phần màn hình chính';
 
   @override
-  String get themeEditor => 'Theme Editor';
+  String get themeEditor => 'Trình chỉnh sửa chủ đề';
 
   @override
   String get themeEditorSubtitle =>
-      'Open the Moonfin Theme Editor in your browser';
+      'Mở Trình chỉnh sửa chủ đề Moonfin trong trình duyệt của bạn';
 
   @override
-  String get homeScreen => 'Home Screen';
+  String get homeScreen => 'Màn hình chính';
 
   @override
-  String get bottomBar => 'Bottom Bar';
+  String get bottomBar => 'Thanh dưới cùng';
 
   @override
-  String get homeRowsStyleClassic => 'Classic';
+  String get homeRowsStyleClassic => 'Cổ điển';
 
   @override
-  String get homeRowsStyleModern => 'Modern';
+  String get homeRowsStyleModern => 'Hiện đại';
 
   @override
-  String get homeRowsSection => 'Home Rows';
+  String get homeRowsSection => 'Hàng nhà';
 
   @override
-  String get rowsType => 'Rows Type';
+  String get rowsType => 'Loại hàng';
 
   @override
   String get rowsTypeDescription =>
-      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
+      'Classic giữ loại hình ảnh và lớp phủ thông tin trên mỗi hàng. Hiện đại sử dụng các hàng từ dọc đến phông nền.';
 
   @override
-  String get displayFavoritesRows => 'Display Favorites Rows';
+  String get displayFavoritesRows => 'Hiển thị hàng yêu thích';
 
   @override
   String get displayFavoritesRowsSubtitle =>
-      'Show Favorite Movies, Series, and other favorite rows in Home Sections.';
+      'Hiển thị Phim, Bộ phim yêu thích và các hàng yêu thích khác trong Phần Trang chủ.';
 
   @override
-  String get favoritesRowSorting => 'Favorites Row Sorting';
+  String get favoritesRowSorting => 'Sắp xếp hàng yêu thích';
 
   @override
   String get favoritesRowSortingDescription =>
-      'Sort Favorites rows by date added, release date, alphabetically, and more.';
+      'Sắp xếp các hàng Mục yêu thích theo ngày thêm, ngày phát hành, theo thứ tự bảng chữ cái, v.v.';
 
   @override
-  String get displayCollectionsRows => 'Display Collections Rows';
+  String get displayCollectionsRows => 'Hiển thị các hàng bộ sưu tập';
 
   @override
   String get displayCollectionsRowsSubtitle =>
-      'Show Collections rows in Home Sections.';
+      'Hiển thị các hàng Bộ sưu tập trong Phần Trang chủ.';
 
   @override
-  String get collectionsRowSorting => 'Collections Row Sorting';
+  String get collectionsRowSorting => 'Sắp xếp hàng bộ sưu tập';
 
   @override
   String get collectionsRowSortingDescription =>
-      'Sort Collections rows by date added, release date, alphabetically, and more.';
+      'Sắp xếp các hàng Bộ sưu tập theo ngày thêm, ngày phát hành, theo thứ tự bảng chữ cái, v.v.';
 
   @override
-  String get displayGenresRows => 'Display Genres Rows';
+  String get displayGenresRows => 'Hiển thị dòng thể loại';
 
   @override
-  String get displayGenresRowsSubtitle => 'Show Genres rows in Home Sections.';
+  String get displayGenresRowsSubtitle =>
+      'Hiển thị các hàng Thể loại trong Phần Trang chủ.';
 
   @override
-  String get genresRowSorting => 'Genres Row Sorting';
+  String get genresRowSorting => 'Sắp xếp hàng thể loại';
 
   @override
   String get genresRowSortingDescription =>
-      'Sort Genres rows by date added, release date, alphabetically, and more.';
+      'Sắp xếp các hàng Thể loại theo ngày thêm, ngày phát hành, theo thứ tự bảng chữ cái, v.v.';
 
   @override
-  String get genresRowItems => 'Genres Row Items';
+  String get genresRowItems => 'Các mục hàng thể loại';
 
   @override
   String get genresRowItemsDescription =>
-      'Show Movies, Series, or both in Genres rows.';
+      'Hiển thị Phim, Bộ hoặc cả hai trong hàng Thể loại.';
 
   @override
-  String get appearance => 'Appearance';
+  String get appearance => 'Vẻ bề ngoài';
 
   @override
-  String get cardSize => 'Card Size';
+  String get cardSize => 'Kích thước thẻ';
 
   @override
-  String get externalPlayerApp => 'External player app';
+  String get externalPlayerApp => 'Ứng dụng trình phát bên ngoài';
 
   @override
   String get externalPlayerAskEachTimeSubtitle =>
-      'Show app chooser when playback starts.';
+      'Hiển thị trình chọn ứng dụng khi bắt đầu phát lại.';
 
   @override
-  String get loadingInstalledPlayers => 'Loading installed players...';
+  String get loadingInstalledPlayers => 'Đang tải trình phát đã cài đặt...';
 
   @override
-  String get connection => 'Connection';
+  String get connection => 'Sự liên quan';
 
   @override
-  String get audioTranscodeTarget => 'Audio Transcode Target';
+  String get audioTranscodeTarget => 'Mục tiêu chuyển mã âm thanh';
 
   @override
-  String get passthrough => 'Passthrough';
+  String get passthrough => 'Truyền qua';
 
   @override
-  String get supportedOnThisDevice => 'Supported on this device';
+  String get supportedOnThisDevice => 'Được hỗ trợ trên thiết bị này';
 
   @override
-  String get notSupportedOnThisDevice => 'Not Supported on this device';
+  String get notSupportedOnThisDevice => 'Không được hỗ trợ trên thiết bị này';
 
   @override
-  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) Passthrough';
+  String get settingsAudioDtsXPassthrough => 'Truyền qua DTS:X (DTS UHD)';
 
   @override
   String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'Bitstream DTS:X (DTS UHD) to external decoder.';
+      'Dòng bit DTS:X (DTS UHD) tới bộ giải mã bên ngoài.';
 
   @override
   String get settingsAudioTrueHdJocPassthrough =>
-      'TrueHD with Atmos (JOC) Passthrough';
+      'TrueHD với Truyền qua Atmos (JOC)';
 
   @override
-  String get mediaPlayerBehavior => 'Media Player Behavior';
+  String get mediaPlayerBehavior => 'Hành vi của trình phát đa phương tiện';
 
   @override
-  String get playbackEnhancements => 'Playback Enhancements';
+  String get playbackEnhancements => 'Cải tiến phát lại';
 
   @override
-  String get alwaysOn => 'Always on.';
+  String get alwaysOn => 'Luôn bật.';
 
   @override
   String get replaceSkipOutroWithNextUpDisplay =>
-      'Replace Skip Outro with Next Up Display';
+      'Thay thế Skip Outro bằng Next Up Display';
 
   @override
   String get replaceSkipOutroWithNextUpDisplaySubtitle =>
-      'Show the Next Up overlay instead of the Skip Outro button.';
+      'Hiển thị lớp phủ Tiếp theo thay vì nút Bỏ qua.';
 
   @override
-  String get playerRouting => 'Player Routing';
+  String get playerRouting => 'Định tuyến người chơi';
 
   @override
-  String get preferSoftwareDecoders => 'Prefer software decoders';
+  String get preferSoftwareDecoders => 'Ưu tiên phần mềm giải mã';
 
   @override
   String get preferSoftwareDecodersSubtitle =>
-      'Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.';
+      'Sử dụng FFmpeg (âm thanh) và libgav1 (AV1) trước bộ giải mã phần cứng. Tắt nếu quá trình truyền âm thanh HDMI bị hỏng.';
 
   @override
-  String get useExternalPlayer => 'Use external player';
+  String get useExternalPlayer => 'Sử dụng trình phát bên ngoài';
 
   @override
   String get useExternalPlayerSubtitle =>
-      'Open video playback in your selected external app on Android TV.';
+      'Mở tính năng phát lại video trong ứng dụng bên ngoài đã chọn của bạn trên Android TV.';
 
   @override
-  String get automaticQueuing => 'Automatic Queuing';
+  String get automaticQueuing => 'Xếp hàng tự động';
 
   @override
-  String get preferSdhSubtitles => 'Prefer SDH subtitles';
+  String get preferSdhSubtitles => 'Ưu tiên phụ đề SDH';
 
   @override
   String get preferSdhSubtitlesSubtitle =>
-      'Prioritize SDH/CC subtitle tracks when auto-selecting.';
+      'Ưu tiên các bản phụ đề SDH/CC khi tự động chọn.';
 
   @override
-  String get webDiagnostics => 'Web diagnostics';
+  String get webDiagnostics => 'Chẩn đoán web';
 
   @override
-  String get webDiagnosticsTitle => 'Moonfin Web Diagnostics';
+  String get webDiagnosticsTitle => 'Moonfin Chẩn đoán web';
 
   @override
   String get webDiagnosticsIntro =>
-      'Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).';
+      'Sử dụng trang này để chẩn đoán các sự cố kết nối trình duyệt (CORS, nội dung hỗn hợp và cài đặt khám phá).';
 
   @override
   String get webDiagnosticsDetectedMixedContentFailure =>
-      'Detected Mixed-Content Failure';
+      'Đã phát hiện lỗi nội dung hỗn hợp';
 
   @override
   String get webDiagnosticsDetectedCorsPreflightFailure =>
-      'Detected CORS/Preflight Failure';
+      'Đã phát hiện CORS/Lỗi trước ánh sáng';
 
   @override
   String get webDiagnosticsMixedContentFailureBody =>
-      'Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.';
+      'Moonfin đã phát hiện thấy một trang HTTPS đang cố gọi URL máy chủ HTTP. Trình duyệt chặn yêu cầu này trước khi nó đến máy chủ của bạn.';
 
   @override
   String get webDiagnosticsCorsFailureBody =>
-      'Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.';
+      'Moonfin đã phát hiện ra lỗi yêu cầu ở cấp trình duyệt thường xảy ra do thiếu tiêu đề CORS hoặc preflight trên máy chủ phương tiện.';
 
   @override
   String webDiagnosticsTargetUrl(String url) {
-    return 'Target URL: $url';
+    return 'URL mục tiêu: $url';
   }
 
   @override
   String webDiagnosticsDetail(String detail) {
-    return 'Detail: $detail';
+    return 'Chi tiết: $detail';
   }
 
   @override
-  String get webDiagnosticsCurrentRuntimeContext => 'Current Runtime Context';
+  String get webDiagnosticsCurrentRuntimeContext =>
+      'Bối cảnh thời gian chạy hiện tại';
 
   @override
-  String get webDiagnosticsOrigin => 'Origin';
+  String get webDiagnosticsOrigin => 'Nguồn gốc';
 
   @override
-  String get webDiagnosticsScheme => 'Scheme';
+  String get webDiagnosticsScheme => 'Cơ chế';
 
   @override
-  String get webDiagnosticsPluginMode => 'Plugin Mode';
+  String get webDiagnosticsPluginMode => 'Chế độ bổ trợ';
 
   @override
-  String get webDiagnosticsWebRtcScan => 'WebRTC Scan';
+  String get webDiagnosticsWebRtcScan => 'Quét WebRTC';
 
   @override
-  String get webDiagnosticsForcedServerUrl => 'Forced Server URL';
+  String get webDiagnosticsForcedServerUrl => 'URL máy chủ bắt buộc';
 
   @override
-  String get webDiagnosticsDefaultServerUrl => 'Default Server URL';
+  String get webDiagnosticsDefaultServerUrl => 'URL máy chủ mặc định';
 
   @override
-  String get webDiagnosticsDiscoveryProxyUrl => 'Discovery Proxy URL';
+  String get webDiagnosticsDiscoveryProxyUrl => 'URL proxy khám phá';
 
   @override
-  String get notConfigured => 'not configured';
+  String get notConfigured => 'không được cấu hình';
 
   @override
-  String get webDiagnosticsMixedContent => 'Mixed Content';
+  String get webDiagnosticsMixedContent => 'Nội dung hỗn hợp';
 
   @override
   String get webDiagnosticsMixedContentDetected =>
-      'This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.';
+      'Trang này được tải qua HTTPS nhưng một hoặc nhiều URL được định cấu hình là HTTP. Trình duyệt chặn các trang HTTPS gọi API HTTP.';
 
   @override
   String get webDiagnosticsMixedContentFix =>
-      'Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.';
+      'Khắc phục: phân phối máy chủ phương tiện hoặc điểm cuối proxy của bạn qua HTTPS hoặc chỉ tải Moonfin qua HTTP trên các mạng cục bộ đáng tin cậy.';
 
   @override
   String get webDiagnosticsNoMixedContentDetected =>
-      'No obvious mixed-content configuration detected from current runtime settings.';
+      'Không phát hiện thấy cấu hình nội dung hỗn hợp rõ ràng nào từ cài đặt thời gian chạy hiện tại.';
 
   @override
-  String get webDiagnosticsCorsChecklist => 'CORS Checklist';
+  String get webDiagnosticsCorsChecklist => 'Danh sách kiểm tra CORS';
 
   @override
   String get webDiagnosticsCorsChecklistItem1 =>
-      '• Allow the browser origin in Access-Control-Allow-Origin.';
+      '• Cho phép nguồn gốc trình duyệt trong Access-Control-Allow-Origin.';
 
   @override
   String get webDiagnosticsCorsChecklistItem2 =>
-      '• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.';
+      '• Bao gồm Ủy quyền, X-Emby-Authorization và X-Emby-Token trong Access-Control-Allow-Headers.';
 
   @override
   String get webDiagnosticsCorsChecklistItem3 =>
-      '• Expose Content-Range and Accept-Ranges for streaming and seek behavior.';
+      '• Hiển thị Phạm vi nội dung và Phạm vi chấp nhận cho hành vi phát trực tuyến và tìm kiếm.';
 
   @override
   String get webDiagnosticsCorsChecklistItem4 =>
-      '• Return 204 to OPTIONS preflight requests.';
+      '• Trả về 204 cho các yêu cầu preflight của OPTIONS.';
 
   @override
   String get webDiagnosticsHeaderSnippetTitle =>
-      'Example Header Snippet (nginx-style)';
+      'Đoạn tiêu đề ví dụ (kiểu nginx)';
 
   @override
-  String get note => 'Note';
+  String get note => 'Ghi chú';
 
   @override
   String get webDiagnosticsNonWebNote =>
-      'This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.';
+      'Tuyến chẩn đoán này dành cho các bản dựng web. Nếu bạn thấy điều này trên nền tảng khác thì những bước kiểm tra này có thể không áp dụng.';
 
   @override
-  String get backToServerSelect => 'Back To Server Select';
+  String get backToServerSelect => 'Quay lại máy chủ Chọn';
 
   @override
-  String get signOutAllUsers => 'Sign Out All Users';
+  String get signOutAllUsers => 'Đăng xuất tất cả người dùng';
 
   @override
   String get voiceSearchPermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied. Enable it in system settings.';
+      'Quyền sử dụng micrô bị từ chối vĩnh viễn. Kích hoạt nó trong cài đặt hệ thống.';
 
   @override
   String get voiceSearchPermissionRequired =>
-      'Microphone permission is required for voice search.';
+      'Cần có sự cho phép của micrô để tìm kiếm bằng giọng nói.';
 
   @override
-  String get voiceSearchNoMatch => 'Did not catch that. Try again.';
+  String get voiceSearchNoMatch => 'Không nắm bắt được điều đó. Hãy thử lại.';
 
   @override
-  String get voiceSearchNoSpeechDetected => 'No speech detected.';
+  String get voiceSearchNoSpeechDetected =>
+      'Không phát hiện thấy giọng nói nào.';
 
   @override
-  String get voiceSearchMicrophoneError => 'Microphone error.';
+  String get voiceSearchMicrophoneError => 'Lỗi micro.';
 
   @override
-  String get voiceSearchNeedsInternet => 'Voice search needs internet.';
+  String get voiceSearchNeedsInternet =>
+      'Tìm kiếm bằng giọng nói cần có internet.';
 
   @override
-  String get voiceSearchServiceBusy => 'Voice service is busy. Try again.';
+  String get voiceSearchServiceBusy => 'Dịch vụ thoại đang bận. Hãy thử lại.';
 
   @override
   String get microphonePermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied.';
+      'Quyền sử dụng micrô bị từ chối vĩnh viễn.';
 
   @override
-  String get microphonePermissionDenied => 'Microphone permission is denied.';
+  String get microphonePermissionDenied => 'Quyền sử dụng micrô bị từ chối.';
 
   @override
   String get speechRecognitionUnavailable =>
-      'Speech recognition is unavailable on this device.';
+      'Tính năng nhận dạng giọng nói không khả dụng trên thiết bị này.';
 
   @override
-  String get openIosRoutePicker => 'Open iOS route picker';
+  String get openIosRoutePicker => 'Mở bộ chọn tuyến đường iOS';
 
   @override
   String get airPlayRoutePickerUnavailable =>
-      'AirPlay route picker is unavailable on this device.';
+      'Công cụ chọn tuyến AirPlay không khả dụng trên thiết bị này.';
 
   @override
-  String get videos => 'Videos';
+  String get videos => 'Video';
 
   @override
-  String get trailers => 'Trailers';
+  String get trailers => 'Xe kéo';
 
   @override
-  String get programs => 'Programs';
+  String get programs => 'Chương trình';
 
   @override
-  String get songs => 'Songs';
+  String get songs => 'Bài hát';
 
   @override
-  String get photoAlbums => 'Photo Albums';
+  String get photoAlbums => 'Album ảnh';
 
   @override
-  String get photos => 'Photos';
+  String get photos => 'Ảnh';
 
   @override
-  String get people => 'People';
+  String get people => 'Mọi người';
 
   @override
-  String get recentlyReleasedEpisodes => 'Recently Released Episodes';
+  String get recentlyReleasedEpisodes => 'Các tập phát hành gần đây';
 
   @override
-  String get watchAgain => 'Watch Again';
+  String get watchAgain => 'Xem lại';
 
   @override
-  String get guestAppearances => 'Guest Appearances';
+  String get guestAppearances => 'Khách mời xuất hiện';
 
   @override
-  String get appearancesSeerr => 'Appearances (Seerr)';
+  String get appearancesSeerr => 'Xuất hiện (Seerr)';
 
   @override
-  String get watchWithGroup => 'Watch with group';
+  String get watchWithGroup => 'Xem cùng nhóm';
 
   @override
-  String get errors => 'Errors';
+  String get errors => 'Lỗi';
 
   @override
-  String get warnings => 'Warnings';
+  String get warnings => 'Cảnh báo';
 
   @override
-  String get disk => 'Disk';
+  String get disk => 'Đĩa';
 
   @override
-  String get openInBrowser => 'Open in Browser';
+  String get openInBrowser => 'Mở trong trình duyệt';
 
   @override
   String get embeddedBrowserNotAvailable =>
-      'Embedded browser is not available on this platform.';
+      'Trình duyệt nhúng không có sẵn trên nền tảng này.';
 
   @override
   String get adminRestartServerConfirmation =>
-      'Are you sure you want to restart the server?';
+      'Bạn có chắc chắn muốn khởi động lại máy chủ không?';
 
   @override
   String get adminShutdownServerConfirmation =>
-      'Are you sure you want to shut down the server? You will need to restart it manually.';
+      'Bạn có chắc chắn muốn tắt máy chủ không? Bạn sẽ cần phải khởi động lại nó bằng tay.';
 
   @override
-  String get internal => 'Internal';
+  String get internal => 'Nội bộ';
 
   @override
-  String get idle => 'Idle';
+  String get idle => 'Nhàn rỗi';
 
   @override
   String get os => 'OS';
 
   @override
-  String get adminNoUsersFound => 'No users found';
+  String get adminNoUsersFound => 'Không tìm thấy người dùng nào';
 
   @override
-  String get adminNoUsersMatchSearch => 'No users match your search';
+  String get adminNoUsersMatchSearch =>
+      'Không có người dùng nào phù hợp với tìm kiếm của bạn';
 
   @override
-  String get adminNoDevicesFound => 'No devices found';
+  String get adminNoDevicesFound => 'Không tìm thấy thiết bị nào';
 
   @override
   String get adminNoDevicesMatchCurrentFilters =>
-      'No devices match the current filters';
+      'Không có thiết bị nào phù hợp với bộ lọc hiện tại';
 
   @override
-  String get passwordSet => 'Password set';
+  String get passwordSet => 'Đã đặt mật khẩu';
 
   @override
-  String get noPasswordConfigured => 'No password configured';
+  String get noPasswordConfigured => 'Không có mật khẩu được cấu hình';
 
   @override
-  String get remoteAccess => 'Remote Access';
+  String get remoteAccess => 'Truy cập từ xa';
 
   @override
-  String get localOnly => 'Local Only';
+  String get localOnly => 'Chỉ địa phương';
 
   @override
-  String get adminMediaAnalyticsLoadFailed => 'Failed to load media analytics';
+  String get adminMediaAnalyticsLoadFailed =>
+      'Không tải được phân tích phương tiện';
 
   @override
   String get analyticsCombinedAcrossLibraries =>
-      'Combined analytics across all media libraries.';
+      'Phân tích kết hợp trên tất cả các thư viện phương tiện.';
 
   @override
-  String get analyticsTopArtists => 'Top Artists';
+  String get analyticsTopArtists => 'Nghệ sĩ hàng đầu';
 
   @override
-  String get analyticsTopAuthors => 'Top Authors';
+  String get analyticsTopAuthors => 'tác giả hàng đầu';
 
   @override
-  String get analyticsTopContributors => 'Top Contributors';
+  String get analyticsTopContributors => 'Những người đóng góp hàng đầu';
 
   @override
   String analyticsLibrariesCount(int count) {
@@ -7758,91 +7769,91 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get analyticsNoIndexedMediaTotals =>
-      'No indexed media totals are available for this selection yet.';
+      'Hiện chưa có tổng số phương tiện được lập chỉ mục cho lựa chọn này.';
 
   @override
-  String get analyticsLibraryDetails => 'Library Details';
+  String get analyticsLibraryDetails => 'Chi tiết thư viện';
 
   @override
-  String get analyticsLibraryBreakdown => 'Library Breakdown';
+  String get analyticsLibraryBreakdown => 'Phân tích thư viện';
 
   @override
-  String get analyticsNoLibrariesAvailable => 'No libraries are available.';
+  String get analyticsNoLibrariesAvailable => 'Không có thư viện có sẵn.';
 
   @override
-  String get adminServerAdministrationTitle => 'Server Administration';
+  String get adminServerAdministrationTitle => 'Quản trị máy chủ';
 
   @override
-  String get adminServerPathData => 'Data';
+  String get adminServerPathData => 'dữ liệu';
 
   @override
-  String get adminServerPathImageCache => 'Image Cache';
+  String get adminServerPathImageCache => 'Bộ đệm hình ảnh';
 
   @override
-  String get adminServerPathCache => 'Cache';
+  String get adminServerPathCache => 'Bộ nhớ đệm';
 
   @override
-  String get adminServerPathLogs => 'Logs';
+  String get adminServerPathLogs => 'Nhật ký';
 
   @override
-  String get adminServerPathMetadata => 'Metadata';
+  String get adminServerPathMetadata => 'Siêu dữ liệu';
 
   @override
-  String get adminServerPathTranscode => 'Transcode';
+  String get adminServerPathTranscode => 'Chuyển mã';
 
   @override
   String get adminServerPathWeb => 'Web';
 
   @override
   String get adminNoServerPathsReturned =>
-      'No server paths returned by this server.';
+      'Không có đường dẫn máy chủ nào được máy chủ này trả về.';
 
   @override
   String adminPercentUsed(int percent) {
-    return '$percent% used';
+    return '$percent% đã sử dụng';
   }
 
   @override
-  String get userActivity => 'User Activity';
+  String get userActivity => 'Hoạt động của người dùng';
 
   @override
-  String get systemEvents => 'System Events';
+  String get systemEvents => 'Sự kiện hệ thống';
 
   @override
-  String get needsAttention => 'Needs Attention';
+  String get needsAttention => 'Cần chú ý';
 
   @override
-  String get adminDrawerSectionServer => 'Server';
+  String get adminDrawerSectionServer => 'Máy chủ';
 
   @override
-  String get adminDrawerSectionPlayback => 'Playback';
+  String get adminDrawerSectionPlayback => 'Phát lại';
 
   @override
-  String get adminDrawerSectionDevices => 'Devices';
+  String get adminDrawerSectionDevices => 'Thiết bị';
 
   @override
-  String get adminDrawerSectionAdvanced => 'Advanced';
+  String get adminDrawerSectionAdvanced => 'Trình độ cao';
 
   @override
-  String get adminDrawerSectionPlugins => 'Plugins';
+  String get adminDrawerSectionPlugins => 'Plugin';
 
   @override
-  String get adminDrawerSectionLiveTv => 'Live TV';
+  String get adminDrawerSectionLiveTv => 'Truyền hình trực tiếp';
 
   @override
-  String get homeVideos => 'Home Videos';
+  String get homeVideos => 'Trang chủ Video';
 
   @override
-  String get mixedContent => 'Mixed Content';
+  String get mixedContent => 'Nội dung hỗn hợp';
 
   @override
-  String get homeVideosAndPhotos => 'Home Videos & Photos';
+  String get homeVideosAndPhotos => 'Trang chủ Video & Hình ảnh';
 
   @override
-  String get mixedMoviesAndShows => 'Mixed Movies & Shows';
+  String get mixedMoviesAndShows => 'Phim và chương trình tổng hợp';
 
   @override
-  String get intelQuickSync => 'Intel Quick Sync';
+  String get intelQuickSync => 'Đồng bộ hóa nhanh Intel';
 
   @override
   String get rockchipMpp => 'Rockchip MPP';
@@ -7851,62 +7862,63 @@ class AppLocalizationsVi extends AppLocalizations {
   String get dolbyVision => 'Dolby Vision';
 
   @override
-  String get noRecordingsFound => 'No recordings found';
+  String get noRecordingsFound => 'Không tìm thấy bản ghi nào';
 
   @override
   String noImagePagesFoundInArchive(String extension) {
-    return 'No image pages found inside .$extension archive.';
+    return 'Không tìm thấy trang hình ảnh nào trong kho lưu trữ .$extension.';
   }
 
   @override
   String embeddedRendererFailed(int code, String description) {
-    return 'Embedded renderer failed ($code): $description';
+    return 'Trình kết xuất được nhúng không thành công ($code): $description';
   }
 
   @override
   String epubRendererFailed(int code, String description) {
-    return 'EPUB renderer failed ($code): $description';
+    return 'Trình kết xuất EPUB không thành công ($code): $description';
   }
 
   @override
   String missingLocalFileForReader(String uri) {
-    return 'Missing local file for reader: $uri';
+    return 'Thiếu tệp cục bộ cho trình đọc: $uri';
   }
 
   @override
   String httpStatusWhileOpeningBookData(int status, String uri) {
-    return 'HTTP $status while opening book data from $uri';
+    return 'HTTP $status trong khi mở dữ liệu sách từ $uri';
   }
 
   @override
   String get noReadableBookEndpointAvailable =>
-      'No readable book endpoint available';
+      'Không có điểm cuối sách có thể đọc được';
 
   @override
   String unsupportedComicArchiveFormat(String extension) {
-    return 'Unsupported comic archive format: .$extension';
+    return 'Định dạng lưu trữ truyện tranh không được hỗ trợ: .$extension';
   }
 
   @override
   String get cbrExtractionPluginUnavailable =>
-      'CBR extraction plugin is not available on this platform.';
+      'Plugin trích xuất CBR không có sẵn trên nền tảng này.';
 
   @override
-  String get failedToExtractCbrArchive => 'Failed to extract .cbr archive.';
+  String get failedToExtractCbrArchive =>
+      'Không thể giải nén kho lưu trữ .cbr.';
 
   @override
   String get cb7ExtractionUnavailable =>
-      'CB7 extraction is not available on this platform.';
+      'Trích xuất CB7 không có sẵn trên nền tảng này.';
 
   @override
   String get cb7ExtractionPluginUnavailable =>
-      'CB7 extraction plugin is not available on this platform.';
+      'Plugin trích xuất CB7 không có sẵn trên nền tảng này.';
 
   @override
-  String get closeGenrePanel => 'Close genre panel';
+  String get closeGenrePanel => 'Đóng bảng thể loại';
 
   @override
-  String get loadingShuffle => 'Loading shuffle...';
+  String get loadingShuffle => 'Đang tải ngẫu nhiên...';
 
   @override
   String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
@@ -7918,15 +7930,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get genresShuffleLabel => 'GENRES SHUFFLE';
 
   @override
-  String get autoHdrSwitching => 'Auto HDR Switching';
+  String get autoHdrSwitching => 'Tự động chuyển đổi HDR';
 
   @override
   String get autoHdrSwitchingDescription =>
-      'Automatically enable HDR for HDR video playback and restore display mode on exit.';
+      'Tự động bật HDR để phát lại video HDR và ​​khôi phục chế độ hiển thị khi thoát.';
 
   @override
-  String get whenFullscreen => 'When fullscreen';
+  String get whenFullscreen => 'Khi toàn màn hình';
 
   @override
-  String get transcodingLimits => 'Transcoding Limits';
+  String get transcodingLimits => 'Giới hạn chuyển mã';
 }

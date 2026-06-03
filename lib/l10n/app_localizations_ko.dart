@@ -6722,7 +6722,8 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsSupportMoonfin => 'Moonfin 지원';
 
   @override
-  String get settingsSupportMoonfinSubtitle => 'GitHub에서 프로젝트를 시작하거나 기여하세요.';
+  String get settingsSupportMoonfinSubtitle =>
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => '합법적인';

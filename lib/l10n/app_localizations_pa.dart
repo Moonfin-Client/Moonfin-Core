@@ -6890,7 +6890,7 @@ class AppLocalizationsPa extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'GitHub \'ਤੇ ਪ੍ਰੋਜੈਕਟ ਨੂੰ ਸਟਾਰ ਕਰੋ ਜਾਂ ਯੋਗਦਾਨ ਦਿਓ';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'ਕਾਨੂੰਨੀ';

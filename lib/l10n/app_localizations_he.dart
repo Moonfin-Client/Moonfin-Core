@@ -6810,7 +6810,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'סמן את הפרויקט ב-GitHub או תרום';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'מִשׁפָּטִי';

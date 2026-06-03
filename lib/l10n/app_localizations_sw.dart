@@ -6952,7 +6952,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'Weka nyota kwenye mradi kwenye GitHub au uchangie';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'KISHERIA';

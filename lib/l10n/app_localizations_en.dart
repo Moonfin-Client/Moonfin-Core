@@ -6853,7 +6853,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'Star the project on GitHub or contribute';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'LEGAL';
@@ -8000,6 +8000,13 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
       'Switch between Moonfin and Neon Pulse without restarting the app';
 
   @override
+  String get keyboardPreferSystemIme => 'Prefer system keyboard';
+
+  @override
+  String get keyboardPreferSystemImeDescription =>
+      'Use your device input method by default for text entry';
+
+  @override
   String get themeMoonfin => 'Moonfin';
 
   @override
@@ -8602,6 +8609,9 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get movies => 'Movies';
+
+  @override
+  String get musicVideos => 'Music Videos';
 
   @override
   String get other => 'Other';
@@ -9427,6 +9437,21 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get favoriteChannel => 'Favorite Channel';
 
   @override
+  String get record => 'Record';
+
+  @override
+  String get cancelRecordingAction => 'Cancel Recording';
+
+  @override
+  String get programSetToRecord => 'Program set to record';
+
+  @override
+  String get recordingCancelled => 'Recording cancelled';
+
+  @override
+  String get unableToCreateRecording => 'Unable to create recording';
+
+  @override
   String get watch => 'Watch';
 
   @override
@@ -10015,6 +10040,142 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   @override
   String get enableTrueHdAudio =>
       'Enable TrueHD audio (may not work on all platforms)';
+
+  @override
+  String get settingsAudioOutputMode => 'Audio Output Mode';
+
+  @override
+  String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
+
+  @override
+  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
+
+  @override
+  String get settingsAudioFallbackAacStereo => 'AAC Stereo';
+
+  @override
+  String get settingsAudioFallbackAc35_1 => 'AC3 5.1';
+
+  @override
+  String get settingsAudioFallbackEac35_1 => 'EAC3 5.1';
+
+  @override
+  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
+
+  @override
+  String get settingsAudioCodecPassthrough => 'Codec Passthrough';
+
+  @override
+  String get settingsAudioCodecPassthroughDescription =>
+      'Enable only formats your AVR or HDMI sink supports.';
+
+  @override
+  String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
+
+  @override
+  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) Passthrough';
+
+  @override
+  String get settingsAudioDtsCorePassthrough => 'DTS Core Passthrough';
+
+  @override
+  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA Passthrough';
+
+  @override
+  String get settingsAudioTrueHdPassthrough => 'TrueHD Passthrough';
+
+  @override
+  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos Passthrough';
+
+  @override
+  String get settingsAudioBitstreamEac3ToExternalDecoder =>
+      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
+
+  @override
+  String get settingsAudioBitstreamEac3JocToExternalDecoder =>
+      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
+
+  @override
+  String get settingsAudioBitstreamDtsHdToExternalDecoder =>
+      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
+
+  @override
+  String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
+      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
+
+  @override
+  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
+
+  @override
+  String get settingsDetectedAudioCapabilitiesUnavailable =>
+      'No runtime capability snapshot available yet.';
+
+  @override
+  String get settingsAudioRouteLabel => 'Route';
+
+  @override
+  String get settingsAudioDecodeLabel => 'Decode';
+
+  @override
+  String get settingsAudioPassthroughLabel => 'Passthrough';
+
+  @override
+  String get settingsAudioHdRoute => 'HD audio route';
+
+  @override
+  String get settingsAudioRouteHdmi => 'HDMI';
+
+  @override
+  String get settingsAudioRouteArc => 'ARC';
+
+  @override
+  String get settingsAudioRouteEarc => 'eARC';
+
+  @override
+  String get settingsAudioRouteBluetooth => 'Bluetooth';
+
+  @override
+  String get settingsAudioRouteSpeaker => 'Speaker';
+
+  @override
+  String settingsAudioPcmChannels(int count) {
+    return '${count}ch PCM';
+  }
+
+  @override
+  String get settingsAudioDiagnostics => 'Diagnostics';
+
+  @override
+  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
+
+  @override
+  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
+
+  @override
+  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
+
+  @override
+  String get settingsAudioDiagnosticsAllowedAudioCodecs =>
+      'Allowed Audio Codecs';
+
+  @override
+  String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
+      'HLS MPEG-TS Audio Codecs';
+
+  @override
+  String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
+      'HLS fMP4 Audio Codecs';
+
+  @override
+  String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
+      'audio-spdif passthrough';
+
+  @override
+  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
+
+  @override
+  String get settingsAudioDiagnosticsRouteHdAudioSupport =>
+      'Route HD Audio Support';
 
   @override
   String get nightMode => 'Night Mode';
@@ -14559,7 +14720,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get settingsSupportMoonfinSubtitle =>
-      'Star the project on GitHub or contribute';
+      'Donate a coffee to the developer';
 
   @override
   String get settingsLegal => 'LEGAL';
@@ -14859,4 +15020,720 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String latestLibraryName(String libraryName) {
     return 'Latest $libraryName';
   }
+
+  @override
+  String get autoplayNextEpisode => 'Autoplay Next Episode';
+
+  @override
+  String get autoplayNextEpisodeSubtitle =>
+      'Automatically play the next episode when available.';
+
+  @override
+  String get skipSilenceTitle => 'Skip silence';
+
+  @override
+  String get skipSilenceSubtitle =>
+      'Automatically skip silent audio segments when supported by the stream.';
+
+  @override
+  String get allowExternalAudioEffectsTitle => 'Allow external audio effects';
+
+  @override
+  String get allowExternalAudioEffectsSubtitle =>
+      'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.';
+
+  @override
+  String get disableTunnelingTitle => 'Disable tunneling';
+
+  @override
+  String get disableTunnelingSubtitle =>
+      'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
+
+  @override
+  String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
+
+  @override
+  String get mapDolbyVisionP7Subtitle =>
+      'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.';
+
+  @override
+  String get subtitlesUseEmbeddedStyles => 'Use embedded subtitle styles';
+
+  @override
+  String get subtitlesUseEmbeddedStylesSubtitle =>
+      'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.';
+
+  @override
+  String get subtitlesUseEmbeddedFontSizes =>
+      'Use embedded subtitle font sizes';
+
+  @override
+  String get subtitlesUseEmbeddedFontSizesSubtitle =>
+      'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
+
+  @override
+  String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
+
+  @override
+  String get useDetailedSubHeadingsDescription =>
+      'Show detailed or minimal subrow on Library pages.';
+
+  @override
+  String get savedThemesDeleteDialogTitle => 'Delete saved theme?';
+
+  @override
+  String savedThemesDeleteDialogMessage(String themeName) {
+    return 'Remove \"$themeName\" from this device cache?';
+  }
+
+  @override
+  String savedThemesDeletedMessage(String themeName) {
+    return 'Deleted \"$themeName\" from this device.';
+  }
+
+  @override
+  String savedThemesDeleteFailedMessage(String themeName) {
+    return 'Could not delete \"$themeName\".';
+  }
+
+  @override
+  String get savedThemesTitle => 'Saved themes';
+
+  @override
+  String get savedThemesDescription =>
+      'These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.';
+
+  @override
+  String get savedThemesEmpty => 'No saved themes were found for this server.';
+
+  @override
+  String savedThemesCurrentThemeId(String themeId) {
+    return '$themeId • Currently active';
+  }
+
+  @override
+  String get savedThemesDeleteTooltip => 'Delete saved theme';
+
+  @override
+  String get savedThemesManageSubtitle =>
+      'Manage downloaded plugin themes on this device';
+
+  @override
+  String get kefinTweaksTitle => 'KefinTweaks';
+
+  @override
+  String get homeScreenSectionsTitle => 'Home Screen Sections';
+
+  @override
+  String get themeEditor => 'Theme Editor';
+
+  @override
+  String get themeEditorSubtitle =>
+      'Open the Moonfin Theme Editor in your browser';
+
+  @override
+  String get homeScreen => 'Home Screen';
+
+  @override
+  String get bottomBar => 'Bottom Bar';
+
+  @override
+  String get homeRowsStyleClassic => 'Classic';
+
+  @override
+  String get homeRowsStyleModern => 'Modern';
+
+  @override
+  String get homeRowsSection => 'Home Rows';
+
+  @override
+  String get rowsType => 'Rows Type';
+
+  @override
+  String get rowsTypeDescription =>
+      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
+
+  @override
+  String get displayFavoritesRows => 'Display Favorites Rows';
+
+  @override
+  String get displayFavoritesRowsSubtitle =>
+      'Show Favorite Movies, Series, and other favorite rows in Home Sections.';
+
+  @override
+  String get favoritesRowSorting => 'Favorites Row Sorting';
+
+  @override
+  String get favoritesRowSortingDescription =>
+      'Sort Favorites rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displayCollectionsRows => 'Display Collections Rows';
+
+  @override
+  String get displayCollectionsRowsSubtitle =>
+      'Show Collections rows in Home Sections.';
+
+  @override
+  String get collectionsRowSorting => 'Collections Row Sorting';
+
+  @override
+  String get collectionsRowSortingDescription =>
+      'Sort Collections rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displayGenresRows => 'Display Genres Rows';
+
+  @override
+  String get displayGenresRowsSubtitle => 'Show Genres rows in Home Sections.';
+
+  @override
+  String get genresRowSorting => 'Genres Row Sorting';
+
+  @override
+  String get genresRowSortingDescription =>
+      'Sort Genres rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get genresRowItems => 'Genres Row Items';
+
+  @override
+  String get genresRowItemsDescription =>
+      'Show Movies, Series, or both in Genres rows.';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get cardSize => 'Card Size';
+
+  @override
+  String get externalPlayerApp => 'External player app';
+
+  @override
+  String get externalPlayerAskEachTimeSubtitle =>
+      'Show app chooser when playback starts.';
+
+  @override
+  String get loadingInstalledPlayers => 'Loading installed players...';
+
+  @override
+  String get connection => 'Connection';
+
+  @override
+  String get audioTranscodeTarget => 'Audio Transcode Target';
+
+  @override
+  String get passthrough => 'Passthrough';
+
+  @override
+  String get supportedOnThisDevice => 'Supported on this device';
+
+  @override
+  String get notSupportedOnThisDevice => 'Not Supported on this device';
+
+  @override
+  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) Passthrough';
+
+  @override
+  String get settingsAudioBitstreamDtsXToExternalDecoder =>
+      'Bitstream DTS:X (DTS UHD) to external decoder.';
+
+  @override
+  String get settingsAudioTrueHdJocPassthrough =>
+      'TrueHD with Atmos (JOC) Passthrough';
+
+  @override
+  String get mediaPlayerBehavior => 'Media Player Behavior';
+
+  @override
+  String get playbackEnhancements => 'Playback Enhancements';
+
+  @override
+  String get alwaysOn => 'Always on.';
+
+  @override
+  String get replaceSkipOutroWithNextUpDisplay =>
+      'Replace Skip Outro with Next Up Display';
+
+  @override
+  String get replaceSkipOutroWithNextUpDisplaySubtitle =>
+      'Show the Next Up overlay instead of the Skip Outro button.';
+
+  @override
+  String get playerRouting => 'Player Routing';
+
+  @override
+  String get preferSoftwareDecoders => 'Prefer software decoders';
+
+  @override
+  String get preferSoftwareDecodersSubtitle =>
+      'Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.';
+
+  @override
+  String get useExternalPlayer => 'Use external player';
+
+  @override
+  String get useExternalPlayerSubtitle =>
+      'Open video playback in your selected external app on Android TV.';
+
+  @override
+  String get automaticQueuing => 'Automatic Queuing';
+
+  @override
+  String get preferSdhSubtitles => 'Prefer SDH subtitles';
+
+  @override
+  String get preferSdhSubtitlesSubtitle =>
+      'Prioritize SDH/CC subtitle tracks when auto-selecting.';
+
+  @override
+  String get webDiagnostics => 'Web diagnostics';
+
+  @override
+  String get webDiagnosticsTitle => 'Moonfin Web Diagnostics';
+
+  @override
+  String get webDiagnosticsIntro =>
+      'Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).';
+
+  @override
+  String get webDiagnosticsDetectedMixedContentFailure =>
+      'Detected Mixed-Content Failure';
+
+  @override
+  String get webDiagnosticsDetectedCorsPreflightFailure =>
+      'Detected CORS/Preflight Failure';
+
+  @override
+  String get webDiagnosticsMixedContentFailureBody =>
+      'Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.';
+
+  @override
+  String get webDiagnosticsCorsFailureBody =>
+      'Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.';
+
+  @override
+  String webDiagnosticsTargetUrl(String url) {
+    return 'Target URL: $url';
+  }
+
+  @override
+  String webDiagnosticsDetail(String detail) {
+    return 'Detail: $detail';
+  }
+
+  @override
+  String get webDiagnosticsCurrentRuntimeContext => 'Current Runtime Context';
+
+  @override
+  String get webDiagnosticsOrigin => 'Origin';
+
+  @override
+  String get webDiagnosticsScheme => 'Scheme';
+
+  @override
+  String get webDiagnosticsPluginMode => 'Plugin Mode';
+
+  @override
+  String get webDiagnosticsWebRtcScan => 'WebRTC Scan';
+
+  @override
+  String get webDiagnosticsForcedServerUrl => 'Forced Server URL';
+
+  @override
+  String get webDiagnosticsDefaultServerUrl => 'Default Server URL';
+
+  @override
+  String get webDiagnosticsDiscoveryProxyUrl => 'Discovery Proxy URL';
+
+  @override
+  String get notConfigured => 'not configured';
+
+  @override
+  String get webDiagnosticsMixedContent => 'Mixed Content';
+
+  @override
+  String get webDiagnosticsMixedContentDetected =>
+      'This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.';
+
+  @override
+  String get webDiagnosticsMixedContentFix =>
+      'Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.';
+
+  @override
+  String get webDiagnosticsNoMixedContentDetected =>
+      'No obvious mixed-content configuration detected from current runtime settings.';
+
+  @override
+  String get webDiagnosticsCorsChecklist => 'CORS Checklist';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem1 =>
+      '• Allow the browser origin in Access-Control-Allow-Origin.';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem2 =>
+      '• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem3 =>
+      '• Expose Content-Range and Accept-Ranges for streaming and seek behavior.';
+
+  @override
+  String get webDiagnosticsCorsChecklistItem4 =>
+      '• Return 204 to OPTIONS preflight requests.';
+
+  @override
+  String get webDiagnosticsHeaderSnippetTitle =>
+      'Example Header Snippet (nginx-style)';
+
+  @override
+  String get note => 'Note';
+
+  @override
+  String get webDiagnosticsNonWebNote =>
+      'This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.';
+
+  @override
+  String get backToServerSelect => 'Back To Server Select';
+
+  @override
+  String get signOutAllUsers => 'Sign Out All Users';
+
+  @override
+  String get voiceSearchPermissionPermanentlyDenied =>
+      'Microphone permission is permanently denied. Enable it in system settings.';
+
+  @override
+  String get voiceSearchPermissionRequired =>
+      'Microphone permission is required for voice search.';
+
+  @override
+  String get voiceSearchNoMatch => 'Did not catch that. Try again.';
+
+  @override
+  String get voiceSearchNoSpeechDetected => 'No speech detected.';
+
+  @override
+  String get voiceSearchMicrophoneError => 'Microphone error.';
+
+  @override
+  String get voiceSearchNeedsInternet => 'Voice search needs internet.';
+
+  @override
+  String get voiceSearchServiceBusy => 'Voice service is busy. Try again.';
+
+  @override
+  String get microphonePermissionPermanentlyDenied =>
+      'Microphone permission is permanently denied.';
+
+  @override
+  String get microphonePermissionDenied => 'Microphone permission is denied.';
+
+  @override
+  String get speechRecognitionUnavailable =>
+      'Speech recognition is unavailable on this device.';
+
+  @override
+  String get openIosRoutePicker => 'Open iOS route picker';
+
+  @override
+  String get airPlayRoutePickerUnavailable =>
+      'AirPlay route picker is unavailable on this device.';
+
+  @override
+  String get videos => 'Videos';
+
+  @override
+  String get trailers => 'Trailers';
+
+  @override
+  String get programs => 'Programs';
+
+  @override
+  String get songs => 'Songs';
+
+  @override
+  String get photoAlbums => 'Photo Albums';
+
+  @override
+  String get photos => 'Photos';
+
+  @override
+  String get people => 'People';
+
+  @override
+  String get recentlyReleasedEpisodes => 'Recently Released Episodes';
+
+  @override
+  String get watchAgain => 'Watch Again';
+
+  @override
+  String get guestAppearances => 'Guest Appearances';
+
+  @override
+  String get appearancesSeerr => 'Appearances (Seerr)';
+
+  @override
+  String get watchWithGroup => 'Watch with group';
+
+  @override
+  String get errors => 'Errors';
+
+  @override
+  String get warnings => 'Warnings';
+
+  @override
+  String get disk => 'Disk';
+
+  @override
+  String get openInBrowser => 'Open in Browser';
+
+  @override
+  String get embeddedBrowserNotAvailable =>
+      'Embedded browser is not available on this platform.';
+
+  @override
+  String get adminRestartServerConfirmation =>
+      'Are you sure you want to restart the server?';
+
+  @override
+  String get adminShutdownServerConfirmation =>
+      'Are you sure you want to shut down the server? You will need to restart it manually.';
+
+  @override
+  String get internal => 'Internal';
+
+  @override
+  String get idle => 'Idle';
+
+  @override
+  String get os => 'OS';
+
+  @override
+  String get adminNoUsersFound => 'No users found';
+
+  @override
+  String get adminNoUsersMatchSearch => 'No users match your search';
+
+  @override
+  String get adminNoDevicesFound => 'No devices found';
+
+  @override
+  String get adminNoDevicesMatchCurrentFilters =>
+      'No devices match the current filters';
+
+  @override
+  String get passwordSet => 'Password set';
+
+  @override
+  String get noPasswordConfigured => 'No password configured';
+
+  @override
+  String get remoteAccess => 'Remote Access';
+
+  @override
+  String get localOnly => 'Local Only';
+
+  @override
+  String get adminMediaAnalyticsLoadFailed => 'Failed to load media analytics';
+
+  @override
+  String get analyticsCombinedAcrossLibraries =>
+      'Combined analytics across all media libraries.';
+
+  @override
+  String get analyticsTopArtists => 'Top Artists';
+
+  @override
+  String get analyticsTopAuthors => 'Top Authors';
+
+  @override
+  String get analyticsTopContributors => 'Top Contributors';
+
+  @override
+  String analyticsLibrariesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Libraries',
+      one: '1 Library',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get analyticsNoIndexedMediaTotals =>
+      'No indexed media totals are available for this selection yet.';
+
+  @override
+  String get analyticsLibraryDetails => 'Library Details';
+
+  @override
+  String get analyticsLibraryBreakdown => 'Library Breakdown';
+
+  @override
+  String get analyticsNoLibrariesAvailable => 'No libraries are available.';
+
+  @override
+  String get adminServerAdministrationTitle => 'Server Administration';
+
+  @override
+  String get adminServerPathData => 'Data';
+
+  @override
+  String get adminServerPathImageCache => 'Image Cache';
+
+  @override
+  String get adminServerPathCache => 'Cache';
+
+  @override
+  String get adminServerPathLogs => 'Logs';
+
+  @override
+  String get adminServerPathMetadata => 'Metadata';
+
+  @override
+  String get adminServerPathTranscode => 'Transcode';
+
+  @override
+  String get adminServerPathWeb => 'Web';
+
+  @override
+  String get adminNoServerPathsReturned =>
+      'No server paths returned by this server.';
+
+  @override
+  String adminPercentUsed(int percent) {
+    return '$percent% used';
+  }
+
+  @override
+  String get userActivity => 'User Activity';
+
+  @override
+  String get systemEvents => 'System Events';
+
+  @override
+  String get needsAttention => 'Needs Attention';
+
+  @override
+  String get adminDrawerSectionServer => 'Server';
+
+  @override
+  String get adminDrawerSectionPlayback => 'Playback';
+
+  @override
+  String get adminDrawerSectionDevices => 'Devices';
+
+  @override
+  String get adminDrawerSectionAdvanced => 'Advanced';
+
+  @override
+  String get adminDrawerSectionPlugins => 'Plugins';
+
+  @override
+  String get adminDrawerSectionLiveTv => 'Live TV';
+
+  @override
+  String get homeVideos => 'Home Videos';
+
+  @override
+  String get mixedContent => 'Mixed Content';
+
+  @override
+  String get homeVideosAndPhotos => 'Home Videos & Photos';
+
+  @override
+  String get mixedMoviesAndShows => 'Mixed Movies & Shows';
+
+  @override
+  String get intelQuickSync => 'Intel Quick Sync';
+
+  @override
+  String get rockchipMpp => 'Rockchip MPP';
+
+  @override
+  String get dolbyVision => 'Dolby Vision';
+
+  @override
+  String get noRecordingsFound => 'No recordings found';
+
+  @override
+  String noImagePagesFoundInArchive(String extension) {
+    return 'No image pages found inside .$extension archive.';
+  }
+
+  @override
+  String embeddedRendererFailed(int code, String description) {
+    return 'Embedded renderer failed ($code): $description';
+  }
+
+  @override
+  String epubRendererFailed(int code, String description) {
+    return 'EPUB renderer failed ($code): $description';
+  }
+
+  @override
+  String missingLocalFileForReader(String uri) {
+    return 'Missing local file for reader: $uri';
+  }
+
+  @override
+  String httpStatusWhileOpeningBookData(int status, String uri) {
+    return 'HTTP $status while opening book data from $uri';
+  }
+
+  @override
+  String get noReadableBookEndpointAvailable =>
+      'No readable book endpoint available';
+
+  @override
+  String unsupportedComicArchiveFormat(String extension) {
+    return 'Unsupported comic archive format: .$extension';
+  }
+
+  @override
+  String get cbrExtractionPluginUnavailable =>
+      'CBR extraction plugin is not available on this platform.';
+
+  @override
+  String get failedToExtractCbrArchive => 'Failed to extract .cbr archive.';
+
+  @override
+  String get cb7ExtractionUnavailable =>
+      'CB7 extraction is not available on this platform.';
+
+  @override
+  String get cb7ExtractionPluginUnavailable =>
+      'CB7 extraction plugin is not available on this platform.';
+
+  @override
+  String get closeGenrePanel => 'Close genre panel';
+
+  @override
+  String get loadingShuffle => 'Loading shuffle...';
+
+  @override
+  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
+
+  @override
+  String get randomShuffleLabel => 'RANDOM SHUFFLE';
+
+  @override
+  String get genresShuffleLabel => 'GENRES SHUFFLE';
+
+  @override
+  String get autoHdrSwitching => 'Auto HDR Switching';
+
+  @override
+  String get autoHdrSwitchingDescription =>
+      'Automatically enable HDR for HDR video playback and restore display mode on exit.';
+
+  @override
+  String get whenFullscreen => 'When fullscreen';
+
+  @override
+  String get transcodingLimits => 'Transcoding Limits';
 }
