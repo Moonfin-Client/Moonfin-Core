@@ -7,9 +7,9 @@
 </p>
 
 
-[![License](https://img.shields.io/github/license/Moonfin-Client/Mobile-Desktop.svg)](LICENSE)
-[![Release](https://img.shields.io/github/v/release/Moonfin-Client/Mobile-Desktop)](https://github.com/Moonfin-Client/Mobile-Desktop/releases)
-[![Downloads](https://img.shields.io/github/downloads/Moonfin-Client/Mobile-Desktop/total?label=Downloads)](https://github.com/Moonfin-Client/Mobile-Desktop/releases)
+[![License](https://img.shields.io/github/license/Moonfin-Client/Moonfin-Core.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/Moonfin-Client/Moonfin-Core)](https://github.com/Moonfin-Client/Moonfin-Core/releases)
+[![Downloads](https://img.shields.io/github/downloads/Moonfin-Client/Moonfin-Core/total?label=Downloads)](https://github.com/Moonfin-Client/Moonfin-Core/releases)
 
 <a href="https://www.buymeacoffee.com/moonfin" target="_blank"><img src="https://github.com/user-attachments/assets/fe26eaec-147f-496f-8e95-4ebe19f57131" alt="Buy Me A Coffee" ></a>
 
@@ -32,7 +32,7 @@ Moonfin is a cross-platform media client built with Flutter, designed for Jellyf
 | **iOS** | 13.0 | Full support |
 | **macOS** | 10.15 (Catalina) | Full support |
 | **Windows** | 10 | Full support |
-| **Linux** | GTK 3 + CMake 3.13+ | Full support |
+| **Linux** | GTK 3+, CMake 3.13+ | Full support (Wayland only) |
 | **Tizen (Samsung TV)** | Tizen 6.0+ | Experimental — see notes below |
 
 > **Tizen (Samsung TV) — experimental.** Built with the
@@ -435,8 +435,8 @@ flutter-tizen run -d <device>
 ### Quick Start
 
 ```bash
-git clone https://github.com/Moonfin-Client/Mobile-Desktop.git
-cd Mobile-Desktop
+git clone https://github.com/Moonfin-Client/Moonfin-Core.git
+cd Moonfin-Core
 flutter pub get
 ```
 
@@ -497,8 +497,9 @@ We welcome contributions to Moonfin.
 
 ## Support & Community
 
-- **Issues**: [GitHub Issues](https://github.com/Moonfin-Client/Mobile-Desktop/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Moonfin-Client/Mobile-Desktop/discussions)
+- **Issues**: [GitHub Issues](https://github.com/Moonfin-Client/Moonfin-Core/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Moonfin-Client/Moonfin-Core/discussions)
+- **Discord**: [Discord](https://discord.gg/moonfin)
 - **Upstream Jellyfin**: [jellyfin.org](https://jellyfin.org)
 
 ## Credits
