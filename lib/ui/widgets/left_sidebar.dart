@@ -98,7 +98,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
     _currentTime = ValueNotifier<String>('');
     _focusNavbarCallback = () {
       if (!mounted) return;
-      if (PlatformDetection.isTV || PlatformDetection.isDesktop) {
+      if (PlatformDetection.isTV || (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
         _homeFocusNode.requestFocus();
       }
     };
@@ -106,7 +106,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
       if (!mounted) return;
       if (PlatformDetection.isTV) {
         _profileFocusNode.requestFocus();
-      } else if (PlatformDetection.isDesktop) {
+      } else if ((PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
         _homeFocusNode.requestFocus();
       }
     };
@@ -126,7 +126,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
     _viewsRepo.addListener(_onUserViewsChanged);
     _loadLibraries();
     FocusManager.instance.addListener(_trackPreviousFocus);
-    if (PlatformDetection.isTV || PlatformDetection.isDesktop) {
+    if (PlatformDetection.isTV || (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
       _armTvFocusGate();
       _sidebarFocus.addListener(_onSidebarFocusNodeChanged);
     }
@@ -153,7 +153,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
           _previousFocusAvatarCallback;
     }
     FocusManager.instance.removeListener(_trackPreviousFocus);
-    if (PlatformDetection.isTV || PlatformDetection.isDesktop) {
+    if (PlatformDetection.isTV || (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
       _sidebarFocus.removeListener(_onSidebarFocusNodeChanged);
     }
     _clockTimer?.cancel();
@@ -320,13 +320,13 @@ class _LeftSidebarState extends State<LeftSidebar> {
   }
 
   void _markNavigationAwayFromSidebar() {
-    if (PlatformDetection.isTV || PlatformDetection.isDesktop) {
+    if (PlatformDetection.isTV || (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
       _skipExpandOnNextFocusFromNavigation = true;
     }
   }
 
   void _onSidebarFocusChange(bool hasFocus) {
-    if (PlatformDetection.isTV || PlatformDetection.isDesktop) {
+    if (PlatformDetection.isTV || (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
       return;
     }
     // On mobile, keep sidebar opening explicit (menu tap) to avoid
@@ -440,7 +440,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
   }
 
   Widget _buildDrawerLayout() {
-    if (PlatformDetection.isTV || PlatformDetection.isDesktop) {
+    if (PlatformDetection.isTV || (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
       return _buildTvLayout();
     }
     final expandedWidth = _isMobile
@@ -585,7 +585,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
     final opacity = _overlayOpacity();
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final desktopHoverRail =
-        PlatformDetection.isDesktop && !PlatformDetection.isTV;
+        (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi)) && !PlatformDetection.isTV;
     final railWidth = _isExpanded ? _kExpandedWidthTV : _kCollapsedWidthTV;
 
     final rail = AnimatedContainer(
@@ -867,7 +867,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
                             child: Icon(
                               Icons.expand_more,
                               size:
-                                  (PlatformDetection.isDesktop &&
+                                  ((PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi)) &&
                                       !PlatformDetection.isTV)
                                   ? 18
                                   : 16,
@@ -1001,7 +1001,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
 
   void _exitSidebarToContent() {
     _collapse();
-    if (PlatformDetection.isTV || PlatformDetection.isDesktop) {
+    if (PlatformDetection.isTV || (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
       _restoreFocusOutsideSidebar();
     }
   }
@@ -1179,7 +1179,7 @@ class _SidebarItemState extends State<_SidebarItem> {
   @override
   Widget build(BuildContext context) {
     final desktopSidebar =
-        PlatformDetection.isDesktop && !PlatformDetection.isTV;
+        (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi)) && !PlatformDetection.isTV;
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final highlighted =
         (desktopSidebar && _isHovered) ||
@@ -1304,7 +1304,7 @@ class _SidebarLibraryItemState extends State<_SidebarLibraryItem> {
   @override
   Widget build(BuildContext context) {
     final desktopSidebar =
-        PlatformDetection.isDesktop && !PlatformDetection.isTV;
+        (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi)) && !PlatformDetection.isTV;
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final focusColor = Color(_prefs.get(UserPreferences.focusColor).colorValue);
     final baseColor = widget.baseColor ?? Colors.white.withValues(alpha: 0.5);

@@ -218,7 +218,7 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
       showBackButton: widget.showBackButton,
     );
 
-    if (PlatformDetection.isTV || PlatformDetection.isDesktop) {
+    if (PlatformDetection.isTV || (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
       return Column(
         children: [
           Expanded(
