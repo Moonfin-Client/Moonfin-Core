@@ -1518,9 +1518,7 @@ class _MediaBarState extends State<MediaBar> with WidgetsBindingObserver {
                       child: Center(
                         child: _NavArrow(
                           icon: Icons.chevron_right,
-                          onTap: _currentIndex < items.length - 1
-                              ? () => _goToPage(_currentIndex + 1)
-                              : null,
+                          onTap: () => _goToPage((_currentIndex + 1) % items.length),
                         ),
                       ),
                     ),
@@ -1852,9 +1850,7 @@ class _MediaBarState extends State<MediaBar> with WidgetsBindingObserver {
                       child: Center(
                         child: _NavArrow(
                           icon: Icons.chevron_right,
-                          onTap: _currentIndex < items.length - 1
-                              ? () => _goToPage(_currentIndex + 1)
-                              : null,
+                          onTap: () => _goToPage((_currentIndex + 1) % items.length),
                         ),
                       ),
                     ),
@@ -1917,7 +1913,7 @@ class _MediaBarState extends State<MediaBar> with WidgetsBindingObserver {
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.arrowRight) {
-      if (_currentIndex < items.length - 1) _goToPage(_currentIndex + 1);
+      _goToPage((_currentIndex + 1) % items.length);
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.arrowDown && widget.onNavigateDown != null) {
