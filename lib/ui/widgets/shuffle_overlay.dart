@@ -774,7 +774,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
       child: SafeArea(
         minimum: EdgeInsets.symmetric(
           horizontal: isMobile ? 8 : 24,
-          vertical: isMobile ? 8 : 18,
+          vertical: isMobile ? 8 : 8,
         ),
         child: Center(
           child: ConstrainedBox(
@@ -834,9 +834,9 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
                       Padding(
                         padding: EdgeInsets.fromLTRB(
                           isMobile ? 12 : 18,
-                          isMobile ? 10 : 16,
+                          isMobile ? 10 : 10,
                           isMobile ? 12 : 18,
-                          isMobile ? 12 : 16,
+                          isMobile ? 12 : 10,
                         ),
                         child: Column(
                           children: [
@@ -845,11 +845,11 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
                               SizedBox(height: isMobile ? 6 : 8),
                             ],
                             Expanded(child: _buildCardsArea(l10n)),
-                            SizedBox(height: isMobile ? 8 : 10),
+                            SizedBox(height: isMobile ? 8 : 6),
                             _buildFocusHeader(l10n),
-                            SizedBox(height: isMobile ? 6 : 8),
+                            SizedBox(height: isMobile ? 6 : 6),
                             _buildInfoPanel(l10n),
-                            SizedBox(height: isMobile ? 10 : 12),
+                            SizedBox(height: isMobile ? 10 : 8),
                             _buildActionButtons(l10n),
                           ],
                         ),
@@ -970,9 +970,9 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
         final selectedScale = centerScale * cardExpansionScale;
         final textBlockHeight = isTv ? 8.0 : 6.0;
 
-        final spacing = isTv ? 24.0 : 18.0;
-        final minCardWidth = isTv ? 190.0 : 160.0;
-        final maxCardWidth = isTv ? 340.0 : 280.0;
+        final spacing = isTv ? 28.0 : 20.0;
+        final minCardWidth = isTv ? 240.0 : 190.0;
+        final maxCardWidth = isTv ? 400.0 : 320.0;
 
         final cardsAvailableWidth = math.max(0, constraints.maxWidth - 4);
         final totalSpacing = spacing * (_items.length - 1);
@@ -985,7 +985,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
               )
             : minCardWidth;
 
-        final maxStripHeight = constraints.maxHeight - (isTv ? 16 : 8);
+        final maxStripHeight = constraints.maxHeight;
         final maxImageHeight = math.max(
           0,
           (maxStripHeight - textBlockHeight) / selectedScale,
@@ -1371,7 +1371,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
       width: double.infinity,
       padding: EdgeInsets.symmetric(
         horizontal: isMobile ? 12 : 14,
-        vertical: isMobile ? 10 : 12,
+        vertical: isMobile ? 10 : 8,
       ),
       decoration: BoxDecoration(
         color: AppColorScheme.scrim.withValues(alpha: 0.35),
@@ -1462,6 +1462,8 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
       );
     }
 
+    final isMobile = PlatformDetection.useMobileUi;
+    final maxOverviewLines = isMobile ? 3 : 2;
     final overview = (item.overview ?? '').trim();
     final overviewText = overview.isEmpty ? _heroTagline(item) : overview;
     final overviewStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -1471,7 +1473,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
     final overviewFontSize = overviewStyle?.fontSize ?? 12;
     final overviewLineHeight =
         overviewFontSize * (overviewStyle?.height ?? 1.0);
-    final overviewMinHeight = (overviewLineHeight * 3) + 4;
+    final overviewMinHeight = (overviewLineHeight * maxOverviewLines) + 4;
 
     return KeyedSubtree(
       key: ValueKey<String>('${item.serverId}:${item.id}'),
@@ -1495,7 +1497,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
               constraints: BoxConstraints(minHeight: overviewMinHeight),
               child: Text(
                 overviewText,
-                maxLines: 3,
+                maxLines: maxOverviewLines,
                 overflow: TextOverflow.ellipsis,
                 style: overviewStyle,
               ),
