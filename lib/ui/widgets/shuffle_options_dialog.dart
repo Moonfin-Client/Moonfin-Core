@@ -299,15 +299,20 @@ Future<List<AggregatedItem>> fetchRandomItems({
     final shuffledLibraries = List<AggregatedLibrary>.from(libs)..shuffle();
     final collected = <AggregatedItem>[];
     final seenIds = <String>{};
-    for (final library in shuffledLibraries) {
+    for (var i = 0; i < shuffledLibraries.length; i++) {
       if (collected.length >= limit) break;
+      final library = shuffledLibraries[i];
+      final remainingLibraries = shuffledLibraries.length - i;
+      final needed = limit - collected.length;
+      final targetLimit = (needed / remainingLibraries).ceil();
+
       try {
         final items = await _fetchRandomItemsScoped(
           client: client,
           contentType: contentType,
           parentId: library.id,
           genreName: null,
-          limit: limit,
+          limit: targetLimit,
           fields: fields,
         );
         for (final item in items) {

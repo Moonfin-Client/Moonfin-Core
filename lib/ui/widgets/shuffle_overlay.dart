@@ -152,13 +152,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
     Map<String, Object?> context = const <String, Object?>{},
     Object? error,
     StackTrace? stackTrace,
-  }) {
-    final _ = message;
-    final __ = level;
-    final ___ = context;
-    final ____ = error;
-    final _____ = stackTrace;
-  }
+  }) {}
 
   String _describeError(Object error) {
     if (error is TimeoutException) {
@@ -971,14 +965,14 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
     return LayoutBuilder(
       builder: (context, constraints) {
         const posterAspectRatio = 2 / 3;
-        const centerScale = 1.18;
+        const centerScale = 1.3;
         final cardExpansionScale = cardFocusExpansion == true ? 1.05 : 1.0;
         final selectedScale = centerScale * cardExpansionScale;
         final textBlockHeight = isTv ? 8.0 : 6.0;
 
-        final spacing = isTv ? 18.0 : 14.0;
-        final minCardWidth = isTv ? 130.0 : 112.0;
-        final maxCardWidth = isTv ? 250.0 : 220.0;
+        final spacing = isTv ? 24.0 : 18.0;
+        final minCardWidth = isTv ? 190.0 : 160.0;
+        final maxCardWidth = isTv ? 340.0 : 280.0;
 
         final cardsAvailableWidth = math.max(0, constraints.maxWidth - 4);
         final totalSpacing = spacing * (_items.length - 1);
@@ -991,7 +985,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
               )
             : minCardWidth;
 
-        final maxStripHeight = constraints.maxHeight - (isTv ? 64 : 26);
+        final maxStripHeight = constraints.maxHeight - (isTv ? 16 : 8);
         final maxImageHeight = math.max(
           0,
           (maxStripHeight - textBlockHeight) / selectedScale,
@@ -1017,7 +1011,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
                         duration: const Duration(milliseconds: 180),
                         curve: Curves.easeOut,
                         alignment: Alignment.topCenter,
-                        scale: index == _selectedIndex ? centerScale : 0.9,
+                        scale: index == _selectedIndex ? centerScale : 1.00,
                         child: AnimatedOpacity(
                           duration: const Duration(milliseconds: 180),
                           opacity: disablePosterOpacity
@@ -1362,7 +1356,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
           color: AppColorScheme.onSurface,
-          fontSize: isMobile ? 22 : 32,
+          fontSize: isMobile ? 22 : 24,
           fontWeight: FontWeight.w800,
           height: 1.05,
         ),
