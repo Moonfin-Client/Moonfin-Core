@@ -301,6 +301,20 @@ enum FavoriteTypeFilter {
     musicArtist => ['MusicArtist'],
     audio => ['Audio'],
   };
+
+  static FavoriteTypeFilter fromRowId(String id) {
+    return switch (id) {
+      'favorites_movies' => FavoriteTypeFilter.movie,
+      'favorites_series' => FavoriteTypeFilter.series,
+      'favorites_episodes' => FavoriteTypeFilter.episode,
+      'favorites_people' => FavoriteTypeFilter.person,
+      'favorites_artists' => FavoriteTypeFilter.musicArtist,
+      'favorites_musicvideos' => FavoriteTypeFilter.musicVideo,
+      'favorites_albums' => FavoriteTypeFilter.musicAlbum,
+      'favorites_songs' => FavoriteTypeFilter.audio,
+      _ => FavoriteTypeFilter.all,
+    };
+  }
 }
 
 enum SeerrFetchLimit {

@@ -23,6 +23,8 @@ class HomeViewModel extends ChangeNotifier {
   final MediaBarViewModel _mediaBarViewModel;
   final MultiServerRepository _multiServerRepo;
   final HomeRowCacheStore _cacheStore = HomeRowCacheStore();
+  final Set<String> _inFlightPagingRowIds = {};
+  final Map<String, int> _rowOffsets = {};
 
   List<HomeRow> _rows = [];
   List<HomeRow> get rows => _rows;
@@ -95,6 +97,8 @@ class HomeViewModel extends ChangeNotifier {
     }
     _isLoading = true;
     notifyListeners();
+    _rowOffsets.clear();
+    _multiServerRepo.clearOffsets();
     try {
       var hydratedFromCache = false;
       if (_rows.isEmpty) {
@@ -340,14 +344,26 @@ class HomeViewModel extends ChangeNotifier {
   Future<void> loadMoreForRow(int rowIndex) async {
     if (rowIndex < 0 || rowIndex >= _rows.length) return;
     final row = _rows[rowIndex];
-    if (!row.hasMore) return;
+    if (!row.hasMore || _inFlightPagingRowIds.contains(row.id)) return;
 
+    _inFlightPagingRowIds.add(row.id);
     try {
-      final items = await _dataSource.loadMore(row: row, serverId: _serverId);
+      final int currentOffset = _rowOffsets[row.id] ?? row.items.length;
+      final (List<AggregatedItem> items, int totalCount) result;
+      if (_multiServerEnabled && !row.id.startsWith('pluginDynamic:')) {
+        result = await _multiServerRepo.loadMore(row: row);
+      } else {
+        result = await _dataSource.loadMore(row: row, serverId: _serverId, offset: currentOffset);
+      }
+      _rowOffsets[row.id] = currentOffset + 15;
+
       _rows = List.of(_rows);
-      _rows[rowIndex] = row.copyWith(items: items);
+      _rows[rowIndex] = row.copyWith(items: result.$1, totalCount: result.$2);
       notifyListeners();
-    } catch (_) {}
+    } catch (_) {
+    } finally {
+      _inFlightPagingRowIds.remove(row.id);
+    }
   }
 
   Future<List<HomeRow>> _loadConfig(HomeSectionConfig cfg) async {

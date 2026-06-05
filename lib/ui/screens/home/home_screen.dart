@@ -2796,7 +2796,7 @@ class _ContentRowsState extends State<_ContentRows>
           isUp: isUp,
         ),
         onLeftEdge: _onRowLeftEdge,
-        onIndexChanged: (_, item) {
+        onIndexChanged: (index, item) {
           final forceReveal = _forceRevealOnNextRowFocusFromMediaBar;
           _forceRevealOnNextRowFocusFromMediaBar = false;
           widget.onItemSelected(item);
@@ -2815,6 +2815,9 @@ class _ContentRowsState extends State<_ContentRows>
           } else {
             _finishSharedPreview();
           }
+          if (index >= row.items.length - 8) {
+            widget.viewModel.loadMoreForRow(rowIndex);
+          }
         },
         onLongPress: (_, item) => showContextMenu(
           context,
@@ -2825,7 +2828,7 @@ class _ContentRowsState extends State<_ContentRows>
           _finishSharedPreview(releaseResources: true);
           if (row.rowType == HomeRowType.libraryTiles) {
             _navigateToLibrary(context, item);
-          } else if (row.rowType == HomeRowType.genres) {
+          } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
             context.push(Destinations.genre(item.name, genreId: item.id));
           } else {
             context.push(Destinations.itemOrPhoto(
@@ -2916,7 +2919,7 @@ class _ContentRowsState extends State<_ContentRows>
           void navigateToItem() {
             if (row.rowType == HomeRowType.libraryTiles) {
               _navigateToLibrary(context, item);
-            } else if (row.rowType == HomeRowType.genres) {
+            } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
               context.push(Destinations.genre(item.name, genreId: item.id));
             } else {
               context.push(Destinations.itemOrPhoto(
