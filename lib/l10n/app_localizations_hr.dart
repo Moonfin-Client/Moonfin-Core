@@ -12,6 +12,15 @@ class AppLocalizationsHr extends AppLocalizations {
   String get appTitle => 'Mjesečeva peraja';
 
   @override
+  String get accountPreferences => 'Account Preferences';
+
+  @override
+  String get interfaceLanguage => 'Interface Language';
+
+  @override
+  String get systemLanguageDefault => 'System Default';
+
+  @override
   String get signIn => 'Prijavite se';
 
   @override

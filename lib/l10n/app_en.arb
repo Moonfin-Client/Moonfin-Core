@@ -4,6 +4,18 @@
   "@appTitle": {
     "description": "The application title"
   },
+  "accountPreferences": "Account Preferences",
+  "@accountPreferences": {
+    "description": "Section header for account preferences settings"
+  },
+  "interfaceLanguage": "Interface Language",
+  "@interfaceLanguage": {
+    "description": "Label for the app interface language setting"
+  },
+  "systemLanguageDefault": "System Default",
+  "@systemLanguageDefault": {
+    "description": "Label for using the system default language in settings"
+  },
   "signIn": "Sign In",
   "@signIn": {
     "description": "Sign in heading and button label"

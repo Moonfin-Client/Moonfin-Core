@@ -12,6 +12,15 @@ class AppLocalizationsSq extends AppLocalizations {
   String get appTitle => 'Fina e hënës';
 
   @override
+  String get accountPreferences => 'Account Preferences';
+
+  @override
+  String get interfaceLanguage => 'Interface Language';
+
+  @override
+  String get systemLanguageDefault => 'System Default';
+
+  @override
   String get signIn => 'Hyni';
 
   @override

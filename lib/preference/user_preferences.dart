@@ -99,6 +99,7 @@ class UserPreferences extends ChangeNotifier {
     'next_up_timeout',
     'replace_skip_outro_with_next_up',
     'enable_still_watching',
+    'pref_language_override',
   };
 
   bool _isScopedPreference<T>(Preference<T> pref) {
@@ -658,6 +659,11 @@ class UserPreferences extends ChangeNotifier {
     key: 'dolby_vision_profile7_direct_play_behavior',
     defaultValue: DolbyVisionProfile7DirectPlayBehavior.auto,
     values: DolbyVisionProfile7DirectPlayBehavior.values,
+  );
+
+  static final languageOverride = Preference<String>(
+    key: 'pref_language_override',
+    defaultValue: 'system',
   );
 
   static final defaultAudioLanguage = Preference(

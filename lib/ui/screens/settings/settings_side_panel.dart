@@ -17,6 +17,7 @@ import '../../../di/providers.dart';
 import '../../../platform/web_runtime_config.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/language_codes.dart';
+import '../../../util/locale_names.dart';
 import '../../../util/overlay_color_palette.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/app_distribution.dart';
@@ -441,6 +442,21 @@ class _AuthenticationCategoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final hideWebOnlyAuthControls = PlatformDetection.isWeb;
+
+    final Map<String, String> langOptions = {
+      'system': l10n.systemLanguageDefault,
+    };
+    final sortedLocales = List<Locale>.from(AppLocalizations.supportedLocales);
+    sortedLocales.sort((a, b) {
+      final nameA = kLocaleDisplayNames[a.toLanguageTag()] ?? a.toLanguageTag();
+      final nameB = kLocaleDisplayNames[b.toLanguageTag()] ?? b.toLanguageTag();
+      return nameA.toLowerCase().compareTo(nameB.toLowerCase());
+    });
+    for (final locale in sortedLocales) {
+      final tag = locale.toLanguageTag();
+      langOptions[tag] = kLocaleDisplayNames[tag] ?? locale.toString();
+    }
+
     return Scaffold(
       appBar: buildSettingsAppBar(context, Text(l10n.settingsAccountSecurity)),
       body: ListView(
@@ -469,6 +485,13 @@ class _AuthenticationCategoryScreen extends StatelessWidget {
             subtitle: Text(l10n.requirePinToAccess),
             onTap: () =>
                 context.pushSettingsScreen(const PinCodeSettingsScreen()),
+          ),
+          _SectionHeader(l10n.accountPreferences),
+          StringPickerPreferenceTile(
+            preference: UserPreferences.languageOverride,
+            title: l10n.interfaceLanguage,
+            icon: Icons.language,
+            options: langOptions,
           ),
           if (!hideWebOnlyAuthControls)
             EnumPreferenceTile<UserSortBy>(

@@ -54,6 +54,22 @@ class _MoonfinAppState extends State<MoonfinApp> {
 
   void _syncThemeFromPrefs() {
     _themeController.refreshFromPreferences(_prefs);
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Locale? _resolveLocale() {
+    final override = _prefs.get(UserPreferences.languageOverride);
+    if (override == 'system') {
+      return null;
+    }
+    for (final locale in AppLocalizations.supportedLocales) {
+      if (locale.toLanguageTag() == override || locale.toString() == override) {
+        return locale;
+      }
+    }
+    return null;
   }
 
   @override
@@ -78,6 +94,7 @@ class _MoonfinAppState extends State<MoonfinApp> {
               debugShowCheckedModeBanner: false,
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
+              locale: _resolveLocale(),
               localeResolutionCallback: (locale, supportedLocales) {
                 for (final supported in supportedLocales) {
                   if (supported.languageCode == locale?.languageCode) {

@@ -12,6 +12,15 @@ class AppLocalizationsBn extends AppLocalizations {
   String get appTitle => 'মুনফিন';
 
   @override
+  String get accountPreferences => 'Account Preferences';
+
+  @override
+  String get interfaceLanguage => 'Interface Language';
+
+  @override
+  String get systemLanguageDefault => 'System Default';
+
+  @override
   String get signIn => 'সাইন ইন করুন';
 
   @override

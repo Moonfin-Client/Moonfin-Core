@@ -227,6 +227,24 @@ abstract class AppLocalizations {
   /// **'Moonfin'**
   String get appTitle;
 
+  /// Section header for account preferences settings
+  ///
+  /// In en, this message translates to:
+  /// **'Account Preferences'**
+  String get accountPreferences;
+
+  /// Label for the app interface language setting
+  ///
+  /// In en, this message translates to:
+  /// **'Interface Language'**
+  String get interfaceLanguage;
+
+  /// Label for using the system default language in settings
+  ///
+  /// In en, this message translates to:
+  /// **'System Default'**
+  String get systemLanguageDefault;
+
   /// Sign in heading and button label
   ///
   /// In en, this message translates to:

@@ -12,6 +12,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get appTitle => 'مونفين';
 
   @override
+  String get accountPreferences => 'Account Preferences';
+
+  @override
+  String get interfaceLanguage => 'Interface Language';
+
+  @override
+  String get systemLanguageDefault => 'System Default';
+
+  @override
   String get signIn => 'تسجيل الدخول';
 
   @override

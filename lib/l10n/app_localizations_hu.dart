@@ -12,6 +12,15 @@ class AppLocalizationsHu extends AppLocalizations {
   String get appTitle => 'Holdfin';
 
   @override
+  String get accountPreferences => 'Account Preferences';
+
+  @override
+  String get interfaceLanguage => 'Interface Language';
+
+  @override
+  String get systemLanguageDefault => 'System Default';
+
+  @override
   String get signIn => 'Jelentkezzen be';
 
   @override

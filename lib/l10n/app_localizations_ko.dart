@@ -12,6 +12,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get appTitle => '달지느러미';
 
   @override
+  String get accountPreferences => 'Account Preferences';
+
+  @override
+  String get interfaceLanguage => 'Interface Language';
+
+  @override
+  String get systemLanguageDefault => 'System Default';
+
+  @override
   String get signIn => '로그인';
 
   @override

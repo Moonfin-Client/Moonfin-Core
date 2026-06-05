@@ -12,6 +12,15 @@ class AppLocalizationsSr extends AppLocalizations {
   String get appTitle => 'Моонфин';
 
   @override
+  String get accountPreferences => 'Account Preferences';
+
+  @override
+  String get interfaceLanguage => 'Interface Language';
+
+  @override
+  String get systemLanguageDefault => 'System Default';
+
+  @override
   String get signIn => 'Пријавите се';
 
   @override

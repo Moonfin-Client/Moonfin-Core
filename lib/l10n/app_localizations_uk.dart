@@ -12,6 +12,15 @@ class AppLocalizationsUk extends AppLocalizations {
   String get appTitle => 'Місячне плавник';
 
   @override
+  String get accountPreferences => 'Account Preferences';
+
+  @override
+  String get interfaceLanguage => 'Interface Language';
+
+  @override
+  String get systemLanguageDefault => 'System Default';
+
+  @override
   String get signIn => 'Увійти';
 
   @override

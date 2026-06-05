@@ -12,6 +12,15 @@ class AppLocalizationsTa extends AppLocalizations {
   String get appTitle => 'மூன்ஃபின்';
 
   @override
+  String get accountPreferences => 'Account Preferences';
+
+  @override
+  String get interfaceLanguage => 'Interface Language';
+
+  @override
+  String get systemLanguageDefault => 'System Default';
+
+  @override
   String get signIn => 'உள்நுழையவும்';
 
   @override

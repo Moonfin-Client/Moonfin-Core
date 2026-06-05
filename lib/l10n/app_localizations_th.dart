@@ -12,6 +12,15 @@ class AppLocalizationsTh extends AppLocalizations {
   String get appTitle => 'มูนฟิน';
 
   @override
+  String get accountPreferences => 'Account Preferences';
+
+  @override
+  String get interfaceLanguage => 'Interface Language';
+
+  @override
+  String get systemLanguageDefault => 'System Default';
+
+  @override
   String get signIn => 'เข้าสู่ระบบ';
 
   @override

@@ -12,6 +12,15 @@ class AppLocalizationsKn extends AppLocalizations {
   String get appTitle => 'ಮೂನ್ಫಿನ್';
 
   @override
+  String get accountPreferences => 'Account Preferences';
+
+  @override
+  String get interfaceLanguage => 'Interface Language';
+
+  @override
+  String get systemLanguageDefault => 'System Default';
+
+  @override
   String get signIn => 'ಸೈನ್ ಇನ್ ಮಾಡಿ';
 
   @override
