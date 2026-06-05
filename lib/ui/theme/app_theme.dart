@@ -16,25 +16,20 @@ class AppTheme {
 
     final themedShadows = spec.textGlow;
 
-    // Overall neon text sizing is handled globally via kNeonTextScale (a
-    // MediaQuery textScaler in app.dart) so that hardcoded fontSize values are
-    // shrunk too. Keep this at 1.0 to avoid double-scaling the named styles.
-    const kNeonFontScale = 1.0;
-
     TextStyle? neonDisplay(TextStyle? style) {
       if (style == null) return null;
       return style.copyWith(
-        fontSize: (style.fontSize ?? 14) * kNeonFontScale,
         color: c.accent,
         shadows: themedShadows,
         letterSpacing: (style.letterSpacing ?? 0) + 0.4,
+        fontWeight: FontWeight.bold,
       );
     }
 
     TextStyle? neonBody(TextStyle? style) {
       if (style == null) return null;
       return style.copyWith(
-        fontSize: (style.fontSize ?? 14) * kNeonFontScale,
+        fontFamily: 'NeonPulseBody',
         color: c.onSurface,
         letterSpacing: 0.6,
       );

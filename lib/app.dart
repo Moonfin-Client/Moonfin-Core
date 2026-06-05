@@ -34,11 +34,6 @@ import 'util/focus/input_mode_tracker.dart';
 import 'util/platform_detection.dart';
 import 'ui/widgets/overlay_sheet.dart';
 
-/// Uniform text downscale applied while the Neon Pulse theme is active.
-/// Its display font (ScienceGothic) renders larger than the default at the
-/// same point size; lower this to shrink all neon text further.
-const double kNeonTextScale = 0.82;
-
 class MoonfinApp extends StatefulWidget {
   const MoonfinApp({super.key});
 
@@ -139,26 +134,8 @@ class _MoonfinAppState extends State<MoonfinApp> {
                   ],
                 );
 
-                // The Neon Pulse font (ScienceGothic) has large glyph metrics,
-                // so it renders oversized at any given point size. Apply a
-                // uniform downscale to *all* text under the neon theme — this
-                // catches widgets with hardcoded `fontSize:` that bypass the
-                // TextTheme-level scaling in AppTheme. Tune via [kNeonTextScale].
-                final neonScale = _themeController.activeSpec.id ==
-                        ThemeRegistry.neonPulseId
-                    ? kNeonTextScale
-                    : 1.0;
-
                 if (!PlatformDetection.useDesktopUi) {
-                  if (neonScale == 1.0) {
-                    return overlay;
-                  }
-                  return MediaQuery(
-                    data: MediaQuery.of(
-                      context,
-                    ).copyWith(textScaler: TextScaler.linear(neonScale)),
-                    child: overlay,
-                  );
+                  return overlay;
                 }
 
                 return ListenableBuilder(
@@ -167,9 +144,9 @@ class _MoonfinAppState extends State<MoonfinApp> {
                     final scale =
                         _prefs.get(UserPreferences.desktopUiScale).scaleFactor;
                     return MediaQuery(
-                      data: MediaQuery.of(context).copyWith(
-                        textScaler: TextScaler.linear(scale * neonScale),
-                      ),
+                      data: MediaQuery.of(
+                        context,
+                      ).copyWith(textScaler: TextScaler.linear(scale)),
                       child: overlay,
                     );
                   },
