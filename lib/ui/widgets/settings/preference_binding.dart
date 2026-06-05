@@ -7,16 +7,14 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import '../../../preference/user_preferences.dart';
 
 class PreferenceBinding<T> extends ValueNotifier<T> {
-  final PreferenceStore _store;
   final Preference<T> _preference;
 
-  PreferenceBinding(this._store, this._preference) : super(_store.get(_preference));
+  PreferenceBinding(PreferenceStore store, this._preference) : super(GetIt.instance<UserPreferences>().get(_preference));
 
   @override
   set value(T newValue) {
     super.value = newValue;
-    unawaited(_store.set(_preference, newValue));
-    GetIt.instance<UserPreferences>().notifyPreferenceChanged();
+    unawaited(GetIt.instance<UserPreferences>().set(_preference, newValue));
   }
 
   void reset() {

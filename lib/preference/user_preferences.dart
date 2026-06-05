@@ -90,74 +90,59 @@ class UserPreferences extends ChangeNotifier {
     return '${serverId}_$userId';
   }
 
-  Preference<String>? _scopedResumeSubtractDurationPreference() {
+  static final Set<String> _scopedPreferenceKeys = {
+    'pref_enable_cinema_mode',
+    'pref_resume_preroll',
+    'media_segment_actions',
+    'pref_autoplay_next_episode',
+    'next_up_behavior',
+    'next_up_timeout',
+    'replace_skip_outro_with_next_up',
+    'enable_still_watching',
+  };
+
+  bool _isScopedPreference<T>(Preference<T> pref) {
+    return _scopedPreferenceKeys.contains(pref.key);
+  }
+
+  Preference<dynamic>? _scopedPreference(Preference<dynamic> pref) {
     final scopeSuffix = _activeProfileScopeSuffix();
     if (scopeSuffix == null) {
       return null;
     }
-    return Preference(
-      key: 'pref_resume_preroll_$scopeSuffix',
-      defaultValue: '0',
-    );
-  }
-
-  Preference<bool>? _scopedCinemaModeEnabledPreference() {
-    final scopeSuffix = _activeProfileScopeSuffix();
-    if (scopeSuffix == null) {
-      return null;
+    final scopedKey = '${pref.key}_$scopeSuffix';
+    if (pref is EnumPreference) {
+      return EnumPreference<Enum>(
+        key: scopedKey,
+        defaultValue: pref.defaultValue,
+        values: pref.values.cast<Enum>(),
+      );
     }
-    return Preference(
-      key: 'pref_enable_cinema_mode_$scopeSuffix',
-      defaultValue: true,
+    return Preference<dynamic>(
+      key: scopedKey,
+      defaultValue: pref.defaultValue,
     );
-  }
-
-  bool _isResumeSubtractDurationPreference<T>(Preference<T> pref) {
-    return pref.key == resumeSubtractDuration.key;
-  }
-
-  bool _isCinemaModeEnabledPreference<T>(Preference<T> pref) {
-    return pref.key == cinemaModeEnabled.key;
   }
 
   T get<T>(Preference<T> pref) {
-    if (_isResumeSubtractDurationPreference(pref)) {
-      final scoped = _scopedResumeSubtractDurationPreference();
+    if (_isScopedPreference(pref)) {
+      final scoped = _scopedPreference(pref);
       if (scoped != null && _store.containsKey(scoped.key)) {
         return _store.get(scoped) as T;
       }
-      return _store.get(resumeSubtractDuration) as T;
-    }
-
-    if (_isCinemaModeEnabledPreference(pref)) {
-      final scoped = _scopedCinemaModeEnabledPreference();
-      if (scoped != null && _store.containsKey(scoped.key)) {
-        return _store.get(scoped) as T;
-      }
-      return _store.get(cinemaModeEnabled) as T;
+      return _store.get(pref);
     }
 
     return _store.get(pref);
   }
 
   Future<void> set<T>(Preference<T> pref, T value) async {
-    if (_isResumeSubtractDurationPreference(pref)) {
-      final scoped = _scopedResumeSubtractDurationPreference();
+    if (_isScopedPreference(pref)) {
+      final scoped = _scopedPreference(pref);
       if (scoped != null) {
-        await _store.set(scoped, value as String);
+        await _store.set(scoped, value);
       } else {
-        await _store.set(resumeSubtractDuration, value as String);
-      }
-      notifyListeners();
-      return;
-    }
-
-    if (_isCinemaModeEnabledPreference(pref)) {
-      final scoped = _scopedCinemaModeEnabledPreference();
-      if (scoped != null) {
-        await _store.set(scoped, value as bool);
-      } else {
-        await _store.set(cinemaModeEnabled, value as bool);
+        await _store.set(pref, value);
       }
       notifyListeners();
       return;
@@ -172,16 +157,10 @@ class UserPreferences extends ChangeNotifier {
   bool containsPreferenceKey(String key) => _store.containsKey(key);
 
   bool containsPreference<T>(Preference<T> pref) {
-    if (_isResumeSubtractDurationPreference(pref)) {
-      final scoped = _scopedResumeSubtractDurationPreference();
+    if (_isScopedPreference(pref)) {
+      final scoped = _scopedPreference(pref);
       return (scoped != null && _store.containsKey(scoped.key)) ||
-          _store.containsKey(resumeSubtractDuration.key);
-    }
-
-    if (_isCinemaModeEnabledPreference(pref)) {
-      final scoped = _scopedCinemaModeEnabledPreference();
-      return (scoped != null && _store.containsKey(scoped.key)) ||
-          _store.containsKey(cinemaModeEnabled.key);
+          _store.containsKey(pref.key);
     }
 
     return _store.containsKey(pref.key);
