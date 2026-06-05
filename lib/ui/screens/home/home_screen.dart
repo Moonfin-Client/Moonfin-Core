@@ -28,6 +28,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../widgets/exit_confirmation_dialog.dart';
 import '../../../util/app_exit.dart';
+import '../../../util/global_shortcut_focus.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/locked_focus_row.dart';
 import '../../../util/focus/dpad_keys.dart';
@@ -633,9 +634,16 @@ class _ContentRowsState extends State<_ContentRows>
     final hasRowContext = _activeFocusedRowIndex != null || onSidebar;
     final desktopUnfocused =
       PlatformDetection.isDesktop && !_windowHasFocus;
+    final onIdleFocus =
+        primary == null ||
+        primary is FocusScopeNode ||
+        identical(primary, globalShortcutFocusNode);
     final chromeFocusActive =
         SettingsPanel.isOpenNotifier.value ||
-        (!desktopUnfocused && !onMediaBar && !hasRowContext);
+        (!onIdleFocus &&
+            !desktopUnfocused &&
+            !onMediaBar &&
+            !hasRowContext);
 
     final nextMediaBarVisible = isMobileUi
       ? true

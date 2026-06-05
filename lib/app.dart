@@ -29,6 +29,7 @@ import 'util/app_distribution.dart';
 import 'util/app_exit.dart';
 import 'util/focus/dpad_keys.dart';
 import 'util/fullscreen_helper.dart';
+import 'util/global_shortcut_focus.dart';
 import 'util/focus/input_mode_tracker.dart';
 import 'util/platform_detection.dart';
 import 'ui/widgets/overlay_sheet.dart';
@@ -188,6 +189,7 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
   @override
   void initState() {
     super.initState();
+    globalShortcutFocusNode = _focusNode;
     _hardwareKeyHandler = _onHardwareKeyEvent;
     HardwareKeyboard.instance.addHandler(_hardwareKeyHandler);
     if (_trackMouseThumbHistory) {

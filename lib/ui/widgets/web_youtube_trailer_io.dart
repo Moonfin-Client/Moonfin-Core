@@ -20,6 +20,7 @@ class WebYouTubeTrailer extends StatefulWidget {
   final bool loop;
   final bool ignorePointer;
   final VoidCallback? onPlaybackStarted;
+  final VoidCallback? onCompleted;
   final VoidCallback? onAutoplayFailed;
   final VoidCallback? onEmbeddedUnavailable;
   final Duration autoplayTimeout;
@@ -32,6 +33,7 @@ class WebYouTubeTrailer extends StatefulWidget {
     this.loop = true,
     this.ignorePointer = false,
     this.onPlaybackStarted,
+    this.onCompleted,
     this.onAutoplayFailed,
     this.onEmbeddedUnavailable,
     this.autoplayTimeout = const Duration(seconds: 3),

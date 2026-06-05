@@ -757,7 +757,7 @@ class _MediaBarState extends State<MediaBar> with WidgetsBindingObserver {
       _autoAdvanceTimer?.cancel();
       setState(() {
         _activeYouTubeVideoId = _pendingYouTubeVideoId;
-        _trailerVideoOpacity = 0;
+        _trailerVideoOpacity = PlatformDetection.isWeb ? 1.0 : 0.0;
       });
       _pendingYouTubeVideoId = null;
       return;
@@ -1108,6 +1108,11 @@ class _MediaBarState extends State<MediaBar> with WidgetsBindingObserver {
   }
 
   void _handleEmbeddedYouTubeUnavailable() {
+    if (PlatformDetection.isWeb) {
+      _markTrailerFailed(_activeTrailerItemId);
+      _cancelTrailerPreview();
+      return;
+    }
     if (!_embeddedYouTubeAvailable) {
       return;
     }
@@ -2078,6 +2083,7 @@ class _MediaBarState extends State<MediaBar> with WidgetsBindingObserver {
                         ignorePointer: true,
                         loop: true,
                         onPlaybackStarted: _onYouTubePlaybackStarted,
+                        onCompleted: () => _onTrailerCompleted(true),
                         onAutoplayFailed: _handleYouTubeAutoplayFailed,
                         onEmbeddedUnavailable:
                             _handleEmbeddedYouTubeUnavailable,
