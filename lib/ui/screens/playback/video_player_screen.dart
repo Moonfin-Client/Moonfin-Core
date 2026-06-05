@@ -2327,6 +2327,27 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final isOutro =
         _skipSegment?.type == MediaSegmentType.outro ||
         _segmentService.activeSegment?.type == MediaSegmentType.outro;
+    if (isOutro) {
+      final item = _queue.currentItem;
+      final itemId = _itemIdForQueueItem(item);
+      if (itemId != null && itemId.isNotEmpty) {
+        try {
+          final mutations = ItemMutationRepository(_clientForQueueItem(item));
+          unawaited(mutations.setPlayed(itemId, isPlayed: true).catchError((_) {}));
+          final raw = _rawDataForQueueItem(item);
+          if (raw != null) {
+            final existingUserData = raw['UserData'];
+            final userData = existingUserData is Map<String, dynamic>
+                ? existingUserData
+                : (existingUserData is Map
+                      ? existingUserData.cast<String, dynamic>()
+                      : <String, dynamic>{});
+            userData['Played'] = true;
+            raw['UserData'] = userData;
+          }
+        } catch (_) {}
+      }
+    }
     if (replaceSkipOutroWithNextUp && isOutro && _shouldShowNextUpOverlay()) {
       final skipTo = _skipTo;
       if (skipTo != null) {
