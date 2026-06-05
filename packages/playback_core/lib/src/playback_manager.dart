@@ -484,11 +484,20 @@ class PlaybackManager {
   }
 
   Future<void> _handleBackendErrorEvent(Map<String, dynamic> event) async {
+    final queueItem = queueService.currentItem;
+    if (_isPreroll(queueItem)) {
+      _suppressNextGenericBackendError = true;
+      try {
+        await _backend!.stop();
+      } catch (_) {}
+      await next();
+      return;
+    }
+
     final eventType = event['event']?.toString();
     final kind = event['kind']?.toString();
     final recoverable = event['recoverable'] == true;
     final resolution = _currentResolution ?? _lastPlaybackResolution;
-    final queueItem = queueService.currentItem;
 
     void emitFailedBringupState(String fallbackMessage) {
       final message = event['message']?.toString().trim();
@@ -708,6 +717,21 @@ class PlaybackManager {
     );
   }
 
+  bool _isPreroll(dynamic item) {
+    if (item == null) return false;
+    try {
+      if (item is Map) {
+        return item['__moonfinIsPreroll'] == true;
+      }
+      final dynamic dynItem = item;
+      final rawData = dynItem.rawData;
+      if (rawData is Map) {
+        return rawData['__moonfinIsPreroll'] == true;
+      }
+    } catch (_) {}
+    return false;
+  }
+
   Future<void> _playCurrentItem({
     Duration startPosition = Duration.zero,
     bool enableDirectPlay = true,
@@ -914,6 +938,20 @@ class PlaybackManager {
       try {
         await _backend!.stop();
       } catch (_) {}
+
+      if (_isPreroll(item)) {
+        final hadNext = queueService.next();
+        if (hadNext) {
+          await _playCurrentItem(
+            startPosition: startPosition,
+            enableDirectPlay: enableDirectPlay,
+            enableDirectStream: enableDirectStream,
+            enableTranscoding: enableTranscoding,
+            allowStartupRecovery: allowStartupRecovery,
+          );
+        }
+        return;
+      }
 
       if (allowStartupRecovery) {
         final forceTranscodeFallback =

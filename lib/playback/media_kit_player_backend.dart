@@ -188,6 +188,22 @@ class MediaKitPlayerBackend implements PlayerBackend {
   static final Map<String, _ParsedMpvConfCacheEntry> _parsedMpvConfCache =
       <String, _ParsedMpvConfCacheEntry>{};
 
+  bool _isStale = false;
+  String? _currentUrl;
+
+  void _updateStaleState() {
+    if (!_isStale) return;
+    try {
+      final playlist = _player.state.playlist;
+      if (playlist.index >= 0 && playlist.index < playlist.medias.length) {
+        final currentMedia = playlist.medias[playlist.index];
+        if (currentMedia.uri == _currentUrl) {
+          _isStale = false;
+        }
+      }
+    } catch (_) {}
+  }
+
   Future<String?> _tryNativeGetProperty(Object native, String key) async {
     try {
       final dynamic dyn = native;
@@ -468,6 +484,9 @@ class MediaKitPlayerBackend implements PlayerBackend {
         : payload['url']?.toString() ?? '';
     if (url.isEmpty) return;
 
+    _currentUrl = url;
+    _isStale = true;
+
     await _notifyNativeHandleReady();
     await _configureAppleMobileLibassFont();
     await _applyAudioPassthroughOptions();
@@ -476,6 +495,7 @@ class MediaKitPlayerBackend implements PlayerBackend {
     final media = Media(url);
     final openPaused = startPosition > Duration.zero;
     await _player.open(media, play: !openPaused);
+    _updateStaleState();
     await _applyLinuxHwdecFallbackIfNeeded(media, openPaused: openPaused);
     if (!_useLibass) {
       _enableNativeSubtitleRendering();
@@ -1025,6 +1045,7 @@ class MediaKitPlayerBackend implements PlayerBackend {
 
   @override
   Future<void> stop() async {
+    _isStale = true;
     await _player.stop();
   }
 
@@ -1041,43 +1062,80 @@ class MediaKitPlayerBackend implements PlayerBackend {
   }
 
   @override
-  Duration get position => _player.state.position;
+  Duration get position {
+    _updateStaleState();
+    return _isStale ? Duration.zero : _player.state.position;
+  }
 
   @override
-  Duration get duration => _player.state.duration;
+  Duration get duration {
+    _updateStaleState();
+    return _isStale ? Duration.zero : _player.state.duration;
+  }
 
   @override
-  Duration get buffer => _player.state.buffer;
+  Duration get buffer {
+    _updateStaleState();
+    return _isStale ? Duration.zero : _player.state.buffer;
+  }
 
   @override
-  bool get isPlaying => _player.state.playing;
+  bool get isPlaying {
+    _updateStaleState();
+    return _isStale ? false : _player.state.playing;
+  }
 
   @override
-  bool get isBuffering => _player.state.buffering;
+  bool get isBuffering {
+    _updateStaleState();
+    return _isStale ? false : _player.state.buffering;
+  }
 
   @override
   double get playbackSpeed => _player.state.rate;
 
   @override
-  Stream<Duration> get positionStream => _player.stream.position;
+  Stream<Duration> get positionStream => _player.stream.position.map((pos) {
+        _updateStaleState();
+        return _isStale ? Duration.zero : pos;
+      });
 
   @override
-  Stream<Duration> get durationStream => _player.stream.duration;
+  Stream<Duration> get durationStream => _player.stream.duration.map((dur) {
+        _updateStaleState();
+        return _isStale ? Duration.zero : dur;
+      });
 
   @override
-  Stream<Duration> get bufferStream => _player.stream.buffer;
+  Stream<Duration> get bufferStream => _player.stream.buffer.map((buf) {
+        _updateStaleState();
+        return _isStale ? Duration.zero : buf;
+      });
 
   @override
-  Stream<bool> get playingStream => _player.stream.playing;
+  Stream<bool> get playingStream => _player.stream.playing.map((playing) {
+        _updateStaleState();
+        return _isStale ? false : playing;
+      });
 
   @override
-  Stream<bool> get bufferingStream => _player.stream.buffering;
+  Stream<bool> get bufferingStream => _player.stream.buffering.map((buffering) {
+        _updateStaleState();
+        return _isStale ? false : buffering;
+      });
 
   @override
-  Stream<bool> get completedStream => _player.stream.completed;
+  Stream<bool> get completedStream => _player.stream.completed.map((completed) {
+        _updateStaleState();
+        return _isStale ? false : completed;
+      });
 
   @override
-  Stream<Map<String, dynamic>>? get errorStream => null;
+  Stream<Map<String, dynamic>>? get errorStream =>
+      _player.stream.error.map((err) => <String, dynamic>{
+            'event': 'error',
+            'message': err,
+          });
 
   @override
   Future<void> setPlaybackSpeed(double speed) async {
@@ -1197,12 +1255,16 @@ class MediaKitPlayerBackend implements PlayerBackend {
 
   @override
   Future<void> waitForTracksReady() async {
-    if (_player.state.tracks.audio.isNotEmpty) {
+    _updateStaleState();
+    if (!_isStale && _player.state.tracks.audio.isNotEmpty) {
       return;
     }
     try {
       final tracks = await _player.stream.tracks
-          .firstWhere((t) => t.audio.isNotEmpty)
+          .firstWhere((t) {
+            _updateStaleState();
+            return !_isStale && t.audio.isNotEmpty;
+          })
           .timeout(const Duration(seconds: 5));
       if (tracks.audio.isEmpty) return;
     } catch (_) {}
@@ -1211,12 +1273,16 @@ class MediaKitPlayerBackend implements PlayerBackend {
   @override
   Future<void> waitForEmbeddedSubtitleCount(int count) async {
     if (count <= 0) return;
-    if (_player.state.tracks.subtitle.length >= count) {
+    _updateStaleState();
+    if (!_isStale && _player.state.tracks.subtitle.length >= count) {
       return;
     }
     try {
       final tracks = await _player.stream.tracks
-          .firstWhere((t) => t.subtitle.length >= count)
+          .firstWhere((t) {
+            _updateStaleState();
+            return !_isStale && t.subtitle.length >= count;
+          })
           .timeout(const Duration(seconds: 5));
       if (tracks.subtitle.length < count) return;
     } catch (_) {}
