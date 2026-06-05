@@ -7072,6 +7072,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Intros und Outros überspringen?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'Prompt-Benutzer';
 
   @override

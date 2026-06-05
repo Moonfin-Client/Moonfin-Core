@@ -176,6 +176,13 @@ enum MediaSegmentAction {
   askToSkip,
 }
 
+enum MediaSegmentCountdown {
+  progressBar,
+  timer,
+  both,
+  none,
+}
+
 enum ImageType {
   poster,
   thumb,

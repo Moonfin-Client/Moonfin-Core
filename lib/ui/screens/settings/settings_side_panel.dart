@@ -2726,6 +2726,18 @@ class _AutomationQueueScreenState extends State<_AutomationQueueScreen> {
               'intro:doNothing,outro:doNothing': l10n.settingsDoNothing,
             },
           ),
+          if (mediaSegmentActions == _promptSkipSegments)
+            EnumPreferenceTile<MediaSegmentCountdown>(
+              preference: UserPreferences.mediaSegmentCountdown,
+              title: l10n.settingsMediaSegmentCountdown,
+              icon: Icons.timer_outlined,
+              labelOf: (v) => switch (v) {
+                MediaSegmentCountdown.progressBar => l10n.settingsProgressBar,
+                MediaSegmentCountdown.timer => l10n.settingsTimer,
+                MediaSegmentCountdown.both => l10n.settingsBoth,
+                MediaSegmentCountdown.none => l10n.settingsNone,
+              },
+            ),
 
           _SectionHeader(l10n.automaticQueuing),
           ListTile(

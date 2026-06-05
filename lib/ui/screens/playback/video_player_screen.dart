@@ -3323,6 +3323,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                           ? _tvSkipSegmentFocus
                           : null,
                       onDismiss: _clearSkipSegment,
+                      positionStream: _state.positionStream,
                     ),
                   if (_showNextUp && _nextUpItem != null)
                     NextUpOverlay(

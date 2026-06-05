@@ -7079,6 +7079,18 @@ class AppLocalizationsHu extends AppLocalizations {
       'Kihagyja a bevezetőket és a végeket?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'Felhasználó kérése';
 
   @override

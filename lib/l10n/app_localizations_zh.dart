@@ -6785,6 +6785,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => '跳过片头和片尾？';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => '提示用户';
 
   @override

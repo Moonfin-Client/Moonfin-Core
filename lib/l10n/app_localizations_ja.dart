@@ -6835,6 +6835,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'イントロとアウトロをスキップしますか?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'ユーザーにプロンプ​​トを表示';
 
   @override

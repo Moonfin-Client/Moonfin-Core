@@ -100,6 +100,7 @@ class UserPreferences extends ChangeNotifier {
     'replace_skip_outro_with_next_up',
     'enable_still_watching',
     'pref_language_override',
+    'pref_media_segment_countdown',
   };
 
   bool _isScopedPreference<T>(Preference<T> pref) {
@@ -734,6 +735,12 @@ class UserPreferences extends ChangeNotifier {
   static final mediaSegmentActions = Preference(
     key: 'media_segment_actions',
     defaultValue: 'intro:askToSkip,outro:askToSkip',
+  );
+
+  static final mediaSegmentCountdown = EnumPreference(
+    key: 'pref_media_segment_countdown',
+    defaultValue: MediaSegmentCountdown.both,
+    values: MediaSegmentCountdown.values,
   );
 
   static final replaceSkipOutroWithNextUp = Preference(

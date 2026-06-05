@@ -7025,6 +7025,18 @@ class AppLocalizationsSv extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Hoppa över Intros och Outros?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'Fråga användare';
 
   @override

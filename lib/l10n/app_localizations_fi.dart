@@ -7040,6 +7040,18 @@ class AppLocalizationsFi extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Ohitetaanko introt ja loppupalat?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'Kehota käyttäjää';
 
   @override

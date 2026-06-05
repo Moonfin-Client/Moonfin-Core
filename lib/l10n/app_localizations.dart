@@ -12425,7 +12425,7 @@ abstract class AppLocalizations {
   /// **'{count, plural, one {# license notice} other {# license notices}}'**
   String settingsLicenseNoticesCount(int count);
 
-  /// No description provided for @settingsBoth.
+  /// Option label to show both progress bar and countdown timer on media segment countdown overlay
   ///
   /// In en, this message translates to:
   /// **'Both'**
@@ -12496,6 +12496,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Skip Intros and Outros?'**
   String get settingsSkipIntrosAndOutros;
+
+  /// Setting label for media segment countdown customizations
+  ///
+  /// In en, this message translates to:
+  /// **'Media Segment Countdown'**
+  String get settingsMediaSegmentCountdown;
+
+  /// Option label to show only progress bar on media segment countdown overlay
+  ///
+  /// In en, this message translates to:
+  /// **'Progress Bar'**
+  String get settingsProgressBar;
+
+  /// Option label to show only countdown timer on media segment countdown overlay
+  ///
+  /// In en, this message translates to:
+  /// **'Timer'**
+  String get settingsTimer;
+
+  /// Option label to hide all decorations on media segment countdown overlay
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get settingsNone;
 
   /// No description provided for @settingsPromptUser.
   ///

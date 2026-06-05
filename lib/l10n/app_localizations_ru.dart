@@ -7062,6 +7062,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Пропустить интро и аутро?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'Подскажите пользователю';
 
   @override

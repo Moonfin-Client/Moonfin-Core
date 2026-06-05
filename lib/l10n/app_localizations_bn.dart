@@ -7006,6 +7006,18 @@ class AppLocalizationsBn extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Intros এবং Outros এড়িয়ে যান?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'প্রম্পট ব্যবহারকারী';
 
   @override

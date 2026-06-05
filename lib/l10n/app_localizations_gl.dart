@@ -7110,6 +7110,18 @@ class AppLocalizationsGl extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Omitir intros e outros?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'Usuario avisado';
 
   @override

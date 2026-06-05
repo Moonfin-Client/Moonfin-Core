@@ -6788,6 +6788,26 @@
   "settingsSyncplaySubtitle": "Synchronization logic for group sessions",
   "settingsAdvancedOptionsSubtitle": "Specialized player features. Use with caution, as some options may cause playback issues",
   "settingsSkipIntrosAndOutros": "Skip Intros and Outros?",
+  "settingsMediaSegmentCountdown": "Media Segment Countdown",
+  "@settingsMediaSegmentCountdown": {
+    "description": "Setting label for media segment countdown customizations"
+  },
+  "settingsProgressBar": "Progress Bar",
+  "@settingsProgressBar": {
+    "description": "Option label to show only progress bar on media segment countdown overlay"
+  },
+  "settingsTimer": "Timer",
+  "@settingsTimer": {
+    "description": "Option label to show only countdown timer on media segment countdown overlay"
+  },
+  "settingsBoth": "Both",
+  "@settingsBoth": {
+    "description": "Option label to show both progress bar and countdown timer on media segment countdown overlay"
+  },
+  "settingsNone": "None",
+  "@settingsNone": {
+    "description": "Option label to hide all decorations on media segment countdown overlay"
+  },
   "settingsPromptUser": "Prompt User",
   "settingsSkip": "Skip",
   "settingsDoNothing": "Do Nothing",

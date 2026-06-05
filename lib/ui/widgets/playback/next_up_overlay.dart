@@ -3,10 +3,13 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../preference/preference_constants.dart';
+import '../../../preference/user_preferences.dart';
 
 class NextUpOverlay extends StatefulWidget {
   final AggregatedItem nextItem;
@@ -73,9 +76,16 @@ class _NextUpOverlayState extends State<NextUpOverlay>
         ? 'S${item.parentIndexNumber ?? '?'}:E${item.indexNumber}'
         : null;
 
+    final prefs = GetIt.instance<UserPreferences>();
+    final mediaSegmentCountdown = prefs.get(UserPreferences.mediaSegmentCountdown);
+    final showProgressBar = mediaSegmentCountdown == MediaSegmentCountdown.progressBar ||
+        mediaSegmentCountdown == MediaSegmentCountdown.both;
+    final showTimer = mediaSegmentCountdown == MediaSegmentCountdown.timer ||
+        mediaSegmentCountdown == MediaSegmentCountdown.both;
+
     return Positioned(
       right: 24,
-      bottom: 100,
+      bottom: 120,
       child: Container(
         width: 340,
         decoration: BoxDecoration(
@@ -110,18 +120,39 @@ class _NextUpOverlayState extends State<NextUpOverlay>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    l10n.upNext,
-                    style: const TextStyle(
-                      color: Colors.white54,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.upNext,
+                        style: const TextStyle(
+                          color: Colors.white54,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      if (showTimer && widget.timeoutMs > 0)
+                        AnimatedBuilder(
+                          animation: _countdownController,
+                          builder: (context, _) {
+                            final remainingMs = widget.timeoutMs * (1.0 - _countdownController.value);
+                            final seconds = (remainingMs / 1000).ceil();
+                            return Text(
+                              'Ends in :${seconds.toString().padLeft(2, '0')}',
+                              style: const TextStyle(
+                                color: Colors.white54,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            );
+                          },
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    [?epInfo, item.name]
-                        .where((s) => s.isNotEmpty)
+                    [epInfo, item.name]
+                        .where((s) => s != null && s.isNotEmpty)
                         .join(' — '),
                     style: const TextStyle(
                       color: Colors.white,
@@ -204,14 +235,14 @@ class _NextUpOverlayState extends State<NextUpOverlay>
                 ],
               ),
             ),
-            if (widget.timeoutMs > 0)
+            if (showProgressBar && widget.timeoutMs > 0)
               AnimatedBuilder(
                 animation: _countdownController,
                 builder: (context, _) => LinearProgressIndicator(
                   value: 1.0 - _countdownController.value,
                   backgroundColor: Colors.transparent,
                   color: AppColorScheme.accent,
-                  minHeight: 3,
+                  minHeight: 6,
                 ),
               ),
           ],

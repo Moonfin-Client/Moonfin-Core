@@ -6791,6 +6791,18 @@ class AppLocalizationsYue extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => '跳過片頭和片尾？';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => '提示用戶';
 
   @override

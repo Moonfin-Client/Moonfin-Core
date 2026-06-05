@@ -7049,6 +7049,18 @@ class AppLocalizationsLv extends AppLocalizations {
       'Vai izlaist ievadus un noslēgumus?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'Pamudināt lietotāju';
 
   @override

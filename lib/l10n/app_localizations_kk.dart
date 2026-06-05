@@ -7048,6 +7048,18 @@ class AppLocalizationsKk extends AppLocalizations {
       'Кіріспелер мен шығыстарды өткізіп жіберу керек пе?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'Шұғыл пайдаланушы';
 
   @override

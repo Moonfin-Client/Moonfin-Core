@@ -7056,6 +7056,18 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Pominąć wstępy i zakończenia?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'Monituj użytkownika';
 
   @override

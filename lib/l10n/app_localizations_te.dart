@@ -7057,6 +7057,18 @@ class AppLocalizationsTe extends AppLocalizations {
       'పరిచయాలు మరియు అవుట్‌రోలను దాటవేయాలా?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'ప్రాంప్ట్ యూజర్';
 
   @override

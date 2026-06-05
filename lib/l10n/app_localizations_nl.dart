@@ -7044,6 +7044,18 @@ class AppLocalizationsNl extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Intro\'s en Outro\'s overslaan?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'Vraag gebruiker';
 
   @override

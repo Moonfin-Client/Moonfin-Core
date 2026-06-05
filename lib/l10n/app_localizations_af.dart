@@ -7021,6 +7021,18 @@ class AppLocalizationsAf extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Slaan Intro\'s en Outros oor?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'Vinnige gebruiker';
 
   @override

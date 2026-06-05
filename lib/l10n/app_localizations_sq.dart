@@ -7075,6 +7075,18 @@ class AppLocalizationsSq extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Të kapërcehen hyrjet dhe daljet?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'Përdoruesi i shpejtë';
 
   @override

@@ -7045,6 +7045,18 @@ class AppLocalizationsSk extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Preskočiť úvody a závery?';
 
   @override
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+
+  @override
+  String get settingsProgressBar => 'Progress Bar';
+
+  @override
+  String get settingsTimer => 'Timer';
+
+  @override
+  String get settingsNone => 'None';
+
+  @override
   String get settingsPromptUser => 'Vyzvať používateľa';
 
   @override
