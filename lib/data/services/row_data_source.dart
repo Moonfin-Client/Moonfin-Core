@@ -386,7 +386,7 @@ class RowDataSource {
       parentId: collectionId,
       sortBy: sortBy,
       sortOrder: sortOrder,
-      recursive: true,
+      recursive: false,
       startIndex: startIndex,
       limit: limit,
     );
