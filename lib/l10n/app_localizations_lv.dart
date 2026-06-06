@@ -15,6 +15,9 @@ class AppLocalizationsLv extends AppLocalizations {
   String get signIn => 'Pierakstīties';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Savienojuma izveide ar $serverName';
   }

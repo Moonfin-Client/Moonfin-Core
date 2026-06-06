@@ -15,6 +15,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get signIn => 'Inicieu la sessió';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'S\'està connectant a $serverName';
   }

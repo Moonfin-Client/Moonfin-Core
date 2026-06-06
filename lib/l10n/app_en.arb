@@ -8,6 +8,10 @@
   "@signIn": {
     "description": "Sign in heading and button label"
   },
+  "empty": "Empty",
+  "@empty": {
+    "description": "Label indicating a section or category is empty"
+  },
   "connectingToServer": "Connecting to {serverName}",
   "@connectingToServer": {
     "description": "Subtitle showing which server the user is connecting to",

@@ -15,6 +15,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get signIn => 'Είσοδος';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Σύνδεση στο $serverName';
   }

@@ -15,6 +15,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get signIn => 'وارد شوید';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'در حال اتصال به $serverName';
   }

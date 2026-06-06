@@ -15,6 +15,9 @@ class AppLocalizationsRo extends AppLocalizations {
   String get signIn => 'Conectare';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Se conectează la $serverName';
   }

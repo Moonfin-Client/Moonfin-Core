@@ -15,6 +15,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get signIn => 'サインイン';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Connecting to $serverName';
   }

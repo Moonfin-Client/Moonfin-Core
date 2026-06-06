@@ -15,6 +15,9 @@ class AppLocalizationsCy extends AppLocalizations {
   String get signIn => 'Mewngofnodwch';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Yn cysylltu â $serverName';
   }

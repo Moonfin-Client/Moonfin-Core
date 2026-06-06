@@ -15,6 +15,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get signIn => 'Jelentkezzen be';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Connecting to $serverName';
   }

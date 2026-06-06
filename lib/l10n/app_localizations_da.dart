@@ -15,6 +15,9 @@ class AppLocalizationsDa extends AppLocalizations {
   String get signIn => 'Log ind';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Opretter forbindelse til $serverName';
   }

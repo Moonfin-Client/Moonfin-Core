@@ -15,6 +15,9 @@ class AppLocalizationsSv extends AppLocalizations {
   String get signIn => 'Logga in';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Connecting to $serverName';
   }

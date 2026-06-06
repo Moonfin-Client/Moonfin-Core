@@ -15,6 +15,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get signIn => '登入';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Connecting to $serverName';
   }

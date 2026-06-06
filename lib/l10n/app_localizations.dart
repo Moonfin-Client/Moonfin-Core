@@ -233,6 +233,12 @@ abstract class AppLocalizations {
   /// **'Sign In'**
   String get signIn;
 
+  /// Label indicating a section or category is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Empty'**
+  String get empty;
+
   /// Subtitle showing which server the user is connecting to
   ///
   /// In en, this message translates to:

@@ -15,6 +15,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get signIn => 'Přihlaste se';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Připojování k $serverName';
   }

@@ -15,6 +15,9 @@ class AppLocalizationsBe extends AppLocalizations {
   String get signIn => 'Увайдзіце';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Падключэнне да $serverName';
   }

@@ -15,6 +15,9 @@ class AppLocalizationsHr extends AppLocalizations {
   String get signIn => 'Prijavite se';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Connecting to $serverName';
   }

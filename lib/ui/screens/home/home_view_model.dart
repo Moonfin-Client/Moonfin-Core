@@ -371,7 +371,10 @@ class HomeViewModel extends ChangeNotifier {
 
       final filteredItems = _filterEmptyElements(result.$1);
       _rows = List.of(_rows);
-      _rows[rowIndex] = row.copyWith(items: filteredItems, totalCount: result.$2);
+      _rows[rowIndex] = row.copyWith(
+        items: filteredItems,
+        totalCount: result.$2 - (result.$1.length - filteredItems.length),
+      );
       notifyListeners();
     } catch (_) {
     } finally {

@@ -15,6 +15,9 @@ class AppLocalizationsLt extends AppLocalizations {
   String get signIn => 'Prisijunkite';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Connecting to $serverName';
   }

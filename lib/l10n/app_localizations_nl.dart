@@ -15,6 +15,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get signIn => 'Inloggen';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Connecting to $serverName';
   }

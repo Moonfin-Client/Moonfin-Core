@@ -15,6 +15,9 @@ class AppLocalizationsAf extends AppLocalizations {
   String get signIn => 'Meld aan';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Koppel tans aan $serverName';
   }

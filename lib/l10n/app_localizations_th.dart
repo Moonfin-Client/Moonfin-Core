@@ -15,6 +15,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get signIn => 'เข้าสู่ระบบ';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'กำลังเชื่อมต่อกับ $serverName';
   }

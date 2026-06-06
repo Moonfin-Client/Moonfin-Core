@@ -15,6 +15,9 @@ class AppLocalizationsSq extends AppLocalizations {
   String get signIn => 'Hyni';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Connecting to $serverName';
   }

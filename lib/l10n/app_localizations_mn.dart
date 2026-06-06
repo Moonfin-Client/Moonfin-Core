@@ -15,6 +15,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get signIn => 'Нэвтрэх';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return '$serverName-д холбогдож байна';
   }

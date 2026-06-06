@@ -15,6 +15,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get signIn => 'সাইন ইন করুন';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return '$serverName এর সাথে সংযুক্ত হচ্ছে';
   }

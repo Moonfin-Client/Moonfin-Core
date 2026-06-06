@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -111,11 +113,12 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
 
     final tasks = <Future<void>>[];
 
+    final newEmptyIds = <String>{};
     void setEmpty(String stableId, bool isEmpty) {
       if (isEmpty) {
-        _emptySectionIds.add(stableId);
+        newEmptyIds.add(stableId);
       } else {
-        _emptySectionIds.remove(stableId);
+        newEmptyIds.remove(stableId);
       }
     }
 
@@ -300,6 +303,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
 
     if (mounted) {
       setState(() {
+        _emptySectionIds
+          ..clear()
+          ..addAll(newEmptyIds);
         _isLoadingEmptyStates = false;
       });
     }
@@ -368,7 +374,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       _persistSections(pushSync: false);
     }
     _refreshPluginSections();
-    _checkEmptyStates();
+    unawaited(_checkEmptyStates());
   }
 
   bool _ensureBuiltinSectionsPresent() {
@@ -435,7 +441,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     if (changed) {
       _persistSections(pushSync: false);
     }
-    _checkEmptyStates();
+    unawaited(_checkEmptyStates());
   }
 
   /// Adds plugin-dynamic sections discovered by the Home Screen Sections
@@ -1088,8 +1094,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(color: Colors.red.withValues(alpha: 0.5), width: 0.8),
                         ),
-                        child: const Text(
-                          'Empty',
+                        child: Text(
+                          l10n.empty,
                           style: TextStyle(
                             fontSize: 10,
                             color: Colors.red,
@@ -1265,6 +1271,7 @@ class _HomeSectionTileState extends State<_HomeSectionTile> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Focus(
       focusNode: widget.focusNode,
       autofocus: widget.autofocus,
@@ -1349,8 +1356,8 @@ class _HomeSectionTileState extends State<_HomeSectionTile> {
                         borderRadius: BorderRadius.circular(4),
                         border: Border.all(color: Colors.red.withValues(alpha: 0.5), width: 0.8),
                       ),
-                      child: const Text(
-                        'Empty',
+                      child: Text(
+                        l10n.empty,
                         style: TextStyle(
                           fontSize: 10,
                           color: Colors.red,

@@ -15,6 +15,9 @@ class AppLocalizationsTl extends AppLocalizations {
   String get signIn => 'Mag-sign In';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Kumokonekta sa $serverName';
   }

@@ -15,6 +15,9 @@ class AppLocalizationsMl extends AppLocalizations {
   String get signIn => 'സൈൻ ഇൻ';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Connecting to $serverName';
   }

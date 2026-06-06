@@ -15,6 +15,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get signIn => '로그인';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Connecting to $serverName';
   }

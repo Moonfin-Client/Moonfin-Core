@@ -15,6 +15,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get signIn => 'दाखिल करना';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Connecting to $serverName';
   }

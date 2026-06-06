@@ -15,6 +15,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get signIn => 'Войти';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Connecting to $serverName';
   }

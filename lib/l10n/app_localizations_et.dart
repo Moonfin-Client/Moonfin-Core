@@ -15,6 +15,9 @@ class AppLocalizationsEt extends AppLocalizations {
   String get signIn => 'Logi sisse';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Ühenduse loomine aadressiga $serverName';
   }

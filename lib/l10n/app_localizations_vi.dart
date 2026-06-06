@@ -15,6 +15,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get signIn => 'Đăng nhập';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Đang kết nối với $serverName';
   }

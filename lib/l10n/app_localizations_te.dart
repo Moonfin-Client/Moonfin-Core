@@ -15,6 +15,9 @@ class AppLocalizationsTe extends AppLocalizations {
   String get signIn => 'సైన్ ఇన్ చేయండి';
 
   @override
+  String get empty => 'Empty';
+
+  @override
   String connectingToServer(String serverName) {
     return 'Connecting to $serverName';
   }
