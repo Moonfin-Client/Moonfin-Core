@@ -995,8 +995,11 @@ class _DetailContentState extends State<_DetailContent> {
                           _isCompact(context) ? 16 : 48,
                           0,
                         )
-                      : EdgeInsets.symmetric(
-                          horizontal: _isCompact(context) ? 16 : 48,
+                      : EdgeInsets.fromLTRB(
+                          _isCompact(context) ? 16 : 48,
+                          0,
+                          _isCompact(context) ? 16 : 48,
+                          MediaQuery.of(context).padding.bottom + 32,
                         ),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate(
@@ -9627,7 +9630,7 @@ class _FilmographyRow extends StatelessWidget {
         ? (isEpisode ? 160.0 : 120.0)
         : cardHeight * cardAspectRatio;
     final rowHeight = isMobile
-        ? 220.0
+        ? 240.0
         : cardHeight + (56 * metadataScale);
 
     return SizedBox(
@@ -9723,7 +9726,7 @@ class _SeerrAppearancesRow extends StatelessWidget {
     final cardHeight = posterSize.portraitHeight.toDouble() * platformScale * rowScale;
     
     final cardWidth = isMobile ? 120.0 : cardHeight * (2 / 3);
-    final rowHeight = isMobile ? 220.0 : cardHeight + (56 * metadataScale);
+    final rowHeight = isMobile ? 240.0 : cardHeight + (56 * metadataScale);
     final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
     final suppressFocusGlow = ThemeRegistry.active.borders.focusGlow.isNotEmpty;
 
