@@ -172,12 +172,12 @@ class RowDataSource {
     );
   }
 
-  Future<HomeRow> loadPlaylists(String serverId, {String? mediaType}) async {
+  Future<HomeRow> loadPlaylists(String serverId, {String? mediaType, String? sortBy, String? sortOrder}) async {
     final response = await _getItemsWithFallback(
-      includeItemTypes: ['Playlist'],
-      sortBy: 'SortName',
-      sortOrder: 'Ascending',
-      recursive: true,
+      includeItemTypes: const ['Playlist'],
+      sortBy: sortBy ?? 'SortName',
+      sortOrder: sortOrder ?? 'Ascending',
+      recursive: false,
       limit: _defaultLimit,
     );
     var row = _buildRow(
@@ -396,6 +396,33 @@ class RowDataSource {
       response: response,
       serverId: serverId,
       rowType: HomeRowType.collections,
+    );
+  }
+
+  Future<HomeRow> loadPlaylistRow(
+    String serverId, {
+    required String playlistId,
+    required String title,
+    required String rowId,
+    String sortBy = _defaultSortBy,
+    String sortOrder = _defaultSortOrder,
+    int startIndex = 0,
+    int limit = _defaultLimit,
+  }) async {
+    final response = await _getItemsWithFallback(
+      parentId: playlistId,
+      sortBy: sortBy,
+      sortOrder: sortOrder,
+      recursive: false,
+      startIndex: startIndex,
+      limit: limit,
+    );
+    return _buildRow(
+      id: rowId,
+      title: title,
+      response: response,
+      serverId: serverId,
+      rowType: HomeRowType.playlists,
     );
   }
 
@@ -654,16 +681,33 @@ class RowDataSource {
 
     switch (row.rowType) {
       case HomeRowType.playlists:
-        final pageCount = (currentOffset / _defaultLimit).ceil();
-        final startIndex = pageCount * _defaultLimit;
-        response = await _getItemsWithFallback(
-          includeItemTypes: ['Playlist'],
-          sortBy: 'SortName',
-          sortOrder: 'Ascending',
-          recursive: true,
-          startIndex: startIndex,
-          limit: _defaultLimit,
-        );
+        final parsed = _parseStableId(row.id);
+        if (parsed != null && parsed.source == HomeSectionPluginSource.playlists) {
+          final playlistId = parsed.additionalData;
+          var sortBy = _defaultSortBy;
+          if (prefs != null) {
+            sortBy = prefs.get(UserPreferences.playlistsRowSortBy).apiValue;
+          }
+          response = await _getItemsWithFallback(
+            parentId: playlistId,
+            sortBy: sortBy,
+            sortOrder: 'Ascending',
+            recursive: false,
+            startIndex: currentOffset,
+            limit: _defaultLimit,
+          );
+        } else {
+          final pageCount = (currentOffset / _defaultLimit).ceil();
+          final startIndex = pageCount * _defaultLimit;
+          response = await _getItemsWithFallback(
+            includeItemTypes: const ['Playlist'],
+            sortBy: 'SortName',
+            sortOrder: 'Ascending',
+            recursive: false,
+            startIndex: startIndex,
+            limit: _defaultLimit,
+          );
+        }
       case HomeRowType.favorites:
         final sortBy = prefs?.get(UserPreferences.favoritesRowSortBy).apiValue ?? _defaultSortBy;
         response = await _getItemsWithFallback(
@@ -1179,6 +1223,38 @@ class RowDataSource {
             id: rowId,
             title: title,
             rowType: HomeRowType.genres,
+          );
+        }
+      case HomeSectionPluginSource.playlists:
+        final playlistId = additionalData?.trim();
+        if (playlistId == null || playlistId.isEmpty) {
+          return HomeRow(
+            id: rowId,
+            title: title,
+            rowType: HomeRowType.playlists,
+          );
+        }
+        try {
+          var sortBy = _defaultSortBy;
+          if (GetIt.instance.isRegistered<UserPreferences>()) {
+            sortBy = GetIt.instance<UserPreferences>()
+                .get(UserPreferences.playlistsRowSortBy)
+                .apiValue;
+          }
+          final row = await loadPlaylistRow(
+            serverId,
+            playlistId: playlistId,
+            title: title,
+            rowId: rowId,
+            sortBy: sortBy,
+            sortOrder: _defaultSortOrder,
+          );
+          return row;
+        } catch (_) {
+          return HomeRow(
+            id: rowId,
+            title: title,
+            rowType: HomeRowType.playlists,
           );
         }
       case HomeSectionPluginSource.kefinTweaks:

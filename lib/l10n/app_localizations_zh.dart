@@ -7185,6 +7185,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String get genresRowItemsDescription => '在流派行中显示电影、连续剧或两者。';
 
   @override
+  String get displayPlaylistsRows => 'Display Playlist Rows';
+
+  @override
+  String get displayPlaylistsRowsSubtitle =>
+      'Show Playlist rows in Home Sections.';
+
+  @override
+  String get playlistsRowSorting => 'Playlist Row Sorting';
+
+  @override
+  String get playlistsRowSortingDescription =>
+      'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
   String get appearance => '外貌';
 
   @override

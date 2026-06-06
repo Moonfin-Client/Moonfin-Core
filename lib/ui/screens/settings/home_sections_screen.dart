@@ -333,11 +333,16 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     return type == HomeSectionType.genres;
   }
 
+  bool _isPlaylistsSectionType(HomeSectionType type) {
+    return type == HomeSectionType.playlists;
+  }
+
   bool _isHiddenByRowVisibilityGates(HomeSectionConfig section) {
     final showFavoritesRows = _prefs.get(UserPreferences.displayFavoritesRows);
     final showCollectionsRows =
         _prefs.get(UserPreferences.displayCollectionsRows);
     final showGenresRows = _prefs.get(UserPreferences.displayGenresRows);
+    final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
 
     final hiddenByFavorites =
       !showFavoritesRows && _isFavoriteSectionType(section.type);
@@ -349,7 +354,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       ((section.isBuiltin && _isGenresSectionType(section.type)) ||
         (section.isPluginDynamic &&
           section.pluginSource == HomeSectionPluginSource.genres));
-    return hiddenByFavorites || hiddenByCollections || hiddenByGenres;
+    final hiddenByPlaylists = !showPlaylistsRows &&
+      ((section.isBuiltin && _isPlaylistsSectionType(section.type)) ||
+        (section.isPluginDynamic &&
+          section.pluginSource == HomeSectionPluginSource.playlists));
+    return hiddenByFavorites || hiddenByCollections || hiddenByGenres || hiddenByPlaylists;
   }
 
   List<int> _visibleSectionIndices() {
@@ -424,18 +433,22 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     }
     final collectionsFuture = _fetchCollectionsForHomeSections();
     final genresFuture = _fetchGenresForHomeSections();
+    final playlistsFuture = _fetchPlaylistsForHomeSections();
     final discoveredCollections = await collectionsFuture;
     final discoveredGenres = await genresFuture;
+    final discoveredPlaylists = await playlistsFuture;
     if (!mounted) return;
     var changed = false;
     setState(() {
       final mergedPluginSections = _mergeDiscoveredPluginSections();
       final mergedCollectionSections = _mergeCollectionSections(discoveredCollections);
       final mergedGenreSections = _mergeGenreSections(discoveredGenres);
+      final mergedPlaylistSections = _mergePlaylistSections(discoveredPlaylists);
       changed =
           mergedPluginSections ||
           mergedCollectionSections ||
-          mergedGenreSections;
+          mergedGenreSections ||
+          mergedPlaylistSections;
       _rebuildFocusNodes();
     });
     if (changed) {
@@ -608,6 +621,111 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     } catch (_) {
       return const <_DiscoveredGenreRow>[];
     }
+  }
+
+  Future<List<_DiscoveredPlaylistRow>> _fetchPlaylistsForHomeSections() async {
+    final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
+    if (!showPlaylistsRows) return const <_DiscoveredPlaylistRow>[];
+
+    try {
+      final client = GetIt.instance<MediaServerClient>();
+      const pageSize = 250;
+      var startIndex = 0;
+      int? total;
+      final all = <_DiscoveredPlaylistRow>[];
+
+      while (true) {
+        final response = await client.itemsApi.getItems(
+          includeItemTypes: const ['Playlist'],
+          sortBy: 'SortName',
+          sortOrder: 'Ascending',
+          recursive: true,
+          startIndex: startIndex,
+          limit: pageSize,
+        );
+
+        total ??= response['TotalRecordCount'] as int?;
+        final items = (response['Items'] as List?) ?? const [];
+        if (items.isEmpty) break;
+
+        all.addAll(
+          items
+              .whereType<Map<String, dynamic>>()
+              .where((item) =>
+                  (item['Id']?.toString() ?? '').isNotEmpty &&
+                  (item['Name']?.toString() ?? '').isNotEmpty)
+              .map(
+                (item) => _DiscoveredPlaylistRow(
+                  id: item['Id'].toString(),
+                  name: item['Name'].toString(),
+                ),
+              ),
+        );
+
+        startIndex += items.length;
+        if (items.length < pageSize) break;
+        if (total != null && startIndex >= total) break;
+      }
+
+      return all;
+    } catch (_) {
+      return const <_DiscoveredPlaylistRow>[];
+    }
+  }
+
+  bool _mergePlaylistSections(List<_DiscoveredPlaylistRow> discovered) {
+    final client = GetIt.instance<MediaServerClient>();
+    final serverId = client.baseUrl;
+    var changed = false;
+
+    final existing = <String, HomeSectionConfig>{
+      for (final cfg in _sections.where((c) =>
+          c.isPluginDynamic &&
+          c.pluginSource == HomeSectionPluginSource.playlists &&
+          c.serverId == serverId))
+        cfg.stableId: cfg,
+    };
+
+    final freshIds = <String>{};
+    var nextOrder = _sections.length;
+    for (final playlist in discovered) {
+      final cfg = HomeSectionConfig.pluginDynamic(
+        serverId: serverId,
+        pluginSection: 'playlist',
+        pluginAdditionalData: playlist.id,
+        pluginDisplayText: playlist.name,
+        pluginSource: HomeSectionPluginSource.playlists,
+        enabled: existing[
+                'pluginDynamic:playlists:$serverId:playlist:${playlist.id}']
+                ?.enabled ??
+            false,
+        order: nextOrder++,
+      );
+      freshIds.add(cfg.stableId);
+      final idx = _sections.indexWhere((s) => s.stableId == cfg.stableId);
+      if (idx >= 0) {
+        final updated = _sections[idx].copyWith(
+          pluginDisplayText: cfg.pluginDisplayText,
+        );
+        if (_sections[idx].pluginDisplayText != updated.pluginDisplayText) {
+          _sections[idx] = updated;
+          changed = true;
+        }
+      } else {
+        _sections.add(cfg);
+        changed = true;
+      }
+    }
+
+    final before = _sections.length;
+    _sections.removeWhere((s) =>
+        s.isPluginDynamic &&
+        s.pluginSource == HomeSectionPluginSource.playlists &&
+        s.serverId == serverId &&
+        !freshIds.contains(s.stableId));
+    if (_sections.length != before) changed = true;
+
+    return changed;
   }
 
   bool _mergeGenreSections(List<_DiscoveredGenreRow> discovered) {
@@ -1193,6 +1311,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     return switch (section.pluginSource) {
       HomeSectionPluginSource.collections => 'Collections row',
       HomeSectionPluginSource.genres => 'Genres row',
+      HomeSectionPluginSource.playlists => 'Playlists row',
       HomeSectionPluginSource.kefinTweaks => 'KefinTweaks plugin',
       HomeSectionPluginSource.hss => 'Home Screen Sections plugin',
     };
@@ -1214,6 +1333,16 @@ class _DiscoveredGenreRow {
   final String name;
 
   const _DiscoveredGenreRow({
+    required this.id,
+    required this.name,
+  });
+}
+
+class _DiscoveredPlaylistRow {
+  final String id;
+  final String name;
+
+  const _DiscoveredPlaylistRow({
     required this.id,
     required this.name,
   });

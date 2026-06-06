@@ -33,7 +33,9 @@ enum HomeSectionPluginSource {
 
   collections('collections'),
 
-  genres('genres');
+  genres('genres'),
+
+  playlists('playlists');
 
   const HomeSectionPluginSource(this.serializedName);
   final String serializedName;

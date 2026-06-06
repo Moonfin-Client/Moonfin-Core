@@ -916,6 +916,17 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
     _reloadHomeRows();
   }
 
+  void _onPlaylistsRowsToggleChanged() {
+    _pushPersonalizationSync();
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  void _onPlaylistsSortChanged() {
+    _pushPersonalizationSync();
+    _reloadHomeRows();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -924,6 +935,7 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
       UserPreferences.displayCollectionsRows,
     );
     final showGenresRows = _prefs.get(UserPreferences.displayGenresRows);
+    final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
     final rowsStyle = _prefs.get(UserPreferences.homeRowsStyle);
     return Scaffold(
       appBar: buildSettingsAppBar(context, Text(l10n.homeScreen)),
@@ -1015,6 +1027,22 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
               labelOf: (v) => v.displayName,
               onChanged: _onGenresItemFilterChanged,
             ),
+            SwitchPreferenceTile(
+              preference: UserPreferences.displayPlaylistsRows,
+              title: l10n.displayPlaylistsRows,
+              subtitle: l10n.displayPlaylistsRowsSubtitle,
+              icon: Icons.playlist_play,
+              onChanged: _onPlaylistsRowsToggleChanged,
+            ),
+            if (showPlaylistsRows)
+              EnumPreferenceTile<LibrarySortBy>(
+                preference: UserPreferences.playlistsRowSortBy,
+                title: l10n.playlistsRowSorting,
+                description: l10n.playlistsRowSortingDescription,
+                icon: Icons.sort,
+                labelOf: (v) => v.displayName,
+                onChanged: _onPlaylistsSortChanged,
+              ),
           ],
 
           _SectionHeader(l10n.appearance),

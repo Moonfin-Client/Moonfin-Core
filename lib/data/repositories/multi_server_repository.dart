@@ -262,16 +262,20 @@ class MultiServerRepository {
     );
   }
 
-  Future<HomeRow> getAggregatedPlaylists({int limit = _defaultLimit}) async {
+  Future<HomeRow> getAggregatedPlaylists({
+    int limit = _defaultLimit,
+    String sortBy = _defaultSortBy,
+    String sortOrder = _defaultSortOrder,
+  }) async {
     final sessions = await getLoggedInServers();
 
     final results = await Future.wait(
       sessions.map(
         (session) => _withTimeout(() async {
           final response = await session.client.itemsApi.getItems(
-            includeItemTypes: ['Playlist'],
-            sortBy: 'SortName',
-            sortOrder: 'Ascending',
+            includeItemTypes: const ['Playlist'],
+            sortBy: sortBy,
+            sortOrder: sortOrder,
             recursive: true,
             limit: limit,
             fields: _fields,
@@ -288,8 +292,16 @@ class MultiServerRepository {
       ),
     );
 
-    final all = results.expand((e) => e).toList()
-      ..sort((a, b) => a.name.compareTo(b.name));
+    final all = results.expand((e) => e).toList();
+    if (sortBy == 'SortName') {
+      if (sortOrder == 'Ascending') {
+        all.sort((a, b) => a.name.compareTo(b.name));
+      } else {
+        all.sort((a, b) => b.name.compareTo(a.name));
+      }
+    } else {
+      _sortAggregatedItems(all, sortBy: sortBy, sortOrder: sortOrder);
+    }
 
     final takenItems = all.take(limit).toList();
     final totalCount = sessions.fold<int>(0, (sum, session) {
@@ -430,10 +442,11 @@ class MultiServerRepository {
             final pageCount = (startIndex / _defaultLimit).ceil();
             final targetStartIndex = pageCount * _defaultLimit;
             _rowOffsets[cacheKey] = targetStartIndex + _defaultLimit;
+            final sortBy = prefs?.get(UserPreferences.playlistsRowSortBy).apiValue ?? _defaultSortBy;
 
             final response = await session.client.itemsApi.getItems(
               includeItemTypes: const ['Playlist'],
-              sortBy: 'SortName',
+              sortBy: sortBy,
               sortOrder: 'Ascending',
               recursive: true,
               startIndex: targetStartIndex,
@@ -581,7 +594,12 @@ class MultiServerRepository {
     final List<AggregatedItem> sortedCombined;
     if (row.rowType == HomeRowType.playlists || row.rowType == HomeRowType.latestMedia) {
       if (row.rowType == HomeRowType.playlists) {
-        uniqueCombined.sort((a, b) => a.name.compareTo(b.name));
+        final sortBy = prefs?.get(UserPreferences.playlistsRowSortBy).apiValue ?? _defaultSortBy;
+        if (sortBy == 'SortName') {
+          uniqueCombined.sort((a, b) => a.name.compareTo(b.name));
+        } else {
+          _sortAggregatedItems(uniqueCombined, sortBy: sortBy, sortOrder: 'Ascending');
+        }
       }
       sortedCombined = uniqueCombined;
     } else {

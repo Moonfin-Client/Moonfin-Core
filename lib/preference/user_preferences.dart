@@ -286,6 +286,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final displayPlaylistsRows = Preference(
+    key: 'pref_display_playlists_rows',
+    defaultValue: false,
+  );
+
   static final favoritesRowSortBy = EnumPreference(
     key: 'pref_favorites_row_sort_by',
     defaultValue: LibrarySortBy.name,
@@ -300,6 +305,12 @@ class UserPreferences extends ChangeNotifier {
 
   static final genresRowSortBy = EnumPreference(
     key: 'pref_genres_row_sort_by',
+    defaultValue: LibrarySortBy.name,
+    values: LibrarySortBy.values,
+  );
+
+  static final playlistsRowSortBy = EnumPreference(
+    key: 'pref_playlists_row_sort_by',
     defaultValue: LibrarySortBy.name,
     values: LibrarySortBy.values,
   );

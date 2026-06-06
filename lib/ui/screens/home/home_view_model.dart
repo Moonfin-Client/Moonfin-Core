@@ -71,6 +71,10 @@ class HomeViewModel extends ChangeNotifier {
     return type == HomeSectionType.genres;
   }
 
+  static bool _isPlaylistsSectionType(HomeSectionType type) {
+    return type == HomeSectionType.playlists;
+  }
+
   ImageApi imageApiForServer(String serverId) {
     if (!_multiServerEnabled) return _dataSource.imageApi;
     return _multiServerRepo.getImageApiForServer(serverId);
@@ -125,6 +129,8 @@ class HomeViewModel extends ChangeNotifier {
           _prefs.get(UserPreferences.displayCollectionsRows);
         final showGenresRows =
           _prefs.get(UserPreferences.displayGenresRows);
+      final showPlaylistsRows =
+          _prefs.get(UserPreferences.displayPlaylistsRows);
 
       // Plugin-dynamic sections only make sense on the active server.
       final visibleConfigsRaw = configs
@@ -140,7 +146,11 @@ class HomeViewModel extends ChangeNotifier {
             (showGenresRows ||
               !((c.isBuiltin && _isGenresSectionType(c.type)) ||
                 (c.isPluginDynamic &&
-                  c.pluginSource == HomeSectionPluginSource.genres))),
+                  c.pluginSource == HomeSectionPluginSource.genres))) &&
+            (showPlaylistsRows ||
+              !((c.isBuiltin && _isPlaylistsSectionType(c.type)) ||
+                (c.isPluginDynamic &&
+                  c.pluginSource == HomeSectionPluginSource.playlists))),
           )
           .toList(growable: false);
 
@@ -481,6 +491,7 @@ class HomeViewModel extends ChangeNotifier {
     switch (cfg.pluginSource) {
       case HomeSectionPluginSource.collections:
       case HomeSectionPluginSource.genres:
+      case HomeSectionPluginSource.playlists:
         return const <String>{};
       case HomeSectionPluginSource.hss:
         final builtin = _builtinForPluginSection(cfg.pluginSection);
@@ -607,9 +618,18 @@ class HomeViewModel extends ChangeNotifier {
             ? await _multiServerRepo.getAggregatedLatestMediaRows()
             : _loadLatestMediaRows();
       case HomeSectionType.playlists:
+        final playlistsSortBy =
+            _prefs.get(UserPreferences.playlistsRowSortBy).apiValue;
         return [_multiServerEnabled
-            ? await _multiServerRepo.getAggregatedPlaylists()
-            : await _dataSource.loadPlaylists(_serverId)];
+            ? await _multiServerRepo.getAggregatedPlaylists(
+                sortBy: playlistsSortBy,
+                sortOrder: sortOrder,
+              )
+            : await _dataSource.loadPlaylists(
+                _serverId,
+                sortBy: playlistsSortBy,
+                sortOrder: sortOrder,
+              )];
       case HomeSectionType.favoriteMovies:
       case HomeSectionType.favoriteSeries:
       case HomeSectionType.favoriteEpisodes:

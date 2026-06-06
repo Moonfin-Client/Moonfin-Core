@@ -7494,6 +7494,20 @@ class AppLocalizationsUk extends AppLocalizations {
       'Показувати фільми, серіали або обидва в рядках жанрів.';
 
   @override
+  String get displayPlaylistsRows => 'Display Playlist Rows';
+
+  @override
+  String get displayPlaylistsRowsSubtitle =>
+      'Show Playlist rows in Home Sections.';
+
+  @override
+  String get playlistsRowSorting => 'Playlist Row Sorting';
+
+  @override
+  String get playlistsRowSortingDescription =>
+      'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
   String get appearance => 'Зовнішній вигляд';
 
   @override

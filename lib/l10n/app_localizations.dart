@@ -13241,6 +13241,30 @@ abstract class AppLocalizations {
   /// **'Show Movies, Series, or both in Genres rows.'**
   String get genresRowItemsDescription;
 
+  /// No description provided for @displayPlaylistsRows.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Playlist Rows'**
+  String get displayPlaylistsRows;
+
+  /// No description provided for @displayPlaylistsRowsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Playlist rows in Home Sections.'**
+  String get displayPlaylistsRowsSubtitle;
+
+  /// No description provided for @playlistsRowSorting.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist Row Sorting'**
+  String get playlistsRowSorting;
+
+  /// No description provided for @playlistsRowSortingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Playlist rows by date added, release date, alphabetically, and more.'**
+  String get playlistsRowSortingDescription;
+
   /// No description provided for @appearance.
   ///
   /// In en, this message translates to:

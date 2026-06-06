@@ -7476,6 +7476,20 @@ class AppLocalizationsMn extends AppLocalizations {
       'Төрөл бүрийн мөрөнд Кино, Цуврал эсвэл хоёуланг нь харуул.';
 
   @override
+  String get displayPlaylistsRows => 'Display Playlist Rows';
+
+  @override
+  String get displayPlaylistsRowsSubtitle =>
+      'Show Playlist rows in Home Sections.';
+
+  @override
+  String get playlistsRowSorting => 'Playlist Row Sorting';
+
+  @override
+  String get playlistsRowSortingDescription =>
+      'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
   String get appearance => 'Гадаад төрх';
 
   @override
