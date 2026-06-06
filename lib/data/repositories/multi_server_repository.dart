@@ -732,7 +732,6 @@ class MultiServerRepository {
           final id = data['Id'] as String;
           final collectionType = (data['CollectionType'] as String?)?.toLowerCase();
           if (collectionType == 'music' ||
-              collectionType == 'books' ||
               collectionType == 'playlists' ||
               collectionType == 'boxsets' ||
               collectionType == 'livetv') {
