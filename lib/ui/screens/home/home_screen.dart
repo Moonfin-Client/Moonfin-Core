@@ -2374,7 +2374,9 @@ class _ContentRowsState extends State<_ContentRows>
         : 0.0;
     final overlayBottom = _isHomeRowsStyleV2()
         ? navbarHeight
-        : infoTopPadding + infoAreaHeight;
+        : showInfoOverlay
+            ? infoTopPadding + infoAreaHeight
+            : 0.0;
     final rowExtents = _computeRowExtents(rows, posterSize, prefs);
     final rowTopOffsets = <double>[];
     var currentTop = listTopPadding + infoPlaceholderHeight;
