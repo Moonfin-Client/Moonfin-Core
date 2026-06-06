@@ -177,7 +177,7 @@ class RowDataSource {
       includeItemTypes: const ['Playlist'],
       sortBy: sortBy ?? 'SortName',
       sortOrder: sortOrder ?? 'Ascending',
-      recursive: true,
+      recursive: false,
       limit: _defaultLimit,
     );
     var row = _buildRow(
@@ -413,7 +413,7 @@ class RowDataSource {
       parentId: playlistId,
       sortBy: sortBy,
       sortOrder: sortOrder,
-      recursive: true,
+      recursive: false,
       startIndex: startIndex,
       limit: limit,
     );
@@ -681,16 +681,33 @@ class RowDataSource {
 
     switch (row.rowType) {
       case HomeRowType.playlists:
-        final pageCount = (currentOffset / _defaultLimit).ceil();
-        final startIndex = pageCount * _defaultLimit;
-        response = await _getItemsWithFallback(
-          includeItemTypes: ['Playlist'],
-          sortBy: 'SortName',
-          sortOrder: 'Ascending',
-          recursive: true,
-          startIndex: startIndex,
-          limit: _defaultLimit,
-        );
+        final parsed = _parseStableId(row.id);
+        if (parsed != null && parsed.source == HomeSectionPluginSource.playlists) {
+          final playlistId = parsed.additionalData;
+          var sortBy = _defaultSortBy;
+          if (prefs != null) {
+            sortBy = prefs.get(UserPreferences.playlistsRowSortBy).apiValue;
+          }
+          response = await _getItemsWithFallback(
+            parentId: playlistId,
+            sortBy: sortBy,
+            sortOrder: 'Ascending',
+            recursive: false,
+            startIndex: currentOffset,
+            limit: _defaultLimit,
+          );
+        } else {
+          final pageCount = (currentOffset / _defaultLimit).ceil();
+          final startIndex = pageCount * _defaultLimit;
+          response = await _getItemsWithFallback(
+            includeItemTypes: const ['Playlist'],
+            sortBy: 'SortName',
+            sortOrder: 'Ascending',
+            recursive: false,
+            startIndex: startIndex,
+            limit: _defaultLimit,
+          );
+        }
       case HomeRowType.favorites:
         final sortBy = prefs?.get(UserPreferences.favoritesRowSortBy).apiValue ?? _defaultSortBy;
         response = await _getItemsWithFallback(
