@@ -1,4 +1,5 @@
-@font-face{font-family:'NeonPulseDisplay';src:url('assets/fonts/ScienceGothic-Regular.ttf') format('truetype');font-display:swap}
+@font-face{font-family:'NeonPulseDisplay';src:url('assets/fonts/Orbitron-Regular.ttf') format('truetype');font-display:swap}
+@font-face{font-family:'NeonPulseBody';src:url('assets/fonts/Rajdhani-Regular.ttf') format('truetype');font-display:swap}
 @font-face{font-family:'Material Icons';src:url('../../assets/fonts/MaterialIcons-Regular.otf') format('opentype');font-display:block}
 :root{--e-bg:#0f1117;--e-surf:#1a1d27;--e-bdr:#2a2d3a;--e-txt:#e2e2e2;--e-dim:#8a8d9a;--e-acc:#00a4dc;--e-r:6px;--editor-width:360px;--editor-scale:1}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
