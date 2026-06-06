@@ -822,6 +822,11 @@ class AppLocalizationsBe extends AppLocalizations {
   }
 
   @override
+  String endsIn(String time) {
+    return 'Ends in $time';
+  }
+
+  @override
   String get view => 'Выгляд';
 
   @override

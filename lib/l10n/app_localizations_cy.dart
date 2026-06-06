@@ -825,6 +825,11 @@ class AppLocalizationsCy extends AppLocalizations {
   }
 
   @override
+  String endsIn(String time) {
+    return 'Ends in $time';
+  }
+
+  @override
   String get view => 'Golwg';
 
   @override

@@ -819,6 +819,11 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
+  String endsIn(String time) {
+    return 'Ends in $time';
+  }
+
+  @override
   String get view => 'দেখুন';
 
   @override

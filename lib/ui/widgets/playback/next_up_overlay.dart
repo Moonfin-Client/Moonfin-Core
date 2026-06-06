@@ -143,7 +143,7 @@ class _NextUpOverlayState extends State<NextUpOverlay>
                                 ? '$minutes:${secs.toString().padLeft(2, '0')}'
                                 : ':${secs.toString().padLeft(2, '0')}';
                             return Text(
-                              'Ends in $timerText',
+                              l10n.endsIn(timerText),
                               style: const TextStyle(
                                 color: Colors.white54,
                                 fontSize: 12,

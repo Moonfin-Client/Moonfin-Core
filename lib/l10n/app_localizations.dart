@@ -1649,6 +1649,12 @@ abstract class AppLocalizations {
   /// **'Ends at {time}'**
   String endsAt(String time);
 
+  /// Label showing remaining time for segment or timeout
+  ///
+  /// In en, this message translates to:
+  /// **'Ends in {time}'**
+  String endsIn(String time);
+
   /// Action button label for viewing a photo
   ///
   /// In en, this message translates to:

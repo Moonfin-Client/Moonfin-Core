@@ -794,6 +794,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String endsIn(String time) {
+    return 'Ends in $time';
+  }
+
+  @override
   String get view => '看法';
 
   @override

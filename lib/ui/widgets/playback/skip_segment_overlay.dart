@@ -107,7 +107,7 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
       final timerText = remainingSec >= 60
           ? '$minutes:${seconds.toString().padLeft(2, '0')}'
           : ':${seconds.toString().padLeft(2, '0')}';
-      timerSuffix = ' - Ends in $timerText';
+      timerSuffix = ' - ${l10n.endsIn(timerText)}';
     } else {
       timerSuffix = '';
     }
