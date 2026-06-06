@@ -1601,10 +1601,8 @@ class PlaybackManager {
     _backend?.waitForTracksReady().then((_) async {
       if (sessionToken != _playbackSessionToken) return;
 
-      final selectedSubtitleIndex = _subtitleStreamIndex;
-      if (selectedSubtitleIndex != null &&
-          selectedSubtitleIndex >= 0 &&
-          _isSubtitleExternal(selectedSubtitleIndex)) {
+      // Always wait for external subtitles to load before setting tracks to avoid auto-selection/re-prepare races
+      if (_currentResolution?.externalSubtitles.isNotEmpty ?? false) {
         await _externalSubsLoaded;
         if (sessionToken != _playbackSessionToken) return;
       }
