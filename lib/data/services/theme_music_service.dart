@@ -26,7 +26,7 @@ class ThemeMusicService {
 
   static const _fadeDurationMs = 2000;
   static const _fadeStepMs = 50;
-  static const _validTypes = {'Series', 'Movie', 'Season', 'Episode'};
+  static const _validTypes = {'Series', 'Movie', 'Season', 'Episode', 'BoxSet'};
 
   ThemeMusicService(this._client, this._prefs, this._playbackManager) {
     _mainPlaybackSub = _playbackManager.state.playingStream.listen((isPlaying) {
