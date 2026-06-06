@@ -910,12 +910,12 @@ class HomeViewModel extends ChangeNotifier {
           for (final item in nextUpRow?.items ?? []) {
             mergedItemsMap.putIfAbsent(item.id, () => item);
           }
-          final sorted = mergedItemsMap.values.toList()
-            ..sort((a, b) {
-              final aDate = a.rawData['UserData']?['LastPlayedDate'] as String? ?? '';
-              final bDate = b.rawData['UserData']?['LastPlayedDate'] as String? ?? '';
-              return bDate.compareTo(aDate);
-            });
+          int byLastPlayedDate(AggregatedItem a, AggregatedItem b) {
+            final aDate = a.rawData['UserData']?['LastPlayedDate'] as String? ?? '';
+            final bDate = b.rawData['UserData']?['LastPlayedDate'] as String? ?? '';
+            return bDate.compareTo(aDate);
+          }
+          final sorted = mergedItemsMap.values.toList()..sort(byLastPlayedDate);
           _applyMergedResumeResult(sorted);
         } else {
           final results = await Future.wait([
@@ -929,12 +929,12 @@ class HomeViewModel extends ChangeNotifier {
           for (final item in results[1].items) {
             mergedItemsMap.putIfAbsent(item.id, () => item);
           }
-          final sorted = mergedItemsMap.values.toList()
-            ..sort((a, b) {
-              final aDate = a.rawData['UserData']?['LastPlayedDate'] as String? ?? '';
-              final bDate = b.rawData['UserData']?['LastPlayedDate'] as String? ?? '';
-              return bDate.compareTo(aDate);
-            });
+          int byLastPlayedDate(AggregatedItem a, AggregatedItem b) {
+            final aDate = a.rawData['UserData']?['LastPlayedDate'] as String? ?? '';
+            final bDate = b.rawData['UserData']?['LastPlayedDate'] as String? ?? '';
+            return bDate.compareTo(aDate);
+          }
+          final sorted = mergedItemsMap.values.toList()..sort(byLastPlayedDate);
           _applyMergedResumeResult(sorted);
         }
       } catch (_) {
