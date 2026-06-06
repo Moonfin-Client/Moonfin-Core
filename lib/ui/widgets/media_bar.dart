@@ -172,7 +172,7 @@ class _MediaBarState extends State<MediaBar> with WidgetsBindingObserver {
     _youTubeRevealTimer?.cancel();
     _mainPlaybackSub?.cancel();
     _media3EventSub?.cancel();
-    _disposeTrailerPlayer();
+    unawaited(_disposeTrailerPlayer());
     widget.viewModel.removeListener(_onStateChanged);
     widget.prefs.removeListener(_onPrefsChanged);
     WidgetsBinding.instance.removeObserver(this);
@@ -417,7 +417,7 @@ class _MediaBarState extends State<MediaBar> with WidgetsBindingObserver {
     if (trailerEngineChanged) {
       _lastUseMedia3TrailerEngine = useMedia3Trailer;
       _cancelTrailerPreview();
-      _disposeTrailerPlayer();
+      unawaited(_disposeTrailerPlayer());
     }
 
     final trailerPreviewEnabled = widget.prefs.get(
@@ -433,7 +433,7 @@ class _MediaBarState extends State<MediaBar> with WidgetsBindingObserver {
     if (hardwareDecodingChanged) {
       _lastHardwareDecodingEnabled = hardwareDecodingEnabled;
       _cancelTrailerPreview();
-      _disposeTrailerPlayer();
+      unawaited(_disposeTrailerPlayer());
     }
 
     if (!trailerPreviewEnabled) {
@@ -1066,7 +1066,7 @@ class _MediaBarState extends State<MediaBar> with WidgetsBindingObserver {
     return null;
   }
 
-  void _disposeTrailerPlayer() {
+  Future<void> _disposeTrailerPlayer() async {
     _clearSponsorBlockTracking();
     _trailerCompletedSub?.cancel();
     _trailerCompletedSub = null;
@@ -1076,10 +1076,15 @@ class _MediaBarState extends State<MediaBar> with WidgetsBindingObserver {
       _trailerUsingMedia3 = false;
       unawaited(_media3TrailerBackend!.stop());
     }
-    _trailerPlayer?.stop();
-    _trailerPlayer?.dispose();
+    // Capture and null fields before the await so any code that wakes during
+    // the async pause (e.g. a concurrent _loadTrailer call) sees null and
+    // creates a fresh player rather than grabbing this half-disposed one.
+    // This matches how the main video player already handles teardown.
+    final player = _trailerPlayer;
     _trailerPlayer = null;
     _trailerController = null;
+    await player?.stop();
+    player?.dispose();
   }
 
   void _clearSponsorBlockTracking() {
