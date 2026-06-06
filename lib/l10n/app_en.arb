@@ -472,6 +472,18 @@
   "@extraLarge": {
     "description": "Poster size option"
   },
+  "scrollDirection": "Scroll Direction",
+  "@scrollDirection": {
+    "description": "Section header for scroll direction selection in library display settings"
+  },
+  "scrollDirectionVertical": "Vertical",
+  "@scrollDirectionVertical": {
+    "description": "Library scroll direction option: vertical grid (default)"
+  },
+  "scrollDirectionHorizontal": "Horizontal",
+  "@scrollDirectionHorizontal": {
+    "description": "Library scroll direction option: horizontal grid for ultrawide displays"
+  },
   "libraryGenresTitle": "{name} \u2014 Genres",
   "@libraryGenresTitle": {
     "description": "Header title showing library name with genres suffix",

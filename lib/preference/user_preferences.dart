@@ -1137,6 +1137,14 @@ class UserPreferences extends ChangeNotifier {
         values: ImageType.values,
       );
 
+  static EnumPreference<LibraryScrollDirection> libraryScrollDirection(
+    String libraryId,
+  ) => EnumPreference(
+    key: 'library_scroll_dir_$libraryId',
+    defaultValue: LibraryScrollDirection.vertical,
+    values: LibraryScrollDirection.values,
+  );
+
   static final allGenresImageType = EnumPreference(
     key: 'all_genres_image_type',
     defaultValue: ImageType.thumb,
