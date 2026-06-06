@@ -744,9 +744,7 @@ class HomeViewModel extends ChangeNotifier {
         .where((data) {
           final id = data['Id'] as String;
           final collectionType = data['CollectionType'] as String?;
-          if (collectionType == 'playlists' ||
-              collectionType == 'boxsets' ||
-              collectionType == 'livetv') {
+          if (collectionType == 'livetv') {
             return false;
           }
           return !latestExcludes.contains(id);
