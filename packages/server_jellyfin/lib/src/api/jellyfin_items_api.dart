@@ -90,8 +90,9 @@ class JellyfinItemsApi implements ItemsApi {
 
   @override
   Future<Map<String, dynamic>> getItem(String itemId) async {
+    final userId = _getUserId();
     final response = await _dio.get(
-      '/Items/$itemId',
+      '/Users/$userId/Items/$itemId',
       queryParameters: {'Fields': kItemFields},
     );
     return response.data as Map<String, dynamic>;

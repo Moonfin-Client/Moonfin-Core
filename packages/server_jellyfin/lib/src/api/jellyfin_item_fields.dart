@@ -1,2 +1,2 @@
 const kItemFields =
-    'Trickplay,Chapters,MediaSources,MediaStreams,People,Overview,Genres';
+    'Trickplay,Chapters,MediaSources,MediaStreams,People,Overview,Genres,RecursiveItemCount,ChildCount';

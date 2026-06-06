@@ -501,7 +501,19 @@ void registerPlaybackModule() {
   );
 }
 
+MediaServerClient? _currentActiveResolverClient;
+
+void resetActiveStreamResolver() {
+  _currentActiveResolverClient = null;
+}
+
 void setActiveStreamResolver(MediaServerClient client) {
+  if (identical(client, _currentActiveResolverClient) &&
+      _getIt.isRegistered<MediaStreamResolver>() &&
+      _getIt.isRegistered<PlayerService>()) {
+    return;
+  }
+
   if (_getIt.isRegistered<MediaStreamResolver>()) {
     _getIt.unregister<MediaStreamResolver>();
   }
@@ -529,12 +541,15 @@ void setActiveStreamResolver(MediaServerClient client) {
   final manager = _getIt<PlaybackManager>();
   manager.setResolver(resolver);
   manager.setPlayerService(service);
+
+  _currentActiveResolverClient = client;
 }
 
 Future<void> _ensureResolverForItem(dynamic item) async {
   if (item is! AggregatedItem) return;
   final factory = _getIt<MediaServerClientFactory>();
   final client = factory.getClientIfExists(item.serverId);
-  if (client == null || identical(client, _getIt<MediaServerClient>())) return;
+  if (client == null) return;
   setActiveStreamResolver(client);
 }
+

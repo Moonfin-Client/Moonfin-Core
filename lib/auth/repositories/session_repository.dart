@@ -252,6 +252,7 @@ class SessionRepository {
         await _authStore.removeUser(serverId, userId);
       }
       _clientFactory.removeClient(serverId);
+      resetActiveStreamResolver();
     }
 
     await _authPrefs.setLastServerId('');

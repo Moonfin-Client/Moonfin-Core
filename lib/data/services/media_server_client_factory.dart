@@ -27,7 +27,20 @@ class MediaServerClientFactory {
   }
 
   MediaServerClient? getClientIfExists(String serverId) {
-    return _clients[serverId];
+    final client = _clients[serverId];
+    if (client != null) return client;
+
+    if (serverId.contains('://')) {
+      final normalizedInput = normalizeServerBaseUrl(serverId);
+      if (normalizedInput.isNotEmpty) {
+        for (final activeClient in _clients.values) {
+          if (normalizeServerBaseUrl(activeClient.baseUrl) == normalizedInput) {
+            return activeClient;
+          }
+        }
+      }
+    }
+    return null;
   }
 
   MediaServerClient getActiveClient() {
