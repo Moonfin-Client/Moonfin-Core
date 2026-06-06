@@ -727,29 +727,86 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   }
 
   Widget _buildBody() {
-    return switch (_vm.state) {
-      LibraryBrowseState.loading => Center(
-        child: CircularProgressIndicator(color: _jellyfinBlue),
-      ),
-      LibraryBrowseState.error => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              _vm.errorMessage ??
-                  AppLocalizations.of(context).failedToLoadLibrary,
-              style: const TextStyle(color: Colors.white),
+    final spinnerColor = _vm.isBookLibrary ? _bookAccent : _jellyfinBlue;
+    final showHorizChevrons =
+        _vm.scrollDirection == LibraryScrollDirection.horizontal &&
+        PlatformDetection.useDesktopUi &&
+        !PlatformDetection.isTV;
+    return Column(
+      children: [
+        if (showHorizChevrons)
+          // Chevron row matching home-screen style — sits just below the toolbar,
+          // flush with the right edge at _horizontalPadding inset.
+          Padding(
+            padding: EdgeInsets.fromLTRB(_horizontalPadding, 0, _horizontalPadding, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Focus(
+                  canRequestFocus: false,
+                  skipTraversal: true,
+                  descendantsAreFocusable: false,
+                  child: IconButton(
+                    icon: const Icon(Icons.chevron_left),
+                    onPressed: () {
+                      if (_scrollController.hasClients) {
+                        _scrollController.animateTo(
+                          (_scrollController.offset - 480).clamp(0, double.infinity),
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      }
+                    },
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+                Focus(
+                  canRequestFocus: false,
+                  skipTraversal: true,
+                  descendantsAreFocusable: false,
+                  child: IconButton(
+                    icon: const Icon(Icons.chevron_right),
+                    onPressed: () {
+                      if (_scrollController.hasClients) {
+                        _scrollController.animateTo(
+                          _scrollController.offset + 480,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      }
+                    },
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _vm.load,
-              child: Text(AppLocalizations.of(context).retry),
-            ),
-          ],
+          ),
+        Expanded(
+          child: switch (_vm.state) {
+            LibraryBrowseState.loading => Center(
+                child: CircularProgressIndicator(color: spinnerColor),
+              ),
+            LibraryBrowseState.error => Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _vm.errorMessage ?? AppLocalizations.of(context).failedToLoadLibrary,
+                      style: TextStyle(
+                        color: _vm.isBookLibrary ? const Color(0xFFF4E6D5) : Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(onPressed: _vm.load, child: Text(AppLocalizations.of(context).retry)),
+                  ],
+                ),
+              ),
+            LibraryBrowseState.ready =>
+              _isSongsBrowse ? _buildSongsList() : (_vm.isBookLibrary ? _buildBookGrid() : _buildGrid()),
+          },
         ),
-      ),
-      LibraryBrowseState.ready => _isSongsBrowse ? _buildSongsList() : _buildGrid(),
-    };
+      ],
+    );
   }
 
   Widget _buildSongsList() {
@@ -1068,11 +1125,9 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         );
         final textHeight = hasSubtitles ? 42.0 : 24.0;
 
-        // Fix #1 — use _cardWidth() as the TARGET CELL HEIGHT so that the
-        // poster-size preference controls card size regardless of aspect ratio.
-        // (Previously it was used as image width, causing posters to fill the
-        // entire viewport height because their tall aspect ratio produced 1 row.)
-        final targetCellHeight = _cardWidth();
+        final targetImageHeight = _cardWidth() / ar;
+        final targetCellHeight = targetImageHeight + textHeight;
+
         final rowCount =
             ((constraints.maxHeight - gridPadding * 2 + spacing) /
                     (targetCellHeight + spacing))
@@ -1082,21 +1137,18 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
         final availableHeight = constraints.maxHeight - gridPadding * 2;
         final actualCellHeight =
             (availableHeight - (rowCount - 1) * spacing) / rowCount;
-        final actualCellWidth = (actualCellHeight - textHeight) * ar;
-        final childAspectRatio = actualCellWidth / actualCellHeight;
+        final actualImageHeight = actualCellHeight - textHeight;
+        final actualCellWidth = actualImageHeight * ar;
 
-        final showDesktopChevrons =
-            PlatformDetection.useDesktopUi && !PlatformDetection.isTV;
+        final childAspectRatio = actualCellHeight / actualCellWidth;
 
-        // Fix #2 — redirect vertical mouse-wheel delta to horizontal scroll.
-        // Fix #4 — ClampingScrollPhysics prevents the view from rubber-banding
-        //          past position 0 which caused the leading padding to vanish.
-        final scrollView = Listener(
+        return Listener(
           onPointerSignal: (signal) {
             if (signal is PointerScrollEvent) {
               final pos = _scrollController.position;
-              final newOffset = (_scrollController.offset + signal.scrollDelta.dy)
-                  .clamp(pos.minScrollExtent, pos.maxScrollExtent);
+              final newOffset =
+                  (_scrollController.offset + signal.scrollDelta.dy)
+                      .clamp(pos.minScrollExtent, pos.maxScrollExtent);
               _scrollController.jumpTo(newOffset);
             }
           },
@@ -1106,7 +1158,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             physics: const ClampingScrollPhysics(),
             slivers: [
               SliverPadding(
-                // Fix #4 — explicit leading padding preserved by Clamping physics.
                 padding: EdgeInsets.fromLTRB(
                   gridPadding, gridPadding, 16, gridPadding,
                 ),
@@ -1188,107 +1239,9 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             ],
           ),
         );
-
-        // Fix #3 — overlay left/right chevron buttons on desktop (non-TV),
-        // matching the home-screen row pattern.
-        if (!showDesktopChevrons) return scrollView;
-
-        const chevronScrollStep = 480.0;
-        return Stack(
-          children: [
-            scrollView,
-            // Left chevron
-            Positioned(
-              left: 0,
-              top: 0,
-              bottom: 0,
-              child: Focus(
-                canRequestFocus: false,
-                skipTraversal: true,
-                descendantsAreFocusable: false,
-                child: Center(
-                  child: AnimatedBuilder(
-                    animation: _scrollController,
-                    builder: (context, _) {
-                      final canScrollLeft = _scrollController.hasClients &&
-                          _scrollController.offset > 0;
-                      return Opacity(
-                        opacity: canScrollLeft ? 1.0 : 0.0,
-                        child: _HorizontalScrollChevron(
-                          icon: Icons.chevron_left_rounded,
-                          onPressed: canScrollLeft
-                              ? () => _scrollController.animateTo(
-                                    (_scrollController.offset - chevronScrollStep)
-                                        .clamp(0, double.infinity),
-                                    duration: const Duration(milliseconds: 300),
-                                    curve: Curves.easeInOut,
-                                  )
-                              : null,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-            // Right chevron
-            Positioned(
-              right: 0,
-              top: 0,
-              bottom: 0,
-              child: Focus(
-                canRequestFocus: false,
-                skipTraversal: true,
-                descendantsAreFocusable: false,
-                child: Center(
-                  child: AnimatedBuilder(
-                    animation: _scrollController,
-                    builder: (context, _) {
-                      final canScrollRight = _scrollController.hasClients &&
-                          _scrollController.offset <
-                              _scrollController.position.maxScrollExtent;
-                      return Opacity(
-                        opacity: canScrollRight ? 1.0 : 0.0,
-                        child: _HorizontalScrollChevron(
-                          icon: Icons.chevron_right_rounded,
-                          onPressed: canScrollRight
-                              ? () => _scrollController.animateTo(
-                                    _scrollController.offset + chevronScrollStep,
-                                    duration: const Duration(milliseconds: 300),
-                                    curve: Curves.easeInOut,
-                                  )
-                              : null,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
       },
     );
   }
-
-  // Reusable chevron button for the horizontal library grid.
-  // Wrapped in a semi-transparent pill so it's visible over any poster art.
-  static Widget _HorizontalScrollChevron({
-    required IconData icon,
-    required VoidCallback? onPressed,
-  }) =>
-      Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        decoration: BoxDecoration(
-          color: Colors.black54,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: IconButton(
-          icon: Icon(icon, color: Colors.white),
-          onPressed: onPressed,
-          visualDensity: VisualDensity.compact,
-        ),
-      );
 
   Widget _buildBookGrid() {
     final baseItems = _vm.items.where((item) => !_vm.isNavigableFolder(item));
