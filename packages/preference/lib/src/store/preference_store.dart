@@ -133,8 +133,9 @@ class PreferenceStore {
     try {
       var stored = _requirePrefs.getString(preference.key);
       if (stored == null || stored.isEmpty) return preference.defaultValue;
-      if (stored == 'specificUser') {
+      if (preference.key == 'pref_auto_login_behavior' && stored == 'specificUser') {
         stored = 'currentUser';
+        _requirePrefs.setString(preference.key, 'currentUser');
       }
       for (final v in preference.values) {
         if ((v as Enum).name == stored) return v;
