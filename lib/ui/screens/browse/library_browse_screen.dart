@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -4102,7 +4103,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   }
 
   Widget _buildHorizontalGrid() {
-    final cardWidth = _cardWidth();
     final spacing = 12.0;
     final watchedBehavior = _prefs.get(UserPreferences.watchedIndicatorBehavior);
 
@@ -4114,109 +4114,228 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
           (item) => (_cardSubtitle(item)?.isNotEmpty ?? false),
         );
         final textHeight = hasSubtitles ? 42.0 : 24.0;
-        // Cell height in the horizontal view = card width + text
-        final cellHeight = cardWidth / ar + textHeight;
-        // How many rows fit in the available vertical height
+
+        // Fix #1 — use _cardWidth() as the TARGET CELL HEIGHT so that the
+        // poster-size preference controls card size regardless of aspect ratio.
+        // (Previously it was used as image width, causing posters to fill the
+        // entire viewport height because their tall aspect ratio produced 1 row.)
+        final targetCellHeight = _cardWidth();
         final rowCount =
             ((constraints.maxHeight - gridPadding * 2 + spacing) /
-                    (cellHeight + spacing))
+                    (targetCellHeight + spacing))
                 .floor()
                 .clamp(1, 10);
 
-        final availableHeight =
-            constraints.maxHeight - gridPadding * 2;
+        final availableHeight = constraints.maxHeight - gridPadding * 2;
         final actualCellHeight =
             (availableHeight - (rowCount - 1) * spacing) / rowCount;
         final actualCellWidth = (actualCellHeight - textHeight) * ar;
         final childAspectRatio = actualCellWidth / actualCellHeight;
 
-        return CustomScrollView(
-          controller: _scrollController,
-          scrollDirection: Axis.horizontal,
-          slivers: [
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(gridPadding, gridPadding, 16, gridPadding),
-              sliver: SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: rowCount,
-                  mainAxisSpacing: spacing,
-                  crossAxisSpacing: spacing,
-                  childAspectRatio: childAspectRatio,
+        final showDesktopChevrons =
+            PlatformDetection.useDesktopUi && !PlatformDetection.isTV;
+
+        // Fix #2 — redirect vertical mouse-wheel delta to horizontal scroll.
+        // Fix #4 — ClampingScrollPhysics prevents the view from rubber-banding
+        //          past position 0 which caused the leading padding to vanish.
+        final scrollView = Listener(
+          onPointerSignal: (signal) {
+            if (signal is PointerScrollEvent) {
+              final pos = _scrollController.position;
+              final newOffset = (_scrollController.offset + signal.scrollDelta.dy)
+                  .clamp(pos.minScrollExtent, pos.maxScrollExtent);
+              _scrollController.jumpTo(newOffset);
+            }
+          },
+          child: CustomScrollView(
+            controller: _scrollController,
+            scrollDirection: Axis.horizontal,
+            physics: const ClampingScrollPhysics(),
+            slivers: [
+              SliverPadding(
+                // Fix #4 — explicit leading padding preserved by Clamping physics.
+                padding: EdgeInsets.fromLTRB(
+                  gridPadding, gridPadding, 16, gridPadding,
                 ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final item = _vm.items[index];
-                    final itemAspectRatio = _itemAspectRatio(item);
-                    final focusColor = Color(
-                      _prefs.get(UserPreferences.focusColor).colorValue,
-                    );
-                    final isNeon =
-                        ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
-                    return MediaCard(
-                      title: item.name,
-                      subtitle: _cardSubtitle(item),
-                      imageUrl: _imageUrl(item),
-                      width: double.infinity,
-                      aspectRatio: itemAspectRatio,
-                      focusColor: focusColor,
-                      focusNode: getGridItemFocusNode(index),
-                      cardFocusExpansion: _prefs.get(
-                        UserPreferences.cardFocusExpansion,
-                      ),
-                      suppressFocusGlow: isNeon,
-                      isPlayed: item.isPlayed,
-                      isFavorite: item.isFavorite,
-                      unplayedCount: item.unplayedItemCount,
-                      playedPercentage: _displayPlayedPercentage(item),
-                      watchedBehavior: watchedBehavior,
-                      itemType: item.type,
-                      onFocus: () => _onItemFocused(item),
-                      onHoverStart: () => _onItemFocused(item),
-                      onHoverEnd: () => _vm.setFocusedItem(null),
-                      onKeyEvent: (_, event) {
-                        if (!_vm.hasMore && !_vm.loadingMore) {
-                          return KeyEventResult.ignored;
-                        }
-                        if (!event.isActionable ||
-                            !event.logicalKey.isRightKey) {
-                          return KeyEventResult.ignored;
-                        }
-                        // Last item in its column — trigger load more
-                        final col = index ~/ rowCount;
-                        final isLastCol =
-                            (col + 1) * rowCount >= _vm.items.length;
-                        if (!isLastCol) return KeyEventResult.ignored;
-                        _vm.loadMore();
-                        return KeyEventResult.handled;
-                      },
-                      onLongPress: () => showContextMenu(
-                        context,
-                        item,
-                        onChanged: () => setState(() {}),
-                      ),
-                      onTap: () => _onItemTap(item),
-                    );
-                  },
-                  childCount: _vm.items.length,
-                ),
-              ),
-            ),
-            if (_vm.loadingMore)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: _vm.isBookLibrary ? _bookAccent : _jellyfinBlue,
-                    ),
+                sliver: SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: rowCount,
+                    mainAxisSpacing: spacing,
+                    crossAxisSpacing: spacing,
+                    childAspectRatio: childAspectRatio,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final item = _vm.items[index];
+                      final itemAspectRatio = _itemAspectRatio(item);
+                      final focusColor = Color(
+                        _prefs.get(UserPreferences.focusColor).colorValue,
+                      );
+                      final isNeon =
+                          ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+                      return MediaCard(
+                        title: item.name,
+                        subtitle: _cardSubtitle(item),
+                        imageUrl: _imageUrl(item),
+                        width: double.infinity,
+                        aspectRatio: itemAspectRatio,
+                        focusColor: focusColor,
+                        focusNode: getGridItemFocusNode(index),
+                        cardFocusExpansion: _prefs.get(
+                          UserPreferences.cardFocusExpansion,
+                        ),
+                        suppressFocusGlow: isNeon,
+                        isPlayed: item.isPlayed,
+                        isFavorite: item.isFavorite,
+                        unplayedCount: item.unplayedItemCount,
+                        playedPercentage: _displayPlayedPercentage(item),
+                        watchedBehavior: watchedBehavior,
+                        itemType: item.type,
+                        onFocus: () => _onItemFocused(item),
+                        onHoverStart: () => _onItemFocused(item),
+                        onHoverEnd: () => _vm.setFocusedItem(null),
+                        onKeyEvent: (_, event) {
+                          if (!_vm.hasMore && !_vm.loadingMore) {
+                            return KeyEventResult.ignored;
+                          }
+                          if (!event.isActionable ||
+                              !event.logicalKey.isRightKey) {
+                            return KeyEventResult.ignored;
+                          }
+                          final col = index ~/ rowCount;
+                          final isLastCol =
+                              (col + 1) * rowCount >= _vm.items.length;
+                          if (!isLastCol) return KeyEventResult.ignored;
+                          _vm.loadMore();
+                          return KeyEventResult.handled;
+                        },
+                        onLongPress: () => showContextMenu(
+                          context,
+                          item,
+                          onChanged: () => setState(() {}),
+                        ),
+                        onTap: () => _onItemTap(item),
+                      );
+                    },
+                    childCount: _vm.items.length,
                   ),
                 ),
               ),
+              if (_vm.loadingMore)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: _vm.isBookLibrary ? _bookAccent : _jellyfinBlue,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+
+        // Fix #3 — overlay left/right chevron buttons on desktop (non-TV),
+        // matching the home-screen row pattern.
+        if (!showDesktopChevrons) return scrollView;
+
+        const chevronScrollStep = 480.0;
+        return Stack(
+          children: [
+            scrollView,
+            // Left chevron
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              child: Focus(
+                canRequestFocus: false,
+                skipTraversal: true,
+                descendantsAreFocusable: false,
+                child: Center(
+                  child: AnimatedBuilder(
+                    animation: _scrollController,
+                    builder: (context, _) {
+                      final canScrollLeft = _scrollController.hasClients &&
+                          _scrollController.offset > 0;
+                      return Opacity(
+                        opacity: canScrollLeft ? 1.0 : 0.0,
+                        child: _HorizontalScrollChevron(
+                          icon: Icons.chevron_left_rounded,
+                          onPressed: canScrollLeft
+                              ? () => _scrollController.animateTo(
+                                    (_scrollController.offset - chevronScrollStep)
+                                        .clamp(0, double.infinity),
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  )
+                              : null,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+            // Right chevron
+            Positioned(
+              right: 0,
+              top: 0,
+              bottom: 0,
+              child: Focus(
+                canRequestFocus: false,
+                skipTraversal: true,
+                descendantsAreFocusable: false,
+                child: Center(
+                  child: AnimatedBuilder(
+                    animation: _scrollController,
+                    builder: (context, _) {
+                      final canScrollRight = _scrollController.hasClients &&
+                          _scrollController.offset <
+                              _scrollController.position.maxScrollExtent;
+                      return Opacity(
+                        opacity: canScrollRight ? 1.0 : 0.0,
+                        child: _HorizontalScrollChevron(
+                          icon: Icons.chevron_right_rounded,
+                          onPressed: canScrollRight
+                              ? () => _scrollController.animateTo(
+                                    _scrollController.offset + chevronScrollStep,
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  )
+                              : null,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
           ],
         );
       },
     );
   }
+
+  // Reusable chevron button for the horizontal library grid.
+  // Wrapped in a semi-transparent pill so it's visible over any poster art.
+  static Widget _HorizontalScrollChevron({
+    required IconData icon,
+    required VoidCallback? onPressed,
+  }) =>
+      Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        decoration: BoxDecoration(
+          color: Colors.black54,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: IconButton(
+          icon: Icon(icon, color: Colors.white),
+          onPressed: onPressed,
+          visualDensity: VisualDensity.compact,
+        ),
+      );
 
   Widget _buildBookGrid() {
     final baseItems = _vm.items.where((item) => !_vm.isNavigableFolder(item));
