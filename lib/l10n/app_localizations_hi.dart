@@ -506,6 +506,15 @@ class AppLocalizationsHi extends AppLocalizations {
   String get extraLarge => 'एक्स्ट्रा लार्ज';
 
   @override
+  String get scrollDirection => 'Scroll Direction';
+
+  @override
+  String get scrollDirectionVertical => 'Vertical';
+
+  @override
+  String get scrollDirectionHorizontal => 'Horizontal';
+
+  @override
   String libraryGenresTitle(String name) {
     return '$name — शैलियाँ';
   }

@@ -111,6 +111,9 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   late PosterSize _posterSize;
   PosterSize get posterSize => _posterSize;
 
+  late LibraryScrollDirection _scrollDirection;
+  LibraryScrollDirection get scrollDirection => _scrollDirection;
+
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
@@ -271,6 +274,9 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _imageType = _prefs.get(UserPreferences.libraryImageType(_imagePrefKey));
     _posterSize = _readScopedPosterSize();
     _lastGroupCollectionsValue = _prefs.get(UserPreferences.groupItemsIntoCollections);
+    _scrollDirection = _prefs.get(
+      UserPreferences.libraryScrollDirection(_imagePrefKey),
+    );
     _prefs.addListener(_onPrefsChanged);
   }
 
@@ -851,6 +857,16 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     } else {
       await _prefs.set(UserPreferences.libraryPosterSize, value);
     }
+    notifyListeners();
+  }
+
+  Future<void> setScrollDirection(LibraryScrollDirection value) async {
+    if (_scrollDirection == value) return;
+    _scrollDirection = value;
+    await _prefs.set(
+      UserPreferences.libraryScrollDirection(_imagePrefKey),
+      value,
+    );
     notifyListeners();
   }
 

@@ -507,6 +507,15 @@ class AppLocalizationsTl extends AppLocalizations {
   String get extraLarge => 'Napakalaki';
 
   @override
+  String get scrollDirection => 'Scroll Direction';
+
+  @override
+  String get scrollDirectionVertical => 'Vertical';
+
+  @override
+  String get scrollDirectionHorizontal => 'Horizontal';
+
+  @override
   String libraryGenresTitle(String name) {
     return '$name — Mga Genre';
   }

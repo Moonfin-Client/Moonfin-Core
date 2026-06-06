@@ -10720,6 +10720,15 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get extraLarge => 'Extra Large';
 
   @override
+  String get scrollDirection => 'Scroll Direction';
+
+  @override
+  String get scrollDirectionVertical => 'Vertical';
+
+  @override
+  String get scrollDirectionHorizontal => 'Horizontal';
+
+  @override
   String libraryGenresTitle(String name) {
     return '$name — Genres';
   }
