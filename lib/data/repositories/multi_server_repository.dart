@@ -17,6 +17,7 @@ import '../services/media_server_client_factory.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/genre_browse_utils.dart';
 import '../utils/latest_media_row_normalizer.dart';
+import '../utils/next_up_enrichment.dart';
 import '../utils/playlist_utils.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/current_app_localizations.dart';
@@ -43,7 +44,7 @@ class MultiServerRepository {
   static const _sessionCacheDuration = Duration(seconds: 5);
   static const _serverTimeout = Duration(seconds: 8);
   static const _fields =
-      'Type,UserData,Overview,Genres,CommunityRating,CriticRating,'
+      'DateCreated,Type,UserData,Overview,Genres,CommunityRating,CriticRating,'
       'OfficialRating,RunTimeTicks,ProductionYear,SeriesName,'
       'ParentIndexNumber,IndexNumber,Status,ImageTags,BackdropImageTags,'
       'ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,'
@@ -247,7 +248,8 @@ class MultiServerRepository {
             imageTypeLimit: _imageTypeLimit,
             enableResumable: false,
           );
-          return _parseItems(response, session.server.id);
+          final parsed = _parseItems(response, session.server.id);
+          return await _enrichNextUpItemsWithSeriesLastPlayed(parsed, session.client);
         }, label: 'next up from ${session.server.name}'),
       ),
     );
@@ -988,4 +990,10 @@ class MultiServerRepository {
     final bDate = b.rawData['UserData']?['LastPlayedDate'] as String? ?? '';
     return bDate.compareTo(aDate);
   }
+
+  Future<List<AggregatedItem>> _enrichNextUpItemsWithSeriesLastPlayed(
+    List<AggregatedItem> items,
+    MediaServerClient client,
+  ) =>
+      enrichNextUpItemsWithSeriesLastPlayed(items, client);
 }

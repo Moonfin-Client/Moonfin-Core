@@ -15,6 +15,7 @@ import '../models/home_row.dart';
 import '../utils/bounded_concurrency.dart';
 import '../utils/latest_media_row_normalizer.dart';
 import '../utils/genre_browse_utils.dart';
+import '../utils/next_up_enrichment.dart';
 import '../utils/playlist_utils.dart';
 
 class RowDataSource {
@@ -27,14 +28,14 @@ class RowDataSource {
   static const _genreArtworkConcurrency = 6;
 
   static const _fields =
-      'Type,UserData,Overview,Genres,CommunityRating,CriticRating,'
+      'DateCreated,Type,UserData,Overview,Genres,CommunityRating,CriticRating,'
       'OfficialRating,RunTimeTicks,ProductionYear,SeriesName,'
       'ParentIndexNumber,IndexNumber,Status,ImageTags,BackdropImageTags,'
       'ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,'
       'ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,'
       'ParentLogoItemId,ParentLogoImageTag';
   static const _fallbackFields =
-      'Type,UserData,OfficialRating,RunTimeTicks,ProductionYear,SeriesName,'
+      'DateCreated,Type,UserData,OfficialRating,RunTimeTicks,ProductionYear,SeriesName,'
       'ParentIndexNumber,IndexNumber,ImageTags,BackdropImageTags,'
       'ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,'
       'ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,'
@@ -107,13 +108,15 @@ class RowDataSource {
       limit: _defaultLimit,
       enableResumable: false,
     );
-    return _buildRow(
+    final row = _buildRow(
       id: 'nextUp',
       title: _l10n.nextUp,
       response: response,
       serverId: serverId,
       rowType: HomeRowType.nextUp,
     );
+    final enrichedItems = await _enrichNextUpItemsWithSeriesLastPlayed(row.items);
+    return row.copyWith(items: enrichedItems);
   }
 
   Future<HomeRow> loadResumeRelaxed(String serverId) async {
@@ -134,13 +137,15 @@ class RowDataSource {
     final response = await getNextUpRelaxed(
       limit: _defaultLimit,
     );
-    return _buildRow(
+    final row = _buildRow(
       id: 'nextUp',
       title: _l10n.nextUp,
       response: response,
       serverId: serverId,
       rowType: HomeRowType.nextUp,
     );
+    final enrichedItems = await _enrichNextUpItemsWithSeriesLastPlayed(row.items);
+    return row.copyWith(items: enrichedItems);
   }
 
   Future<HomeRow> loadLatestMedia(
@@ -521,13 +526,15 @@ class RowDataSource {
       parentId: parentId,
       limit: _defaultLimit,
     );
-    return _buildRow(
+    final row = _buildRow(
       id: 'nextUp_$parentId',
       title: _l10n.nextUp,
       response: response,
       serverId: serverId,
       rowType: HomeRowType.nextUp,
     );
+    final enrichedItems = await _enrichNextUpItemsWithSeriesLastPlayed(row.items);
+    return row.copyWith(items: enrichedItems);
   }
 
   Future<HomeRow> loadLibraryFavorites(
@@ -1661,6 +1668,11 @@ class RowDataSource {
         .where((e) => e.isNotEmpty)
         .toSet();
   }
+
+  Future<List<AggregatedItem>> _enrichNextUpItemsWithSeriesLastPlayed(
+    List<AggregatedItem> items,
+  ) =>
+      enrichNextUpItemsWithSeriesLastPlayed(items, _client);
 }
 
 class _ParsedStableId {
