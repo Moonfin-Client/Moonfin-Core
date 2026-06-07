@@ -194,6 +194,17 @@ class HomeSectionConfig {
         HomeSectionConfig(type: HomeSectionType.favoriteSongs, enabled: false, order: 18),
         HomeSectionConfig(type: HomeSectionType.collections, enabled: false, order: 19),
         HomeSectionConfig(type: HomeSectionType.genres, enabled: false, order: 20),
+        HomeSectionConfig(type: HomeSectionType.seerrRecentRequests, enabled: false, order: 21),
+        HomeSectionConfig(type: HomeSectionType.seerrRecentlyAdded, enabled: false, order: 22),
+        HomeSectionConfig(type: HomeSectionType.seerrPopularMovies, enabled: false, order: 23),
+        HomeSectionConfig(type: HomeSectionType.seerrUpcomingMovies, enabled: false, order: 24),
+        HomeSectionConfig(type: HomeSectionType.seerrPopularSeries, enabled: false, order: 25),
+        HomeSectionConfig(type: HomeSectionType.seerrUpcomingSeries, enabled: false, order: 26),
+        HomeSectionConfig(type: HomeSectionType.seerrTrending, enabled: false, order: 27),
+        HomeSectionConfig(type: HomeSectionType.seerrMovieGenres, enabled: false, order: 28),
+        HomeSectionConfig(type: HomeSectionType.seerrStudios, enabled: false, order: 29),
+        HomeSectionConfig(type: HomeSectionType.seerrSeriesGenres, enabled: false, order: 30),
+        HomeSectionConfig(type: HomeSectionType.seerrNetworks, enabled: false, order: 31),
       ];
 
   static List<HomeSectionConfig> fromJsonString(String jsonString) {

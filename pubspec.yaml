@@ -107,7 +107,7 @@ dependencies:
   webview_flutter_android: ^4.12.0
   webview_flutter_wkwebview: ^3.25.1
   youtube_player_iframe: ^6.0.0
-  pdfrx: ^2.2.24
+  pdfrx: ^2.4.3
   flutter_widget_from_html_core: ^0.16.1
   archive: ^4.0.9
   rar:

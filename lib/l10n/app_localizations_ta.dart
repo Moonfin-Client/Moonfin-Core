@@ -2707,6 +2707,9 @@ class AppLocalizationsTa extends AppLocalizations {
   String get showLibrariesInToolbar => 'கருவிப்பட்டியில் நூலகங்களைக் காட்டு';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'நவ்பார் ஒளிபுகா';
 
   @override
@@ -6927,6 +6930,10 @@ class AppLocalizationsTa extends AppLocalizations {
       'வழிசெலுத்தல் பட்டியில் நூலகங்கள் பொத்தானைக் காட்டு';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'ஒரு நூலகத்திற்கு முகப்புப் பக்கத் தெரிவுநிலையை நிலைமாற்று. மாற்றங்கள் நடைமுறைக்கு வர Moonfin ஐ மீண்டும் தொடங்கவும்.';
 
@@ -7516,6 +7523,13 @@ class AppLocalizationsTa extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Appearance';

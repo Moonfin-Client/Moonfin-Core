@@ -2641,6 +2641,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get showLibrariesInToolbar => 'ツールバーにライブラリを表示';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'ナビゲーションバーの不透明度';
 
   @override
@@ -6704,6 +6707,10 @@ class AppLocalizationsJa extends AppLocalizations {
       'ナビゲーション バーにライブラリ ボタンを表示する';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'ライブラリごとにホームページの表示を切り替えます。変更を有効にするには、Moonfin を再起動します。';
 
@@ -7264,6 +7271,13 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Appearance';

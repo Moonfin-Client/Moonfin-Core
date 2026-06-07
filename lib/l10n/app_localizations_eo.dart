@@ -2685,6 +2685,9 @@ class AppLocalizationsEo extends AppLocalizations {
   String get showLibrariesInToolbar => 'Montru Bibliotekojn en Ilobreto';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Navbar Opakeco';
 
   @override
@@ -6860,6 +6863,10 @@ class AppLocalizationsEo extends AppLocalizations {
       'Montru la butonon de bibliotekoj en la navigadbreto';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Ŝaltu hejmpaĝan videblecon per biblioteko. Rekomencu Moonfin por ke ŝanĝoj efektiviĝu.';
 
@@ -7448,6 +7455,13 @@ class AppLocalizationsEo extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Aspekto';

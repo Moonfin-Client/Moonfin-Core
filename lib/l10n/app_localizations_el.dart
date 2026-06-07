@@ -2720,6 +2720,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get showLibrariesInToolbar => 'Εμφάνιση βιβλιοθηκών στο Toolbar';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Αδιαφάνεια γραμμής πλοήγησης';
 
   @override
@@ -6974,6 +6977,10 @@ class AppLocalizationsEl extends AppLocalizations {
       'Εμφάνιση του κουμπιού βιβλιοθήκες στη γραμμή πλοήγησης';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Εναλλαγή ορατότητας αρχικής σελίδας ανά βιβλιοθήκη. Επανεκκινήστε το Moonfin για να τεθούν σε ισχύ οι αλλαγές.';
 
@@ -7574,6 +7581,13 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Εμφάνιση';

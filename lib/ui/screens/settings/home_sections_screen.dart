@@ -15,6 +15,7 @@ import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/poster_size_settings_dialog.dart';
+import '../../widgets/playback/player_loading_overlay.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../../l10n/app_localizations.dart';
@@ -84,6 +85,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
   late List<HomeSectionConfig> _sections;
   HomeSectionConfig? _mediaBarConfig;
   final _focusNodes = <FocusNode>[];
+  final Map<String, FocusNode> _focusNodesByStableId = {};
+  bool _isLoading = true;
+  bool _showOverlay = true;
 
   final Set<String> _emptySectionIds = {};
 
@@ -303,16 +307,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
           ..clear()
           ..addAll(newEmptyIds);
       });
-      if (PlatformDetection.isTV) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
-          if (FocusManager.instance.primaryFocus?.hasPrimaryFocus ?? false) {
-            return;
-          }
-          final first = _visibleSectionIndices().firstOrNull;
-          if (first != null) _focusSectionAndEnsureVisible(first);
-        });
-      }
     }
   }
 
@@ -342,12 +336,36 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     return type == HomeSectionType.playlists;
   }
 
+  bool _isSeerrSectionType(HomeSectionType type) {
+    return type == HomeSectionType.seerrRecentRequests ||
+        type == HomeSectionType.seerrRecentlyAdded ||
+        type == HomeSectionType.seerrPopularMovies ||
+        type == HomeSectionType.seerrUpcomingMovies ||
+        type == HomeSectionType.seerrPopularSeries ||
+        type == HomeSectionType.seerrUpcomingSeries ||
+        type == HomeSectionType.seerrTrending ||
+        type == HomeSectionType.seerrMovieGenres ||
+        type == HomeSectionType.seerrStudios ||
+        type == HomeSectionType.seerrSeriesGenres ||
+        type == HomeSectionType.seerrNetworks;
+  }
+
+  void _addSection(HomeSectionConfig cfg) {
+    final insertIdx = _sections.indexWhere((s) => s.isBuiltin && _isSeerrSectionType(s.type));
+    if (insertIdx >= 0) {
+      _sections.insert(insertIdx, cfg);
+    } else {
+      _sections.add(cfg);
+    }
+  }
+
   bool _isHiddenByRowVisibilityGates(HomeSectionConfig section) {
     final showFavoritesRows = _prefs.get(UserPreferences.displayFavoritesRows);
     final showCollectionsRows =
         _prefs.get(UserPreferences.displayCollectionsRows);
     final showGenresRows = _prefs.get(UserPreferences.displayGenresRows);
     final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
+    final showSeerrRows = _prefs.get(UserPreferences.displaySeerrRows);
 
     final hiddenByFavorites =
       !showFavoritesRows && _isFavoriteSectionType(section.type);
@@ -363,7 +381,12 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       ((section.isBuiltin && _isPlaylistsSectionType(section.type)) ||
         (section.isPluginDynamic &&
           section.pluginSource == HomeSectionPluginSource.playlists));
-    return hiddenByFavorites || hiddenByCollections || hiddenByGenres || hiddenByPlaylists;
+    final hiddenBySeerr = !showSeerrRows && _isSeerrSectionType(section.type);
+    return hiddenByFavorites ||
+        hiddenByCollections ||
+        hiddenByGenres ||
+        hiddenByPlaylists ||
+        hiddenBySeerr;
   }
 
   List<int> _visibleSectionIndices() {
@@ -409,16 +432,36 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         continue;
       }
       if (existingTypes.contains(type)) continue;
+
+      final isSeerr = _isSeerrSectionType(type);
+      final idx = isSeerr ? _sections.length : insertIndex;
+
       _sections.insert(
-        insertIndex,
+        idx,
         HomeSectionConfig(
           type: type,
           enabled: false,
           order: nextOrder++,
         ),
       );
-      insertIndex++;
+      if (!isSeerr) {
+        insertIndex++;
+      }
       changed = true;
+    }
+
+    // Migration: if Seerr rows exist before dynamic sections, move them to the end.
+    final lastDynamicIndex = _sections.lastIndexWhere((s) => s.isPluginDynamic);
+    if (lastDynamicIndex >= 0) {
+      final firstSeerrIndex =
+          _sections.indexWhere((s) => s.isBuiltin && _isSeerrSectionType(s.type));
+      if (firstSeerrIndex >= 0 && firstSeerrIndex < lastDynamicIndex) {
+        final seerrConfigs =
+            _sections.where((s) => s.isBuiltin && _isSeerrSectionType(s.type)).toList();
+        _sections.removeWhere((s) => s.isBuiltin && _isSeerrSectionType(s.type));
+        _sections.addAll(seerrConfigs);
+        changed = true;
+      }
     }
 
     return changed;
@@ -427,40 +470,64 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
   /// Probes for newly discovered plugin sections in the background and
   /// re-merges the result into the visible list.
   Future<void> _refreshPluginSections() async {
-    final futures = <Future<void>>[];
-    if (GetIt.instance.isRegistered<HomeScreenSectionsService>()) {
-      futures.add(GetIt.instance<HomeScreenSectionsService>().refreshAll());
-    }
-    if (GetIt.instance.isRegistered<KefinTweaksService>()) {
-      futures.add(GetIt.instance<KefinTweaksService>().refreshAll());
-    }
-    if (futures.isNotEmpty) {
-      await Future.wait(futures);
-    }
-    final collectionsFuture = _fetchCollectionsForHomeSections();
-    final genresFuture = _fetchGenresForHomeSections();
-    final playlistsFuture = _fetchPlaylistsForHomeSections();
-    final discoveredCollections = await collectionsFuture;
-    final discoveredGenres = await genresFuture;
-    final discoveredPlaylists = await playlistsFuture;
-    if (!mounted) return;
-    var changed = false;
     setState(() {
-      final mergedPluginSections = _mergeDiscoveredPluginSections();
-      final mergedCollectionSections = _mergeCollectionSections(discoveredCollections);
-      final mergedGenreSections = _mergeGenreSections(discoveredGenres);
-      final mergedPlaylistSections = _mergePlaylistSections(discoveredPlaylists);
-      changed =
-          mergedPluginSections ||
-          mergedCollectionSections ||
-          mergedGenreSections ||
-          mergedPlaylistSections;
-      _rebuildFocusNodes();
+      _isLoading = true;
+      _showOverlay = true;
     });
-    if (changed) {
-      _persistSections(pushSync: false);
+    try {
+      final futures = <Future<void>>[];
+      if (GetIt.instance.isRegistered<HomeScreenSectionsService>()) {
+        futures.add(GetIt.instance<HomeScreenSectionsService>().refreshAll());
+      }
+      if (GetIt.instance.isRegistered<KefinTweaksService>()) {
+        futures.add(GetIt.instance<KefinTweaksService>().refreshAll());
+      }
+      if (futures.isNotEmpty) {
+        try {
+          await Future.wait(futures);
+        } catch (_) {}
+      }
+      final collectionsFuture = _fetchCollectionsForHomeSections();
+      final genresFuture = _fetchGenresForHomeSections();
+      final playlistsFuture = _fetchPlaylistsForHomeSections();
+      final discoveredCollections = await collectionsFuture;
+      final discoveredGenres = await genresFuture;
+      final discoveredPlaylists = await playlistsFuture;
+      if (!mounted) return;
+      var changed = false;
+      setState(() {
+        final mergedPluginSections = _mergeDiscoveredPluginSections();
+        final mergedCollectionSections = _mergeCollectionSections(discoveredCollections);
+        final mergedGenreSections = _mergeGenreSections(discoveredGenres);
+        final mergedPlaylistSections = _mergePlaylistSections(discoveredPlaylists);
+        changed =
+            mergedPluginSections ||
+            mergedCollectionSections ||
+            mergedGenreSections ||
+            mergedPlaylistSections;
+        _rebuildFocusNodes();
+      });
+      if (changed) {
+        _persistSections(pushSync: false);
+      }
+      await _checkEmptyStates();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        if (PlatformDetection.isTV) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            if (FocusManager.instance.primaryFocus?.hasPrimaryFocus ?? false) {
+              return;
+            }
+            final first = _visibleSectionIndices().firstOrNull;
+            if (first != null) _focusSectionAndEnsureVisible(first);
+          });
+        }
+      }
     }
-    unawaited(_checkEmptyStates());
   }
 
   /// Adds plugin-dynamic sections discovered by the Home Screen Sections
@@ -561,7 +628,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
           changed = true;
         }
       } else {
-        _sections.add(cfg);
+        _addSection(cfg);
         changed = true;
       }
     }
@@ -718,7 +785,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
           changed = true;
         }
       } else {
-        _sections.add(cfg);
+        _addSection(cfg);
         changed = true;
       }
     }
@@ -773,7 +840,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
           changed = true;
         }
       } else {
-        _sections.add(cfg);
+        _addSection(cfg);
         changed = true;
       }
     }
@@ -831,7 +898,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
             changed = true;
           }
         } else {
-          _sections.add(cfg);
+          _addSection(cfg);
           changed = true;
         }
       }
@@ -890,7 +957,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
             changed = true;
           }
         } else {
-          _sections.add(cfg);
+          _addSection(cfg);
           changed = true;
         }
       }
@@ -909,20 +976,35 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
   }
 
   void _rebuildFocusNodes() {
-    for (final n in _focusNodes) {
-      n.dispose();
+    final activeIds = _sections.map((s) => s.stableId).toSet();
+
+    final inactiveIds = _focusNodesByStableId.keys.where((id) => !activeIds.contains(id)).toList();
+    for (final id in inactiveIds) {
+      _focusNodesByStableId[id]?.dispose();
+      _focusNodesByStableId.remove(id);
     }
+
+    for (final section in _sections) {
+      if (!_focusNodesByStableId.containsKey(section.stableId)) {
+        _focusNodesByStableId[section.stableId] = FocusNode(
+          debugLabel: 'section_${section.stableId}',
+        );
+      }
+    }
+
     _focusNodes.clear();
-    for (var i = 0; i < _sections.length; i++) {
-      _focusNodes.add(FocusNode(debugLabel: 'section_$i'));
+    for (final section in _sections) {
+      _focusNodes.add(_focusNodesByStableId[section.stableId]!);
     }
   }
 
   @override
   void dispose() {
-    for (final n in _focusNodes) {
+    for (final n in _focusNodesByStableId.values) {
       n.dispose();
     }
+    _focusNodesByStableId.clear();
+    _focusNodes.clear();
     super.dispose();
   }
 
@@ -1032,6 +1114,17 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     HomeSectionType.collections => l10n.collections,
     HomeSectionType.genres => l10n.genres,
     HomeSectionType.liveTv => l10n.liveTV,
+    HomeSectionType.seerrRecentRequests => l10n.recentRequests,
+    HomeSectionType.seerrRecentlyAdded => l10n.recentlyAdded,
+    HomeSectionType.seerrPopularMovies => l10n.popularMovies,
+    HomeSectionType.seerrUpcomingMovies => l10n.upcomingMovies,
+    HomeSectionType.seerrPopularSeries => l10n.popularSeries,
+    HomeSectionType.seerrUpcomingSeries => l10n.upcomingSeries,
+    HomeSectionType.seerrTrending => l10n.trending,
+    HomeSectionType.seerrMovieGenres => l10n.movieGenres,
+    HomeSectionType.seerrStudios => l10n.studios,
+    HomeSectionType.seerrSeriesGenres => l10n.seriesGenres,
+    HomeSectionType.seerrNetworks => l10n.networks,
     HomeSectionType.none => l10n.none,
   };
 
@@ -1055,6 +1148,32 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         PosterSizeSettingsDialog(
           prefs: _prefs,
           onChanged: () => setState(() {}),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingOverlay(BuildContext context) {
+    final theme = Theme.of(context);
+    return Positioned.fill(
+      child: AnimatedOpacity(
+        opacity: _isLoading ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        onEnd: () {
+          if (!_isLoading && mounted) {
+            setState(() {
+              _showOverlay = false;
+            });
+          }
+        },
+        child: Container(
+          color: theme.colorScheme.surface,
+          alignment: Alignment.center,
+          child: const PlayerLoadingOverlay(
+            logoSize: 80,
+            labelSpacing: 20,
+          ),
         ),
       ),
     );
@@ -1087,9 +1206,21 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
             ),
           ],
         ),
-        body: PlatformDetection.isTV
-            ? _buildTvList(l10n)
-            : _buildReorderableList(l10n),
+        body: ExcludeFocus(
+          excluding: _isLoading,
+          child: IgnorePointer(
+            ignoring: _isLoading,
+            child: Stack(
+              children: [
+                PlatformDetection.isTV
+                    ? _buildTvList(l10n)
+                    : _buildReorderableList(l10n),
+                if (_showOverlay)
+                  _buildLoadingOverlay(context),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -1227,7 +1358,16 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                           color: AppColorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                       )
-                    : null,
+                    : (_isSeerrSectionType(section.type)
+                        ? Text(
+                            'Seerr Discovery Rows',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontFamily: kCleanSettingsFontFamily,
+                              color: AppColorScheme.onSurface.withValues(alpha: 0.7),
+                            ),
+                          )
+                        : null),
                 onTap: isEmpty
                     ? null
                     : () {
@@ -1260,6 +1400,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
   Widget _buildTvList(AppLocalizations l10n) {
     final visibleIndices = _visibleSectionIndices();
     return ListView.builder(
+      cacheExtent: 3000.0,
       itemCount: visibleIndices.length + (widget.showGeneralOptions ? 1 : 0),
       itemBuilder: (context, index) {
         if (widget.showGeneralOptions && index == 0) {
@@ -1276,7 +1417,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
           label: _labelFor(section, l10n),
           subtitle: section.isPluginDynamic
               ? _pluginSubtitle(section)
-              : null,
+              : (_isSeerrSectionType(section.type)
+                  ? 'Seerr Discovery Rows'
+                  : null),
           enabled: section.enabled,
           isFirst: visibleIndex == 0,
           isLast: visibleIndex == visibleIndices.length - 1,

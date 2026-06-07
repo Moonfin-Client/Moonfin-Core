@@ -2707,6 +2707,9 @@ class AppLocalizationsSq extends AppLocalizations {
       'Shfaq bibliotekat në shiritin e veglave';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Opaciteti i Navbarit';
 
   @override
@@ -6931,6 +6934,10 @@ class AppLocalizationsSq extends AppLocalizations {
       'Shfaq butonin e bibliotekave në shiritin e navigimit';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Ndrysho dukshmërinë e faqes kryesore për bibliotekë. Rinisni Moonfin që ndryshimet të hyjnë në fuqi.';
 
@@ -7521,6 +7528,13 @@ class AppLocalizationsSq extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Appearance';

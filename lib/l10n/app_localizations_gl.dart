@@ -2722,6 +2722,9 @@ class AppLocalizationsGl extends AppLocalizations {
       'Mostrar bibliotecas na barra de ferramentas';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Opacidade da barra de navegación';
 
   @override
@@ -6966,6 +6969,10 @@ class AppLocalizationsGl extends AppLocalizations {
       'Mostra o botón de bibliotecas na barra de navegación';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Alterna a visibilidade da páxina de inicio por biblioteca. Reinicia Moonfin para que os cambios teñan efecto.';
 
@@ -7557,6 +7564,13 @@ class AppLocalizationsGl extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Appearance';

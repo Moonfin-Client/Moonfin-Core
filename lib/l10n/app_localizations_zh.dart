@@ -2618,6 +2618,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get showLibrariesInToolbar => '在工具栏中显示库';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => '导航栏不透明度';
 
   @override
@@ -6656,6 +6659,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsShowLibrariesButtonInNavigation => '在导航栏中显示库按钮';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       '切换每个库的主页可见性。重新启动 Moonfin 以使更改生效。';
 
@@ -7197,6 +7204,13 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => '外貌';

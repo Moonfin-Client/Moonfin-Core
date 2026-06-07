@@ -2119,8 +2119,14 @@ class _ContentRowsState extends State<_ContentRows>
       return _libraryRowExtent(rowHeight, metadataScale: metadataScale);
     }
 
-    final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
-    final rowImageType = isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs);
+    final isSeerrRowOverride = row.id == 'seerr_movie_genres' ||
+        row.id == 'seerr_series_genres' ||
+        row.id == 'seerr_studios' ||
+        row.id == 'seerr_networks';
+    final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !isSeerrRowOverride;
+    final rowImageType = isSeerrRowOverride
+        ? ImageType.thumb
+        : (isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs));
     final platformScale = PlatformDetection.isTV ? 0.8 : desktopScale;
     var maxCardHeight = 220.0 * metadataScale;
     if (isRowsV2) {
@@ -2739,9 +2745,14 @@ class _ContentRowsState extends State<_ContentRows>
     required AppLocalizations l10n,
   }) {
     final suppressFocusGlow = ThemeRegistry.active.borders.focusGlow.isNotEmpty;
-    final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
-    final rowImageType =
-        isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs);
+    final isSeerrRowOverride = row.id == 'seerr_movie_genres' ||
+        row.id == 'seerr_series_genres' ||
+        row.id == 'seerr_studios' ||
+        row.id == 'seerr_networks';
+    final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !isSeerrRowOverride;
+    final rowImageType = isSeerrRowOverride
+        ? ImageType.thumb
+        : (isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs));
     final desktopScale = _desktopUiScaleFactor();
     final metadataScale = PlatformDetection.useDesktopUi ? desktopScale : 1.0;
     final platformScale = PlatformDetection.isTV ? 0.8 : desktopScale;
@@ -2792,12 +2803,14 @@ class _ContentRowsState extends State<_ContentRows>
           posterSize.portraitHeight.toDouble() * platformScale + (46 * metadataScale);
     }
 
+    final isSeerrRow = row.id.startsWith('seerr_');
     return _buildTitledRow(
       key: _rowContainerKey(rowIndex),
       title: _localizedRowTitle(row, l10n),
+      subtitle: isSeerrRow ? 'Seerr Discovery Rows' : null,
       rowIndex: rowIndex,
       hasItems: row.items.isNotEmpty,
-      height: maxCardHeight + (10 * metadataScale),
+      height: maxCardHeight + (10 * metadataScale) + (isSeerrRow ? 18.0 : 0.0),
       child: LockedFocusRow<AggregatedItem>(
         key: _rowKey(rowIndex),
         items: row.items,
@@ -2850,6 +2863,29 @@ class _ContentRowsState extends State<_ContentRows>
             _navigateToLibrary(context, item);
           } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
             context.push(Destinations.genre(item.name, genreId: item.id));
+          } else if (item.serverId == 'seerr') {
+            final filterType = item.rawData['FilterType'] as String?;
+            if (filterType != null) {
+              final mediaType = item.rawData['MediaType'] as String? ?? 'movie';
+              final filterId = item.id;
+              final filterName = item.rawData['FilterName'] as String? ?? item.name;
+              final uri = Uri(
+                path: Destinations.seerrBrowse,
+                queryParameters: {
+                  'filterId': filterId,
+                  'filterName': filterName,
+                  'mediaType': mediaType,
+                  'filterType': filterType,
+                },
+              );
+              context.push(uri.toString());
+            } else {
+              final mediaType = item.type == 'Series' || item.type == 'tv' ? 'tv' : 'movie';
+              context.push(
+                Destinations.seerrMedia(item.id),
+                extra: {'mediaType': mediaType},
+              );
+            }
           } else {
             context.push(Destinations.itemOrPhoto(
               item.id,
@@ -2941,6 +2977,29 @@ class _ContentRowsState extends State<_ContentRows>
               _navigateToLibrary(context, item);
             } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
               context.push(Destinations.genre(item.name, genreId: item.id));
+            } else if (item.serverId == 'seerr') {
+              final filterType = item.rawData['FilterType'] as String?;
+              if (filterType != null) {
+                final mediaType = item.rawData['MediaType'] as String? ?? 'movie';
+                final filterId = item.id;
+                final filterName = item.rawData['FilterName'] as String? ?? item.name;
+                final uri = Uri(
+                  path: Destinations.seerrBrowse,
+                  queryParameters: {
+                    'filterId': filterId,
+                    'filterName': filterName,
+                    'mediaType': mediaType,
+                    'filterType': filterType,
+                  },
+                );
+                context.push(uri.toString());
+              } else {
+                final mediaType = item.type == 'Series' || item.type == 'tv' ? 'tv' : 'movie';
+                context.push(
+                  Destinations.seerrMedia(item.id),
+                  extra: {'mediaType': mediaType},
+                );
+              }
             } else {
               context.push(Destinations.itemOrPhoto(
                 item.id,
@@ -3230,6 +3289,7 @@ class _ContentRowsState extends State<_ContentRows>
   Widget _buildTitledRow({
     Key? key,
     required String title,
+    String? subtitle,
     required int rowIndex,
     required bool hasItems,
     required double height,
@@ -3255,12 +3315,27 @@ class _ContentRowsState extends State<_ContentRows>
           child: Row(
             children: [
               Expanded(
-                child: Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppColorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: AppColorScheme.onSurface,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                    if (subtitle != null && subtitle.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColorScheme.onSurface.withValues(alpha: 0.5),
+                            ),
                       ),
+                    ],
+                  ],
                 ),
               ),
               if (showHeaderControls) ...[
@@ -3402,6 +3477,19 @@ class _ContentRowsState extends State<_ContentRows>
     bool useSeriesThumbs,
     double requestScale,
   ) {
+    if (item.serverId == 'seerr') {
+      final backdrop = item.rawData['BackdropPath'] as String?;
+      if (backdrop != null && backdrop.isNotEmpty) {
+        if (backdrop.startsWith('http')) return backdrop;
+        return 'https://image.tmdb.org/t/p/w1280$backdrop';
+      }
+      final poster = item.rawData['PosterPath'] as String?;
+      if (poster != null && poster.isNotEmpty) {
+        if (poster.startsWith('http')) return poster;
+        return 'https://image.tmdb.org/t/p/w300$poster';
+      }
+      return null;
+    }
     final maxW = (height * 16 / 9 * requestScale).toInt();
     final maxH = (height * requestScale).toInt();
     if (!useSeriesThumbs) {
@@ -3470,6 +3558,12 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   static ImageType _homeRowImageTypeForRow(HomeRow row, UserPreferences prefs) {
+    if (row.id == 'seerr_movie_genres' ||
+        row.id == 'seerr_series_genres' ||
+        row.id == 'seerr_studios' ||
+        row.id == 'seerr_networks') {
+      return ImageType.thumb;
+    }
     if (row.rowType == HomeRowType.latestMedia && _isLatestMusicRow(row)) {
       return ImageType.poster;
     }
@@ -3522,6 +3616,12 @@ class _ContentRowsState extends State<_ContentRows>
     HomeRow row,
     ImageType imageType,
   ) {
+    if (row.id == 'seerr_movie_genres' ||
+        row.id == 'seerr_series_genres' ||
+        row.id == 'seerr_studios' ||
+        row.id == 'seerr_networks') {
+      return 16 / 9;
+    }
     double thumbAspectRatio() {
       return switch (item.type) {
         'MusicAlbum' || 'MusicArtist' || 'Audio' || 'Playlist' || 'Person' => 1,
@@ -3544,6 +3644,32 @@ class _ContentRowsState extends State<_ContentRows>
     double requestScale,
     {bool isMyMediaRow = false}
   ) {
+    if (item.serverId == 'seerr') {
+      if (imageType == ImageType.thumb || imageType == ImageType.banner) {
+        final backdrop = item.rawData['BackdropPath'] as String?;
+        if (backdrop != null && backdrop.isNotEmpty) {
+          if (backdrop.startsWith('http')) return backdrop;
+          return 'https://image.tmdb.org/t/p/w1280$backdrop';
+        }
+        final poster = item.rawData['PosterPath'] as String?;
+        if (poster != null && poster.isNotEmpty) {
+          if (poster.startsWith('http')) return poster;
+          return 'https://image.tmdb.org/t/p/w300$poster';
+        }
+      } else {
+        final poster = item.rawData['PosterPath'] as String?;
+        if (poster != null && poster.isNotEmpty) {
+          if (poster.startsWith('http')) return poster;
+          return 'https://image.tmdb.org/t/p/w300$poster';
+        }
+        final backdrop = item.rawData['BackdropPath'] as String?;
+        if (backdrop != null && backdrop.isNotEmpty) {
+          if (backdrop.startsWith('http')) return backdrop;
+          return 'https://image.tmdb.org/t/p/w1280$backdrop';
+        }
+      }
+      return null;
+    }
     final itemThumbTag = _tagForType(item, 'Thumb');
     final itemBannerTag = _tagForType(item, 'Banner');
     final parentThumbItemId = item.rawData['ParentThumbItemId'] as String?;

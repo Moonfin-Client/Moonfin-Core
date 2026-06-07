@@ -2692,6 +2692,9 @@ class AppLocalizationsAf extends AppLocalizations {
   String get showLibrariesInToolbar => 'Wys biblioteke in Toolbar';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Navbar Ondeursigtigheid';
 
   @override
@@ -6881,6 +6884,10 @@ class AppLocalizationsAf extends AppLocalizations {
       'Wys die biblioteke-knoppie in die navigasiebalk';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Wissel tuisbladsigbaarheid per biblioteek. Herbegin Moonfin vir veranderinge om in werking te tree.';
 
@@ -7465,6 +7472,13 @@ class AppLocalizationsAf extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Voorkoms';

@@ -2697,6 +2697,9 @@ class AppLocalizationsSr extends AppLocalizations {
       'Прикажи библиотеке на траци са алаткама';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Прозирност навигационе траке';
 
   @override
@@ -6896,6 +6899,10 @@ class AppLocalizationsSr extends AppLocalizations {
       'Прикажите дугме библиотеке на траци за навигацију';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Укључите/искључите видљивост почетне странице по библиотеци. Поново покрените __АРБ_ТЕРМ_0__ да би промене ступиле на снагу.';
 
@@ -7486,6 +7493,13 @@ class AppLocalizationsSr extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Appearance';

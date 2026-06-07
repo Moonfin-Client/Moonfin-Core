@@ -2699,6 +2699,9 @@ class AppLocalizationsSl extends AppLocalizations {
   String get showLibrariesInToolbar => 'Prikaži knjižnice v orodni vrstici';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Neprosojnost krmarne vrstice';
 
   @override
@@ -6900,6 +6903,10 @@ class AppLocalizationsSl extends AppLocalizations {
       'Prikažite gumb za knjižnice v navigacijski vrstici';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Preklopi vidnost domače strani na knjižnico. Znova zaženite Moonfin, da spremembe začnejo veljati.';
 
@@ -7490,6 +7497,13 @@ class AppLocalizationsSl extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Appearance';

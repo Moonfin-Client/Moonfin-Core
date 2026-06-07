@@ -2690,6 +2690,9 @@ class AppLocalizationsLt extends AppLocalizations {
   String get showLibrariesInToolbar => 'Rodyti bibliotekas įrankių juostoje';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Navigacijos juostos neskaidrumas';
 
   @override
@@ -6894,6 +6897,10 @@ class AppLocalizationsLt extends AppLocalizations {
       'Rodyti bibliotekų mygtuką naršymo juostoje';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Perjungti pagrindinio puslapio matomumą pagal biblioteką. Iš naujo paleiskite „Moonfin“, kad pakeitimai įsigaliotų.';
 
@@ -7488,6 +7495,13 @@ class AppLocalizationsLt extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Išvaizda';

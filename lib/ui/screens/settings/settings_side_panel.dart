@@ -29,6 +29,7 @@ import '../../../playback/audio_capability_profile.dart';
 import '../../../playback/external_player_service.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../preference/seerr_preferences.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/settings/preference_binding.dart';
@@ -768,6 +769,7 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final seerrEnabledOnAccount = GetIt.instance<SeerrPreferences>().enabled;
     final availableNavbarPositions = NavigationLayout.availableNavbarPositions;
     final prefs = GetIt.instance<UserPreferences>();
     final currentNavbarPosition = prefs.get(UserPreferences.navbarPosition);
@@ -849,6 +851,18 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
               icon: Icons.video_library,
               onChanged: _pushPersonalizationSync,
             ),
+            if (seerrEnabledOnAccount)
+              SwitchPreferenceTile(
+                preference: UserPreferences.showSeerrButton,
+                title: l10n.showSeerrButton,
+                subtitle: l10n.settingsShowSeerrButtonInNavigation,
+                iconBuilder: (size, color) => Image.asset(
+                  'assets/icons/seerr.png',
+                  width: size,
+                  height: size,
+                ),
+                onChanged: _pushPersonalizationSync,
+              ),
           ],
         ),
       ),
@@ -922,6 +936,12 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
     setState(() {});
   }
 
+  void _onSeerrRowsToggleChanged() {
+    _pushPersonalizationSync();
+    if (!mounted) return;
+    setState(() {});
+  }
+
   void _onPlaylistsSortChanged() {
     _pushPersonalizationSync();
     _reloadHomeRows();
@@ -936,6 +956,7 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
     );
     final showGenresRows = _prefs.get(UserPreferences.displayGenresRows);
     final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
+    final seerrEnabledOnAccount = GetIt.instance<SeerrPreferences>().enabled;
     final rowsStyle = _prefs.get(UserPreferences.homeRowsStyle);
     return Scaffold(
       appBar: buildSettingsAppBar(context, Text(l10n.homeScreen)),
@@ -1027,23 +1048,37 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
               labelOf: (v) => v.displayName,
               onChanged: _onGenresItemFilterChanged,
             ),
-            SwitchPreferenceTile(
-              preference: UserPreferences.displayPlaylistsRows,
-              title: l10n.displayPlaylistsRows,
-              subtitle: l10n.displayPlaylistsRowsSubtitle,
-              icon: Icons.playlist_play,
-              onChanged: _onPlaylistsRowsToggleChanged,
-            ),
-            if (showPlaylistsRows)
-              EnumPreferenceTile<LibrarySortBy>(
-                preference: UserPreferences.playlistsRowSortBy,
-                title: l10n.playlistsRowSorting,
-                description: l10n.playlistsRowSortingDescription,
-                icon: Icons.sort,
-                labelOf: (v) => v.displayName,
-                onChanged: _onPlaylistsSortChanged,
-              ),
           ],
+          SwitchPreferenceTile(
+            preference: UserPreferences.displayPlaylistsRows,
+            title: l10n.displayPlaylistsRows,
+            subtitle: l10n.displayPlaylistsRowsSubtitle,
+            icon: Icons.playlist_play,
+            onChanged: _onPlaylistsRowsToggleChanged,
+          ),
+          if (showPlaylistsRows)
+            EnumPreferenceTile<LibrarySortBy>(
+              preference: UserPreferences.playlistsRowSortBy,
+              title: l10n.playlistsRowSorting,
+              description: l10n.playlistsRowSortingDescription,
+              icon: Icons.sort,
+              labelOf: (v) => v.displayName,
+              onChanged: _onPlaylistsSortChanged,
+            ),
+          SwitchPreferenceTile(
+            preference: UserPreferences.displaySeerrRows,
+            title: l10n.displaySeerrRows,
+            subtitle: seerrEnabledOnAccount
+                ? l10n.displaySeerrRowsSubtitle
+                : '${l10n.displaySeerrRowsSubtitle} (Requires Seerr login in Plugins)',
+            enabled: seerrEnabledOnAccount,
+            iconBuilder: (size, color) => Image.asset(
+              'assets/icons/seerr.png',
+              width: size,
+              height: size,
+            ),
+            onChanged: _onSeerrRowsToggleChanged,
+          ),
 
           _SectionHeader(l10n.appearance),
           SwitchPreferenceTile(

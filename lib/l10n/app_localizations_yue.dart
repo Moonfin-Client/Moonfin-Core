@@ -2623,6 +2623,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get showLibrariesInToolbar => '在工具列中顯示庫';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => '導覽列不透明度';
 
   @override
@@ -6661,6 +6664,10 @@ class AppLocalizationsYue extends AppLocalizations {
   String get settingsShowLibrariesButtonInNavigation => '在導覽列中顯示庫按鈕';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       '切換每個庫的主頁可見性。重新啟動 Moonfin 以使變更生效。';
 
@@ -7216,6 +7223,13 @@ class AppLocalizationsYue extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Appearance';

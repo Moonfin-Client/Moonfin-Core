@@ -15,6 +15,11 @@ import '../../../l10n/current_app_localizations.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import 'package:get_it/get_it.dart';
+import '../../../data/repositories/seerr_repository.dart';
+import '../../../data/services/seerr/seerr_api_models.dart';
+import '../../../preference/seerr_preferences.dart';
+import '../../../data/viewmodels/seerr_discover_view_model.dart';
 
 class HomeViewModel extends ChangeNotifier {
   final RowDataSource _dataSource;
@@ -75,6 +80,20 @@ class HomeViewModel extends ChangeNotifier {
     return type == HomeSectionType.playlists;
   }
 
+  static bool _isSeerrSectionType(HomeSectionType type) {
+    return type == HomeSectionType.seerrRecentRequests ||
+        type == HomeSectionType.seerrRecentlyAdded ||
+        type == HomeSectionType.seerrPopularMovies ||
+        type == HomeSectionType.seerrUpcomingMovies ||
+        type == HomeSectionType.seerrPopularSeries ||
+        type == HomeSectionType.seerrUpcomingSeries ||
+        type == HomeSectionType.seerrTrending ||
+        type == HomeSectionType.seerrMovieGenres ||
+        type == HomeSectionType.seerrStudios ||
+        type == HomeSectionType.seerrSeriesGenres ||
+        type == HomeSectionType.seerrNetworks;
+  }
+
   ImageApi imageApiForServer(String serverId) {
     if (!_multiServerEnabled) return _dataSource.imageApi;
     return _multiServerRepo.getImageApiForServer(serverId);
@@ -131,6 +150,8 @@ class HomeViewModel extends ChangeNotifier {
           _prefs.get(UserPreferences.displayGenresRows);
       final showPlaylistsRows =
           _prefs.get(UserPreferences.displayPlaylistsRows);
+      final showSeerrRows =
+          _prefs.get(UserPreferences.displaySeerrRows);
 
       // Plugin-dynamic sections only make sense on the active server.
       final visibleConfigsRaw = configs
@@ -150,7 +171,8 @@ class HomeViewModel extends ChangeNotifier {
             (showPlaylistsRows ||
               !((c.isBuiltin && _isPlaylistsSectionType(c.type)) ||
                 (c.isPluginDynamic &&
-                  c.pluginSource == HomeSectionPluginSource.playlists))),
+                  c.pluginSource == HomeSectionPluginSource.playlists))) &&
+            (showSeerrRows || !_isSeerrSectionType(c.type)),
           )
           .toList(growable: false);
 
@@ -381,6 +403,28 @@ class HomeViewModel extends ChangeNotifier {
             row.rowType == HomeRowType.liveTvOnNow;
       case HomeSectionType.activeRecordings:
         return row.rowType == HomeRowType.activeRecordings;
+      case HomeSectionType.seerrRecentRequests:
+        return row.id == 'seerr_recent_requests';
+      case HomeSectionType.seerrRecentlyAdded:
+        return row.id == 'seerr_recently_added';
+      case HomeSectionType.seerrPopularMovies:
+        return row.id == 'seerr_popular_movies';
+      case HomeSectionType.seerrUpcomingMovies:
+        return row.id == 'seerr_upcoming_movies';
+      case HomeSectionType.seerrPopularSeries:
+        return row.id == 'seerr_popular_series';
+      case HomeSectionType.seerrUpcomingSeries:
+        return row.id == 'seerr_upcoming_series';
+      case HomeSectionType.seerrTrending:
+        return row.id == 'seerr_trending';
+      case HomeSectionType.seerrMovieGenres:
+        return row.id == 'seerr_movie_genres';
+      case HomeSectionType.seerrStudios:
+        return row.id == 'seerr_studios';
+      case HomeSectionType.seerrSeriesGenres:
+        return row.id == 'seerr_series_genres';
+      case HomeSectionType.seerrNetworks:
+        return row.id == 'seerr_networks';
       case HomeSectionType.mediaBar:
       case HomeSectionType.recentlyReleased:
       case HomeSectionType.resumeBook:
@@ -578,6 +622,28 @@ class HomeViewModel extends ChangeNotifier {
         return const {'genres'};
       case HomeSectionType.activeRecordings:
         return const {'activeRecordings'};
+      case HomeSectionType.seerrRecentRequests:
+        return const {'seerrRecentRequests'};
+      case HomeSectionType.seerrRecentlyAdded:
+        return const {'seerrRecentlyAdded'};
+      case HomeSectionType.seerrPopularMovies:
+        return const {'seerrPopularMovies'};
+      case HomeSectionType.seerrUpcomingMovies:
+        return const {'seerrUpcomingMovies'};
+      case HomeSectionType.seerrPopularSeries:
+        return const {'seerrPopularSeries'};
+      case HomeSectionType.seerrUpcomingSeries:
+        return const {'seerrUpcomingSeries'};
+      case HomeSectionType.seerrTrending:
+        return const {'seerrTrending'};
+      case HomeSectionType.seerrMovieGenres:
+        return const {'seerrMovieGenres'};
+      case HomeSectionType.seerrStudios:
+        return const {'seerrStudios'};
+      case HomeSectionType.seerrSeriesGenres:
+        return const {'seerrSeriesGenres'};
+      case HomeSectionType.seerrNetworks:
+        return const {'seerrNetworks'};
       case HomeSectionType.mediaBar:
       case HomeSectionType.none:
         return const <String>{};
@@ -751,6 +817,28 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.mediaBar:
         _mediaBarViewModel.load();
         return [];
+      case HomeSectionType.seerrRecentRequests:
+        return _loadSeerrRow(SeerrRowType.recentRequests, l10n.recentRequests, 'seerr_recent_requests');
+      case HomeSectionType.seerrRecentlyAdded:
+        return _loadSeerrRow(SeerrRowType.recentlyAdded, l10n.recentlyAdded, 'seerr_recently_added');
+      case HomeSectionType.seerrPopularMovies:
+        return _loadSeerrRow(SeerrRowType.popularMovies, l10n.popularMovies, 'seerr_popular_movies');
+      case HomeSectionType.seerrUpcomingMovies:
+        return _loadSeerrRow(SeerrRowType.upcomingMovies, l10n.upcomingMovies, 'seerr_upcoming_movies');
+      case HomeSectionType.seerrPopularSeries:
+        return _loadSeerrRow(SeerrRowType.popularSeries, l10n.popularSeries, 'seerr_popular_series');
+      case HomeSectionType.seerrUpcomingSeries:
+        return _loadSeerrRow(SeerrRowType.upcomingSeries, l10n.upcomingSeries, 'seerr_upcoming_series');
+      case HomeSectionType.seerrTrending:
+        return _loadSeerrRow(SeerrRowType.trending, l10n.trending, 'seerr_trending');
+      case HomeSectionType.seerrMovieGenres:
+        return _loadSeerrRow(SeerrRowType.movieGenres, l10n.movieGenres, 'seerr_movie_genres');
+      case HomeSectionType.seerrStudios:
+        return _loadSeerrRow(SeerrRowType.studios, l10n.studios, 'seerr_studios');
+      case HomeSectionType.seerrSeriesGenres:
+        return _loadSeerrRow(SeerrRowType.seriesGenres, l10n.seriesGenres, 'seerr_series_genres');
+      case HomeSectionType.seerrNetworks:
+        return _loadSeerrRow(SeerrRowType.networks, l10n.networks, 'seerr_networks');
       case HomeSectionType.recentlyReleased:
       case HomeSectionType.resumeBook:
       case HomeSectionType.none:
@@ -872,6 +960,61 @@ class HomeViewModel extends ChangeNotifier {
           id: 'libraryTilesSmall', title: l10n.myMedia,
           rowType: HomeRowType.libraryTilesSmall, isLoading: true,
         );
+      case HomeSectionType.seerrRecentRequests:
+        return HomeRow(
+          id: 'seerr_recent_requests', title: l10n.recentRequests,
+          rowType: HomeRowType.pluginDynamic, isLoading: true,
+        );
+      case HomeSectionType.seerrRecentlyAdded:
+        return HomeRow(
+          id: 'seerr_recently_added', title: l10n.recentlyAdded,
+          rowType: HomeRowType.pluginDynamic, isLoading: true,
+        );
+      case HomeSectionType.seerrPopularMovies:
+        return HomeRow(
+          id: 'seerr_popular_movies', title: l10n.popularMovies,
+          rowType: HomeRowType.pluginDynamic, isLoading: true,
+        );
+      case HomeSectionType.seerrUpcomingMovies:
+        return HomeRow(
+          id: 'seerr_upcoming_movies', title: l10n.upcomingMovies,
+          rowType: HomeRowType.pluginDynamic, isLoading: true,
+        );
+      case HomeSectionType.seerrPopularSeries:
+        return HomeRow(
+          id: 'seerr_popular_series', title: l10n.popularSeries,
+          rowType: HomeRowType.pluginDynamic, isLoading: true,
+        );
+      case HomeSectionType.seerrUpcomingSeries:
+        return HomeRow(
+          id: 'seerr_upcoming_series', title: l10n.upcomingSeries,
+          rowType: HomeRowType.pluginDynamic, isLoading: true,
+        );
+      case HomeSectionType.seerrTrending:
+        return HomeRow(
+          id: 'seerr_trending', title: l10n.trending,
+          rowType: HomeRowType.pluginDynamic, isLoading: true,
+        );
+      case HomeSectionType.seerrMovieGenres:
+        return HomeRow(
+          id: 'seerr_movie_genres', title: l10n.movieGenres,
+          rowType: HomeRowType.pluginDynamic, isLoading: true,
+        );
+      case HomeSectionType.seerrStudios:
+        return HomeRow(
+          id: 'seerr_studios', title: l10n.studios,
+          rowType: HomeRowType.pluginDynamic, isLoading: true,
+        );
+      case HomeSectionType.seerrSeriesGenres:
+        return HomeRow(
+          id: 'seerr_series_genres', title: l10n.seriesGenres,
+          rowType: HomeRowType.pluginDynamic, isLoading: true,
+        );
+      case HomeSectionType.seerrNetworks:
+        return HomeRow(
+          id: 'seerr_networks', title: l10n.networks,
+          rowType: HomeRowType.pluginDynamic, isLoading: true,
+        );
       case HomeSectionType.liveTv:
       case HomeSectionType.activeRecordings:
       case HomeSectionType.mediaBar:
@@ -988,6 +1131,320 @@ class HomeViewModel extends ChangeNotifier {
       );
     }
     notifyListeners();
+  }
+
+  Future<List<HomeRow>> _loadSeerrRow(SeerrRowType type, String title, String rowId) async {
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      final seerrPrefs = GetIt.instance<SeerrPreferences>();
+      await repo.ensureInitialized();
+      if (!repo.isAvailable) {
+        return [];
+      }
+
+      final blockNsfw = seerrPrefs.blockNsfw;
+      final limit = seerrPrefs.fetchLimit.limit;
+
+      List<SeerrDiscoverItem> rawItems = [];
+
+      if (type == SeerrRowType.movieGenres) {
+        final genres = await repo.getGenreSliderMovies();
+        final aggregatedItems = genres.map((genre) {
+          final backdrop = genre.backdrops.isNotEmpty ? genre.backdrops.first : '';
+          return AggregatedItem(
+            id: genre.id.toString(),
+            serverId: 'seerr',
+            rawData: {
+              'Name': genre.name,
+              'Type': 'Genre',
+              'Overview': '',
+              'PosterPath': backdrop,
+              'BackdropPath': backdrop,
+              'MediaType': 'movie',
+              'FilterType': 'genre',
+              'FilterName': genre.name,
+            },
+          );
+        }).toList();
+        return [
+          HomeRow(
+            id: rowId,
+            title: title,
+            rowType: HomeRowType.pluginDynamic,
+            items: aggregatedItems,
+          )
+        ];
+      } else if (type == SeerrRowType.seriesGenres) {
+        final genres = await repo.getGenreSliderTv();
+        final aggregatedItems = genres.map((genre) {
+          final backdrop = genre.backdrops.isNotEmpty ? genre.backdrops.first : '';
+          return AggregatedItem(
+            id: genre.id.toString(),
+            serverId: 'seerr',
+            rawData: {
+              'Name': genre.name,
+              'Type': 'Genre',
+              'Overview': '',
+              'PosterPath': backdrop,
+              'BackdropPath': backdrop,
+              'MediaType': 'tv',
+              'FilterType': 'genre',
+              'FilterName': genre.name,
+            },
+          );
+        }).toList();
+        return [
+          HomeRow(
+            id: rowId,
+            title: title,
+            rowType: HomeRowType.pluginDynamic,
+            items: aggregatedItems,
+          )
+        ];
+      } else if (type == SeerrRowType.networks) {
+        final networks = SeerrDiscoverViewModel.popularNetworks;
+        final aggregatedItems = networks.map((network) {
+          return AggregatedItem(
+            id: network.id.toString(),
+            serverId: 'seerr',
+            rawData: {
+              'Name': network.name,
+              'Type': 'Network',
+              'Overview': '',
+              'PosterPath': network.logoPath ?? '',
+              'BackdropPath': network.logoPath ?? '',
+              'MediaType': 'tv',
+              'FilterType': 'network',
+              'FilterName': network.name,
+            },
+          );
+        }).toList();
+        return [
+          HomeRow(
+            id: rowId,
+            title: title,
+            rowType: HomeRowType.pluginDynamic,
+            items: aggregatedItems,
+          )
+        ];
+      } else if (type == SeerrRowType.studios) {
+        final studios = SeerrDiscoverViewModel.popularStudios;
+        final aggregatedItems = studios.map((studio) {
+          return AggregatedItem(
+            id: studio.id.toString(),
+            serverId: 'seerr',
+            rawData: {
+              'Name': studio.name,
+              'Type': 'Studio',
+              'Overview': '',
+              'PosterPath': studio.logoPath ?? '',
+              'BackdropPath': studio.logoPath ?? '',
+              'MediaType': 'movie',
+              'FilterType': 'studio',
+              'FilterName': studio.name,
+            },
+          );
+        }).toList();
+        return [
+          HomeRow(
+            id: rowId,
+            title: title,
+            rowType: HomeRowType.pluginDynamic,
+            items: aggregatedItems,
+          )
+        ];
+      } else if (type == SeerrRowType.recentRequests) {
+        final user = await repo.getCurrentUser();
+        final response = await repo.getRequests(
+          requestedBy: user.canViewAllRequests ? null : user.id,
+          limit: limit,
+        );
+        final mapped = response.results
+            .where((r) => r.media != null)
+            .map((r) {
+              final media = r.media!;
+              return SeerrDiscoverItem(
+                id: media.tmdbId ?? media.id,
+                title: media.title ?? media.name,
+                name: media.name ?? media.title,
+                overview: media.overview,
+                releaseDate: media.releaseDate,
+                firstAirDate: media.firstAirDate,
+                mediaType: r.type,
+                posterPath: media.posterPath,
+                backdropPath: media.backdropPath,
+                mediaInfo: SeerrMediaInfo(
+                  id: media.id,
+                  tmdbId: media.tmdbId,
+                  status: media.status,
+                ),
+              );
+            })
+            .toList();
+        rawItems = await Future.wait(mapped.map((item) => _enrichSeerrItem(repo, item)));
+      } else if (type == SeerrRowType.recentlyAdded) {
+        final media = await repo.getRecentlyAdded(limit: limit);
+        final mapped = media.map((m) => SeerrDiscoverItem(
+          id: m.tmdbId ?? m.id,
+          title: m.title,
+          name: m.name,
+          overview: m.overview,
+          releaseDate: m.releaseDate,
+          firstAirDate: m.firstAirDate,
+          mediaType: m.mediaType,
+          posterPath: m.posterPath,
+          backdropPath: m.backdropPath,
+          mediaInfo: SeerrMediaInfo(
+            id: m.id,
+            tmdbId: m.tmdbId,
+            status: m.status,
+          ),
+        )).toList();
+        rawItems = await Future.wait(mapped.map((item) => _enrichSeerrItem(repo, item)));
+      } else {
+        final page = await _loadSeerrPage(repo, type, limit);
+        if (page != null) {
+          rawItems = page.results;
+        }
+      }
+
+      final nsfwKeywords = [
+        r'\bsex\b', 'sexual', r'\bporn\b', 'erotic', r'\bnude\b', 'nudity',
+        r'\bxxx\b', 'adult film', 'prostitute', 'stripper', r'\bescort\b',
+        'seduction', r'\baffair\b', 'threesome', r'\borgy\b', 'kinky',
+        'fetish', r'\bbdsm\b', 'dominatrix',
+      ];
+      final nsfwPatterns = nsfwKeywords.map((k) => RegExp(k, caseSensitive: false)).toList();
+
+      final filtered = rawItems.where((item) {
+        if (type != SeerrRowType.recentlyAdded && type != SeerrRowType.recentRequests) {
+          if (item.isAvailable || item.isBlacklisted) return false;
+        }
+        if (blockNsfw) {
+          if (item.adult) return false;
+          final text = '${item.displayTitle} ${item.overview ?? ''}';
+          if (nsfwPatterns.any((p) => p.hasMatch(text))) return false;
+        }
+        return true;
+      }).toList();
+
+      final aggregatedItems = filtered.map((item) {
+        return AggregatedItem(
+          id: item.id.toString(),
+          serverId: 'seerr',
+          rawData: {
+            'Name': item.displayTitle,
+            'Type': item.mediaType == 'tv' ? 'Series' : 'Movie',
+            'Overview': item.overview ?? '',
+            'PosterPath': item.posterPath ?? '',
+            'BackdropPath': item.backdropPath ?? '',
+            'ProductionYear': _extractYear(item.releaseDate ?? item.firstAirDate),
+          },
+        );
+      }).toList();
+
+      return [
+        HomeRow(
+          id: rowId,
+          title: title,
+          rowType: HomeRowType.pluginDynamic,
+          items: aggregatedItems,
+        )
+      ];
+    } catch (e) {
+      debugPrint('[SeerrHomeRow] Failed to load Seerr row $type: $e');
+      return [];
+    }
+  }
+
+  Future<SeerrDiscoverPage?> _loadSeerrPage(SeerrRepository repo, SeerrRowType type, int limit) async {
+    switch (type) {
+      case SeerrRowType.trending:
+        return repo.getTrending(limit: limit, offset: 0);
+      case SeerrRowType.popularMovies:
+        return repo.getTrendingMovies(limit: limit, offset: 0);
+      case SeerrRowType.popularSeries:
+        return repo.getTrendingTv(limit: limit, offset: 0);
+      case SeerrRowType.upcomingMovies:
+        return repo.getUpcomingMovies();
+      case SeerrRowType.upcomingSeries:
+        return repo.getUpcomingTv();
+      default:
+        return null;
+    }
+  }
+
+  Future<SeerrDiscoverItem> _enrichSeerrItem(SeerrRepository repo, SeerrDiscoverItem item) async {
+    if (item.backdropPath != null && item.voteAverage != null && (item.releaseDate != null || item.firstAirDate != null)) {
+      return item;
+    }
+    final tmdbId = item.mediaInfo?.tmdbId ?? item.id;
+    if (tmdbId <= 0) return item;
+    try {
+      if (item.mediaType == 'tv') {
+        final details = await repo.getTvDetails(tmdbId);
+        return SeerrDiscoverItem(
+          id: item.id,
+          mediaType: item.mediaType,
+          title: item.title ?? details.title,
+          name: item.name ?? details.name,
+          originalTitle: item.originalTitle,
+          originalName: item.originalName,
+          posterPath: details.posterPath ?? item.posterPath,
+          backdropPath: details.backdropPath ?? item.backdropPath,
+          overview: details.overview ?? item.overview,
+          releaseDate: item.releaseDate ?? details.firstAirDate,
+          firstAirDate: item.firstAirDate ?? details.firstAirDate,
+          originalLanguage: item.originalLanguage,
+          genreIds: item.genreIds,
+          voteAverage: details.voteAverage ?? item.voteAverage,
+          voteCount: item.voteCount,
+          popularity: item.popularity,
+          adult: item.adult,
+          mediaInfo: item.mediaInfo,
+          character: item.character,
+          job: item.job,
+          department: item.department,
+        );
+      }
+      final details = await repo.getMovieDetails(tmdbId);
+      return SeerrDiscoverItem(
+        id: item.id,
+        mediaType: item.mediaType,
+        title: item.title ?? details.title,
+        name: item.name,
+        originalTitle: item.originalTitle,
+        originalName: item.originalName,
+        posterPath: details.posterPath ?? item.posterPath,
+        backdropPath: details.backdropPath ?? item.backdropPath,
+        overview: details.overview ?? item.overview,
+        releaseDate: item.releaseDate ?? details.releaseDate,
+        firstAirDate: item.firstAirDate ?? details.releaseDate,
+        originalLanguage: item.originalLanguage,
+        genreIds: item.genreIds,
+        voteAverage: details.voteAverage ?? item.voteAverage,
+        voteCount: item.voteCount,
+        popularity: item.popularity,
+        adult: item.adult,
+        mediaInfo: item.mediaInfo,
+        character: item.character,
+        job: item.job,
+        department: item.department,
+      );
+    } catch (_) {
+      return item;
+    }
+  }
+
+  int? _extractYear(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return null;
+    try {
+      final parts = dateString.split('-');
+      if (parts.isNotEmpty) {
+        return int.tryParse(parts[0]);
+      }
+    } catch (_) {}
+    return null;
   }
 }
 

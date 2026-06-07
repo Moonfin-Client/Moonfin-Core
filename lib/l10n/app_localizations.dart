@@ -4907,6 +4907,12 @@ abstract class AppLocalizations {
   /// **'Show Libraries in Toolbar'**
   String get showLibrariesInToolbar;
 
+  /// Setting for showing Seerr button
+  ///
+  /// In en, this message translates to:
+  /// **'Show Seerr Button'**
+  String get showSeerrButton;
+
   /// Setting for navbar opacity
   ///
   /// In en, this message translates to:
@@ -12257,6 +12263,12 @@ abstract class AppLocalizations {
   /// **'Show the libraries button in the navigation bar'**
   String get settingsShowLibrariesButtonInNavigation;
 
+  /// No description provided for @settingsShowSeerrButtonInNavigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the Seerr button in the navigation bar'**
+  String get settingsShowSeerrButtonInNavigation;
+
   /// No description provided for @settingsLibraryVisibilitySubtitle.
   ///
   /// In en, this message translates to:
@@ -13264,6 +13276,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sort Playlist rows by date added, release date, alphabetically, and more.'**
   String get playlistsRowSortingDescription;
+
+  /// No description provided for @displaySeerrRows.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Seerr Discovery Rows'**
+  String get displaySeerrRows;
+
+  /// No description provided for @displaySeerrRowsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Seerr discovery rows in Home Sections.'**
+  String get displaySeerrRowsSubtitle;
 
   /// No description provided for @appearance.
   ///

@@ -2691,6 +2691,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get showLibrariesInToolbar => 'Хэрэгслийн самбарт номын санг харуулах';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Navbar-ийн тунгалаг байдал';
 
   @override
@@ -6896,6 +6899,10 @@ class AppLocalizationsMn extends AppLocalizations {
       'Навигацийн талбар дахь номын сангийн товчийг харуул';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Номын сан бүрийн нүүр хуудасны харагдах байдлыг асаах/унтраах. Өөрчлөлтүүд хүчин төгөлдөр болохын тулд Moonfin-г дахин эхлүүлнэ үү.';
 
@@ -7488,6 +7495,13 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Гадаад төрх';

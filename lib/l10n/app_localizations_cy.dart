@@ -2698,6 +2698,9 @@ class AppLocalizationsCy extends AppLocalizations {
   String get showLibrariesInToolbar => 'Dangos Llyfrgelloedd yn y Bar Offer';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Anhryloywder Navbar';
 
   @override
@@ -6893,6 +6896,10 @@ class AppLocalizationsCy extends AppLocalizations {
       'Dangoswch y botwm llyfrgelloedd yn y bar llywio';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Toglo gwelededd tudalen gartref fesul llyfrgell. Ailgychwyn Moonfin i newidiadau ddod i rym.';
 
@@ -7483,6 +7490,13 @@ class AppLocalizationsCy extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Ymddangosiad';

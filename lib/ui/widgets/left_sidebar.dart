@@ -124,6 +124,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
     _userSub = _userRepo.currentUserStream.listen((_) => _loadUserImage());
     _prefs.addListener(_onPrefsChanged);
     _viewsRepo.addListener(_onUserViewsChanged);
+    GetIt.instance<PluginSyncService>().addListener(_onPrefsChanged);
     _loadLibraries();
     FocusManager.instance.addListener(_trackPreviousFocus);
     if (PlatformDetection.isTV || (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi))) {
@@ -168,6 +169,9 @@ class _LeftSidebarState extends State<LeftSidebar> {
     _userSub?.cancel();
     try {
       _viewsRepo.removeListener(_onUserViewsChanged);
+    } catch (_) {}
+    try {
+      GetIt.instance<PluginSyncService>().removeListener(_onPrefsChanged);
     } catch (_) {}
     _prefs.removeListener(_onPrefsChanged);
     _currentTime.dispose();
@@ -686,10 +690,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
     final showSyncPlay =
         _prefs.get(UserPreferences.syncPlayEnabled) &&
         _prefs.get(UserPreferences.showSyncPlayButton);
-    final pluginSync = GetIt.instance<PluginSyncService>();
     final seerrPrefs = GetIt.instance<SeerrPreferences>();
-    final seerrEnabledLocally =
-        seerrPrefs.enabled && _prefs.get(UserPreferences.seerrEnabled);
     final seerrDisplayName = seerrPrefs.moonfinDisplayName.trim();
     final seerrNavLabel = seerrDisplayName.isNotEmpty
       ? seerrDisplayName
@@ -828,9 +829,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
                       );
                     },
                   ),
-                if (pluginSync.pluginAvailable &&
-                    pluginSync.seerrInfoAvailable &&
-                    seerrEnabledLocally)
+                if (_prefs.get(UserPreferences.showSeerrButton))
                   _SidebarItem(
                     baseColor: nextSidebarColor(),
                     iconBuilder: (size, color) => seerrPrefs.isSeerrVariant

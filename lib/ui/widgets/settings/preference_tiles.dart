@@ -205,6 +205,7 @@ class SwitchPreferenceTile extends StatefulWidget {
   final VoidCallback? onChanged;
 
   final bool inverted;
+  final bool enabled;
 
   const SwitchPreferenceTile({
     super.key,
@@ -215,6 +216,7 @@ class SwitchPreferenceTile extends StatefulWidget {
     this.iconBuilder,
     this.onChanged,
     this.inverted = false,
+    this.enabled = true,
   });
 
   @override
@@ -242,6 +244,7 @@ class _SwitchPreferenceTileState extends State<SwitchPreferenceTile> {
   @override
   Widget build(BuildContext context) {
     return TvFocusHighlight(
+      enabled: widget.enabled,
       builder: (context, focused) {
         final iconColor = focused
             ? AppColors.black.withValues(alpha: 0.54)
@@ -271,10 +274,12 @@ class _SwitchPreferenceTileState extends State<SwitchPreferenceTile> {
                 ? Text(widget.subtitle!, style: _kSettingsSubtitleTextStyle)
                 : null,
             value: widget.inverted ? !value : value,
-            onChanged: (v) {
-              _binding.value = widget.inverted ? !v : v;
-              widget.onChanged?.call();
-            },
+            onChanged: widget.enabled
+                ? (v) {
+                    _binding.value = widget.inverted ? !v : v;
+                    widget.onChanged?.call();
+                  }
+                : null,
           ),
         );
       },
@@ -794,8 +799,13 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
 
 class TvFocusHighlight extends StatefulWidget {
   final Widget Function(BuildContext context, bool focused) builder;
+  final bool enabled;
 
-  const TvFocusHighlight({super.key, required this.builder});
+  const TvFocusHighlight({
+    super.key,
+    required this.builder,
+    this.enabled = true,
+  });
 
   @override
   State<TvFocusHighlight> createState() => _TvFocusHighlightState();
@@ -828,26 +838,29 @@ class _TvFocusHighlightState extends State<TvFocusHighlight> {
   Widget build(BuildContext context) {
     return Focus(
       focusNode: _focusNode,
-      canRequestFocus: true,
-      skipTraversal: true,
-      descendantsAreFocusable: true,
+      canRequestFocus: widget.enabled,
+      skipTraversal: !widget.enabled,
+      descendantsAreFocusable: widget.enabled,
       onFocusChange: _onFocusChange,
       child: Padding(
         padding: _settingsTileOuterPadding(context),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 90),
-          curve: Curves.easeOut,
-          decoration: _settingsTileDecoration(context, focused: _focused),
-          child: ListTileTheme.merge(
-            textColor: _focused
-                ? AppColors.black.withValues(alpha: 0.87)
-                : AppColorScheme.onSurface,
-            iconColor: _focused
-                ? AppColors.black.withValues(alpha: 0.54)
-                : AppColorScheme.onSurface.withValues(alpha: 0.7),
-            titleTextStyle: _kSettingsTitleTextStyle,
-            subtitleTextStyle: _kSettingsSubtitleTextStyle,
-            child: Builder(builder: (ctx) => widget.builder(ctx, _focused)),
+        child: Opacity(
+          opacity: widget.enabled ? 1.0 : 0.45,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 90),
+            curve: Curves.easeOut,
+            decoration: _settingsTileDecoration(context, focused: _focused),
+            child: ListTileTheme.merge(
+              textColor: _focused
+                  ? AppColors.black.withValues(alpha: 0.87)
+                  : AppColorScheme.onSurface,
+              iconColor: _focused
+                  ? AppColors.black.withValues(alpha: 0.54)
+                  : AppColorScheme.onSurface.withValues(alpha: 0.7),
+              titleTextStyle: _kSettingsTitleTextStyle,
+              subtitleTextStyle: _kSettingsSubtitleTextStyle,
+              child: Builder(builder: (ctx) => widget.builder(ctx, _focused)),
+            ),
           ),
         ),
       ),

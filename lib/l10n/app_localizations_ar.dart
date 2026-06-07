@@ -2679,6 +2679,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get showLibrariesInToolbar => 'إظهار المكتبات في شريط الأدوات';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'عتامة نافبار';
 
   @override
@@ -6836,6 +6839,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'إظهار زر المكتبات في شريط التنقل';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'تبديل رؤية الصفحة الرئيسية لكل مكتبة. أعد تشغيل Moonfin لتصبح التغييرات سارية المفعول.';
 
@@ -7415,6 +7422,13 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'مظهر';

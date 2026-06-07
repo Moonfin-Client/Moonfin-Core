@@ -116,6 +116,7 @@ class _TopToolbarState extends State<TopToolbar> {
     _userSub = _userRepo.currentUserStream.listen((_) => _loadUserImage());
     _prefs.addListener(_onPrefsChanged);
     _viewsRepo.addListener(_onUserViewsChanged);
+    GetIt.instance<PluginSyncService>().addListener(_onPrefsChanged);
     _loadLibraries();
   }
 
@@ -145,6 +146,9 @@ class _TopToolbarState extends State<TopToolbar> {
     _userSub?.cancel();
     try {
       _viewsRepo.removeListener(_onUserViewsChanged);
+    } catch (_) {}
+    try {
+      GetIt.instance<PluginSyncService>().removeListener(_onPrefsChanged);
     } catch (_) {}
     _prefs.removeListener(_onPrefsChanged);
     _currentTime.dispose();
@@ -617,14 +621,8 @@ class _TopToolbarState extends State<TopToolbar> {
     final showSyncPlay =
         _prefs.get(UserPreferences.syncPlayEnabled) &&
         _prefs.get(UserPreferences.showSyncPlayButton);
-    final pluginSync = GetIt.instance<PluginSyncService>();
     final seerrPrefs = GetIt.instance<SeerrPreferences>();
-    final seerrEnabledLocally =
-        seerrPrefs.enabled && _prefs.get(UserPreferences.seerrEnabled);
-    final showSeerr =
-        seerrEnabledLocally &&
-        pluginSync.pluginAvailable &&
-        pluginSync.seerrInfoAvailable;
+    final showSeerr = _prefs.get(UserPreferences.showSeerrButton);
     final l10n = AppLocalizations.of(context);
     final seerrDisplayName = seerrPrefs.moonfinDisplayName.trim();
     final seerrNavLabel = seerrDisplayName.isNotEmpty

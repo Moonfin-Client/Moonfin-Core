@@ -2695,6 +2695,9 @@ class AppLocalizationsSv extends AppLocalizations {
   String get showLibrariesInToolbar => 'Visa bibliotek i verktygsfältet';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Navbar Opacitet';
 
   @override
@@ -6883,6 +6886,10 @@ class AppLocalizationsSv extends AppLocalizations {
       'Visa biblioteksknappen i navigeringsfältet';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Växla hemsidans synlighet per bibliotek. Starta om Moonfin för att ändringarna ska träda i kraft.';
 
@@ -7472,6 +7479,13 @@ class AppLocalizationsSv extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Appearance';

@@ -85,7 +85,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
   static final _nsfwPatterns =
       _nsfwKeywords.map((k) => RegExp(k, caseSensitive: false)).toList();
 
-  static const _popularNetworks = [
+  static const popularNetworks = [
     SeerrNetwork(id: 213, name: 'Netflix', logoPath: 'https://image.tmdb.org/t/p/w780_filter(duotone,ffffff,bababa)/wwemzKWzjKYJFfCeiB57q3r4Bcm.png'),
     SeerrNetwork(id: 2739, name: 'Disney+', logoPath: 'https://image.tmdb.org/t/p/w780_filter(duotone,ffffff,bababa)/gJ8VX6JSu3ciXHuC2dDGAo2lvwM.png'),
     SeerrNetwork(id: 1024, name: 'Prime Video', logoPath: 'https://image.tmdb.org/t/p/w780_filter(duotone,ffffff,bababa)/ifhbNuuVnlwYy5oXA5VIb2YR8AZ.png'),
@@ -110,7 +110,7 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
     SeerrNetwork(id: 3353, name: 'Peacock', logoPath: 'https://image.tmdb.org/t/p/w780_filter(duotone,ffffff,bababa)/gIAcGTjKKr0KOHL5s4O36roJ8p7.png'),
   ];
 
-  static const _popularStudios = [
+  static const popularStudios = [
     SeerrStudio(id: 2, name: 'Disney', logoPath: 'https://image.tmdb.org/t/p/w780_filter(duotone,ffffff,bababa)/wdrCwmRnLFJhEoH8GSfymY85KHT.png'),
     SeerrStudio(id: 127928, name: '20th Century Studios', logoPath: 'https://image.tmdb.org/t/p/w780_filter(duotone,ffffff,bababa)/h0rjX5vjW5r8yEnUBStFarjcLT4.png'),
     SeerrStudio(id: 34, name: 'Sony Pictures', logoPath: 'https://image.tmdb.org/t/p/w780_filter(duotone,ffffff,bababa)/GagSvqWlyPdkFHMfQ3pNq6ix9P.png'),
@@ -235,12 +235,12 @@ class SeerrDiscoverViewModel extends ChangeNotifier {
           await _loadGenres(index, isMovie: false);
         case SeerrRowType.networks:
           _updateRow(index, row.copyWith(
-            networks: _popularNetworks,
+            networks: popularNetworks,
             isLoading: false,
           ));
         case SeerrRowType.studios:
           _updateRow(index, row.copyWith(
-            studios: _popularStudios,
+            studios: popularStudios,
             isLoading: false,
           ));
         default:

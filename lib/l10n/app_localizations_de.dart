@@ -2706,6 +2706,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Bibliotheken in der Symbolleiste anzeigen';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Navigationsleisten-Transparenz';
 
   @override
@@ -6930,6 +6933,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Zeigen Sie die Schaltfläche „Bibliotheken“ in der Navigationsleiste an';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Schalten Sie die Sichtbarkeit der Startseite pro Bibliothek um. Starten Sie Moonfin neu, damit die Änderungen wirksam werden.';
 
@@ -7525,6 +7532,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Aussehen';

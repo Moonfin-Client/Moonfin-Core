@@ -2698,6 +2698,9 @@ class AppLocalizationsUk extends AppLocalizations {
       'Показати бібліотеки на панелі інструментів';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Непрозорість навігаційної панелі';
 
   @override
@@ -6909,6 +6912,10 @@ class AppLocalizationsUk extends AppLocalizations {
       'Показати кнопку бібліотек на панелі навігації';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Перемикання видимості домашньої сторінки для кожної бібліотеки. Перезапустіть Moonfin, щоб зміни набули чинності.';
 
@@ -7506,6 +7513,13 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Зовнішній вигляд';

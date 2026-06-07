@@ -2697,6 +2697,9 @@ class AppLocalizationsEt extends AppLocalizations {
   String get showLibrariesInToolbar => 'Näita teeke tööriistaribal';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Navbari läbipaistmatus';
 
   @override
@@ -6882,6 +6885,10 @@ class AppLocalizationsEt extends AppLocalizations {
       'Kuvage navigeerimisribal teekide nupp';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Avalehe nähtavuse sisse- ja väljalülitamine teegi kaupa. Muudatuste jõustumiseks taaskäivitage Moonfin.';
 
@@ -7472,6 +7479,13 @@ class AppLocalizationsEt extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Välimus';

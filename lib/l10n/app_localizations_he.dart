@@ -2663,6 +2663,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get showLibrariesInToolbar => 'הצג ספריות בסרגל הכלים';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'אטימות Navbar';
 
   @override
@@ -6781,6 +6784,10 @@ class AppLocalizationsHe extends AppLocalizations {
       'הצג את לחצן הספריות בסרגל הניווט';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'החלף את נראות דף הבית לכל ספריה. הפעל מחדש את Moonfin כדי שהשינויים ייכנסו לתוקף.';
 
@@ -7356,6 +7363,13 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Appearance';

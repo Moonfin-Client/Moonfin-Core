@@ -2693,6 +2693,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get showLibrariesInToolbar => 'Tampilkan Perpustakaan di Toolbar';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Opasitas Navbar';
 
   @override
@@ -6889,6 +6892,10 @@ class AppLocalizationsId extends AppLocalizations {
       'Tampilkan tombol perpustakaan di bilah navigasi';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Alihkan visibilitas halaman beranda per perpustakaan. Mulai ulang Moonfin agar perubahan diterapkan.';
 
@@ -7470,6 +7477,13 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Appearance';

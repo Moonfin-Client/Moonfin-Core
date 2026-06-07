@@ -2697,6 +2697,9 @@ class AppLocalizationsSk extends AppLocalizations {
       'Zobraziť knižnice na paneli s nástrojmi';
 
   @override
+  String get showSeerrButton => 'Show Seerr Button';
+
+  @override
   String get navbarOpacity => 'Nepriehľadnosť navigačnej lišty';
 
   @override
@@ -6904,6 +6907,10 @@ class AppLocalizationsSk extends AppLocalizations {
       'Zobraziť tlačidlo knižnice na navigačnom paneli';
 
   @override
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Prepnúť viditeľnosť domovskej stránky podľa knižnice. Reštartujte Moonfin, aby sa zmeny prejavili.';
 
@@ -7493,6 +7500,13 @@ class AppLocalizationsSk extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+
+  @override
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Appearance';
