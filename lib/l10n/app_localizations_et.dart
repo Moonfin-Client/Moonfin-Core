@@ -2953,6 +2953,9 @@ class AppLocalizationsEt extends AppLocalizations {
   String get combineBothRows => 'Ühendage mõlemad read üheks koduosaks';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Rea pilditüübi kohta';
 
   @override

@@ -2947,6 +2947,9 @@ class AppLocalizationsTr extends AppLocalizations {
       'Her iki satırı tek bir ana bölümde birleştirin';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Satır Başına Görüntü Türü';
 
   @override

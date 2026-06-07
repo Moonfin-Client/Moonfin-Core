@@ -2959,6 +2959,9 @@ class AppLocalizationsTe extends AppLocalizations {
   String get combineBothRows => 'రెండు అడ్డు వరుసలను ఒకే హోమ్ విభాగంలో కలపండి';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'ప్రతి వరుస చిత్రం రకం';
 
   @override

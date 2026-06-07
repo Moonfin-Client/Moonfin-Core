@@ -2863,6 +2863,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get combineBothRows => '将两行合并为一个主页部分';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => '每行图像类型';
 
   @override

@@ -2951,6 +2951,9 @@ class AppLocalizationsHr extends AppLocalizations {
       'Kombinirajte oba reda u jedan početni odjeljak';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Vrsta slike po redu';
 
   @override

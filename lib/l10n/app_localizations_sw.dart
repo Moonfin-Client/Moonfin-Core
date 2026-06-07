@@ -2968,6 +2968,9 @@ class AppLocalizationsSw extends AppLocalizations {
       'Changanya safu zote mbili kwenye sehemu moja ya nyumbani';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Aina ya Picha kwa Safu Mlalo';
 
   @override

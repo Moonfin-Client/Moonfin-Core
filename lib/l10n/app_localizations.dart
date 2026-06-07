@@ -5393,6 +5393,12 @@ abstract class AppLocalizations {
   /// **'Combine both rows into a single home section'**
   String get combineBothRows;
 
+  /// Setting for full screen home rows
+  ///
+  /// In en, this message translates to:
+  /// **'Full Screen Home Rows'**
+  String get fullScreenRows;
+
   /// Title for per-row image type screen
   ///
   /// In en, this message translates to:

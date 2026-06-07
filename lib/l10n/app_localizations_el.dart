@@ -2979,6 +2979,9 @@ class AppLocalizationsEl extends AppLocalizations {
       'Συνδυάστε και τις δύο σειρές σε ένα ενιαίο αρχικό τμήμα';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Τύπος εικόνας ανά σειρά';
 
   @override

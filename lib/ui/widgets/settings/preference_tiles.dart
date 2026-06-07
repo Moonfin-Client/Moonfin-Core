@@ -838,8 +838,8 @@ class _TvFocusHighlightState extends State<TvFocusHighlight> {
   Widget build(BuildContext context) {
     return Focus(
       focusNode: _focusNode,
-      canRequestFocus: widget.enabled,
-      skipTraversal: !widget.enabled,
+      canRequestFocus: false,
+      skipTraversal: true,
       descendantsAreFocusable: widget.enabled,
       onFocusChange: _onFocusChange,
       child: Padding(

@@ -2927,6 +2927,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get combineBothRows => 'รวมทั้งสองแถวเป็นส่วนบ้านเดียว';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'ประเภทรูปภาพต่อแถว';
 
   @override

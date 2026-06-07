@@ -2868,6 +2868,9 @@ class AppLocalizationsYue extends AppLocalizations {
   String get combineBothRows => '將兩行合併為一個主頁部分';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => '每行圖像類型';
 
   @override

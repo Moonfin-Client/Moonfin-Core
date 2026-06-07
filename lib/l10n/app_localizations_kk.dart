@@ -2958,6 +2958,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get combineBothRows => 'Екі жолды бір үй бөліміне біріктіріңіз';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Әр жолдағы кескін түрі';
 
   @override

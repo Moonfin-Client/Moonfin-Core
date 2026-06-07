@@ -2916,6 +2916,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get combineBothRows => 'שלב את שתי השורות למקטע בית אחד';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'סוג תמונה לפי שורה';
 
   @override

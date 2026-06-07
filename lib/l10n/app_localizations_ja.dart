@@ -2890,6 +2890,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get combineBothRows => '両方の行を 1 つのホーム セクションに結合します';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => '行ごとの画像タイプ';
 
   @override

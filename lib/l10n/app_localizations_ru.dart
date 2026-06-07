@@ -2962,6 +2962,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get combineBothRows => 'Объедините оба ряда в один домашний раздел.';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Тип изображения по строкам';
 
   @override

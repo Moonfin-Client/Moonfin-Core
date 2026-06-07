@@ -2944,6 +2944,9 @@ class AppLocalizationsEo extends AppLocalizations {
       'Kombinu ambaŭ vicojn en ununuran hejman sekcion';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Per Vico Bilda Tipo';
 
   @override

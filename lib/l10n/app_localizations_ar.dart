@@ -2935,6 +2935,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get combineBothRows => 'ادمج كلا الصفين في قسم رئيسي واحد';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'نوع الصورة لكل صف';
 
   @override

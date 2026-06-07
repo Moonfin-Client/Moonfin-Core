@@ -2956,6 +2956,9 @@ class AppLocalizationsSk extends AppLocalizations {
       'Skombinujte oba riadky do jednej domácej sekcie';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Typ obrázka na riadok';
 
   @override

@@ -2934,6 +2934,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get combineBothRows => 'Combine both rows into a single home section';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Per Row Image Type';
 
   @override
@@ -10846,6 +10849,9 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get combineBothRows => 'Combine both rows into a single home section';
+
+  @override
+  String get fullScreenRows => 'Full Screen Home Rows';
 
   @override
   String get perRowImageType => 'Per Row Image Type';

@@ -2962,6 +2962,9 @@ class AppLocalizationsHu extends AppLocalizations {
       'Kombinálja mindkét sort egyetlen kezdőszakaszba';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Soronkénti képtípus';
 
   @override

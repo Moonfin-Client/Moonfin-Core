@@ -2947,6 +2947,9 @@ class AppLocalizationsDa extends AppLocalizations {
       'Kombiner begge rækker til en enkelt hjemmesektion';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Billedtype pr. række';
 
   @override

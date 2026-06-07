@@ -2958,6 +2958,9 @@ class AppLocalizationsNl extends AppLocalizations {
   String get combineBothRows => 'Combineer beide rijen tot één woongedeelte';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Per rij afbeeldingstype';
 
   @override

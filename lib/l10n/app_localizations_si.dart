@@ -2942,6 +2942,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get combineBothRows => 'පේළි දෙකම එක් නිවසක කොටසකට ඒකාබද්ධ කරන්න';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'පේළි රූප වර්ගය අනුව';
 
   @override

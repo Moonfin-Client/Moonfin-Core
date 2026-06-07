@@ -2950,6 +2950,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get combineBothRows => 'Jenis Gambar Per Baris';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Jenis Gambar Per Baris';
 
   @override

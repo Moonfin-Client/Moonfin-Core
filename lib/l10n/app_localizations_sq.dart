@@ -2967,6 +2967,9 @@ class AppLocalizationsSq extends AppLocalizations {
       'Kombinoni të dy rreshtat në një seksion të vetëm shtëpiak';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Lloji i imazhit për rresht';
 
   @override

@@ -2954,6 +2954,9 @@ class AppLocalizationsSv extends AppLocalizations {
       'Kombinera båda raderna till en enda hemsektion';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'Bildtyp per rad';
 
   @override

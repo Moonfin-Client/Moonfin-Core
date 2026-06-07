@@ -2244,8 +2244,13 @@ class _ContentRowsState extends State<_ContentRows>
   double _v2MetadataHeightBudget(UserPreferences prefs) {
     final hasAdditionalRatings =
         prefs.get(UserPreferences.enableAdditionalRatings);
+    final homeRowsFullscreen =
+        prefs.get(UserPreferences.fullScreenRows);
     if (hasAdditionalRatings) {
-      return PlatformDetection.isTV ? 208.0 : 144.0;
+      if (homeRowsFullscreen){
+        return 244;
+      }
+      return 144;
     }
     return 136.0;
   }

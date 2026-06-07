@@ -2931,6 +2931,9 @@
   "@combineBothRows": {
     "description": "Description for merge continue watching and next up"
   },
+  "@fullScreenRows": {
+    "description": "Setting for full screen home rows"
+  },
   "@perRowImageType": {
     "description": "Title for per-row image type screen"
   },
@@ -5465,6 +5468,7 @@
   "configureImageTypeForEachRow": "Configure image type for each enabled home row",
   "mergeContinueWatchingAndNextUp": "Merge Continue Watching and Next Up",
   "combineBothRows": "Combine both rows into a single home section",
+  "fullScreenRows": "Full Screen Home Rows",
   "perRowImageType": "Per Row Image Type",
   "perRowSettings": "Per-Row Settings",
   "autoLogin": "Auto Login",

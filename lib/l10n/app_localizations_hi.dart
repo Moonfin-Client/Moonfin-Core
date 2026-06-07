@@ -2939,6 +2939,9 @@ class AppLocalizationsHi extends AppLocalizations {
       'दोनों पंक्तियों को एक ही होम सेक्शन में संयोजित करें';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'प्रति पंक्ति छवि प्रकार';
 
   @override

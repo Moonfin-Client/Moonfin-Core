@@ -2960,6 +2960,9 @@ class AppLocalizationsKn extends AppLocalizations {
   String get combineBothRows => 'ಎರಡೂ ಸಾಲುಗಳನ್ನು ಒಂದೇ ಹೋಮ್ ವಿಭಾಗಕ್ಕೆ ಸೇರಿಸಿ';
 
   @override
+  String get fullScreenRows => 'Full Screen Home Rows';
+
+  @override
   String get perRowImageType => 'ಪ್ರತಿ ಸಾಲಿನ ಚಿತ್ರ ಪ್ರಕಾರ';
 
   @override
