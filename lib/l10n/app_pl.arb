@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} selected",
   "mediaBar": "Pasek multimediów",
   "mediaBarMode": "Styl paska multimediów",
-  "mediaBarModeDescription": "Wybierz pomiędzy Moonfin, MakD lub wyłącz pasek multimediów",
+  "mediaBarModeDescription": "Wybierz jeden z różnych stylów paska multimediów lub wyłącz go",
   "mediaBarModeMoonfin": "Księżycowa Płetwa",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Wyłączony",

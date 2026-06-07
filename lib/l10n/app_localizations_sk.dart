@@ -2826,7 +2826,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Vyberte si medzi Moonfin, MakD alebo vypnite panel médií';
+      'Vyberte si medzi rôznymi štýlmi mediálneho panela alebo mediálny panel vypnite';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';

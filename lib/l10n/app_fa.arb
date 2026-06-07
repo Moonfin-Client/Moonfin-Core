@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} انتخاب شد",
   "mediaBar": "نوار رسانه",
   "mediaBarMode": "سبک نوار رسانه",
-  "mediaBarModeDescription": "بین Moonfin، MakD را انتخاب کنید یا نوار رسانه را خاموش کنید",
+  "mediaBarModeDescription": "از بین سبک‌های مختلف نوار رسانه انتخاب کنید، یا نوار رسانه را خاموش کنید",
   "mediaBarModeMoonfin": "باله ماه",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "خاموش",

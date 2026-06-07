@@ -2820,7 +2820,7 @@ class AppLocalizationsAf extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Kies tussen Moonfin, MakD, of skakel die mediabalk af';
+      'Kies tussen verskeie mediabalkstyle, of skakel die mediabalk af';
 
   @override
   String get mediaBarModeMoonfin => 'Maanvin';

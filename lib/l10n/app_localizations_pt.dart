@@ -2830,7 +2830,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Escolha entre Moonfin, MakD ou desative a barra de mídia';
+      'Escolha entre vários estilos de barra de mídia ou desative a barra de mídia';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';
@@ -10863,7 +10863,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get mediaBarModeDescription =>
-      'Escolha entre Moonfin, MakD ou desligue a barra de mídia';
+      'Escolha entre vários estilos de barra de mídia ou desative a barra de mídia';
 
   @override
   String get mediaBarModeMoonfin => 'Barbatana Lunar';
@@ -18840,7 +18840,7 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
 
   @override
   String get mediaBarModeDescription =>
-      'Escolha entre Moonfin, MakD ou desligue a barra de mídia';
+      'Escolha entre vários estilos de barra de mídia ou desative a barra de mídia';
 
   @override
   String get mediaBarModeMoonfin => 'Barbatana Lunar';

@@ -5426,7 +5426,7 @@
   "itemsSelected": "Vybráno {count}",
   "mediaBar": "Media Bar",
   "mediaBarMode": "Styl Media Bar",
-  "mediaBarModeDescription": "Vyberte si mezi Moonfin, MakD nebo vypněte panel médií",
+  "mediaBarModeDescription": "Vyberte si mezi různými styly mediálního panelu nebo mediální panel vypněte",
   "mediaBarModeMoonfin": "Měsíční ploutev",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Vypnuto",

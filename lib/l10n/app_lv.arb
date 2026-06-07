@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} atlasīts",
   "mediaBar": "Multivides josla",
   "mediaBarMode": "Multivides joslas stils",
-  "mediaBarModeDescription": "Izvēlieties Moonfin, MakD vai izslēdziet multivides joslu",
+  "mediaBarModeDescription": "Izvēlieties starp dažādiem multivides joslas stiliem vai izslēdziet multivides joslu",
   "mediaBarModeMoonfin": "Moonfin",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Izslēgts",

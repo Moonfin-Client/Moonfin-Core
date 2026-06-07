@@ -2820,7 +2820,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Moonfin, MakD хоёрын аль нэгийг нь сонгох эсвэл медиа мөрийг унтраа';
+      'Төрөл бүрийн медиа самбарын хэв маягаас сонгох эсвэл медиа мөрийг унтраа';
 
   @override
   String get mediaBarModeMoonfin => 'Сарны фин';

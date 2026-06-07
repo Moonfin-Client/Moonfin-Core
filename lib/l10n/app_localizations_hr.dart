@@ -2821,7 +2821,7 @@ class AppLocalizationsHr extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Odaberite između Moonfin, MakD ili isključite medijsku traku';
+      'Odaberite između različitih stilova medijske trake ili isključite medijsku traku';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';

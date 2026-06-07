@@ -3917,7 +3917,7 @@
   "@mediaBarMode": {
     "description": "Setting for choosing media bar style"
   },
-  "mediaBarModeDescription": "Choose between Moonfin, MakD, or turn the media bar off",
+  "mediaBarModeDescription": "Choose between various media bar styles, or turn the media bar off",
   "@mediaBarModeDescription": {
     "description": "Description for media bar style setting"
   },

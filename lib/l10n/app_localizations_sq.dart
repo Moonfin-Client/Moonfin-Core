@@ -2835,7 +2835,7 @@ class AppLocalizationsSq extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Zgjidhni midis Moonfin, MakD ose çaktivizoni shiritin e medias';
+      'Zgjidhni midis stileve të ndryshme të shiritit të medias ose çaktivizoni shiritin e medias';
 
   @override
   String get mediaBarModeMoonfin => 'Fina e hënës';

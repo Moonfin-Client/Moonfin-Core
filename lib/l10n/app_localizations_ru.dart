@@ -2831,7 +2831,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Выбирайте между Moonfin, MakD или отключите медиа-панель.';
+      'Выберите один из вариантов оформления панели управления медиафайлами или отключите её';
 
   @override
   String get mediaBarModeMoonfin => 'Лунный плавник';

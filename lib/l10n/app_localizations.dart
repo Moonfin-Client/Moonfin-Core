@@ -5150,7 +5150,7 @@ abstract class AppLocalizations {
   /// Description for media bar style setting
   ///
   /// In en, this message translates to:
-  /// **'Choose between Moonfin, MakD, or turn the media bar off'**
+  /// **'Choose between various media bar styles, or turn the media bar off'**
   String get mediaBarModeDescription;
 
   /// Media bar style option: Moonfin

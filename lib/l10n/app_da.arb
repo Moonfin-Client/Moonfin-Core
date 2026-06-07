@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} valgt",
   "mediaBar": "Mediebar",
   "mediaBarMode": "Mediebar stil",
-  "mediaBarModeDescription": "Vælg mellem Moonfin, MakD, eller sluk for medielinjen",
+  "mediaBarModeDescription": "Vælg mellem forskellige medielinjestilarter, eller slå medielinjen fra",
   "mediaBarModeMoonfin": "Månefinne",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Slukket",

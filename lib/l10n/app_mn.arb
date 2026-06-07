@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} сонгосон",
   "mediaBar": "Media Bar",
   "mediaBarMode": "Хэвлэл мэдээллийн самбарын хэв маяг",
-  "mediaBarModeDescription": "Moonfin, MakD хоёрын аль нэгийг нь сонгох эсвэл медиа мөрийг унтраа",
+  "mediaBarModeDescription": "Төрөл бүрийн медиа самбарын хэв маягаас сонгох эсвэл медиа мөрийг унтраа",
   "mediaBarModeMoonfin": "Сарны фин",
   "mediaBarModeMakd": "МакД",
   "mediaBarModeOff": "Унтраах",

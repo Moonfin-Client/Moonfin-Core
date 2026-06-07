@@ -2813,7 +2813,7 @@ class AppLocalizationsEo extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Elektu inter Moonfin, MakD aŭ malŝaltu la amaskomunikilaron';
+      'Elektu inter diversaj stiloj de amaskomunikila breto, aŭ malŝaltu la amaskomunikilan breton';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';

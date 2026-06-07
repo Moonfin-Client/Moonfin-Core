@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} selected",
   "mediaBar": "Panel médií",
   "mediaBarMode": "Štýl mediálneho panela",
-  "mediaBarModeDescription": "Vyberte si medzi Moonfin, MakD alebo vypnite panel médií",
+  "mediaBarModeDescription": "Vyberte si medzi rôznymi štýlmi mediálneho panela alebo mediálny panel vypnite",
   "mediaBarModeMoonfin": "Moonfin",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Vypnuté",

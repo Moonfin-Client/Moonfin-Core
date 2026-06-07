@@ -2817,7 +2817,7 @@ class AppLocalizationsLt extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Pasirinkite „Moonfin“, „MakD“ arba išjunkite medijos juostą';
+      'Pasirinkite iš įvairių medijos juostos stilių arba išjunkite medijos juostą';
 
   @override
   String get mediaBarModeMoonfin => 'Mėnulio pelekas';

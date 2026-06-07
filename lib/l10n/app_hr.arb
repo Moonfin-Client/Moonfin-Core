@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} selected",
   "mediaBar": "Medijska traka",
   "mediaBarMode": "Stil medijske trake",
-  "mediaBarModeDescription": "Odaberite između Moonfin, MakD ili isključite medijsku traku",
+  "mediaBarModeDescription": "Odaberite između različitih stilova medijske trake ili isključite medijsku traku",
   "mediaBarModeMoonfin": "Moonfin",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Isključeno",

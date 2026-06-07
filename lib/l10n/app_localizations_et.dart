@@ -2824,7 +2824,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Valige Moonfin, MakD või lülitage meediariba välja';
+      'Valige erinevate meediariba stiilide vahel või lülitage meediariba välja';
 
   @override
   String get mediaBarModeMoonfin => 'Kuufin';

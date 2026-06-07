@@ -2834,7 +2834,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Zwischen Moonfin, MakD oder Aus fur die Medienleiste wahlen';
+      'Wählen Sie zwischen verschiedenen Stilen für die Medienleiste oder schalten Sie die Medienleiste aus';
 
   @override
   String get mediaBarModeMoonfin => 'Mondflosse';

@@ -2816,7 +2816,7 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Vælg mellem Moonfin, MakD, eller sluk for medielinjen';
+      'Vælg mellem forskellige medielinjestilarter, eller slå medielinjen fra';
 
   @override
   String get mediaBarModeMoonfin => 'Månefinne';

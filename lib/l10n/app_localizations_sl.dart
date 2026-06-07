@@ -2827,7 +2827,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Izbirajte med Moonfin, MakD ali izklopite medijsko vrstico';
+      'Izbirajte med različnimi slogi medijske vrstice ali pa medijsko vrstico izklopite';
 
   @override
   String get mediaBarModeMoonfin => 'Mesečeva plavutka';

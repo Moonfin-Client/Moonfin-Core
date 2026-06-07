@@ -2823,7 +2823,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Valj mellan Moonfin, MakD eller stang av mediefaltet';
+      'Välj mellan olika mediefältsstilar eller stäng av mediefältet';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';

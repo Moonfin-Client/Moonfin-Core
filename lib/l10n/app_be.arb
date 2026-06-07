@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} выбраны",
   "mediaBar": "Панэль медыя",
   "mediaBarMode": "Стыль медыябара",
-  "mediaBarModeDescription": "Выбірайце паміж Moonfin, MakD або выключыце медыяпанэль",
+  "mediaBarModeDescription": "Выбірайце паміж рознымі стылямі медыяпанэлі або адключайце медыяпанэль",
   "mediaBarModeMoonfin": "Месяцовы плаўнік",
   "mediaBarModeMakd": "МакД",
   "mediaBarModeOff": "Выкл",

@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} valitud",
   "mediaBar": "Meediumiriba",
   "mediaBarMode": "Meediumiriba stiil",
-  "mediaBarModeDescription": "Valige Moonfin, MakD või lülitage meediariba välja",
+  "mediaBarModeDescription": "Valige erinevate meediariba stiilide vahel või lülitage meediariba välja",
   "mediaBarModeMoonfin": "Kuufin",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Väljas",

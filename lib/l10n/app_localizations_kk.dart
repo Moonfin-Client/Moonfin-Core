@@ -2828,7 +2828,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Moonfin, MakD арасында таңдаңыз немесе медиа жолағын өшіріңіз';
+      'Түрлі медиа жолақ мәнерлерінің бірін таңдаңыз немесе медиа жолағын өшіріңіз';
 
   @override
   String get mediaBarModeMoonfin => 'Ай жүзі';

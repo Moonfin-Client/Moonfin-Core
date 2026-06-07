@@ -2831,7 +2831,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Válasszon a Moonfin, MakD közül, vagy kapcsolja ki a médiasávot';
+      'Válasszon a különböző médiasáv-stílusok közül, vagy kapcsolja ki a médiasávot';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';

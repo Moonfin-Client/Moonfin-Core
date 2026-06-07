@@ -5432,7 +5432,7 @@
   "localPreviews": "Vistas previas locales",
   "localPreviewsDescription": "Configura vistas previas de tráilers, medios y audio.",
   "mediaBarMode": "Estilo de barra multimedia",
-  "mediaBarModeDescription": "Elija entre Moonfin, MakD o apague la barra multimedia",
+  "mediaBarModeDescription": "Elige entre varios estilos de barra multimedia o desactiva la barra multimedia",
   "mediaBarModeMoonfin": "aleta lunar",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Apagado",
