@@ -987,6 +987,7 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
             SwitchPreferenceTile(
               preference: UserPreferences.fullScreenRows,
               title: l10n.fullScreenRows,
+              subtitle: l10n.fullScreenRowsDescription,
               icon: Icons.image_aspect_ratio,
               onChanged: _pushPersonalizationSync,
             ),

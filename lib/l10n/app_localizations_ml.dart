@@ -2966,7 +2966,10 @@ class AppLocalizationsMl extends AppLocalizations {
       'രണ്ട് വരികളും ഒരു ഹോം വിഭാഗത്തിലേക്ക് സംയോജിപ്പിക്കുക';
 
   @override
-  String get fullScreenRows => 'Full Screen Home Rows';
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'ഓരോ വരി ചിത്ര തരം';

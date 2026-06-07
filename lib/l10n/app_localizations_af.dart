@@ -2951,7 +2951,10 @@ class AppLocalizationsAf extends AppLocalizations {
       'Kombineer albei rye in \'n enkele huisafdeling';
 
   @override
-  String get fullScreenRows => 'Full Screen Home Rows';
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Per ry tipe beeld';

@@ -2952,7 +2952,10 @@ class AppLocalizationsVi extends AppLocalizations {
       'Kết hợp cả hai hàng thành một phần nhà duy nhất';
 
   @override
-  String get fullScreenRows => 'Full Screen Home Rows';
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Loại hình ảnh trên mỗi hàng';

@@ -2965,7 +2965,10 @@ class AppLocalizationsMk extends AppLocalizations {
       'Комбинирајте ги двата реда во еден домашен дел';
 
   @override
-  String get fullScreenRows => 'Full Screen Home Rows';
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Тип на слика по ред';

@@ -2934,6 +2934,9 @@
   "@fullScreenRows": {
     "description": "Setting for full screen home rows"
   },
+  "@fullScreenRowsDescription": {
+    "description": "Description for full screen home rows"
+  },
   "@perRowImageType": {
     "description": "Title for per-row image type screen"
   },
@@ -5468,7 +5471,8 @@
   "configureImageTypeForEachRow": "Configure image type for each enabled home row",
   "mergeContinueWatchingAndNextUp": "Merge Continue Watching and Next Up",
   "combineBothRows": "Combine both rows into a single home section",
-  "fullScreenRows": "Full Screen Home Rows",
+  "fullScreenRows": "Expanded Home Rows",
+  "fullScreenRowsDescription": "Limit home rows to 1 row per screen",
   "perRowImageType": "Per Row Image Type",
   "perRowSettings": "Per-Row Settings",
   "autoLogin": "Auto Login",

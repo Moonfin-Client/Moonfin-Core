@@ -2947,7 +2947,10 @@ class AppLocalizationsDa extends AppLocalizations {
       'Kombiner begge rækker til en enkelt hjemmesektion';
 
   @override
-  String get fullScreenRows => 'Full Screen Home Rows';
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Billedtype pr. række';

@@ -2930,7 +2930,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get combineBothRows => 'هر دو ردیف را در یک بخش خانه ترکیب کنید';
 
   @override
-  String get fullScreenRows => 'Full Screen Home Rows';
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'نوع تصویر در هر ردیف';

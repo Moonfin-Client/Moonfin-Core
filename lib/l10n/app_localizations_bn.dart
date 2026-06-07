@@ -2940,7 +2940,10 @@ class AppLocalizationsBn extends AppLocalizations {
   String get combineBothRows => 'একটি একক হোম বিভাগে উভয় সারি একত্রিত করুন';
 
   @override
-  String get fullScreenRows => 'Full Screen Home Rows';
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'প্রতি সারি ইমেজ টাইপ';

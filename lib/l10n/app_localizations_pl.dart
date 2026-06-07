@@ -2958,7 +2958,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get combineBothRows => 'Połącz oba rzędy w jedną sekcję główną';
 
   @override
-  String get fullScreenRows => 'Full Screen Home Rows';
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Typ obrazu na wiersz';
