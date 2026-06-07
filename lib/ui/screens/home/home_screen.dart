@@ -2248,7 +2248,7 @@ class _ContentRowsState extends State<_ContentRows>
         prefs.get(UserPreferences.fullScreenRows);
     if (hasAdditionalRatings) {
       if (homeRowsFullscreen){
-        return 244;
+        return 280;
       }
       return 144;
     }
