@@ -4051,7 +4051,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '$label$stateLabel$positionLabel',
+                      '$stateLabel$positionLabel',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: AppTypography.fontSizeXs,
