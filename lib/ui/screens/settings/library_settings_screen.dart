@@ -147,27 +147,38 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
             onChanged: (v) => _toggleExclude(lib.id, !v, isLatest: false),
           ),
         ),
-        TvFocusHighlight(
-          builder: (_, focused) => SwitchListTile(
-            secondary: Icon(Icons.new_releases,
-                color: focused
-                    ? AppColors.black.withValues(alpha: 0.54)
-                    : null),
-            title: Text(
-              l10n.showInLatestMedia,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: focused
-                    ? AppColors.black.withValues(alpha: 0.87)
-                    : AppColorScheme.onSurface,
+        // Playlists and boxsets use a different API path for their row content
+        // (getItems with type filtering rather than getLatestItems on a parent).
+        // Until a dedicated Latest row type exists for these, hide the toggle
+        // to avoid surfacing a setting that has no effect.
+        if (!_noLatestMediaSupport.contains(lib.collectionType.toLowerCase()))
+          TvFocusHighlight(
+            builder: (_, focused) => SwitchListTile(
+              secondary: Icon(Icons.new_releases,
+                  color: focused
+                      ? AppColors.black.withValues(alpha: 0.54)
+                      : null),
+              title: Text(
+                l10n.showInLatestMedia,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: focused
+                      ? AppColors.black.withValues(alpha: 0.87)
+                      : AppColorScheme.onSurface,
+                ),
               ),
+              value: !config.latestItemsExcludes.contains(lib.id),
+              onChanged: (v) => _toggleExclude(lib.id, !v, isLatest: true),
             ),
-            value: !config.latestItemsExcludes.contains(lib.id),
-            onChanged: (v) => _toggleExclude(lib.id, !v, isLatest: true),
           ),
-        ),
       ],
     ];
   }
+
+  /// Collection types whose 'Show in Latest Media' toggle is not yet functional.
+  /// getLatestItems on these parents returns container contents (movies, episodes)
+  /// rather than the container items themselves, which causes duplicate rows.
+  static const _noLatestMediaSupport = {'playlists', 'boxsets'};
+
 }

@@ -86,7 +86,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
   final _focusNodes = <FocusNode>[];
 
   final Set<String> _emptySectionIds = {};
-  bool _isLoadingEmptyStates = false;
 
   static FavoriteTypeFilter _favoriteFilterForSection(HomeSectionType type) {
     return switch (type) {
@@ -104,9 +103,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
 
   Future<void> _checkEmptyStates() async {
     if (!mounted) return;
-    setState(() {
-      _isLoadingEmptyStates = true;
-    });
 
     final client = GetIt.instance<MediaServerClient>();
     final userId = client.userId;
@@ -306,8 +302,14 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         _emptySectionIds
           ..clear()
           ..addAll(newEmptyIds);
-        _isLoadingEmptyStates = false;
       });
+      if (PlatformDetection.isTV) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          final first = _visibleSectionIndices().firstOrNull;
+          if (first != null) _focusSectionAndEnsureVisible(first);
+        });
+      }
     }
   }
 
@@ -383,7 +385,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       _persistSections(pushSync: false);
     }
     _refreshPluginSections();
-    unawaited(_checkEmptyStates());
+    // Empty-state check is driven entirely by _refreshPluginSections;
+    // no separate call here avoids a double-spinner flash on open.
   }
 
   bool _ensureBuiltinSectionsPresent() {
@@ -417,6 +420,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
 
     return changed;
   }
+
+  static const _noLatestMediaSupport = {'playlists', 'boxsets'};
 
   /// Probes for newly discovered plugin sections in the background and
   /// re-merges the result into the visible list.
@@ -1064,19 +1069,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
           context,
           Text(l10n.homeSections),
           actions: [
-            if (_isLoadingEmptyStates)
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: Center(
-                  child: SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                    ),
-                  ),
-                ),
-              ),
             IconButton(
               icon: const Icon(Icons.restore),
               tooltip: l10n.resetToDefaults,
