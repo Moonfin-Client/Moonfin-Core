@@ -306,6 +306,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       if (PlatformDetection.isTV) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (!mounted) return;
+          if (FocusManager.instance.primaryFocus?.hasPrimaryFocus ?? false) {
+            return;
+          }
           final first = _visibleSectionIndices().firstOrNull;
           if (first != null) _focusSectionAndEnsureVisible(first);
         });
@@ -420,8 +423,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
 
     return changed;
   }
-
-  static const _noLatestMediaSupport = {'playlists', 'boxsets'};
 
   /// Probes for newly discovered plugin sections in the background and
   /// re-merges the result into the visible list.
