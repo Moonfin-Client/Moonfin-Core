@@ -2244,15 +2244,15 @@ class _ContentRowsState extends State<_ContentRows>
   double _v2MetadataHeightBudget(UserPreferences prefs) {
     final hasAdditionalRatings =
         prefs.get(UserPreferences.enableAdditionalRatings);
-    final homeRowsFullscreen =
-        prefs.get(UserPreferences.fullScreenRows);
-    if (hasAdditionalRatings) {
-      if (homeRowsFullscreen){
-        return 280;
-      }
-      return 144;
-    }
-    return 136.0;
+    final fullScreenRows =
+        PlatformDetection.isTV && prefs.get(UserPreferences.fullScreenRows);
+    final hasAdditionalRatingsPadding =
+        hasAdditionalRatings ? 8.0 : 0.0;
+    final fullScreenRowsPadding =
+        fullScreenRows ? 156.0 : 0.0;
+    final heightBudget =
+        136.0 + hasAdditionalRatingsPadding + fullScreenRowsPadding;
+    return heightBudget;
   }
 
   double _overlayRowShift({
