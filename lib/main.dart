@@ -309,7 +309,7 @@ void main() async {
     await notificationService.initialize();
   } catch (_) {}
 
-  if (PlatformDetection.isMobile) {
+  if (PlatformDetection.isMobile || PlatformDetection.isIOS) {
     try {
       await initAudioService(
         manager: GetIt.instance<PlaybackManager>(),
@@ -333,6 +333,9 @@ void main() async {
       ),
     ));
     await session.setActive(true);
+    session.becomingNoisyEventStream.listen((_) {
+      GetIt.instance<PlaybackManager>().pause();
+    });
   } catch (_) {}
 
   if (!GetIt.instance.isRegistered<PlaybackLifecycleHandler>()) {

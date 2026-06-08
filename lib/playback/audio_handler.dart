@@ -50,6 +50,8 @@ class MoonfinAudioHandler extends BaseAudioHandler
       controls: controls,
       systemActions: const {
         MediaAction.seek,
+        MediaAction.play,
+        MediaAction.pause,
         MediaAction.skipToNext,
         MediaAction.skipToPrevious,
       },
