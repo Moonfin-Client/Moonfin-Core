@@ -191,6 +191,16 @@ class MediaKitPlayerBackend implements PlayerBackend {
   bool _isStale = false;
   String? _currentUrl;
 
+  late final Stream<bool> _playingStream = _mergeWithStale<bool>(
+    _player.stream.playing,
+    () => _isStale ? false : _player.state.playing,
+  );
+
+  late final Stream<bool> _bufferingStream = _mergeWithStale<bool>(
+    _player.stream.buffering,
+    () => _isStale ? false : _player.state.buffering,
+  );
+
   void _updateStaleState() {
     if (!_isStale) return;
     try {
@@ -1125,16 +1135,10 @@ class MediaKitPlayerBackend implements PlayerBackend {
   });
 
   @override
-  Stream<bool> get playingStream => _mergeWithStale<bool>(
-        _player.stream.playing,
-        () => _isStale ? false : _player.state.playing,
-      );
+  Stream<bool> get playingStream => _playingStream;
 
   @override
-  Stream<bool> get bufferingStream => _mergeWithStale<bool>(
-        _player.stream.buffering,
-        () => _isStale ? false : _player.state.buffering,
-      );
+  Stream<bool> get bufferingStream => _bufferingStream;
 
   @override
   Stream<bool> get completedStream => _player.stream.completed.map((completed) {
