@@ -80,6 +80,8 @@ class PlaybackManager implements AudioOwnable {
   Duration _deferredStartPosition = Duration.zero;
   bool _deferPlaybackToExternalPlayer = false;
   bool _skipExternalRoutingOnce = false;
+  bool _forceExternalPlayerOnce = false;
+  bool _forceExternalChooserOnce = false;
   bool _unsupportedAudioRecoveryInFlight = false;
   bool _suppressNextGenericBackendError = false;
   final _backendChangedController = StreamController<PlayerBackend>.broadcast();
@@ -110,6 +112,24 @@ class PlaybackManager implements AudioOwnable {
 
   void skipExternalRoutingOnce() {
     _skipExternalRoutingOnce = true;
+  }
+
+  void forceExternalPlayerOnce() {
+    _forceExternalPlayerOnce = true;
+  }
+
+  void forceExternalChooserOnce() {
+    _forceExternalChooserOnce = true;
+  }
+
+  bool consumeForceExternalChooserOnce() {
+    final shouldForce = _forceExternalChooserOnce;
+    _forceExternalChooserOnce = false;
+    return shouldForce;
+  }
+
+  void setBitrateOverride(int? mbps) {
+    _maxBitrateOverrideMbps = mbps;
   }
 
   int? get maxBitrateOverrideMbps => _maxBitrateOverrideMbps;
@@ -714,8 +734,11 @@ class PlaybackManager implements AudioOwnable {
     }
     queueService.setQueue(items, startIndex: startIndex);
 
+    final forceExternal = _forceExternalPlayerOnce;
+    _forceExternalPlayerOnce = false;
+
     final externalDecider = _externalPlaybackDecider;
-    if (externalDecider != null && externalDecider(items)) {
+    if (forceExternal || (externalDecider != null && externalDecider(items))) {
       _deferredStartPosition = startPosition;
       _deferPlaybackToExternalPlayer = true;
       _setBringupState(const PlaybackBringupState.idle());

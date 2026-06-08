@@ -46,9 +46,10 @@ class _ExternalPlayerHostScreenState extends State<ExternalPlayerHostScreen> {
     Duration pendingStartPosition = _manager.consumeDeferredStartPosition();
 
     try {
-      var component = _prefs
-          .get(UserPreferences.externalPlayerComponentName)
-          .trim();
+      final forceChooser = _manager.consumeForceExternalChooserOnce();
+      var component = forceChooser
+          ? ''
+          : _prefs.get(UserPreferences.externalPlayerComponentName).trim();
 
       final selectedPlayer = component.isEmpty
           ? null

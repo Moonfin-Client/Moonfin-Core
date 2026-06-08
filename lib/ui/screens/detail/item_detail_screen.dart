@@ -48,6 +48,7 @@ import '../../widgets/focus/focusable_button.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/focus/step_scroll.dart';
 import '../../widgets/overlay_sheet.dart';
+import '../../widgets/settings/preference_tiles.dart';
 import '../../widgets/playback/player_loading_overlay.dart';
 import '../../../playback/offline_playback_launcher.dart';
 import '../../../playback/hdr_stream_capability.dart';
@@ -4396,6 +4397,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
       label: button.label,
       icon: button.icon,
       onPressed: button.onPressed,
+      onLongPress: button.onLongPress,
       onFocused: onFocused ?? button.onFocused,
       onArrowUp: onArrowUp ?? button.onArrowUp,
       onArrowDown: onArrowDown ?? button.onArrowDown,
@@ -4710,6 +4712,13 @@ class _ActionButtonsState extends State<_ActionButtons> {
     final isPhoto = item.type == 'Photo';
     final isBook = _isReadableBookItem(item);
     final isSeries = item.type == 'Series';
+    final mediaType = item.rawData['MediaType'] as String?;
+    final isAudio =
+        item.type == 'Audio' ||
+        item.type == 'MusicAlbum' ||
+        item.type == 'AudioBook' ||
+        mediaType == 'Audio';
+    final isVideo = !isPhoto && !isBook && !isAudio;
     final ws = _computeWatchState(item);
     final isFullyWatched = ws.isFullyWatched;
     final isFullyUnwatched = ws.isFullyUnwatched;
@@ -4787,6 +4796,9 @@ class _ActionButtonsState extends State<_ActionButtons> {
         focusNode: PlatformDetection.isTV ? _tvPlayFocusNode : null,
         autofocus: PlatformDetection.isTV,
         onPressed: () => _play(context, item, resume: !isPhoto && hasProgress),
+        onLongPress: isVideo
+            ? () => _showAdvancedPlaybackMenu(context, item)
+            : null,
       ),
       if (_supportsShuffle(item))
         _DetailActionButton(
@@ -4799,6 +4811,9 @@ class _ActionButtonsState extends State<_ActionButtons> {
           label: isBook ? l10n.startOver : l10n.restart,
           icon: Icons.restart_alt,
           onPressed: () => _play(context, item),
+          onLongPress: isVideo
+              ? () => _showAdvancedPlaybackMenu(context, item, forceStartOver: true)
+              : null,
         ),
       if (_offlineRow != null)
         _DetailActionButton(
@@ -4933,6 +4948,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
           label: widget.label,
           icon: widget.icon,
           onPressed: widget.onPressed,
+          onLongPress: widget.onLongPress,
           onFocused: widget.onFocused,
           onArrowUp: widget.onArrowUp,
           onArrowDown: widget.onArrowDown,
@@ -5299,15 +5315,127 @@ class _ActionButtonsState extends State<_ActionButtons> {
     }
   }
 
+  void _showAdvancedPlaybackMenu(
+    BuildContext context,
+    AggregatedItem item, {
+    bool forceStartOver = false,
+  }) async {
+    final resume = !forceStartOver && (item.playbackPosition?.inMilliseconds ?? 0) > 0;
+    final options = [
+      if (PlatformDetection.isAndroid)
+        _AdvancedPlaybackOption(
+          label: 'Open in External Player',
+          icon: Icons.open_in_new,
+          onTap: () {
+            _play(
+              context,
+              item,
+              resume: resume,
+              openInExternalPlayer: true,
+            );
+          },
+        ),
+      _AdvancedPlaybackOption(
+        label: 'Transcode Stream: High Quality (1080p)',
+        icon: Icons.high_quality,
+        onTap: () {
+          _play(
+            context,
+            item,
+            resume: resume,
+            forceMaxBitrateMbps: 4,
+            forceTranscode: true,
+          );
+        },
+      ),
+      _AdvancedPlaybackOption(
+        label: 'Transcode Stream: Medium Quality (720p)',
+        icon: Icons.video_settings,
+        onTap: () {
+          _play(
+            context,
+            item,
+            resume: resume,
+            forceMaxBitrateMbps: 2,
+            forceTranscode: true,
+          );
+        },
+      ),
+      _AdvancedPlaybackOption(
+        label: 'Transcode Stream: Low Quality (480p)',
+        icon: Icons.sd,
+        onTap: () {
+          _play(
+            context,
+            item,
+            resume: resume,
+            forceMaxBitrateMbps: 1,
+            forceTranscode: true,
+          );
+        },
+      ),
+    ];
+
+    var picked = false;
+    await showFocusRestoringDialog<void>(
+      context: context,
+      useRootNavigator: false,
+      builder: (dialogContext) => SimpleDialog(
+        title: const Text('Advanced Playback'),
+        children: options.asMap().entries.map((entry) {
+          final i = entry.key;
+          final option = entry.value;
+          return FocusableButton(
+            autofocus: i == 0,
+            borderRadius: 6,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            onPressed: () {
+              if (picked) return;
+              picked = true;
+              Navigator.of(dialogContext).pop();
+              option.onTap();
+            },
+            child: Row(
+              children: [
+                Icon(option.icon, size: 22),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    option.label,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   void _play(
     BuildContext context,
     AggregatedItem item, {
     bool resume = false,
+    int? forceMaxBitrateMbps,
+    bool forceTranscode = false,
+    bool openInExternalPlayer = false,
   }) async {
     if (_playLaunchInFlight) return;
     _playLaunchInFlight = true;
     try {
-      await _playInternal(context, item, resume: resume);
+      final manager = GetIt.instance<PlaybackManager>();
+      manager.setBitrateOverride(forceMaxBitrateMbps);
+      if (openInExternalPlayer) {
+        manager.forceExternalPlayerOnce();
+        manager.forceExternalChooserOnce();
+      }
+      await _playInternal(
+        context,
+        item,
+        resume: resume,
+        forceTranscode: forceTranscode,
+      );
     } finally {
       _playLaunchInFlight = false;
     }
@@ -5569,6 +5697,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
     BuildContext context,
     AggregatedItem item, {
     bool resume = false,
+    bool forceTranscode = false,
   }) async {
     final manager = GetIt.instance<PlaybackManager>();
     final mediaStreams = _mediaStreamsForCurrentSelection(item);
@@ -5701,18 +5830,19 @@ class _ActionButtonsState extends State<_ActionButtons> {
                 : Duration.zero;
 
             if (!context.mounted) return;
-            final forceTranscode = await _shouldForceTranscodeForDolbyVision(
+            final dvForceTranscode = await _shouldForceTranscodeForDolbyVision(
               context,
               [selectedEpisode],
             );
+            final directAllowed = !dvForceTranscode && !forceTranscode;
             await manager.playItems(
               seriesQueue,
               startIndex: idx,
               startPosition: startPosition,
               audioStreamIndex: audioStreamIndex,
               subtitleStreamIndex: subtitleStreamIndex,
-              enableDirectPlay: !forceTranscode,
-              enableDirectStream: !forceTranscode,
+              enableDirectPlay: directAllowed,
+              enableDirectStream: directAllowed,
             );
 
           case 'Season':
@@ -5732,18 +5862,19 @@ class _ActionButtonsState extends State<_ActionButtons> {
             final startPosition = resume
                 ? (selectedEpisode.playbackPosition ?? Duration.zero)
                 : Duration.zero;
-            final forceTranscode = await _shouldForceTranscodeForDolbyVision(
+            final dvForceTranscode = await _shouldForceTranscodeForDolbyVision(
               context,
               [selectedEpisode],
             );
+            final directAllowed = !dvForceTranscode && !forceTranscode;
             await manager.playItems(
               seasonQueue,
               startIndex: idx,
               startPosition: startPosition,
               audioStreamIndex: audioStreamIndex,
               subtitleStreamIndex: subtitleStreamIndex,
-              enableDirectPlay: !forceTranscode,
-              enableDirectStream: !forceTranscode,
+              enableDirectPlay: directAllowed,
+              enableDirectStream: directAllowed,
             );
 
           case 'Episode':
@@ -5784,11 +5915,12 @@ class _ActionButtonsState extends State<_ActionButtons> {
                   ? ((selectedEpisode.id == item.id ? item.playbackPosition : selectedEpisode.playbackPosition) ?? Duration.zero)
                   : Duration.zero;
                   
-              final forceTranscode = await _shouldForceTranscodeForDolbyVision(
+              final dvForceTranscode = await _shouldForceTranscodeForDolbyVision(
                 context,
                 [selectedEpisode],
                 mediaSourceId: widget.selectedMediaSourceId,
               );
+              final directAllowed = !dvForceTranscode && !forceTranscode;
               await manager.playItems(
                 episodeQueue,
                 startIndex: idx,
@@ -5796,8 +5928,8 @@ class _ActionButtonsState extends State<_ActionButtons> {
                 audioStreamIndex: audioStreamIndex,
                 subtitleStreamIndex: subtitleStreamIndex,
                 mediaSourceId: widget.selectedMediaSourceId,
-                enableDirectPlay: !forceTranscode,
-                enableDirectStream: !forceTranscode,
+                enableDirectPlay: directAllowed,
+                enableDirectStream: directAllowed,
               );
               break;
             }
@@ -5825,11 +5957,12 @@ class _ActionButtonsState extends State<_ActionButtons> {
             final queue = prerolls.isEmpty
                 ? <AggregatedItem>[item]
                 : <AggregatedItem>[...prerolls, item];
-            final forceTranscode =
+            final dvForceTranscode =
                 !isAudio &&
                 await _shouldForceTranscodeForDolbyVision(context, [
                   item,
                 ], mediaSourceId: selectedMediaSourceId);
+            final directAllowed = !dvForceTranscode && !forceTranscode;
             final playItemsFuture = manager.playItems(
               queue,
               startPosition: startPosition,
@@ -5842,8 +5975,8 @@ class _ActionButtonsState extends State<_ActionButtons> {
               mediaSourceId: applyMainItemStreamOverrides
                   ? selectedMediaSourceId
                   : null,
-              enableDirectPlay: !forceTranscode,
-              enableDirectStream: !forceTranscode,
+              enableDirectPlay: directAllowed,
+              enableDirectStream: directAllowed,
             );
             if (!applyMainItemStreamOverrides && hasMainItemStreamOverrides) {
               manager.setPendingItemOverrides(
@@ -7472,6 +7605,7 @@ class _DetailActionButton extends StatefulWidget {
   final String label;
   final IconData icon;
   final VoidCallback onPressed;
+  final VoidCallback? onLongPress;
   final VoidCallback? onFocused;
   final VoidCallback? onArrowUp;
   final VoidCallback? onArrowDown;
@@ -7488,6 +7622,7 @@ class _DetailActionButton extends StatefulWidget {
     required this.label,
     required this.icon,
     required this.onPressed,
+    this.onLongPress,
     this.onFocused,
     this.onArrowUp,
     this.onArrowDown,
@@ -7507,6 +7642,16 @@ class _DetailActionButton extends StatefulWidget {
 
 class _DetailActionButtonState extends State<_DetailActionButton>
     with FocusStateMixin {
+  Timer? _longPressTimer;
+  bool _longPressFired = false;
+  bool _selectDownSeen = false;
+
+  @override
+  void dispose() {
+    _longPressTimer?.cancel();
+    super.dispose();
+  }
+
   bool _tryFocusSidebar() {
     if (GetIt.instance<UserPreferences>().get(UserPreferences.navbarPosition) !=
         NavbarPosition.left) {
@@ -7640,6 +7785,42 @@ class _DetailActionButtonState extends State<_DetailActionButton>
             widget.onArrowDown!();
             return KeyEventResult.handled;
           }
+          if (widget.onLongPress != null) {
+            if (event.logicalKey.isContextMenuKey) {
+              if (event is KeyDownEvent) {
+                widget.onLongPress!();
+              }
+              return KeyEventResult.handled;
+            }
+            if (event.logicalKey.isSelectKey) {
+              if (event is KeyDownEvent) {
+                _selectDownSeen = true;
+                _longPressFired = false;
+                _longPressTimer?.cancel();
+                _longPressTimer = Timer(const Duration(milliseconds: 500), () {
+                  _longPressFired = true;
+                  widget.onLongPress?.call();
+                });
+                return KeyEventResult.handled;
+              }
+              if (event is KeyRepeatEvent) {
+                return _selectDownSeen
+                    ? KeyEventResult.handled
+                    : KeyEventResult.ignored;
+              }
+              if (event is KeyUpEvent) {
+                if (!_selectDownSeen) return KeyEventResult.ignored;
+                _selectDownSeen = false;
+                _longPressTimer?.cancel();
+                _longPressTimer = null;
+                if (!_longPressFired) {
+                  widget.onPressed();
+                }
+                _longPressFired = false;
+                return KeyEventResult.handled;
+              }
+            }
+          }
           if (isActivateKey(event)) {
             widget.onPressed();
             return KeyEventResult.handled;
@@ -7648,6 +7829,8 @@ class _DetailActionButtonState extends State<_DetailActionButton>
         },
         child: GestureDetector(
           onTap: widget.onPressed,
+          onLongPress: widget.onLongPress,
+          onSecondaryTap: widget.onLongPress,
           child: SizedBox(
             width: isMobile ? 80 : 108 * desktopScale,
             child: Column(
@@ -10816,4 +10999,16 @@ class _NavbarFocusPoint extends StatelessWidget {
       child: const SizedBox(height: 1, width: double.infinity),
     );
   }
+}
+
+class _AdvancedPlaybackOption {
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  _AdvancedPlaybackOption({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
 }
