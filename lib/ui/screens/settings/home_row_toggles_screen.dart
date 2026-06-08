@@ -9,6 +9,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
+import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../widgets/settings/settings_panel.dart';
 import 'home_sections_screen.dart';
@@ -104,9 +105,10 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     final showGenresRows = _prefs.get(UserPreferences.displayGenresRows);
     final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
 
-    return withCleanSettingsTypography(
-      context,
-      Scaffold(
+    return RequestInitialFocus(
+      child: withCleanSettingsTypography(
+        context,
+        Scaffold(
         appBar: buildSettingsAppBar(context, Text(l10n.homeRowToggles)),
         body: ListView(
           children: [
@@ -251,6 +253,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
             const SizedBox(height: 32),
           ],
         ),
+      ),
       ),
     );
   }
