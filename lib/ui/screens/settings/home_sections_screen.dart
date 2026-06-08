@@ -350,12 +350,55 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         type == HomeSectionType.seerrNetworks;
   }
 
+  int _getSectionCategory(HomeSectionConfig section) {
+    if (section.isPluginDynamic) {
+      if (section.pluginSource == HomeSectionPluginSource.kefinTweaks ||
+          section.pluginSource == HomeSectionPluginSource.hss) {
+        return 7;
+      }
+      if (section.pluginSource == HomeSectionPluginSource.collections) {
+        return 2;
+      }
+      if (section.pluginSource == HomeSectionPluginSource.genres) {
+        return 4;
+      }
+      if (section.pluginSource == HomeSectionPluginSource.playlists) {
+        return 5;
+      }
+      return 7;
+    }
+    // is builtin
+    if (section.type == HomeSectionType.collections) {
+      return 2;
+    }
+    if (_isFavoriteSectionType(section.type)) {
+      return 3;
+    }
+    if (section.type == HomeSectionType.genres) {
+      return 4;
+    }
+    if (section.type == HomeSectionType.playlists) {
+      return 5;
+    }
+    if (_isSeerrSectionType(section.type)) {
+      return 6;
+    }
+    // general builtins (resume, nextUp, etc.)
+    return 1;
+  }
+
   void _addSection(HomeSectionConfig cfg) {
-    final insertIdx = _sections.indexWhere((s) => s.isBuiltin && _isSeerrSectionType(s.type));
+    final newCategory = _getSectionCategory(cfg);
+    var insertIdx = -1;
+    for (var i = 0; i < _sections.length; i++) {
+      if (_getSectionCategory(_sections[i]) <= newCategory) {
+        insertIdx = i;
+      }
+    }
     if (insertIdx >= 0) {
-      _sections.insert(insertIdx, cfg);
+      _sections.insert(insertIdx + 1, cfg);
     } else {
-      _sections.add(cfg);
+      _sections.insert(0, cfg);
     }
   }
 
@@ -420,10 +463,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         .where((s) => s.isBuiltin)
         .map((s) => s.type)
         .toSet();
-    var insertIndex = _sections.indexWhere((s) => s.isPluginDynamic);
-    if (insertIndex < 0) {
-      insertIndex = _sections.length;
-    }
     var nextOrder = _sections.length;
     var changed = false;
 
@@ -433,20 +472,13 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       }
       if (existingTypes.contains(type)) continue;
 
-      final isSeerr = _isSeerrSectionType(type);
-      final idx = isSeerr ? _sections.length : insertIndex;
-
-      _sections.insert(
-        idx,
+      _addSection(
         HomeSectionConfig(
           type: type,
           enabled: false,
           order: nextOrder++,
         ),
       );
-      if (!isSeerr) {
-        insertIndex++;
-      }
       changed = true;
     }
 

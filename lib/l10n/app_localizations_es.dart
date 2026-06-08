@@ -7482,6 +7482,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String get homeRowsSection => 'Filas de inicio';
 
   @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Turn on the following toggles to see and select them in the Home Sections interface.';
+
+  @override
   String get rowsType => 'Tipo de filas';
 
   @override

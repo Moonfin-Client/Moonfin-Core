@@ -1985,11 +1985,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showBackdropImages => 'Show backdrop images behind content';
 
   @override
-  String get seriesThumbnails => 'Series Thumbnails';
+  String get seriesThumbnails => 'Show Series Thumbnails';
 
   @override
   String get seriesThumbnailsDescription =>
-      'Episodes only: use series artwork that matches each row image type';
+      'For TV shows, use generic series artwork instead of episode specific stills on the homepage.';
 
   @override
   String get homeRowInfoOverlay => 'Home Row Info Overlay';
@@ -7351,7 +7351,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeRowsSection => 'Home Rows';
 
   @override
-  String get rowsType => 'Rows Type';
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Turn on the following toggles to see and select them in the Home Sections interface.';
+
+  @override
+  String get rowsType => 'Row Type';
 
   @override
   String get rowsTypeDescription =>
@@ -7430,7 +7447,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appearance => 'Appearance';
 
   @override
-  String get cardSize => 'Card Size';
+  String get cardSize => 'Home Row Card Display Size';
 
   @override
   String get externalPlayerApp => 'External player app';
@@ -9927,11 +9944,11 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get showBackdropImages => 'Show backdrop images behind content';
 
   @override
-  String get seriesThumbnails => 'Series Thumbnails';
+  String get seriesThumbnails => 'Show Series Thumbnails';
 
   @override
   String get seriesThumbnailsDescription =>
-      'Episodes only: use series artwork that matches each row image type';
+      'For TV shows, use generic series artwork instead of episode specific stills on the homepage.';
 
   @override
   String get homeRowInfoOverlay => 'Home Row Info Overlay';
@@ -15242,7 +15259,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get homeRowsSection => 'Home Rows';
 
   @override
-  String get rowsType => 'Rows Type';
+  String get rowsType => 'Row Type';
 
   @override
   String get rowsTypeDescription =>
@@ -15300,7 +15317,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get appearance => 'Appearance';
 
   @override
-  String get cardSize => 'Card Size';
+  String get cardSize => 'Home Row Card Display Size';
 
   @override
   String get externalPlayerApp => 'External player app';

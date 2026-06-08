@@ -46,6 +46,7 @@ import 'appearance_theme_screen.dart';
 import 'diagnostics_settings_screen.dart';
 import 'saved_themes_screen.dart';
 import 'home_sections_screen.dart';
+import 'home_row_toggles_screen.dart';
 import 'library_settings_screen.dart';
 import 'media_bar_settings_screen.dart';
 import 'local_previews_settings_screen.dart';
@@ -892,77 +893,16 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
     GetIt.instance<HomeViewModel>().load(preserveExisting: true);
   }
 
-  void _onFavoritesRowsToggleChanged() {
-    _pushPersonalizationSync();
-    if (!mounted) return;
-    setState(() {});
-  }
-
-  void _onCollectionsRowsToggleChanged() {
-    _pushPersonalizationSync();
-    if (!mounted) return;
-    setState(() {});
-  }
-
-  void _onGenresRowsToggleChanged() {
-    _pushPersonalizationSync();
-    if (!mounted) return;
-    setState(() {});
-  }
-
-  void _onFavoritesSortChanged() {
-    _pushPersonalizationSync();
-    _reloadHomeRows();
-  }
-
-  void _onCollectionsSortChanged() {
-    _pushPersonalizationSync();
-    _reloadHomeRows();
-  }
-
-  void _onGenresSortChanged() {
-    _pushPersonalizationSync();
-    _reloadHomeRows();
-  }
-
-  void _onGenresItemFilterChanged() {
-    _pushPersonalizationSync();
-    _reloadHomeRows();
-  }
-
-  void _onPlaylistsRowsToggleChanged() {
-    _pushPersonalizationSync();
-    if (!mounted) return;
-    setState(() {});
-  }
-
-  void _onSeerrRowsToggleChanged() {
-    _pushPersonalizationSync();
-    if (!mounted) return;
-    setState(() {});
-  }
-
-  void _onPlaylistsSortChanged() {
-    _pushPersonalizationSync();
-    _reloadHomeRows();
-  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final showFavoritesRows = _prefs.get(UserPreferences.displayFavoritesRows);
-    final showCollectionsRows = _prefs.get(
-      UserPreferences.displayCollectionsRows,
-    );
-    final showGenresRows = _prefs.get(UserPreferences.displayGenresRows);
-    final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
-    final seerrEnabledOnAccount = GetIt.instance<SeerrPreferences>().enabled;
     final rowsStyle = _prefs.get(UserPreferences.homeRowsStyle);
     return Scaffold(
       appBar: buildSettingsAppBar(context, Text(l10n.homeScreen)),
       body: ListView(
         children: [
-          _SectionHeader(l10n.homeRowsSection),
+          _SectionHeader(l10n.homeRowDisplay),
           EnumPreferenceTile<HomeRowsStyle>(
             preference: UserPreferences.homeRowsStyle,
             title: l10n.rowsType,
@@ -983,6 +923,13 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
             icon: Icons.merge_type,
             onChanged: _pushPersonalizationSync,
           ),
+          SwitchPreferenceTile(
+            preference: UserPreferences.seriesThumbnailsEnabled,
+            title: l10n.seriesThumbnails,
+            subtitle: l10n.seriesThumbnailsDescription,
+            icon: Icons.image_aspect_ratio,
+            onChanged: _pushPersonalizationSync,
+          ),
           if (PlatformDetection.isTV)
             SwitchPreferenceTile(
               preference: UserPreferences.fullScreenRows,
@@ -991,110 +938,6 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
               icon: Icons.image_aspect_ratio,
               onChanged: _pushPersonalizationSync,
             ),
-          _TvSettingsListTile(
-            autofocus: true,
-            leading: const Icon(Icons.list),
-            title: Text(l10n.homeSections),
-            subtitle: Text(l10n.reorderToggleHomeRows),
-            onTap: () => context.pushSettingsScreen(
-              const HomeSectionsScreen(showGeneralOptions: false),
-            ),
-          ),
-          SwitchPreferenceTile(
-            preference: UserPreferences.displayFavoritesRows,
-            title: l10n.displayFavoritesRows,
-            subtitle: l10n.displayFavoritesRowsSubtitle,
-            icon: Icons.favorite,
-            onChanged: _onFavoritesRowsToggleChanged,
-          ),
-          if (showFavoritesRows)
-            EnumPreferenceTile<LibrarySortBy>(
-              preference: UserPreferences.favoritesRowSortBy,
-              title: l10n.favoritesRowSorting,
-              description: l10n.favoritesRowSortingDescription,
-              icon: Icons.sort,
-              labelOf: (v) => v.displayName,
-              onChanged: _onFavoritesSortChanged,
-            ),
-          SwitchPreferenceTile(
-            preference: UserPreferences.displayCollectionsRows,
-            title: l10n.displayCollectionsRows,
-            subtitle: l10n.displayCollectionsRowsSubtitle,
-            icon: Icons.collections,
-            onChanged: _onCollectionsRowsToggleChanged,
-          ),
-          if (showCollectionsRows)
-            EnumPreferenceTile<LibrarySortBy>(
-              preference: UserPreferences.collectionsRowSortBy,
-              title: l10n.collectionsRowSorting,
-              description: l10n.collectionsRowSortingDescription,
-              icon: Icons.sort,
-              labelOf: (v) => v.displayName,
-              onChanged: _onCollectionsSortChanged,
-            ),
-          SwitchPreferenceTile(
-            preference: UserPreferences.displayGenresRows,
-            title: l10n.displayGenresRows,
-            subtitle: l10n.displayGenresRowsSubtitle,
-            icon: Icons.theater_comedy,
-            onChanged: _onGenresRowsToggleChanged,
-          ),
-          if (showGenresRows) ...[
-            EnumPreferenceTile<LibrarySortBy>(
-              preference: UserPreferences.genresRowSortBy,
-              title: l10n.genresRowSorting,
-              description: l10n.genresRowSortingDescription,
-              icon: Icons.sort,
-              labelOf: (v) => v.displayName,
-              onChanged: _onGenresSortChanged,
-            ),
-            EnumPreferenceTile<GenresRowItemFilter>(
-              preference: UserPreferences.genresRowItemFilter,
-              title: l10n.genresRowItems,
-              description: l10n.genresRowItemsDescription,
-              icon: Icons.filter_list,
-              labelOf: (v) => v.displayName,
-              onChanged: _onGenresItemFilterChanged,
-            ),
-          ],
-          SwitchPreferenceTile(
-            preference: UserPreferences.displayPlaylistsRows,
-            title: l10n.displayPlaylistsRows,
-            subtitle: l10n.displayPlaylistsRowsSubtitle,
-            icon: Icons.playlist_play,
-            onChanged: _onPlaylistsRowsToggleChanged,
-          ),
-          if (showPlaylistsRows)
-            EnumPreferenceTile<LibrarySortBy>(
-              preference: UserPreferences.playlistsRowSortBy,
-              title: l10n.playlistsRowSorting,
-              description: l10n.playlistsRowSortingDescription,
-              icon: Icons.sort,
-              labelOf: (v) => v.displayName,
-              onChanged: _onPlaylistsSortChanged,
-            ),
-          SwitchPreferenceTile(
-            preference: UserPreferences.displaySeerrRows,
-            title: l10n.displaySeerrRows,
-            subtitle: seerrEnabledOnAccount
-                ? l10n.displaySeerrRowsSubtitle
-                : '${l10n.displaySeerrRowsSubtitle} (Requires Seerr login in Plugins)',
-            enabled: seerrEnabledOnAccount,
-            iconBuilder: (size, color) => Image.asset(
-              'assets/icons/seerr.png',
-              width: size,
-              height: size,
-            ),
-            onChanged: _onSeerrRowsToggleChanged,
-          ),
-
-          _SectionHeader(l10n.appearance),
-          SwitchPreferenceTile(
-            preference: UserPreferences.seriesThumbnailsEnabled,
-            title: l10n.seriesThumbnails,
-            subtitle: l10n.seriesThumbnailsDescription,
-            icon: Icons.image_aspect_ratio,
-          ),
           EnumPreferenceTile<PosterSize>(
             preference: UserPreferences.posterSize,
             title: l10n.cardSize,
@@ -1115,6 +958,25 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
               icon: Icons.info_outline,
             ),
 
+          _SectionHeader(l10n.homeRowSections),
+          _TvSettingsListTile(
+            autofocus: true,
+            leading: const Icon(Icons.list),
+            title: Text(l10n.homeSections),
+            subtitle: Text(l10n.reorderToggleHomeRows),
+            onTap: () => context.pushSettingsScreen(
+              const HomeSectionsScreen(showGeneralOptions: false),
+            ),
+          ),
+          _TvSettingsListTile(
+            leading: const Icon(Icons.tune),
+            title: Text(l10n.homeRowToggles),
+            subtitle: Text(l10n.homeRowTogglesSubtitle),
+            onTap: () => context.pushSettingsScreen(
+              const HomeRowTogglesScreen(),
+            ),
+          ),
+
           _SectionHeader(l10n.audio),
           SwitchPreferenceTile(
             preference: UserPreferences.themeMusicOnHomeRows,
@@ -1123,6 +985,7 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
             icon: Icons.queue_music,
             onChanged: _pushPersonalizationSync,
           ),
+          const SizedBox(height: 32),
         ],
       ),
     );

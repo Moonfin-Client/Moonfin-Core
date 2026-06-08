@@ -2833,11 +2833,11 @@
   "@showBackdropImages": {
     "description": "Description for background backdrops"
   },
-  "seriesThumbnails": "Series Thumbnails",
+  "seriesThumbnails": "Show Series Thumbnails",
   "@seriesThumbnails": {
     "description": "Setting for series thumbnails"
   },
-  "seriesThumbnailsDescription": "Episodes only: use series artwork that matches each row image type",
+  "seriesThumbnailsDescription": "For TV shows, use generic series artwork instead of episode specific stills on the homepage.",
   "@seriesThumbnailsDescription": {
     "description": "Description for series thumbnails setting"
   },
@@ -7060,7 +7060,12 @@
   "homeRowsStyleClassic": "Classic",
   "homeRowsStyleModern": "Modern",
   "homeRowsSection": "Home Rows",
-  "rowsType": "Rows Type",
+  "homeRowDisplay": "Home Row Display",
+  "homeRowSections": "Home Row Sections",
+  "homeRowToggles": "Home Row Toggles",
+  "homeRowTogglesSubtitle": "Enable or disable different home row categories",
+  "homeRowTogglesDescription": "Turn on the following toggles to see and select them in the Home Sections interface.",
+  "rowsType": "Row Type",
   "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.",
   "displayFavoritesRows": "Display Favorites Rows",
   "displayFavoritesRowsSubtitle": "Show Favorite Movies, Series, and other favorite rows in Home Sections.",
@@ -7083,7 +7088,7 @@
   "displaySeerrRows": "Display Seerr Discovery Rows",
   "displaySeerrRowsSubtitle": "Show Seerr discovery rows in Home Sections.",
   "appearance": "Appearance",
-  "cardSize": "Card Size",
+  "cardSize": "Home Row Card Display Size",
   "externalPlayerApp": "External player app",
   "externalPlayerAskEachTimeSubtitle": "Show app chooser when playback starts.",
   "loadingInstalledPlayers": "Loading installed players...",

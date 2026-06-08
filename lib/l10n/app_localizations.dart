@@ -3626,13 +3626,13 @@ abstract class AppLocalizations {
   /// Setting for series thumbnails
   ///
   /// In en, this message translates to:
-  /// **'Series Thumbnails'**
+  /// **'Show Series Thumbnails'**
   String get seriesThumbnails;
 
   /// Description for series thumbnails setting
   ///
   /// In en, this message translates to:
-  /// **'Episodes only: use series artwork that matches each row image type'**
+  /// **'For TV shows, use generic series artwork instead of episode specific stills on the homepage.'**
   String get seriesThumbnailsDescription;
 
   /// Setting for home row info overlay
@@ -13175,10 +13175,40 @@ abstract class AppLocalizations {
   /// **'Home Rows'**
   String get homeRowsSection;
 
+  /// No description provided for @homeRowDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Home Row Display'**
+  String get homeRowDisplay;
+
+  /// No description provided for @homeRowSections.
+  ///
+  /// In en, this message translates to:
+  /// **'Home Row Sections'**
+  String get homeRowSections;
+
+  /// No description provided for @homeRowToggles.
+  ///
+  /// In en, this message translates to:
+  /// **'Home Row Toggles'**
+  String get homeRowToggles;
+
+  /// No description provided for @homeRowTogglesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable or disable different home row categories'**
+  String get homeRowTogglesSubtitle;
+
+  /// No description provided for @homeRowTogglesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on the following toggles to see and select them in the Home Sections interface.'**
+  String get homeRowTogglesDescription;
+
   /// No description provided for @rowsType.
   ///
   /// In en, this message translates to:
-  /// **'Rows Type'**
+  /// **'Row Type'**
   String get rowsType;
 
   /// No description provided for @rowsTypeDescription.
@@ -13316,7 +13346,7 @@ abstract class AppLocalizations {
   /// No description provided for @cardSize.
   ///
   /// In en, this message translates to:
-  /// **'Card Size'**
+  /// **'Home Row Card Display Size'**
   String get cardSize;
 
   /// No description provided for @externalPlayerApp.

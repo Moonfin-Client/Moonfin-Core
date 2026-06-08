@@ -134,19 +134,36 @@ BoxDecoration _settingsTileDecoration(
   );
 }
 
-Widget _buildSubtitle(String value, String? description) {
-  if (description == null) {
-    return Text(value, style: _kSettingsSubtitleTextStyle);
-  }
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(value, style: _kSettingsSubtitleTextStyle),
-      const SizedBox(height: 2),
-      Text(description, style: _kSettingsDescriptionTextStyle),
-    ],
+Widget _buildSelectionBubble(BuildContext context, String label, bool focused) {
+  final theme = Theme.of(context);
+  final colorScheme = theme.colorScheme;
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    decoration: BoxDecoration(
+      color: focused
+          ? AppColors.black.withValues(alpha: 0.12)
+          : colorScheme.primary.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: focused
+            ? AppColors.black.withValues(alpha: 0.35)
+            : colorScheme.primary.withValues(alpha: 0.35),
+        width: 1,
+      ),
+    ),
+    child: Text(
+      label,
+      style: theme.textTheme.labelMedium?.copyWith(
+        color: focused
+            ? AppColors.black.withValues(alpha: 0.87)
+            : colorScheme.primary,
+        fontWeight: FontWeight.w600,
+        fontSize: 11,
+      ),
+    ),
   );
 }
+
 
 void _ensureFocusVisible(BuildContext context, {double alignment = 0.9}) {
   WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -339,6 +356,7 @@ class _EnumPreferenceTileState<T extends Enum>
         valueListenable: _binding,
         builder: (context, value, _) {
           final current = values.contains(value) ? value : values.first;
+          final label = widget.labelOf(current);
           return ListTile(
             leading: widget.icon != null
                 ? buildSettingsLeadingIconShell(
@@ -351,7 +369,10 @@ class _EnumPreferenceTileState<T extends Enum>
                   )
                 : null,
             title: Text(widget.title, style: _kSettingsTitleTextStyle),
-            subtitle: _buildSubtitle(widget.labelOf(current), widget.description),
+            trailing: _buildSelectionBubble(context, label, focused),
+            subtitle: widget.description != null
+                ? Text(widget.description!, style: _kSettingsDescriptionTextStyle)
+                : null,
             isThreeLine: widget.description != null,
             onTap: () => _showPicker(context, current),
           );
@@ -618,25 +639,28 @@ class _StringPickerPreferenceTileState
     return TvFocusHighlight(
       builder: (context, focused) => ValueListenableBuilder<String>(
         valueListenable: _binding,
-        builder: (context, value, _) => ListTile(
-          leading: widget.icon != null
-              ? buildSettingsLeadingIconShell(
-                  context,
-                  icon: Icon(widget.icon),
-                  focused: focused,
-                  iconColor: focused
-                      ? AppColors.black.withValues(alpha: 0.54)
-                      : AppColorScheme.onSurface.withValues(alpha: 0.78),
-                )
-              : null,
-          title: Text(widget.title, style: _kSettingsTitleTextStyle),
-          subtitle: _buildSubtitle(
-            widget.options[value] ?? value,
-            widget.description,
-          ),
-          isThreeLine: widget.description != null,
-          onTap: () => _showPicker(context, value),
-        ),
+        builder: (context, value, _) {
+          final label = widget.options[value] ?? value;
+          return ListTile(
+            leading: widget.icon != null
+                ? buildSettingsLeadingIconShell(
+                    context,
+                    icon: Icon(widget.icon),
+                    focused: focused,
+                    iconColor: focused
+                        ? AppColors.black.withValues(alpha: 0.54)
+                        : AppColorScheme.onSurface.withValues(alpha: 0.78),
+                  )
+                : null,
+            title: Text(widget.title, style: _kSettingsTitleTextStyle),
+            trailing: _buildSelectionBubble(context, label, focused),
+            subtitle: widget.description != null
+                ? Text(widget.description!, style: _kSettingsDescriptionTextStyle)
+                : null,
+            isThreeLine: widget.description != null,
+            onTap: () => _showPicker(context, value),
+          );
+        },
       ),
     );
   }
@@ -731,25 +755,28 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
     return TvFocusHighlight(
       builder: (context, focused) => ValueListenableBuilder<int>(
         valueListenable: _binding,
-        builder: (context, value, _) => ListTile(
-          leading: widget.icon != null
-              ? buildSettingsLeadingIconShell(
-                  context,
-                  icon: Icon(widget.icon),
-                  focused: focused,
-                  iconColor: focused
-                      ? AppColors.black.withValues(alpha: 0.54)
-                      : AppColorScheme.onSurface.withValues(alpha: 0.78),
-                )
-              : null,
-          title: Text(widget.title, style: _kSettingsTitleTextStyle),
-          subtitle: _buildSubtitle(
-            widget.options[value] ?? value.toString(),
-            widget.description,
-          ),
-          isThreeLine: widget.description != null,
-          onTap: () => _showPicker(context, value),
-        ),
+        builder: (context, value, _) {
+          final label = widget.options[value] ?? value.toString();
+          return ListTile(
+            leading: widget.icon != null
+                ? buildSettingsLeadingIconShell(
+                    context,
+                    icon: Icon(widget.icon),
+                    focused: focused,
+                    iconColor: focused
+                        ? AppColors.black.withValues(alpha: 0.54)
+                        : AppColorScheme.onSurface.withValues(alpha: 0.78),
+                  )
+                : null,
+            title: Text(widget.title, style: _kSettingsTitleTextStyle),
+            trailing: _buildSelectionBubble(context, label, focused),
+            subtitle: widget.description != null
+                ? Text(widget.description!, style: _kSettingsDescriptionTextStyle)
+                : null,
+            isThreeLine: widget.description != null,
+            onTap: () => _showPicker(context, value),
+          );
+        },
       ),
     );
   }
