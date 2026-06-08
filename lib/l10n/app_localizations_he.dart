@@ -2916,6 +2916,12 @@ class AppLocalizationsHe extends AppLocalizations {
   String get combineBothRows => 'שלב את שתי השורות למקטע בית אחד';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => 'סוג תמונה לפי שורה';
 
   @override

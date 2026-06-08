@@ -2968,6 +2968,12 @@ class AppLocalizationsEs extends AppLocalizations {
       'Combinar ambas filas en una sola sección del inicio';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => 'Tipo de imagen por fila';
 
   @override

@@ -246,6 +246,11 @@ class UserPreferences extends ChangeNotifier {
     values: HomeRowsStyle.values,
   );
 
+  static final fullScreenRows = Preference(
+    key: 'pref_home_rows_fullscreen',
+    defaultValue: false,
+  );
+
   static final desktopUiScale = EnumPreference(
     key: 'pref_desktop_ui_scale',
     defaultValue: DesktopUiScale.medium,

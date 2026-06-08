@@ -2955,6 +2955,12 @@ class AppLocalizationsCy extends AppLocalizations {
   String get combineBothRows => 'Cyfunwch y ddwy res yn un adran gartref';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => 'Math Delwedd Fesul Rhes';
 
   @override

@@ -983,6 +983,14 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
             icon: Icons.merge_type,
             onChanged: _pushPersonalizationSync,
           ),
+          if (PlatformDetection.isTV)
+            SwitchPreferenceTile(
+              preference: UserPreferences.fullScreenRows,
+              title: l10n.fullScreenRows,
+              subtitle: l10n.fullScreenRowsDescription,
+              icon: Icons.image_aspect_ratio,
+              onChanged: _pushPersonalizationSync,
+            ),
           _TvSettingsListTile(
             autofocus: true,
             leading: const Icon(Icons.list),

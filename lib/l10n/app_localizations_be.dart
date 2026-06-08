@@ -2951,6 +2951,12 @@ class AppLocalizationsBe extends AppLocalizations {
       'Аб\'яднайце абодва шэрагу ў адну хатнюю секцыю';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => 'Тып выявы ў радку';
 
   @override

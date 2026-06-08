@@ -2951,6 +2951,12 @@ class AppLocalizationsUg extends AppLocalizations {
   String get combineBothRows => 'ھەر ئىككى قۇرنى بىر ئۆي بۆلىكىگە بىرلەشتۈرۈڭ';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => 'ھەر بىر قۇر رەسىم تىپى';
 
   @override

@@ -2975,6 +2975,12 @@ class AppLocalizationsTl extends AppLocalizations {
       'Pagsamahin ang parehong mga hilera sa isang solong seksyon ng tahanan';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => 'Uri ng Larawan sa Bawat Hilera';
 
   @override

@@ -2966,6 +2966,12 @@ class AppLocalizationsTa extends AppLocalizations {
       'இரண்டு வரிசைகளையும் ஒரு முகப்புப் பிரிவில் இணைக்கவும்';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => 'ஒவ்வொரு வரிசை பட வகை';
 
   @override

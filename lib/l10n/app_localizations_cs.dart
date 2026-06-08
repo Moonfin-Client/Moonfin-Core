@@ -2946,6 +2946,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get combineBothRows => 'Spojte oba řádky do jedné domovské sekce';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => 'Typ obrázku na řádek';
 
   @override

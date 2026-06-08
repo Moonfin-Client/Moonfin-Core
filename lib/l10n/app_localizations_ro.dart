@@ -2964,6 +2964,12 @@ class AppLocalizationsRo extends AppLocalizations {
       'Combinați ambele rânduri într-o singură secțiune de acasă';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => 'Tip de imagine pe rând';
 
   @override

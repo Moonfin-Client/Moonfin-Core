@@ -2959,6 +2959,12 @@ class AppLocalizationsLv extends AppLocalizations {
   String get combineBothRows => 'Apvienojiet abas rindas vienā sākuma sadaļā';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => 'Rindas attēla veids';
 
   @override

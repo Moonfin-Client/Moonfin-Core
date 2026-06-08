@@ -2958,6 +2958,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get combineBothRows => 'Yhdistä molemmat rivit yhdeksi kotiosioon';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => 'Rivikuvatyypin mukaan';
 
   @override

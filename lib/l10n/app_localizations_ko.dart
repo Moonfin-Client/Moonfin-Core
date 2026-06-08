@@ -2883,6 +2883,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get combineBothRows => '두 행을 단일 홈 섹션으로 결합';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => '행별 이미지 유형';
 
   @override

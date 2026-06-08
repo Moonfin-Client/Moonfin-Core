@@ -4089,6 +4089,14 @@
   "@combineBothRows": {
     "description": "Description for merge continue watching and next up"
   },
+  "fullScreenRows": "Expanded Home Rows",
+  "@fullScreenRows": {
+    "description": "Setting for full screen home rows"
+  },
+  "fullScreenRowsDescription": "Limit home rows to 1 row per screen",
+  "@fullScreenRowsDescription": {
+    "description": "Description for full screen home rows"
+  },
   "perRowImageType": "Per Row Image Type",
   "@perRowImageType": {
     "description": "Title for per-row image type screen"
