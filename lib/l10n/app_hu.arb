@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} selected",
   "mediaBar": "Media Bar",
   "mediaBarMode": "Médiasáv stílusa",
-  "mediaBarModeDescription": "Válasszon a Moonfin, MakD közül, vagy kapcsolja ki a médiasávot",
+  "mediaBarModeDescription": "Válasszon a különböző médiasáv-stílusok közül, vagy kapcsolja ki a médiasávot",
   "mediaBarModeMoonfin": "Moonfin",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Le",

@@ -450,20 +450,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       changed = true;
     }
 
-    // Migration: if Seerr rows exist before dynamic sections, move them to the end.
-    final lastDynamicIndex = _sections.lastIndexWhere((s) => s.isPluginDynamic);
-    if (lastDynamicIndex >= 0) {
-      final firstSeerrIndex =
-          _sections.indexWhere((s) => s.isBuiltin && _isSeerrSectionType(s.type));
-      if (firstSeerrIndex >= 0 && firstSeerrIndex < lastDynamicIndex) {
-        final seerrConfigs =
-            _sections.where((s) => s.isBuiltin && _isSeerrSectionType(s.type)).toList();
-        _sections.removeWhere((s) => s.isBuiltin && _isSeerrSectionType(s.type));
-        _sections.addAll(seerrConfigs);
-        changed = true;
-      }
-    }
-
     return changed;
   }
 

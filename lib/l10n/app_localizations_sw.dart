@@ -2835,7 +2835,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Chagua kati ya Moonfin, MakD, au zima upau wa midia';
+      'Chagua kati ya mitindo mbalimbali ya upau wa midia, au zima upau wa midia';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';

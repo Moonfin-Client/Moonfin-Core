@@ -2788,7 +2788,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'בחר בין Moonfin, MakD, או כבה את סרגל המדיה';
+      'בחרו בין סגנונות שונים של סרגל מדיה, או כבו את סרגל המדיה';
 
   @override
   String get mediaBarModeMoonfin => 'סנפיר ירח';

@@ -2828,7 +2828,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Kies tussen Moonfin, MakD of schakel de mediabalk uit';
+      'Kies uit verschillende stijlen voor de mediabalk of schakel de mediabalk uit';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';

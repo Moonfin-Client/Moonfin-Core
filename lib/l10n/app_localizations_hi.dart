@@ -2808,7 +2808,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Moonfin, MakD में से चुनें, या मीडिया बार बंद करें';
+      'अलग-अलग मीडिया बार स्टाइल में से चुनें, या मीडिया बार को बंद कर दें।';
 
   @override
   String get mediaBarModeMoonfin => 'मूनफ़िन';

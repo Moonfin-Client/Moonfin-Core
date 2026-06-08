@@ -12,3 +12,4 @@ dependencies:
   server_core:
     path: ../server_core
   logger: ^2.5.0
+  web: ^1.1.1

@@ -2806,7 +2806,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'اختر بين Moonfin أو MakD أو قم بإيقاف تشغيل شريط الوسائط';
+      'اختر من بين أنماط متنوعة لشريط الوسائط، أو قم بإيقاف تشغيل شريط الوسائط';
 
   @override
   String get mediaBarModeMoonfin => 'مونفين';

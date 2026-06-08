@@ -2834,7 +2834,7 @@ class AppLocalizationsBg extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Изберете между Moonfin, MakD или изключете медийната лента';
+      'Изберете между различни стилове на медийната лента или я изключете';
 
   @override
   String get mediaBarModeMoonfin => 'Лунна перка';

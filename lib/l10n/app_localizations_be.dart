@@ -2820,7 +2820,7 @@ class AppLocalizationsBe extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Выбірайце паміж Moonfin, MakD або выключыце медыяпанэль';
+      'Выбірайце паміж рознымі стылямі медыяпанэлі або адключайце медыяпанэль';
 
   @override
   String get mediaBarModeMoonfin => 'Месяцовы плаўнік';

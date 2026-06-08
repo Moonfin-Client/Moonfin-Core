@@ -3503,7 +3503,7 @@
   "@mediaBarMode": {
     "description": "Setting for choosing media bar style"
   },
-  "mediaBarModeDescription": "Scegli tra Moonfin, MakD o disattiva la barra media",
+  "mediaBarModeDescription": "Scegli tra diversi stili della barra multimediale oppure disattiva la barra multimediale",
   "@mediaBarModeDescription": {
     "description": "Description for media bar style setting"
   },

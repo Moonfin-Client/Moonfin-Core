@@ -2195,16 +2195,18 @@ class _VideoPlaybackScreen extends StatelessWidget {
               subtitle: l10n.hardwareDecodingSubtitle,
               icon: Icons.memory,
             ),
-          EnumPreferenceTile<RefreshRateSwitchingBehavior>(
-            preference: UserPreferences.refreshRateSwitchingBehavior,
-            title: l10n.refreshRateSwitching,
-            icon: Icons.speed,
-            labelOf: (v) => switch (v) {
-              RefreshRateSwitchingBehavior.disabled => l10n.disabled,
-              RefreshRateSwitchingBehavior.scaleOnTv => l10n.scaleOnTv,
-              RefreshRateSwitchingBehavior.scaleOnDevice => l10n.scaleOnDevice,
-            },
-          ),
+          if (!PlatformDetection.isWeb)
+            EnumPreferenceTile<RefreshRateSwitchingBehavior>(
+              preference: UserPreferences.refreshRateSwitchingBehavior,
+              title: l10n.refreshRateSwitching,
+              icon: Icons.speed,
+              labelOf: (v) => switch (v) {
+                RefreshRateSwitchingBehavior.disabled => l10n.disabled,
+                RefreshRateSwitchingBehavior.scaleOnTv => l10n.scaleOnTv,
+                RefreshRateSwitchingBehavior.scaleOnDevice =>
+                  l10n.scaleOnDevice,
+              },
+            ),
           if (PlatformDetection.isWindows)
             EnumPreferenceTile<AutoHdrSwitchingBehavior>(
               preference: UserPreferences.autoHdrSwitchingBehavior,
@@ -2615,17 +2617,18 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
           ),
 
           const _SectionHeader('Processing & Passthrough'),
-          EnumPreferenceTile<AudioOutputMode>(
-            preference: UserPreferences.audioOutputMode,
-            title: l10n.settingsAudioOutputMode,
-            icon: Icons.surround_sound,
-            labelOf: (v) => switch (v) {
-              AudioOutputMode.auto => l10n.auto,
-              AudioOutputMode.forceStereo => l10n.downmixToStereo,
-              AudioOutputMode.avrPassthrough =>
-                l10n.settingsAudioOutputModeAvrPassthrough,
-            },
-          ),
+          if (!PlatformDetection.isWeb)
+            EnumPreferenceTile<AudioOutputMode>(
+              preference: UserPreferences.audioOutputMode,
+              title: l10n.settingsAudioOutputMode,
+              icon: Icons.surround_sound,
+              labelOf: (v) => switch (v) {
+                AudioOutputMode.auto => l10n.auto,
+                AudioOutputMode.forceStereo => l10n.downmixToStereo,
+                AudioOutputMode.avrPassthrough =>
+                  l10n.settingsAudioOutputModeAvrPassthrough,
+              },
+            ),
           EnumPreferenceTile<AudioFallbackCodec>(
             preference: UserPreferences.audioFallbackCodec,
             title: l10n.settingsAudioFallbackCodec,

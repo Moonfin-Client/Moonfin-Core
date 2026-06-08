@@ -2814,7 +2814,7 @@ class AppLocalizationsNb extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Velg mellom Moonfin, MakD, eller slå av medielinjen';
+      'Velg mellom ulike mediefeltstiler, eller slå av mediefeltet';
 
   @override
   String get mediaBarModeMoonfin => 'Månefinne';

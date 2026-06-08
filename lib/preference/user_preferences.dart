@@ -277,6 +277,12 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: PlatformDetection.isTV,
   );
 
+  static final favoritesViewStyle = EnumPreference(
+    key: 'pref_favorites_view_style',
+    defaultValue: FavoritesViewStyle.home,
+    values: FavoritesViewStyle.values,
+  );
+
   static final displayFavoritesRows = Preference(
     key: 'pref_display_favorites_rows',
     defaultValue: false,

@@ -2801,7 +2801,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'بین Moonfin، MakD را انتخاب کنید یا نوار رسانه را خاموش کنید';
+      'از بین سبک‌های مختلف نوار رسانه انتخاب کنید، یا نوار رسانه را خاموش کنید';
 
   @override
   String get mediaBarModeMoonfin => 'باله ماه';

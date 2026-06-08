@@ -2828,7 +2828,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Wybierz pomiędzy Moonfin, MakD lub wyłącz pasek multimediów';
+      'Wybierz jeden z różnych stylów paska multimediów lub wyłącz go';
 
   @override
   String get mediaBarModeMoonfin => 'Księżycowa Płetwa';

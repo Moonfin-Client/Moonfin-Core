@@ -2828,7 +2828,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Valitse Moonfin tai MakD tai kytke mediapalkki pois päältä';
+      'Valitse eri mediapalkkityylien välillä tai poista mediapalkki käytöstä';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';

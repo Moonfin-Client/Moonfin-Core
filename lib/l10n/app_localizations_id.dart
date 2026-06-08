@@ -2820,7 +2820,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Pilih antara Moonfin, MakD, atau matikan bilah media';
+      'Pilih di antara berbagai gaya bilah media, atau nonaktifkan bilah media';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';

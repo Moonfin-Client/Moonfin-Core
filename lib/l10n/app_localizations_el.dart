@@ -2848,7 +2848,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Επιλέξτε μεταξύ Moonfin, MakD ή απενεργοποιήστε τη γραμμή πολυμέσων';
+      'Επιλέξτε ανάμεσα σε διάφορα στυλ γραμμής πολυμέσων ή απενεργοποιήστε τη γραμμή πολυμέσων';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';

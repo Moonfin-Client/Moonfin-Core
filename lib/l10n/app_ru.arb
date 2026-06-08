@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} selected",
   "mediaBar": "Медиа-бар",
   "mediaBarMode": "Стиль медиа-бара",
-  "mediaBarModeDescription": "Выбирайте между Moonfin, MakD или отключите медиа-панель.",
+  "mediaBarModeDescription": "Выберите один из вариантов оформления панели управления медиафайлами или отключите её",
   "mediaBarModeMoonfin": "Лунный плавник",
   "mediaBarModeMakd": "МакД",
   "mediaBarModeOff": "Выключенный",

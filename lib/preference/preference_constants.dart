@@ -71,6 +71,11 @@ enum PosterSize {
   final int landscapeHeight;
 }
 
+enum FavoritesViewStyle {
+  home,
+  library,
+}
+
 enum HomeRowsStyle {
   v1,
   v2,

@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} selected",
   "mediaBar": "Mediabalk",
   "mediaBarMode": "Mediabalkstijl",
-  "mediaBarModeDescription": "Kies tussen Moonfin, MakD of schakel de mediabalk uit",
+  "mediaBarModeDescription": "Kies uit verschillende stijlen voor de mediabalk of schakel de mediabalk uit",
   "mediaBarModeMoonfin": "Moonfin",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Uit",

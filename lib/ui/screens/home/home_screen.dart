@@ -2387,7 +2387,7 @@ class _ContentRowsState extends State<_ContentRows>
     final desktopScale = _desktopUiScaleFactor();
     final navbarIsTop = widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
     final navbarIsLeft = !navbarIsTop;
-    final navbarHeight = navbarIsTop && !(PlatformDetection.isTV && includeBigMediaBar && !_isBookshelfMode())
+    final navbarHeight = !(PlatformDetection.isTV && includeBigMediaBar)
         ? (PlatformDetection.isTV
             ? 95.0
             : PlatformDetection.useMobileUi

@@ -2847,7 +2847,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Choisissez Moonfin, MakD ou desactivez la barre media';
+      'Choisissez parmi différents styles de barre multimédia ou désactivez la barre multimédia';
 
   @override
   String get mediaBarModeMoonfin => 'Aileron de lune';

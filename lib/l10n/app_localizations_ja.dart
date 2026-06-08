@@ -2765,7 +2765,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Moonfin、MakD のいずれかを選択するか、メディア バーをオフにする';
+      'さまざまなメディアバーのスタイルから選択するか、メディアバーをオフにします。';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';

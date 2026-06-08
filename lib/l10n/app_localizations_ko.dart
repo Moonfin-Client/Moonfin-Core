@@ -2758,7 +2758,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get mediaBarMode => '미디어 바 스타일';
 
   @override
-  String get mediaBarModeDescription => 'Moonfin, MakD 중에서 선택하거나 미디어 바를 끄세요';
+  String get mediaBarModeDescription => '다양한 미디어 바 스타일 중 하나를 선택하거나 미디어 바를 끄십시오';
 
   @override
   String get mediaBarModeMoonfin => '달지느러미';

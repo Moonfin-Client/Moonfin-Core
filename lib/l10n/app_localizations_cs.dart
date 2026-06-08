@@ -2817,7 +2817,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Vyberte si mezi Moonfin, MakD nebo vypněte panel médií';
+      'Vyberte si mezi různými styly mediálního panelu nebo mediální panel vypněte';
 
   @override
   String get mediaBarModeMoonfin => 'Měsíční ploutev';

@@ -2829,7 +2829,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Izvēlieties Moonfin, MakD vai izslēdziet multivides joslu';
+      'Izvēlieties starp dažādiem multivides joslas stiliem vai izslēdziet multivides joslu';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';

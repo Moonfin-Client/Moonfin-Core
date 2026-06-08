@@ -36,8 +36,9 @@ class FavoritesViewModel extends ChangeNotifier {
   Map<FavoriteTypeFilter, List<AggregatedItem>> _rowItems = {};
   Map<FavoriteTypeFilter, List<AggregatedItem>> get rowItems => _rowItems;
 
-  int get totalCount =>
-      _rowItems.values.fold(0, (sum, list) => sum + list.length);
+  int get totalCount => _viewStyle == FavoritesViewStyle.home
+      ? _rowItems.values.fold(0, (sum, list) => sum + list.length)
+      : _gridTotalCount;
 
   late LibrarySortBy _sortBy;
   LibrarySortBy get sortBy => _sortBy;
@@ -64,6 +65,23 @@ class FavoritesViewModel extends ChangeNotifier {
 
   ImageApi get imageApi => _client.imageApi;
 
+  late FavoritesViewStyle _viewStyle;
+  FavoritesViewStyle get viewStyle => _viewStyle;
+
+  List<AggregatedItem> _gridItems = const [];
+  List<AggregatedItem> get gridItems => _gridItems;
+
+  int _gridTotalCount = 0;
+  int get gridTotalCount => _gridTotalCount;
+
+  bool _loadingMoreGrid = false;
+  bool get loadingMoreGrid => _loadingMoreGrid;
+
+  bool get hasMoreGrid => _gridItems.length < _gridTotalCount;
+
+  final Map<FavoriteTypeFilter, int> _rowTotalCounts = {};
+  final Set<FavoriteTypeFilter> _inFlightPagingRowTypes = {};
+
   FavoritesViewModel({
     required MediaServerClient client,
     required UserPreferences prefs,
@@ -75,6 +93,7 @@ class FavoritesViewModel extends ChangeNotifier {
     _sortDirection = _prefs.get(UserPreferences.librarySortDirection(_prefKey));
     _imageType = _prefs.get(UserPreferences.libraryImageType(_prefKey));
     _posterSize = _prefs.resolveLibraryPosterSize();
+    _viewStyle = _prefs.get(UserPreferences.favoritesViewStyle);
   }
 
   void setFocusedItem(AggregatedItem? item) {
@@ -82,6 +101,13 @@ class FavoritesViewModel extends ChangeNotifier {
     _focusedRatings = const {};
     notifyListeners();
     if (item != null) _loadFocusedRatings(item);
+  }
+
+  Future<void> setViewStyle(FavoritesViewStyle value) async {
+    if (_viewStyle == value) return;
+    _viewStyle = value;
+    await _prefs.set(UserPreferences.favoritesViewStyle, value);
+    await load();
   }
 
   Future<void> _loadFocusedRatings(AggregatedItem item) async {
@@ -117,18 +143,28 @@ class FavoritesViewModel extends ChangeNotifier {
   Future<void> load() async {
     _state = FavoritesState.loading;
     _rowItems = {};
+    _rowTotalCounts.clear();
+    _gridItems = const [];
+    _gridTotalCount = 0;
     _tmdbIdByItemId.clear();
     notifyListeners();
 
     try {
-      final results = await Future.wait(
-        rowTypes.map((type) => _fetchRowItems(type)),
-      );
-      final map = <FavoriteTypeFilter, List<AggregatedItem>>{};
-      for (var i = 0; i < rowTypes.length; i++) {
-        if (results[i].isNotEmpty) map[rowTypes[i]] = results[i];
+      if (_viewStyle == FavoritesViewStyle.home) {
+        final results = await Future.wait(
+          rowTypes.map((type) => _fetchRowItems(type, startIndex: 0)),
+        );
+        final map = <FavoriteTypeFilter, List<AggregatedItem>>{};
+        for (var i = 0; i < rowTypes.length; i++) {
+          if (results[i].$1.isNotEmpty) {
+            map[rowTypes[i]] = results[i].$1;
+            _rowTotalCounts[rowTypes[i]] = results[i].$2;
+          }
+        }
+        _rowItems = map;
+      } else {
+        await _fetchGridPage(0);
       }
-      _rowItems = map;
       _state = FavoritesState.ready;
     } catch (e) {
       _errorMessage = e.toString();
@@ -137,7 +173,10 @@ class FavoritesViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<AggregatedItem>> _fetchRowItems(FavoriteTypeFilter type) async {
+  Future<(List<AggregatedItem>, int)> _fetchRowItems(
+    FavoriteTypeFilter type, {
+    int startIndex = 0,
+  }) async {
     try {
       final sortValue = _sortBy.apiValue;
       final sortOrder = _sortDirection == SortDirection.ascending
@@ -148,6 +187,7 @@ class FavoritesViewModel extends ChangeNotifier {
         response = await _client.itemsApi.getItems(
           sortBy: sortValue,
           sortOrder: sortOrder,
+          startIndex: startIndex,
           limit: _rowLimit,
           recursive: true,
           isFavorite: true,
@@ -163,6 +203,7 @@ class FavoritesViewModel extends ChangeNotifier {
         response = await _client.itemsApi.getItems(
           sortBy: fallbackSort,
           sortOrder: sortOrder,
+          startIndex: startIndex,
           limit: _rowLimit,
           recursive: true,
           isFavorite: true,
@@ -172,7 +213,7 @@ class FavoritesViewModel extends ChangeNotifier {
         );
       }
       final rawItems = (response['Items'] as List?) ?? [];
-      return rawItems
+      final items = rawItems
           .cast<Map<String, dynamic>>()
           .map(
             (raw) => AggregatedItem(
@@ -182,9 +223,109 @@ class FavoritesViewModel extends ChangeNotifier {
             ),
           )
           .toList();
+      final totalCount = response['TotalRecordCount'] as int? ?? items.length;
+      return (items, totalCount);
     } catch (_) {
-      return const [];
+      return (const <AggregatedItem>[], 0);
     }
+  }
+
+  Future<void> loadMoreForType(FavoriteTypeFilter type) async {
+    final items = _rowItems[type];
+    if (items == null || items.isEmpty) return;
+    final total = _rowTotalCounts[type] ?? 0;
+    if (items.length >= total) return;
+    if (_inFlightPagingRowTypes.contains(type)) return;
+
+    _inFlightPagingRowTypes.add(type);
+    try {
+      final currentOffset = items.length;
+      final (newItems, totalCount) = await _fetchRowItems(type, startIndex: currentOffset);
+      _rowTotalCounts[type] = totalCount;
+
+      if (newItems.isNotEmpty) {
+        _rowItems[type] = [...items, ...newItems];
+        notifyListeners();
+      }
+    } catch (_) {
+    } finally {
+      _inFlightPagingRowTypes.remove(type);
+    }
+  }
+
+  Future<void> _fetchGridPage(int startIndex) async {
+    final sortValue = _sortBy.apiValue;
+    final sortOrder = _sortDirection == SortDirection.ascending
+        ? 'Ascending'
+        : 'Descending';
+    final pageSize = startIndex == 0 ? 75 : 48;
+
+    Map<String, dynamic> response;
+    try {
+      response = await _client.itemsApi.getItems(
+        sortBy: sortValue,
+        sortOrder: sortOrder,
+        startIndex: startIndex,
+        limit: pageSize,
+        recursive: true,
+        isFavorite: true,
+        fields: _browseFields,
+      );
+    } on DioException catch (e) {
+      final statusCode = e.response?.statusCode ?? 0;
+      if (statusCode < 500) rethrow;
+      final fallbackSort = sortValue.toLowerCase().contains('isfolder')
+          ? 'SortName'
+          : sortValue;
+      response = await _client.itemsApi.getItems(
+        sortBy: fallbackSort,
+        sortOrder: sortOrder,
+        startIndex: startIndex,
+        limit: pageSize,
+        recursive: true,
+        isFavorite: true,
+        fields: _browseFields,
+        enableTotalRecordCount: false,
+      );
+    }
+
+    final rawItems = (response['Items'] as List?) ?? [];
+    final totalFromServer = response['TotalRecordCount'] as int?;
+    if (totalFromServer != null) {
+      _gridTotalCount = totalFromServer;
+    } else {
+      _gridTotalCount = startIndex + rawItems.length + (rawItems.length == pageSize ? 1 : 0);
+    }
+
+    final mapped = rawItems
+        .cast<Map<String, dynamic>>()
+        .map(
+          (raw) => AggregatedItem(
+            id: raw['Id'] as String,
+            serverId: _client.baseUrl,
+            rawData: raw,
+          ),
+        )
+        .toList();
+
+    if (startIndex == 0) {
+      _gridItems = mapped;
+    } else {
+      _gridItems = [..._gridItems, ...mapped];
+    }
+  }
+
+  Future<void> loadMoreGrid() async {
+    if (_loadingMoreGrid || !hasMoreGrid) return;
+    _loadingMoreGrid = true;
+    notifyListeners();
+
+    try {
+      await _fetchGridPage(_gridItems.length);
+    } catch (_) {}
+
+    _loadingMoreGrid = false;
+    notifyListeners();
   }
 
   Future<void> setSortBy(LibrarySortBy value) async {

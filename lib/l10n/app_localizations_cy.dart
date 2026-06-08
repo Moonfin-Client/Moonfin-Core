@@ -2826,7 +2826,7 @@ class AppLocalizationsCy extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Dewiswch rhwng Moonfin, MakD, neu trowch y bar cyfryngau i ffwrdd';
+      'Dewiswch rhwng gwahanol arddulliau bar cyfryngau, neu diffoddwch y bar cyfryngau';
 
   @override
   String get mediaBarModeMoonfin => 'Lleuad';
