@@ -248,7 +248,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final fullScreenRows = Preference(
     key: 'pref_home_rows_fullscreen',
-    defaultValue: false,
+    defaultValue: true,
   );
 
   static final desktopUiScale = EnumPreference(

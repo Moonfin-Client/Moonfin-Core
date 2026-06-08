@@ -2385,15 +2385,18 @@ class _ContentRowsState extends State<_ContentRows>
     final showInfoOverlay = _showHomeRowInfoOverlay();
     final safeTop = MediaQuery.of(context).padding.top;
     final desktopScale = _desktopUiScaleFactor();
+    final fullScreenRows = PlatformDetection.isTV && prefs.get(UserPreferences.fullScreenRows);
     final navbarIsTop = widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
     final navbarIsLeft = !navbarIsTop;
-    final navbarHeight = !(PlatformDetection.isTV && includeBigMediaBar)
-        ? (PlatformDetection.isTV
+    final navbarHeight = PlatformDetection.isTV
+        ? (fullScreenRows
             ? 95.0
-            : PlatformDetection.useMobileUi
-                ? 60.0
-                : 80.0)
-        : 0.0;
+            : (navbarIsTop
+                ? 45.0
+                : 15.0))
+        : (PlatformDetection.useMobileUi
+            ? 60.0
+            : 80.0);
     final listTopPadding = includeMediaBar || showInfoOverlay
         ? 0.0
         : _isHomeRowsStyleV2()
