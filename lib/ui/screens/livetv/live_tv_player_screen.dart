@@ -15,7 +15,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../playback/html_video_backend.dart';
 import '../../../playback/media_kit_player_backend.dart';
 import '../../../playback/tizen_player_backend.dart';
-import 'package:video_player/video_player.dart';
+import 'package:video_player_avplay/video_player.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -858,17 +858,12 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
     if (controller == null || !controller.value.isInitialized) {
       return const Positioned.fill(child: ColoredBox(color: Colors.black));
     }
+    // VideoPlayer punches a transparent hole; AVPlay renders and scales on a
+    // hardware plane below it (aspect handled by setDisplayMode in the backend).
     return Positioned.fill(
       child: ColoredBox(
         color: Colors.black,
-        child: FittedBox(
-          fit: BoxFit.contain,
-          child: SizedBox(
-            width: controller.value.size.width,
-            height: controller.value.size.height,
-            child: VideoPlayer(controller),
-          ),
-        ),
+        child: VideoPlayer(controller),
       ),
     );
   }

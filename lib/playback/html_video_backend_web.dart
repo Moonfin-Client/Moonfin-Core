@@ -507,6 +507,10 @@ class HtmlVideoBackend implements PlayerBackend {
     _videoElement.volume = (_volume / 100).clamp(0.0, 1.0);
   }
 
+  // A bare HTML <video> element has no audio/subtitle delay control, and routing
+  // streamed (often cross-origin) media through a Web Audio DelayNode is both
+  // CORS-fragile and positive-delay-only. Both stay no-ops with
+  // `supportsAudioDelay`/`supportsSubtitleDelay` false, hiding the UI control.
   @override
   Future<void> setAudioDelay(double seconds) async {}
 
@@ -561,6 +565,9 @@ class HtmlVideoBackend implements PlayerBackend {
   bool get supportsRuntimeTrackSelection => false;
 
   @override
+  bool get supportsRuntimeSubtitleSelection => supportsRuntimeTrackSelection;
+
+  @override
   bool get requiresStartupMediaReadyCheck => false;
 
   @override
@@ -568,6 +575,12 @@ class HtmlVideoBackend implements PlayerBackend {
 
   @override
   bool get canRenderBitmapSubtitles => true;
+
+  @override
+  bool get supportsAudioDelay => false;
+
+  @override
+  bool get supportsSubtitleDelay => false;
 
   Widget buildView({BoxFit fit = BoxFit.contain}) {
     _videoElement.style.objectFit = _cssObjectFit(fit);

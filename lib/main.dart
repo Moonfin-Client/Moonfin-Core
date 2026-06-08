@@ -16,6 +16,7 @@ import 'di/injection.dart';
 import 'playback/audio_capability_profile.dart';
 import 'playback/audio_handler.dart';
 import 'playback/playback_lifecycle_handler.dart';
+import 'playback/tizen_device_profile.dart';
 import 'platform/web_runtime_config.dart';
 import 'preference/preference_constants.dart';
 import 'preference/user_preferences.dart';
@@ -267,6 +268,8 @@ void main() async {
   // there would fail to load libmpv.
   if (!PlatformDetection.isTizen) {
     MediaKit.ensureInitialized();
+  } else {
+    await TizenDeviceProfile.initialize();
   }
 
   await _detectAndSetTvMode();

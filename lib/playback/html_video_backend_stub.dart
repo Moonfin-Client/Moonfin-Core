@@ -137,6 +137,9 @@ class HtmlVideoBackend implements PlayerBackend {
   bool get supportsRuntimeTrackSelection => false;
 
   @override
+  bool get supportsRuntimeSubtitleSelection => supportsRuntimeTrackSelection;
+
+  @override
   bool get requiresStartupMediaReadyCheck => false;
 
   @override
@@ -144,6 +147,12 @@ class HtmlVideoBackend implements PlayerBackend {
 
   @override
   bool get canRenderBitmapSubtitles => false;
+
+  @override
+  bool get supportsAudioDelay => false;
+
+  @override
+  bool get supportsSubtitleDelay => false;
 
   Widget buildView({BoxFit fit = BoxFit.contain}) {
     return const SizedBox.shrink();

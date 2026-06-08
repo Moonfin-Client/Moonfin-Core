@@ -61,9 +61,21 @@ abstract class PlayerBackend {
 
   bool get supportsRuntimeTrackSelection;
 
+  bool get supportsRuntimeSubtitleSelection => supportsRuntimeTrackSelection;
+
   bool get requiresStartupMediaReadyCheck => true;
 
   bool get nativelyHandlesStartPosition => false;
+
+  /// Whether this backend can apply an audio delay/offset via [setAudioDelay].
+  /// When false, the in-player audio delay control is hidden so users aren't
+  /// presented with an unresponsive adjustment.
+  bool get supportsAudioDelay => false;
+
+  /// Whether this backend can apply a subtitle delay/offset via
+  /// [setSubtitleDelay]. When false, the in-player subtitle delay control is
+  /// hidden.
+  bool get supportsSubtitleDelay => false;
 
   bool get canRenderBitmapSubtitles;
 

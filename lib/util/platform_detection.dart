@@ -304,4 +304,6 @@ class PlatformDetection {
   static bool get useMobileUi => _hasMobileFormFactor && !isTV;
 
   static bool get useNativeVideoSurface => isAndroid && isTV;
+
+  static bool get deliversSystemPopRoute => isAndroid;
 }

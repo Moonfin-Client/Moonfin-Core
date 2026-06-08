@@ -5502,8 +5502,15 @@ class _ActionButtonsState extends State<_ActionButtons> {
   }) async {
     if (!context.mounted) return false;
     final manager = GetIt.instance<PlaybackManager>();
-    final pushVideoEarly =
-        destination == Destinations.videoPlayer && PlatformDetection.isIOS;
+    // Push the video route before startup completes on iOS and Tizen: on both,
+    // playback bring-up runs inside the player route, so deferring the push makes
+    // the Play button look dead. Tizen additionally keeps the route up on failure
+    // so its bring-up overlay can surface the AVPlay error (it never defers to an
+    // external player); iOS pops on failure.
+    final isVideoDestination = destination == Destinations.videoPlayer;
+    final pushVideoEarly = isVideoDestination &&
+        (PlatformDetection.isIOS || PlatformDetection.isTizen);
+    final keepRouteOnFailure = isVideoDestination && PlatformDetection.isTizen;
 
     void popTopPlayerRoute() {
       final route = ModalRoute.of(context);
@@ -5513,7 +5520,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
     }
 
     Future<Object?>? routeFuture;
-    if (destination != Destinations.videoPlayer || pushVideoEarly) {
+    if (!isVideoDestination || pushVideoEarly) {
       routeFuture = context.push(destination);
     }
 
@@ -5521,17 +5528,25 @@ class _ActionButtonsState extends State<_ActionButtons> {
     try {
       started = await startupFuture;
     } catch (_) {
-      if (routeFuture != null && context.mounted) {
-        popTopPlayerRoute();
+      if (keepRouteOnFailure) {
+        // The Tizen player route is already up and surfaces the error via its
+        // bring-up overlay; don't pop it or rethrow (an unhandled async error).
+        started = false;
+      } else {
+        if (routeFuture != null && context.mounted) {
+          popTopPlayerRoute();
+        }
+        rethrow;
       }
-      rethrow;
     }
 
     if (!started) {
-      if (routeFuture != null && context.mounted) {
-        popTopPlayerRoute();
+      if (!keepRouteOnFailure) {
+        if (routeFuture != null && context.mounted) {
+          popTopPlayerRoute();
+        }
+        return false;
       }
-      return false;
     }
 
     if (!context.mounted) return false;

@@ -701,6 +701,9 @@ class Media3PlayerBackend implements PlayerBackend {
   bool get supportsRuntimeTrackSelection => true;
 
   @override
+  bool get supportsRuntimeSubtitleSelection => supportsRuntimeTrackSelection;
+
+  @override
   bool get requiresStartupMediaReadyCheck => false;
 
   @override
@@ -708,6 +711,12 @@ class Media3PlayerBackend implements PlayerBackend {
 
   @override
   bool get canRenderBitmapSubtitles => true;
+
+  @override
+  bool get supportsAudioDelay => true;
+
+  @override
+  bool get supportsSubtitleDelay => true;
 
   @override
   void dispose() {

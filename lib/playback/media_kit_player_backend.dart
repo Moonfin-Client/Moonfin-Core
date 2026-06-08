@@ -390,6 +390,9 @@ class MediaKitPlayerBackend implements PlayerBackend {
   bool get supportsRuntimeTrackSelection => true;
 
   @override
+  bool get supportsRuntimeSubtitleSelection => supportsRuntimeTrackSelection;
+
+  @override
   bool get requiresStartupMediaReadyCheck => true;
 
   @override
@@ -398,6 +401,14 @@ class MediaKitPlayerBackend implements PlayerBackend {
   @override
   bool get canRenderBitmapSubtitles =>
       PlatformDetection.isDesktop || PlatformDetection.isAndroid;
+
+  // mpv exposes the `audio-delay` and `sub-delay` properties natively; both
+  // setters below apply them directly. See [setAudioDelay]/[setSubtitleDelay].
+  @override
+  bool get supportsAudioDelay => true;
+
+  @override
+  bool get supportsSubtitleDelay => true;
 
   Player get player => _player;
 

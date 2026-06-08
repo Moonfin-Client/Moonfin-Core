@@ -444,10 +444,11 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
         return false;
       }
       if (appRouter.canPop()) {
-        // On Android the system also delivers popRoute via MethodChannel,
-        // which would cause a double pop if we also popped here. Let the
-        // platform handle the pop; just consume the KeyEvent.
-        if (PlatformDetection.isAndroid) {
+        // On Android and Tizen TV the system also delivers popRoute via the
+        // system-navigation channel, which would cause a double pop if we also
+        // popped here. Let the platform handle the pop; just consume the
+        // KeyEvent.
+        if (PlatformDetection.deliversSystemPopRoute) {
           return true;
         }
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -455,7 +456,7 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
           appRouter.pop();
         });
       } else if (!_exitDialogShowing) {
-        if (PlatformDetection.isAndroid) {
+        if (PlatformDetection.deliversSystemPopRoute) {
           return true;
         }
         _exitDialogShowing = true;

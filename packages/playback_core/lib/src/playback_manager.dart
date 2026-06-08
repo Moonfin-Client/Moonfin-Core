@@ -1437,7 +1437,7 @@ class PlaybackManager implements AudioOwnable {
     await _applySubtitleRendererModeForStream(streamIndex);
 
     if (!_isOfflinePlayback &&
-        !(_backend?.supportsRuntimeTrackSelection ?? true)) {
+        !(_backend?.supportsRuntimeSubtitleSelection ?? true)) {
       final canRenderBitmap = _backend?.canRenderBitmapSubtitles ?? false;
       await _reResolveAtCurrentPosition(
         forceTranscode: isBitmap && !canRenderBitmap,
@@ -1487,9 +1487,9 @@ class PlaybackManager implements AudioOwnable {
         return;
       }
 
-      final shouldPreferRuntimeTrackSelection =
-          _backend?.supportsRuntimeTrackSelection ?? false;
-      if (shouldPreferRuntimeTrackSelection) {
+      final shouldPreferRuntimeSubtitleSelection =
+          _backend?.supportsRuntimeSubtitleSelection ?? false;
+      if (shouldPreferRuntimeSubtitleSelection) {
         final mpvId = _mpvTrackIdForStream(streamIndex, 'Subtitle');
         if (mpvId != null) {
           await _backend?.setSubtitleTrack(

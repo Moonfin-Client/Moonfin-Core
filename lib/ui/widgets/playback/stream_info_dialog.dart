@@ -12,6 +12,7 @@ Future<void> showStreamInfoDialog({
   required String title,
   required List<Map<String, dynamic>> streamInfoSections,
   double maxWidth = 560,
+  bool useRootNavigator = true,
 }) async {
   final l10n = AppLocalizations.of(context);
 
@@ -129,6 +130,7 @@ Future<void> showStreamInfoDialog({
       context,
       title: title,
       maxWidth: maxWidth,
+      useRootNavigator: useRootNavigator,
       builder: (_) => body(controller),
     );
   } finally {

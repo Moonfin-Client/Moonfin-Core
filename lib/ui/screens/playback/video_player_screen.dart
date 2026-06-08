@@ -51,6 +51,7 @@ import '../../widgets/subtitle_preview.dart';
 import '../../screensaver/screensaver_controller.dart';
 import '../../widgets/remote_play_to_session_dialog.dart';
 import '../../widgets/track_selector_dialog.dart';
+import '../../widgets/overlay_sheet.dart';
 import '../../widgets/playback/player_loading_overlay.dart';
 import '../../widgets/playback/skip_segment_overlay.dart';
 import '../../widgets/playback/next_up_overlay.dart';
@@ -61,7 +62,7 @@ import '../../../syncplay/syncplay_manager.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../playback/tizen_player_backend.dart';
-import 'package:video_player/video_player.dart';
+import 'package:video_player_avplay/video_player.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   const VideoPlayerScreen({super.key});
@@ -804,6 +805,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       } else {
         _syncMedia3VolumeBoostLevel(resetWhenUnavailable: true);
       }
+      // A fresh backend starts with zero delay; carry over any user-set
+      // audio/subtitle delay so it persists across stream reloads.
+      unawaited(_reapplyDelays());
       if (!mounted) return;
       setState(() {});
     });
@@ -1974,6 +1978,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _prefs.set(UserPreferences.playerZoomMode, next);
         _showZoomModeToast(next);
         unawaited(_syncMedia3ZoomMode());
+        _syncTizenZoomMode();
         unawaited(_pushMedia3UiMetadata());
         return;
       case 'castPlay':
@@ -2572,6 +2577,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       dismissed = true;
       return false;
     });
+    // TVs (Android and Tizen) deliver a follow-up system popRoute after the back
+    // press. If we close the overlay here without recording it, that second event
+    // falls through to didPopRoute()/PopScope and pops the player itself (the
+    // "back exits the whole player" double-exit). Mark it so the follow-up is
+    // consumed, like the dialogs' own back-key handlers do.
+    if (dismissed) {
+      DialogBackSuppressor.markDismissed();
+    }
     return dismissed;
   }
 
@@ -3516,19 +3529,23 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (controller == null || !controller.value.isInitialized) {
       return const Positioned.fill(child: ColoredBox(color: Colors.black));
     }
+    // VideoPlayer punches a transparent hole and AVPlay renders onto a hardware
+    // plane below it, scaling to the zoom mode via setDisplayMode (see
+    // TizenPlayerBackend.syncZoomMode). The overlay fills the screen, so the
+    // Flutter side is just a full-bleed hole over black.
     return Positioned.fill(
       child: ColoredBox(
         color: Colors.black,
-        child: FittedBox(
-          fit: _zoomToFit(_zoomMode),
-          child: SizedBox(
-            width: controller.value.size.width,
-            height: controller.value.size.height,
-            child: VideoPlayer(controller),
-          ),
-        ),
+        child: VideoPlayer(controller),
       ),
     );
+  }
+
+  void _syncTizenZoomMode() {
+    final backend = _activeBackend;
+    if (backend is TizenPlayerBackend) {
+      unawaited(backend.syncZoomMode());
+    }
   }
 
   NativeVideoZoomMode _nativeZoomMode(ZoomMode mode) => switch (mode) {
@@ -5968,10 +5985,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         options: options,
         selectedIndex: selectedIndex,
         useRootNavigator: false,
-        // Delay controls are only wired for the Media3 backend (Android).
-        // On other platforms the backend no-ops setAudioDelay/setSubtitleDelay,
-        // so the footer is hidden to avoid a confusing unresponsive control.
-        footer: _activeMedia3Backend != null
+        // Show the delay control only when the active backend can actually
+        // apply it (Media3 on Android, mpv/MediaKit on desktop). Backends that
+        // no-op the setter (Tizen, web) report false and the footer is hidden so
+        // users aren't presented with an unresponsive adjustment.
+        footer:
+            (audio
+                ? (_activeBackend?.supportsAudioDelay ?? false)
+                : (_activeBackend?.supportsSubtitleDelay ?? false))
             ? _DelayFooter(
                 initialDelay: audio ? _audioDelay : _subtitleDelay,
                 label: audio ? l10n.audioDelay : l10n.subtitleDelay,
@@ -6004,6 +6025,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             () => _manager.changeSubtitleTrack(streamIndex),
           );
           _syncSubtitleActive();
+          unawaited(_reapplyDelays());
         }
       } else {
         if (result < streams.length) {
@@ -6012,6 +6034,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             'audio_$streamIndex',
             () => _manager.changeAudioTrack(streamIndex),
           );
+          unawaited(_reapplyDelays());
         }
       }
     }());
@@ -6049,6 +6072,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _prefs.set(UserPreferences.playerZoomMode, next);
         _showZoomModeToast(next);
         unawaited(_syncMedia3ZoomMode());
+        _syncTizenZoomMode();
         unawaited(_pushMedia3UiMetadata());
       },
       tooltip: tooltip,
@@ -6491,6 +6515,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
+  /// Re-pushes the current audio/subtitle delays to the backend. mpv resets
+  /// `audio-delay`/`sub-delay` to 0 whenever a new file is loaded (e.g. a
+  /// transcoded track switch or the next queue item), so the delays must be
+  /// reapplied after the stream reloads to keep them in effect. No-op for
+  /// backends that don't support the respective delay.
+  Future<void> _reapplyDelays() async {
+    final backend = _manager.backend;
+    if (backend == null) return;
+    if (_audioDelay != 0.0 && backend.supportsAudioDelay) {
+      await backend.setAudioDelay(_audioDelay);
+    }
+    if (_subtitleDelay != 0.0 && backend.supportsSubtitleDelay) {
+      await backend.setSubtitleDelay(_subtitleDelay);
+    }
+  }
+
   String _formatBitrate(int? bitrate) {
     if (bitrate == null) {
       return AppLocalizations.of(context).unknown;
@@ -6575,6 +6615,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         context: context,
         title: l10n.playbackInformation,
         streamInfoSections: streamInfoSections,
+        useRootNavigator: false,
       ),
     );
     _showControls();

@@ -47,11 +47,7 @@ dependencies:
   media_kit: 1.2.6
   media_kit_video: ^2.0.1
   media_kit_libs_video: 1.0.7
-  # Tizen playback backend (TizenPlayerBackend) — media_kit/libmpv and Media3
-  # are unavailable on Tizen, so video plays through video_player, whose Tizen
-  # implementation (video_player_tizen) wraps the native AVPlay player.
-  video_player: ^2.9.2
-  video_player_tizen: any
+  video_player_avplay: any
 
   # Image Loading
   cached_network_image: ^3.4.1
