@@ -7428,7 +7428,7 @@ class AppLocalizationsAf extends AppLocalizations {
 
   @override
   String get homeRowTogglesDescription =>
-      'Turn on the following toggles to see and select them in the Home Sections interface.';
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Tipe rye';

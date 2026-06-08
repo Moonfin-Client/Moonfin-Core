@@ -2833,11 +2833,11 @@
   "@showBackdropImages": {
     "description": "Description for background backdrops"
   },
-  "seriesThumbnails": "Show Series Thumbnails",
+  "seriesThumbnails": "Display Series Thumbnails",
   "@seriesThumbnails": {
     "description": "Setting for series thumbnails"
   },
-  "seriesThumbnailsDescription": "For TV shows, use generic series artwork instead of episode specific stills on the homepage.",
+  "seriesThumbnailsDescription": "For TV series, use the main series artwork instead of the episode thumbnail.",
   "@seriesThumbnailsDescription": {
     "description": "Description for series thumbnails setting"
   },
@@ -7064,7 +7064,7 @@
   "homeRowSections": "Home Row Sections",
   "homeRowToggles": "Home Row Toggles",
   "homeRowTogglesSubtitle": "Enable or disable different home row categories",
-  "homeRowTogglesDescription": "Turn on the following toggles to see and select them in the Home Sections interface.",
+  "homeRowTogglesDescription": "Enable the following toggles to display the rows in Home Sections.",
   "rowsType": "Row Type",
   "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.",
   "displayFavoritesRows": "Display Favorites Rows",

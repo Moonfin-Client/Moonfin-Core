@@ -3626,13 +3626,13 @@ abstract class AppLocalizations {
   /// Setting for series thumbnails
   ///
   /// In en, this message translates to:
-  /// **'Show Series Thumbnails'**
+  /// **'Display Series Thumbnails'**
   String get seriesThumbnails;
 
   /// Description for series thumbnails setting
   ///
   /// In en, this message translates to:
-  /// **'For TV shows, use generic series artwork instead of episode specific stills on the homepage.'**
+  /// **'For TV series, use the main series artwork instead of the episode thumbnail.'**
   String get seriesThumbnailsDescription;
 
   /// Setting for home row info overlay
@@ -13202,7 +13202,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeRowTogglesDescription.
   ///
   /// In en, this message translates to:
-  /// **'Turn on the following toggles to see and select them in the Home Sections interface.'**
+  /// **'Enable the following toggles to display the rows in Home Sections.'**
   String get homeRowTogglesDescription;
 
   /// No description provided for @rowsType.

@@ -1985,11 +1985,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showBackdropImages => 'Show backdrop images behind content';
 
   @override
-  String get seriesThumbnails => 'Show Series Thumbnails';
+  String get seriesThumbnails => 'Display Series Thumbnails';
 
   @override
   String get seriesThumbnailsDescription =>
-      'For TV shows, use generic series artwork instead of episode specific stills on the homepage.';
+      'For TV series, use the main series artwork instead of the episode thumbnail.';
 
   @override
   String get homeRowInfoOverlay => 'Home Row Info Overlay';
@@ -7365,7 +7365,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeRowTogglesDescription =>
-      'Turn on the following toggles to see and select them in the Home Sections interface.';
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Row Type';
@@ -9944,11 +9944,11 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get showBackdropImages => 'Show backdrop images behind content';
 
   @override
-  String get seriesThumbnails => 'Show Series Thumbnails';
+  String get seriesThumbnails => 'Display Series Thumbnails';
 
   @override
   String get seriesThumbnailsDescription =>
-      'For TV shows, use generic series artwork instead of episode specific stills on the homepage.';
+      'For TV series, use the main series artwork instead of the episode thumbnail.';
 
   @override
   String get homeRowInfoOverlay => 'Home Row Info Overlay';
