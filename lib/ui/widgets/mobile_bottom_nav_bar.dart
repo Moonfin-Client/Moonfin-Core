@@ -235,6 +235,21 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
       );
     }
 
+    if (_prefs.get(UserPreferences.showLiveTvButton) &&
+        _libraries.any((lib) => lib.collectionType == 'livetv')) {
+      actions.add(
+        _BottomNavAction(
+          icon: Icons.live_tv,
+          label: l10n.liveTv,
+          isActive: _isActive(Destinations.liveTvGuide),
+          onTap: () {
+            if (_isActive(Destinations.liveTvGuide)) return;
+            context.navigateTopLevel(Destinations.liveTvGuide);
+          },
+        ),
+      );
+    }
+
     if (_seerrEnabled()) {
       final seerrPrefs = GetIt.instance<SeerrPreferences>();
       final displayName = seerrPrefs.moonfinDisplayName.trim();

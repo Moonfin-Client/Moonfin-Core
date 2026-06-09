@@ -613,6 +613,8 @@ class _TopToolbarState extends State<TopToolbar> {
     final showSyncPlay =
         _prefs.get(UserPreferences.syncPlayEnabled) &&
         _prefs.get(UserPreferences.showSyncPlayButton);
+    final showLiveTv = _prefs.get(UserPreferences.showLiveTvButton) &&
+        _libraries.any((lib) => lib.collectionType == 'livetv');
     final seerrPrefs = GetIt.instance<SeerrPreferences>();
     final showSeerr = _prefs.get(UserPreferences.showSeerrButton) &&
         GetIt.instance<PluginSyncService>().seerrAvailable;
@@ -785,6 +787,22 @@ class _TopToolbarState extends State<TopToolbar> {
                           builder: (_) => const SyncPlayScreen(),
                         ),
                       ),
+                    ),
+                  ),
+                ],
+                if (showLiveTv) ...[
+                  _gap(),
+                  _orderButton(
+                    order: (order++).toDouble(),
+                    child: ExpandableIconButton(
+                      key: const ValueKey('toolbar_livetv'),
+                      icon: Icons.live_tv,
+                      label: l10n.liveTv,
+                      baseColor: nextNavColor(),
+                      onPressed: () {
+                        if (_isActive(Destinations.liveTvGuide)) return;
+                        context.navigateTopLevel(Destinations.liveTvGuide);
+                      },
                     ),
                   ),
                 ],

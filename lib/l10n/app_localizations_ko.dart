@@ -6711,6 +6711,19 @@ class AppLocalizationsKo extends AppLocalizations {
       'Show the Seerr button in the navigation bar';
 
   @override
+  String get settingsNavbarDisplayHeader => 'Navbar Display';
+
+  @override
+  String get settingsNavbarContentsHeader => 'Navbar Contents';
+
+  @override
+  String get settingsNavbarContentsDescription =>
+      'Enable the following toggles to display these elements in the navigation bar.';
+
+  @override
+  String get showLiveTvButton => 'Show Live TV Button';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       '라이브러리별로 홈 페이지 가시성을 전환합니다. 변경 사항을 적용하려면 Moonfin을 다시 시작하세요.';
 
