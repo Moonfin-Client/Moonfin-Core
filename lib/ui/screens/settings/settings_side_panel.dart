@@ -2058,7 +2058,7 @@ class _VideoPlaybackScreen extends StatelessWidget {
               subtitle: l10n.hardwareDecodingSubtitle,
               icon: Icons.memory,
             ),
-          if (!PlatformDetection.isWeb)
+          if (PlatformDetection.isAndroid && PlatformDetection.isTV)
             EnumPreferenceTile<RefreshRateSwitchingBehavior>(
               preference: UserPreferences.refreshRateSwitchingBehavior,
               title: l10n.refreshRateSwitching,
@@ -2083,6 +2083,12 @@ class _VideoPlaybackScreen extends StatelessWidget {
                 AutoHdrSwitchingBehavior.always => l10n.always,
               },
             ),
+          SwitchPreferenceTile(
+            preference: UserPreferences.liveTvDirectPlayEnabled,
+            title: l10n.settingsLiveTvDirect,
+            subtitle: l10n.settingsLiveTvDirectSubtitle,
+            icon: Icons.live_tv,
+          ),
 
           _SectionHeader(l10n.transcodingLimits),
           StringPickerPreferenceTile(
@@ -2852,12 +2858,6 @@ class _AdvancedOptionsScreenState extends State<_AdvancedOptionsScreen> {
                 icon: Icons.warning_amber,
               ),
             ],
-            SwitchPreferenceTile(
-              preference: UserPreferences.liveTvDirectPlayEnabled,
-              title: l10n.settingsLiveTvDirect,
-              subtitle: l10n.settingsLiveTvDirectSubtitle,
-              icon: Icons.live_tv,
-            ),
           ],
         ),
       ),
