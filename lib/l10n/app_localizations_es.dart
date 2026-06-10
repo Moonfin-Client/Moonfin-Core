@@ -9249,7 +9249,7 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   String get readMore => 'Leer más';
 
   @override
-  String get shuffle => 'Barajar';
+  String get shuffle => 'Aleatorio';
 
   @override
   String downloadsCount(int count) {
@@ -17280,7 +17280,7 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   String get readMore => 'Leer más';
 
   @override
-  String get shuffle => 'Barajar';
+  String get shuffle => 'Aleatorio';
 
   @override
   String downloadsCount(int count) {
@@ -25311,7 +25311,7 @@ class AppLocalizationsEsDo extends AppLocalizationsEs {
   String get readMore => 'Leer más';
 
   @override
-  String get shuffle => 'Barajar';
+  String get shuffle => 'Aleatorio';
 
   @override
   String downloadsCount(int count) {
@@ -33342,7 +33342,7 @@ class AppLocalizationsEsMx extends AppLocalizationsEs {
   String get readMore => 'Leer más';
 
   @override
-  String get shuffle => 'Barajar';
+  String get shuffle => 'Aleatorio';
 
   @override
   String downloadsCount(int count) {
