@@ -2697,7 +2697,7 @@ class _AutomationQueueScreenState extends State<_AutomationQueueScreen> {
             labelOf: (v) => switch (v) {
               NextUpBehavior.extended => l10n.extended,
               NextUpBehavior.minimal => l10n.minimal,
-              NextUpBehavior.disabled => l10n.none,
+              NextUpBehavior.disabled => l10n.disabled,
             },
           ),
           if (showNextUpOptions)
