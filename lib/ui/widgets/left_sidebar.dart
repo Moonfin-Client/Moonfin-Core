@@ -907,24 +907,23 @@ class _LeftSidebarState extends State<LeftSidebar> {
                         : const SizedBox.shrink(),
                   ),
                 ],
-                if (_isExpanded)
-                  _SidebarItem(
-                    icon: Icons.settings_rounded,
-                    label: l10n.settings,
-                    baseColor: nextSidebarColor(),
-                    focusNode: _settingsFocusNode,
-                    showLabel: _showLabels,
-                    onPressed: () async {
-                      _onNavigate();
-                      await SettingsPanel.open(
-                        context,
-                        const SettingsSidePanel(),
-                      );
-                      if (!mounted) return;
-                      _markNavigationAwayFromSidebar();
-                      _settingsFocusNode.requestFocus();
-                    },
-                  ),
+                _SidebarItem(
+                  icon: Icons.settings_rounded,
+                  label: l10n.settings,
+                  baseColor: nextSidebarColor(),
+                  focusNode: _settingsFocusNode,
+                  showLabel: _showLabels,
+                  onPressed: () async {
+                    _onNavigate();
+                    await SettingsPanel.open(
+                      context,
+                      const SettingsSidePanel(),
+                    );
+                    if (!mounted) return;
+                    _markNavigationAwayFromSidebar();
+                    _settingsFocusNode.requestFocus();
+                  },
+                ),
               ];
 
               return SingleChildScrollView(
@@ -935,9 +934,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
                     minHeight: math.max(0, constraints.maxHeight - 8),
                   ),
                   child: Column(
-                    mainAxisAlignment: _showLabels
-                        ? MainAxisAlignment.start
-                        : MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: items,
                   ),
                 ),
@@ -945,24 +942,6 @@ class _LeftSidebarState extends State<LeftSidebar> {
             },
           ),
         ),
-        if (!_isExpanded)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: _SidebarItem(
-              icon: Icons.settings_rounded,
-              label: l10n.settings,
-              baseColor: nextSidebarColor(),
-              focusNode: _settingsFocusNode,
-              showLabel: _showLabels,
-              onPressed: () async {
-                _onNavigate();
-                await SettingsPanel.open(context, const SettingsSidePanel());
-                if (!mounted) return;
-                _markNavigationAwayFromSidebar();
-                _settingsFocusNode.requestFocus();
-              },
-            ),
-          ),
         if (showClock && _showLabels)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
