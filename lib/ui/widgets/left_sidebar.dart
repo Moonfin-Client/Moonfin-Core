@@ -934,7 +934,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
                     minHeight: math.max(0, constraints.maxHeight - 8),
                   ),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: items,
                   ),
                 ),
