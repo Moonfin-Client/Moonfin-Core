@@ -206,6 +206,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
           children: [
             _CardImage(
               imageUrl: widget.imageUrl,
+              title: widget.title,
               aspectRatio: widget.aspectRatio,
               isFavorite: widget.isFavorite,
               isPlayed: widget.isPlayed,
@@ -343,6 +344,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
 
 class _CardImage extends StatelessWidget {
   final String? imageUrl;
+  final String? title;
   final double aspectRatio;
   final bool isFavorite;
   final bool isPlayed;
@@ -361,6 +363,7 @@ class _CardImage extends StatelessWidget {
 
   const _CardImage({
     this.imageUrl,
+    this.title,
     required this.aspectRatio,
     required this.isFavorite,
     required this.isPlayed,
@@ -408,7 +411,11 @@ class _CardImage extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 Container(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  color: (itemType == 'Network' || itemType == 'Studio')
+                      ? Theme.of(context).colorScheme.surfaceContainerHighest
+                      : (imageUrl != null
+                          ? Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.2)
+                          : Colors.transparent),
                   padding: (itemType == 'Network' || itemType == 'Studio')
                       ? const EdgeInsets.all(8.0)
                       : EdgeInsets.zero,
@@ -422,9 +429,9 @@ class _CardImage extends StatelessWidget {
                           scale: isCircular ? 0.8 : 0.9,
                           maxWidth: aspectRatio > 1.2 ? 960 : 640,
                           errorBuilder: (_, _, _) =>
-                              _PlaceholderIcon(itemType: itemType),
+                              _PlaceholderIcon(itemType: itemType, title: title),
                         )
-                      : _PlaceholderIcon(itemType: itemType),
+                      : _PlaceholderIcon(itemType: itemType, title: title),
                 ),
                 if (isFavorite)
                   Positioned(
@@ -639,11 +646,48 @@ class _CardImage extends StatelessWidget {
 
 class _PlaceholderIcon extends StatelessWidget {
   final String? itemType;
+  final String? title;
 
-  const _PlaceholderIcon({this.itemType});
+  const _PlaceholderIcon({this.itemType, this.title});
 
   @override
   Widget build(BuildContext context) {
+    if (itemType != 'Person') {
+      return Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Theme.of(context).colorScheme.primary.withValues(alpha: 0.25),
+              Theme.of(context).colorScheme.secondary.withValues(alpha: 0.05),
+              Colors.transparent,
+            ],
+            stops: const [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: title != null && title!.isNotEmpty
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(
+                    title!.toUpperCase(),
+                    textAlign: TextAlign.center,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2.5,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ),
+              )
+            : null,
+      );
+    }
+
     return Center(
       child: Icon(
         MediaCard.iconForType(itemType),

@@ -3788,6 +3788,13 @@ class _ContentRowsState extends State<_ContentRows>
     double requestScale,
     {bool isMyMediaRow = false}
   ) {
+    if (imageType == ImageType.poster && isMyMediaRow) {
+      final primaryAr = item.rawData['PrimaryImageAspectRatio'] as num?;
+      if (primaryAr == null || primaryAr >= 1.0) {
+        return null;
+      }
+    }
+
     if (item.serverId == 'seerr') {
       final backdrop = _seerrTmdbImageUrl(item.rawData['BackdropPath'] as String?, 1280);
       final poster = _seerrTmdbImageUrl(item.rawData['PosterPath'] as String?, 300);
