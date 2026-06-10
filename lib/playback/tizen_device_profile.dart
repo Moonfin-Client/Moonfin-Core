@@ -48,13 +48,21 @@ class TizenDeviceProfile {
     }
   }
 
+  /// TEMPORARY DIAGNOSTIC — set true to strip all DirectPlayProfiles so the
+  /// server is forced to transcode everything to HLS. Used to test whether the
+  /// native AVPlay/PlusPlayer "stuck on Loading Stream…" hang is specific to
+  /// direct-progressive-HTTP playback (HLS plays → direct-play bug) or affects
+  /// the native player for any source (HLS also hangs → display/runner bug).
+  /// Revert to false once diagnosed.
+  static bool debugForceTranscode = true;
+
   static String get debugSummary {
     final c = _detected;
     final source = c == null ? 'static-fallback' : 'detected';
     final caps = c ?? _staticCaps;
     return 'caps=$source uhd=${caps.uhd} uhd8K=${caps.uhd8K} hevc=${caps.hevc} '
         'av1=${caps.av1} vp9=${caps.vp9} hdr10=${caps.hdr10} '
-        '(DTS/TrueHD always transcoded)';
+        'forceTranscode=$debugForceTranscode (DTS/TrueHD always transcoded)';
   }
 
   static Map<String, dynamic> build({
@@ -288,7 +296,8 @@ class TizenDeviceProfile {
       'MaxStaticBitrate': maxBitrate,
       'MaxStaticMusicBitrate': 40000000,
       'MusicStreamingTranscodingBitrate': 384000,
-      'DirectPlayProfiles': directPlayProfiles,
+      'DirectPlayProfiles':
+          debugForceTranscode ? const <Map<String, dynamic>>[] : directPlayProfiles,
       'TranscodingProfiles': transcodingProfiles,
       'ContainerProfiles': <Map<String, dynamic>>[],
       'CodecProfiles': codecProfiles,
