@@ -24,7 +24,6 @@ import '../../../util/app_distribution.dart';
 import '../../widgets/app_update_dialog.dart';
 
 import '../../../auth/store/authentication_preferences.dart';
-import '../../../auth/store/authentication_store.dart';
 import '../../../auth/repositories/session_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../playback/audio_capability_profile.dart';
@@ -472,23 +471,11 @@ class _AuthenticationCategoryScreen extends StatelessWidget {
             icon: Icons.person,
             labelOf: (v) {
               if (v == UserSelectBehavior.currentUser) {
-                final authPrefs = GetIt.instance<AuthenticationPreferences>();
-                final autoUserId = authPrefs.savedAutoLoginUserId;
-                final autoServerId = authPrefs.savedAutoLoginServerId;
-                if (autoUserId.isNotEmpty && autoServerId.isNotEmpty) {
-                  final authStore = GetIt.instance<AuthenticationStore>();
-                  final autoUser = authStore.getUser(autoServerId, autoUserId);
-                  if (autoUser != null) {
-                    final session = GetIt.instance<SessionRepository>();
-                    if (session.activeUserId == autoUserId &&
-                        session.activeServerId == autoServerId) {
-                      return l10n.currentUser;
-                    } else {
-                      return autoUser.name;
-                    }
-                  }
-                }
-                return l10n.currentUser;
+                final session = GetIt.instance<SessionRepository>();
+                // If I'm the auto-login user, just say "Current User"
+                // If someone else is, show their name so it's clear
+                if (session.activeUserIsAutoLoginTarget) return l10n.currentUser;
+                return session.autoLoginTargetDisplayName() ?? l10n.currentUser;
               }
               return switch (v) {
                 UserSelectBehavior.disabled => l10n.disabled,
@@ -502,19 +489,10 @@ class _AuthenticationCategoryScreen extends StatelessWidget {
               UserSelectBehavior.currentUser => l10n.currentUser,
             },
             onChanged: () {
-              final store = GetIt.instance<PreferenceStore>();
-              final behavior = store.get(UserPreferences.autoLoginUserBehavior);
-              final authPrefs = GetIt.instance<AuthenticationPreferences>();
-              if (behavior == UserSelectBehavior.currentUser) {
-                final session = GetIt.instance<SessionRepository>();
-                final serverId = session.activeServerId;
-                final userId = session.activeUserId;
-                if (serverId != null && userId != null) {
-                  authPrefs.setAutoLogin(serverId, userId);
-                }
-              } else {
-                authPrefs.clearAutoLogin();
-              }
+              final behavior = GetIt.instance<PreferenceStore>()
+                  .get(UserPreferences.autoLoginUserBehavior);
+              GetIt.instance<SessionRepository>()
+                  .applyAutoLoginForBehavior(behavior);
             },
           ),
           SwitchPreferenceTile(
