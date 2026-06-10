@@ -891,6 +891,18 @@ class PlaybackManager implements AudioOwnable {
     _mediaSourceId = resolution.mediaSourceId;
     _itemKnownDuration = _resolvedItemDuration(item, resolution.mediaSourceId);
 
+    if (_audioStreamIndex == null) {
+      final audioStreams =
+          resolution.mediaStreams.where((s) => s['Type'] == 'Audio').toList();
+      if (audioStreams.isNotEmpty) {
+        final defaultAudio = audioStreams.firstWhere(
+          (s) => s['IsDefault'] == true,
+          orElse: () => audioStreams.first,
+        );
+        _audioStreamIndex = defaultAudio['Index'] as int?;
+      }
+    }
+
     final playbackDecisionLogger = _playbackDecisionLogger;
     if (playbackDecisionLogger != null && _backend != null) {
       try {
@@ -1816,6 +1828,8 @@ class PlaybackManager implements AudioOwnable {
     _lastExplicitAudioLanguage = null;
     _lastExplicitSubtitleLanguage = null;
     _lastExplicitSubtitleEnabled = null;
+    _audioStreamIndex = null;
+    _subtitleStreamIndex = null;
     _isAutoNexting = false;
     _isManualNexting = false;
     suppressAutoNext = false;
