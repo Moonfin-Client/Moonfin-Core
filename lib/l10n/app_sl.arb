@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} selected",
   "mediaBar": "Medijska vrstica",
   "mediaBarMode": "Slog medijske vrstice",
-  "mediaBarModeDescription": "Izbirajte med Moonfin, MakD ali izklopite medijsko vrstico",
+  "mediaBarModeDescription": "Izbirajte med različnimi slogi medijske vrstice ali pa medijsko vrstico izklopite",
   "mediaBarModeMoonfin": "Mesečeva plavutka",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Izključeno",

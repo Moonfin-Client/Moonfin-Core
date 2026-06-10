@@ -2833,11 +2833,11 @@
   "@showBackdropImages": {
     "description": "Description for background backdrops"
   },
-  "seriesThumbnails": "Series Thumbnails",
+  "seriesThumbnails": "Display Series Thumbnails",
   "@seriesThumbnails": {
     "description": "Setting for series thumbnails"
   },
-  "seriesThumbnailsDescription": "Episodes only: use series artwork that matches each row image type",
+  "seriesThumbnailsDescription": "For TV series, use the main series artwork instead of the episode thumbnail.",
   "@seriesThumbnailsDescription": {
     "description": "Description for series thumbnails setting"
   },
@@ -3917,7 +3917,7 @@
   "@mediaBarMode": {
     "description": "Setting for choosing media bar style"
   },
-  "mediaBarModeDescription": "Choose between Moonfin, MakD, or turn the media bar off",
+  "mediaBarModeDescription": "Choose between various media bar styles, or turn the media bar off",
   "@mediaBarModeDescription": {
     "description": "Description for media bar style setting"
   },
@@ -4088,6 +4088,14 @@
   "combineBothRows": "Combine both rows into a single home section",
   "@combineBothRows": {
     "description": "Description for merge continue watching and next up"
+  },
+  "fullScreenRows": "Expanded Home Rows",
+  "@fullScreenRows": {
+    "description": "Setting for full screen home rows"
+  },
+  "fullScreenRowsDescription": "Limit home rows to 1 row per screen",
+  "@fullScreenRowsDescription": {
+    "description": "Description for full screen home rows"
   },
   "perRowImageType": "Per Row Image Type",
   "@perRowImageType": {
@@ -7052,7 +7060,12 @@
   "homeRowsStyleClassic": "Classic",
   "homeRowsStyleModern": "Modern",
   "homeRowsSection": "Home Rows",
-  "rowsType": "Rows Type",
+  "homeRowDisplay": "Home Row Display",
+  "homeRowSections": "Home Row Sections",
+  "homeRowToggles": "Home Row Toggles",
+  "homeRowTogglesSubtitle": "Enable or disable different home row categories",
+  "homeRowTogglesDescription": "Enable the following toggles to display the rows in Home Sections.",
+  "rowsType": "Row Type",
   "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.",
   "displayFavoritesRows": "Display Favorites Rows",
   "displayFavoritesRowsSubtitle": "Show Favorite Movies, Series, and other favorite rows in Home Sections.",
@@ -7075,7 +7088,7 @@
   "displaySeerrRows": "Display Seerr Discovery Rows",
   "displaySeerrRowsSubtitle": "Show Seerr discovery rows in Home Sections.",
   "appearance": "Appearance",
-  "cardSize": "Card Size",
+  "cardSize": "Home Row Card Display Size",
   "externalPlayerApp": "External player app",
   "externalPlayerAskEachTimeSubtitle": "Show app chooser when playback starts.",
   "loadingInstalledPlayers": "Loading installed players...",

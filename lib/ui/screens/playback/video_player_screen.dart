@@ -42,6 +42,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/audio_labels.dart';
 import '../../../util/auto_hdr_switcher.dart';
+import '../../../util/clock_format.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/play_method_label.dart';
@@ -242,6 +243,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   double _verticalDragStartValue = 0.0;
   bool _verticalDragIsVolume = false;
   Offset? _doubleTapDownPosition;
+  DateTime? _lastControlButtonPressAt;
   bool _showSkipForward = false;
   bool _showSkipBackward = false;
   Timer? _skipForwardTimer;
@@ -3905,11 +3907,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final remaining = duration - position;
     if (remaining <= Duration.zero) return '';
     final end = DateTime.now().add(remaining);
-    final localizations = MaterialLocalizations.of(context);
-    final use24Hour = MediaQuery.of(context).alwaysUse24HourFormat;
-    final time = localizations.formatTimeOfDay(
-      TimeOfDay.fromDateTime(end),
-      alwaysUse24HourFormat: use24Hour,
+    final time = formatClockTime(
+      end,
+      use24Hour: _prefs.get(UserPreferences.use24HourClock),
     );
     return AppLocalizations.of(context).endsAt(time);
   }
@@ -5176,8 +5176,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _doubleTapDownPosition = details.localPosition;
   }
 
+  void _handleControlButtonPress(VoidCallback onPressed) {
+    _lastControlButtonPressAt = DateTime.now();
+    onPressed();
+    _showControls();
+  }
+
+  bool _recentlyPressedControlButton() {
+    final lastPress = _lastControlButtonPressAt;
+    return lastPress != null &&
+        DateTime.now().difference(lastPress) <
+            const Duration(milliseconds: 350);
+  }
+
   void _handleDoubleTapGesture() {
     if (PlatformDetection.useDesktopUi) {
+      if (_recentlyPressedControlButton()) {
+        return;
+      }
       unawaited(_toggleDesktopFullscreen());
       _showControls();
       return;
@@ -5601,10 +5617,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         focusNode: focusNode,
         extent: extent,
         tooltip: tooltip,
-        onPressed: () {
-          onPressed();
-          _showControls();
-        },
+        onPressed: () => _handleControlButtonPress(onPressed),
         onRightBoundary: onRightBoundary,
         child: Icon(icon, color: iconColor, size: size),
       );
@@ -5614,10 +5627,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       height: extent,
       child: IconButton(
         focusNode: focusNode,
-        onPressed: () {
-          onPressed();
-          _showControls();
-        },
+        onPressed: () => _handleControlButtonPress(onPressed),
         tooltip: PlatformDetection.useDesktopUi ? tooltip : null,
         icon: Icon(icon, color: iconColor, size: size),
         padding: EdgeInsets.zero,

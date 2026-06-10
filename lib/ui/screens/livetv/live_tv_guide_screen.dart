@@ -15,6 +15,8 @@ import '../../widgets/overlay_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/key_event_utils.dart';
+import '../../../preference/user_preferences.dart';
+import '../../../util/clock_format.dart';
 
 const _kChannelColumnWidth = 160.0;
 const _kRowHeight = 84.0;
@@ -48,6 +50,7 @@ class LiveTvGuideScreen extends StatefulWidget {
 
 class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
   late final LiveTvGuideViewModel _vm;
+  final _prefs = GetIt.instance<UserPreferences>();
   final _channelScrollController = ScrollController();
   final _programScrollController = ScrollController();
   final _timeHeaderHorizontalScrollController = ScrollController();
@@ -289,11 +292,10 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
   }
 
   String _formatTime(DateTime dt) {
-    final h = dt.hour;
-    final m = dt.minute.toString().padLeft(2, '0');
-    final amPm = h >= 12 ? 'PM' : 'AM';
-    final h12 = h > 12 ? h - 12 : (h == 0 ? 12 : h);
-    return '$h12:$m $amPm';
+    return formatClockTime(
+      dt,
+      use24Hour: _prefs.get(UserPreferences.use24HourClock),
+    );
   }
 
   String _formatDate(DateTime dt) {

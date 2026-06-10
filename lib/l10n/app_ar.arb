@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} تم التحديد",
   "mediaBar": "شريط الوسائط",
   "mediaBarMode": "نمط شريط الوسائط",
-  "mediaBarModeDescription": "اختر بين Moonfin أو MakD أو قم بإيقاف تشغيل شريط الوسائط",
+  "mediaBarModeDescription": "اختر من بين أنماط متنوعة لشريط الوسائط، أو قم بإيقاف تشغيل شريط الوسائط",
   "mediaBarModeMoonfin": "مونفين",
   "mediaBarModeMakd": "ماكد",
   "mediaBarModeOff": "عن",

@@ -3626,13 +3626,13 @@ abstract class AppLocalizations {
   /// Setting for series thumbnails
   ///
   /// In en, this message translates to:
-  /// **'Series Thumbnails'**
+  /// **'Display Series Thumbnails'**
   String get seriesThumbnails;
 
   /// Description for series thumbnails setting
   ///
   /// In en, this message translates to:
-  /// **'Episodes only: use series artwork that matches each row image type'**
+  /// **'For TV series, use the main series artwork instead of the episode thumbnail.'**
   String get seriesThumbnailsDescription;
 
   /// Setting for home row info overlay
@@ -5150,7 +5150,7 @@ abstract class AppLocalizations {
   /// Description for media bar style setting
   ///
   /// In en, this message translates to:
-  /// **'Choose between Moonfin, MakD, or turn the media bar off'**
+  /// **'Choose between various media bar styles, or turn the media bar off'**
   String get mediaBarModeDescription;
 
   /// Media bar style option: Moonfin
@@ -5392,6 +5392,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Combine both rows into a single home section'**
   String get combineBothRows;
+
+  /// Setting for full screen home rows
+  ///
+  /// In en, this message translates to:
+  /// **'Expanded Home Rows'**
+  String get fullScreenRows;
+
+  /// Description for full screen home rows
+  ///
+  /// In en, this message translates to:
+  /// **'Limit home rows to 1 row per screen'**
+  String get fullScreenRowsDescription;
 
   /// Title for per-row image type screen
   ///
@@ -13163,10 +13175,40 @@ abstract class AppLocalizations {
   /// **'Home Rows'**
   String get homeRowsSection;
 
+  /// No description provided for @homeRowDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Home Row Display'**
+  String get homeRowDisplay;
+
+  /// No description provided for @homeRowSections.
+  ///
+  /// In en, this message translates to:
+  /// **'Home Row Sections'**
+  String get homeRowSections;
+
+  /// No description provided for @homeRowToggles.
+  ///
+  /// In en, this message translates to:
+  /// **'Home Row Toggles'**
+  String get homeRowToggles;
+
+  /// No description provided for @homeRowTogglesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable or disable different home row categories'**
+  String get homeRowTogglesSubtitle;
+
+  /// No description provided for @homeRowTogglesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable the following toggles to display the rows in Home Sections.'**
+  String get homeRowTogglesDescription;
+
   /// No description provided for @rowsType.
   ///
   /// In en, this message translates to:
-  /// **'Rows Type'**
+  /// **'Row Type'**
   String get rowsType;
 
   /// No description provided for @rowsTypeDescription.
@@ -13304,7 +13346,7 @@ abstract class AppLocalizations {
   /// No description provided for @cardSize.
   ///
   /// In en, this message translates to:
-  /// **'Card Size'**
+  /// **'Home Row Card Display Size'**
   String get cardSize;
 
   /// No description provided for @externalPlayerApp.

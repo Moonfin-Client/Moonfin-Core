@@ -2848,7 +2848,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Επιλέξτε μεταξύ Moonfin, MakD ή απενεργοποιήστε τη γραμμή πολυμέσων';
+      'Επιλέξτε ανάμεσα σε διάφορα στυλ γραμμής πολυμέσων ή απενεργοποιήστε τη γραμμή πολυμέσων';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';
@@ -2977,6 +2977,12 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get combineBothRows =>
       'Συνδυάστε και τις δύο σειρές σε ένα ενιαίο αρχικό τμήμα';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Τύπος εικόνας ανά σειρά';
@@ -7514,6 +7520,23 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'Αρχικές Σειρές';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Τύπος σειρών';

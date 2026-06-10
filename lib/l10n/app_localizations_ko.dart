@@ -2758,7 +2758,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get mediaBarMode => '미디어 바 스타일';
 
   @override
-  String get mediaBarModeDescription => 'Moonfin, MakD 중에서 선택하거나 미디어 바를 끄세요';
+  String get mediaBarModeDescription => '다양한 미디어 바 스타일 중 하나를 선택하거나 미디어 바를 끄십시오';
 
   @override
   String get mediaBarModeMoonfin => '달지느러미';
@@ -2881,6 +2881,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get combineBothRows => '두 행을 단일 홈 섹션으로 결합';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => '행별 이미지 유형';
@@ -7200,6 +7206,23 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'Home Rows';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Rows Type';

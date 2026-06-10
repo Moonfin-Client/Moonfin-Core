@@ -2824,7 +2824,7 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Valige Moonfin, MakD või lülitage meediariba välja';
+      'Valige erinevate meediariba stiilide vahel või lülitage meediariba välja';
 
   @override
   String get mediaBarModeMoonfin => 'Kuufin';
@@ -2951,6 +2951,12 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String get combineBothRows => 'Ühendage mõlemad read üheks koduosaks';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Rea pilditüübi kohta';
@@ -7412,6 +7418,23 @@ class AppLocalizationsEt extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'Kodu read';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Ridade tüüp';

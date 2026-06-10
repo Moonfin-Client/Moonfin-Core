@@ -2813,7 +2813,7 @@ class AppLocalizationsEo extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Elektu inter Moonfin, MakD aŭ malŝaltu la amaskomunikilaron';
+      'Elektu inter diversaj stiloj de amaskomunikila breto, aŭ malŝaltu la amaskomunikilan breton';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';
@@ -2942,6 +2942,12 @@ class AppLocalizationsEo extends AppLocalizations {
   @override
   String get combineBothRows =>
       'Kombinu ambaŭ vicojn en ununuran hejman sekcion';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Per Vico Bilda Tipo';
@@ -7388,6 +7394,23 @@ class AppLocalizationsEo extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'Hejmaj Vicoj';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Vicoj Tipo';

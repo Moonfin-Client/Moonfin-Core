@@ -265,6 +265,11 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
       _focusNodes.insert(newIndex, node);
     });
     _save();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _focusNodes[newIndex].requestFocus();
+      }
+    });
   }
 }
 

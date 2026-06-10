@@ -2820,7 +2820,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Moonfin, MakD хоёрын аль нэгийг нь сонгох эсвэл медиа мөрийг унтраа';
+      'Төрөл бүрийн медиа самбарын хэв маягаас сонгох эсвэл медиа мөрийг унтраа';
 
   @override
   String get mediaBarModeMoonfin => 'Сарны фин';
@@ -2949,6 +2949,12 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get combineBothRows => 'Хоёр мөрийг нэг гэрийн хэсэг болгон нэгтгэнэ';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Мөр бүрийн зургийн төрөл';
@@ -7428,6 +7434,23 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'Нүүр хуудас';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Мөрийн төрөл';

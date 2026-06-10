@@ -2820,7 +2820,7 @@ class AppLocalizationsBe extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Выбірайце паміж Moonfin, MakD або выключыце медыяпанэль';
+      'Выбірайце паміж рознымі стылямі медыяпанэлі або адключайце медыяпанэль';
 
   @override
   String get mediaBarModeMoonfin => 'Месяцовы плаўнік';
@@ -2949,6 +2949,12 @@ class AppLocalizationsBe extends AppLocalizations {
   @override
   String get combineBothRows =>
       'Аб\'яднайце абодва шэрагу ў адну хатнюю секцыю';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Тып выявы ў радку';
@@ -7428,6 +7434,23 @@ class AppLocalizationsBe extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'Хатнія шэрагі';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Тып радкоў';

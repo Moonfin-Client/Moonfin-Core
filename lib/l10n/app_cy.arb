@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} wedi'i ddewis",
   "mediaBar": "Bar Cyfryngau",
   "mediaBarMode": "Arddull Bar Cyfryngau",
-  "mediaBarModeDescription": "Dewiswch rhwng Moonfin, MakD, neu trowch y bar cyfryngau i ffwrdd",
+  "mediaBarModeDescription": "Dewiswch rhwng gwahanol arddulliau bar cyfryngau, neu diffoddwch y bar cyfryngau",
   "mediaBarModeMoonfin": "Lleuad",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "I ffwrdd",

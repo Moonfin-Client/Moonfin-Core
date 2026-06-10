@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} selected",
   "mediaBar": "मीडिया बार",
   "mediaBarMode": "मीडिया बार शैली",
-  "mediaBarModeDescription": "Moonfin, MakD में से चुनें, या मीडिया बार बंद करें",
+  "mediaBarModeDescription": "अलग-अलग मीडिया बार स्टाइल में से चुनें, या मीडिया बार को बंद कर दें।",
   "mediaBarModeMoonfin": "मूनफ़िन",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "बंद",

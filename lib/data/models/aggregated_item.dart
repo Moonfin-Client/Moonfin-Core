@@ -139,6 +139,8 @@ class AggregatedItem {
   String? get parentThumbImageTag =>
       rawData['ParentThumbImageTag'] as String?;
   String? get status => rawData['Status'] as String?;
+  String? get seerrMediaType => rawData['SeerrMediaType'] as String?;
+  int? get seerrStatus => _toInt(rawData['SeerrStatus']);
   int? get childCount => _toInt(rawData['ChildCount']);
 
   DateTime? get premiereDate {

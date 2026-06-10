@@ -183,16 +183,23 @@ class EmbyItemsApi implements ItemsApi {
     final response = await _dio.get(
       '/Users/$userId/Items/Latest',
       queryParameters: {
-        'ParentId': ?parentId,
+        if (parentId != null) 'ParentId': parentId,
         if (includeItemTypes != null)
           'IncludeItemTypes': includeItemTypes.join(','),
-        'Limit': ?limit,
-        'Fields': ?fields,
-        'EnableImageTypes': ?enableImageTypes,
-        'ImageTypeLimit': ?imageTypeLimit,
+        if (limit != null) 'Limit': limit,
+        if (fields != null) 'Fields': fields,
+        if (enableImageTypes != null) 'EnableImageTypes': enableImageTypes,
+        if (imageTypeLimit != null) 'ImageTypeLimit': imageTypeLimit,
       },
     );
-    return response.data as Map<String, dynamic>;
+
+    // /Items/Latest returns a bare array, so normalize it into the
+    // same shape as /Items so all callers stay unchanged.
+    final list = response.data as List;
+    return {
+      'Items': list,
+      'TotalRecordCount': list.length,
+    };
   }
 
   @override

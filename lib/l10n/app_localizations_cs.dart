@@ -2817,7 +2817,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Vyberte si mezi Moonfin, MakD nebo vypněte panel médií';
+      'Vyberte si mezi různými styly mediálního panelu nebo mediální panel vypněte';
 
   @override
   String get mediaBarModeMoonfin => 'Měsíční ploutev';
@@ -2944,6 +2944,12 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get combineBothRows => 'Spojte oba řádky do jedné domovské sekce';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Typ obrázku na řádek';
@@ -7409,6 +7415,23 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'Domácí řádky';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Typ řádků';

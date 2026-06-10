@@ -2827,7 +2827,7 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Izbirajte med Moonfin, MakD ali izklopite medijsko vrstico';
+      'Izbirajte med različnimi slogi medijske vrstice ali pa medijsko vrstico izklopite';
 
   @override
   String get mediaBarModeMoonfin => 'Mesečeva plavutka';
@@ -2956,6 +2956,12 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get combineBothRows => 'Združite obe vrstici v en sam domači del';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Vrsta slike na vrstico';
@@ -7431,6 +7437,23 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'Home Rows';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Rows Type';

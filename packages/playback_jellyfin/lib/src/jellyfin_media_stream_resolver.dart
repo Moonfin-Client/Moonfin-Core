@@ -97,14 +97,6 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       url = url
           .replaceFirst(RegExp(r'\?StartTimeTicks=\d+&'), '?')
           .replaceFirst(RegExp(r'[&?]StartTimeTicks=\d+'), '');
-      if (!enableDirectPlay && subtitleStreamIndex != null && subtitleStreamIndex >= 0) {
-        final smRegex = RegExp(r'SubtitleMethod=\w+');
-        if (smRegex.hasMatch(url)) {
-          url = url.replaceFirst(smRegex, 'SubtitleMethod=Encode');
-        } else {
-          url = '$url&SubtitleMethod=Encode';
-        }
-      }
     }
 
     // Append auth token for mpv (which doesn't use our Dio interceptors).

@@ -5426,7 +5426,7 @@
   "itemsSelected": "Επιλέχτηκε το {count}",
   "mediaBar": "Media Bar",
   "mediaBarMode": "Στυλ μπαρ πολυμέσων",
-  "mediaBarModeDescription": "Επιλέξτε μεταξύ Moonfin, MakD ή απενεργοποιήστε τη γραμμή πολυμέσων",
+  "mediaBarModeDescription": "Επιλέξτε ανάμεσα σε διάφορα στυλ γραμμής πολυμέσων ή απενεργοποιήστε τη γραμμή πολυμέσων",
   "mediaBarModeMoonfin": "Moonfin",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Μακριά από",

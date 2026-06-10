@@ -237,7 +237,8 @@ void main() {
     });
 
     test(
-      'in AVR passthrough mode, disabled passthrough toggle removes codec even when local decode is available',
+      'in AVR passthrough mode, a locally-decodable codec stays direct-playable '
+      'even when its passthrough toggle is off (libmpv decodes to PCM)',
       () {
         final profile = DeviceProfileBuilder.build(
           downMixAudio: false,
@@ -245,6 +246,30 @@ void main() {
           audioCapabilityProfile: _capabilityProfile(
             canDecodeDts: true,
             canDecodeDtsHd: true,
+          ),
+          dtsCorePassthroughEnabled: false,
+          dtsHdPassthroughEnabled: false,
+          dtsXPassthroughEnabled: false,
+        );
+
+        final codecs = _videoDirectPlayAudioCodecs(profile);
+        expect(codecs, contains('dts'));
+        expect(codecs, contains('dca'));
+      },
+    );
+
+    test(
+      'in AVR passthrough mode, a codec that can neither be decoded nor passed '
+      'through is removed (hardware-only backends stay gated)',
+      () {
+        final profile = DeviceProfileBuilder.build(
+          downMixAudio: false,
+          audioOutputMode: AudioOutputMode.avrPassthrough,
+          audioCapabilityProfile: _capabilityProfile(
+            canDecodeDts: false,
+            canDecodeDtsHd: false,
+            canPassthroughDts: false,
+            canPassthroughDtsHd: false,
           ),
           dtsCorePassthroughEnabled: false,
           dtsHdPassthroughEnabled: false,

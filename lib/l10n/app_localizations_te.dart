@@ -2959,6 +2959,12 @@ class AppLocalizationsTe extends AppLocalizations {
   String get combineBothRows => 'రెండు అడ్డు వరుసలను ఒకే హోమ్ విభాగంలో కలపండి';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => 'ప్రతి వరుస చిత్రం రకం';
 
   @override
@@ -7449,6 +7455,23 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'హోమ్ వరుసలు';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'అడ్డు వరుసల రకం';

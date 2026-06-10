@@ -1443,7 +1443,7 @@ packages:
     source: hosted
     version: "2.0.3"
   screen_brightness_android:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       name: screen_brightness_android
       sha256: d34f5321abd03bc3474f4c381f53d189117eba0b039eac1916aa92cca5fd0a96

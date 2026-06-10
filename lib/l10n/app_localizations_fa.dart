@@ -2801,7 +2801,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'بین Moonfin، MakD را انتخاب کنید یا نوار رسانه را خاموش کنید';
+      'از بین سبک‌های مختلف نوار رسانه انتخاب کنید، یا نوار رسانه را خاموش کنید';
 
   @override
   String get mediaBarModeMoonfin => 'باله ماه';
@@ -2928,6 +2928,12 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get combineBothRows => 'هر دو ردیف را در یک بخش خانه ترکیب کنید';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'نوع تصویر در هر ردیف';
@@ -7360,6 +7366,23 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'ردیف های صفحه اصلی';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'نوع ردیف';

@@ -2966,6 +2966,12 @@ class AppLocalizationsMl extends AppLocalizations {
       'രണ്ട് വരികളും ഒരു ഹോം വിഭാഗത്തിലേക്ക് സംയോജിപ്പിക്കുക';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => 'ഓരോ വരി ചിത്ര തരം';
 
   @override
@@ -7494,6 +7500,23 @@ class AppLocalizationsMl extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'ഹോം വരികൾ';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'വരികളുടെ തരം';

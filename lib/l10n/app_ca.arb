@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} seleccionat",
   "mediaBar": "Barra de mitjans",
   "mediaBarMode": "Estil de barra multimèdia",
-  "mediaBarModeDescription": "Trieu entre Moonfin, MakD o desactiva la barra multimèdia",
+  "mediaBarModeDescription": "Trieu entre diversos estils de barra multimèdia o desactiveu la barra multimèdia",
   "mediaBarModeMoonfin": "Moonfin",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Apagat",

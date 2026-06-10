@@ -61,12 +61,12 @@ Future<void> launchOfflinePlayback(
   if (episodeQueue != null && episodeQueue.length > 1) {
     queueUrls = episodeQueue
         .where((e) => e.localFilePath != null && e.downloadStatus == 2)
-        .map((e) => File(e.localFilePath!).uri.toString())
+        .map((e) => e.localFilePath!)
         .toList();
     startIndex = queueUrls.indexOf(result.url).clamp(0, queueUrls.length - 1);
     for (final ep in episodeQueue) {
       if (ep.localFilePath != null && ep.downloadStatus == 2) {
-        final url = File(ep.localFilePath!).uri.toString();
+        final url = ep.localFilePath!;
         final epMeta = jsonDecode(ep.metadataJson) as Map<String, dynamic>;
         if (isAudio) {
           await _injectLocalPaths(ep, epMeta);
@@ -89,7 +89,7 @@ Future<void> launchOfflinePlayback(
       await tracker.stopTracking();
       if (episodeQueue == null) return;
       final nextEp = episodeQueue.firstWhere(
-        (e) => e.localFilePath != null && File(e.localFilePath!).uri.toString() == url,
+        (e) => e.localFilePath != null && e.localFilePath == url,
         orElse: () => item,
       );
       final nextResult = await resolver.resolve(nextEp.itemId);

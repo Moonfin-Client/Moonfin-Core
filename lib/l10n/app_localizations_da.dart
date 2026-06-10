@@ -2816,7 +2816,7 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Vælg mellem Moonfin, MakD, eller sluk for medielinjen';
+      'Vælg mellem forskellige medielinjestilarter, eller slå medielinjen fra';
 
   @override
   String get mediaBarModeMoonfin => 'Månefinne';
@@ -2945,6 +2945,12 @@ class AppLocalizationsDa extends AppLocalizations {
   @override
   String get combineBothRows =>
       'Kombiner begge rækker til en enkelt hjemmesektion';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Billedtype pr. række';
@@ -7398,6 +7404,23 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'Hjemmerækker';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Rækketype';

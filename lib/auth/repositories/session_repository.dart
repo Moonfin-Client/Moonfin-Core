@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
+import '../../ui/navigation/app_router.dart';
+import '../../ui/navigation/destinations.dart';
+
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:playback_core/playback_core.dart';
@@ -70,6 +74,34 @@ class SessionRepository {
 
   String? get activeServerId => _activeServerId;
   String? get activeUserId => _activeUserId;
+
+  // save or clear the auto login target based on the chosen behavior.
+  Future<void> applyAutoLoginForBehavior(UserSelectBehavior behavior) async {
+    if (behavior == UserSelectBehavior.currentUser) {
+      final serverId = _activeServerId;
+      final userId = _activeUserId;
+      if (serverId != null && userId != null) {
+        await _authPrefs.setAutoLogin(serverId, userId);
+      }
+    } else {
+      await _authPrefs.clearAutoLogin();
+    }
+  }
+
+  // true when the person using the app right now is the saved auto login user.
+  bool get activeUserIsAutoLoginTarget =>
+      _activeUserId != null &&
+      _activeServerId != null &&
+      _authPrefs.savedAutoLoginUserId == _activeUserId &&
+      _authPrefs.savedAutoLoginServerId == _activeServerId;
+
+  // the name of the saved auto-login user or null if none.
+  String? autoLoginTargetDisplayName() {
+    final serverId = _authPrefs.savedAutoLoginServerId;
+    final userId = _authPrefs.savedAutoLoginUserId;
+    if (serverId.isEmpty || userId.isEmpty) return null;
+    return _authStore.getUser(serverId, userId)?.name;
+  }
   SessionState get state => _state;
   Stream<SessionState> get stateStream => _stateController.stream;
 
@@ -218,6 +250,15 @@ class SessionRepository {
         GetIt.instance<UserPreferences>()
             .initLanguagePrefs(serverUser.configuration!);
       }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        _logger.w('Access token expired or unauthorized. Logging out.');
+        await destroyCurrentSession();
+        appRouter.go(
+          '${Destinations.login}?serverId=$serverId&username=${Uri.encodeComponent(user.name)}',
+        );
+        return;
+      }
     } catch (_) {
     }
 
@@ -257,7 +298,9 @@ class SessionRepository {
 
     await _authPrefs.setLastServerId('');
     await _authPrefs.setLastUserId('');
-    await _authPrefs.clearAutoLogin();
+    if (_authPrefs.loginBehavior != UserSelectBehavior.currentUser) {
+      await _authPrefs.clearAutoLogin();
+    }
 
     _activeServerId = null;
     _activeUserId = null;

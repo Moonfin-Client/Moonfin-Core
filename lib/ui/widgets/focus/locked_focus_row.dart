@@ -259,12 +259,12 @@ class LockedFocusRowState<T> extends State<LockedFocusRow<T>> {
       return KeyEventResult.handled;
     }
     if (key.isUpKey) {
-      widget.onVerticalNavigation?.call(true);
-      return KeyEventResult.handled;
+      final handled = widget.onVerticalNavigation?.call(true) ?? false;
+      return handled ? KeyEventResult.handled : KeyEventResult.ignored;
     }
     if (key.isDownKey) {
-      widget.onVerticalNavigation?.call(false);
-      return KeyEventResult.handled;
+      final handled = widget.onVerticalNavigation?.call(false) ?? false;
+      return handled ? KeyEventResult.handled : KeyEventResult.ignored;
     }
     if (key.isContextMenuKey && widget.onLongPress != null) {
       final idx = _focusedIndex;
