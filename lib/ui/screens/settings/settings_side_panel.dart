@@ -2698,15 +2698,12 @@ class _AutomationQueueScreenState extends State<_AutomationQueueScreen> {
           EnumPreferenceTile<NextUpBehavior>(
             preference: UserPreferences.nextUpBehavior,
             title: l10n.nextUpDisplay,
-            description:
-                'If enabled, show a pop-up at the end of an episode to Play Next or Close. If Autoplay is off, no input will return to details page.',
+            description: l10n.settingsNextUpDisplayDescription,
             icon: Icons.skip_next,
             labelOf: (v) => switch (v) {
-              NextUpBehavior.extended =>
-                'Extended - Full card with artwork and description',
-              NextUpBehavior.minimal =>
-                'Minimal - Compact overlay without thumbnail',
-              NextUpBehavior.disabled => 'None - Hide Next Up display',
+              NextUpBehavior.extended => l10n.extended,
+              NextUpBehavior.minimal => l10n.minimal,
+              NextUpBehavior.disabled => l10n.disabled,
             },
           ),
           if (showNextUpOptions)
