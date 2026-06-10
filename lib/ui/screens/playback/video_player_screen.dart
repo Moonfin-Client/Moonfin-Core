@@ -243,7 +243,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   double _verticalDragStartValue = 0.0;
   bool _verticalDragIsVolume = false;
   Offset? _doubleTapDownPosition;
-
+  DateTime? _lastSeekTime;
   bool _showSkipForward = false;
   bool _showSkipBackward = false;
   Timer? _skipForwardTimer;
@@ -2587,6 +2587,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       ),
     );
     _manager.seekTo(clamped);
+    _lastSeekTime = DateTime.now();
     if (showControls) {
       _showControls();
     }
@@ -2621,6 +2622,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _pendingScrubSeekTarget = null;
         _scrubSeekDebounceTimer = null;
         unawaited(_manager.seekTo(pendingTarget));
+        _lastSeekTime = DateTime.now();
         if (mounted) {
           setState(() {
             _isSeeking = false;
@@ -2933,6 +2935,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
           case LogicalKeyboardKey.mediaRewind:
             unawaited(_manager.seekTo(Duration.zero));
+            _lastSeekTime = DateTime.now();
             unawaited(_manager.resume());
             return KeyEventResult.handled;
 
@@ -3599,6 +3602,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       initialData: _state.isBuffering,
       builder: (context, snap) {
         if (snap.data != true || _isBringupInProgress(_bringupState.phase)) {
+          return const SizedBox.shrink();
+        }
+        final hasTrickplay = _trickplayInfo != null && _trickplayInfo!.isValid;
+        final recentlySought = _lastSeekTime != null &&
+            DateTime.now().difference(_lastSeekTime!) < const Duration(seconds: 3);
+        if (hasTrickplay && (_isSeeking || recentlySought)) {
           return const SizedBox.shrink();
         }
         return const Center(
