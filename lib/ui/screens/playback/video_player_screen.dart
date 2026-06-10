@@ -3355,7 +3355,6 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                           child: Center(child: _buildCenterTransportControls()),
                         ),
                     ],
-                    _buildCastMiniBar(),
                     _buildBufferingIndicator(),
                     _buildVolumeOverlay(),
                     if (PlatformDetection.useMobileUi)
@@ -4051,7 +4050,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '$stateLabel$positionLabel',
+                      '$label$stateLabel$positionLabel',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: AppTypography.fontSizeXs,
