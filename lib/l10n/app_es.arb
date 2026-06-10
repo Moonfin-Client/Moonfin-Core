@@ -8,7 +8,7 @@
   "@signIn": {
     "description": "Sign in heading and button label"
   },
-  "connectingToServer": "Conectándose a {serverName}",
+  "connectingToServer": "Conectando a {serverName}",
   "@connectingToServer": {
     "description": "Subtitle showing which server the user is connecting to",
     "placeholders": {
@@ -70,7 +70,7 @@
       }
     }
   },
-  "whosWatching": "¿Quién está viendo?",
+  "whosWatching": "¿Quién es?",
   "@whosWatching": {
     "description": "Server user selection heading"
   },
@@ -82,7 +82,7 @@
   "@selectServer": {
     "description": "Button to navigate back to server selection"
   },
-  "appVersionFooter": "Versión Moonfin {version}",
+  "appVersionFooter": "Versión de Moonfin: {version}",
   "@appVersionFooter": {
     "description": "App version shown in footer",
     "placeholders": {
@@ -95,7 +95,7 @@
   "@savedServers": {
     "description": "Section heading for previously saved servers"
   },
-  "discoveredServers": "Servidores descubiertos",
+  "discoveredServers": "Servidores encontrados",
   "@discoveredServers": {
     "description": "Section heading for auto-discovered local servers"
   },
@@ -111,7 +111,7 @@
   "@addServer": {
     "description": "Button to manually add a server address"
   },
-  "embyConnect": "Emby Conectar",
+  "embyConnect": "Conectar Emby",
   "@embyConnect": {
     "description": "Emby Connect sign-in option label"
   },
@@ -176,7 +176,7 @@
   "@themeMoonfin": {
     "description": "Display name for the Moonfin theme"
   },
-  "themeMoonfinSubtitle": "Aspecto actual de Moonfin que a todos les encanta",
+  "themeMoonfinSubtitle": "El aspecto actual de Moonfin que gusta a todos",
   "@themeMoonfinSubtitle": {
     "description": "Preview description for the Moonfin theme"
   },
@@ -285,7 +285,7 @@
   "@schedule": {
     "description": "Live TV schedule button label"
   },
-  "series": "Serie",
+  "series": "Series",
   "@series": {
     "description": "Section header for TV series"
   },
@@ -617,7 +617,7 @@
   "@pickUpAgain": {
     "description": "Book rail title for in-progress bookmarked items"
   },
-  "bookHighlightsDescription": "Tus libros con destacados, favoritos o progreso de lectura.",
+  "bookHighlightsDescription": "Tus libros destacados, favoritos o con progreso de lectura.",
   "@bookHighlightsDescription": {
     "description": "Subtitle for saved highlights section"
   },
@@ -629,7 +629,7 @@
   "@handPickedFromListeningQueue": {
     "description": "Subtitle for primary book rail from audiobooks"
   },
-  "booksWithHighlights": "Libros con destacados, favoritos o progreso de lectura.",
+  "booksWithHighlights": "Libros destacados, favoritos o con progreso de lectura.",
   "@booksWithHighlights": {
     "description": "Subtitle for bookmarks secondary rail"
   },
