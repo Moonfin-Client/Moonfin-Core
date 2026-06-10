@@ -5774,9 +5774,12 @@ class _ActionButtonsState extends State<_ActionButtons> {
                 episodes,
                 startIndex: idx,
               );
+              
+              // Fallback to the master item's position context if it's the target episode
               final startPosition = resume
-                  ? (selectedEpisode.playbackPosition ?? Duration.zero)
+                  ? ((selectedEpisode.id == item.id ? item.playbackPosition : selectedEpisode.playbackPosition) ?? Duration.zero)
                   : Duration.zero;
+                  
               final forceTranscode = await _shouldForceTranscodeForDolbyVision(
                 context,
                 [selectedEpisode],
