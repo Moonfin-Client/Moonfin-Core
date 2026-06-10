@@ -19,6 +19,7 @@ import 'package:video_player/video_player.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/clock_format.dart';
 import '../../../util/play_method_label.dart';
 import '../../../util/platform_detection.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
@@ -1313,15 +1314,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
   }
 
   String _formatTime(DateTime dt) {
-    final use24 = _prefs.get(UserPreferences.use24HourClock);
-    final h = dt.hour;
-    final m = dt.minute.toString().padLeft(2, '0');
-    if (use24) {
-      return '${h.toString().padLeft(2, '0')}:$m';
-    }
-    final amPm = h >= 12 ? 'PM' : 'AM';
-    final h12 = h > 12 ? h - 12 : (h == 0 ? 12 : h);
-    return '$h12:$m $amPm';
+    return formatClockTime(
+      dt,
+      use24Hour: _prefs.get(UserPreferences.use24HourClock),
+    );
   }
 }
 

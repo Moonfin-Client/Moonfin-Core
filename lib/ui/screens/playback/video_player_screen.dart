@@ -42,6 +42,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/audio_labels.dart';
 import '../../../util/auto_hdr_switcher.dart';
+import '../../../util/clock_format.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/play_method_label.dart';
@@ -3906,17 +3907,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final remaining = duration - position;
     if (remaining <= Duration.zero) return '';
     final end = DateTime.now().add(remaining);
-    final use24Hour = _prefs.get(UserPreferences.use24HourClock);
-    final hour = end.hour;
-    final minute = end.minute.toString().padLeft(2, '0');
-    final String time;
-    if (use24Hour) {
-      time = '${hour.toString().padLeft(2, '0')}:$minute';
-    } else {
-      final amPm = hour >= 12 ? 'PM' : 'AM';
-      final h12 = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
-      time = '$h12:$minute $amPm';
-    }
+    final time = formatClockTime(
+      end,
+      use24Hour: _prefs.get(UserPreferences.use24HourClock),
+    );
     return AppLocalizations.of(context).endsAt(time);
   }
 

@@ -19,6 +19,7 @@ import '../../data/services/plugin_sync_service.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/seerr_preferences.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/clock_format.dart';
 import '../../util/overlay_color_palette.dart';
 import '../../util/platform_detection.dart';
 import '../navigation/destinations.dart';
@@ -190,20 +191,10 @@ class _TopToolbarState extends State<TopToolbar> {
   }
 
   void _updateClock() {
-    final now = DateTime.now();
-    final use24 = _prefs.get(UserPreferences.use24HourClock);
-    final minute = now.minute.toString().padLeft(2, '0');
-    String newTime;
-    if (use24) {
-      final hour = now.hour.toString().padLeft(2, '0');
-      newTime = '$hour:$minute';
-    } else {
-      final hour = now.hour > 12
-          ? now.hour - 12
-          : (now.hour == 0 ? 12 : now.hour);
-      final period = now.hour >= 12 ? 'PM' : 'AM';
-      newTime = '$hour:$minute $period';
-    }
+    final newTime = formatClockTime(
+      DateTime.now(),
+      use24Hour: _prefs.get(UserPreferences.use24HourClock),
+    );
     if (mounted && _currentTime.value != newTime) {
       _currentTime.value = newTime;
     }
