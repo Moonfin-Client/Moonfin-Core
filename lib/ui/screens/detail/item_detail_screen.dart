@@ -9044,18 +9044,18 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
             width: widget.isMobile ? 180.0 : 220.0 * desktopScale,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              border: widget.isCurrent
-                  ? Border.fromBorderSide(
-                      ThemeRegistry.active.borders.focusBorder.copyWith(
-                        color: AppColorScheme.accent,
-                        width: 2,
-                      ),
-                    )
-                  : showFocusBorder
+              border: showFocusBorder
                   ? Border.fromBorderSide(
                       ThemeRegistry.active.borders.focusBorder.copyWith(
                         color: isNeon ? AppColorScheme.accent : focusColor,
                         width: 1.5,
+                      ),
+                    )
+                  : widget.isCurrent
+                  ? Border.fromBorderSide(
+                      ThemeRegistry.active.borders.focusBorder.copyWith(
+                        color: AppColorScheme.onSurface,
+                        width: 2.5,
                       ),
                     )
                   : null,
