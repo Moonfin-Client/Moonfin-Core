@@ -5561,7 +5561,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
 
   Future<List<AggregatedItem>> _shuffleQueueForItem(AggregatedItem item) async {
     const shuffleQueueFields =
-        'MediaStreams,MediaSources,RunTimeTicks,Trickplay';
+        'MediaStreams,MediaSources,RunTimeTicks,Trickplay,Chapters';
     switch (item.type) {
       case 'Series':
         if (viewModel.episodes.length > 1) {
@@ -5787,7 +5787,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
         switch (item.type) {
           case 'Series':
             const episodeQueueFields =
-                'Overview,MediaStreams,MediaSources,RunTimeTicks,Trickplay,UserData';
+                'Overview,MediaStreams,MediaSources,RunTimeTicks,Trickplay,UserData,Chapters';
 
             final client = _clientForItem(item);
             final data = await client.itemsApi.getEpisodes(
@@ -5922,7 +5922,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
               if (seriesId != null && seriesId.isNotEmpty) {
                 try {
                   const episodeQueueFields =
-                      'Overview,MediaStreams,MediaSources,RunTimeTicks,Trickplay,UserData';
+                      'Overview,MediaStreams,MediaSources,RunTimeTicks,Trickplay,UserData,Chapters';
                   final client = _clientForItem(item);
                   final data = await client.itemsApi.getEpisodes(
                     seriesId,

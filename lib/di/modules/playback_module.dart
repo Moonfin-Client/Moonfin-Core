@@ -28,7 +28,7 @@ final _getIt = GetIt.instance;
 
 const _nextSeasonEpisodeFields =
     'Type,UserData,SeriesName,ParentIndexNumber,IndexNumber,SeriesId,SeasonId,'
-    'MediaSources,MediaStreams,RunTimeTicks';
+    'MediaSources,MediaStreams,RunTimeTicks,Chapters';
 
 bool _isDolbyVisionResolution(StreamResolutionResult resolution) {
   for (final stream in resolution.mediaStreams) {
