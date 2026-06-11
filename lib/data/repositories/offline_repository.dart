@@ -256,4 +256,24 @@ class OfflineRepository {
   Map<String, dynamic> rowToRawData(DownloadedItem row) {
     return jsonDecode(row.metadataJson) as Map<String, dynamic>;
   }
+
+  Future<void> updateItemPaths({
+    required String itemId,
+    required String serverId,
+    String? localFilePath,
+    String? posterPath,
+    String? backdropPath,
+    String? logoPath,
+    String? thumbPath,
+  }) async {
+    await (_db.update(_db.downloadedItems)
+          ..where((t) => t.itemId.equals(itemId) & t.serverId.equals(serverId)))
+        .write(DownloadedItemsCompanion(
+      localFilePath: localFilePath != null ? Value(localFilePath) : const Value.absent(),
+      posterPath: posterPath != null ? Value(posterPath) : const Value.absent(),
+      backdropPath: backdropPath != null ? Value(backdropPath) : const Value.absent(),
+      logoPath: logoPath != null ? Value(logoPath) : const Value.absent(),
+      thumbPath: thumbPath != null ? Value(thumbPath) : const Value.absent(),
+    ));
+  }
 }
