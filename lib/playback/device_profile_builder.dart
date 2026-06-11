@@ -207,9 +207,13 @@ class DeviceProfileBuilder {
       requestedProfile: audioCapabilityProfile,
       webCapabilities: webCapabilities,
     );
-    final effectiveMaxChannels = maxAudioChannels <= 0 ? 8 : maxAudioChannels;
-    final forceStereo = audioOutputMode == AudioOutputMode.forceStereo ||
-        (maxAudioChannels >= 1 && maxAudioChannels <= 2);
+    final effectiveMaxChannels = maxAudioChannels <= 0
+        ? (capabilityProfile.maxPcmChannels > 0
+            ? capabilityProfile.maxPcmChannels
+            : 8)
+        : maxAudioChannels;
+    final forceStereo = effectiveMaxChannels <= 2 ||
+        audioOutputMode == AudioOutputMode.forceStereo;
     final effectiveAudioFallbackCodec = _resolveAudioFallbackCodec(
       requested: audioFallbackCodec,
       capabilityProfile: capabilityProfile,
