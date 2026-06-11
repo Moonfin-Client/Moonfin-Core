@@ -64,6 +64,30 @@ void main() {
       expect(store.getBool(UserPreferences.ac3PassthroughEnabled.key), isTrue);
     });
 
+    test('remaps legacy fallback codecs to their renamed versions', () async {
+      final codecsToTest = {
+        'aacStereo': 'aac',
+        'ac3_5_1': 'ac3',
+        'eac3_5_1': 'eac3',
+      };
+
+      for (final entry in codecsToTest.entries) {
+        SharedPreferences.setMockInitialValues(<String, Object>{
+          UserPreferences.audioFallbackCodec.key: entry.key,
+        });
+
+        final store = PreferenceStore();
+        await store.init();
+
+        await migrateAudioPreferenceSplit(store);
+
+        expect(
+          store.getString(UserPreferences.audioFallbackCodec.key),
+          entry.value,
+        );
+      }
+    });
+
     test('keeps fresh installs on default split values', () async {
       SharedPreferences.setMockInitialValues(<String, Object>{});
 

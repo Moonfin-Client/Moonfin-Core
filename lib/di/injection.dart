@@ -334,6 +334,19 @@ Future<void> migrateAudioPreferenceSplit(PreferenceStore store) async {
     await setBoolIfMissing(UserPreferences.eac3JocPassthroughEnabled, false);
   }
 
+  final savedFallbackCodec = store.getString(UserPreferences.audioFallbackCodec.key);
+  if (savedFallbackCodec != null) {
+    final remappedName = switch (savedFallbackCodec) {
+      'aacStereo' => 'aac',
+      'ac3_5_1' => 'ac3',
+      'eac3_5_1' => 'eac3',
+      _ => null,
+    };
+    if (remappedName != null) {
+      await store.setString(UserPreferences.audioFallbackCodec.key, remappedName);
+    }
+  }
+
   await store.setBool(migrationKey, true);
 }
 

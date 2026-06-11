@@ -207,11 +207,9 @@ class DeviceProfileBuilder {
       requestedProfile: audioCapabilityProfile,
       webCapabilities: webCapabilities,
     );
-    final effectiveMaxChannels = maxAudioChannels <= 0
-        ? (capabilityProfile.maxPcmChannels > 0 ? capabilityProfile.maxPcmChannels : 8)
-        : maxAudioChannels;
-    final forceStereo = effectiveMaxChannels <= 2 ||
-        audioOutputMode == AudioOutputMode.forceStereo;
+    final effectiveMaxChannels = maxAudioChannels <= 0 ? 8 : maxAudioChannels;
+    final forceStereo = audioOutputMode == AudioOutputMode.forceStereo ||
+        (maxAudioChannels >= 1 && maxAudioChannels <= 2);
     final effectiveAudioFallbackCodec = _resolveAudioFallbackCodec(
       requested: audioFallbackCodec,
       capabilityProfile: capabilityProfile,
@@ -732,20 +730,6 @@ class DeviceProfileBuilder {
     return profiles;
   }
 
-  static bool _isForceStereo({
-    required AudioOutputMode audioOutputMode,
-    required bool legacyDownMixAudio,
-  }) {
-    switch (audioOutputMode) {
-      case AudioOutputMode.forceStereo:
-        return true;
-      case AudioOutputMode.avrPassthrough:
-        return false;
-      case AudioOutputMode.auto:
-        return legacyDownMixAudio;
-    }
-  }
-
   static AudioCapabilityProfile _resolveEffectiveAudioCapabilityProfile({
     required AudioCapabilityProfile? requestedProfile,
     required WebPlaybackCapabilities? webCapabilities,
@@ -809,6 +793,7 @@ class DeviceProfileBuilder {
 
     return preferredTargets
         .where(allowedAudioCodecs.contains)
+        .where(_hlsMpegTsAudioCodecs.contains)
         .toList(growable: false);
   }
 

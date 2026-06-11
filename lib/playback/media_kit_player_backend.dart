@@ -202,6 +202,21 @@ class MediaKitPlayerBackend implements PlayerBackend {
     };
   }
 
+  static bool _passthroughActive(UserPreferences prefs) {
+    return passthroughCodecsFromPreferences(
+      audioOutputMode: prefs.resolveAudioOutputMode(),
+      ac3PassthroughEnabled: prefs.resolveAc3PassthroughEnabled(),
+      eac3PassthroughEnabled: prefs.resolveEac3PassthroughEnabled(),
+      eac3JocPassthroughEnabled: prefs.resolveEac3JocPassthroughEnabled(),
+      dtsCorePassthroughEnabled: prefs.resolveDtsCorePassthroughEnabled(),
+      dtsHdPassthroughEnabled: prefs.resolveDtsHdPassthroughEnabled(),
+      dtsXPassthroughEnabled: prefs.resolveDtsXPassthroughEnabled(),
+      trueHdPassthroughEnabled: prefs.resolveTrueHdPassthroughEnabled(),
+      trueHdAtmosPassthroughEnabled:
+          prefs.resolveTrueHdAtmosPassthroughEnabled(),
+    ).isNotEmpty;
+  }
+
   bool _isStale = false;
   String? _currentUrl;
 
@@ -353,7 +368,7 @@ class MediaKitPlayerBackend implements PlayerBackend {
       _nativeSetProperty(platform, 'network-timeout', '120');
 
       final maxChannels = prefs.get(UserPreferences.maxAudioChannels);
-      final audioChannelsLayout = maxChannels == 0
+      final audioChannelsLayout = (maxChannels == 0 || _passthroughActive(prefs))
           ? (PlatformDetection.isIOS ? 'stereo' : 'auto')
           : _mpvAudioChannelsLayout(maxChannels);
       _nativeSetProperty(platform, 'audio-channels', audioChannelsLayout);
