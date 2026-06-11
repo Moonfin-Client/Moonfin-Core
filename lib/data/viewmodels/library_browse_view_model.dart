@@ -217,6 +217,18 @@ class LibraryBrowseViewModel extends ChangeNotifier {
             ?.toLowerCase();
       }
 
+      if (isHomeVideosLibrary || isMixedContentLibrary) {
+        if (_sortBy != LibrarySortBy.name &&
+            _sortBy != LibrarySortBy.dateAdded &&
+            _sortBy != LibrarySortBy.random) {
+          _sortBy = LibrarySortBy.name;
+          await _prefs.set(
+            UserPreferences.librarySortBy(_prefKey),
+            LibrarySortBy.name,
+          );
+        }
+      }
+
       _refreshPosterSizeFromScope();
 
       if (!_imageTypeSynced) {
@@ -306,7 +318,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
       sortBy = 'SortName';
     } else if (isHomeVideosLibrary || isMixedContentLibrary) {
       recursive = false;
-      sortBy = 'IsFolder,SortName';
+      sortBy = 'IsFolder,$sortBy';
     }
 
     if (genreId != null &&

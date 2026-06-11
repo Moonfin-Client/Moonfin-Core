@@ -4850,7 +4850,9 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
             ),
             Divider(color: dividerColor),
             _sectionHeader(l10n.sortBy, sectionColor),
-            for (final option in LibrarySortBy.values)
+            for (final option in (vm.isHomeVideosLibrary || vm.isMixedContentLibrary)
+                ? const [LibrarySortBy.name, LibrarySortBy.dateAdded, LibrarySortBy.random]
+                : LibrarySortBy.values)
               _radioTile(
                 label: option.displayName,
                 selected: vm.sortBy == option,
