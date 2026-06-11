@@ -293,6 +293,19 @@ void main() async {
     _detectAndSetCodecCapabilities(),
   ]);
 
+  if (PlatformDetection.isAppleTV) {
+    PlatformDetection.setMediaCodecCapabilities(const {
+      'supportsAvc': true,
+      'avcMainLevel': 52,
+      'supportsAvcHigh10': true,
+      'avcHigh10Level': 52,
+      'supportsHevc': true,
+      'hevcMainLevel': 153,
+      'supportsHevcMain10': true,
+      'hevcMain10Level': 153,
+    });
+  }
+
   _configureImageCache();
   await configureAppleTvImageCache();
 

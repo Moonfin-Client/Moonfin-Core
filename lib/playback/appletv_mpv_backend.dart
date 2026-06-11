@@ -53,9 +53,12 @@ class AppleTvMpvBackend implements PlayerBackend {
   final _bufferingStream = StreamController<bool>.broadcast();
   final _completedStream = StreamController<bool>.broadcast();
   final _errorStream = StreamController<Map<String, dynamic>>.broadcast();
+  final _userExitStream = StreamController<void>.broadcast();
 
   @override
   Stream<Map<String, dynamic>> get errorStream => _errorStream.stream;
+
+  Stream<void> get userExitStream => _userExitStream.stream;
 
   Future<T?> _invoke<T>(String method, [dynamic arguments]) async {
     if (_disposed) return null;
@@ -111,6 +114,8 @@ class AppleTvMpvBackend implements PlayerBackend {
         _isBuffering = false;
         _playingStream.add(false);
         _bufferingStream.add(false);
+      case 'userExited':
+        _userExitStream.add(null);
       case 'tracksChanged':
         _tracksKnown = true;
         _textTrackCount = _toInt(map['textTrackCount']);
@@ -498,5 +503,6 @@ class AppleTvMpvBackend implements PlayerBackend {
     _bufferingStream.close();
     _completedStream.close();
     _errorStream.close();
+    _userExitStream.close();
   }
 }

@@ -41,7 +41,7 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         return nil
     }
 
-    private func send(_ payload: [String: Any]) {
+    nonisolated private func send(_ payload: [String: Any]) {
         eventSink?(payload)
     }
 
@@ -95,6 +95,7 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         player = created
         let vc = AppleTvPlayerViewController(player: created)
         vc.modalPresentationStyle = .overFullScreen
+        vc.onExit = { [weak self] in self?.send(["event": "userExited"]) }
         playerVC = vc
         rootViewController?.present(vc, animated: false) { [weak self] in
             Task { @MainActor in
