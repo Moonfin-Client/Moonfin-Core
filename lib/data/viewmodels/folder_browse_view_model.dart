@@ -208,16 +208,23 @@ class FolderBrowseViewModel extends ChangeNotifier {
 
   bool isNavigableFolder(AggregatedItem item) {
     final type = item.type;
+    if (type == 'Series' ||
+        type == 'Season' ||
+        type == 'BoxSet' ||
+        type == 'Playlist') {
+      return false;
+    }
+
+    final isFolder = item.rawData['IsFolder'] as bool? ?? false;
+    if (isFolder) return true;
+
     return type == 'Folder' ||
         type == 'CollectionFolder' ||
         type == 'UserView' ||
-        type == 'BoxSet' ||
         type == 'MusicAlbum' ||
-        type == 'Season' ||
-        type == 'Series' ||
-        type == 'PhotoAlbum' ||
-        type == 'Playlist';
+        type == 'PhotoAlbum';
   }
+
 
   @override
   void dispose() {

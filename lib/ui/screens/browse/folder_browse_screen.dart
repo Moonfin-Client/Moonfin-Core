@@ -71,30 +71,56 @@ class _FolderBrowseScreenState extends State<FolderBrowseScreen> {
 
   String? _imageUrl(AggregatedItem item, {int? maxWidth}) {
     final api = _vm.imageApi;
+    final isFolder = _vm.isNavigableFolder(item);
 
     final imageTags = item.rawData['ImageTags'];
     if (imageTags is Map) {
-      final thumbTag = imageTags['Thumb'] as String?;
-      if (thumbTag != null) {
-        return api.getThumbImageUrl(item.id, maxWidth: maxWidth, tag: thumbTag);
-      }
+      if (isFolder) {
+        final thumbTag = imageTags['Thumb'] as String?;
+        if (thumbTag != null) {
+          return api.getThumbImageUrl(item.id, maxWidth: maxWidth, tag: thumbTag);
+        }
 
-      final primaryTag = imageTags['Primary'] as String?;
-      if (primaryTag != null) {
-        return api.getPrimaryImageUrl(
-          item.id,
-          maxWidth: maxWidth,
-          tag: primaryTag,
-        );
-      }
+        final primaryTag = imageTags['Primary'] as String?;
+        if (primaryTag != null) {
+          return api.getPrimaryImageUrl(
+            item.id,
+            maxWidth: maxWidth,
+            tag: primaryTag,
+          );
+        }
 
-      final backdropTag = imageTags['Backdrop'] as String?;
-      if (backdropTag != null) {
-        return api.getBackdropImageUrl(
-          item.id,
-          maxWidth: maxWidth,
-          tag: backdropTag,
-        );
+        final backdropTag = imageTags['Backdrop'] as String?;
+        if (backdropTag != null) {
+          return api.getBackdropImageUrl(
+            item.id,
+            maxWidth: maxWidth,
+            tag: backdropTag,
+          );
+        }
+      } else {
+        final primaryTag = imageTags['Primary'] as String?;
+        if (primaryTag != null) {
+          return api.getPrimaryImageUrl(
+            item.id,
+            maxWidth: maxWidth,
+            tag: primaryTag,
+          );
+        }
+
+        final thumbTag = imageTags['Thumb'] as String?;
+        if (thumbTag != null) {
+          return api.getThumbImageUrl(item.id, maxWidth: maxWidth, tag: thumbTag);
+        }
+
+        final backdropTag = imageTags['Backdrop'] as String?;
+        if (backdropTag != null) {
+          return api.getBackdropImageUrl(
+            item.id,
+            maxWidth: maxWidth,
+            tag: backdropTag,
+          );
+        }
       }
     }
 
