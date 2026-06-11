@@ -380,7 +380,6 @@ class SeerrTvDetails {
   final SeerrMediaInfo? mediaInfo;
   final List<SeerrKeyword> keywords;
   final List<SeerrVideo> relatedVideos;
-  final String? seriesType;
 
   const SeerrTvDetails({
     required this.id,
