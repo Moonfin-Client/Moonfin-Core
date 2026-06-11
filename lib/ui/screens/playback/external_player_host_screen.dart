@@ -7,8 +7,11 @@ import 'package:playback_core/playback_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../playback/audio_capability_profile.dart';
+import '../../../playback/device_profile_builder.dart';
 import '../../../playback/external_player_policy.dart';
 import '../../../playback/external_player_service.dart';
+import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../navigation/destinations.dart';
 
@@ -98,9 +101,47 @@ class _ExternalPlayerHostScreenState extends State<ExternalPlayerHostScreen> {
 
         final resolver = GetIt.instance<MediaStreamResolver>();
         final playService = GetIt.instance<PlayerService>();
-        final backend = _manager.backend ?? GetIt.instance<PlayerBackend>();
 
-        final profile = backend.getDeviceProfile(useProgressiveTranscode: false);
+        final maxBitrateOption = int.tryParse(_prefs.get(UserPreferences.maxBitrate));
+        final maxResolution = _prefs.get(UserPreferences.maxVideoResolution);
+        final profile = DeviceProfileBuilder.build(
+          maxBitrateMbps: maxBitrateOption,
+          audioCapabilityProfile: const AudioCapabilityProfile.optimistic(),
+          audioOutputMode: AudioOutputMode.auto,
+          audioFallbackCodec: AudioFallbackCodec.auto,
+          maxResolution: maxResolution,
+          pgsDirectPlay: true,
+          assDirectPlay: true,
+          supportsAvc: true,
+          supportsAvcHigh10: true,
+          avcMainLevel: 52,
+          avcHigh10Level: 52,
+          supportsHevc: true,
+          supportsHevcMain10: true,
+          hevcMainLevel: 186,
+          supportsHevcDolbyVision: true,
+          supportsHevcDolbyVisionEl: true,
+          supportsHevcHdr10: true,
+          supportsHevcHdr10Plus: true,
+          supportsAv1: true,
+          supportsAv1Main10: true,
+          supportsAv1DolbyVision: true,
+          supportsAv1Hdr10: true,
+          supportsAv1Hdr10Plus: true,
+          supportsVc1: true,
+          maxResolutionAvcWidth: 4096,
+          maxResolutionAvcHeight: 2160,
+          maxResolutionHevcWidth: 4096,
+          maxResolutionHevcHeight: 2160,
+          maxResolutionAv1Width: 4096,
+          maxResolutionAv1Height: 2160,
+          maxResolutionVc1Width: 4096,
+          maxResolutionVc1Height: 2160,
+          supportsDvProfile5: true,
+          supportsDvProfile7: true,
+          supportsDvProfile8: true,
+          allowDolbyVisionProfile7ElDirectPlay: true,
+        );
         final overrideMbps = _manager.maxBitrateOverrideMbps;
         if (overrideMbps != null) {
           profile['MaxStreamingBitrate'] = overrideMbps * 1000000;
