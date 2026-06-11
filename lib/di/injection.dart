@@ -259,7 +259,7 @@ Future<void> _migrateAndroidMobileAudioDefaults(
 }
 
 Future<void> migrateAudioPreferenceSplit(PreferenceStore store) async {
-  const migrationKey = 'pref_audio_preference_split_v2';
+  const migrationKey = 'pref_audio_preference_split_v3';
 
   if (store.getBool(migrationKey) == true) {
     return;
