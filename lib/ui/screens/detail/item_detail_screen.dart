@@ -48,7 +48,6 @@ import '../../widgets/focus/focusable_button.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/focus/step_scroll.dart';
 import '../../widgets/overlay_sheet.dart';
-import '../../widgets/settings/preference_tiles.dart';
 import '../../widgets/playback/player_loading_overlay.dart';
 import '../../../playback/offline_playback_launcher.dart';
 import '../../../playback/hdr_stream_capability.dart';
@@ -2659,7 +2658,8 @@ class _DetailContentState extends State<_DetailContent> {
             .where((i) => i.type != 'Movie' && i.type != 'Series')
             .toList()
           ..sort(releaseSort);
-    final firstFocus = initialFocusNode;
+    final actionButtonsFocusNode = _sectionFocusNode('detailBoxSetActionButtons');
+    final firstFocus = initialFocusNode ?? actionButtonsFocusNode;
     final moviesFocusNode = movies.isNotEmpty
         ? _sectionFocusNode('detailBoxSetMovies')
         : null;
@@ -2674,10 +2674,25 @@ class _DetailContentState extends State<_DetailContent> {
         : null;
 
     return [
-      if (firstFocus != null) _NavbarFocusPoint(focusNode: firstFocus),
+      if (!_hasMetadata(item)) _NavbarFocusPoint(focusNode: firstFocus),
+      _ActionButtons(
+        viewModel: viewModel,
+        itemId: viewModel.item?.id,
+        selectedMediaSourceId: selectedMediaSourceId,
+        onSelectedMediaSourceChanged: onSelectedMediaSourceChanged,
+        tvPlayFocusNode: actionButtonsFocusNode,
+        onRequestFocus: _requestSectionFocus,
+        downTarget: moviesFocusNode ??
+            seriesFocusNode ??
+            otherFocusNode ??
+            castFocusNode,
+        autoPlay: widget.autoPlay,
+      ),
       if (_hasMetadata(item)) ...[
         const SizedBox(height: 24),
-        _MetadataSection(viewModel: viewModel),
+        _MetadataSection(
+          viewModel: viewModel,
+        ),
       ],
       if (movies.isNotEmpty) ...[
         const SizedBox(height: 8),
@@ -2695,6 +2710,7 @@ class _DetailContentState extends State<_DetailContent> {
             firstItemFocusNode: moviesFocusNode,
             onItemKeyEvent: _buildVerticalRowHandler(
               sourceFocusNode: moviesFocusNode,
+              upTarget: actionButtonsFocusNode,
               downTarget: seriesFocusNode ?? otherFocusNode ?? castFocusNode,
               itemCount: movies.length,
             ),
@@ -2717,7 +2733,7 @@ class _DetailContentState extends State<_DetailContent> {
             firstItemFocusNode: seriesFocusNode,
             onItemKeyEvent: _buildVerticalRowHandler(
               sourceFocusNode: seriesFocusNode,
-              upTarget: moviesFocusNode,
+              upTarget: moviesFocusNode ?? actionButtonsFocusNode,
               downTarget: otherFocusNode ?? castFocusNode,
               itemCount: series.length,
             ),
@@ -2740,7 +2756,7 @@ class _DetailContentState extends State<_DetailContent> {
             firstItemFocusNode: otherFocusNode,
             onItemKeyEvent: _buildVerticalRowHandler(
               sourceFocusNode: otherFocusNode,
-              upTarget: seriesFocusNode ?? moviesFocusNode,
+              upTarget: seriesFocusNode ?? moviesFocusNode ?? actionButtonsFocusNode,
               downTarget: castFocusNode,
               itemCount: other.length,
             ),
@@ -2768,7 +2784,7 @@ class _DetailContentState extends State<_DetailContent> {
             firstItemFocusNode: castFocusNode,
             onItemKeyEvent: _buildVerticalRowHandler(
               sourceFocusNode: castFocusNode,
-              upTarget: otherFocusNode ?? seriesFocusNode ?? moviesFocusNode,
+              upTarget: otherFocusNode ?? seriesFocusNode ?? moviesFocusNode ?? actionButtonsFocusNode,
               itemCount: viewModel.actors.length,
             ),
           ),
@@ -2779,7 +2795,8 @@ class _DetailContentState extends State<_DetailContent> {
   }
 
   bool _hasMetadata(AggregatedItem item) {
-    return viewModel.directors.isNotEmpty ||
+    return item.type == 'BoxSet' ||
+        viewModel.directors.isNotEmpty ||
         viewModel.writers.isNotEmpty ||
         item.studios.isNotEmpty;
   }
@@ -4723,6 +4740,22 @@ class _ActionButtonsState extends State<_ActionButtons> {
     final isFullyWatched = ws.isFullyWatched;
     final isFullyUnwatched = ws.isFullyUnwatched;
     final hasProgress = ws.hasProgress;
+    final bool isBoxSet = item.type == 'BoxSet';
+    final bool boxSetAllWatched;
+    final bool boxSetAllUnwatched;
+    if (isBoxSet) {
+      final items = viewModel.collectionItems;
+      if (items.isEmpty) {
+        boxSetAllWatched = item.isPlayed;
+        boxSetAllUnwatched = !item.isPlayed;
+      } else {
+        boxSetAllWatched = items.every((e) => e.isPlayed);
+        boxSetAllUnwatched = items.every((e) => !e.isPlayed && (e.playbackPosition == null || e.playbackPosition == Duration.zero));
+      }
+    } else {
+      boxSetAllWatched = false;
+      boxSetAllUnwatched = false;
+    }
     final selectedSource = _selectedMediaSourceForItem(
       item,
       widget.selectedMediaSourceId,
@@ -4775,6 +4808,8 @@ class _ActionButtonsState extends State<_ActionButtons> {
           playButtonLabel = 'Resume';
         }
       }
+    } else if (isBoxSet) {
+      playButtonLabel = (boxSetAllWatched || boxSetAllUnwatched) ? l10n.play : l10n.resume;
     } else if (hasProgress) {
       playButtonLabel = l10n.resumeFrom(
         _formatResumePosition(item.playbackPosition),
@@ -4795,7 +4830,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
             : Icons.play_arrow,
         focusNode: PlatformDetection.isTV ? _tvPlayFocusNode : null,
         autofocus: PlatformDetection.isTV,
-        onPressed: () => _play(context, item, resume: !isPhoto && hasProgress),
+        onPressed: () => _play(context, item, resume: isBoxSet ? (!boxSetAllWatched && !boxSetAllUnwatched) : (!isPhoto && hasProgress)),
         onLongPress: isVideo
             ? () => _showAdvancedPlaybackMenu(context, item)
             : null,
@@ -4806,7 +4841,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
           icon: Icons.shuffle_rounded,
           onPressed: () => _shuffle(context, item),
         ),
-      if (hasProgress && !isPhoto)
+      if (isBoxSet ? !(boxSetAllWatched || boxSetAllUnwatched) : (hasProgress && !isPhoto))
         _DetailActionButton(
           label: isBook ? l10n.startOver : l10n.restart,
           icon: Icons.restart_alt,
@@ -4906,7 +4941,9 @@ class _ActionButtonsState extends State<_ActionButtons> {
       if (canShowDownloadActions)
         _DownloadButton(item: item, viewModel: viewModel),
       if (canShowDownloadActions) _DeleteDownloadButton(item: item),
-      if (item.canDelete)
+      if (item.type == 'BoxSet'
+          ? (GetIt.instance<UserRepository>().currentUser?.isAdministrator ?? false)
+          : item.canDelete)
         _DetailActionButton(
           label: l10n.delete,
           icon: Icons.delete_outline,
@@ -5458,7 +5495,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
       case 'Season':
         return viewModel.episodes.length > 1;
       case 'BoxSet':
-        return viewModel.collectionItems.length > 1;
+        return viewModel.collectionItems.length > 1 || (item.rawData['ChildCount'] as num? ?? 0) > 1;
       case 'Folder':
       case 'CollectionFolder':
       case 'UserView':
@@ -5934,6 +5971,65 @@ class _ActionButtonsState extends State<_ActionButtons> {
               break;
             }
             continue defaultCase;
+
+          case 'BoxSet':
+            final playableQueue = await _loadFolderPlayableItemsForShuffle(
+              item,
+              fields: 'Overview,MediaStreams,MediaSources,RunTimeTicks,Trickplay,UserData',
+            );
+            if (playableQueue.isEmpty) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      AppLocalizations.of(context).noEpisodesLoaded,
+                    ),
+                  ),
+                );
+              }
+              throw PlaybackStartupRecoveryAbortedException();
+            }
+
+            final allWatched = playableQueue.every((e) => e.isPlayed);
+            final allUnwatched = playableQueue.every((e) => !e.isPlayed && (e.playbackPosition == null || e.playbackPosition == Duration.zero));
+
+            int startIndex = 0;
+            Duration startPosition = Duration.zero;
+
+            if (allWatched || allUnwatched) {
+              startIndex = 0;
+              startPosition = Duration.zero;
+            } else {
+              final resumeIndex = playableQueue.indexWhere(
+                (e) => !e.isPlayed && (e.playbackPosition != null && e.playbackPosition! > Duration.zero),
+              );
+              if (resumeIndex >= 0) {
+                startIndex = resumeIndex;
+                startPosition = playableQueue[resumeIndex].playbackPosition ?? Duration.zero;
+              } else {
+                final nextUnwatchedIndex = playableQueue.indexWhere((e) => !e.isPlayed);
+                startIndex = nextUnwatchedIndex >= 0 ? nextUnwatchedIndex : 0;
+                startPosition = Duration.zero;
+              }
+            }
+
+            if (!context.mounted) return;
+            final targetItem = playableQueue[startIndex];
+            final dvForceTranscode = await _shouldForceTranscodeForDolbyVision(
+              context,
+              [targetItem],
+            );
+            final directAllowed = !dvForceTranscode && !forceTranscode;
+            await manager.playItems(
+              playableQueue,
+              startIndex: startIndex,
+              startPosition: startPosition,
+              audioStreamIndex: audioStreamIndex,
+              subtitleStreamIndex: subtitleStreamIndex,
+              enableDirectPlay: directAllowed,
+              enableDirectStream: directAllowed,
+            );
+            break;
 
           case 'MusicAlbum':
             final tracks = viewModel.tracks;
@@ -7110,7 +7206,8 @@ bool _isDownloadable(String? type) {
       type == 'Book' ||
       type == 'Episode' ||
       type == 'Season' ||
-      type == 'Series';
+      type == 'Series' ||
+      type == 'BoxSet';
 }
 
 bool _canUserDownload() {
@@ -7277,7 +7374,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
       listenable: downloadService,
       builder: (context, _) {
         final item = widget.item;
-        final isMulti = item.type == 'Season' || item.type == 'Series';
+        final isMulti = item.type == 'Season' || item.type == 'Series' || item.type == 'BoxSet';
         final progress = downloadService.activeDownloads[item.id];
         final downloadError = progress?.error;
         final isBatch = downloadService.isBatchDownloading;
@@ -7358,10 +7455,12 @@ class _DownloadButtonState extends State<_DownloadButton> {
 
   void _showQualityPicker(BuildContext context, DownloadService service) {
     final item = widget.item;
-    final isMulti = item.type == 'Season' || item.type == 'Series';
+    final isMulti = item.type == 'Season' || item.type == 'Series' || item.type == 'BoxSet';
     final supportsTranscoding =
         item.type == 'Movie' || item.type == 'Episode' || isMulti;
-    final episodes = widget.viewModel.episodes;
+    final estimationItems = item.type == 'BoxSet'
+        ? widget.viewModel.collectionItems
+        : widget.viewModel.episodes;
 
     if (!isMulti && !supportsTranscoding) {
       _startDownload(context, service, DownloadQuality.original);
@@ -7371,7 +7470,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
     final sourceWidth = isMulti
         ? (() {
             int? maxWidth;
-            for (final episode in episodes) {
+            for (final episode in estimationItems) {
               final width = episode.sourceVideoWidth;
               if (width == null) continue;
               maxWidth = maxWidth == null || width > maxWidth
@@ -7387,7 +7486,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
       return q.maxWidth! <= sourceWidth;
     }).toList();
     final multiEstimateSubtitles = isMulti
-        ? _multiTranscodedEstimateSubtitles(episodes, availableQualities)
+        ? _multiTranscodedEstimateSubtitles(estimationItems, availableQualities)
         : const <DownloadQuality, String>{};
     showFocusRestoringModalBottomSheet(
       context: context,
@@ -7473,6 +7572,8 @@ class _DownloadButtonState extends State<_DownloadButton> {
         service.downloadItems(episodes, quality: quality);
       case 'Series':
         service.downloadSeries(item.id, quality: quality);
+      case 'BoxSet':
+        service.downloadBoxSet(item.id, quality: quality);
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -8479,7 +8580,9 @@ class _ChapterListCardState extends State<_ChapterListCard>
 class _MetadataSection extends StatelessWidget {
   final ItemDetailViewModel viewModel;
 
-  const _MetadataSection({required this.viewModel});
+  const _MetadataSection({
+    required this.viewModel,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -8519,130 +8622,134 @@ class _MetadataSection extends StatelessWidget {
         ? const EdgeInsets.symmetric(horizontal: 12, vertical: 10)
         : const EdgeInsets.symmetric(horizontal: 16, vertical: 14);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: isNeon
-            ? AppColorScheme.background.withValues(alpha: 0.25)
-            : Colors.white.withValues(alpha: 0.03),
-        border: Border.fromBorderSide(
-          ThemeRegistry.active.borders.cardBorder.copyWith(
-            color: isNeon
-                ? AppColorScheme.accent.withValues(alpha: 0.95)
-                : Colors.white.withValues(alpha: 0.06),
-            width: isNeon ? 1.2 : null,
-          ),
-        ),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: isMobile
-          ? Wrap(
-              children: entries.asMap().entries.map((e) {
-                final entry = e.value;
-                return FractionallySizedBox(
-                  widthFactor: entries.length <= 2 ? 1.0 : 0.5,
-                  child: Padding(
-                    padding: cellPadding,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+    final mainContent = entries.isEmpty
+        ? const SizedBox.shrink()
+        : Container(
+            decoration: BoxDecoration(
+              color: isNeon
+                  ? AppColorScheme.background.withValues(alpha: 0.25)
+                  : Colors.white.withValues(alpha: 0.03),
+              border: Border.fromBorderSide(
+                ThemeRegistry.active.borders.cardBorder.copyWith(
+                  color: isNeon
+                      ? AppColorScheme.accent.withValues(alpha: 0.95)
+                      : Colors.white.withValues(alpha: 0.06),
+                  width: isNeon ? 1.2 : null,
+                ),
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: isMobile
+                ? Wrap(
+                    children: entries.asMap().entries.map((e) {
+                      final entry = e.value;
+                      return FractionallySizedBox(
+                        widthFactor: entries.length <= 2 ? 1.0 : 0.5,
+                        child: Padding(
+                          padding: cellPadding,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                entry.key,
+                                style: Theme.of(context).textTheme.labelSmall
+                                    ?.copyWith(
+                                      color: isNeon
+                                          ? AppColorScheme.accent
+                                          : Colors.white.withValues(alpha: 0.4),
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 1.0,
+                                      fontSize: 10,
+                                    ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                entry.value,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: isNeon
+                                          ? AppColorScheme.onSurface
+                                          : Colors.white.withValues(alpha: 0.9),
+                                      fontSize: 12,
+                                    ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  )
+                : IntrinsicHeight(
+                    child: Row(
                       children: [
-                        Text(
-                          entry.key,
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
-                                color: isNeon
-                                    ? AppColorScheme.accent
-                                    : Colors.white.withValues(alpha: 0.4),
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.0,
-                                fontSize: 10,
-                              ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          entry.value,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: isNeon
-                                    ? AppColorScheme.onSurface
-                                    : Colors.white.withValues(alpha: 0.9),
-                                fontSize: 12,
-                              ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        ...entries.asMap().entries.map((e) {
+                          final index = e.key;
+                          final entry = e.value;
+                          return Expanded(
+                            child: Row(
+                              children: [
+                                if (index > 0)
+                                  Container(
+                                    width: 1,
+                                    color: isNeon
+                                        ? AppColorScheme.accent.withValues(alpha: 0.8)
+                                        : Colors.white.withValues(alpha: 0.08),
+                                  ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 14,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          entry.key,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelSmall
+                                              ?.copyWith(
+                                                color: isNeon
+                                                    ? AppColorScheme.accent
+                                                    : Colors.white.withValues(
+                                                        alpha: 0.4,
+                                                      ),
+                                                fontWeight: FontWeight.w600,
+                                                letterSpacing: 1.0,
+                                              ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          entry.value,
+                                          style: Theme.of(context).textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: isNeon
+                                                    ? AppColorScheme.onSurface
+                                                    : Colors.white.withValues(
+                                                        alpha: 0.9,
+                                                      ),
+                                              ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
                       ],
                     ),
                   ),
-                );
-              }).toList(),
-            )
-          : IntrinsicHeight(
-              child: Row(
-                children: [
-                  ...entries.asMap().entries.map((e) {
-                    final index = e.key;
-                    final entry = e.value;
-                    return Expanded(
-                      child: Row(
-                        children: [
-                          if (index > 0)
-                            Container(
-                              width: 1,
-                              color: isNeon
-                                  ? AppColorScheme.accent.withValues(alpha: 0.8)
-                                  : Colors.white.withValues(alpha: 0.08),
-                            ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 14,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    entry.key,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelSmall
-                                        ?.copyWith(
-                                          color: isNeon
-                                              ? AppColorScheme.accent
-                                              : Colors.white.withValues(
-                                                  alpha: 0.4,
-                                                ),
-                                          fontWeight: FontWeight.w600,
-                                          letterSpacing: 1.0,
-                                        ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    entry.value,
-                                    style: Theme.of(context).textTheme.bodySmall
-                                        ?.copyWith(
-                                          color: isNeon
-                                              ? AppColorScheme.onSurface
-                                              : Colors.white.withValues(
-                                                  alpha: 0.9,
-                                                ),
-                                        ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-                ],
-              ),
-            ),
-    );
+          );
+
+    return mainContent;
   }
 }
 

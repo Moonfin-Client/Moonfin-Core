@@ -1474,6 +1474,40 @@ class DownloadService extends ChangeNotifier {
     await downloadItems(episodes, quality: quality);
   }
 
+  Future<void> downloadBoxSet(String boxSetId, {DownloadQuality quality = DownloadQuality.original}) async {
+    final playableItems = await _getAllPlayableItemsForBoxSet(boxSetId);
+    await downloadItems(playableItems, quality: quality);
+  }
+
+  Future<List<AggregatedItem>> _getAllPlayableItemsForBoxSet(String boxSetId) async {
+    try {
+      final data = await _client.itemsApi.getItems(
+        parentId: boxSetId,
+        recursive: true,
+        includeItemTypes: const ['Episode', 'Movie', 'Video', 'Audio'],
+        fields: 'MediaStreams,MediaSources,RunTimeTicks,Trickplay',
+      );
+      final rawItems = data['Items'] as List?;
+      if (rawItems == null) return const [];
+      final serverId = _client.baseUrl;
+      return rawItems
+          .whereType<Map>()
+          .map((raw) => raw.cast<String, dynamic>())
+          .where((raw) {
+            final id = raw['Id'] as String?;
+            return id != null && id.isNotEmpty;
+          })
+          .map((raw) => AggregatedItem(
+                id: raw['Id'] as String,
+                serverId: serverId,
+                rawData: raw,
+              ))
+          .toList();
+    } catch (_) {
+      return const [];
+    }
+  }
+
   Future<bool> deleteDownloadedItems(List<AggregatedItem> items) async {
     var allSucceeded = true;
     final seenIds = <String>{};

@@ -52,7 +52,8 @@ List<ItemContextAction> contextActionsFor(
       type == 'Series' ||
       type == 'Season' ||
       type == 'Audio' ||
-      type == 'MusicAlbum';
+      type == 'MusicAlbum' ||
+      type == 'BoxSet';
 
   if (isMediaType) {
     actions.add(ItemContextAction(
