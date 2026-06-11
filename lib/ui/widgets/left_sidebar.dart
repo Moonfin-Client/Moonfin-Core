@@ -682,6 +682,8 @@ class _LeftSidebarState extends State<LeftSidebar> {
     final showSyncPlay =
         _prefs.get(UserPreferences.syncPlayEnabled) &&
         _prefs.get(UserPreferences.showSyncPlayButton);
+    final showLiveTv = _prefs.get(UserPreferences.showLiveTvButton) &&
+        _libraries.any((lib) => lib.collectionType == 'livetv');
     final seerrPrefs = GetIt.instance<SeerrPreferences>();
     final seerrDisplayName = seerrPrefs.moonfinDisplayName.trim();
     final seerrNavLabel = seerrDisplayName.isNotEmpty
@@ -820,6 +822,22 @@ class _LeftSidebarState extends State<LeftSidebar> {
                           builder: (_) => const SyncPlayScreen(),
                         ),
                       );
+                    },
+                  ),
+                if (showLiveTv)
+                  _SidebarItem(
+                    icon: Icons.live_tv,
+                    label: l10n.liveTv,
+                    baseColor: nextSidebarColor(),
+                    showLabel: _showLabels,
+                    onPressed: () {
+                      _onNavigate();
+                      if (_isActive(Destinations.liveTvGuide)) {
+                        _exitSidebarToContent();
+                        return;
+                      }
+                      _markNavigationAwayFromSidebar();
+                      context.navigateTopLevel(Destinations.liveTvGuide);
                     },
                   ),
                 if (_prefs.get(UserPreferences.showSeerrButton) &&

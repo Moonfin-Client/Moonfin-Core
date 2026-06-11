@@ -12395,6 +12395,30 @@ abstract class AppLocalizations {
   /// **'Show the Seerr button in the navigation bar'**
   String get settingsShowSeerrButtonInNavigation;
 
+  /// No description provided for @settingsNavbarDisplayHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Navbar Display'**
+  String get settingsNavbarDisplayHeader;
+
+  /// No description provided for @settingsNavbarContentsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Navbar Contents'**
+  String get settingsNavbarContentsHeader;
+
+  /// No description provided for @settingsNavbarContentsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable the following toggles to display these elements in the navigation bar.'**
+  String get settingsNavbarContentsDescription;
+
+  /// No description provided for @showLiveTvButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Live TV Button'**
+  String get showLiveTvButton;
+
   /// No description provided for @settingsLibraryVisibilitySubtitle.
   ///
   /// In en, this message translates to:
