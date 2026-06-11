@@ -5,8 +5,10 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:playback_core/playback_core.dart';
+import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
+import '../../../data/services/media_server_client_factory.dart';
 import '../../../playback/appletv_mpv_backend.dart';
 import '../../../preference/user_preferences.dart';
 
@@ -57,7 +59,133 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       );
       _bringupSub = manager.bringupStateStream.listen((_) => _pushMetadata());
     }
-    WidgetsBinding.instance.addPostFrameCallback((_) => _pushMetadata());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _pushMetadata();
+      _pushSubtitleStyle();
+    });
+  }
+
+  void _pushSubtitleStyle() {
+    final backend = _backend;
+    if (backend == null) return;
+    try {
+      final prefs = GetIt.instance<UserPreferences>();
+      backend.configureSubtitleStyle(
+        textColor: prefs.get(UserPreferences.subtitlesTextColor),
+        backgroundColor: prefs.get(UserPreferences.subtitlesBackgroundColor),
+        strokeColor: prefs.get(UserPreferences.subtitleTextStrokeColor),
+        fontSize: prefs.get(UserPreferences.subtitlesTextSize),
+        fontWeight: prefs.get(UserPreferences.subtitlesTextWeight),
+        verticalOffset: prefs.get(UserPreferences.subtitlesOffsetPosition),
+      );
+    } catch (_) {}
+  }
+
+  String _logoUrlForItem(dynamic item) {
+    Map<String, dynamic>? raw;
+    String? itemId;
+    String? serverId;
+    if (item is AggregatedItem) {
+      raw = item.rawData;
+      itemId = item.id;
+      serverId = item.serverId;
+    } else if (item is Map) {
+      raw = item.cast<String, dynamic>();
+      itemId = (raw['Id'] ?? raw['id'])?.toString();
+      serverId = (raw['ServerId'] as String?) ?? (raw['serverId'] as String?);
+    }
+    if (raw == null) return '';
+
+    String? logoItemId;
+    String? logoTag;
+    final type = (raw['Type'] as String?)?.trim();
+    if (type == 'Episode') {
+      logoItemId =
+          (raw['ParentLogoItemId'] as String?) ?? (raw['SeriesId'] as String?);
+      logoTag = raw['ParentLogoImageTag'] as String?;
+    } else {
+      final imageTags = raw['ImageTags'];
+      if (imageTags is Map) {
+        logoTag = imageTags['Logo'] as String?;
+      }
+      logoTag ??= raw['LogoImageTag'] as String?;
+      logoItemId = itemId;
+    }
+
+    final normalizedItemId = logoItemId?.trim();
+    final normalizedTag = logoTag?.trim();
+    if (normalizedItemId == null ||
+        normalizedItemId.isEmpty ||
+        normalizedTag == null ||
+        normalizedTag.isEmpty) {
+      return '';
+    }
+
+    try {
+      MediaServerClient? client;
+      if (serverId != null && serverId.isNotEmpty) {
+        client = GetIt.instance<MediaServerClientFactory>().getClientIfExists(
+          serverId,
+        );
+      }
+      client ??= GetIt.instance<MediaServerClient>();
+      return client.imageApi.getLogoImageUrl(
+        normalizedItemId,
+        maxWidth: 420,
+        tag: normalizedTag,
+      );
+    } catch (_) {
+      return '';
+    }
+  }
+
+  String _prettyPlayMethod(String name) {
+    switch (name) {
+      case 'directPlay':
+        return 'Direct Play';
+      case 'directStream':
+        return 'Direct Stream';
+      case 'transcode':
+        return 'Transcode';
+      default:
+        return name;
+    }
+  }
+
+  List<String> _streamInfoLines(PlaybackManager manager) {
+    final res = manager.currentResolution;
+    if (res == null) return const [];
+    final lines = <String>[];
+    lines.add('Play method: ${_prettyPlayMethod(res.playMethod.name)}');
+    final container = res.container;
+    if (container != null && container.isNotEmpty) {
+      lines.add('Container: ${container.toUpperCase()}');
+    }
+    final video = res.mediaStreams.firstWhere(
+      (s) => s['Type'] == 'Video',
+      orElse: () => const <String, dynamic>{},
+    );
+    if (video.isNotEmpty) {
+      final title = (video['DisplayTitle'] as String?) ?? '';
+      if (title.isNotEmpty) lines.add('Video: $title');
+      final range = (video['VideoRangeType'] as String?) ?? '';
+      if (range.isNotEmpty) lines.add('Video range: $range');
+    }
+    final audioIndex = manager.audioStreamIndex;
+    final audio = res.mediaStreams.firstWhere(
+      (s) =>
+          s['Type'] == 'Audio' &&
+          (audioIndex == null || s['Index'] == audioIndex),
+      orElse: () => const <String, dynamic>{},
+    );
+    if (audio.isNotEmpty) {
+      final title = (audio['DisplayTitle'] as String?) ?? '';
+      if (title.isNotEmpty) lines.add('Audio: $title');
+    }
+    if (res.transcodingReasons.isNotEmpty) {
+      lines.add('Transcode reasons: ${res.transcodingReasons.join(', ')}');
+    }
+    return lines;
   }
 
   List<Map<String, dynamic>> _trackOptions(
@@ -203,6 +331,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         manager.subtitleStreamIndex,
         audio: false,
       ),
+      logoUrl: _logoUrlForItem(item),
+      streamInfoLines: _streamInfoLines(manager),
     );
   }
 
@@ -234,6 +364,11 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
           unawaited(manager.disableSubtitles());
         } else {
           unawaited(manager.changeSubtitleTrack(index));
+        }
+      case 'setSpeed':
+        final speed = (action['speed'] as num?)?.toDouble();
+        if (speed != null && speed > 0) {
+          unawaited(_backend?.setPlaybackSpeed(speed) ?? Future<void>.value());
         }
     }
     Future<void>.delayed(const Duration(milliseconds: 300), _pushMetadata);

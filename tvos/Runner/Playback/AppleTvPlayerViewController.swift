@@ -8,9 +8,12 @@ final class AppleTvPlayerViewController: UIViewController {
     var onPrevious: (() -> Void)?
     var onSelectAudio: ((Int) -> Void)?
     var onSelectSubtitle: ((Int) -> Void)?
+    var onSetSpeed: ((Double) -> Void)?
+    var baseSubtitlePos = 92
     private var didAttachSurface = false
     private var updateTimer: Timer?
     private var lastShowAt: TimeInterval = 0
+    private var subtitlesRaised = false
 
     private var skipForwardMs = 30000
     private var skipBackMs = 10000
@@ -18,12 +21,17 @@ final class AppleTvPlayerViewController: UIViewController {
     private var hasPrevious = false
     private var audioTracks: [(index: Int, label: String, subtitle: String, selected: Bool)] = []
     private var subtitleTracks: [(index: Int, label: String, subtitle: String, selected: Bool)] = []
+    private var streamInfoLines: [String] = []
+    private var logoUrlString = ""
 
     private var scrubTargetMs: Int?
     private var scrubCommitTimer: Timer?
 
     private enum Zone { case scrubber, buttons }
-    private enum ControlId { case prev, skipBack, playPause, skipForward, next, audio, subtitles, chapters }
+    private enum ControlId {
+        case prev, skipBack, playPause, skipForward, next
+        case speed, chapters, subtitles, audio, zoom, info
+    }
     private var focusedZone: Zone = .buttons
     private var focusedControlIndex = 0
     private var controls: [ControlId] = []
@@ -35,15 +43,26 @@ final class AppleTvPlayerViewController: UIViewController {
     private let scrubber = UIProgressView(progressViewStyle: .default)
     private let currentTimeLabel = UILabel()
     private let durationLabel = UILabel()
+    private let endsAtLabel = UILabel()
     private let chapterOverlay = UIView()
-    private let controlRow = UIStackView()
+    private let controlBar = UIView()
+    private let transportStack = UIStackView()
+    private let secondaryStack = UIStackView()
 
     private let topContainer = UIView()
     private let topGradientLayer = CAGradientLayer()
+    private let logoImageView = UIImageView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
 
     private var chapters: [(title: String, startMs: Int)] = []
+
+    private static let endTimeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        formatter.dateStyle = .none
+        return formatter
+    }()
 
     init(player: MpvPlayerWrapper) {
         self.player = player
@@ -71,7 +90,7 @@ final class AppleTvPlayerViewController: UIViewController {
             topContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             topContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             topContainer.topAnchor.constraint(equalTo: view.topAnchor),
-            topContainer.heightAnchor.constraint(equalToConstant: 220),
+            topContainer.heightAnchor.constraint(equalToConstant: 260),
         ])
 
         topGradientLayer.colors = [
@@ -80,10 +99,10 @@ final class AppleTvPlayerViewController: UIViewController {
         ]
         topContainer.layer.addSublayer(topGradientLayer)
 
-        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        subtitleLabel.font = .systemFont(ofSize: 26, weight: .semibold)
-        subtitleLabel.textColor = UIColor(white: 1, alpha: 0.7)
-        topContainer.addSubview(subtitleLabel)
+        logoImageView.translatesAutoresizingMaskIntoConstraints = false
+        logoImageView.contentMode = .scaleAspectFit
+        logoImageView.isHidden = true
+        topContainer.addSubview(logoImageView)
 
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.font = .systemFont(ofSize: 40, weight: .bold)
@@ -91,18 +110,30 @@ final class AppleTvPlayerViewController: UIViewController {
         titleLabel.numberOfLines = 1
         topContainer.addSubview(titleLabel)
 
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        subtitleLabel.font = .systemFont(ofSize: 26, weight: .semibold)
+        subtitleLabel.textColor = UIColor(white: 1, alpha: 0.7)
+        topContainer.addSubview(subtitleLabel)
+
         NSLayoutConstraint.activate([
-            subtitleLabel.leadingAnchor.constraint(
+            logoImageView.leadingAnchor.constraint(
                 equalTo: topContainer.leadingAnchor, constant: 90),
-            subtitleLabel.trailingAnchor.constraint(
+            logoImageView.topAnchor.constraint(
+                equalTo: topContainer.safeAreaLayoutGuide.topAnchor, constant: 40),
+            logoImageView.heightAnchor.constraint(equalToConstant: 82),
+            logoImageView.widthAnchor.constraint(lessThanOrEqualToConstant: 460),
+
+            titleLabel.leadingAnchor.constraint(
+                equalTo: topContainer.leadingAnchor, constant: 90),
+            titleLabel.trailingAnchor.constraint(
                 equalTo: topContainer.trailingAnchor, constant: -90),
-            subtitleLabel.topAnchor.constraint(
+            titleLabel.topAnchor.constraint(
                 equalTo: topContainer.safeAreaLayoutGuide.topAnchor, constant: 40),
 
-            titleLabel.leadingAnchor.constraint(equalTo: subtitleLabel.leadingAnchor),
-            titleLabel.trailingAnchor.constraint(equalTo: subtitleLabel.trailingAnchor),
-            titleLabel.topAnchor.constraint(
-                equalTo: subtitleLabel.bottomAnchor, constant: 6),
+            subtitleLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
+            subtitleLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
+            subtitleLabel.topAnchor.constraint(
+                equalTo: logoImageView.bottomAnchor, constant: 8),
         ])
 
         osdContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -112,7 +143,7 @@ final class AppleTvPlayerViewController: UIViewController {
             osdContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             osdContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             osdContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            osdContainer.heightAnchor.constraint(equalToConstant: 320),
+            osdContainer.heightAnchor.constraint(equalToConstant: 340),
         ])
 
         gradientLayer.colors = [
@@ -120,6 +151,21 @@ final class AppleTvPlayerViewController: UIViewController {
             UIColor(white: 0, alpha: 0.9).cgColor,
         ]
         osdContainer.layer.addSublayer(gradientLayer)
+
+        controlBar.translatesAutoresizingMaskIntoConstraints = false
+        osdContainer.addSubview(controlBar)
+
+        transportStack.translatesAutoresizingMaskIntoConstraints = false
+        transportStack.axis = .horizontal
+        transportStack.alignment = .center
+        transportStack.spacing = 24
+        controlBar.addSubview(transportStack)
+
+        secondaryStack.translatesAutoresizingMaskIntoConstraints = false
+        secondaryStack.axis = .horizontal
+        secondaryStack.alignment = .center
+        secondaryStack.spacing = 24
+        controlBar.addSubview(secondaryStack)
 
         scrubber.translatesAutoresizingMaskIntoConstraints = false
         scrubber.progressTintColor = UIColor(red: 0.9, green: 0.1, blue: 0.55, alpha: 1)
@@ -133,28 +179,49 @@ final class AppleTvPlayerViewController: UIViewController {
         osdContainer.addSubview(chapterOverlay)
 
         currentTimeLabel.translatesAutoresizingMaskIntoConstraints = false
-        currentTimeLabel.font = .monospacedDigitSystemFont(ofSize: 28, weight: .medium)
-        currentTimeLabel.textColor = .white
+        currentTimeLabel.font = .monospacedDigitSystemFont(ofSize: 26, weight: .medium)
+        currentTimeLabel.textColor = UIColor(white: 1, alpha: 0.7)
         osdContainer.addSubview(currentTimeLabel)
 
         durationLabel.translatesAutoresizingMaskIntoConstraints = false
-        durationLabel.font = .monospacedDigitSystemFont(ofSize: 28, weight: .medium)
+        durationLabel.font = .monospacedDigitSystemFont(ofSize: 26, weight: .medium)
         durationLabel.textColor = UIColor(white: 1, alpha: 0.7)
         durationLabel.textAlignment = .right
         osdContainer.addSubview(durationLabel)
 
-        controlRow.translatesAutoresizingMaskIntoConstraints = false
-        controlRow.axis = .horizontal
-        controlRow.alignment = .center
-        controlRow.distribution = .equalSpacing
-        controlRow.spacing = 28
-        osdContainer.addSubview(controlRow)
+        endsAtLabel.translatesAutoresizingMaskIntoConstraints = false
+        endsAtLabel.font = .monospacedDigitSystemFont(ofSize: 24, weight: .medium)
+        endsAtLabel.textColor = UIColor(white: 1, alpha: 0.7)
+        endsAtLabel.textAlignment = .right
+        osdContainer.addSubview(endsAtLabel)
 
         NSLayoutConstraint.activate([
-            scrubber.leadingAnchor.constraint(
+            controlBar.leadingAnchor.constraint(
                 equalTo: osdContainer.leadingAnchor, constant: 90),
-            scrubber.trailingAnchor.constraint(
+            controlBar.trailingAnchor.constraint(
                 equalTo: osdContainer.trailingAnchor, constant: -90),
+            controlBar.bottomAnchor.constraint(
+                equalTo: osdContainer.bottomAnchor, constant: -56),
+            controlBar.heightAnchor.constraint(equalToConstant: 72),
+
+            transportStack.leadingAnchor.constraint(equalTo: controlBar.leadingAnchor),
+            transportStack.centerYAnchor.constraint(equalTo: controlBar.centerYAnchor),
+
+            secondaryStack.trailingAnchor.constraint(equalTo: controlBar.trailingAnchor),
+            secondaryStack.centerYAnchor.constraint(equalTo: controlBar.centerYAnchor),
+
+            currentTimeLabel.leadingAnchor.constraint(equalTo: controlBar.leadingAnchor),
+            currentTimeLabel.bottomAnchor.constraint(
+                equalTo: controlBar.topAnchor, constant: -16),
+
+            durationLabel.trailingAnchor.constraint(equalTo: controlBar.trailingAnchor),
+            durationLabel.bottomAnchor.constraint(
+                equalTo: controlBar.topAnchor, constant: -16),
+
+            scrubber.leadingAnchor.constraint(equalTo: controlBar.leadingAnchor),
+            scrubber.trailingAnchor.constraint(equalTo: controlBar.trailingAnchor),
+            scrubber.bottomAnchor.constraint(
+                equalTo: currentTimeLabel.topAnchor, constant: -10),
             scrubber.heightAnchor.constraint(equalToConstant: 6),
 
             chapterOverlay.leadingAnchor.constraint(equalTo: scrubber.leadingAnchor),
@@ -162,72 +229,83 @@ final class AppleTvPlayerViewController: UIViewController {
             chapterOverlay.centerYAnchor.constraint(equalTo: scrubber.centerYAnchor),
             chapterOverlay.heightAnchor.constraint(equalToConstant: 16),
 
-            currentTimeLabel.leadingAnchor.constraint(equalTo: scrubber.leadingAnchor),
-            currentTimeLabel.bottomAnchor.constraint(
-                equalTo: scrubber.topAnchor, constant: -14),
-
-            durationLabel.trailingAnchor.constraint(equalTo: scrubber.trailingAnchor),
-            durationLabel.bottomAnchor.constraint(
-                equalTo: scrubber.topAnchor, constant: -14),
-
-            controlRow.centerXAnchor.constraint(equalTo: osdContainer.centerXAnchor),
-            controlRow.topAnchor.constraint(equalTo: scrubber.bottomAnchor, constant: 34),
+            endsAtLabel.trailingAnchor.constraint(equalTo: controlBar.trailingAnchor),
+            endsAtLabel.bottomAnchor.constraint(
+                equalTo: scrubber.topAnchor, constant: -8),
         ])
     }
 
-    private func icon(for id: ControlId) -> String {
+    private func iconName(for id: ControlId) -> String {
         switch id {
         case .prev: return "backward.end.fill"
-        case .skipBack: return "gobackward"
+        case .skipBack: return "backward.fill"
         case .playPause: return isPaused() ? "play.fill" : "pause.fill"
-        case .skipForward: return "goforward"
+        case .skipForward: return "forward.fill"
         case .next: return "forward.end.fill"
-        case .audio: return "waveform"
-        case .subtitles: return "captions.bubble"
+        case .speed: return "gauge.with.dots.needle.67percent"
         case .chapters: return "list.bullet"
+        case .subtitles: return "captions.bubble"
+        case .audio: return "speaker.wave.2"
+        case .zoom: return player.zoomMode.iconName
+        case .info: return "info.circle"
         }
     }
 
+    private func makeControl(_ id: ControlId) -> UIView {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.layer.cornerRadius = 32
+        let iconView = UIImageView()
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        iconView.contentMode = .scaleAspectFit
+        iconView.tintColor = .white
+        iconView.image = UIImage(
+            systemName: iconName(for: id),
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 28, weight: .medium))
+        container.addSubview(iconView)
+        NSLayoutConstraint.activate([
+            container.widthAnchor.constraint(equalToConstant: 64),
+            container.heightAnchor.constraint(equalToConstant: 64),
+            iconView.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+            iconView.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+        ])
+        controlViews[id] = container
+        controlIcons[id] = iconView
+        return container
+    }
+
     private func rebuildControls() {
-        controlRow.arrangedSubviews.forEach {
-            controlRow.removeArrangedSubview($0)
+        transportStack.arrangedSubviews.forEach {
+            transportStack.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+        secondaryStack.arrangedSubviews.forEach {
+            secondaryStack.removeArrangedSubview($0)
             $0.removeFromSuperview()
         }
         controlViews.removeAll()
         controlIcons.removeAll()
 
-        var ids: [ControlId] = []
-        if hasPrevious { ids.append(.prev) }
-        ids.append(.skipBack)
-        ids.append(.playPause)
-        ids.append(.skipForward)
-        if hasNext { ids.append(.next) }
-        if !audioTracks.isEmpty { ids.append(.audio) }
-        ids.append(.subtitles)
-        if chapters.count > 1 { ids.append(.chapters) }
-        controls = ids
+        var transport: [ControlId] = []
+        if hasPrevious { transport.append(.prev) }
+        transport.append(.skipBack)
+        transport.append(.playPause)
+        transport.append(.skipForward)
+        if hasNext { transport.append(.next) }
 
-        for id in ids {
-            let container = UIView()
-            container.translatesAutoresizingMaskIntoConstraints = false
-            container.layer.cornerRadius = 32
-            let iconView = UIImageView()
-            iconView.translatesAutoresizingMaskIntoConstraints = false
-            iconView.contentMode = .scaleAspectFit
-            iconView.tintColor = .white
-            iconView.image = UIImage(
-                systemName: icon(for: id),
-                withConfiguration: UIImage.SymbolConfiguration(pointSize: 30, weight: .semibold))
-            container.addSubview(iconView)
-            NSLayoutConstraint.activate([
-                container.widthAnchor.constraint(equalToConstant: 64),
-                container.heightAnchor.constraint(equalToConstant: 64),
-                iconView.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-                iconView.centerYAnchor.constraint(equalTo: container.centerYAnchor),
-            ])
-            controlRow.addArrangedSubview(container)
-            controlViews[id] = container
-            controlIcons[id] = iconView
+        var secondary: [ControlId] = [.speed]
+        if chapters.count > 1 { secondary.append(.chapters) }
+        if !subtitleTracks.isEmpty { secondary.append(.subtitles) }
+        if audioTracks.count > 1 { secondary.append(.audio) }
+        secondary.append(.zoom)
+        if !streamInfoLines.isEmpty { secondary.append(.info) }
+
+        controls = transport + secondary
+        for id in transport {
+            transportStack.addArrangedSubview(makeControl(id))
+        }
+        for id in secondary {
+            secondaryStack.addArrangedSubview(makeControl(id))
         }
 
         if !controls.indices.contains(focusedControlIndex) {
@@ -260,6 +338,7 @@ final class AppleTvPlayerViewController: UIViewController {
         skipBackMs = (args["skipBackMs"] as? NSNumber)?.intValue ?? 10000
         audioTracks = parseTracks(args["audioTracks"])
         subtitleTracks = parseTracks(args["subtitleTracks"])
+        streamInfoLines = (args["streamInfoLines"] as? [String]) ?? []
 
         chapters = ((args["chapters"] as? [[String: Any]]) ?? []).compactMap {
             entry in
@@ -269,10 +348,38 @@ final class AppleTvPlayerViewController: UIViewController {
             let title = (entry["title"] as? String) ?? ""
             return (title: title, startMs: startMs)
         }
+
+        loadLogo((args["logoUrl"] as? String) ?? "")
+
         if isViewLoaded {
             rebuildControls()
             view.setNeedsLayout()
         }
+    }
+
+    private func loadLogo(_ urlString: String) {
+        guard urlString != logoUrlString else { return }
+        logoUrlString = urlString
+        guard !urlString.isEmpty, let url = URL(string: urlString) else {
+            logoImageView.isHidden = true
+            logoImageView.image = nil
+            titleLabel.isHidden = (titleLabel.text ?? "").isEmpty
+            return
+        }
+        let expected = urlString
+        URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+            Task { @MainActor in
+                guard let self, self.logoUrlString == expected else { return }
+                if let data, let image = UIImage(data: data) {
+                    self.logoImageView.image = image
+                    self.logoImageView.isHidden = false
+                    self.titleLabel.isHidden = true
+                } else {
+                    self.logoImageView.isHidden = true
+                    self.titleLabel.isHidden = (self.titleLabel.text ?? "").isEmpty
+                }
+            }
+        }.resume()
     }
 
     private func parseTracks(_ raw: Any?)
@@ -411,12 +518,21 @@ final class AppleTvPlayerViewController: UIViewController {
             adjustScrub(byMs: skipForwardMs)
         case .next:
             onNext?()
-        case .audio:
-            presentAudioMenu()
-        case .subtitles:
-            presentSubtitleMenu()
+        case .speed:
+            presentSpeedMenu()
         case .chapters:
             presentChapterMenu()
+        case .subtitles:
+            presentSubtitleMenu()
+        case .audio:
+            presentAudioMenu()
+        case .zoom:
+            player.cycleZoomMode()
+            controlIcons[.zoom]?.image = UIImage(
+                systemName: player.zoomMode.iconName,
+                withConfiguration: UIImage.SymbolConfiguration(pointSize: 28, weight: .medium))
+        case .info:
+            presentInfoDialog()
         }
     }
 
@@ -480,7 +596,15 @@ final class AppleTvPlayerViewController: UIViewController {
         renderProgress()
     }
 
+    private func setSubtitlesRaised(_ raised: Bool) {
+        guard raised != subtitlesRaised else { return }
+        subtitlesRaised = raised
+        let pos = raised ? min(baseSubtitlePos, 70) : baseSubtitlePos
+        player.setProperty("sub-pos", value: String(pos))
+    }
+
     private func hideOsd() {
+        setSubtitlesRaised(false)
         UIView.animate(withDuration: 0.3) {
             self.osdContainer.alpha = 0
             self.topContainer.alpha = 0
@@ -547,8 +671,36 @@ final class AppleTvPlayerViewController: UIViewController {
         present(sheet, animated: true)
     }
 
+    private func presentSpeedMenu() {
+        let sheet = UIAlertController(
+            title: "Playback Speed", message: nil, preferredStyle: .actionSheet)
+        let speeds: [Double] = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0]
+        let current = Double(player.rate)
+        for speed in speeds {
+            let check = abs(speed - current) < 0.01 ? "\u{2713} " : ""
+            let label = speed == 1.0 ? "Normal" : String(format: "%gx", speed)
+            sheet.addAction(
+                UIAlertAction(title: "\(check)\(label)", style: .default) {
+                    [weak self] _ in
+                    self?.onSetSpeed?(speed)
+                })
+        }
+        sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(sheet, animated: true)
+    }
+
+    private func presentInfoDialog() {
+        let alert = UIAlertController(
+            title: "Playback Information",
+            message: streamInfoLines.joined(separator: "\n"),
+            preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+
     private func showOsd() {
         lastShowAt = CACurrentMediaTime()
+        setSubtitlesRaised(true)
         if osdContainer.alpha < 1 {
             UIView.animate(withDuration: 0.2) {
                 self.osdContainer.alpha = 1
@@ -563,24 +715,36 @@ final class AppleTvPlayerViewController: UIViewController {
         scrubber.progress = duration > 0 ? Float(min(1, max(0, current / duration))) : 0
         currentTimeLabel.text = formatTime(current)
         durationLabel.text = formatTime(duration)
+
+        let rate = max(0.01, Double(player.rate))
+        if duration > 0 {
+            let remaining = max(0, duration - current) / rate
+            let endDate = Date().addingTimeInterval(remaining)
+            endsAtLabel.text = "Ends at \(Self.endTimeFormatter.string(from: endDate))"
+            endsAtLabel.isHidden = false
+        } else {
+            endsAtLabel.isHidden = true
+        }
     }
 
     private func updateOsd() {
         renderProgress()
         controlIcons[.playPause]?.image = UIImage(
             systemName: isPaused() ? "play.fill" : "pause.fill",
-            withConfiguration: UIImage.SymbolConfiguration(pointSize: 30, weight: .semibold))
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 28, weight: .medium))
 
         let shouldShow =
             isPaused() || scrubTargetMs != nil
             || (CACurrentMediaTime() - lastShowAt < 4.0)
         let visible = osdContainer.alpha > 0.5
         if shouldShow && !visible {
+            setSubtitlesRaised(true)
             UIView.animate(withDuration: 0.2) {
                 self.osdContainer.alpha = 1
                 self.topContainer.alpha = 1
             }
         } else if !shouldShow && visible {
+            setSubtitlesRaised(false)
             UIView.animate(withDuration: 0.3) {
                 self.osdContainer.alpha = 0
                 self.topContainer.alpha = 0

@@ -14,6 +14,7 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
     private var lastTextTrackCount = -1
     private var didComplete = false
     private var lastMetadata: [String: Any]?
+    private var lastSubtitleStyle: [String: Any]?
     static var lastCommand = "-"
 
     init(messenger: FlutterBinaryMessenger, rootViewController: UIViewController) {
@@ -63,6 +64,9 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         case "setUiMetadata":
             lastMetadata = args
             playerVC?.applyUiMetadata(args)
+        case "configureSubtitleStyle":
+            lastSubtitleStyle = args
+            applySubtitleStyle(args)
         case "play":
             player?.resume()
         case "pause":
@@ -94,6 +98,49 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         ((value as? NSNumber)?.doubleValue ?? 0) / 1000.0
     }
 
+    private func applySubtitleStyle(_ args: [String: Any]) {
+        guard let player = player else { return }
+        applySubtitleStyle(args, on: player, vc: playerVC)
+    }
+
+    private func applySubtitleStyle(
+        _ args: [String: Any], on player: MpvPlayerWrapper,
+        vc: AppleTvPlayerViewController?
+    ) {
+        func argbString(_ value: Any?) -> String? {
+            guard let n = (value as? NSNumber)?.int64Value else { return nil }
+            let a = (n >> 24) & 0xFF
+            let r = (n >> 16) & 0xFF
+            let g = (n >> 8) & 0xFF
+            let b = n & 0xFF
+            return String(format: "#%02X%02X%02X%02X", a, r, g, b)
+        }
+
+        if let color = argbString(args["textColor"]) {
+            player.setProperty("sub-color", value: color)
+        }
+        if let color = argbString(args["backgroundColor"]) {
+            player.setProperty("sub-back-color", value: color)
+        }
+        if let color = argbString(args["strokeColor"]) {
+            player.setProperty("sub-border-color", value: color)
+            player.setProperty("sub-border-size", value: "3")
+        }
+        if let size = (args["fontSize"] as? NSNumber)?.doubleValue, size > 0 {
+            let mpvSize = Int((size * 55.0 / 24.0).rounded())
+            player.setProperty("sub-font-size", value: String(mpvSize))
+        }
+        if let weight = (args["fontWeight"] as? NSNumber)?.intValue {
+            player.setProperty("sub-bold", value: weight >= 600 ? "yes" : "no")
+        }
+        var subPos = 92
+        if let offset = (args["verticalOffset"] as? NSNumber)?.doubleValue {
+            subPos = min(100, max(40, 100 - Int((offset * 100).rounded())))
+        }
+        player.setProperty("sub-pos", value: String(subPos))
+        vc?.baseSubtitlePos = subPos
+    }
+
     private func present() {
         if playerVC != nil {
             send(["event": "presented"])
@@ -112,8 +159,14 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         vc.onSelectSubtitle = { [weak self] index in
             self?.send(["event": "selectSubtitle", "index": index])
         }
+        vc.onSetSpeed = { [weak self] speed in
+            self?.send(["event": "setSpeed", "speed": speed])
+        }
         if let meta = lastMetadata {
             vc.applyUiMetadata(meta)
+        }
+        if let style = lastSubtitleStyle {
+            applySubtitleStyle(style, on: created, vc: vc)
         }
         playerVC = vc
         rootViewController?.present(vc, animated: false) { [weak self] in
