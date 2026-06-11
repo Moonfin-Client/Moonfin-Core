@@ -13,6 +13,7 @@ class LibraryRow extends StatefulWidget {
   final VoidCallback? onSeeAll;
   final double? rowHeight;
   final ScrollController? scrollController;
+  final bool isLoading;
 
   const LibraryRow({
     super.key,
@@ -21,6 +22,7 @@ class LibraryRow extends StatefulWidget {
     this.onSeeAll,
     this.rowHeight,
     this.scrollController,
+    this.isLoading = false,
   });
 
   @override
@@ -62,32 +64,40 @@ class _LibraryRowState extends State<LibraryRow> {
       showControls: showControls,
       builder: (_, scrollController) => SizedBox(
         height: rowHeight + (10 * desktopScale),
-        child: hasItems
-            ? ListView.separated(
-                controller: scrollController,
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.fromLTRB(
-                  20 * desktopScale,
-                  5 * desktopScale,
-                  20 * desktopScale,
-                  5 * desktopScale,
+        child: widget.isLoading
+            ? Center(
+                child: SizedBox(
+                  width: 24 * desktopScale,
+                  height: 24 * desktopScale,
+                  child: const CircularProgressIndicator(strokeWidth: 2),
                 ),
-                itemCount: widget.children.length,
-                separatorBuilder: (_, _) =>
-                    SizedBox(width: 12 * desktopScale),
-                itemBuilder: (_, i) => widget.children[i],
               )
-            : Center(
-                child: Text(
-                  l10n.noItems,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withAlpha(128),
-                      ),
-                ),
-              ),
+            : hasItems
+                ? ListView.separated(
+                    controller: scrollController,
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.fromLTRB(
+                      20 * desktopScale,
+                      5 * desktopScale,
+                      20 * desktopScale,
+                      5 * desktopScale,
+                    ),
+                    itemCount: widget.children.length,
+                    separatorBuilder: (_, _) =>
+                        SizedBox(width: 12 * desktopScale),
+                    itemBuilder: (_, i) => widget.children[i],
+                  )
+                : Center(
+                    child: Text(
+                      l10n.noItems,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withAlpha(128),
+                          ),
+                    ),
+                  ),
       ),
     );
   }

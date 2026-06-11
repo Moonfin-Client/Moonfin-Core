@@ -2651,6 +2651,7 @@ class _ContentRowsState extends State<_ContentRows>
               if (row.isLoading) {
                 rowChild = LibraryRow(
                   title: _localizedRowTitle(row, l10n),
+                  isLoading: true,
                   children: const [],
                 );
                 return Padding(

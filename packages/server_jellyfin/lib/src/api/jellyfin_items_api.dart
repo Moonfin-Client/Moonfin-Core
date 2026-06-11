@@ -129,9 +129,11 @@ class JellyfinItemsApi implements ItemsApi {
     String? enableImageTypes,
     int? imageTypeLimit,
   }) async {
+    final userId = _getUserId();
     final response = await _dio.get(
       '/Shows/NextUp',
       queryParameters: {
+        'UserId': userId,
         'SeriesId': ?seriesId,
         'ParentId': ?parentId,
         'Limit': ?limit,
