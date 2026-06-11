@@ -5883,7 +5883,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
             );
 
           case 'Season':
-            final episodes = viewModel.episodes;
+            final episodes = viewModel.episodes.where(isEligibleNextEpisodeCandidate).toList();
             if (episodes.isEmpty) return;
             final startIndex = resume
                 ? episodes.indexWhere(
@@ -5939,11 +5939,12 @@ class _ActionButtonsState extends State<_ActionButtons> {
             if (!context.mounted) return;
 
             if (episodes.length > 1) {
-              final startIndex = episodes.indexWhere((e) => e.id == item.id);
+              final playableEpisodes = episodes.where((e) => e.id == item.id || isEligibleNextEpisodeCandidate(e)).toList();
+              final startIndex = playableEpisodes.indexWhere((e) => e.id == item.id);
               final idx = startIndex >= 0 ? startIndex : 0;
-              final selectedEpisode = episodes[idx];
+              final selectedEpisode = playableEpisodes[idx];
               final episodeQueue = _truncateQueueIfImmediateNextUnplayable(
-                episodes,
+                playableEpisodes,
                 startIndex: idx,
               );
               
@@ -6102,10 +6103,11 @@ class _ActionButtonsState extends State<_ActionButtons> {
   ) async {
     final manager = GetIt.instance<PlaybackManager>();
     final queue = await _shuffleQueueForItem(item);
-    if (queue.length < 2) return;
+    final playableQueue = queue.where((e) => isEligibleNextEpisodeCandidate(e) || e.id == item.id).toList();
+    if (playableQueue.length < 2) return;
     if (!context.mounted) return;
 
-    final shuffled = List<AggregatedItem>.from(queue)..shuffle();
+    final shuffled = List<AggregatedItem>.from(playableQueue)..shuffle();
     final isAudio = shuffled.every((queuedItem) {
       final mediaType = queuedItem.rawData['MediaType'] as String?;
       return queuedItem.type == 'Audio' || mediaType == 'Audio';

@@ -23,6 +23,7 @@ import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../syncplay/syncplay_manager.dart';
 import '../../util/platform_detection.dart';
+import '../../util/episode_playability.dart';
 
 final _getIt = GetIt.instance;
 
@@ -316,11 +317,14 @@ Future<List<dynamic>> _nextSeasonItemsProvider(
       seriesId: seriesId,
       seasonId: nextSeasonId,
     );
-    if (nextSeasonEpisodes.isEmpty ||
-        nextSeasonEpisodes.first.mediaSources.isEmpty) {
+    final playableEpisodes = nextSeasonEpisodes
+        .where(isEligibleNextEpisodeCandidate)
+        .toList();
+    if (playableEpisodes.isEmpty ||
+        playableEpisodes.first.mediaSources.isEmpty) {
       return const <dynamic>[];
     }
-    return nextSeasonEpisodes;
+    return playableEpisodes;
   } catch (_) {
     return const <dynamic>[];
   }

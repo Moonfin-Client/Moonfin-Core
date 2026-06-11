@@ -6,7 +6,7 @@ import 'package:playback_core/playback_core.dart';
 import '../preference/user_preferences.dart';
 import 'html_video_backend_profile.dart';
 
-class HtmlVideoBackend implements PlayerBackend {
+class HtmlVideoBackend extends PlayerBackend {
   HtmlVideoBackend(this._prefs);
 
   final UserPreferences _prefs;
@@ -84,6 +84,7 @@ class HtmlVideoBackend implements PlayerBackend {
 
   @override
   Future<void> setAudioTrack(int index) async {}
+
 
   @override
   Future<void> setSubtitleTrack(

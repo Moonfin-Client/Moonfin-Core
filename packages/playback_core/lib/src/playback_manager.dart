@@ -99,7 +99,34 @@ class PlaybackManager implements AudioOwnable {
   Stream<void> get sessionEndedStream => _sessionEndedController.stream;
   StreamResolutionResult? get currentResolution => _currentResolution;
   int? get audioStreamIndex => _audioStreamIndex;
-  int? get subtitleStreamIndex => _subtitleStreamIndex;
+  int? get subtitleStreamIndex {
+    if (_subtitleStreamIndex != null) {
+      return _subtitleStreamIndex;
+    }
+    final activeId = _backend?.activeSubtitleTrackIndex;
+    if (activeId == -1) {
+      return -1;
+    }
+    if (activeId != null && activeId > 0) {
+      return _streamIndexForMpvTrackId(activeId, 'Subtitle');
+    }
+    return null;
+  }
+
+  Future<int?> getSubtitleStreamIndexAsync() async {
+    if (_subtitleStreamIndex != null) {
+      return _subtitleStreamIndex;
+    }
+    final activeId = await _backend?.getActiveSubtitleTrackIndexAsync();
+    if (activeId == -1) {
+      return -1;
+    }
+    if (activeId != null && activeId > 0) {
+      return _streamIndexForMpvTrackId(activeId, 'Subtitle');
+    }
+    return null;
+  }
+
   int? get pendingAudioStreamIndex => _pendingItemAudioStreamIndex;
   int? get pendingSubtitleStreamIndex => _pendingItemSubtitleStreamIndex;
   String? get pendingMediaSourceId => _mediaSourceId;
@@ -1123,7 +1150,7 @@ class PlaybackManager implements AudioOwnable {
           restorePosition: useNativeStart ? startPosition : null,
         );
       }
-      if (_subtitleStreamIndex == null || _subtitleStreamIndex == -1) {
+      if (_subtitleStreamIndex == -1) {
         _waitAndDisableSubtitles(sessionToken);
       }
     } else if (resolution.playMethod == StreamPlayMethod.transcode) {
@@ -1143,7 +1170,7 @@ class PlaybackManager implements AudioOwnable {
         } else {
           _waitAndApplyExternalSubtitle(sessionToken, resolution);
         }
-      } else {
+      } else if (_subtitleStreamIndex == -1) {
         _waitAndDisableSubtitles(sessionToken);
       }
     }
@@ -1847,6 +1874,44 @@ class PlaybackManager implements AudioOwnable {
     final positional = typeStreams.indexWhere((s) => s['Index'] == streamIndex);
     if (positional < 0) return null;
     return positional + 1;
+  }
+
+  int? _streamIndexForMpvTrackId(int mpvTrackId, String type) {
+    final streams = _currentMediaStreams;
+    if (streams.isEmpty) return null;
+    final typeStreams = streams.where((s) => s['Type'] == type).toList();
+    if (typeStreams.isEmpty) return null;
+
+    if (type == 'Subtitle') {
+      final embeddedCount = typeStreams
+          .where((s) => s['IsExternal'] != true)
+          .length;
+
+      if (mpvTrackId > embeddedCount) {
+        final externalPos = mpvTrackId - embeddedCount - 1;
+        final externalStreams = typeStreams
+            .where((s) => s['IsExternal'] == true)
+            .toList();
+        if (externalPos >= 0 && externalPos < externalStreams.length) {
+          return externalStreams[externalPos]['Index'] as int?;
+        }
+      } else {
+        final embeddedStreams = typeStreams
+            .where((s) => s['IsExternal'] != true)
+            .toList();
+        final embeddedPos = mpvTrackId - 1;
+        if (embeddedPos >= 0 && embeddedPos < embeddedStreams.length) {
+          return embeddedStreams[embeddedPos]['Index'] as int?;
+        }
+      }
+      return null;
+    }
+
+    final positional = mpvTrackId - 1;
+    if (positional >= 0 && positional < typeStreams.length) {
+      return typeStreams[positional]['Index'] as int?;
+    }
+    return null;
   }
 
   Future<void> playOffline(

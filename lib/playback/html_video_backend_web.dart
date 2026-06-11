@@ -27,7 +27,7 @@ extension type _MoonfinHlsBridge._(JSObject _) implements JSObject {
   external void destroy(JSAny? controller);
 }
 
-class HtmlVideoBackend implements PlayerBackend {
+class HtmlVideoBackend extends PlayerBackend {
   HtmlVideoBackend(this._prefs)
     : _viewType = 'moonfin-html-video-${_nextViewId++}' {
     _videoElement = _createVideoElement();
@@ -439,6 +439,7 @@ class HtmlVideoBackend implements PlayerBackend {
   @override
   Future<void> setAudioTrack(int index) async {
   }
+
 
   @override
   Future<void> setSubtitleTrack(

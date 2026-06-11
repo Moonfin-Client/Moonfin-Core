@@ -61,6 +61,10 @@ abstract class PlayerBackend {
 
   bool get supportsRuntimeTrackSelection;
 
+  int? get activeSubtitleTrackIndex => null;
+
+  Future<int?> getActiveSubtitleTrackIndexAsync() async => null;
+
   bool get requiresStartupMediaReadyCheck => true;
 
   bool get nativelyHandlesStartPosition => false;

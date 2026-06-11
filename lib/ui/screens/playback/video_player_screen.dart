@@ -5837,88 +5837,90 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final canDownloadRemote =
         !audio && item is AggregatedItem && _canDownloadRemoteSubtitles(item);
 
-    final int? currentStreamIndex;
-    if (audio) {
-      currentStreamIndex =
-          _manager.audioStreamIndex ??
-          streams.where((s) => s['IsDefault'] == true).firstOrNull?['Index']
-              as int?;
-    } else {
-      final subIdx = _manager.subtitleStreamIndex;
-      currentStreamIndex =
-          subIdx ??
-          streams.where((s) => s['IsDefault'] == true).firstOrNull?['Index']
-              as int?;
-    }
-    final isSubsOff = !audio && _manager.subtitleStreamIndex == -1;
-
-    final options = <TrackOption>[
-      if (!audio) TrackOption(label: l10n.off),
-      ...optionStreams.asMap().entries.map((entry) {
-        final index = entry.key;
-        final trackNumber = index + 1;
-        final s = entry.value;
-        final displayTitle = s['DisplayTitle'] as String?;
-        final title = s['Title'] as String?;
-        final language = s['Language'] as String?;
-        final codec = s['Codec'] as String?;
-        final label =
-            displayTitle ??
-            title ??
-            language ??
-            l10n.streamTypeFallback(streamType, index + 1);
-        final subtitle = audio
-            ? [
-                if (language != null && displayTitle != null) language,
-                if (codec != null) codec.toUpperCase(),
-                if (s['Channels'] != null) '${s['Channels']}ch',
-              ].join(' · ')
-            : (() {
-                final subtitleType =
-                    ((codec == null || codec.isEmpty) ? 'Unknown' : codec)
-                        .toUpperCase();
-                final deliveryMethod = (s['DeliveryMethod'] as String?)
-                    ?.trim()
-                    .toLowerCase();
-                final location = s['IsExternal'] == true
-                    ? 'External'
-                    : (deliveryMethod == 'embed' ? 'Embedded' : 'Internal');
-                return '$subtitleType · $location';
-              })();
-        return TrackOption(
-          label: '$trackNumber - $label',
-          subtitle: subtitle.isNotEmpty ? subtitle : null,
-          scrollLabel: true,
-          scrollSubtitle: true,
-        );
-      }),
-      if (canDownloadRemote)
-        TrackOption(
-          label: l10n.downloadSubtitlesLabel,
-          subtitle: l10n.searchOpenSubtitlesPlugin,
-        ),
-    ];
-
-    final int? selectedIndex;
-    if (audio) {
-      final idx = currentStreamIndex != null
-          ? streams.indexWhere((s) => s['Index'] == currentStreamIndex)
-          : -1;
-      selectedIndex = idx >= 0 ? idx : null;
-    } else {
-      if (isSubsOff || (currentStreamIndex == null && streams.isNotEmpty)) {
-        selectedIndex = 0;
-      } else if (currentStreamIndex != null) {
-        final idx = optionStreams.indexWhere(
-          (s) => s['Index'] == currentStreamIndex,
-        );
-        selectedIndex = idx >= 0 ? idx + 1 : null;
-      } else {
-        selectedIndex = null;
-      }
-    }
-
     unawaited(() async {
+      final int? currentStreamIndex;
+      if (audio) {
+        currentStreamIndex =
+            _manager.audioStreamIndex ??
+            streams.where((s) => s['IsDefault'] == true).firstOrNull?['Index']
+                as int?;
+      } else {
+        final subIdx = await _manager.getSubtitleStreamIndexAsync();
+        currentStreamIndex =
+            subIdx ??
+            streams.where((s) => s['IsDefault'] == true).firstOrNull?['Index']
+                as int?;
+      }
+      final isSubsOff = !audio && currentStreamIndex == -1;
+
+      final options = <TrackOption>[
+        if (!audio) TrackOption(label: l10n.off),
+        ...optionStreams.asMap().entries.map((entry) {
+          final index = entry.key;
+          final trackNumber = index + 1;
+          final s = entry.value;
+          final displayTitle = s['DisplayTitle'] as String?;
+          final title = s['Title'] as String?;
+          final language = s['Language'] as String?;
+          final codec = s['Codec'] as String?;
+          final label =
+              displayTitle ??
+              title ??
+              language ??
+              l10n.streamTypeFallback(streamType, index + 1);
+          final subtitle = audio
+              ? [
+                  if (language != null && displayTitle != null) language,
+                  if (codec != null) codec.toUpperCase(),
+                  if (s['Channels'] != null) '${s['Channels']}ch',
+                ].join(' · ')
+              : (() {
+                  final subtitleType =
+                      ((codec == null || codec.isEmpty) ? 'Unknown' : codec)
+                          .toUpperCase();
+                  final deliveryMethod = (s['DeliveryMethod'] as String?)
+                      ?.trim()
+                      .toLowerCase();
+                  final location = s['IsExternal'] == true
+                      ? 'External'
+                      : (deliveryMethod == 'embed' ? 'Embedded' : 'Internal');
+                  return '$subtitleType · $location';
+                })();
+          return TrackOption(
+            label: '$trackNumber - $label',
+            subtitle: subtitle.isNotEmpty ? subtitle : null,
+            scrollLabel: true,
+            scrollSubtitle: true,
+          );
+        }),
+        if (canDownloadRemote)
+          TrackOption(
+            label: l10n.downloadSubtitlesLabel,
+            subtitle: l10n.searchOpenSubtitlesPlugin,
+          ),
+      ];
+
+      final int? selectedIndex;
+      if (audio) {
+        final idx = currentStreamIndex != null
+            ? streams.indexWhere((s) => s['Index'] == currentStreamIndex)
+            : -1;
+        selectedIndex = idx >= 0 ? idx : null;
+      } else {
+        if (isSubsOff || (currentStreamIndex == null && streams.isNotEmpty)) {
+          selectedIndex = 0;
+        } else if (currentStreamIndex != null) {
+          final idx = optionStreams.indexWhere(
+            (s) => s['Index'] == currentStreamIndex,
+          );
+          selectedIndex = idx >= 0 ? idx + 1 : null;
+        } else {
+          selectedIndex = null;
+        }
+      }
+
+      if (!mounted) return;
+
       final result = await TrackSelectorDialog.show(
         context,
         title: audio ? l10n.audioTrack : l10n.subtitleTrack,

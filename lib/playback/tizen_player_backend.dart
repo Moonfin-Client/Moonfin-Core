@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:video_player/video_player.dart';
 import 'package:playback_core/playback_core.dart';
 
-import '../preference/preference_constants.dart';
 import '../preference/user_preferences.dart';
 import 'audio_capability_profile.dart';
 import 'device_profile_builder.dart';
@@ -22,7 +21,7 @@ import 'known_defects.dart';
 ///     is false) — the `video_player` API does not expose track lists.
 ///   * No bitmap (PGS/VOBSUB) subtitle rendering, no ASS styling, no audio/
 ///     subtitle delay, and no external subtitle sideloading.
-class TizenPlayerBackend implements PlayerBackend {
+class TizenPlayerBackend extends PlayerBackend {
   TizenPlayerBackend(this._prefs);
 
   final UserPreferences _prefs;
@@ -278,6 +277,7 @@ class TizenPlayerBackend implements PlayerBackend {
     _speed = speed;
     await _controller?.setPlaybackSpeed(speed);
   }
+
 
   // The standard video_player API exposes no runtime track selection; tracks are
   // selected server-side via the device profile / transcoding instead.

@@ -168,7 +168,7 @@ class _MediaKitDeviceProfileCapabilities {
   }
 }
 
-class MediaKitPlayerBackend implements PlayerBackend {
+class MediaKitPlayerBackend extends PlayerBackend {
   static const Duration _linuxHwdecFirstFrameTimeout = Duration(
     milliseconds: 1500,
   );
@@ -543,6 +543,17 @@ class MediaKitPlayerBackend implements PlayerBackend {
     await _applyAudioPassthroughOptions();
     await _applyCustomMpvConfIfEnabled();
     await _applyAssOverrideMode();
+
+    if (_player.platform is NativePlayer) {
+      final native = _player.platform as NativePlayer;
+      await _nativeSetProperty(native, 'sid', 'auto');
+      await _nativeSetProperty(native, 'secondary-sid', 'no');
+      await _nativeSetProperty(native, 'sub-visibility', 'yes');
+      if (_useLibass) {
+        await _nativeSetProperty(native, 'sub-ass', 'yes');
+      }
+    }
+
     final media = Media(url);
     final openPaused = startPosition > Duration.zero;
     await _player.open(media, play: !openPaused);
@@ -1225,6 +1236,35 @@ class MediaKitPlayerBackend implements PlayerBackend {
       } catch (_) {}
     }
   }
+
+  @override
+  int? get activeSubtitleTrackIndex {
+    if (_player.platform is! NativePlayer) {
+      return null;
+    }
+    try {
+      final active = _player.state.track.subtitle;
+      if (active.id == 'no') {
+        return -1;
+      }
+      if (active.id == 'auto') {
+        return null;
+      }
+      final subtitleTracks = _player.state.tracks.subtitle;
+      final playableSubtitleTracks = subtitleTracks
+          .where((t) => t.id != 'auto' && t.id != 'no')
+          .toList();
+      final idx = playableSubtitleTracks.indexWhere((t) => t.id == active.id);
+      if (idx >= 0) {
+        return idx + 1;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  @override
+  Future<int?> getActiveSubtitleTrackIndexAsync() async => activeSubtitleTrackIndex;
+
 
   @override
   Future<void> setSubtitleTrack(
