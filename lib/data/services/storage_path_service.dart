@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -16,6 +17,21 @@ class StoragePathService {
   bool get isUsingMediaStore => _useMediaStore;
 
   void clearCache() => _cachedRoot = null;
+
+  static String get appFolderName {
+    // get the flavor passed via --flavor
+    // android/androidtv/macos/ios/linux too? - only android/androidtv are set up currently
+    const flavor = String.fromEnvironment('FLUTTER_APP_FLAVOR');
+    final betaFlavor = flavor.toLowerCase().contains('beta');
+
+    // check for --dart-define MOONFIN_BETA_BUILD=true from CLI
+    // needed for windows, and maybe linux if we don't do a flavor
+    const betaDartDefine = bool.fromEnvironment('MOONFIN_BETA_BUILD');
+
+    final isBeta = betaFlavor || betaDartDefine;
+    debugPrint('StoragePathService: isBeta=$isBeta (flavor=$flavor, betaDartDefine=$betaDartDefine)');
+    return isBeta ? 'Moonfin Beta' : 'Moonfin';
+  }
 
   Future<Directory> getOfflineRoot() async {
     if (_cachedRoot != null) return _cachedRoot!;
@@ -45,10 +61,10 @@ class StoragePathService {
     if (PlatformDetection.isAndroid) {
       final extDir = await getExternalStorageDirectory();
       final base = extDir ?? await getApplicationDocumentsDirectory();
-      dir = Directory('${base.path}/Moonfin');
+      dir = Directory('${base.path}/$appFolderName');
     } else if (PlatformDetection.isIOS) {
       final docs = await getApplicationDocumentsDirectory();
-      dir = Directory('${docs.path}/Moonfin');
+      dir = Directory('${docs.path}/$appFolderName');
     } else {
       final support = await getApplicationSupportDirectory();
       dir = Directory('${support.path}/Downloads');
@@ -82,7 +98,7 @@ class StoragePathService {
 
   Future<File> getDatabaseFile() async {
     final docs = await getApplicationDocumentsDirectory();
-    final dbDir = Directory('${docs.path}/Moonfin/DB');
+    final dbDir = Directory('${docs.path}/$appFolderName/DB');
     if (!await dbDir.exists()) await dbDir.create(recursive: true);
     return File('${dbDir.path}/offline.db');
   }
@@ -90,7 +106,10 @@ class StoragePathService {
   Future<Directory> getImageCacheDir() async {
     if (PlatformDetection.isAndroid && _useMediaStore) {
       final support = await getApplicationSupportDirectory();
-      final dir = Directory('${support.path}/Moonfin/images');
+      final dir = (!Platform.isWindows)
+        ? Directory('${support.path}/$appFolderName/images')
+        // windows includes the app folder
+        : Directory('${support.path}/images');
       if (!await dir.exists()) await dir.create(recursive: true);
       return dir;
     }

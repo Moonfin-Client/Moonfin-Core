@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:moonfin/data/services/storage_path_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/open.dart';
 
@@ -11,7 +12,7 @@ import '../../util/platform_detection.dart';
 QueryExecutor openConnection() {
   return LazyDatabase(() async {
     final docs = await getApplicationDocumentsDirectory();
-    final dbDir = Directory('${docs.path}/Moonfin/DB');
+    final dbDir = Directory('${docs.path}/${StoragePathService.appFolderName}/DB');
     if (!dbDir.existsSync()) {
       await dbDir.create(recursive: true);
     }

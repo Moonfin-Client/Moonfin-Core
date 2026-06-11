@@ -90,12 +90,19 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "org.moonfin" "\0"
+#ifdef MOONFIN_BETA_BUILD
+            VALUE "FileDescription", "Moonfin Beta" "\0"
+            VALUE "InternalName", "moonfin-beta" "\0"
+            VALUE "OriginalFilename", "moonfin-beta.exe" "\0"
+            VALUE "ProductName", "Moonfin Beta" "\0"
+#else
             VALUE "FileDescription", "Moonfin" "\0"
-            VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "moonfin" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 org.moonfin. All rights reserved." "\0"
             VALUE "OriginalFilename", "moonfin.exe" "\0"
             VALUE "ProductName", "Moonfin" "\0"
+#endif
+            VALUE "FileVersion", VERSION_AS_STRING "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 org.moonfin. All rights reserved." "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

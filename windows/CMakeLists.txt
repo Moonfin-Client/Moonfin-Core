@@ -2,7 +2,14 @@
 cmake_minimum_required(VERSION 3.14)
 project(moonfin LANGUAGES CXX)
 
-set(BINARY_NAME "moonfin")
+# for CLI - flutter run --dart-define=MOONFIN_BETA_BUILD=true
+# for launch configurations - add an env for "MOONFIN_BETA_BUILD": "true"
+if(DEFINED ENV{MOONFIN_BETA_BUILD})
+  set(BINARY_NAME "Moonfin-Beta")
+  add_definitions(-DMOONFIN_BETA_BUILD)
+else()
+  set(BINARY_NAME "moonfin")
+endif ()
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.

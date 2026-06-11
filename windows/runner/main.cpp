@@ -27,7 +27,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(1280, 720);
+#ifdef MOONFIN_BETA_BUILD
+  if (!window.Create(L"Moonfin Beta", origin, size)) {
+#else
   if (!window.Create(L"Moonfin", origin, size)) {
+#endif
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);
