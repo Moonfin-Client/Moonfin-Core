@@ -356,6 +356,7 @@ SeerrTvDetails _$SeerrTvDetailsFromJson(Map<String, dynamic> json) =>
               ?.map((e) => SeerrVideo.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      seriesType: json['seriesType'] as String?,
     );
 
 Map<String, dynamic> _$SeerrTvDetailsToJson(SeerrTvDetails instance) =>
@@ -382,6 +383,7 @@ Map<String, dynamic> _$SeerrTvDetailsToJson(SeerrTvDetails instance) =>
       'mediaInfo': instance.mediaInfo,
       'keywords': instance.keywords,
       'relatedVideos': instance.relatedVideos,
+      'seriesType': instance.seriesType,
     };
 
 SeerrGenre _$SeerrGenreFromJson(Map<String, dynamic> json) => SeerrGenre(

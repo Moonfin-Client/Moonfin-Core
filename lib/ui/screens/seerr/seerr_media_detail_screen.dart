@@ -1905,8 +1905,24 @@ class _RequestDialogState extends State<_RequestDialog> {
     final server = _activeServer;
     if (server == null) return;
     _selectedServerId ??= server.server.id;
-    _selectedProfileId ??= server.server.activeProfileId;
-    final dir = server.server.activeDirectory;
+
+    final isAnime = widget.vm.state.isAnime;
+    final int? animeProfileId = server.server.activeAnimeProfileId;
+    final String? animeDir = server.server.activeAnimeDirectory;
+
+    if (isAnime && animeProfileId != null) {
+      _selectedProfileId ??= animeProfileId;
+    } else {
+      _selectedProfileId ??= server.server.activeProfileId;
+    }
+
+    final String dir;
+    if (isAnime && animeDir != null && animeDir.isNotEmpty) {
+      dir = animeDir;
+    } else {
+      dir = server.server.activeDirectory;
+    }
+
     if (_selectedRootFolderId == null && dir.isNotEmpty) {
       final match = server.rootFolders
           .where((f) => f.path == dir)
@@ -1923,6 +1939,11 @@ class _RequestDialogState extends State<_RequestDialog> {
     if (_selectedProfileId != null) return _selectedProfileId;
     final server = _activeServer;
     if (server == null) return null;
+    final isAnime = widget.vm.state.isAnime;
+    final int? animeProfileId = server.server.activeAnimeProfileId;
+    if (isAnime && animeProfileId != null) {
+      return animeProfileId;
+    }
     return server.server.activeProfileId;
   }
 
@@ -1937,7 +1958,15 @@ class _RequestDialogState extends State<_RequestDialog> {
           ?.path;
     }
 
-    final dir = server.server.activeDirectory;
+    final isAnime = widget.vm.state.isAnime;
+    final String? animeDir = server.server.activeAnimeDirectory;
+    final String dir;
+    if (isAnime && animeDir != null && animeDir.isNotEmpty) {
+      dir = animeDir;
+    } else {
+      dir = server.server.activeDirectory;
+    }
+
     if (dir.isNotEmpty) {
       final match =
           server.rootFolders.where((f) => f.path == dir).firstOrNull;

@@ -31,6 +31,12 @@ class SeerrMediaDetailState {
 
   bool get isMovie => movie != null;
   bool get isTv => tv != null;
+  bool get isAnime {
+    if (tv != null) {
+      return tv!.seriesType?.toLowerCase() == 'anime';
+    }
+    return false;
+  }
 
   String get displayTitle {
     if (movie != null) return movie!.title;

@@ -380,6 +380,7 @@ class SeerrTvDetails {
   final SeerrMediaInfo? mediaInfo;
   final List<SeerrKeyword> keywords;
   final List<SeerrVideo> relatedVideos;
+  final String? seriesType;
 
   const SeerrTvDetails({
     required this.id,
@@ -404,6 +405,7 @@ class SeerrTvDetails {
     this.mediaInfo,
     this.keywords = const [],
     this.relatedVideos = const [],
+    this.seriesType,
   });
 
   String get displayTitle => name ?? title ?? '';
