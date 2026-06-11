@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} selected",
   "mediaBar": "Medijos juosta",
   "mediaBarMode": "Medijos juostos stilius",
-  "mediaBarModeDescription": "Pasirinkite „Moonfin“, „MakD“ arba išjunkite medijos juostą",
+  "mediaBarModeDescription": "Pasirinkite iš įvairių medijos juostos stilių arba išjunkite medijos juostą",
   "mediaBarModeMoonfin": "Mėnulio pelekas",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Išjungta",

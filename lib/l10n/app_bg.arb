@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} избрано",
   "mediaBar": "Медийна лента",
   "mediaBarMode": "Стил на медийната лента",
-  "mediaBarModeDescription": "Изберете между Moonfin, MakD или изключете медийната лента",
+  "mediaBarModeDescription": "Изберете между различни стилове на медийната лента или я изключете",
   "mediaBarModeMoonfin": "Лунна перка",
   "mediaBarModeMakd": "МакД",
   "mediaBarModeOff": "Изкл",

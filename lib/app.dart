@@ -113,6 +113,13 @@ class _MoonfinAppState extends State<MoonfinApp> {
               supportedLocales: AppLocalizations.supportedLocales,
               locale: _lastResolvedLocale,
               localeResolutionCallback: (locale, supportedLocales) {
+                // Prefer exact match (language + country/script)
+                for (final supported in supportedLocales) {
+                  if (supported == locale) {
+                    return supported;
+                  }
+                }
+                // Fall back to language-only match
                 for (final supported in supportedLocales) {
                   if (supported.languageCode == locale?.languageCode) {
                     return supported;

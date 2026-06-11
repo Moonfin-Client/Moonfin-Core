@@ -1299,6 +1299,8 @@ class HomeViewModel extends ChangeNotifier {
             'PosterPath': item.posterPath ?? '',
             'BackdropPath': item.backdropPath ?? '',
             'ProductionYear': _extractYear(item.releaseDate ?? item.firstAirDate),
+            'SeerrMediaType': item.mediaType,
+            'SeerrStatus': item.mediaInfo?.status,
           },
         );
       }).toList();

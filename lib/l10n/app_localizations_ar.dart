@@ -2806,7 +2806,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'اختر بين Moonfin أو MakD أو قم بإيقاف تشغيل شريط الوسائط';
+      'اختر من بين أنماط متنوعة لشريط الوسائط، أو قم بإيقاف تشغيل شريط الوسائط';
 
   @override
   String get mediaBarModeMoonfin => 'مونفين';
@@ -2933,6 +2933,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get combineBothRows => 'ادمج كلا الصفين في قسم رئيسي واحد';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'نوع الصورة لكل صف';
@@ -7355,6 +7361,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'صفوف المنزل';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'نوع الصفوف';

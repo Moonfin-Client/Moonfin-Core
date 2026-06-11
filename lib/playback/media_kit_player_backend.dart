@@ -191,6 +191,16 @@ class MediaKitPlayerBackend implements PlayerBackend {
   bool _isStale = false;
   String? _currentUrl;
 
+  late final Stream<bool> _playingStream = _mergeWithStale<bool>(
+    _player.stream.playing,
+    () => _isStale ? false : _player.state.playing,
+  );
+
+  late final Stream<bool> _bufferingStream = _mergeWithStale<bool>(
+    _player.stream.buffering,
+    () => _isStale ? false : _player.state.buffering,
+  );
+
   void _updateStaleState() {
     if (!_isStale) return;
     try {
@@ -450,7 +460,7 @@ class MediaKitPlayerBackend implements PlayerBackend {
       audioFallbackToStereoAac:
           _prefs.resolveAudioFallbackCodec() == AudioFallbackCodec.aacStereo,
       maxResolution: maxResolution,
-      pgsDirectPlay: _prefs.get(UserPreferences.pgsDirectPlay),
+      pgsDirectPlay: _prefs.get(UserPreferences.pgsDirectPlay) && canRenderBitmapSubtitles,
       assDirectPlay: _prefs.get(UserPreferences.assDirectPlay),
       supportsAvc: capabilities.supportsAvc,
       supportsAvcHigh10: capabilities.supportsAvcHigh10,
@@ -1125,16 +1135,10 @@ class MediaKitPlayerBackend implements PlayerBackend {
   });
 
   @override
-  Stream<bool> get playingStream => _player.stream.playing.map((playing) {
-    _updateStaleState();
-    return _isStale ? false : playing;
-  });
+  Stream<bool> get playingStream => _playingStream;
 
   @override
-  Stream<bool> get bufferingStream => _player.stream.buffering.map((buffering) {
-    _updateStaleState();
-    return _isStale ? false : buffering;
-  });
+  Stream<bool> get bufferingStream => _bufferingStream;
 
   @override
   Stream<bool> get completedStream => _player.stream.completed.map((completed) {
@@ -1406,6 +1410,32 @@ class MediaKitPlayerBackend implements PlayerBackend {
         '${r.toRadixString(16).padLeft(2, '0')}'
         '${g.toRadixString(16).padLeft(2, '0')}'
         '${b.toRadixString(16).padLeft(2, '0')}';
+  }
+
+  Stream<T> _mergeWithStale<T>(Stream<T> source, T Function() getValue) {
+    late StreamController<T> controller;
+    StreamSubscription<T>? sourceSub;
+    StreamSubscription<Playlist>? playlistSub;
+
+    controller = StreamController<T>.broadcast(
+      onListen: () {
+        void checkAndPush() {
+          _updateStaleState();
+          if (!controller.isClosed) {
+            controller.add(getValue());
+          }
+        }
+
+        sourceSub = source.listen((_) => checkAndPush());
+        playlistSub = _player.stream.playlist.listen((_) => checkAndPush());
+        checkAndPush();
+      },
+      onCancel: () {
+        sourceSub?.cancel();
+        playlistSub?.cancel();
+      },
+    );
+    return controller.stream;
   }
 
   @override

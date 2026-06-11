@@ -45,9 +45,10 @@ class KnownDefects {
       case DolbyVisionProfile7DirectPlayBehavior.disabled:
         return false;
       case DolbyVisionProfile7DirectPlayBehavior.auto:
-        return modelHasDolbyVisionProfile7ElDirectPlayDefault(
-          model ?? PlatformDetection.deviceModel,
-        );
+        return PlatformDetection.isDesktop ||
+            modelHasDolbyVisionProfile7ElDirectPlayDefault(
+              model ?? PlatformDetection.deviceModel,
+            );
     }
   }
 }

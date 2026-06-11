@@ -2836,7 +2836,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Elige entre Moonfin, MakD o desactivar la barra de medios';
+      'Elige entre varios estilos de barra multimedia o desactiva la barra multimedia';
 
   @override
   String get mediaBarModeMoonfin => 'aleta lunar';
@@ -2966,6 +2966,12 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get combineBothRows =>
       'Combinar ambas filas en una sola sección del inicio';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Tipo de imagen por fila';
@@ -7476,6 +7482,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String get homeRowsSection => 'Filas de inicio';
 
   @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
+
+  @override
   String get rowsType => 'Tipo de filas';
 
   @override
@@ -10901,7 +10924,7 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
 
   @override
   String get mediaBarModeDescription =>
-      'Elija entre Moonfin, MakD o apague la barra multimedia';
+      'Elige entre varios estilos de barra multimedia o desactiva la barra multimedia';
 
   @override
   String get mediaBarModeMoonfin => 'aleta lunar';
@@ -18932,7 +18955,7 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get mediaBarModeDescription =>
-      'Elija entre Moonfin, MakD o apague la barra multimedia';
+      'Elige entre varios estilos de barra multimedia o desactiva la barra multimedia';
 
   @override
   String get mediaBarModeMoonfin => 'aleta lunar';
@@ -26963,7 +26986,7 @@ class AppLocalizationsEsDo extends AppLocalizationsEs {
 
   @override
   String get mediaBarModeDescription =>
-      'Elija entre Moonfin, MakD o apague la barra multimedia';
+      'Elige entre varios estilos de barra multimedia o desactiva la barra multimedia';
 
   @override
   String get mediaBarModeMoonfin => 'aleta lunar';
@@ -34994,7 +35017,7 @@ class AppLocalizationsEsMx extends AppLocalizationsEs {
 
   @override
   String get mediaBarModeDescription =>
-      'Elija entre Moonfin, MakD o apague la barra multimedia';
+      'Elige entre varios estilos de barra multimedia o desactiva la barra multimedia';
 
   @override
   String get mediaBarModeMoonfin => 'aleta lunar';

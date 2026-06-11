@@ -592,6 +592,7 @@ class _ContentRowsState extends State<_ContentRows>
   String? _activePreviewKey;
   String? _mobilePressedV2Key;
   String? _mouseHoveredV2Key;
+  final Set<String> _v2FocusPrefetchedUrls = <String>{};
   final Map<String, Map<String, double>> _v2AdditionalRatingsByKey = {};
   final Map<String, Future<void>> _v2RatingsRequests = {};
   final Map<String, String?> _v2TmdbIdByKey = {};
@@ -1376,6 +1377,78 @@ class _ContentRowsState extends State<_ContentRows>
       return false;
     }
     return widget.prefs.get(UserPreferences.homeRowInfoOverlay);
+  }
+
+  void _prefetchV2FocusedImage(
+    AggregatedItem item, {
+    required double v2ImageHeight,
+    required double v2FocusedWidth,
+    required bool useSeriesThumbs,
+  }) {
+    if (!mounted || PlatformDetection.useMobileUi) return;
+
+    if (_v2FocusPrefetchedUrls.length > 800) {
+      _v2FocusPrefetchedUrls.clear();
+    }
+
+    final requestScale =
+        MediaQuery.devicePixelRatioOf(context).clamp(1.0, 2.0);
+    final imageApi = widget.viewModel.imageApiForServer(item.serverId);
+    final url = _resolveV2FocusedImageUrl(
+      item,
+      imageApi,
+      v2ImageHeight,
+      useSeriesThumbs,
+      requestScale,
+    );
+    if (url == null || url.isEmpty) return;
+    if (!_v2FocusPrefetchedUrls.add(url)) return;
+    unawaited(
+      BoundedNetworkImage.precache(
+        context,
+        url,
+        layoutWidth: v2FocusedWidth,
+        scale: 0.9,
+        maxWidth: 960,
+      ).catchError((_) {
+        _v2FocusPrefetchedUrls.remove(url);
+      }),
+    );
+  }
+
+  void _prefetchV2FocusNeighbors({
+    required HomeRow row,
+    required int focusedIndex,
+    required double v2ImageHeight,
+    required double v2FocusedWidth,
+    required bool useSeriesThumbs,
+  }) {
+    final items = row.items;
+    for (final offset in const [1, -1]) {
+      final i = focusedIndex + offset;
+      if (i < 0 || i >= items.length) continue;
+      _prefetchV2FocusedImage(
+        items[i],
+        v2ImageHeight: v2ImageHeight,
+        v2FocusedWidth: v2FocusedWidth,
+        useSeriesThumbs: useSeriesThumbs,
+      );
+    }
+  }
+
+  void _prefetchV2RowLeadImage({
+    required HomeRow row,
+    required double v2ImageHeight,
+    required double v2FocusedWidth,
+    required bool useSeriesThumbs,
+  }) {
+    if (row.items.isEmpty) return;
+    _prefetchV2FocusedImage(
+      row.items.first,
+      v2ImageHeight: v2ImageHeight,
+      v2FocusedWidth: v2FocusedWidth,
+      useSeriesThumbs: useSeriesThumbs,
+    );
   }
 
   void _primeV2FocusedRatings(AggregatedItem item) {
@@ -2244,10 +2317,15 @@ class _ContentRowsState extends State<_ContentRows>
   double _v2MetadataHeightBudget(UserPreferences prefs) {
     final hasAdditionalRatings =
         prefs.get(UserPreferences.enableAdditionalRatings);
-    if (hasAdditionalRatings) {
-      return PlatformDetection.isTV ? 208.0 : 144.0;
-    }
-    return 136.0;
+    final fullScreenRows =
+        PlatformDetection.isTV && prefs.get(UserPreferences.fullScreenRows);
+    final hasAdditionalRatingsPadding =
+        hasAdditionalRatings ? 8.0 : 0.0;
+    final fullScreenRowsPadding =
+        fullScreenRows ? 156.0 : 0.0;
+    final heightBudget =
+        136.0 + hasAdditionalRatingsPadding + fullScreenRowsPadding;
+    return heightBudget;
   }
 
   double _overlayRowShift({
@@ -2380,15 +2458,18 @@ class _ContentRowsState extends State<_ContentRows>
     final showInfoOverlay = _showHomeRowInfoOverlay();
     final safeTop = MediaQuery.of(context).padding.top;
     final desktopScale = _desktopUiScaleFactor();
+    final fullScreenRows = PlatformDetection.isTV && prefs.get(UserPreferences.fullScreenRows);
     final navbarIsTop = widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
     final navbarIsLeft = !navbarIsTop;
-    final navbarHeight = navbarIsTop && !(PlatformDetection.isTV && includeBigMediaBar && !_isBookshelfMode())
-        ? (PlatformDetection.isTV
+    final navbarHeight = PlatformDetection.isTV
+        ? (fullScreenRows
             ? 95.0
-            : PlatformDetection.useMobileUi
-                ? 60.0
-                : 80.0)
-        : 0.0;
+            : (navbarIsTop
+                ? 45.0
+                : 15.0))
+        : (PlatformDetection.useMobileUi
+            ? 60.0
+            : 80.0);
     final listTopPadding = includeMediaBar || showInfoOverlay
         ? 0.0
         : _isHomeRowsStyleV2()
@@ -2850,6 +2931,12 @@ class _ContentRowsState extends State<_ContentRows>
     if (isRowsV2) {
       maxCardHeight = v2ImageHeight + (v2MetadataHeightBudget * metadataScale);
       firstCardWidth = v2PortraitWidth;
+      _prefetchV2RowLeadImage(
+        row: row,
+        v2ImageHeight: v2ImageHeight,
+        v2FocusedWidth: v2FocusedWidth,
+        useSeriesThumbs: useSeriesThumbs,
+      );
     } else {
       for (final item in row.items) {
         final ar = _aspectRatioForRowItem(item, row, rowImageType);
@@ -2904,6 +2991,13 @@ class _ContentRowsState extends State<_ContentRows>
           widget.onItemSelected(item);
           if (isRowsV2) {
             _primeV2FocusedRatings(item);
+            _prefetchV2FocusNeighbors(
+              row: row,
+              focusedIndex: index,
+              v2ImageHeight: v2ImageHeight,
+              v2FocusedWidth: v2FocusedWidth,
+              useSeriesThumbs: useSeriesThumbs,
+            );
           }
           unawaited(_revealAndScrollToPinnedInfo(ignoreScrollCooldown: forceReveal));
           if (_suppressNextRowPreviewFromMediaBar) {
@@ -3097,6 +3191,8 @@ class _ContentRowsState extends State<_ContentRows>
             playedPercentage: item.playedPercentage,
             watchedBehavior: watchedBehavior,
             itemType: item.type,
+            seerrMediaType: item.seerrMediaType,
+            seerrStatus: item.seerrStatus,
             focusColor: focusColor,
             cardFocusExpansion: isRowsV2 ? false : cardExpansion && !showPreviewVideo,
             externalIsFocused: effectiveV2Focused,

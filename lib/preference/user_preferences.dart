@@ -246,6 +246,11 @@ class UserPreferences extends ChangeNotifier {
     values: HomeRowsStyle.values,
   );
 
+  static final fullScreenRows = Preference(
+    key: 'pref_home_rows_fullscreen',
+    defaultValue: true,
+  );
+
   static final desktopUiScale = EnumPreference(
     key: 'pref_desktop_ui_scale',
     defaultValue: DesktopUiScale.medium,
@@ -270,6 +275,12 @@ class UserPreferences extends ChangeNotifier {
   static final homeRowInfoOverlay = Preference(
     key: 'pref_home_row_info_overlay',
     defaultValue: PlatformDetection.isTV,
+  );
+
+  static final favoritesViewStyle = EnumPreference(
+    key: 'pref_favorites_view_style',
+    defaultValue: FavoritesViewStyle.home,
+    values: FavoritesViewStyle.values,
   );
 
   static final displayFavoritesRows = Preference(

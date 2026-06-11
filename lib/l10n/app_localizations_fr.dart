@@ -2847,7 +2847,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Choisissez Moonfin, MakD ou desactivez la barre media';
+      'Choisissez parmi différents styles de barre multimédia ou désactivez la barre multimédia';
 
   @override
   String get mediaBarModeMoonfin => 'Aileron de lune';
@@ -2977,6 +2977,12 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get combineBothRows =>
       'Combiner les deux rangées en une seule section d’accueil';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Type d’image par rangée';
@@ -7483,6 +7489,23 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'Lignes d\'accueil';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Type de lignes';

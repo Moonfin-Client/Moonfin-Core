@@ -1985,11 +1985,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showBackdropImages => 'Show backdrop images behind content';
 
   @override
-  String get seriesThumbnails => 'Series Thumbnails';
+  String get seriesThumbnails => 'Display Series Thumbnails';
 
   @override
   String get seriesThumbnailsDescription =>
-      'Episodes only: use series artwork that matches each row image type';
+      'For TV series, use the main series artwork instead of the episode thumbnail.';
 
   @override
   String get homeRowInfoOverlay => 'Home Row Info Overlay';
@@ -2804,7 +2804,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Choose between Moonfin, MakD, or turn the media bar off';
+      'Choose between various media bar styles, or turn the media bar off';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';
@@ -2932,6 +2932,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get combineBothRows => 'Combine both rows into a single home section';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Per Row Image Type';
@@ -7345,7 +7351,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeRowsSection => 'Home Rows';
 
   @override
-  String get rowsType => 'Rows Type';
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
+
+  @override
+  String get rowsType => 'Row Type';
 
   @override
   String get rowsTypeDescription =>
@@ -7424,7 +7447,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appearance => 'Appearance';
 
   @override
-  String get cardSize => 'Card Size';
+  String get cardSize => 'Home Row Card Display Size';
 
   @override
   String get externalPlayerApp => 'External player app';
@@ -9921,11 +9944,11 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get showBackdropImages => 'Show backdrop images behind content';
 
   @override
-  String get seriesThumbnails => 'Series Thumbnails';
+  String get seriesThumbnails => 'Display Series Thumbnails';
 
   @override
   String get seriesThumbnailsDescription =>
-      'Episodes only: use series artwork that matches each row image type';
+      'For TV series, use the main series artwork instead of the episode thumbnail.';
 
   @override
   String get homeRowInfoOverlay => 'Home Row Info Overlay';
@@ -10718,7 +10741,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get mediaBarModeDescription =>
-      'Choose between Moonfin, MakD, or turn the media bar off';
+      'Choose between various media bar styles, or turn the media bar off';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';
@@ -10846,6 +10869,12 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get combineBothRows => 'Combine both rows into a single home section';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Per Row Image Type';
@@ -15230,7 +15259,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get homeRowsSection => 'Home Rows';
 
   @override
-  String get rowsType => 'Rows Type';
+  String get rowsType => 'Row Type';
 
   @override
   String get rowsTypeDescription =>
@@ -15288,7 +15317,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get appearance => 'Appearance';
 
   @override
-  String get cardSize => 'Card Size';
+  String get cardSize => 'Home Row Card Display Size';
 
   @override
   String get externalPlayerApp => 'External player app';

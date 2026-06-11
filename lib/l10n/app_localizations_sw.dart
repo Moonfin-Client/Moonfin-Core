@@ -2835,7 +2835,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Chagua kati ya Moonfin, MakD, au zima upau wa midia';
+      'Chagua kati ya mitindo mbalimbali ya upau wa midia, au zima upau wa midia';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';
@@ -2966,6 +2966,12 @@ class AppLocalizationsSw extends AppLocalizations {
   @override
   String get combineBothRows =>
       'Changanya safu zote mbili kwenye sehemu moja ya nyumbani';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Aina ya Picha kwa Safu Mlalo';
@@ -7454,6 +7460,23 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'Home Rows';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Rows Type';

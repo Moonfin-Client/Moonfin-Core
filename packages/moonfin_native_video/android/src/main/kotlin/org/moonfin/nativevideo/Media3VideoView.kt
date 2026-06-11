@@ -1505,8 +1505,8 @@ class Media3VideoView(
     }
 
     private fun stopPlaybackAndRestoreDisplayMode() {
-        player.pause()
-        player.seekTo(0)
+        player.stop()
+        player.clearMediaItems()
         restorePreferredDisplayMode()
         firstFrameCover.visibility = View.VISIBLE
         emitState()

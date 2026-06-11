@@ -90,7 +90,7 @@ class OfflineStreamResolver {
       if (subFile == null) continue;
       final fileExt = subFile.uri.pathSegments.last.split('.').last;
       externalSubs.add(OfflineSubtitle(
-        path: subFile.uri.toString(),
+        path: subFile.path,
         title: stream['DisplayTitle'] as String? ?? stream['Title'] as String?,
         language: stream['Language'] as String?,
         index: index,
@@ -99,7 +99,7 @@ class OfflineStreamResolver {
     }
 
     return OfflineStreamResult(
-      url: file.uri.toString(),
+      url: file.path,
       mediaStreams: mediaStreams,
       itemId: itemId,
       serverId: item.serverId,

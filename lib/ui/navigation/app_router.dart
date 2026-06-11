@@ -237,7 +237,10 @@ final appRouter = GoRouter(
     // General
     GoRoute(
       path: Destinations.home,
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state) {
+        final session = GetIt.instance<SessionRepository>();
+        return HomeScreen(key: ValueKey(session.activeUserId ?? ''));
+      },
     ),
     GoRoute(
       path: Destinations.search,

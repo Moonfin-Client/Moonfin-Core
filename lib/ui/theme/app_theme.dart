@@ -140,6 +140,14 @@ class AppTheme {
         backgroundColor: c.surface,
         shape: JellyfinTokens.shapes.largeShape,
       ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
+          if (states.contains(WidgetState.selected)) {
+            return c.onAccent;
+          }
+          return null;
+        }),
+      ),
     );
   }
 

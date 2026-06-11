@@ -2817,7 +2817,7 @@ class AppLocalizationsLt extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Pasirinkite „Moonfin“, „MakD“ arba išjunkite medijos juostą';
+      'Pasirinkite iš įvairių medijos juostos stilių arba išjunkite medijos juostą';
 
   @override
   String get mediaBarModeMoonfin => 'Mėnulio pelekas';
@@ -2945,6 +2945,12 @@ class AppLocalizationsLt extends AppLocalizations {
 
   @override
   String get combineBothRows => 'Sujunkite abi eilutes į vieną namų skyrių';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Eilutės vaizdo tipas';
@@ -7428,6 +7434,23 @@ class AppLocalizationsLt extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'Pradžios eilutės';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Eilučių tipas';

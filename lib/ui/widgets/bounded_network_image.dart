@@ -36,14 +36,56 @@ class BoundedNetworkImage extends StatelessWidget {
     this.maxWidth = 1024,
   });
 
+  static int _cacheWidthFor(
+    double layoutWidth,
+    double devicePixelRatio, {
+    double scale = 1.0,
+    int minWidth = 64,
+    int maxWidth = 1024,
+  }) {
+    return (layoutWidth * devicePixelRatio * scale)
+        .round()
+        .clamp(minWidth, maxWidth);
+  }
+
+  static Future<void> precache(
+    BuildContext context,
+    String imageUrl, {
+    required double layoutWidth,
+    double scale = 1.0,
+    int minWidth = 64,
+    int maxWidth = 1024,
+  }) {
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    final cacheW = _cacheWidthFor(
+      layoutWidth,
+      dpr,
+      scale: scale,
+      minWidth: minWidth,
+      maxWidth: maxWidth,
+    );
+    return precacheImage(
+      ResizeImage.resizeIfNeeded(
+        cacheW,
+        null,
+        CachedNetworkImageProvider(imageUrl, maxWidth: cacheW),
+      ),
+      context,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final dpr = MediaQuery.devicePixelRatioOf(context);
     return LayoutBuilder(
       builder: (context, constraints) {
-        final cacheW = (constraints.maxWidth * dpr * scale)
-            .round()
-            .clamp(minWidth, maxWidth);
+        final cacheW = _cacheWidthFor(
+          constraints.maxWidth,
+          dpr,
+          scale: scale,
+          minWidth: minWidth,
+          maxWidth: maxWidth,
+        );
         return CachedNetworkImage(
           imageUrl: imageUrl,
           fit: fit,

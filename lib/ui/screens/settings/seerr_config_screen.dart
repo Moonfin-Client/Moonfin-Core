@@ -220,6 +220,11 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
       _focusNodes.insert(newIndex, node);
     });
     _saveRows();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _focusNodes[newIndex].requestFocus();
+      }
+    });
   }
 
   String _rowLabel(SeerrRowType type, AppLocalizations l10n) => switch (type) {

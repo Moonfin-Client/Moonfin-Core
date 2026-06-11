@@ -4374,7 +4374,7 @@ class _LibraryHeader extends StatelessWidget {
     final showInlineAlpha =
       !isBookBrowse && sortBy == LibrarySortBy.name && (!isMobile || isCompactLandscape);
     final showBelowAlpha = !isBookBrowse && sortBy == LibrarySortBy.name && isCompactPortrait;
-    final topPad = isMobile ? MediaQuery.of(context).padding.top : 0.0;
+    final topPad = (isMobile ? MediaQuery.of(context).padding.top : 0.0) + 8.0;
     final hPad = isMobile ? 16.0 : _horizontalPadding * desktopScale;
 
     return Padding(

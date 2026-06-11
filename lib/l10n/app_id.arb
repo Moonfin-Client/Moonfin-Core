@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} selected",
   "mediaBar": "Bilah Media",
   "mediaBarMode": "Gaya Bilah Media",
-  "mediaBarModeDescription": "Pilih antara Moonfin, MakD, atau matikan bilah media",
+  "mediaBarModeDescription": "Pilih di antara berbagai gaya bilah media, atau nonaktifkan bilah media",
   "mediaBarModeMoonfin": "Moonfin",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Mati",

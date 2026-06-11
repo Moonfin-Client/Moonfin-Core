@@ -1,0 +1,109 @@
+name: Build tvOS (Apple TV)
+
+on:
+  workflow_dispatch:
+    inputs:
+      export_method:
+        description: 'Signing/export method (development = sideload, app-store-connect = TestFlight)'
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - app-store-connect
+
+env:
+  FLUTTER_TVOS_REF: '3.44.1-tvos.1.2.0'
+  TEAM_ID: 'CCBYLPUSVH'
+
+jobs:
+  build-tvos:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select latest Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app || true
+
+      - name: Cache flutter-tvos toolchain
+        id: cache-fluttertvos
+        uses: actions/cache@v4
+        with:
+          path: ~/flutter-tvos
+          key: flutter-tvos-${{ env.FLUTTER_TVOS_REF }}-${{ runner.os }}-arm64
+
+      - name: Install flutter-tvos
+        if: steps.cache-fluttertvos.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch "$FLUTTER_TVOS_REF" \
+            https://github.com/fluttertv/flutter-tvos.git "$HOME/flutter-tvos"
+
+      - name: Add flutter-tvos to PATH and precache
+        run: |
+          echo "$HOME/flutter-tvos/bin" >> "$GITHUB_PATH"
+          "$HOME/flutter-tvos/bin/flutter-tvos" precache
+
+      - name: Resolve dependencies
+        run: flutter-tvos pub get
+
+      - name: Import App Store Connect API key
+        env:
+          ASC_KEY_BASE64: ${{ secrets.APPLE_ASC_API_KEY_BASE64 }}
+        run: |
+          if [ -z "$ASC_KEY_BASE64" ]; then
+            echo "::error::APPLE_ASC_API_KEY_BASE64 secret is missing" && exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/asc"
+          echo "$ASC_KEY_BASE64" | base64 -d > "$RUNNER_TEMP/asc/AuthKey.p8"
+          echo "ASC_KEY_PATH=$RUNNER_TEMP/asc/AuthKey.p8" >> "$GITHUB_ENV"
+
+      - name: Build release and write dart-defines
+        run: |
+          flutter-tvos build tvos --release \
+            --dart-define=MOONFIN_TVOS=true \
+            --no-codesign
+
+      - name: Archive
+        run: |
+          xcodebuild \
+            -workspace tvos/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -destination 'generic/platform=tvOS' \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "${{ secrets.APPLE_ASC_API_KEY_ID }}" \
+            -authenticationKeyIssuerID "${{ secrets.APPLE_ASC_API_ISSUER_ID }}" \
+            CODE_SIGN_STYLE=Automatic \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            archive
+
+      - name: Export IPA
+        run: |
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>${{ github.event.inputs.export_method }}</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>teamID</key><string>${TEAM_ID}</string>
+            <key>stripSwiftSymbols</key><true/>
+            <key>compileBitcode</key><false/>
+          </dict></plist>
+          EOF
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
+            -exportPath "$RUNNER_TEMP/ipa" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "${{ secrets.APPLE_ASC_API_KEY_ID }}" \
+            -authenticationKeyIssuerID "${{ secrets.APPLE_ASC_API_ISSUER_ID }}"
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: moonfin-tvos-ipa
+          path: ${{ runner.temp }}/ipa/*.ipa
+          if-no-files-found: error

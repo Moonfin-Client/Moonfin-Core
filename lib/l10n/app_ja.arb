@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} selected",
   "mediaBar": "メディアバー",
   "mediaBarMode": "メディアバーのスタイル",
-  "mediaBarModeDescription": "Moonfin、MakD のいずれかを選択するか、メディア バーをオフにする",
+  "mediaBarModeDescription": "さまざまなメディアバーのスタイルから選択するか、メディアバーをオフにします。",
   "mediaBarModeMoonfin": "Moonfin",
   "mediaBarModeMakd": "マクド",
   "mediaBarModeOff": "オフ",

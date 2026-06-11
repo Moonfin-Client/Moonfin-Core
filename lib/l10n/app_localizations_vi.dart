@@ -2952,6 +2952,12 @@ class AppLocalizationsVi extends AppLocalizations {
       'Kết hợp cả hai hàng thành một phần nhà duy nhất';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => 'Loại hình ảnh trên mỗi hàng';
 
   @override
@@ -7408,6 +7414,23 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'Hàng nhà';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Loại hàng';

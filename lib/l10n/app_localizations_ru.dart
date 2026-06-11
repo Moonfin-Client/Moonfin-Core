@@ -2831,7 +2831,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get mediaBarModeDescription =>
-      'Выбирайте между Moonfin, MakD или отключите медиа-панель.';
+      'Выберите один из вариантов оформления панели управления медиафайлами или отключите её';
 
   @override
   String get mediaBarModeMoonfin => 'Лунный плавник';
@@ -2960,6 +2960,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get combineBothRows => 'Объедините оба ряда в один домашний раздел.';
+
+  @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Тип изображения по строкам';
@@ -7453,6 +7459,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'Home Rows';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Rows Type';

@@ -3503,7 +3503,7 @@
   "@mediaBarMode": {
     "description": "Setting for choosing media bar style"
   },
-  "mediaBarModeDescription": "Valj mellan Moonfin, MakD eller stang av mediefaltet",
+  "mediaBarModeDescription": "Välj mellan olika mediefältsstilar eller stäng av mediefältet",
   "@mediaBarModeDescription": {
     "description": "Description for media bar style setting"
   },

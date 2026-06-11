@@ -13,15 +13,18 @@ import '../../../data/viewmodels/favorites_view_model.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/focus/grid_focus_node_mixin.dart';
+import '../../../util/focus/dpad_keys.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/focusable_toolbar_button.dart';
+import '../../widgets/focus/locked_focus_row.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/fullscreen_backdrop_switcher.dart';
-import '../../widgets/library_row.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/rating_display.dart';
+import '../../widgets/horizontal_scroll_section.dart';
 import '../../../l10n/app_localizations.dart';
 
 Color get _navyBackground => AppColorScheme.background;
@@ -46,7 +49,7 @@ class FavoritesScreen extends StatefulWidget {
   State<FavoritesScreen> createState() => _FavoritesScreenState();
 }
 
-class _FavoritesScreenState extends State<FavoritesScreen> {
+class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMixin<FavoritesScreen> {
   late final FavoritesViewModel _vm;
   final _scrollController = ScrollController();
   final _prefs = GetIt.instance<UserPreferences>();
@@ -54,6 +57,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   StreamSubscription<String?>? _backgroundSub;
   String? _backdropUrl;
   bool _topSnapScheduled = false;
+  final Map<FavoriteTypeFilter, GlobalKey<LockedFocusRowState>> _rowKeys = {};
 
   @override
   void initState() {
@@ -65,6 +69,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     );
     _vm.addListener(_onChanged);
     _vm.load();
+    _scrollController.addListener(_onScroll);
     _backgroundSub = _backgroundService.backgroundStream.listen((url) {
       if (mounted) setState(() => _backdropUrl = url);
     });
@@ -79,16 +84,79 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     _vm.removeListener(_onChanged);
     _prefs.removeListener(_onChanged);
     _vm.dispose();
+    disposeGridFocusNodes();
     super.dispose();
+  }
+
+  int _lastGridItemsLength = 0;
+  Object? _lastGridFirstItemId;
+
+  void _maybeBumpGridVersion() {
+    if (_vm.viewStyle != FavoritesViewStyle.library) return;
+    final length = _vm.gridItems.length;
+    final firstId = length == 0 ? null : _vm.gridItems.first.id;
+    if (length != _lastGridItemsLength || firstId != _lastGridFirstItemId) {
+      _lastGridItemsLength = length;
+      _lastGridFirstItemId = firstId;
+      gridContentVersion++;
+      cleanupGridFocusNodes(length);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) restoreGridFocusIfNeeded();
+      });
+    }
   }
 
   void _onChanged() {
     if (mounted) setState(() {});
+    _maybeBumpGridVersion();
   }
 
   void _onItemFocused(AggregatedItem item) {
     _vm.setFocusedItem(item);
     _backgroundService.setBackground(item, context: BlurContext.browsing);
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    if (_vm.viewStyle != FavoritesViewStyle.library) return;
+    final pos = _scrollController.position;
+    if (pos.pixels > pos.maxScrollExtent - 400) {
+      _vm.loadMoreGrid();
+    }
+  }
+
+  double _cardWidth() {
+    final desktopScale = _desktopUiScaleFactor();
+    final posterSize = _vm.posterSize;
+    final baseWidth = switch (_vm.imageType) {
+      ImageType.thumb => posterSize.landscapeHeight * (16 / 9),
+      ImageType.banner => posterSize.landscapeHeight * (16 / 9),
+      ImageType.poster => posterSize.portraitHeight * (2 / 3),
+    };
+    return baseWidth * desktopScale;
+  }
+
+  double _gridBaseAspectRatio() {
+    return switch (_vm.imageType) {
+      ImageType.thumb => 16 / 9,
+      ImageType.banner => 16 / 9,
+      ImageType.poster => 2 / 3,
+    };
+  }
+
+  double _itemAspectRatio(AggregatedItem item) {
+    return switch (_vm.imageType) {
+      ImageType.thumb => switch (item.type) {
+        'MusicAlbum' ||
+        'MusicArtist' ||
+        'Audio' ||
+        'Playlist' ||
+        'Person' => 1.0,
+        _ => 16 / 9,
+      },
+      ImageType.banner => 16 / 9,
+      ImageType.poster => MediaCard.aspectRatioForType(item.type),
+    };
   }
 
   void _snapRowsToTop() {
@@ -104,6 +172,40 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         curve: Curves.easeOut,
       );
     });
+  }
+
+  bool _onRowVerticalNavigation(
+    List<FavoriteTypeFilter> visibleTypes,
+    FavoriteTypeFilter currentType,
+    bool isUp,
+  ) {
+    final currentIndex = visibleTypes.indexOf(currentType);
+    final targetIndex = currentIndex + (isUp ? -1 : 1);
+    if (targetIndex >= 0 && targetIndex < visibleTypes.length) {
+      final targetType = visibleTypes[targetIndex];
+      final targetKey = _rowKeys[targetType];
+      if (targetKey != null) {
+        final state = targetKey.currentState;
+        if (state != null) {
+          state.requestFocusFromMemory();
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _rowKeys[targetType]?.currentState?.requestFocusFromMemory();
+          });
+        }
+        final ctx = targetKey.currentContext;
+        if (ctx != null) {
+          Scrollable.ensureVisible(
+            ctx,
+            duration: const Duration(milliseconds: 300),
+            alignment: 0.5,
+            curve: Curves.easeInOut,
+          );
+        }
+      }
+      return true;
+    }
+    return false;
   }
 
   double _imageHeight(double aspectRatio) {
@@ -199,7 +301,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           ],
         ),
       ),
-      FavoritesState.ready => _buildRows(),
+      FavoritesState.ready => _vm.viewStyle == FavoritesViewStyle.home
+          ? _buildRows()
+          : _buildGrid(),
     };
   }
 
@@ -217,19 +321,29 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     final navbarIsLeft = _prefs.get(UserPreferences.navbarPosition) == NavbarPosition.left;
     final rowLeftInset = (!isMobile && navbarIsLeft) ? 56.0 : 0.0;
     final focusColor = Color(_prefs.get(UserPreferences.focusColor).colorValue);
-    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final cardFocusExpansion = _prefs.get(UserPreferences.cardFocusExpansion);
     final watchedBehavior = _prefs.get(UserPreferences.watchedIndicatorBehavior);
+    final suppressFocusGlow = ThemeRegistry.active.borders.focusGlow.isNotEmpty;
+    final desktopScale = _desktopUiScaleFactor();
 
-    final rows = <Widget>[];
+    final visibleTypes = <FavoriteTypeFilter>[];
     for (final type in FavoritesViewModel.rowTypes) {
       final items = _vm.rowItems[type];
-      if (items == null || items.isEmpty) continue;
+      if (items != null && items.isNotEmpty) {
+        visibleTypes.add(type);
+      }
+    }
+
+    final rows = <Widget>[];
+    for (final type in visibleTypes) {
+      final items = _vm.rowItems[type]!;
       final isTopRow = rows.isEmpty;
 
       final ar = MediaCard.aspectRatioForType(type.itemTypes?.first);
       final imageH = _imageHeight(ar);
       final rowHeight = imageH + 102;
+
+      _rowKeys.putIfAbsent(type, () => GlobalKey<LockedFocusRowState>());
 
       rows.add(
         Padding(
@@ -237,55 +351,97 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             left: rowLeftInset,
             top: 4,
           ),
-          child: LibraryRow(
+          child: HorizontalScrollSection(
             title: type.displayName,
-            rowHeight: rowHeight,
-            children: items.map((item) {
-              final width = imageH * ar;
-              return MediaCard(
-                title: item.name,
-                subtitle: _cardSubtitle(item),
-                imageUrl: _imageUrl(
-                  item,
-                  maxWidth: width.toInt(),
-                  maxHeight: imageH.toInt(),
+            titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: AppColorScheme.onSurface,
+              fontWeight: FontWeight.w700,
+            ),
+            headerPadding: EdgeInsets.fromLTRB(
+              16 * desktopScale,
+              16 * desktopScale,
+              8 * desktopScale,
+              8 * desktopScale,
+            ),
+            contentSpacing: 0,
+            showControls: !isMobile && PlatformDetection.useDesktopUi,
+            builder: (context, scrollController) => LockedFocusRow<AggregatedItem>(
+              key: _rowKeys[type],
+              items: items,
+              hubKey: 'favorites_row_${type.name}',
+              controller: scrollController,
+              height: rowHeight,
+              itemExtent: imageH * ar,
+              itemSpacing: 12 * desktopScale,
+              padding: EdgeInsets.fromLTRB(
+                20 * desktopScale,
+                5 * desktopScale,
+                20 * desktopScale,
+                5 * desktopScale,
+              ),
+              onIndexChanged: (index, item) {
+                _onItemFocused(item);
+                if (index >= items.length - 8) {
+                  _vm.loadMoreForType(type);
+                }
+              },
+              onVerticalNavigation: (isUp) {
+                return _onRowVerticalNavigation(visibleTypes, type, isUp);
+              },
+              onLongPress: (index, item) => showContextMenu(
+                context,
+                item,
+                onChanged: () => setState(() {}),
+              ),
+              onTap: (index, item) => context.push(
+                Destinations.itemOrPhoto(
+                  item.id,
+                  serverId: item.serverId,
+                  type: item.type,
                 ),
-                width: width,
-                aspectRatio: ar,
-                isFavorite: item.isFavorite,
-                isPlayed: item.isPlayed,
-                unplayedCount: item.unplayedItemCount,
-                playedPercentage: item.playedPercentage,
-                watchedBehavior: watchedBehavior,
-                itemType: item.type,
-                focusColor: focusColor,
-                cardFocusExpansion: cardFocusExpansion,
-                suppressImageFocusBorder: isNeon,
-                suppressFocusGlow: isNeon,
-                onFocus: isMobile
-                    ? null
-                    : () {
-                        _onItemFocused(item);
-                        if (isTopRow && PlatformDetection.isTV) {
-                          _snapRowsToTop();
-                        }
-                      },
-                onHoverStart: isMobile ? null : () => _onItemFocused(item),
-                onHoverEnd: isMobile ? null : () => _vm.setFocusedItem(null),
-                onLongPress: () => showContextMenu(
-                  context,
-                  item,
-                  onChanged: () => setState(() {}),
-                ),
-                onTap: () => context.push(
-                  Destinations.itemOrPhoto(
-                    item.id,
-                    serverId: item.serverId,
-                    type: item.type,
+              ),
+              itemBuilder: (context, item, index, isFocused) {
+                final width = imageH * ar;
+                return MediaCard(
+                  title: item.name,
+                  subtitle: _cardSubtitle(item),
+                  imageUrl: _imageUrl(
+                    item,
+                    maxWidth: width.toInt(),
+                    maxHeight: imageH.toInt(),
                   ),
-                ),
-              );
-            }).toList(),
+                  width: width,
+                  aspectRatio: ar,
+                  isFavorite: item.isFavorite,
+                  isPlayed: item.isPlayed,
+                  unplayedCount: item.unplayedItemCount,
+                  playedPercentage: item.playedPercentage,
+                  watchedBehavior: watchedBehavior,
+                  itemType: item.type,
+                  focusColor: focusColor,
+                  cardFocusExpansion: cardFocusExpansion,
+                  suppressFocusGlow: suppressFocusGlow,
+                  externalIsFocused: isFocused,
+                  onFocus: isMobile
+                      ? null
+                      : () {
+                          _onItemFocused(item);
+                          if (isTopRow && PlatformDetection.isTV) {
+                            _snapRowsToTop();
+                          }
+                        },
+                  onHoverStart: isMobile ? null : () => _onItemFocused(item),
+                  onHoverEnd: isMobile ? null : () => _vm.setFocusedItem(null),
+                  onTap: () => context.push(
+                    Destinations.itemOrPhoto(
+                      item.id,
+                      serverId: item.serverId,
+                      type: item.type,
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ),
       );
@@ -298,6 +454,158 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         bottom: 32,
       ),
       children: rows,
+    );
+  }
+
+  Widget _buildGrid() {
+    if (_vm.gridItems.isEmpty) {
+      return Center(
+        child: Text(
+          AppLocalizations.of(context).noFavoritesYet,
+          style: const TextStyle(color: Colors.white70),
+        ),
+      );
+    }
+
+    final cardWidth = _cardWidth();
+    final spacing = 12.0;
+    final watchedBehavior = _prefs.get(
+      UserPreferences.watchedIndicatorBehavior,
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isMobile = _isCompact(context);
+        final gridPadding = isMobile ? 16.0 : _horizontalPadding;
+        final crossAxisCount =
+            ((constraints.maxWidth - gridPadding * 2 + spacing) /
+                    (cardWidth + spacing))
+                .floor()
+                .clamp(2, 20);
+
+        final cellWidth =
+            (constraints.maxWidth -
+                gridPadding * 2 -
+                (crossAxisCount - 1) * spacing) /
+            crossAxisCount;
+        final ar = _gridBaseAspectRatio();
+        final hasSubtitles = _vm.gridItems.any(
+          (item) => (_cardSubtitle(item)?.isNotEmpty ?? false),
+        );
+        final desktopTextScale = PlatformDetection.useDesktopUi
+            ? MediaQuery.textScalerOf(context).scale(1.0)
+            : 1.0;
+        final textHeight = (hasSubtitles ? 42.0 : 24.0) * desktopTextScale;
+        final childAspectRatio = cellWidth / (cellWidth / ar + textHeight);
+        final focusColor = Color(
+          _prefs.get(UserPreferences.focusColor).colorValue,
+        );
+        final focusExpansion = _prefs.get(UserPreferences.cardFocusExpansion);
+        final suppressFocusGlow = ThemeRegistry.active.borders.focusGlow.isNotEmpty;
+
+        return CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(gridPadding, 8, gridPadding, 16),
+              sliver: SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: spacing,
+                  childAspectRatio: childAspectRatio,
+                ),
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final item = _vm.gridItems[index];
+                  final itemAspectRatio = _itemAspectRatio(item);
+
+                  Widget card = MediaCard(
+                    title: item.name,
+                    subtitle: _cardSubtitle(item),
+                    imageUrl: _imageUrl(
+                      item,
+                      maxWidth: (cellWidth * 2).toInt(),
+                      maxHeight: (cellWidth * 2 / itemAspectRatio).toInt(),
+                    ),
+                    width: double.infinity,
+                    aspectRatio: itemAspectRatio,
+                    focusColor: focusColor,
+                    focusNode: getGridItemFocusNode(index),
+                    cardFocusExpansion: focusExpansion,
+                    suppressFocusGlow: suppressFocusGlow,
+                    isPlayed: item.isPlayed,
+                    isFavorite: item.isFavorite,
+                    unplayedCount: item.unplayedItemCount,
+                    playedPercentage: item.playedPercentage,
+                    watchedBehavior: watchedBehavior,
+                    itemType: item.type,
+                    onFocus: isMobile
+                      ? null
+                      : () {
+                          _onItemFocused(item);
+                        },
+                    onHoverStart: isMobile ? null : () => _onItemFocused(item),
+                    onHoverEnd: isMobile
+                        ? null
+                        : () => _vm.setFocusedItem(null),
+                    onKeyEvent: (_, event) {
+                      if (event.isActionable && event.logicalKey.isRightKey) {
+                        final isLastColumn =
+                            (index % crossAxisCount) == crossAxisCount - 1;
+                        final isLastItem = index == _vm.gridItems.length - 1;
+                        if (isLastColumn || isLastItem) {
+                          return KeyEventResult.handled;
+                        }
+                      }
+
+                      if (!_vm.hasMoreGrid && !_vm.loadingMoreGrid) {
+                        return KeyEventResult.ignored;
+                      }
+                      if (!event.isActionable ||
+                          !event.logicalKey.isDownKey) {
+                        return KeyEventResult.ignored;
+                      }
+
+                      final nextRowIndex = index + crossAxisCount;
+                      final atBottomLoadedRow = nextRowIndex >= _vm.gridItems.length;
+                      if (!atBottomLoadedRow) {
+                        return KeyEventResult.ignored;
+                      }
+
+                      _vm.loadMoreGrid();
+                      return KeyEventResult.handled;
+                    },
+                    onLongPress: () => showContextMenu(
+                      context,
+                      item,
+                      onChanged: () => setState(() {}),
+                    ),
+                    onTap: () => context.push(
+                      Destinations.itemOrPhoto(
+                        item.id,
+                        serverId: item.serverId,
+                        type: item.type,
+                      ),
+                    ),
+                  );
+                  return card;
+                }, childCount: _vm.gridItems.length),
+              ),
+            ),
+            if (_vm.loadingMoreGrid)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: AppColorScheme.accent,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 
@@ -843,12 +1151,42 @@ class _DisplaySettingsDialogState extends State<_DisplaySettingsDialog> {
               ),
             ),
             Divider(color: dividerColor),
+            _sectionHeader('Switch View'),
+            _viewStyleRadioTile(vm, FavoritesViewStyle.home, 'Home View'),
+            _viewStyleRadioTile(vm, FavoritesViewStyle.library, 'Library View'),
+            Divider(color: dividerColor),
             _sectionHeader(AppLocalizations.of(context).imageType),
             for (final type in ImageType.values) _imageTypeRadioTile(vm, type),
             Divider(color: dividerColor),
             _sectionHeader(AppLocalizations.of(context).posterSize),
             for (final size in PosterSize.values)
               _posterSizeRadioTile(vm, size),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _viewStyleRadioTile(FavoritesViewModel vm, FavoritesViewStyle style, String label) {
+    final selected = vm.viewStyle == style;
+    final onSurface = AppColorScheme.onSurface;
+    return InkWell(
+      onTap: () => vm.setViewStyle(style),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Row(
+          children: [
+            _radioCircle(selected),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 15,
+                color: selected
+                    ? onSurface
+                    : onSurface.withValues(alpha: 0.72),
+              ),
+            ),
           ],
         ),
       ),

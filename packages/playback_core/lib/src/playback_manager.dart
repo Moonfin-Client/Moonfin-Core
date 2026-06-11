@@ -53,6 +53,10 @@ class PlaybackManager implements AudioOwnable {
   int? _pendingItemAudioStreamIndex;
   int? _pendingItemSubtitleStreamIndex;
   String? _pendingItemMediaSourceId;
+  String? _lastItemId;
+  String? _lastExplicitAudioLanguage;
+  String? _lastExplicitSubtitleLanguage;
+  bool? _lastExplicitSubtitleEnabled;
   Duration _lastKnownPosition = Duration.zero;
   Duration _itemKnownDuration = Duration.zero;
   int? _maxBitrateOverrideMbps;
@@ -677,6 +681,10 @@ class PlaybackManager implements AudioOwnable {
     bool enableTranscoding = true,
   }) async {
     _clearPendingItemOverrides();
+    _lastItemId = null;
+    _lastExplicitAudioLanguage = null;
+    _lastExplicitSubtitleLanguage = null;
+    _lastExplicitSubtitleEnabled = null;
     _isAutoNexting = false;
     _isManualNexting = false;
     suppressAutoNext = false;
@@ -788,6 +796,10 @@ class PlaybackManager implements AudioOwnable {
     final sessionToken = ++_playbackSessionToken;
     final itemId = _traceItemId(item);
     _applyPendingItemOverridesIfNeeded(itemId);
+    if (_lastItemId != null && _lastItemId != itemId) {
+      _translateTrackSelectionsForNewItem(item);
+    }
+    _lastItemId = itemId;
     _setBringupState(
       PlaybackBringupState(
         phase: PlaybackBringupPhase.resolving,
@@ -1264,6 +1276,16 @@ class PlaybackManager implements AudioOwnable {
 
   Future<void> changeAudioTrack(int streamIndex) async {
     _audioStreamIndex = streamIndex;
+    final streams = _currentMediaStreams;
+    if (streams.isNotEmpty) {
+      final selectedStream = streams.firstWhere(
+        (s) => s['Type'] == 'Audio' && s['Index'] == streamIndex,
+        orElse: () => const <String, dynamic>{},
+      );
+      if (selectedStream.isNotEmpty) {
+        _lastExplicitAudioLanguage = selectedStream['Language'] as String?;
+      }
+    }
 
     if (!_isOfflinePlayback &&
         !(_backend?.supportsRuntimeTrackSelection ?? true)) {
@@ -1433,6 +1455,21 @@ class PlaybackManager implements AudioOwnable {
     final isBitmap = _isSubtitleBitmap(streamIndex);
     _subtitleStreamIndex = streamIndex;
     _subtitleSelectionExplicit = streamIndex >= 0;
+    _lastExplicitSubtitleEnabled = streamIndex >= 0;
+    if (streamIndex >= 0) {
+      final streams = _currentMediaStreams;
+      if (streams.isNotEmpty) {
+        final selectedStream = streams.firstWhere(
+          (s) => s['Type'] == 'Subtitle' && s['Index'] == streamIndex,
+          orElse: () => const <String, dynamic>{},
+        );
+        if (selectedStream.isNotEmpty) {
+          _lastExplicitSubtitleLanguage = selectedStream['Language'] as String?;
+        }
+      }
+    } else {
+      _lastExplicitSubtitleLanguage = null;
+    }
 
     await _applySubtitleRendererModeForStream(streamIndex);
 
@@ -1523,6 +1560,8 @@ class PlaybackManager implements AudioOwnable {
 
   Future<void> disableSubtitles() async {
     _subtitleStreamIndex = -1;
+    _lastExplicitSubtitleEnabled = false;
+    _lastExplicitSubtitleLanguage = null;
     await _resetSubtitleRendererMode();
     if (!_isOfflinePlayback &&
         !(_backend?.supportsRuntimeTrackSelection ?? true)) {
@@ -1773,6 +1812,10 @@ class PlaybackManager implements AudioOwnable {
   }) async {
     _deferredStartPosition = Duration.zero;
     _deferPlaybackToExternalPlayer = false;
+    _lastItemId = null;
+    _lastExplicitAudioLanguage = null;
+    _lastExplicitSubtitleLanguage = null;
+    _lastExplicitSubtitleEnabled = null;
     _isAutoNexting = false;
     _isManualNexting = false;
     suppressAutoNext = false;
@@ -1801,13 +1844,16 @@ class PlaybackManager implements AudioOwnable {
         (_offlineMetadataByUrl[url]?['MediaStreams'] as List?)
             ?.cast<Map<String, dynamic>>() ??
         const <Map<String, dynamic>>[];
-    await _backend!.play(
-      _buildBackendMediaPayload(url: url, mediaStreams: offlineStreams),
-      startPosition: startPosition,
-    );
-    await _syncBackendRepeatModeIfSupported();
-    await _waitForMediaReady();
-    _waitingForMedia = false;
+    try {
+      await _backend!.play(
+        _buildBackendMediaPayload(url: url, mediaStreams: offlineStreams),
+        startPosition: startPosition,
+      );
+      await _syncBackendRepeatModeIfSupported();
+      await _waitForMediaReady(timeout: const Duration(seconds: 5));
+    } finally {
+      _waitingForMedia = false;
+    }
 
     if (startPosition > Duration.zero) {
       await _seekWhilePausedAndResume(startPosition);
@@ -1908,6 +1954,66 @@ class PlaybackManager implements AudioOwnable {
     _service?.dispose();
     queueService.dispose();
     state.dispose();
+  }
+
+  List<Map<String, dynamic>> _extractMediaStreams(dynamic item) {
+    if (item is Map) {
+      final streams = item['MediaStreams'] ?? item['mediaStreams'];
+      if (streams is List) {
+        return streams.cast<Map<String, dynamic>>();
+      }
+    }
+    try {
+      final dynamic dyn = item;
+      final streams = dyn.mediaStreams;
+      if (streams is List) {
+        return streams.cast<Map<String, dynamic>>();
+      }
+    } catch (_) {}
+    return const [];
+  }
+
+  void _translateTrackSelectionsForNewItem(dynamic item) {
+    final newStreams = _extractMediaStreams(item);
+    if (newStreams.isEmpty) {
+      _audioStreamIndex = null;
+      if (_lastExplicitSubtitleEnabled == false) {
+        _subtitleStreamIndex = -1;
+      } else {
+        _subtitleStreamIndex = null;
+      }
+      return;
+    }
+
+    if (_lastExplicitAudioLanguage != null) {
+      final audioStreams = newStreams.where((s) => s['Type'] == 'Audio').toList();
+      final targetIdx = audioStreams.indexWhere(
+        (s) => s['Language']?.toString().toLowerCase() == _lastExplicitAudioLanguage!.toLowerCase(),
+      );
+      if (targetIdx >= 0) {
+        _audioStreamIndex = audioStreams[targetIdx]['Index'] as int?;
+      } else {
+        _audioStreamIndex = null;
+      }
+    } else {
+      _audioStreamIndex = null;
+    }
+
+    if (_lastExplicitSubtitleEnabled == false) {
+      _subtitleStreamIndex = -1;
+    } else if (_lastExplicitSubtitleLanguage != null) {
+      final subtitleStreams = newStreams.where((s) => s['Type'] == 'Subtitle').toList();
+      final targetIdx = subtitleStreams.indexWhere(
+        (s) => s['Language']?.toString().toLowerCase() == _lastExplicitSubtitleLanguage!.toLowerCase(),
+      );
+      if (targetIdx >= 0) {
+        _subtitleStreamIndex = subtitleStreams[targetIdx]['Index'] as int?;
+      } else {
+        _subtitleStreamIndex = null;
+      }
+    } else {
+      _subtitleStreamIndex = null;
+    }
   }
 }
 

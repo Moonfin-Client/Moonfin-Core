@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} valittu",
   "mediaBar": "Mediapalkki",
   "mediaBarMode": "Mediapalkin tyyli",
-  "mediaBarModeDescription": "Valitse Moonfin tai MakD tai kytke mediapalkki pois päältä",
+  "mediaBarModeDescription": "Valitse eri mediapalkkityylien välillä tai poista mediapalkki käytöstä",
   "mediaBarModeMoonfin": "Moonfin",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Pois",

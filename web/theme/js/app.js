@@ -389,7 +389,7 @@ function validateTheme(){
     issues.push(`\"${path}\" must be a number or corner object.`);
   };
 
-  if(!/^[a-z0-9-_]{2,40}$/i.test(ST.id||'')) issues.push('Theme ID should be 2-40 chars (letters, numbers, dash, underscore).');
+  if(!/^[A-Za-z0-9_-]{2,40}$/.test(ST.id||'')) issues.push('Theme ID should be 2-40 characters using letters (a-z or A-Z), numbers, dashes, or underscores.');
   if(!(ST.displayName||'').trim()) issues.push('Display name is required.');
   Object.entries(ST.colors).forEach(([k,v])=>{ if(!parseHex(v||'')) issues.push('Invalid color in colors.'+k); });
   Object.entries(ST.semantic).forEach(([k,v])=>{ if(!parseHex(v||'')) issues.push('Invalid color in semantic.'+k); });
@@ -1605,6 +1605,109 @@ function loadPreset(name){
   };
   loadFromObj(src);
   setStatus('Preset loaded','ok');
+}
+
+function randInt(min,max){
+  return min+Math.floor(Math.random()*(max-min+1));
+}
+
+function hslToArgb(h,s,l,alpha){
+  s/=100; l/=100;
+  const k=n=>(n+h/30)%12;
+  const a=s*Math.min(l,1-l);
+  const f=n=>l-a*Math.max(-1,Math.min(k(n)-3,9-k(n),1));
+  const hex=v=>Math.max(0,Math.min(255,Math.round(v*255))).toString(16).padStart(2,'0').toUpperCase();
+  const alphaHex=Math.max(0,Math.min(255,Math.round(alpha==null?255:alpha))).toString(16).padStart(2,'0').toUpperCase();
+  return '#'+alphaHex+hex(f(0))+hex(f(8))+hex(f(4));
+}
+
+function buildRandomTheme(){
+  const baseHue=randInt(0,359);
+  const accentHue=(baseHue+[120,150,180,200,240][randInt(0,4)])%360;
+  const accent=hslToArgb(accentHue,randInt(72,94),randInt(52,62));
+  const accentAlpha=a=>hslToArgb(accentHue,randInt(72,94),randInt(52,62),a);
+  const accentText=hslToArgb(accentHue,12,randInt(94,99));
+  const text=hslToArgb(baseHue,randInt(4,12),randInt(93,98));
+  const subtext=hslToArgb(baseHue,randInt(4,12),randInt(62,72));
+  const surface=l=>hslToArgb(baseHue,randInt(14,30),l);
+  return {
+    colors:{
+      background:surface(randInt(6,11)),
+      onBackground:text,
+      surface:surface(randInt(11,16)),
+      onSurface:text,
+      surfaceVariant:surface(randInt(16,22)),
+      scrim:hslToArgb(baseHue,randInt(20,40),randInt(2,7),204),
+      accent:accent,
+      onAccent:accentText,
+      buttonNormal:surface(randInt(16,24)),
+      buttonFocused:accent,
+      buttonDisabled:surface(randInt(12,17)),
+      buttonActive:surface(randInt(24,30)),
+      onButtonNormal:text,
+      onButtonFocused:accentText,
+      onButtonDisabled:subtext,
+      inputBackground:surface(randInt(16,24)),
+      inputFocused:surface(randInt(22,28)),
+      inputBorder:surface(randInt(26,34)),
+      inputBorderFocused:accent,
+      rangeTrack:surface(randInt(24,32)),
+      rangeProgress:accent,
+      rangeThumb:accent,
+      seekbarBuffered:hslToArgb(baseHue,6,94,128),
+      badgeBackground:accent,
+      onBadge:accentText,
+      badgeUnplayed:accent,
+      badgeWatched:hslToArgb(randInt(95,150),randInt(55,75),randInt(45,55)),
+      recordingActive:hslToArgb(randInt(0,16),randInt(72,90),randInt(52,60)),
+      recordingScheduled:hslToArgb(randInt(26,46),randInt(76,94),randInt(52,60)),
+    },
+    borders:{
+      cardBorder:{color:accentAlpha(randInt(0,110)),width:randInt(0,2)},
+      chipBorder:{color:accentAlpha(randInt(120,210)),width:1},
+      focusBorder:{color:accent,width:randInt(1,3)},
+      cardRadius:randInt(4,18),
+      chipRadius:[8,12,999][randInt(0,2)],
+      chipBackground:accentAlpha(randInt(20,64)),
+      focusGlow:Math.random()<0.6?[{color:accentAlpha(randInt(120,180)),blurRadius:randInt(4,16),spreadRadius:0,offsetX:0,offsetY:0}]:[],
+      navBorder:Math.random()<0.5?{color:accentAlpha(randInt(120,200)),width:1}:null,
+    },
+    semantic:{
+      statusAvailable:hslToArgb(randInt(120,150),randInt(55,75),randInt(45,55)),
+      statusRequested:hslToArgb(randInt(270,300),randInt(55,75),randInt(50,60)),
+      statusPending:hslToArgb(randInt(40,55),randInt(72,92),randInt(50,58)),
+      statusDownloading:hslToArgb(randInt(220,250),randInt(55,75),randInt(55,65)),
+      mediaTypeBadgeMovie:hslToArgb(randInt(200,230),randInt(60,80),randInt(55,65)),
+      mediaTypeBadgeShow:hslToArgb(randInt(255,285),randInt(55,75),randInt(58,68)),
+    },
+    book:{
+      background:surface(randInt(7,12)),
+      accent:accent,
+      mutedText:subtext,
+      primaryText:text,
+      sectionTitle:text,
+      divider:hslToArgb(baseHue,16,30,128),
+      placeholder:surface(randInt(18,26)),
+      shadow:hslToArgb(baseHue,30,4,180),
+      gradientTop:surface(randInt(12,18)),
+      gradientBottom:surface(randInt(5,10)),
+      inactiveChip:surface(randInt(18,24)),
+      placeholderPalette:[accent,hslToArgb((accentHue+40)%360,70,52),hslToArgb((accentHue+200)%360,68,50)],
+    },
+    textGlow:Math.random()<0.4?[{color:accentAlpha(110),blurRadius:randInt(4,12),offsetX:0,offsetY:0}]:[],
+    navColorCycle:Math.random()<0.5?[accent,hslToArgb((accentHue+60)%360,randInt(70,90),randInt(52,60))]:[],
+  };
+}
+
+function randomizeTheme(){
+  const rnd=buildRandomTheme();
+  rnd.id=ST.id;
+  rnd.displayName=ST.displayName;
+  rnd.description=ST.description;
+  rnd.previewNavMode=ST.previewNavMode;
+  rnd.previewProfile=ST.previewProfile;
+  loadFromObj(rnd);
+  setStatus('Random theme generated','ok');
 }
 
 function doImport(ev){

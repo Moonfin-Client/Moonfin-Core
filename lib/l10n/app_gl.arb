@@ -5426,7 +5426,7 @@
   "itemsSelected": "{count} selected",
   "mediaBar": "Barra de medios",
   "mediaBarMode": "Estilo de barra multimedia",
-  "mediaBarModeDescription": "Escolle entre Moonfin, MakD ou desactiva a barra multimedia",
+  "mediaBarModeDescription": "Escolla entre varios estilos de barra multimedia ou desactive a barra multimedia",
   "mediaBarModeMoonfin": "Moonfin",
   "mediaBarModeMakd": "MakD",
   "mediaBarModeOff": "Desactivado",

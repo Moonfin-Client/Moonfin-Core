@@ -2951,6 +2951,12 @@ class AppLocalizationsUg extends AppLocalizations {
   String get combineBothRows => 'ھەر ئىككى قۇرنى بىر ئۆي بۆلىكىگە بىرلەشتۈرۈڭ';
 
   @override
+  String get fullScreenRows => 'Expanded Home Rows';
+
+  @override
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+
+  @override
   String get perRowImageType => 'ھەر بىر قۇر رەسىم تىپى';
 
   @override
@@ -7409,6 +7415,23 @@ class AppLocalizationsUg extends AppLocalizations {
 
   @override
   String get homeRowsSection => 'Home Rows';
+
+  @override
+  String get homeRowDisplay => 'Home Row Display';
+
+  @override
+  String get homeRowSections => 'Home Row Sections';
+
+  @override
+  String get homeRowToggles => 'Home Row Toggles';
+
+  @override
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
+
+  @override
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Rows Type';

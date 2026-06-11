@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
+
+import 'playback_exit_beacon.dart';
 
 class PlaySessionService implements PlayerService {
   final MediaServerClient _client;
@@ -24,6 +28,7 @@ class PlaySessionService implements PlayerService {
       subtitleStreamIndex: subtitleStreamIndex,
     );
     await _client.playbackApi.reportPlaybackStart(report.toJson());
+    _armExitBeacon(mediaItem, resolution, positionTicks ?? 0);
   }
 
   @override
@@ -45,6 +50,7 @@ class PlaySessionService implements PlayerService {
       subtitleStreamIndex: subtitleStreamIndex,
     );
     await _client.playbackApi.reportPlaybackProgress(report.toJson());
+    _armExitBeacon(mediaItem, resolution, position.inMicroseconds * 10);
   }
 
   @override
@@ -53,11 +59,11 @@ class PlaySessionService implements PlayerService {
     StreamResolutionResult resolution,
     Duration position,
   ) async {
-    final report = PlaybackStopReport(
-      itemId: MediaStreamResolver.extractItemId(mediaItem),
-      mediaSourceId: resolution.mediaSourceId,
-      playSessionId: resolution.playSessionId,
-      positionTicks: position.inMicroseconds * 10,
+    PlaybackExitBeacon.disarm();
+    final report = _stopReport(
+      mediaItem,
+      resolution,
+      position.inMicroseconds * 10,
     );
     Object? reportError;
     StackTrace? reportStackTrace;
@@ -80,6 +86,38 @@ class PlaySessionService implements PlayerService {
     }
   }
 
+  void _armExitBeacon(
+    dynamic mediaItem,
+    StreamResolutionResult resolution,
+    int positionTicks,
+  ) {
+    if (!PlaybackExitBeacon.supported) {
+      return;
+    }
+    final token = _client.accessToken;
+    if (token == null || token.isEmpty) {
+      return;
+    }
+    final report = _stopReport(mediaItem, resolution, positionTicks);
+    PlaybackExitBeacon.arm(
+      url: '${_client.baseUrl}/Sessions/Playing/Stopped?api_key=$token',
+      body: jsonEncode(report.toJson()),
+    );
+  }
+
+  PlaybackStopReport _stopReport(
+    dynamic mediaItem,
+    StreamResolutionResult resolution,
+    int positionTicks,
+  ) {
+    return PlaybackStopReport(
+      itemId: MediaStreamResolver.extractItemId(mediaItem),
+      mediaSourceId: resolution.mediaSourceId,
+      playSessionId: resolution.playSessionId,
+      positionTicks: positionTicks,
+    );
+  }
+
   static PlayMethod _toPlayMethod(StreamPlayMethod method) => switch (method) {
     StreamPlayMethod.directPlay => PlayMethod.directPlay,
     StreamPlayMethod.directStream => PlayMethod.directStream,
@@ -87,5 +125,7 @@ class PlaySessionService implements PlayerService {
   };
 
   @override
-  void dispose() {}
+  void dispose() {
+    PlaybackExitBeacon.disarm();
+  }
 }

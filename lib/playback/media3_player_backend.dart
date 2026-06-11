@@ -451,7 +451,7 @@ class Media3PlayerBackend implements PlayerBackend {
       audioFallbackToStereoAac:
           _prefs.resolveAudioFallbackCodec() == AudioFallbackCodec.aacStereo,
       maxResolution: maxResolution,
-      pgsDirectPlay: _prefs.get(UserPreferences.pgsDirectPlay),
+      pgsDirectPlay: _prefs.get(UserPreferences.pgsDirectPlay) && canRenderBitmapSubtitles,
       assDirectPlay: _prefs.get(UserPreferences.assDirectPlay),
       supportsAvc: PlatformDetection.supportsAvc,
       supportsAvcHigh10: PlatformDetection.supportsAvcHigh10,
