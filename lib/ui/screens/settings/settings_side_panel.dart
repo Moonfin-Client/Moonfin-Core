@@ -771,11 +771,14 @@ class _NavigationCategoryScreen extends StatefulWidget {
 
 class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
   late final PreferenceBinding<bool> _showShuffleButtonBinding;
+  late final PluginSyncService _syncService;
   bool _navbarNormalizeQueued = false;
 
   @override
   void initState() {
     super.initState();
+    _syncService = GetIt.instance<PluginSyncService>();
+    _syncService.addListener(_onSyncChanged);
     _showShuffleButtonBinding = PreferenceBinding(
       GetIt.instance<PreferenceStore>(),
       UserPreferences.showShuffleButton,
@@ -784,8 +787,13 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
 
   @override
   void dispose() {
+    _syncService.removeListener(_onSyncChanged);
     _showShuffleButtonBinding.dispose();
     super.dispose();
+  }
+
+  void _onSyncChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -873,7 +881,7 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
               icon: Icons.video_library,
               onChanged: _pushPersonalizationSync,
             ),
-            if (seerrEnabledOnAccount)
+            if (seerrEnabledOnAccount && _syncService.seerrAvailable)
               SwitchPreferenceTile(
                 preference: UserPreferences.showSeerrButton,
                 title: l10n.showSeerrButton,
@@ -885,6 +893,7 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                 ),
                 onChanged: _pushPersonalizationSync,
               ),
+
           ],
         ),
       ),

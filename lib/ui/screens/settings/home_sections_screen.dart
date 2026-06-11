@@ -408,7 +408,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         _prefs.get(UserPreferences.displayCollectionsRows);
     final showGenresRows = _prefs.get(UserPreferences.displayGenresRows);
     final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
-    final showSeerrRows = _prefs.get(UserPreferences.displaySeerrRows);
+    final showSeerrRows = _prefs.get(UserPreferences.displaySeerrRows) &&
+        GetIt.instance<PluginSyncService>().seerrAvailable;
 
     final hiddenByFavorites =
       !showFavoritesRows && _isFavoriteSectionType(section.type);

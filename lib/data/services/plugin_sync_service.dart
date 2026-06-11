@@ -48,6 +48,7 @@ class PluginSyncService extends ChangeNotifier {
   String? get seerrUrl => _seerrUrl;
   bool _seerrEnabled = false;
   bool get seerrEnabled => _seerrEnabled;
+  bool get seerrAvailable => _pluginAvailable && _seerrEnabled;
   bool _seerrInfoAvailable = false;
   bool get seerrInfoAvailable => _seerrInfoAvailable;
 

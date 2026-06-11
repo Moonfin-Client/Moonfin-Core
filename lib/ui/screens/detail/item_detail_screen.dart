@@ -24,6 +24,7 @@ import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/services/book_reader_service.dart';
 import '../../../data/services/theme_music_service.dart';
 import '../../../data/viewmodels/item_detail_view_model.dart';
+import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../l10n/app_localizations.dart';
@@ -167,6 +168,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     );
     _viewModel.addListener(_onChanged);
     _prefs.addListener(_onPrefsChanged);
+    GetIt.instance<PluginSyncService>().addListener(_onPrefsChanged);
     _viewModel.load();
 
     _backdropUrl = _backgroundService.currentUrl;
@@ -197,6 +199,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     _backgroundService.clearBackgrounds();
     _viewModel.removeListener(_onChanged);
     _prefs.removeListener(_onPrefsChanged);
+    try {
+      GetIt.instance<PluginSyncService>().removeListener(_onPrefsChanged);
+    } catch (_) {}
     _viewModel.dispose();
     _initialContentFocusNode?.dispose();
     super.dispose();
@@ -412,7 +417,9 @@ class _DetailContentState extends State<_DetailContent> {
     if (item == null || item.type != 'Person') return;
     final tmdbId = item.tmdbId;
     if (tmdbId == null || tmdbId.isEmpty) return;
-    if (!prefs.get(UserPreferences.seerrEnabled)) return;
+    if (!GetIt.instance<PluginSyncService>().seerrAvailable) {
+      return;
+    }
 
     if (mounted) {
       setState(() {
@@ -2004,7 +2011,7 @@ class _DetailContentState extends State<_DetailContent> {
     final hasSeerrButton =
         item.tmdbId != null &&
         item.tmdbId!.isNotEmpty &&
-        prefs.get(UserPreferences.seerrEnabled);
+        GetIt.instance<PluginSyncService>().seerrAvailable;
     final seerrFocusNode = hasSeerrButton
         ? _sectionFocusNode('detailPersonSeerrButton')
         : null;
