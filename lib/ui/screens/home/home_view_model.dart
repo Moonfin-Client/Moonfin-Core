@@ -17,6 +17,7 @@ import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../data/repositories/seerr_repository.dart';
+import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/utils/bounded_concurrency.dart';
 import '../../../preference/seerr_preferences.dart';
@@ -155,7 +156,8 @@ class HomeViewModel extends ChangeNotifier {
       final showPlaylistsRows =
           _prefs.get(UserPreferences.displayPlaylistsRows);
       final showSeerrRows =
-          _prefs.get(UserPreferences.displaySeerrRows);
+          _prefs.get(UserPreferences.displaySeerrRows) &&
+          GetIt.instance<PluginSyncService>().seerrAvailable;
 
       // Plugin-dynamic sections only make sense on the active server.
       final visibleConfigsRaw = configs

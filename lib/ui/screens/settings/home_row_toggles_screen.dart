@@ -24,6 +24,24 @@ class HomeRowTogglesScreen extends StatefulWidget {
 
 class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
   final _prefs = GetIt.instance<UserPreferences>();
+  late final PluginSyncService _syncService;
+
+  @override
+  void initState() {
+    super.initState();
+    _syncService = GetIt.instance<PluginSyncService>();
+    _syncService.addListener(_onSyncChanged);
+  }
+
+  @override
+  void dispose() {
+    _syncService.removeListener(_onSyncChanged);
+    super.dispose();
+  }
+
+  void _onSyncChanged() {
+    if (mounted) setState(() {});
+  }
 
   void _pushPersonalizationSync() {
     final syncService = GetIt.instance<PluginSyncService>();
@@ -235,22 +253,25 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                 onChanged: _onPlaylistsSortChanged,
               ),
 
-            _SectionHeader(l10n.seerr),
-            SwitchPreferenceTile(
-              preference: UserPreferences.displaySeerrRows,
-              title: l10n.displaySeerrRows,
-              subtitle: seerrEnabledOnAccount
-                  ? l10n.displaySeerrRowsSubtitle
-                  : '${l10n.displaySeerrRowsSubtitle} (Requires Seerr login in Plugins)',
-              enabled: seerrEnabledOnAccount,
-              iconBuilder: (size, color) => Image.asset(
-                'assets/icons/seerr.png',
-                width: size,
-                height: size,
+            if (_syncService.seerrAvailable) ...[
+              _SectionHeader(l10n.seerr),
+              SwitchPreferenceTile(
+                preference: UserPreferences.displaySeerrRows,
+                title: l10n.displaySeerrRows,
+                subtitle: seerrEnabledOnAccount
+                    ? l10n.displaySeerrRowsSubtitle
+                    : '${l10n.displaySeerrRowsSubtitle} (Requires Seerr login in Plugins)',
+                enabled: seerrEnabledOnAccount,
+                iconBuilder: (size, color) => Image.asset(
+                  'assets/icons/seerr.png',
+                  width: size,
+                  height: size,
+                ),
+                onChanged: _onSeerrRowsToggleChanged,
               ),
-              onChanged: _onSeerrRowsToggleChanged,
-            ),
+            ],
             const SizedBox(height: 32),
+
           ],
         ),
       ),
