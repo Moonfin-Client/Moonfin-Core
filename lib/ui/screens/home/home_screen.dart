@@ -22,6 +22,7 @@ import '../../widgets/rating_display.dart';
 import '../../../data/services/theme_music_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../playback/appletv_preview_player.dart';
 import '../../../playback/inline_preview_engine.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../preference/preference_constants.dart';
@@ -563,10 +564,13 @@ class _ContentRowsState extends State<_ContentRows>
   StreamSubscription<bool>? _mainPlaybackSub;
   Player? _previewPlayer;
   VideoController? _previewController;
+  AppleTvPreviewPlayer? _appleTvPreviewPlayer;
+  StreamSubscription<void>? _appleTvPreviewCompletedSub;
   int _previewRequestId = 0;
   bool _mainPlaybackActive = false;
   bool _previewReady = false;
   bool _previewUsingMedia3 = false;
+  bool _previewUsingAppleTv = false;
   double _scrollOffset = 0;
   double _previewStartScrollOffset = 0;
   bool _isScrolledToTop = true;
@@ -968,7 +972,6 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   void _schedulePreview(AggregatedItem item, {required Duration delay}) {
-    if (PlatformDetection.isAppleTV) return;
     final previewKey = _previewKeyFor(item);
     if (_activePreviewKey == previewKey) {
       return;
@@ -1039,10 +1042,19 @@ class _ContentRowsState extends State<_ContentRows>
       unawaited(_media3PreviewBackend!.release());
       _media3PreviewBackend.resetVolumeState();
     }
+    if (_previewUsingAppleTv) {
+      _previewUsingAppleTv = false;
+      unawaited(_appleTvPreviewPlayer?.setVolume(0));
+      unawaited(_appleTvPreviewPlayer?.stop());
+    }
     if (releaseResources || kIsWeb) {
       _previewPlayer?.dispose();
       _previewPlayer = null;
       _previewController = null;
+      _appleTvPreviewCompletedSub?.cancel();
+      _appleTvPreviewCompletedSub = null;
+      unawaited(_appleTvPreviewPlayer?.dispose());
+      _appleTvPreviewPlayer = null;
     }
 
     if (_activePreviewKey != null || _previewReady) {
@@ -1083,6 +1095,10 @@ class _ContentRowsState extends State<_ContentRows>
     if (_previewUsingMedia3) {
       await _media3PreviewBackend!.stop();
       _previewUsingMedia3 = false;
+    }
+    if (_previewUsingAppleTv) {
+      await _appleTvPreviewPlayer?.stop();
+      _previewUsingAppleTv = false;
     }
     _themeMusicService.setExternalAudioActive(true);
 
@@ -1133,6 +1149,22 @@ class _ContentRowsState extends State<_ContentRows>
           await _media3PreviewBackend.stop();
           return;
         }
+      } else if (PlatformDetection.isAppleTV) {
+        _previewUsingMedia3 = false;
+        _previewUsingAppleTv = true;
+        final player = _ensureAppleTvSharedPreviewPlayer();
+        await player
+            .open(previewUrl, volume: previewVolume)
+            .timeout(_previewOpenTimeout);
+        if (!_isPreviewRequestActive(requestId, previewKey)) {
+          await player.stop();
+          return;
+        }
+        await player.resume();
+        if (!_isPreviewRequestActive(requestId, previewKey)) {
+          await player.stop();
+          return;
+        }
       } else {
         _previewUsingMedia3 = false;
         final player = _ensureSharedPreviewPlayer();
@@ -1175,6 +1207,21 @@ class _ContentRowsState extends State<_ContentRows>
         _finishSharedPreview();
       }
     }
+  }
+
+  AppleTvPreviewPlayer _ensureAppleTvSharedPreviewPlayer() {
+    final existing = _appleTvPreviewPlayer;
+    if (existing != null) {
+      return existing;
+    }
+    final player = AppleTvPreviewPlayer();
+    _appleTvPreviewPlayer = player;
+    _appleTvPreviewCompletedSub = player.completedStream.listen((_) {
+      if (_previewUsingAppleTv) {
+        _finishSharedPreview();
+      }
+    });
+    return player;
   }
 
   Player _ensureSharedPreviewPlayer() {
@@ -3270,6 +3317,9 @@ class _ContentRowsState extends State<_ContentRows>
                   showVideo: showPreviewVideo,
                   useMedia3: showPreviewVideo && _previewUsingMedia3,
                   controller: _previewController,
+                  appleTvTextureId: showPreviewVideo && _previewUsingAppleTv
+                      ? _appleTvPreviewPlayer?.textureId
+                      : null,
                   isFocused: isFocused,
                   focusColor: focusColor,
                 );
@@ -4010,6 +4060,7 @@ class _PreviewCardShell extends StatelessWidget {
   final bool showVideo;
   final bool useMedia3;
   final VideoController? controller;
+  final int? appleTvTextureId;
   final bool isFocused;
   final Color focusColor;
 
@@ -4020,6 +4071,7 @@ class _PreviewCardShell extends StatelessWidget {
     required this.showVideo,
     required this.useMedia3,
     required this.controller,
+    this.appleTvTextureId,
     required this.isFocused,
     required this.focusColor,
   });
@@ -4033,6 +4085,16 @@ class _PreviewCardShell extends StatelessWidget {
     final Widget? previewSurface;
     if (useMedia3) {
       previewSurface = const Media3VideoView(fill: Colors.black);
+    } else if (appleTvTextureId != null) {
+      previewSurface = FittedBox(
+        fit: BoxFit.cover,
+        clipBehavior: Clip.hardEdge,
+        child: SizedBox(
+          width: 1920,
+          height: 1080,
+          child: Texture(textureId: appleTvTextureId!),
+        ),
+      );
     } else if (controller != null) {
       previewSurface = Video(
         controller: controller!,

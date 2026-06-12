@@ -29,6 +29,7 @@ import '../../util/language_matching.dart';
 import '../../util/overlay_color_palette.dart';
 import '../../util/platform_detection.dart';
 import '../../l10n/app_localizations.dart';
+import '../../playback/appletv_preview_player.dart';
 import '../../playback/inline_preview_engine.dart';
 import '../../playback/media3_player_backend.dart';
 import 'bounded_network_image.dart';
@@ -102,6 +103,9 @@ class _MediaBarState extends State<MediaBar>
 
   Player? _trailerPlayer;
   VideoController? _trailerController;
+  AppleTvPreviewPlayer? _appleTvTrailerPlayer;
+  StreamSubscription<void>? _appleTvTrailerCompletedSub;
+  bool _trailerUsingAppleTv = false;
   StreamSubscription<bool>? _mainPlaybackSub;
   StreamSubscription<bool>? _trailerCompletedSub;
   StreamSubscription<bool>? _media3TrailerCompletedSub;
@@ -181,6 +185,9 @@ class _MediaBarState extends State<MediaBar>
     _cancelTrailerPreview();
     try {
       await _trailerPlayer?.stop();
+    } catch (_) {}
+    try {
+      await _appleTvTrailerPlayer?.stop();
     } catch (_) {}
     try {
       await _media3TrailerBackend?.release();
@@ -471,6 +478,11 @@ class _MediaBarState extends State<MediaBar>
         UserPreferences.previewAudioEnabled,
       );
       _media3TrailerBackend!.setVolume(audioEnabled ? 100 : 0);
+    } else if (_trailerUsingAppleTv) {
+      final audioEnabled = widget.prefs.get(
+        UserPreferences.previewAudioEnabled,
+      );
+      unawaited(_appleTvTrailerPlayer?.setVolume(audioEnabled ? 100 : 0));
     } else if (_trailerPlayer != null) {
       final audioEnabled = widget.prefs.get(
         UserPreferences.previewAudioEnabled,
@@ -648,8 +660,7 @@ class _MediaBarState extends State<MediaBar>
       _cancelTrailerPreview();
       return;
     }
-    if (PlatformDetection.isAppleTV ||
-        !widget.prefs.get(UserPreferences.mediaBarTrailerPreview)) {
+    if (!widget.prefs.get(UserPreferences.mediaBarTrailerPreview)) {
       return;
     }
     if (!_isHomeRouteActive) {
@@ -689,9 +700,13 @@ class _MediaBarState extends State<MediaBar>
     _trailerResolveId++;
     _trailerRevealArmed = false;
     _isTrailerPlaying = false;
+    final wasUsingAppleTv = _trailerUsingAppleTv;
     if (_trailerUsingMedia3) {
       _trailerUsingMedia3 = false;
       unawaited(_media3TrailerBackend!.release());
+    } else if (_trailerUsingAppleTv) {
+      _trailerUsingAppleTv = false;
+      unawaited(_appleTvTrailerPlayer?.stop());
     } else {
       _trailerPlayer?.stop();
     }
@@ -701,7 +716,8 @@ class _MediaBarState extends State<MediaBar>
     _clearSponsorBlockTracking();
     if (_activeYouTubeVideoId != null ||
         _trailerVideoOpacity != 0.0 ||
-        wasUsingMedia3) {
+        wasUsingMedia3 ||
+        wasUsingAppleTv) {
       setState(() {
         _activeYouTubeVideoId = null;
         _trailerVideoOpacity = 0.0;
@@ -817,6 +833,25 @@ class _MediaBarState extends State<MediaBar>
           await _media3TrailerBackend.stop();
           return;
         }
+      } else if (PlatformDetection.isAppleTV) {
+        _trailerUsingAppleTv = true;
+        final player = _ensureAppleTvTrailerPlayer();
+        await player
+            .open(
+              streamUrl,
+              headers: useYouTubeHeaders
+                  ? YouTubeStreamResolver.youtubeHeaders
+                  : null,
+              volume: 0,
+            )
+            .timeout(_openTimeout);
+        if (!mounted ||
+            resolveId != _trailerResolveId ||
+            !_isHomeRouteCurrent()) {
+          await player.stop();
+          return;
+        }
+        if (mounted) setState(() {});
       } else {
         _trailerUsingMedia3 = false;
         final player = _ensureTrailerPlayer();
@@ -914,6 +949,33 @@ class _MediaBarState extends State<MediaBar>
         return;
       }
 
+      if (_trailerVideoOpacity != 1) {
+        setState(() => _trailerVideoOpacity = 1);
+      }
+      return;
+    }
+
+    if (_trailerUsingAppleTv) {
+      final player = _appleTvTrailerPlayer;
+      if (player == null) return;
+      final audioEnabled = widget.prefs.get(
+        UserPreferences.previewAudioEnabled,
+      );
+      try {
+        await player.setVolume(audioEnabled ? 100 : 0);
+        if (!mounted || resolveId != _trailerResolveId) return;
+        await player.resume();
+        if (!mounted || resolveId != _trailerResolveId) {
+          unawaited(player.stop());
+          return;
+        }
+      } catch (_) {
+        _markTrailerFailed(item.itemId);
+        _cancelTrailerPreview();
+        return;
+      }
+      _isTrailerPlaying = true;
+      _autoAdvanceTimer?.cancel();
       if (_trailerVideoOpacity != 1) {
         setState(() => _trailerVideoOpacity = 1);
       }
@@ -1075,6 +1137,17 @@ class _MediaBarState extends State<MediaBar>
     }
   }
 
+  AppleTvPreviewPlayer _ensureAppleTvTrailerPlayer() {
+    final existing = _appleTvTrailerPlayer;
+    if (existing != null) return existing;
+    final player = AppleTvPreviewPlayer();
+    _appleTvTrailerPlayer = player;
+    _appleTvTrailerCompletedSub = player.completedStream.listen(
+      (_) => _onTrailerCompleted(true),
+    );
+    return player;
+  }
+
   Player _ensureTrailerPlayer() {
     final existing = _trailerPlayer;
     if (existing != null) return existing;
@@ -1112,10 +1185,18 @@ class _MediaBarState extends State<MediaBar>
     _trailerCompletedSub = null;
     _media3TrailerCompletedSub?.cancel();
     _media3TrailerCompletedSub = null;
+    _appleTvTrailerCompletedSub?.cancel();
+    _appleTvTrailerCompletedSub = null;
     if (_trailerUsingMedia3) {
       _trailerUsingMedia3 = false;
       unawaited(_media3TrailerBackend!.stop());
     }
+    if (_trailerUsingAppleTv) {
+      _trailerUsingAppleTv = false;
+    }
+    final appleTvPlayer = _appleTvTrailerPlayer;
+    _appleTvTrailerPlayer = null;
+    unawaited(appleTvPlayer?.dispose());
     // Capture and null fields before the await so any code that wakes during
     // the async pause (e.g. a concurrent _loadTrailer call) sees null and
     // creates a fresh player rather than grabbing this half-disposed one.
@@ -2304,7 +2385,9 @@ class _MediaBarState extends State<MediaBar>
 
   List<Widget> _buildVideoOverlays() {
     return [
-      if (_trailerUsingMedia3 || _trailerController != null)
+      if (_trailerUsingMedia3 ||
+          _trailerController != null ||
+          (_trailerUsingAppleTv && _appleTvTrailerPlayer?.textureId != null))
         Positioned.fill(
           child: IgnorePointer(
             child: AnimatedOpacity(
@@ -2312,6 +2395,18 @@ class _MediaBarState extends State<MediaBar>
               duration: const Duration(milliseconds: 800),
               child: _trailerUsingMedia3
                   ? const Media3VideoView(fill: Colors.transparent)
+                  : _trailerUsingAppleTv
+                  ? FittedBox(
+                      fit: BoxFit.cover,
+                      clipBehavior: Clip.hardEdge,
+                      child: SizedBox(
+                        width: 1920,
+                        height: 1080,
+                        child: Texture(
+                          textureId: _appleTvTrailerPlayer!.textureId!,
+                        ),
+                      ),
+                    )
                   : Video(
                       controller: _trailerController!,
                       controls: NoVideoControls,

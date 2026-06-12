@@ -22,6 +22,7 @@
 		6BDB0CA2F17384360FC7A86A /* NativePlayerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB983BF44E10FDD7C1C6A86 /* NativePlayerWrapper.swift */; };
 		7BC8A8140C07EF63D219CAE4 /* SubtitleDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D8FB1F102374E32454EA3D4 /* SubtitleDecoder.swift */; };
 		8557BDEED1364C160FDCCA78 /* FFDemuxer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2C5316F2396D410BF8F85E /* FFDemuxer.swift */; };
+		86EBDA29EC9F3F8B48EC6A25 /* AppleTvPreviewChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B3D4A2E4C583DF7B8CAE4BA /* AppleTvPreviewChannel.swift */; };
 		9705A1C61CF904A100538489 /* Flutter.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAB004F5970 /* Flutter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		97C146FB1CF9000082B4168C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000082B4168C /* AppDelegate.swift */; };
 		97C1470A1CF9000082B4168D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000082B4168D /* Main.storyboard */; };
@@ -86,6 +87,7 @@
 		3B3967151E833CAB004F5970 /* Flutter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Flutter.framework; path = Flutter/Flutter.framework; sourceTree = "<group>"; };
 		42C7E472F4F533204C68EA04 /* AppleTvVideoChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvVideoChannel.swift; sourceTree = "<group>"; };
 		4AA2EEAB62F9513C16D8925F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		5B3D4A2E4C583DF7B8CAE4BA /* AppleTvPreviewChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvPreviewChannel.swift; sourceTree = "<group>"; };
 		69C2A2281BE7FC2256E62A2C /* TVServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TVServices.framework; path = System/Library/Frameworks/TVServices.framework; sourceTree = SDKROOT; };
 		7159A7791642FD80F3643C71 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
@@ -222,6 +224,7 @@
 				66DD9E560EFC48A917ADF4E1 /* Playback */,
 				262ACA82479C66EBA778DB00 /* Runner.entitlements */,
 				2D0DB225C5FD5F802D648CC0 /* TopShelfChannel.swift */,
+				5B3D4A2E4C583DF7B8CAE4BA /* AppleTvPreviewChannel.swift */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -479,6 +482,7 @@
 				9DAC7F059A7480839BA11950 /* SubtitleOverlay.swift in Sources */,
 				3E667EB6FA1A725FA86597C7 /* DisplayCriteriaManager.swift in Sources */,
 				991C71B70423D0CB846BAF6C /* TopShelfChannel.swift in Sources */,
+				86EBDA29EC9F3F8B48EC6A25 /* AppleTvPreviewChannel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

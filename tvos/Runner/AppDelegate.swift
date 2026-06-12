@@ -5,6 +5,7 @@ import Flutter
 class AppDelegate: FlutterAppDelegate {
     private var appleTvVideoChannel: AppleTvVideoChannel?
     private var topShelfChannel: TopShelfChannel?
+    private var previewChannel: AppleTvPreviewChannel?
 
     override func application(
         _ application: UIApplication,
@@ -23,6 +24,11 @@ class AppDelegate: FlutterAppDelegate {
             rootViewController: flutterViewController)
         topShelfChannel = TopShelfChannel(
             messenger: flutterViewController.binaryMessenger)
+        if let engine = flutterViewController.engine {
+            previewChannel = AppleTvPreviewChannel(
+                messenger: flutterViewController.binaryMessenger,
+                textures: engine)
+        }
 
         if let launchUrl = launchOptions?[.url] as? URL {
             topShelfChannel?.deliverDeepLink(launchUrl, isLaunch: true)
