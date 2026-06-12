@@ -1180,7 +1180,7 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
               _TvSettingsListTile(
                 autofocus: true,
                 leading: const Icon(Icons.extension),
-                title: Text(l10n.pluginLabel),
+                title: const Text('Moonbase Plugin'),
                 subtitle: Text(l10n.serverSyncAndPluginStatus),
                 onTap: () => context.pushSettingsScreen(const _PluginScreen()),
               ),
@@ -1246,11 +1246,37 @@ class _PluginScreenState extends State<_PluginScreen> {
     debugLabel: 'PluginSettingsScope',
     traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
   );
+  final _scrollController = ScrollController();
+  final _refreshFocusNode = FocusNode(debugLabel: 'PluginRefreshButton');
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshFocusNode.addListener(_onRefreshFocusChange);
+  }
 
   @override
   void dispose() {
+    _refreshFocusNode.removeListener(_onRefreshFocusChange);
+    _refreshFocusNode.dispose();
+    _scrollController.dispose();
     _pluginScope.dispose();
     super.dispose();
+  }
+
+  void _onRefreshFocusChange() {
+    if (_refreshFocusNode.hasFocus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            0,
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
   }
 
   @override
@@ -1262,12 +1288,43 @@ class _PluginScreenState extends State<_PluginScreen> {
           final theme = Theme.of(context);
           final colorScheme = theme.colorScheme;
           final l10n = AppLocalizations.of(context);
-          return Scaffold(
-            appBar: buildSettingsAppBar(context, Text(l10n.pluginLabel)),
-            body: FocusScope(
-              node: _pluginScope,
-              autofocus: true,
-              child: ListView(
+          return FocusScope(
+            node: _pluginScope,
+            autofocus: true,
+            child: Scaffold(
+              appBar: buildSettingsAppBar(
+                context,
+                const Text('Moonbase Plugin'),
+                actions: [
+                  IconButton(
+                    focusNode: _refreshFocusNode,
+                    autofocus: true,
+                    icon: const Icon(Icons.refresh),
+                    onPressed: () async {
+                      if (GetIt.instance.isRegistered<MediaServerClient>()) {
+                        final client = GetIt.instance<MediaServerClient>();
+                        final syncService = GetIt.instance<PluginSyncService>();
+                        await syncService.refreshAvailability(client);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                syncService.pluginAvailable
+                                    ? l10n.pluginDetected
+                                    : l10n.pluginNotDetected,
+                              ),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ],
+              ),
+              body: ListView(
+                controller: _scrollController,
+                padding: const EdgeInsets.only(bottom: 48),
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
