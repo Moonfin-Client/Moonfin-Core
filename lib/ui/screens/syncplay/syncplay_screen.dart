@@ -244,7 +244,7 @@ class _ErrorBanner extends StatelessWidget {
   }
 }
 
-class _ActiveGroupSection extends StatelessWidget {
+class _ActiveGroupSection extends StatefulWidget {
   final SyncPlayManager manager;
   final FocusNode ignoreWaitFocus;
 
@@ -254,9 +254,16 @@ class _ActiveGroupSection extends StatelessWidget {
   });
 
   @override
+  State<_ActiveGroupSection> createState() => _ActiveGroupSectionState();
+}
+
+class _ActiveGroupSectionState extends State<_ActiveGroupSection> {
+  bool _pickerOpen = false;
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final s = manager.state;
+    final s = widget.manager.state;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -294,14 +301,14 @@ class _ActiveGroupSection extends StatelessWidget {
             _buildTileWithFocused(
               context,
               builder: (context, focused) => SwitchListTile(
-                focusNode: ignoreWaitFocus,
+                focusNode: widget.ignoreWaitFocus,
                 contentPadding: PlatformDetection.isTV
                     ? const EdgeInsets.symmetric(horizontal: 16)
                     : EdgeInsets.zero,
                 title: Text(l10n.syncPlayIgnoreWait),
                 subtitle: Text(l10n.syncPlayIgnoreWaitSubtitle),
-                value: manager.ignoreWaitEnabled,
-                onChanged: (v) => manager.requestSetIgnoreWait(v),
+                value: widget.manager.ignoreWaitEnabled,
+                onChanged: (v) => widget.manager.requestSetIgnoreWait(v),
               ),
             ),
             _buildTileWithFocused(
@@ -312,7 +319,7 @@ class _ActiveGroupSection extends StatelessWidget {
                     : EdgeInsets.zero,
                 leading: const Icon(Icons.repeat),
                 title: Text(l10n.syncPlayRepeat),
-                trailing: buildSelectionBubble(context, _repeatLabel(s.repeatMode, l10n), focused),
+                trailing: buildSettingsSelectionBubble(context, _repeatLabel(s.repeatMode, l10n), focused),
                 onTap: () => _showRepeatPicker(context, s, l10n),
               ),
             ),
@@ -328,7 +335,7 @@ class _ActiveGroupSection extends StatelessWidget {
                       : Icons.shuffle,
                 ),
                 title: Text(l10n.shuffle),
-                trailing: buildSelectionBubble(context, _shuffleLabel(s.shuffleMode, l10n), focused),
+                trailing: buildSettingsSelectionBubble(context, _shuffleLabel(s.shuffleMode, l10n), focused),
                 onTap: () => _showShufflePicker(context, s, l10n),
               ),
             ),
@@ -341,14 +348,14 @@ class _ActiveGroupSection extends StatelessWidget {
                 leading: const Icon(Icons.queue_play_next),
                 title: Text(l10n.syncPlaySyncCurrentQueue),
                 subtitle: Text(l10n.syncPlaySyncCurrentQueueSubtitle),
-                onTap: () => manager.syncCurrentPlaybackQueueToGroup(),
+                onTap: () => widget.manager.syncCurrentPlaybackQueueToGroup(),
               ),
             ),
             const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerRight,
               child: FilledButton.tonalIcon(
-                onPressed: () => manager.leaveGroup(),
+                onPressed: () => widget.manager.leaveGroup(),
                 style: FilledButton.styleFrom().copyWith(
                   side: WidgetStateProperty.resolveWith<BorderSide?>((states) {
                     if (states.contains(WidgetState.focused)) {
@@ -375,7 +382,7 @@ class _ActiveGroupSection extends StatelessWidget {
                 final item = s.queue[i];
                 final isCurrent = i == s.currentItemIndex;
                 final title =
-                    manager.itemTitleFor(item.itemId) ??
+                    widget.manager.itemTitleFor(item.itemId) ??
                     l10n.syncPlayQueueItemFallback(i + 1);
                 final tile = ListTile(
                   contentPadding: PlatformDetection.isTV
@@ -391,22 +398,22 @@ class _ActiveGroupSection extends StatelessWidget {
                           fontWeight: isCurrent ? FontWeight.bold : null)),
                   subtitle: Text(item.itemId,
                       maxLines: 1, overflow: TextOverflow.ellipsis),
-                  onTap: () => manager.requestSetCurrentItem(item.playlistItemId),
+                  onTap: () => widget.manager.requestSetCurrentItem(item.playlistItemId),
                   trailing: PopupMenuButton<String>(
                     onSelected: (value) {
                       switch (value) {
                         case 'play':
-                          manager.requestSetCurrentItem(item.playlistItemId);
+                          widget.manager.requestSetCurrentItem(item.playlistItemId);
                           break;
                         case 'remove':
-                          manager.requestRemoveFromQueue(item.playlistItemId);
+                          widget.manager.requestRemoveFromQueue(item.playlistItemId);
                           break;
                         case 'up':
-                          manager.requestMoveQueueItem(
+                          widget.manager.requestMoveQueueItem(
                               item.playlistItemId, i - 1);
                           break;
                         case 'down':
-                          manager.requestMoveQueueItem(
+                          widget.manager.requestMoveQueueItem(
                               item.playlistItemId, i + 1);
                           break;
                       }
@@ -468,66 +475,84 @@ class _ActiveGroupSection extends StatelessWidget {
   }
 
   void _showRepeatPicker(BuildContext context, SyncPlayState s, AppLocalizations l10n) async {
-    final result = await showFocusRestoringDialog<SyncPlayRepeatMode>(
-      context: context,
-      useRootNavigator: false,
-      builder: (ctx) => withBackClose(
-        ctx,
-        SimpleDialog(
-          title: Text(l10n.syncPlayRepeat, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-          children: SyncPlayRepeatMode.values.map((v) {
-            final selected = v == s.repeatMode;
-            return TvFocusHighlight(
-              builder: (_, focused) => ListTile(
-                autofocus: v == s.repeatMode,
-                title: Text(
-                  _repeatLabel(v, l10n),
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+    if (_pickerOpen) return;
+    _pickerOpen = true;
+    var picked = false;
+    try {
+      final result = await showFocusRestoringDialog<SyncPlayRepeatMode>(
+        context: context,
+        useRootNavigator: false,
+        builder: (ctx) => withBackClose(
+          ctx,
+          SimpleDialog(
+            title: Text(l10n.syncPlayRepeat, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+            children: SyncPlayRepeatMode.values.map((v) {
+              final selected = v == s.repeatMode;
+              return TvFocusHighlight(
+                builder: (_, focused) => ListTile(
+                  autofocus: v == s.repeatMode,
+                  title: Text(
+                    _repeatLabel(v, l10n),
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                  trailing: selected ? const Icon(Icons.check) : null,
+                  onTap: () {
+                    if (picked) return;
+                    picked = true;
+                    Navigator.pop(ctx, v);
+                  },
                 ),
-                trailing: selected ? const Icon(Icons.check) : null,
-                onTap: () {
-                  Navigator.pop(ctx, v);
-                },
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
-      ),
-    );
-    if (result != null && result != s.repeatMode) {
-      manager.requestSetRepeatMode(result);
+      );
+      if (result != null && result != s.repeatMode) {
+        widget.manager.requestSetRepeatMode(result);
+      }
+    } finally {
+      _pickerOpen = false;
     }
   }
 
   void _showShufflePicker(BuildContext context, SyncPlayState s, AppLocalizations l10n) async {
-    final result = await showFocusRestoringDialog<SyncPlayShuffleMode>(
-      context: context,
-      useRootNavigator: false,
-      builder: (ctx) => withBackClose(
-        ctx,
-        SimpleDialog(
-          title: Text(l10n.shuffle, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-          children: SyncPlayShuffleMode.values.map((v) {
-            final selected = v == s.shuffleMode;
-            return TvFocusHighlight(
-              builder: (_, focused) => ListTile(
-                autofocus: v == s.shuffleMode,
-                title: Text(
-                  _shuffleLabel(v, l10n),
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+    if (_pickerOpen) return;
+    _pickerOpen = true;
+    var picked = false;
+    try {
+      final result = await showFocusRestoringDialog<SyncPlayShuffleMode>(
+        context: context,
+        useRootNavigator: false,
+        builder: (ctx) => withBackClose(
+          ctx,
+          SimpleDialog(
+            title: Text(l10n.shuffle, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+            children: SyncPlayShuffleMode.values.map((v) {
+              final selected = v == s.shuffleMode;
+              return TvFocusHighlight(
+                builder: (_, focused) => ListTile(
+                  autofocus: v == s.shuffleMode,
+                  title: Text(
+                    _shuffleLabel(v, l10n),
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                  trailing: selected ? const Icon(Icons.check) : null,
+                  onTap: () {
+                    if (picked) return;
+                    picked = true;
+                    Navigator.pop(ctx, v);
+                  },
                 ),
-                trailing: selected ? const Icon(Icons.check) : null,
-                onTap: () {
-                  Navigator.pop(ctx, v);
-                },
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
-      ),
-    );
-    if (result != null && result != s.shuffleMode) {
-      manager.requestSetShuffleMode(result);
+      );
+      if (result != null && result != s.shuffleMode) {
+        widget.manager.requestSetShuffleMode(result);
+      }
+    } finally {
+      _pickerOpen = false;
     }
   }
 
