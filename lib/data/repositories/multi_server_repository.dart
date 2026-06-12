@@ -166,6 +166,7 @@ class MultiServerRepository {
                   : name,
               collectionType: data['CollectionType'] as String? ?? '',
               serverId: session.server.id,
+              primaryImageAspectRatio: (data['PrimaryImageAspectRatio'] as num?)?.toDouble(),
               imageTags: data['ImageTags'] != null ? Map<String, dynamic>.from(data['ImageTags'] as Map) : null,
               backdropImageTags: (data['BackdropImageTags'] as List?)?.map((e) => e.toString()).toList(),
             );
@@ -174,8 +175,7 @@ class MultiServerRepository {
       ),
     );
 
-    return results.expand((e) => e).toList()
-      ..sort((a, b) => a.name.compareTo(b.name));
+    return results.expand((e) => e).toList();
   }
 
   Future<HomeRow> getAggregatedResume({int limit = _defaultLimit}) async {
@@ -694,6 +694,7 @@ class MultiServerRepository {
                   'Name': lib.name,
                   'CollectionType': lib.collectionType,
                   'Type': 'CollectionFolder',
+                  if (lib.primaryImageAspectRatio != null) 'PrimaryImageAspectRatio': lib.primaryImageAspectRatio,
                   if (lib.imageTags != null) 'ImageTags': lib.imageTags,
                   if (lib.backdropImageTags != null) 'BackdropImageTags': lib.backdropImageTags,
                 },

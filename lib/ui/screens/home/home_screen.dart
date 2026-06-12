@@ -3795,7 +3795,7 @@ class _ContentRowsState extends State<_ContentRows>
   ) {
     if (imageType == ImageType.poster && isMyMediaRow) {
       final primaryAr = item.rawData['PrimaryImageAspectRatio'] as num?;
-      if (primaryAr == null || primaryAr >= 1.0) {
+      if (primaryAr != null && primaryAr >= 1.0) {
         return null;
       }
     }
