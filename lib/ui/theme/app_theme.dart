@@ -78,6 +78,7 @@ class AppTheme {
       appBarTheme: AppBarTheme(
         backgroundColor: c.background,
         elevation: 0,
+        scrolledUnderElevation: 0,
       ),
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {

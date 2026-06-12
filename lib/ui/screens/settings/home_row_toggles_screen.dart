@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/services/plugin_sync_service.dart';
 import '../home/home_view_model.dart';
@@ -25,6 +26,20 @@ class HomeRowTogglesScreen extends StatefulWidget {
 class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
   final _prefs = GetIt.instance<UserPreferences>();
   late final PluginSyncService _syncService;
+  bool _navigating = false;
+  bool _buttonFocused = false;
+
+  void _pushHomeSectionsScreen(BuildContext context) {
+    if (_navigating) return;
+    _navigating = true;
+    context.pushSettingsScreen(
+      const HomeSectionsScreen(showGeneralOptions: false),
+    ).then((_) {
+      if (mounted) {
+        setState(() => _navigating = false);
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -123,6 +138,12 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     final showGenresRows = _prefs.get(UserPreferences.displayGenresRows);
     final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
 
+    final borderTokens = ThemeRegistry.active.borders;
+    final baseBorder = borderTokens.cardBorder.color;
+    final unfocusedBorderColor = baseBorder.a == 0
+        ? AppColorScheme.onSurface.withValues(alpha: 0.16)
+        : baseBorder.withValues(alpha: 0.55);
+
     return RequestInitialFocus(
       child: withCleanSettingsTypography(
         context,
@@ -135,8 +156,14 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
               child: Container(
                 padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
                 decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLow,
+                  color: colorScheme.surfaceContainerLow.withValues(alpha: 0.82),
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.fromBorderSide(
+                    borderTokens.cardBorder.copyWith(
+                      color: unfocusedBorderColor,
+                      width: 1.0,
+                    ),
+                  ),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -150,20 +177,37 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withValues(alpha: 0.15),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: theme.colorScheme.primary.withValues(alpha: 0.35),
-                          width: 1.5,
+                    Focus(
+                      onFocusChange: (f) => setState(() => _buttonFocused = f),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: _buttonFocused
+                              ? theme.colorScheme.primary.withValues(alpha: 0.3)
+                              : theme.colorScheme.primary.withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: _buttonFocused
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.primary.withValues(alpha: 0.35),
+                            width: 1.5,
+                          ),
+                          boxShadow: _buttonFocused
+                              ? [
+                                  BoxShadow(
+                                    color: theme.colorScheme.primary.withValues(alpha: 0.22),
+                                    blurRadius: 14,
+                                    spreadRadius: 0.5,
+                                  ),
+                                ]
+                              : null,
                         ),
-                      ),
-                      child: IconButton(
-                        icon: Icon(Icons.list, color: theme.colorScheme.primary),
-                        tooltip: l10n.homeSections,
-                        onPressed: () => context.pushSettingsScreen(
-                          const HomeSectionsScreen(showGeneralOptions: false),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.list,
+                            color: theme.colorScheme.primary,
+                          ),
+                          tooltip: l10n.homeSections,
+                          onPressed: () => _pushHomeSectionsScreen(context),
                         ),
                       ),
                     ),

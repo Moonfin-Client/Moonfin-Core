@@ -139,9 +139,9 @@ class _SettingsNavigatorState extends State<_SettingsNavigator> {
 }
 
 extension SettingsPush on BuildContext {
-  void pushSettingsScreen(Widget screen, {FocusNode? returnFocus}) {
+  Future<void> pushSettingsScreen(Widget screen, {FocusNode? returnFocus}) {
     final focusToRestore = returnFocus ?? FocusManager.instance.primaryFocus;
-    Navigator.of(this).push(
+    return Navigator.of(this).push(
       PageRouteBuilder(
         pageBuilder: (_, _, _) => _AutoFocusWrapper(child: screen),
         transitionDuration: const Duration(milliseconds: 160),
