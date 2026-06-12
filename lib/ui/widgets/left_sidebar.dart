@@ -717,8 +717,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
 
     return Column(
       children: [
-        if (_isExpanded)
-          _buildUserSection(),
+        _buildUserSection(),
         Expanded(
           child: LayoutBuilder(
             builder: (context, constraints) {
