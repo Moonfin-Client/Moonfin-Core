@@ -224,6 +224,7 @@ class SwitchPreferenceTile extends StatefulWidget {
 
   final bool inverted;
   final bool enabled;
+  final FocusNode? focusNode;
 
   const SwitchPreferenceTile({
     super.key,
@@ -235,6 +236,7 @@ class SwitchPreferenceTile extends StatefulWidget {
     this.onChanged,
     this.inverted = false,
     this.enabled = true,
+    this.focusNode,
   });
 
   @override
@@ -286,6 +288,7 @@ class _SwitchPreferenceTileState extends State<SwitchPreferenceTile> {
         return ValueListenableBuilder<bool>(
           valueListenable: _binding,
           builder: (context, value, _) => SwitchListTile(
+            focusNode: widget.focusNode,
             secondary: secondary,
             title: Text(widget.title, style: _kSettingsTitleTextStyle),
             subtitle: widget.subtitle != null
@@ -833,11 +836,13 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
 class TvFocusHighlight extends StatefulWidget {
   final Widget Function(BuildContext context, bool focused) builder;
   final bool enabled;
+  final FocusNode? focusNode;
 
   const TvFocusHighlight({
     super.key,
     required this.builder,
     this.enabled = true,
+    this.focusNode,
   });
 
   @override
@@ -845,18 +850,21 @@ class TvFocusHighlight extends StatefulWidget {
 }
 
 class _TvFocusHighlightState extends State<TvFocusHighlight> {
-  late final FocusNode _focusNode;
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ??
+      (_internalFocusNode ??= FocusNode(debugLabel: 'TvFocusHighlightScope'));
   bool _focused = false;
 
   @override
   void initState() {
     super.initState();
-    _focusNode = FocusNode(debugLabel: 'TvFocusHighlightScope');
+    _focused = _effectiveFocusNode.hasFocus;
   }
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    _internalFocusNode?.dispose();
     super.dispose();
   }
 
@@ -870,7 +878,7 @@ class _TvFocusHighlightState extends State<TvFocusHighlight> {
   @override
   Widget build(BuildContext context) {
     return Focus(
-      focusNode: _focusNode,
+      focusNode: _effectiveFocusNode,
       canRequestFocus: false,
       skipTraversal: true,
       descendantsAreFocusable: widget.enabled,

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../preference/user_preferences.dart';
@@ -10,6 +11,7 @@ import '../../../util/platform_detection.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import 'settings_app_bar.dart';
+import '../../widgets/focus/request_initial_focus.dart';
 
 const _allSources = [
   'tomatoes',
@@ -60,6 +62,7 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
   String _lastEnabledRatingsCsv = '';
   late List<_RatingItem> _items;
   final _focusNodes = <FocusNode>[];
+  final _restoreFocusNode = FocusNode(debugLabel: 'ratings_restore');
 
   @override
   void initState() {
@@ -74,6 +77,7 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
     for (final n in _focusNodes) {
       n.dispose();
     }
+    _restoreFocusNode.dispose();
     super.dispose();
   }
 
@@ -140,27 +144,36 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
     final l10n = AppLocalizations.of(context);
     return withCleanSettingsTypography(
       context,
-      Scaffold(
-        appBar: buildSettingsAppBar(
-          context,
-          Text(l10n.ratings),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.restore),
-              tooltip: l10n.resetToDefaults,
-              onPressed: () {
-                setState(() {
-                  _store.set(
-                      UserPreferences.enabledRatings,
-                      UserPreferences.enabledRatings.defaultValue);
-                  _loadFromPrefs();
-                });
-                _save();
-              },
-            ),
-          ],
+      RequestInitialFocus(
+        targetNode: PlatformDetection.isTV
+            ? (_items.isNotEmpty ? _focusNodes[0] : _restoreFocusNode)
+            : null,
+        child: Scaffold(
+          appBar: buildSettingsAppBar(
+            context,
+            Text(l10n.ratings),
+            actions: [
+              IconButton(
+                focusNode: _restoreFocusNode,
+                style: IconButton.styleFrom(
+                  focusColor: AppColorScheme.accent.withValues(alpha: 0.18),
+                ),
+                icon: const Icon(Icons.restore),
+                tooltip: l10n.resetToDefaults,
+                onPressed: () {
+                  setState(() {
+                    _store.set(
+                        UserPreferences.enabledRatings,
+                        UserPreferences.enabledRatings.defaultValue);
+                    _loadFromPrefs();
+                  });
+                  _save();
+                },
+              ),
+            ],
+          ),
+          body: PlatformDetection.isTV ? _buildTvList(l10n) : _buildReorderableList(l10n),
         ),
-        body: PlatformDetection.isTV ? _buildTvList(l10n) : _buildReorderableList(l10n),
       ),
     );
   }
