@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 protocol StringRepresentableEnum {
     var rawValue: String { get }
@@ -52,38 +53,47 @@ enum VideoCapabilityDetector {
         }
     }
 
+    static func displaySupportsHdr() -> Bool {
+        return UIScreen.main.traitCollection.displayGamut == .P3
+    }
+
     static func deviceProfileCapabilities() -> [String: Any] {
         let is4K: Bool
-        let hdr10: Bool
-        let hdr10Plus: Bool
-        let dolbyVision: Bool
+        let hdr10Gen: Bool
+        let hdr10PlusGen: Bool
+        let dolbyVisionGen: Bool
         switch currentGeneration() {
         case .hd:
             is4K = false
-            hdr10 = false
-            hdr10Plus = false
-            dolbyVision = false
+            hdr10Gen = false
+            hdr10PlusGen = false
+            dolbyVisionGen = false
         case .k4Gen1:
             is4K = true
-            hdr10 = true
-            hdr10Plus = false
-            dolbyVision = true
+            hdr10Gen = true
+            hdr10PlusGen = false
+            dolbyVisionGen = true
         case .k4Gen2:
             is4K = true
-            hdr10 = true
-            hdr10Plus = false
-            dolbyVision = true
+            hdr10Gen = true
+            hdr10PlusGen = false
+            dolbyVisionGen = true
         case .k4Gen3:
             is4K = true
-            hdr10 = true
-            hdr10Plus = true
-            dolbyVision = true
+            hdr10Gen = true
+            hdr10PlusGen = true
+            dolbyVisionGen = true
         case .unknown:
             is4K = true
-            hdr10 = true
-            hdr10Plus = false
-            dolbyVision = true
+            hdr10Gen = true
+            hdr10PlusGen = false
+            dolbyVisionGen = true
         }
+
+        let sinkHdrCapable = displaySupportsHdr()
+        let hdr10 = hdr10Gen && sinkHdrCapable
+        let hdr10Plus = hdr10PlusGen && sinkHdrCapable
+        let dolbyVision = dolbyVisionGen && sinkHdrCapable
         let width = is4K ? 3840 : 1920
         let height = is4K ? 2160 : 1080
         return [
