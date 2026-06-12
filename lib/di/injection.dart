@@ -152,6 +152,12 @@ Future<String> _resolveDeviceName() async {
 }
 
 Future<String> _resolveAppVersion() async {
+  if (PlatformDetection.isAppleTV) {
+    final native = PlatformDetection.clientVersion?.trim();
+    if (native != null && native.isNotEmpty && native != 'Unknown') {
+      return native;
+    }
+  }
   try {
     final info = await pkg.PackageInfo.fromPlatform();
     return info.version.trim().isNotEmpty ? info.version.trim() : '0.1.0';

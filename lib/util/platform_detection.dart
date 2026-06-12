@@ -173,6 +173,7 @@ class PlatformDetection {
       _capabilityBool('knownHevcDoviHdr10PlusBug');
 
   static String? get deviceModel => _capabilityString('deviceModel');
+  static String? get clientVersion => _capabilityString('clientVersion');
   static String? get deviceBoard => _capabilityString('deviceBoard');
   static String? get deviceHardware => _capabilityString('deviceHardware');
   static String? get deviceSocModel => _capabilityString('deviceSocModel');

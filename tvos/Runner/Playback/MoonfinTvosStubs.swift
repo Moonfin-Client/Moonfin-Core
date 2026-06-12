@@ -106,6 +106,7 @@ enum VideoCapabilityDetector {
             "maxResolutionAvc": ["width": width, "height": height],
             "maxResolutionHevc": ["width": width, "height": height],
             "deviceModel": deviceModelIdentifier(),
+            "clientVersion": AppConstants.clientVersion,
         ]
     }
 }
