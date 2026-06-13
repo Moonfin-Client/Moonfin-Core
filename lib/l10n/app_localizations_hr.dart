@@ -360,6 +360,15 @@ class AppLocalizationsHr extends AppLocalizations {
   String get extraLarge => 'Iznimno velik';
 
   @override
+  String get scrollDirection => 'Scroll Direction';
+
+  @override
+  String get scrollDirectionVertical => 'Vertical';
+
+  @override
+  String get scrollDirectionHorizontal => 'Horizontal';
+
+  @override
   String libraryGenresTitle(String name) {
     return '$name — Genres';
   }

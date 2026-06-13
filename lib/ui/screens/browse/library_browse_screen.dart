@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -3925,28 +3926,85 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
   Widget _buildBody() {
     final spinnerColor = _vm.isBookLibrary ? _bookAccent : _jellyfinBlue;
-    return switch (_vm.state) {
-      LibraryBrowseState.loading => Center(
-        child: CircularProgressIndicator(color: spinnerColor),
-      ),
-      LibraryBrowseState.error => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              _vm.errorMessage ?? AppLocalizations.of(context).failedToLoadLibrary,
-              style: TextStyle(
-                color: _vm.isBookLibrary ? const Color(0xFFF4E6D5) : Colors.white,
-              ),
+    final showHorizChevrons =
+        _vm.scrollDirection == LibraryScrollDirection.horizontal &&
+        PlatformDetection.useDesktopUi &&
+        !PlatformDetection.isTV;
+    return Column(
+      children: [
+        if (showHorizChevrons)
+          // Chevron row matching home-screen style — sits just below the toolbar,
+          // flush with the right edge at _horizontalPadding inset.
+          Padding(
+            padding: EdgeInsets.fromLTRB(_horizontalPadding, 0, _horizontalPadding, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Focus(
+                  canRequestFocus: false,
+                  skipTraversal: true,
+                  descendantsAreFocusable: false,
+                  child: IconButton(
+                    icon: const Icon(Icons.chevron_left),
+                    onPressed: () {
+                      if (_scrollController.hasClients) {
+                        _scrollController.animateTo(
+                          (_scrollController.offset - 480).clamp(0, double.infinity),
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      }
+                    },
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+                Focus(
+                  canRequestFocus: false,
+                  skipTraversal: true,
+                  descendantsAreFocusable: false,
+                  child: IconButton(
+                    icon: const Icon(Icons.chevron_right),
+                    onPressed: () {
+                      if (_scrollController.hasClients) {
+                        _scrollController.animateTo(
+                          _scrollController.offset + 480,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                      }
+                    },
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            ElevatedButton(onPressed: _vm.load, child: Text(AppLocalizations.of(context).retry)),
-          ],
+          ),
+        Expanded(
+          child: switch (_vm.state) {
+            LibraryBrowseState.loading => Center(
+                child: CircularProgressIndicator(color: spinnerColor),
+              ),
+            LibraryBrowseState.error => Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      _vm.errorMessage ?? AppLocalizations.of(context).failedToLoadLibrary,
+                      style: TextStyle(
+                        color: _vm.isBookLibrary ? const Color(0xFFF4E6D5) : Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(onPressed: _vm.load, child: Text(AppLocalizations.of(context).retry)),
+                  ],
+                ),
+              ),
+            LibraryBrowseState.ready =>
+              _vm.isBookLibrary ? _buildBookGrid() : _buildGrid(),
+          },
         ),
-      ),
-      LibraryBrowseState.ready =>
-        _vm.isBookLibrary ? _buildBookGrid() : _buildGrid(),
-    };
+      ],
+    );
   }
 
   Widget _buildGrid() {
@@ -3956,6 +4014,13 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
       );
     }
 
+    if (_vm.scrollDirection == LibraryScrollDirection.horizontal) {
+      return _buildHorizontalGrid();
+    }
+    return _buildVerticalGrid();
+  }
+
+  Widget _buildVerticalGrid() {
     final cardWidth = _cardWidth();
     final spacing = _vm.isBookLibrary ? 16.0 : 12.0;
     final watchedBehavior = _prefs.get(
@@ -4047,7 +4112,6 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                             (index % crossAxisCount) == crossAxisCount - 1;
                         final isLastItem = index == _vm.items.length - 1;
                         if (isLastColumn || isLastItem) {
-                          // Keep focus in the current grid row at the right edge.
                           return KeyEventResult.handled;
                         }
                       }
@@ -4092,6 +4156,137 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                 ),
               ),
           ],
+        );
+      },
+    );
+  }
+
+  Widget _buildHorizontalGrid() {
+    final spacing = 12.0;
+    final watchedBehavior = _prefs.get(UserPreferences.watchedIndicatorBehavior);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final gridPadding = _horizontalPadding;
+        final ar = _gridBaseAspectRatio();
+        final hasSubtitles = _vm.items.any(
+          (item) => (_cardSubtitle(item)?.isNotEmpty ?? false),
+        );
+        final textHeight = hasSubtitles ? 42.0 : 24.0;
+
+        final targetImageHeight = _cardWidth() / ar;
+        final targetCellHeight = targetImageHeight + textHeight;
+
+        final rowCount =
+            ((constraints.maxHeight - gridPadding * 2 + spacing) /
+                    (targetCellHeight + spacing))
+                .floor()
+                .clamp(1, 10);
+
+        final availableHeight = constraints.maxHeight - gridPadding * 2;
+        final actualCellHeight =
+            (availableHeight - (rowCount - 1) * spacing) / rowCount;
+        final actualImageHeight = actualCellHeight - textHeight;
+        final actualCellWidth = actualImageHeight * ar;
+
+        final childAspectRatio = actualCellHeight / actualCellWidth;
+
+        return Listener(
+          onPointerSignal: (signal) {
+            if (signal is PointerScrollEvent) {
+              final pos = _scrollController.position;
+              final newOffset =
+                  (_scrollController.offset + signal.scrollDelta.dy)
+                      .clamp(pos.minScrollExtent, pos.maxScrollExtent);
+              _scrollController.jumpTo(newOffset);
+            }
+          },
+          child: CustomScrollView(
+            controller: _scrollController,
+            scrollDirection: Axis.horizontal,
+            physics: const ClampingScrollPhysics(),
+            slivers: [
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(
+                  gridPadding, gridPadding, 16, gridPadding,
+                ),
+                sliver: SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: rowCount,
+                    mainAxisSpacing: spacing,
+                    crossAxisSpacing: spacing,
+                    childAspectRatio: childAspectRatio,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final item = _vm.items[index];
+                      final itemAspectRatio = _itemAspectRatio(item);
+                      final focusColor = Color(
+                        _prefs.get(UserPreferences.focusColor).colorValue,
+                      );
+                      final isNeon =
+                          ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+                      return MediaCard(
+                        title: item.name,
+                        subtitle: _cardSubtitle(item),
+                        imageUrl: _imageUrl(item),
+                        width: double.infinity,
+                        aspectRatio: itemAspectRatio,
+                        focusColor: focusColor,
+                        focusNode: getGridItemFocusNode(index),
+                        cardFocusExpansion: _prefs.get(
+                          UserPreferences.cardFocusExpansion,
+                        ),
+                        suppressFocusGlow: isNeon,
+                        isPlayed: item.isPlayed,
+                        isFavorite: item.isFavorite,
+                        unplayedCount: item.unplayedItemCount,
+                        playedPercentage: _displayPlayedPercentage(item),
+                        watchedBehavior: watchedBehavior,
+                        itemType: item.type,
+                        onFocus: () => _onItemFocused(item),
+                        onHoverStart: () => _onItemFocused(item),
+                        onHoverEnd: () => _vm.setFocusedItem(null),
+                        onKeyEvent: (_, event) {
+                          if (!_vm.hasMore && !_vm.loadingMore) {
+                            return KeyEventResult.ignored;
+                          }
+                          if (!event.isActionable ||
+                              !event.logicalKey.isRightKey) {
+                            return KeyEventResult.ignored;
+                          }
+                          final col = index ~/ rowCount;
+                          final isLastCol =
+                              (col + 1) * rowCount >= _vm.items.length;
+                          if (!isLastCol) return KeyEventResult.ignored;
+                          _vm.loadMore();
+                          return KeyEventResult.handled;
+                        },
+                        onLongPress: () => showContextMenu(
+                          context,
+                          item,
+                          onChanged: () => setState(() {}),
+                        ),
+                        onTap: () => _onItemTap(item),
+                      );
+                    },
+                    childCount: _vm.items.length,
+                  ),
+                ),
+              ),
+              if (_vm.loadingMore)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: _vm.isBookLibrary ? _bookAccent : _jellyfinBlue,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         );
       },
     );
@@ -5149,7 +5344,29 @@ class _SettingsDialogState extends State<_SettingsDialog> {
               ),
             ),
             Divider(color: dividerColor),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
+              child: Text(
+                l10n.scrollDirection,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: sectionColor,
+                ),
+              ),
+            ),
+            _scrollDirectionRadioTile(
+              vm,
+              LibraryScrollDirection.vertical,
+              l10n.scrollDirectionVertical,
+            ),
+            _scrollDirectionRadioTile(
+              vm,
+              LibraryScrollDirection.horizontal,
+              l10n.scrollDirectionHorizontal,
+            ),
             if (!vm.isPlaylistBrowse) ...[
+              Divider(color: dividerColor),
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
                 child: Text(
@@ -5177,6 +5394,35 @@ class _SettingsDialogState extends State<_SettingsDialog> {
             ),
             for (final size in PosterSize.values)
               _posterSizeRadioTile(vm, size),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _scrollDirectionRadioTile(
+    LibraryBrowseViewModel vm,
+    LibraryScrollDirection direction,
+    String label,
+  ) {
+    final selected = vm.scrollDirection == direction;
+    final accent = vm.isBookLibrary ? _bookAccent : _jellyfinBlue;
+    final onSurface = AppColorScheme.onSurface;
+    return InkWell(
+      onTap: () => vm.setScrollDirection(direction),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Row(
+          children: [
+            _radioCircle(selected, accent),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 15,
+                color: selected ? onSurface : onSurface.withValues(alpha: 0.72),
+              ),
+            ),
           ],
         ),
       ),

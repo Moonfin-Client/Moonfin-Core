@@ -359,6 +359,15 @@ class AppLocalizationsBn extends AppLocalizations {
   String get extraLarge => 'অতিরিক্ত বড়';
 
   @override
+  String get scrollDirection => 'Scroll Direction';
+
+  @override
+  String get scrollDirectionVertical => 'Vertical';
+
+  @override
+  String get scrollDirectionHorizontal => 'Horizontal';
+
+  @override
   String libraryGenresTitle(String name) {
     return '$name — ধরন';
   }

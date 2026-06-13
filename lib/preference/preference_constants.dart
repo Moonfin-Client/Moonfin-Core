@@ -294,6 +294,11 @@ enum SeriesStatusFilter {
   ended,
 }
 
+enum LibraryScrollDirection {
+  vertical,
+  horizontal,
+}
+
 enum FavoriteTypeFilter {
   all,
   movie,
