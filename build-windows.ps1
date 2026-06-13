@@ -1,6 +1,14 @@
+param(
+  # Target architecture. 'x64' keeps the original behavior byte-identical;
+  # 'arm64' builds the native ARM64 installer on a windows-11-arm runner.
+  [ValidateSet('x64', 'arm64')]
+  [string]$Architecture = 'x64'
+)
+
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+$vcpkgTriplet = "$Architecture-windows"
 
 function Get-IsccPath {
   $candidates = @(
@@ -106,6 +114,10 @@ function Get-VcpkgCommand {
 }
 
 function Initialize-LibarchiveForWindows {
+  param(
+    [string]$Triplet = 'x64-windows'
+  )
+
   if (-not [Environment]::OSVersion.Platform.ToString().Contains('Win')) {
     return
   }
@@ -120,7 +132,7 @@ function Initialize-LibarchiveForWindows {
     if (-not (Test-Path $bootstrapRoot)) {
       $gitCmd = Get-Command git -ErrorAction SilentlyContinue
       if (-not $gitCmd) {
-        throw "git not found. Install Git or install vcpkg manually, then run: vcpkg install libarchive:x64-windows"
+        throw "git not found. Install Git or install vcpkg manually, then run: vcpkg install libarchive:$Triplet"
       }
 
       & $gitCmd.Source clone https://github.com/microsoft/vcpkg $bootstrapRoot
@@ -145,14 +157,14 @@ function Initialize-LibarchiveForWindows {
   }
 
   $vcpkgRoot = Split-Path -Parent $vcpkgExe
-  $libarchiveHeader = Join-Path $vcpkgRoot "installed\x64-windows\include\archive.h"
-  $libarchiveLib = Join-Path $vcpkgRoot "installed\x64-windows\lib\archive.lib"
+  $libarchiveHeader = Join-Path $vcpkgRoot "installed\$Triplet\include\archive.h"
+  $libarchiveLib = Join-Path $vcpkgRoot "installed\$Triplet\lib\archive.lib"
 
   if (-not (Test-Path $libarchiveHeader) -or -not (Test-Path $libarchiveLib)) {
-    Write-Host "Installing libarchive:x64-windows via vcpkg..."
-    & $vcpkgExe install libarchive:x64-windows
+    Write-Host "Installing libarchive:$Triplet via vcpkg..."
+    & $vcpkgExe install "libarchive:$Triplet"
     if ($LASTEXITCODE -ne 0) {
-      throw "vcpkg install libarchive:x64-windows failed with exit code $LASTEXITCODE"
+      throw "vcpkg install libarchive:$Triplet failed with exit code $LASTEXITCODE"
     }
   }
 
@@ -162,14 +174,15 @@ function Initialize-LibarchiveForWindows {
 function Copy-VcpkgRuntimeDlls {
   param(
     [string]$VcpkgRoot,
-    [string]$ReleaseDir
+    [string]$ReleaseDir,
+    [string]$Triplet = 'x64-windows'
   )
 
   if ([string]::IsNullOrWhiteSpace($VcpkgRoot) -or -not (Test-Path $VcpkgRoot)) {
     return
   }
 
-  $binDir = Join-Path $VcpkgRoot "installed\x64-windows\bin"
+  $binDir = Join-Path $VcpkgRoot "installed\$Triplet\bin"
   if (-not (Test-Path $binDir)) {
     return
   }
@@ -224,8 +237,20 @@ function New-InnoScript {
     [string]$OutputDir,
     [string]$IconPath,
     [string]$ReleaseDir,
-    [string]$IssPath
+    [string]$IssPath,
+    [string]$Architecture = 'x64'
   )
+
+  # Inno Setup 6.3+ architecture identifiers. 'arm64' produces a native ARM64
+  # installer; 'x64compatible' keeps the original x64 behavior (also runnable on
+  # ARM64 under x64 emulation).
+  if ($Architecture -eq 'arm64') {
+    $archesAllowed = 'arm64'
+    $archesInstallIn64Bit = 'arm64'
+  } else {
+    $archesAllowed = 'x64compatible'
+    $archesInstallIn64Bit = 'x64compatible'
+  }
 
   $iss = @"
 #define MyAppName "Moonfin"
@@ -250,8 +275,8 @@ WizardStyle=modern
 PrivilegesRequired=admin
 PrivilegesRequiredOverridesAllowed=dialog
 UsePreviousPrivileges=yes
-ArchitecturesAllowed=x64compatible
-ArchitecturesInstallIn64BitMode=x64compatible
+ArchitecturesAllowed=$archesAllowed
+ArchitecturesInstallIn64BitMode=$archesInstallIn64Bit
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -276,15 +301,21 @@ Filename: "{app}\{#MyAppExeName}"; Description: "Launch {#MyAppName}"; Flags: no
 $flutterExe = Get-FlutterCommand
 $isccExe = Get-IsccPath
 $appVersion = Get-AppVersion
-$installerBaseName = "Moonfin_Windows_v$appVersion"
+# x64 keeps the original "Moonfin_Windows_v<version>" name; arm64 follows the same
+# scheme with a "WindowsARM64" platform token.
+if ($Architecture -eq 'arm64') {
+  $installerBaseName = "Moonfin_WindowsARM64_v$appVersion"
+} else {
+  $installerBaseName = "Moonfin_Windows_v$appVersion"
+}
 
 Push-Location $repoRoot
 try {
-  Write-Host "Moonfin version: $appVersion"
+  Write-Host "Moonfin version: $appVersion (target: $Architecture)"
 
   Assert-ToolchainVersions -FlutterExe $flutterExe
 
-  Initialize-LibarchiveForWindows
+  Initialize-LibarchiveForWindows -Triplet $vcpkgTriplet
 
   Write-Host "Cleaning previous Flutter outputs..."
   Invoke-CheckedCommand -Name "flutter clean" -FilePath $flutterExe -Arguments @("clean")
@@ -292,16 +323,16 @@ try {
   Write-Host "Resolving Dart and Flutter packages..."
   Invoke-CheckedCommand -Name "flutter pub get" -FilePath $flutterExe -Arguments @("pub", "get")
 
-  Write-Host "Building Windows x64 release..."
+  Write-Host "Building Windows $Architecture release..."
   Invoke-CheckedCommand -Name "flutter build windows" -FilePath $flutterExe -Arguments @("build", "windows", "--release", "--dart-define=DISTRIBUTION_CHANNEL=windows")
 
-  $releaseDir = Join-Path $repoRoot "build\windows\x64\runner\Release"
+  $releaseDir = Join-Path $repoRoot "build\windows\$Architecture\runner\Release"
   $releaseExe = Join-Path $releaseDir "moonfin.exe"
   if (-not (Test-Path $releaseExe)) {
     throw "Missing release binary: $releaseExe"
   }
 
-  Copy-VcpkgRuntimeDlls -VcpkgRoot $env:VCPKG_ROOT -ReleaseDir $releaseDir
+  Copy-VcpkgRuntimeDlls -VcpkgRoot $env:VCPKG_ROOT -ReleaseDir $releaseDir -Triplet $vcpkgTriplet
 
   $outputDir = Join-Path $repoRoot "build\windows\installer"
   $iconPath = Join-Path $repoRoot "windows\runner\resources\app_icon.ico"
@@ -315,7 +346,7 @@ try {
     throw "Missing app icon: $iconPath"
   }
 
-  New-InnoScript -AppVersion $appVersion -InstallerBaseName $installerBaseName -OutputDir $outputDir -IconPath $iconPath -ReleaseDir $releaseDir -IssPath $issPath
+  New-InnoScript -AppVersion $appVersion -InstallerBaseName $installerBaseName -OutputDir $outputDir -IconPath $iconPath -ReleaseDir $releaseDir -IssPath $issPath -Architecture $Architecture
 
   Write-Host "Building installer EXE..."
   Invoke-CheckedCommand -Name "ISCC" -FilePath $isccExe -Arguments @($issPath)
