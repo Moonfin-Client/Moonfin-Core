@@ -9,8 +9,7 @@ final class DisplayCriteriaManager {
     private init() {}
 
     func applyNative(formatDescription: CMVideoFormatDescription, refreshRate: Float) {
-        guard let window = activeWindow() else { return }
-        let manager = window.avDisplayManager
+        guard let manager = displayManager() else { return }
         guard manager.isDisplayCriteriaMatchingEnabled else { return }
         if #available(tvOS 17.0, *) {
             manager.preferredDisplayCriteria = AVDisplayCriteria(
@@ -23,15 +22,14 @@ final class DisplayCriteriaManager {
     }
 
     func reset() {
-        guard let window = activeWindow() else { return }
-        window.avDisplayManager.preferredDisplayCriteria = nil
+        displayManager()?.preferredDisplayCriteria = nil
     }
 
     func applyForStream(
         codec: String?, width: Int, height: Int, frameRate: Double, rangeType: String?
     ) {
-        guard let window = activeWindow() else { return }
-        let manager = window.avDisplayManager
+        guard let window = activeWindow(), let manager = displayManager(for: window)
+        else { return }
         guard manager.isDisplayCriteriaMatchingEnabled else { return }
         guard #available(tvOS 17.0, *) else { return }
         let dynamicRange = Self.dynamicRange(from: rangeType)
@@ -50,6 +48,18 @@ final class DisplayCriteriaManager {
             .first { $0.activationState == .foregroundActive }?
             .windows
             .first { $0.isKeyWindow }
+    }
+
+    private func displayManager() -> AVDisplayManager? {
+        guard let window = activeWindow() else { return nil }
+        return displayManager(for: window)
+    }
+
+    private func displayManager(for window: UIWindow) -> AVDisplayManager? {
+        guard window.responds(to: NSSelectorFromString("avDisplayManager")) else {
+            return nil
+        }
+        return window.avDisplayManager
     }
 
     private func resolvedRefreshRate(frameRate: Double, screen: UIScreen) -> Float {
