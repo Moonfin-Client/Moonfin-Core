@@ -1642,6 +1642,24 @@ final class AppleTvPlayerViewController: UIViewController {
             rows.append(
                 ("EDR Current", String(format: "%.2f", screen.currentEDRHeadroom)))
         }
+
+        // HDR display-mode switch diagnostics (why the box did or didn't switch).
+        let dc = DisplayCriteriaManager.shared.lastDiagnostics
+        if let applied = dc["dc_applied"] {
+            rows.append(("HDR Switch Applied", applied))
+        }
+        if let match = dc["dc_match_enabled"] {
+            rows.append(("Match Dynamic Range", match))
+        }
+        if let win = dc["dc_window"] {
+            rows.append(("HDR Switch Window", win))
+        }
+        if let range = dc["dc_range"] {
+            rows.append(("HDR Switch Range", range))
+        }
+        if let edrBefore = dc["dc_edr_before"] {
+            rows.append(("EDR Before Switch", edrBefore))
+        }
         return rows
     }
 
@@ -1854,11 +1872,13 @@ final class AppleTvPlayerViewController: UIViewController {
     }
 }
 
+private let kInfoAccentColor = UIColor(red: 0.42, green: 0.49, blue: 0.96, alpha: 1)
+
 private final class InfoPanelViewController: UIViewController, UITableViewDataSource,
     UITableViewDelegate
 {
     private let sections: [(title: String, rows: [(label: String, value: String)])]
-    private let tableView = UITableView(frame: .zero, style: .grouped)
+    private let tableView = UITableView(frame: .zero, style: .insetGrouped)
 
     init(sections: [(title: String, rows: [(label: String, value: String)])]) {
         self.sections = sections
@@ -1871,59 +1891,61 @@ private final class InfoPanelViewController: UIViewController, UITableViewDataSo
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(white: 0, alpha: 0.55)
+        view.backgroundColor = UIColor(white: 0, alpha: 0.4)
 
-        let panel = UIView()
+        // Glass panel.
+        let panel = UIVisualEffectView(effect: UIBlurEffect(style: .systemThickMaterialDark))
         panel.translatesAutoresizingMaskIntoConstraints = false
-        panel.backgroundColor = UIColor(white: 0.1, alpha: 0.97)
-        panel.layer.cornerRadius = 22
+        panel.layer.cornerRadius = 28
         panel.clipsToBounds = true
         view.addSubview(panel)
+        let content = panel.contentView
 
         let title = UILabel()
         title.translatesAutoresizingMaskIntoConstraints = false
         title.text = "Playback Information"
-        title.font = .systemFont(ofSize: 38, weight: .bold)
+        title.font = .systemFont(ofSize: 26, weight: .bold)
         title.textColor = .white
-        panel.addSubview(title)
+        content.addSubview(title)
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.backgroundColor = .clear
+        tableView.separatorStyle = .none
         tableView.dataSource = self
         tableView.delegate = self
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 56
+        tableView.estimatedRowHeight = 40
         tableView.register(InfoCell.self, forCellReuseIdentifier: "cell")
-        panel.addSubview(tableView)
+        content.addSubview(tableView)
 
         let closeButton = UIButton(type: .system)
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         closeButton.setTitle("Close", for: .normal)
-        closeButton.titleLabel?.font = .systemFont(ofSize: 32, weight: .semibold)
+        closeButton.titleLabel?.font = .systemFont(ofSize: 22, weight: .semibold)
         closeButton.addAction(
             UIAction { [weak self] _ in self?.dismiss(animated: true) }, for: .primaryActionTriggered)
-        panel.addSubview(closeButton)
+        content.addSubview(closeButton)
 
         NSLayoutConstraint.activate([
             panel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             panel.topAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60),
+                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 48),
             panel.bottomAnchor.constraint(
-                equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -60),
-            panel.widthAnchor.constraint(equalToConstant: 1180),
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -48),
+            panel.widthAnchor.constraint(equalToConstant: 720),
 
-            title.topAnchor.constraint(equalTo: panel.topAnchor, constant: 40),
-            title.leadingAnchor.constraint(equalTo: panel.leadingAnchor, constant: 56),
+            title.topAnchor.constraint(equalTo: content.topAnchor, constant: 28),
+            title.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 36),
 
-            tableView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 16),
-            tableView.leadingAnchor.constraint(equalTo: panel.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: panel.trailingAnchor),
+            tableView.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 8),
+            tableView.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 12),
+            tableView.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -12),
             tableView.bottomAnchor.constraint(
-                equalTo: closeButton.topAnchor, constant: -8),
+                equalTo: closeButton.topAnchor, constant: -4),
 
-            closeButton.centerXAnchor.constraint(equalTo: panel.centerXAnchor),
+            closeButton.centerXAnchor.constraint(equalTo: content.centerXAnchor),
             closeButton.bottomAnchor.constraint(
-                equalTo: panel.bottomAnchor, constant: -24),
+                equalTo: content.bottomAnchor, constant: -18),
         ])
     }
 
@@ -1939,13 +1961,13 @@ private final class InfoPanelViewController: UIViewController, UITableViewDataSo
         let header = UIView()
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = sections[section].title
-        label.font = .systemFont(ofSize: 30, weight: .bold)
-        label.textColor = .white
+        label.text = sections[section].title.uppercased()
+        label.font = .systemFont(ofSize: 17, weight: .semibold)
+        label.textColor = kInfoAccentColor
         header.addSubview(label)
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: header.leadingAnchor, constant: 8),
-            label.bottomAnchor.constraint(equalTo: header.bottomAnchor, constant: -8),
+            label.leadingAnchor.constraint(equalTo: header.leadingAnchor, constant: 12),
+            label.bottomAnchor.constraint(equalTo: header.bottomAnchor, constant: -6),
         ])
         return header
     }
@@ -1953,7 +1975,7 @@ private final class InfoPanelViewController: UIViewController, UITableViewDataSo
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int)
         -> CGFloat
     {
-        section == 0 ? 56 : 72
+        section == 0 ? 36 : 48
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
@@ -1979,36 +2001,50 @@ private final class InfoCell: UITableViewCell {
     private let nameLabel = UILabel()
     private let valueLabel = UILabel()
 
+    private let highlight = UIView()
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = UIColor(white: 1, alpha: 0.06)
+        backgroundColor = UIColor(white: 1, alpha: 0.05)
+        selectionStyle = .none
+        focusStyle = .custom
+
+        highlight.translatesAutoresizingMaskIntoConstraints = false
+        highlight.backgroundColor = .clear
+        highlight.layer.cornerRadius = 10
+        contentView.addSubview(highlight)
 
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.font = .systemFont(ofSize: 26, weight: .regular)
-        nameLabel.textColor = UIColor(white: 1, alpha: 0.6)
+        nameLabel.font = .systemFont(ofSize: 20, weight: .regular)
+        nameLabel.textColor = UIColor(white: 1, alpha: 0.55)
         nameLabel.numberOfLines = 0
         contentView.addSubview(nameLabel)
 
         valueLabel.translatesAutoresizingMaskIntoConstraints = false
-        valueLabel.font = .systemFont(ofSize: 26, weight: .medium)
+        valueLabel.font = .systemFont(ofSize: 20, weight: .medium)
         valueLabel.textColor = .white
         valueLabel.numberOfLines = 1
         valueLabel.lineBreakMode = .byTruncatingTail
         contentView.addSubview(valueLabel)
 
         NSLayoutConstraint.activate([
+            highlight.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
+            highlight.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
+            highlight.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 2),
+            highlight.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2),
+
             nameLabel.leadingAnchor.constraint(
-                equalTo: contentView.leadingAnchor, constant: 8),
+                equalTo: contentView.leadingAnchor, constant: 16),
             nameLabel.topAnchor.constraint(
-                equalTo: contentView.topAnchor, constant: 12),
+                equalTo: contentView.topAnchor, constant: 9),
             nameLabel.bottomAnchor.constraint(
-                equalTo: contentView.bottomAnchor, constant: -12),
-            nameLabel.widthAnchor.constraint(equalToConstant: 360),
+                equalTo: contentView.bottomAnchor, constant: -9),
+            nameLabel.widthAnchor.constraint(equalToConstant: 240),
 
             valueLabel.leadingAnchor.constraint(
-                equalTo: nameLabel.trailingAnchor, constant: 24),
+                equalTo: nameLabel.trailingAnchor, constant: 20),
             valueLabel.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor, constant: -8),
+                equalTo: contentView.trailingAnchor, constant: -16),
             valueLabel.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
         ])
     }
@@ -2026,13 +2062,8 @@ private final class InfoCell: UITableViewCell {
         in context: UIFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator
     ) {
         coordinator.addCoordinatedAnimations {
-            if self.isFocused {
-                self.backgroundColor = UIColor(red: 0.0, green: 0.5, blue: 1.0, alpha: 0.9)
-                self.nameLabel.textColor = .white
-            } else {
-                self.backgroundColor = UIColor(white: 1, alpha: 0.06)
-                self.nameLabel.textColor = UIColor(white: 1, alpha: 0.6)
-            }
+            self.highlight.backgroundColor =
+                self.isFocused ? kInfoAccentColor.withAlphaComponent(0.30) : .clear
         }
     }
 }

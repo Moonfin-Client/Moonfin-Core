@@ -8,6 +8,8 @@ final class DisplayCriteriaManager {
     static let shared = DisplayCriteriaManager()
     private init() {}
 
+    private(set) var lastDiagnostics: [String: String] = [:]
+
     func applyNative(formatDescription: CMVideoFormatDescription, refreshRate: Float) {
         guard let manager = displayManager() else { return }
         guard manager.isDisplayCriteriaMatchingEnabled else { return }
@@ -26,28 +28,58 @@ final class DisplayCriteriaManager {
     }
 
     func applyForStream(
-        codec: String?, width: Int, height: Int, frameRate: Double, rangeType: String?
+        codec: String?, width: Int, height: Int, frameRate: Double, rangeType: String?,
+        preferredWindow: UIWindow? = nil
     ) {
-        guard let window = activeWindow(), let manager = displayManager(for: window)
-        else { return }
-        guard manager.isDisplayCriteriaMatchingEnabled else { return }
-        guard #available(tvOS 17.0, *) else { return }
+        var diag: [String: String] = [:]
+        defer { lastDiagnostics = diag }
+
+        let window: UIWindow?
+        if let preferredWindow {
+            window = preferredWindow
+            diag["dc_window"] = "player"
+        } else {
+            window = activeWindow()
+            diag["dc_window"] = window == nil ? "none" : "active"
+        }
+        guard let window, let manager = displayManager(for: window) else {
+            diag["dc_applied"] = "no_window"
+            return
+        }
+        diag["dc_edr_before"] = String(format: "%.2f", window.screen.potentialEDRHeadroom)
+        diag["dc_match_enabled"] = manager.isDisplayCriteriaMatchingEnabled ? "true" : "false"
+        guard manager.isDisplayCriteriaMatchingEnabled else {
+            diag["dc_applied"] = "match_disabled"
+            return
+        }
+        guard #available(tvOS 17.0, *) else {
+            diag["dc_applied"] = "tvos_lt_17"
+            return
+        }
         let dynamicRange = Self.dynamicRange(from: rangeType)
         let refreshRate = resolvedRefreshRate(frameRate: frameRate, screen: window.screen)
         guard
             let formatDescription = makeFormatDescription(
                 codec: codec, width: width, height: height, dynamicRange: dynamicRange)
-        else { return }
+        else {
+            diag["dc_applied"] = "no_format"
+            return
+        }
         manager.preferredDisplayCriteria = AVDisplayCriteria(
             refreshRate: refreshRate, formatDescription: formatDescription)
+        diag["dc_applied"] = "yes"
+        diag["dc_range"] = dynamicRange.rawValue
+        diag["dc_refresh"] = String(format: "%.0f", refreshRate)
     }
 
     private func activeWindow() -> UIWindow? {
-        UIApplication.shared.connectedScenes
+        let scene = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
-            .first { $0.activationState == .foregroundActive }?
-            .windows
-            .first { $0.isKeyWindow }
+            .first { $0.activationState == .foregroundActive }
+            ?? UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .first
+        return scene?.windows.first { $0.isKeyWindow } ?? scene?.windows.last
     }
 
     private func displayManager() -> AVDisplayManager? {

@@ -20,6 +20,7 @@ final class AirPlayController {
     private var streamStartPositionSeconds: Double = 0
     private var pendingTitle: String = ""
     private var pendingPositionSeconds: Double = 0
+    private var remoteCommandTargets: [(MPRemoteCommand, Any)] = []
 
     init() {
         NotificationCenter.default.addObserver(
@@ -28,17 +29,13 @@ final class AirPlayController {
             name: AVAudioSession.routeChangeNotification,
             object: nil
         )
-        setupRemoteCommands()
         refreshRouteStatus()
     }
 
     deinit {
         stopNativePlayer()
         NotificationCenter.default.removeObserver(self)
-        let cc = MPRemoteCommandCenter.shared()
-        cc.playCommand.removeTarget(self)
-        cc.pauseCommand.removeTarget(self)
-        cc.changePlaybackPositionCommand.removeTarget(self)
+        teardownRemoteCommands()
     }
 
     // MARK: - Native AirPlay playback (detail-screen cast)
@@ -51,6 +48,9 @@ final class AirPlayController {
     ) {
         pendingTitle = title
         pendingPositionSeconds = positionSeconds
+
+        // Take over the system transport controls only while casting.
+        setupRemoteCommands()
 
         guard let url = URL(string: urlString) else { return }
 
@@ -252,6 +252,7 @@ final class AirPlayController {
 
     func stop() {
         stopNativePlayer()
+        teardownRemoteCommands()
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
         if isActive {
             isActive = false
@@ -290,24 +291,27 @@ final class AirPlayController {
     }
 
     private func setupRemoteCommands() {
+        guard remoteCommandTargets.isEmpty else { return }
         let cc = MPRemoteCommandCenter.shared()
 
         cc.playCommand.isEnabled = true
-        cc.playCommand.addTarget { [weak self] _ in
+        let playToken = cc.playCommand.addTarget { [weak self] _ in
             self?.playbackState = "playing"
             self?.emitEvent(state: "command", command: "play")
             return .success
         }
+        remoteCommandTargets.append((cc.playCommand, playToken))
 
         cc.pauseCommand.isEnabled = true
-        cc.pauseCommand.addTarget { [weak self] _ in
+        let pauseToken = cc.pauseCommand.addTarget { [weak self] _ in
             self?.playbackState = "paused"
             self?.emitEvent(state: "command", command: "pause")
             return .success
         }
+        remoteCommandTargets.append((cc.pauseCommand, pauseToken))
 
         cc.changePlaybackPositionCommand.isEnabled = true
-        cc.changePlaybackPositionCommand.addTarget { [weak self] event in
+        let seekToken = cc.changePlaybackPositionCommand.addTarget { [weak self] event in
             guard let posEvent = event as? MPChangePlaybackPositionCommandEvent else {
                 return .commandFailed
             }
@@ -315,6 +319,14 @@ final class AirPlayController {
             self?.emitEvent(state: "command", command: "seek", positionTicks: ticks)
             return .success
         }
+        remoteCommandTargets.append((cc.changePlaybackPositionCommand, seekToken))
+    }
+
+    private func teardownRemoteCommands() {
+        for (command, token) in remoteCommandTargets {
+            command.removeTarget(token)
+        }
+        remoteCommandTargets.removeAll()
     }
 
     private func emitCurrentPlaybackEvent(force: Bool) {

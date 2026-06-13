@@ -265,12 +265,15 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
             preferNative ? .native : .mpv, fallbackReason: nil)
 
         if !preferNative && !audioOnly {
-            DisplayCriteriaManager.shared.applyForStream(
+            lastStreamCriteria = StreamCriteria(
                 codec: args["videoCodec"] as? String,
                 width: (args["videoWidth"] as? NSNumber)?.intValue ?? 0,
                 height: (args["videoHeight"] as? NSNumber)?.intValue ?? 0,
                 frameRate: (args["videoFrameRate"] as? NSNumber)?.doubleValue ?? 0,
                 rangeType: args["videoRangeType"] as? String)
+            applyDisplayCriteria()
+        } else {
+            lastStreamCriteria = nil
         }
 
         if !audioOnly {
@@ -286,7 +289,26 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
             if autoPlay {
                 player.resume()
             }
+            applyDisplayCriteria()
         }
+    }
+
+    private struct StreamCriteria {
+        let codec: String?
+        let width: Int
+        let height: Int
+        let frameRate: Double
+        let rangeType: String?
+    }
+
+    private var lastStreamCriteria: StreamCriteria?
+
+    private func applyDisplayCriteria() {
+        guard let c = lastStreamCriteria else { return }
+        DisplayCriteriaManager.shared.applyForStream(
+            codec: c.codec, width: c.width, height: c.height,
+            frameRate: c.frameRate, rangeType: c.rangeType,
+            preferredWindow: playerVC?.view.window)
     }
 
     private func startStateTimer() {
