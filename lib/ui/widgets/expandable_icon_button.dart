@@ -10,7 +10,7 @@ import '../../util/focus/dpad_keys.dart';
 import '../../util/platform_detection.dart';
 import 'focus/focus_theme.dart';
 
-const _kExpandDuration = Duration(milliseconds: 150);
+const _kExpandDuration = Duration(milliseconds: 220);
 const _kHoverDelay = Duration(milliseconds: 150);
 const _kSpacing = 10.0;
 
@@ -199,21 +199,37 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
               children: [
                 widget.iconBuilder?.call(iconSize, fgColor) ??
                     Icon(widget.icon, size: iconSize, color: fgColor),
-                if (isExpanded) ...[
-                  const SizedBox(width: _kSpacing),
-                  Flexible(
-                    child: Text(
-                      widget.label,
-                      style: TextStyle(
-                        color: fgColor,
-                        fontSize: isMobile ? 14 : (isTV ? 14 : 16),
-                        fontWeight: FontWeight.w600,
+                TweenAnimationBuilder<double>(
+                  tween: Tween<double>(end: isExpanded ? 1.0 : 0.0),
+                  duration: _kExpandDuration,
+                  curve: Curves.easeOut,
+                  builder: (context, widthFactor, child) {
+                    final opacity = widthFactor.clamp(0.0, 1.0).toDouble();
+                    return ClipRect(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        widthFactor: widthFactor,
+                        child: Opacity(opacity: opacity, child: child),
                       ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: _kSpacing),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 144),
+                      child: Text(
+                        widget.label,
+                        style: TextStyle(
+                          color: fgColor,
+                          fontSize: isMobile ? 14 : (isTV ? 14 : 16),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
                     ),
                   ),
-                ],
+                ),
               ],
             ),
           ),
