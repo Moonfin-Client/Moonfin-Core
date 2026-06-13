@@ -3151,6 +3151,12 @@ class AppLocalizationsEs extends AppLocalizations {
       'Mostrar reloj durante el salvapantallas';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Críticos)';
 
   @override

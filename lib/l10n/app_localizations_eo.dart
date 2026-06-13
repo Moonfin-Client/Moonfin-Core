@@ -3124,6 +3124,12 @@ class AppLocalizationsEo extends AppLocalizations {
   String get displayClockDuringScreensaver => 'Montru horloĝon dum ekranŝparo';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Putraj Tomatoj (kritikistoj)';
 
   @override

@@ -3164,6 +3164,12 @@ class AppLocalizationsEl extends AppLocalizations {
       'Εμφάνιση ρολογιού κατά την προφύλαξη οθόνης';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Κριτικοί)';
 
   @override

@@ -3148,6 +3148,12 @@ class AppLocalizationsMk extends AppLocalizations {
       'Приказ на часовникот за време на заштитниот екран';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Расипани домати (критичари)';
 
   @override

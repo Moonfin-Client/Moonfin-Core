@@ -3135,6 +3135,12 @@ class AppLocalizationsSr extends AppLocalizations {
       'Прикажите сат током чувара екрана';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Роттен Томатоес (критичари)';
 
   @override

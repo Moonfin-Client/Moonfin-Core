@@ -502,6 +502,45 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: StillWatchingBehavior.disabled,
     values: StillWatchingBehavior.values,
   );
+
+  static final screensaverEnabled = Preference(
+    key: 'pref_screensaver_enabled',
+    defaultValue: true,
+  );
+
+  static final screensaverMode = EnumPreference(
+    key: 'pref_screensaver_mode',
+    defaultValue: ScreensaverMode.library,
+    values: ScreensaverMode.values,
+  );
+
+  static final screensaverTimeout = EnumPreference(
+    key: 'pref_screensaver_timeout',
+    defaultValue: ScreensaverTimeout.m5,
+    values: ScreensaverTimeout.values,
+  );
+
+  static final screensaverDimming = Preference(
+    key: 'pref_screensaver_dimming',
+    defaultValue: 0,
+  );
+
+  static final screensaverClockMode = EnumPreference(
+    key: 'pref_screensaver_clock_mode',
+    defaultValue: ScreensaverClockMode.off,
+    values: ScreensaverClockMode.values,
+  );
+
+  static final screensaverMaxAgeRating = Preference(
+    key: 'pref_screensaver_max_age_rating',
+    defaultValue: 'any',
+  );
+
+  static final screensaverRequireRating = Preference(
+    key: 'pref_screensaver_require_rating',
+    defaultValue: false,
+  );
+
   static final useExternalPlayer = Preference(
     key: 'external_player',
     defaultValue: false,

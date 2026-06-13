@@ -3150,6 +3150,12 @@ class AppLocalizationsMl extends AppLocalizations {
       'സ്ക്രീൻസേവർ സമയത്ത് ക്ലോക്ക് പ്രദർശിപ്പിക്കുക';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'റോട്ടൻ തക്കാളി (വിമർശകർ)';
 
   @override

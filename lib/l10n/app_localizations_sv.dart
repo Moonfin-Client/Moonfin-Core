@@ -3135,6 +3135,12 @@ class AppLocalizationsSv extends AppLocalizations {
       'Visa klockan under skärmsläckare';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Kritiker)';
 
   @override

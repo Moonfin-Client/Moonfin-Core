@@ -3125,6 +3125,12 @@ class AppLocalizationsNb extends AppLocalizations {
   String get displayClockDuringScreensaver => 'Vis klokke under skjermsparer';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Råtne tomater (kritikere)';
 
   @override

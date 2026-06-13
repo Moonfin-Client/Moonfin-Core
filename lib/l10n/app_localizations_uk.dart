@@ -3138,6 +3138,12 @@ class AppLocalizationsUk extends AppLocalizations {
       'Відображення годинника під час заставки';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Критики)';
 
   @override

@@ -3132,6 +3132,12 @@ class AppLocalizationsUg extends AppLocalizations {
       'ئېكران ئېكرانىدا سائەتنى كۆرسىتىش';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'چىرىگەن پەمىدۇر (تەنقىدچىلەر)';
 
   @override

@@ -3146,6 +3146,12 @@ class AppLocalizationsBg extends AppLocalizations {
       'Показване на часовник по време на скрийнсейвър';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Критика)';
 
   @override

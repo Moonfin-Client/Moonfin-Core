@@ -3125,6 +3125,12 @@ class AppLocalizationsSi extends AppLocalizations {
       'තිර සුරැකුම අතරතුර ඔරලෝසුව පෙන්වන්න';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'කුණු වූ තක්කාලි (විවේචකයන්)';
 
   @override

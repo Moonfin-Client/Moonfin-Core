@@ -3145,6 +3145,12 @@ class AppLocalizationsRu extends AppLocalizations {
       'Отображать часы во время заставки';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Тухлые помидоры (критики)';
 
   @override

@@ -3140,6 +3140,12 @@ class AppLocalizationsSl extends AppLocalizations {
       'Prikaz ure med ohranjevalnikom zaslona';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Kritiki)';
 
   @override

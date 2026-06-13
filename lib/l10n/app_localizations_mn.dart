@@ -3135,6 +3135,12 @@ class AppLocalizationsMn extends AppLocalizations {
       'Дэлгэц амраах үед цагийг харуулах';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Шүүмжлэгчид)';
 
   @override

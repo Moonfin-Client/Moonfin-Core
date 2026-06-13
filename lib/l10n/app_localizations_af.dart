@@ -3135,6 +3135,12 @@ class AppLocalizationsAf extends AppLocalizations {
       'Vertoon klok tydens skermbewaarder';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Vrot tamaties (kritici)';
 
   @override

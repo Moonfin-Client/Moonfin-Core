@@ -4323,6 +4323,14 @@
   "@displayClockDuringScreensaver": {
     "description": "Description for show clock"
   },
+  "clockModeStatic": "Static",
+  "@clockModeStatic": {
+    "description": "Screensaver clock mode: fixed in a corner"
+  },
+  "clockModeBouncing": "Bouncing",
+  "@clockModeBouncing": {
+    "description": "Screensaver clock mode: bounces around the screen"
+  },
   "rottenTomatoesCritics": "Rotten Tomatoes (Critics)",
   "@rottenTomatoesCritics": {
     "description": "Rating source: Rotten Tomatoes Critics"

@@ -3151,6 +3151,12 @@ class AppLocalizationsSq extends AppLocalizations {
       'Shfaq orën gjatë ruajtjes së ekranit';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Domate të kalbura (Kritikë)';
 
   @override

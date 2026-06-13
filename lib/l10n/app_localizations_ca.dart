@@ -3166,6 +3166,12 @@ class AppLocalizationsCa extends AppLocalizations {
       'Mostra el rellotge durant l\'estalvi de pantalla';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (crítics)';
 
   @override

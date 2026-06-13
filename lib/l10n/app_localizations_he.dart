@@ -3093,6 +3093,12 @@ class AppLocalizationsHe extends AppLocalizations {
   String get displayClockDuringScreensaver => 'הצג שעון במהלך שומר מסך';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'עגבניות רקובות (מבקרים)';
 
   @override

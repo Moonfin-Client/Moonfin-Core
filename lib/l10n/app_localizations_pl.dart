@@ -3141,6 +3141,12 @@ class AppLocalizationsPl extends AppLocalizations {
       'Wyświetl zegar podczas wygaszacza ekranu';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Zgniłe pomidory (krytycy)';
 
   @override

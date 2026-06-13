@@ -3136,6 +3136,12 @@ class AppLocalizationsCy extends AppLocalizations {
       'Arddangos cloc yn ystod arbedwr sgrin';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Tomatos pwdr (beirniaid)';
 
   @override

@@ -3130,6 +3130,12 @@ class AppLocalizationsLt extends AppLocalizations {
       'Rodyti laikrodį ekrano užsklandos metu';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Supuvę pomidorai (kritikai)';
 
   @override

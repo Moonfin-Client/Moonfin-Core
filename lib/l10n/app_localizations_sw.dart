@@ -3149,6 +3149,12 @@ class AppLocalizationsSw extends AppLocalizations {
   String get displayClockDuringScreensaver => 'Onyesha saa wakati wa skrini';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Nyanya zilizooza (Wakosoaji)';
 
   @override

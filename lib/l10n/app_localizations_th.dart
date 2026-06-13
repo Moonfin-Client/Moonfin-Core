@@ -3106,6 +3106,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get displayClockDuringScreensaver => 'แสดงนาฬิการะหว่างสกรีนเซฟเวอร์';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'มะเขือเทศเน่า (นักวิจารณ์)';
 
   @override

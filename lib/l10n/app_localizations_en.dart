@@ -3116,6 +3116,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Display clock during screensaver';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Critics)';
 
   @override

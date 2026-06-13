@@ -5729,6 +5729,18 @@ abstract class AppLocalizations {
   /// **'Display clock during screensaver'**
   String get displayClockDuringScreensaver;
 
+  /// Screensaver clock mode: fixed in a corner
+  ///
+  /// In en, this message translates to:
+  /// **'Static'**
+  String get clockModeStatic;
+
+  /// Screensaver clock mode: bounces around the screen
+  ///
+  /// In en, this message translates to:
+  /// **'Bouncing'**
+  String get clockModeBouncing;
+
   /// Rating source: Rotten Tomatoes Critics
   ///
   /// In en, this message translates to:

@@ -3043,6 +3043,12 @@ class AppLocalizationsYue extends AppLocalizations {
   String get displayClockDuringScreensaver => '螢幕保護期間顯示時鐘';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => '爛番茄（評論家）';
 
   @override

@@ -379,3 +379,20 @@ enum SeerrRowType {
         orElse: () => SeerrRowType.trending,
       );
 }
+
+enum ScreensaverMode { library, logo }
+
+enum ScreensaverClockMode { off, staticCorner, bouncing }
+
+enum ScreensaverTimeout {
+  m1(1),
+  m2(2),
+  m3(3),
+  m5(5),
+  m10(10),
+  m15(15),
+  m30(30);
+
+  const ScreensaverTimeout(this.minutes);
+  final int minutes;
+}

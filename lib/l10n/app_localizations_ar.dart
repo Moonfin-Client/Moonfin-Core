@@ -3114,6 +3114,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get displayClockDuringScreensaver => 'عرض الساعة أثناء شاشة التوقف';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'الطماطم الفاسدة (النقاد)';
 
   @override

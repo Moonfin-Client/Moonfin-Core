@@ -3142,6 +3142,12 @@ class AppLocalizationsKk extends AppLocalizations {
       'Скринсейвер кезінде сағатты көрсету';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (сыншылар)';
 
   @override

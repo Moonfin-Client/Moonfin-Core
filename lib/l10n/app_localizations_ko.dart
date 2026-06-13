@@ -3058,6 +3058,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get displayClockDuringScreensaver => '화면 보호기 동안 시계 표시';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => '로튼 토마토(비평가)';
 
   @override

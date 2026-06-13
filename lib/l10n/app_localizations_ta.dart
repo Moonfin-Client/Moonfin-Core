@@ -3150,6 +3150,12 @@ class AppLocalizationsTa extends AppLocalizations {
       'ஸ்கிரீன்சேவரின் போது காட்சி கடிகாரம்';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'அழுகிய தக்காளி (விமர்சகர்கள்)';
 
   @override

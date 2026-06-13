@@ -3122,6 +3122,12 @@ class AppLocalizationsHi extends AppLocalizations {
       'स्क्रीनसेवर के दौरान घड़ी प्रदर्शित करें';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'सड़े हुए टमाटर (आलोचक)';
 
   @override

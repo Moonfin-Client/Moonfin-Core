@@ -3142,6 +3142,12 @@ class AppLocalizationsTe extends AppLocalizations {
       'స్క్రీన్‌సేవర్ సమయంలో గడియారాన్ని ప్రదర్శించండి';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'రాటెన్ టొమాటోస్ (విమర్శకులు)';
 
   @override

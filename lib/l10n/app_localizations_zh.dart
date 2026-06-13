@@ -3038,6 +3038,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get displayClockDuringScreensaver => '屏幕保护期间显示时钟';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => '烂番茄（评论家）';
 
   @override

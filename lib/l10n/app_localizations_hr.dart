@@ -3132,6 +3132,12 @@ class AppLocalizationsHr extends AppLocalizations {
       'Prikaz sata tijekom čuvara zaslona';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Kritičari)';
 
   @override

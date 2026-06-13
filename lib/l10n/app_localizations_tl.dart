@@ -3159,6 +3159,12 @@ class AppLocalizationsTl extends AppLocalizations {
       'Ipakita ang orasan sa panahon ng screensaver';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Mga Bulok na Kamatis (Mga Kritiko)';
 
   @override

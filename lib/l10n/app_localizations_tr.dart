@@ -3129,6 +3129,12 @@ class AppLocalizationsTr extends AppLocalizations {
       'Ekran koruyucu sırasında saati göster';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Çürük Domates (Eleştirmenler)';
 
   @override

@@ -3112,6 +3112,12 @@ class AppLocalizationsFa extends AppLocalizations {
       'نمایش ساعت در حین محافظ صفحه نمایش';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'گوجه فرنگی گندیده (منتقدان)';
 
   @override

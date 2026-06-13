@@ -50,6 +50,7 @@ import 'home_sections_screen.dart';
 import 'home_row_toggles_screen.dart';
 import 'library_settings_screen.dart';
 import 'media_bar_settings_screen.dart';
+import 'screensaver_settings_screen.dart';
 import 'local_previews_settings_screen.dart';
 import 'parental_settings_screen.dart';
 import 'pin_code_settings_screen.dart';
@@ -599,6 +600,15 @@ class _CustomizationCategoryScreen extends StatelessWidget {
               onTap: () =>
                   context.pushSettingsScreen(const _LibrariesCategoryScreen()),
             ),
+            if (PlatformDetection.isTV)
+              _TvSettingsListTile(
+                leading: const Icon(Icons.wallpaper),
+                title: Text(l10n.screensaver),
+                subtitle: Text(l10n.enableBuiltInScreensaver),
+                onTap: () => context.pushSettingsScreen(
+                  const ScreensaverSettingsScreen(),
+                ),
+              ),
           ],
         ),
       ),

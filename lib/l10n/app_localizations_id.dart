@@ -3133,6 +3133,12 @@ class AppLocalizationsId extends AppLocalizations {
       'Tampilkan jam selama screensaver';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Tomat Busuk (Kritikus)';
 
   @override

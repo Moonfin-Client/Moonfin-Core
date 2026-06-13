@@ -3128,6 +3128,12 @@ class AppLocalizationsDa extends AppLocalizations {
   String get displayClockDuringScreensaver => 'Vis ur under pauseskærm';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Rådne tomater (kritikere)';
 
   @override

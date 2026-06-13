@@ -3135,6 +3135,12 @@ class AppLocalizationsVi extends AppLocalizations {
       'Hiển thị đồng hồ trong khi bảo vệ màn hình';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Nhà phê bình)';
 
   @override

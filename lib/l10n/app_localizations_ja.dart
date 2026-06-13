@@ -3065,6 +3065,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get displayClockDuringScreensaver => 'スクリーンセーバー中に時計を表示する';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'ロッテン・トマト (批評家)';
 
   @override

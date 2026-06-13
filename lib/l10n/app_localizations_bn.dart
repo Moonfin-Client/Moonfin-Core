@@ -3124,6 +3124,12 @@ class AppLocalizationsBn extends AppLocalizations {
       'স্ক্রিনসেভার চলাকালীন ঘড়ি প্রদর্শন করুন';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'পচা টমেটো (সমালোচক)';
 
   @override

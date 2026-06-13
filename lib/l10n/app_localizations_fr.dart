@@ -3163,6 +3163,12 @@ class AppLocalizationsFr extends AppLocalizations {
       'Afficher l’horloge pendant l’économiseur d’écran';
 
   @override
+  String get clockModeStatic => 'Static';
+
+  @override
+  String get clockModeBouncing => 'Bouncing';
+
+  @override
   String get rottenTomatoesCritics => 'Rotten Tomatoes (Critiques)';
 
   @override
