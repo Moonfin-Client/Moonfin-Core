@@ -8,7 +8,7 @@ import '../../../util/focus/dpad_keys.dart';
 import '../overlay_sheet.dart';
 import 'preference_binding.dart';
 
-Widget _withBackClose(BuildContext dialogContext, Widget child) {
+Widget withBackClose(BuildContext dialogContext, Widget child) {
   final closeDialog = createDialogBackCloseHandler(dialogContext);
 
   return Shortcuts(
@@ -394,7 +394,7 @@ class _EnumPreferenceTileState<T extends Enum>
     final result = await showFocusRestoringDialog<T>(
       context: context,
       useRootNavigator: false,
-      builder: (ctx) => _withBackClose(
+      builder: (ctx) => withBackClose(
         ctx,
         SimpleDialog(
           title: Text(widget.title, style: _kSettingsTitleTextStyle),
@@ -681,7 +681,7 @@ class _StringPickerPreferenceTileState
     final result = await showFocusRestoringDialog<String>(
       context: context,
       useRootNavigator: false,
-      builder: (ctx) => _withBackClose(
+      builder: (ctx) => withBackClose(
         ctx,
         SimpleDialog(
           title: Text(widget.title, style: _kSettingsTitleTextStyle),
@@ -797,7 +797,7 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
     final result = await showFocusRestoringDialog<int>(
       context: context,
       useRootNavigator: false,
-      builder: (ctx) => _withBackClose(
+      builder: (ctx) => withBackClose(
         ctx,
         SimpleDialog(
           title: Text(widget.title, style: _kSettingsTitleTextStyle),

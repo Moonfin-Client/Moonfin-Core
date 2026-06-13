@@ -3027,6 +3027,7 @@ class _SyncPlaySettingsScreenState extends State<_SyncPlaySettingsScreen> {
           children: [
             const _SectionHeader('Active Sessions'),
             _TvSettingsListTile(
+              autofocus: true,
               leading: const Icon(Icons.group_work),
               title: Text(l10n.settingsOpenGroups),
               subtitle: Text(l10n.settingsOpenGroupsSubtitle),
@@ -3342,35 +3343,45 @@ class _DoubleSliderTileState extends State<_DoubleSliderTile> {
             subtitleTextStyle: const TextStyle(fontSize: 12),
             child: ValueListenableBuilder<double>(
               valueListenable: widget.binding,
-              builder: (_, value, _) => ListTile(
-                focusColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                leading: Icon(widget.icon),
-                title: Text(widget.title),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizations.of(
-                        context,
-                      ).settingsMillisecondsValue(value.round()),
-                      style: TextStyle(
-                        color: _outerFocused
-                            ? AppColors.black.withValues(alpha: 0.54)
-                            : AppColorScheme.onSurface.withValues(alpha: 0.7),
+              builder: (context, value, _) {
+                final iconColor = _outerFocused
+                    ? AppColors.black.withValues(alpha: 0.54)
+                    : AppColorScheme.onSurface.withValues(alpha: 0.78);
+                return ListTile(
+                  focusColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  leading: buildSettingsLeadingIconShell(
+                    context,
+                    icon: Icon(widget.icon),
+                    focused: _outerFocused,
+                    iconColor: iconColor,
+                  ),
+                  title: Text(widget.title),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppLocalizations.of(
+                          context,
+                        ).settingsMillisecondsValue(value.round()),
+                        style: TextStyle(
+                          color: _outerFocused
+                              ? AppColors.black.withValues(alpha: 0.54)
+                              : AppColorScheme.onSurface.withValues(alpha: 0.7),
+                        ),
                       ),
-                    ),
-                    Slider(
-                      focusNode: _sliderInternalNode,
-                      value: value.clamp(widget.min, widget.max),
-                      min: widget.min,
-                      max: widget.max,
-                      divisions: 40,
-                      onChanged: (v) => widget.binding.value = v,
-                    ),
-                  ],
-                ),
-              ),
+                      Slider(
+                        focusNode: _sliderInternalNode,
+                        value: value.clamp(widget.min, widget.max),
+                        min: widget.min,
+                        max: widget.max,
+                        divisions: 40,
+                        onChanged: (v) => widget.binding.value = v,
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ),
