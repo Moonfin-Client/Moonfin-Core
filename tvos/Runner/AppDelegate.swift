@@ -7,6 +7,7 @@ class AppDelegate: FlutterAppDelegate {
     private var topShelfChannel: TopShelfChannel?
     private var previewChannel: AppleTvPreviewChannel?
     private var systemChannel: AppleTvSystemChannel?
+    private var audioChannel: AppleTvAudioChannel?
 
     override func application(
         _ application: UIApplication,
@@ -29,6 +30,8 @@ class AppDelegate: FlutterAppDelegate {
             messenger: flutterViewController.binaryMessenger,
             textures: flutterViewController)
         systemChannel = AppleTvSystemChannel(
+            messenger: flutterViewController.binaryMessenger)
+        audioChannel = AppleTvAudioChannel(
             messenger: flutterViewController.binaryMessenger)
 
         if let launchUrl = launchOptions?[.url] as? URL {

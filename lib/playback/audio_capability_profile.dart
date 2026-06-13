@@ -113,6 +113,15 @@ class AudioCapabilityProfile {
 
     final activeRouteType = _parseRouteType(values['activeRouteType']);
 
+    // ARC (plain Audio Return Channel) only carries compressed audio: AC3, DTS
+    // core, and DD+/EAC3 (incl. EAC3-JOC Atmos). The lossless/HD formats
+    // (TrueHD, TrueHD-Atmos, DTS-HD MA, DTS:X) require eARC or a direct
+    // HDMI-out-to-AVR link, so a probe over-reporting them on ARC must be
+    // gated here, otherwise the capability-authoritative resolvers would
+    // advertise passthrough ARC cannot carry. Gate on `arc` specifically:
+    // plain HDMI can carry HD audio.
+    final isArc = activeRouteType == AudioRouteType.arc;
+
     return AudioCapabilityProfile(
       canDecodeAc3: _readBool(values, 'canDecodeAc3', defaultValue: true),
       canDecodeEac3: _readBool(
@@ -148,26 +157,18 @@ class AudioCapabilityProfile {
         'canPassthroughDts',
         defaultValue: legacyDts,
       ),
-      canPassthroughDtsHd: _readBool(
-        values,
-        'canPassthroughDtsHd',
-        defaultValue: legacyDts,
-      ),
-      canPassthroughDtsX: _readBool(
-        values,
-        'canPassthroughDtsX',
-        defaultValue: false,
-      ),
-      canPassthroughTrueHd: _readBool(
-        values,
-        'canPassthroughTrueHd',
-        defaultValue: legacyTrueHd,
-      ),
-      canPassthroughTrueHdJoc: _readBool(
-        values,
-        'canPassthroughTrueHdJoc',
-        defaultValue: false,
-      ),
+      canPassthroughDtsHd:
+          !isArc &&
+          _readBool(values, 'canPassthroughDtsHd', defaultValue: legacyDts),
+      canPassthroughDtsX:
+          !isArc &&
+          _readBool(values, 'canPassthroughDtsX', defaultValue: false),
+      canPassthroughTrueHd:
+          !isArc &&
+          _readBool(values, 'canPassthroughTrueHd', defaultValue: legacyTrueHd),
+      canPassthroughTrueHdJoc:
+          !isArc &&
+          _readBool(values, 'canPassthroughTrueHdJoc', defaultValue: false),
       maxPcmChannels: _readInt(values, 'maxPcmChannels', defaultValue: 8),
       activeRouteType: activeRouteType,
       routeSupportsHdAudio: _readBool(

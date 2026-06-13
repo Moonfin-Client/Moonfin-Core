@@ -215,11 +215,23 @@ object AudioCapabilities {
             }
         }
 
-        if (!canPassthroughTrueHdJoc) {
-            canPassthroughTrueHdJoc = inferTrueHdJocFromTrueHd(
-                canPassthroughTrueHd = canPassthroughTrueHd,
-                routeType = routeType,
-            )
+        // TrueHD-Atmos (JOC) capability must come from a real probe only. We no
+        // longer infer it from plain TrueHD support + route: that over-reported
+        // Atmos on receivers that decode TrueHD but not Atmos, and under the
+        // capability-authoritative resolvers that would auto-advertise Atmos the
+        // AVR can't handle. Users who know their receiver supports it can still
+        // turn the TrueHD-Atmos passthrough toggle on explicitly (override wins).
+
+        // ARC (plain Audio Return Channel) only carries compressed audio. Force
+        // the lossless/HD caps off so we never advertise TrueHD / TrueHD-Atmos /
+        // DTS-HD / DTS:X over a plain ARC link. eARC and direct HDMI keep them.
+        // (Mirrored as a chokepoint in AudioCapabilityProfile.fromMap on the
+        // Dart side.)
+        if (routeType == ROUTE_ARC) {
+            canPassthroughTrueHd = false
+            canPassthroughTrueHdJoc = false
+            canPassthroughDtsHd = false
+            canPassthroughDtsX = false
         }
 
         val supportsAc3 = canPassthroughAc3 || canPassthroughEac3
@@ -389,14 +401,6 @@ object AudioCapabilities {
 
     private fun supportsEncoding(encodings: Set<Int>, encoding: Int?): Boolean {
         return encoding != null && encodings.contains(encoding)
-    }
-
-    private fun inferTrueHdJocFromTrueHd(canPassthroughTrueHd: Boolean, routeType: String): Boolean {
-        if (!canPassthroughTrueHd) {
-            return false
-        }
-
-        return routeType == ROUTE_EARC || routeType == ROUTE_HDMI
     }
 
     private fun resolveRouteType(devices: List<AudioDeviceInfo>): String {

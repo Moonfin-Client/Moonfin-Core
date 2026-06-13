@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
 
+import '../playback/audio_capability_profile.dart';
 import '../util/platform_detection.dart';
 import 'home_section_config.dart';
 import 'preference_constants.dart';
@@ -155,6 +156,20 @@ class UserPreferences extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Clears any stored value for [pref] so subsequent reads fall back to the
+  /// default / capability-derived value. Used to return a tri-state passthrough
+  /// toggle to its "Auto (follow detection)" state.
+  Future<void> removePreference<T>(Preference<T> pref) async {
+    if (_isScopedPreference(pref)) {
+      final scoped = _scopedPreference(pref);
+      if (scoped != null) {
+        await _store.delete(scoped);
+      }
+    }
+    await _store.delete(pref);
+    notifyListeners();
+  }
+
   Future<void> flushPendingWrites() => _store.flushPendingWrites();
 
   bool containsPreferenceKey(String key) => _store.containsKey(key);
@@ -189,24 +204,194 @@ class UserPreferences extends ChangeNotifier {
     return get(posterSize);
   }
 
-  bool resolveAc3PassthroughEnabled() => get(ac3PassthroughEnabled);
+  /// The hardware audio capabilities last detected by the platform probe, or an
+  /// optimistic (decode-everything / passthrough-nothing) profile when none has
+  /// been detected. Mirrors how the playback backends build their profile.
+  AudioCapabilityProfile get detectedAudioCapabilities =>
+      PlatformDetection.hasAudioCapabilities
+      ? AudioCapabilityProfile.fromMap(
+          PlatformDetection.audioCapabilitiesSnapshot,
+        )
+      : const AudioCapabilityProfile.optimistic();
 
-  bool resolveEac3PassthroughEnabled() => get(eac3PassthroughEnabled);
+  // Tri-state passthrough resolution: an explicitly-set toggle wins (On or
+  // Off); when unset, the resolved value follows the detected hardware
+  // capability so passthrough "just works" out of the box without the user
+  // toggling anything. Callers may pass a profile they already built; when
+  // omitted, the live detected profile is used. The DeviceProfileBuilder gate
+  // already ANDs the codec hierarchy (e.g. DTS:X requires DTS core + DTS-HD)
+  // across the resolved values, so each resolver only needs to report its own
+  // capability.
+  bool _resolvePassthrough(
+    Preference<bool> pref,
+    bool Function(AudioCapabilityProfile) capabilityOf,
+    AudioCapabilityProfile? profile,
+  ) => containsPreference(pref)
+      ? get(pref)
+      : capabilityOf(profile ?? detectedAudioCapabilities);
 
-  bool resolveEac3JocPassthroughEnabled() {
-    return get(eac3JocPassthroughEnabled);
+  bool resolveAc3PassthroughEnabled([AudioCapabilityProfile? profile]) =>
+      _resolvePassthrough(
+        ac3PassthroughEnabled,
+        (p) => p.canPassthroughAc3,
+        profile,
+      );
+
+  bool resolveEac3PassthroughEnabled([AudioCapabilityProfile? profile]) =>
+      _resolvePassthrough(
+        eac3PassthroughEnabled,
+        (p) => p.canPassthroughEac3,
+        profile,
+      );
+
+  bool resolveEac3JocPassthroughEnabled([AudioCapabilityProfile? profile]) =>
+      _resolvePassthrough(
+        eac3JocPassthroughEnabled,
+        (p) => p.canPassthroughEac3Joc,
+        profile,
+      );
+
+  bool resolveDtsCorePassthroughEnabled([AudioCapabilityProfile? profile]) =>
+      _resolvePassthrough(
+        dtsCorePassthroughEnabled,
+        (p) => p.canPassthroughDts,
+        profile,
+      );
+
+  bool resolveDtsHdPassthroughEnabled([AudioCapabilityProfile? profile]) =>
+      _resolvePassthrough(
+        dtsHdPassthroughEnabled,
+        (p) => p.canPassthroughDtsHd,
+        profile,
+      );
+
+  bool resolveDtsXPassthroughEnabled([AudioCapabilityProfile? profile]) =>
+      _resolvePassthrough(
+        dtsXPassthroughEnabled,
+        (p) => p.canPassthroughDtsX,
+        profile,
+      );
+
+  bool resolveTrueHdPassthroughEnabled([AudioCapabilityProfile? profile]) =>
+      _resolvePassthrough(
+        trueHdPassthroughEnabled,
+        (p) => p.canPassthroughTrueHd,
+        profile,
+      );
+
+  bool resolveTrueHdAtmosPassthroughEnabled([AudioCapabilityProfile? profile]) =>
+      _resolvePassthrough(
+        trueHdAtmosPassthroughEnabled,
+        (p) => p.canPassthroughTrueHdJoc,
+        profile,
+      );
+
+  /// The eight per-codec passthrough toggle preferences.
+  static List<Preference<bool>> get passthroughTogglePreferences =>
+      <Preference<bool>>[
+        ac3PassthroughEnabled,
+        eac3PassthroughEnabled,
+        eac3JocPassthroughEnabled,
+        dtsCorePassthroughEnabled,
+        dtsHdPassthroughEnabled,
+        dtsXPassthroughEnabled,
+        trueHdPassthroughEnabled,
+        trueHdAtmosPassthroughEnabled,
+      ];
+
+  /// Derives the high-level preset from current state so the UI stays honest:
+  /// any explicit per-codec override (or an explicit Advanced choice) surfaces
+  /// as [AudioPassthroughPreset.advanced]; otherwise it maps from the output
+  /// mode.
+  AudioPassthroughPreset resolveAudioPassthroughPreset() {
+    if (passthroughTogglePreferences.any(containsPreference)) {
+      return AudioPassthroughPreset.advanced;
+    }
+    if (get(audioPassthroughPreset) == AudioPassthroughPreset.advanced) {
+      return AudioPassthroughPreset.advanced;
+    }
+    return switch (get(audioOutputMode)) {
+      AudioOutputMode.forceStereo => AudioPassthroughPreset.stereo,
+      AudioOutputMode.avrPassthrough => AudioPassthroughPreset.surroundReceiver,
+      AudioOutputMode.auto => AudioPassthroughPreset.auto,
+    };
   }
 
-  bool resolveDtsCorePassthroughEnabled() => get(dtsCorePassthroughEnabled);
+  /// Applies a high-level preset by bulk-writing the output mode and clearing
+  /// per-codec overrides (so detection drives passthrough). [advanced] leaves
+  /// the output mode and toggles untouched for manual control.
+  Future<void> applyAudioPassthroughPreset(
+    AudioPassthroughPreset preset,
+  ) async {
+    await set(audioPassthroughPreset, preset);
+    switch (preset) {
+      case AudioPassthroughPreset.auto:
+        await set(audioOutputMode, AudioOutputMode.auto);
+        await clearPassthroughOverrides();
+      case AudioPassthroughPreset.surroundReceiver:
+        await set(audioOutputMode, AudioOutputMode.avrPassthrough);
+        await clearPassthroughOverrides();
+      case AudioPassthroughPreset.stereo:
+        await set(audioOutputMode, AudioOutputMode.forceStereo);
+        await clearPassthroughOverrides();
+      case AudioPassthroughPreset.advanced:
+        // Snapshot the current effective values into explicit prefs so the
+        // per-codec Advanced switches show the true state (a codec auto-enabled
+        // by detection would otherwise read as a bare "off").
+        await materializePassthroughOverrides();
+    }
+  }
 
-  bool resolveDtsHdPassthroughEnabled() => get(dtsHdPassthroughEnabled);
+  /// Clears every per-codec passthrough override so each resolves back to
+  /// "Auto" (follow the detected capability).
+  Future<void> clearPassthroughOverrides() async {
+    for (final pref in passthroughTogglePreferences) {
+      await removePreference(pref);
+    }
+  }
 
-  bool resolveDtsXPassthroughEnabled() => get(dtsXPassthroughEnabled);
+  /// Writes the current resolved (effective) passthrough values into explicit
+  /// prefs for any toggle still on "Auto", so the per-codec Advanced switches
+  /// reflect what detection is actually doing.
+  Future<void> materializePassthroughOverrides() async {
+    final profile = detectedAudioCapabilities;
+    Future<void> materialize(Preference<bool> pref, bool value) async {
+      if (!containsPreference(pref)) await set(pref, value);
+    }
 
-  bool resolveTrueHdPassthroughEnabled() => get(trueHdPassthroughEnabled);
-
-  bool resolveTrueHdAtmosPassthroughEnabled() =>
-      get(trueHdAtmosPassthroughEnabled);
+    await materialize(
+      ac3PassthroughEnabled,
+      resolveAc3PassthroughEnabled(profile),
+    );
+    await materialize(
+      eac3PassthroughEnabled,
+      resolveEac3PassthroughEnabled(profile),
+    );
+    await materialize(
+      eac3JocPassthroughEnabled,
+      resolveEac3JocPassthroughEnabled(profile),
+    );
+    await materialize(
+      dtsCorePassthroughEnabled,
+      resolveDtsCorePassthroughEnabled(profile),
+    );
+    await materialize(
+      dtsHdPassthroughEnabled,
+      resolveDtsHdPassthroughEnabled(profile),
+    );
+    await materialize(
+      dtsXPassthroughEnabled,
+      resolveDtsXPassthroughEnabled(profile),
+    );
+    await materialize(
+      trueHdPassthroughEnabled,
+      resolveTrueHdPassthroughEnabled(profile),
+    );
+    await materialize(
+      trueHdAtmosPassthroughEnabled,
+      resolveTrueHdAtmosPassthroughEnabled(profile),
+    );
+  }
 
   void notifyPreferenceChanged() {
     notifyListeners();
@@ -636,6 +821,21 @@ class UserPreferences extends ChangeNotifier {
     values: AudioFallbackCodec.values,
   );
 
+  static final audioPassthroughPreset = EnumPreference(
+    key: 'pref_audio_passthrough_preset',
+    defaultValue: AudioPassthroughPreset.auto,
+    values: AudioPassthroughPreset.values,
+  );
+
+  /// One-time flag: existing installs that had their passthrough toggles
+  /// auto-seeded by the old startup probe have been cleared back to "Auto"
+  /// (tri-state follow-detection) where their stored value still matched the
+  /// probe.
+  static final audioPassthroughMigratedToAuto = Preference(
+    key: 'pref_audio_passthrough_migrated_to_auto_v1',
+    defaultValue: false,
+  );
+
   static final maxAudioChannels = Preference<int>(
     key: 'pref_max_audio_channels',
     defaultValue: 0,
@@ -693,11 +893,6 @@ class UserPreferences extends ChangeNotifier {
 
   static final audioPassthroughProbeSeeded = Preference(
     key: 'pref_audio_passthrough_probe_seeded_v1',
-    defaultValue: false,
-  );
-
-  static final audioOutputModeProbeSeeded = Preference(
-    key: 'pref_audio_output_mode_probe_seeded_v2',
     defaultValue: false,
   );
 

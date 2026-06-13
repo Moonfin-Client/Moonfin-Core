@@ -27,6 +27,7 @@ import '../../../auth/store/authentication_preferences.dart';
 import '../../../auth/repositories/session_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../playback/audio_capability_profile.dart';
+import '../../../playback/audio_capability_probe.dart';
 import '../../../playback/external_player_service.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
@@ -2501,9 +2502,114 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
     return '$baseSubtitle\n${l10n.status}: $status';
   }
 
+  List<AudioPassthroughPreset> get _availablePresets =>
+      PlatformDetection.isAppleTV
+      ? const [AudioPassthroughPreset.auto, AudioPassthroughPreset.stereo]
+      : const [
+          AudioPassthroughPreset.auto,
+          AudioPassthroughPreset.surroundReceiver,
+          AudioPassthroughPreset.stereo,
+          AudioPassthroughPreset.advanced,
+        ];
+
+  String _audioPresetLabel(AudioPassthroughPreset preset) => switch (preset) {
+    AudioPassthroughPreset.auto =>
+      PlatformDetection.isAppleTV ? 'Auto (multichannel)' : 'Auto',
+    AudioPassthroughPreset.surroundReceiver => 'AV receiver (Atmos / DTS:X)',
+    AudioPassthroughPreset.stereo => 'Stereo',
+    AudioPassthroughPreset.advanced => 'Advanced',
+  };
+
+  String _audioPresetDescription(AudioPassthroughPreset preset) =>
+      switch (preset) {
+        AudioPassthroughPreset.auto => PlatformDetection.isAppleTV
+            ? 'Decode locally and output the most channels your TV or receiver accepts.'
+            : 'Recommended. Plays everything your equipment supports automatically.',
+        AudioPassthroughPreset.surroundReceiver =>
+          'Bitstream Dolby/DTS to your AV receiver, including Atmos and DTS:X when supported.',
+        AudioPassthroughPreset.stereo => 'Always downmix to 2.0 stereo.',
+        AudioPassthroughPreset.advanced =>
+          'Manually control output mode, channels, and per-codec passthrough.',
+      };
+
+  Widget _buildAudioPresetTile() {
+    final current = _prefs.resolveAudioPassthroughPreset();
+    return _TvSettingsListTile(
+      leading: const Icon(Icons.surround_sound),
+      title: const Text('Audio Output'),
+      subtitle: Text(
+        '${_audioPresetLabel(current)}\n${_audioPresetDescription(current)}',
+      ),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => _showAudioPresetPicker(current),
+    );
+  }
+
+  Future<void> _showAudioPresetPicker(AudioPassthroughPreset current) async {
+    final selected = await showDialog<AudioPassthroughPreset>(
+      context: context,
+      builder: (dialogContext) => SimpleDialog(
+        backgroundColor: AppColorScheme.surface,
+        title: const Text('Audio Output'),
+        children: [
+          for (final preset in _availablePresets)
+            ListTile(
+              title: Text(_audioPresetLabel(preset)),
+              subtitle: Text(_audioPresetDescription(preset)),
+              trailing: preset == current ? const Icon(Icons.check) : null,
+              onTap: () => Navigator.of(dialogContext).pop(preset),
+            ),
+        ],
+      ),
+    );
+    if (selected != null) {
+      await _prefs.applyAudioPassthroughPreset(selected);
+    }
+  }
+
+  Widget _buildRedetectTile() {
+    return _TvSettingsListTile(
+      leading: const Icon(Icons.refresh),
+      title: const Text('Re-detect & apply recommended'),
+      subtitle: const Text(
+        'Re-run audio detection and reset to the recommended settings.',
+      ),
+      onTap: _redetectAndApplyRecommended,
+    );
+  }
+
+  Future<void> _redetectAndApplyRecommended() async {
+    final profile = await AudioCapabilityProbe.query();
+    AudioCapabilityProbe.apply(profile);
+
+    final AudioPassthroughPreset preset;
+    if (profile != null &&
+        profile.isAvReceiverRoute &&
+        profile.hasCompressedPassthroughRoute) {
+      preset = AudioPassthroughPreset.surroundReceiver;
+    } else if (profile != null && profile.maxPcmChannels <= 2) {
+      preset = AudioPassthroughPreset.stereo;
+    } else {
+      preset = AudioPassthroughPreset.auto;
+    }
+    await _prefs.applyAudioPassthroughPreset(preset);
+
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
+    final route = profile == null
+        ? l10n.unknown
+        : _audioRouteLabel(l10n, profile.activeRouteType);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Audio re-detected: $route')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final isAdvanced =
+        _prefs.resolveAudioPassthroughPreset() ==
+        AudioPassthroughPreset.advanced;
     return Scaffold(
       appBar: buildSettingsAppBar(context, Text(l10n.settingsAudioPreferences)),
       body: ListView(
@@ -2525,20 +2631,23 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
             },
           ),
 
-          const _SectionHeader('Processing & Passthrough'),
-          if (!PlatformDetection.isWeb)
-            EnumPreferenceTile<AudioOutputMode>(
-              preference: UserPreferences.audioOutputMode,
-              title: l10n.settingsAudioOutputMode,
-              description: l10n.settingsAudioOutputModeDescription,
-              icon: Icons.surround_sound,
-              labelOf: (v) => switch (v) {
-                AudioOutputMode.auto => l10n.auto,
-                AudioOutputMode.forceStereo => l10n.downmixToStereo,
-                AudioOutputMode.avrPassthrough =>
-                  l10n.settingsAudioOutputModeAvrPassthrough,
-              },
-            ),
+          if (!PlatformDetection.isWeb) ...[
+            const _SectionHeader('Audio Output'),
+            _buildAudioPresetTile(),
+            if (isAdvanced) ...[
+              const _SectionHeader('Advanced'),
+              EnumPreferenceTile<AudioOutputMode>(
+                preference: UserPreferences.audioOutputMode,
+                title: l10n.settingsAudioOutputMode,
+                description: l10n.settingsAudioOutputModeDescription,
+                icon: Icons.surround_sound,
+                labelOf: (v) => switch (v) {
+                  AudioOutputMode.auto => l10n.auto,
+                  AudioOutputMode.forceStereo => l10n.downmixToStereo,
+                  AudioOutputMode.avrPassthrough =>
+                    l10n.settingsAudioOutputModeAvrPassthrough,
+                },
+              ),
           IntPickerPreferenceTile(
             preference: UserPreferences.maxAudioChannels,
             title: l10n.settingsMaxAudioChannels,
@@ -2658,11 +2767,14 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
               ),
               icon: Icons.graphic_eq,
             ),
+            ],
+            ],
           ],
 
-          if (PlatformDetection.isAndroid && PlatformDetection.isTV) ...[
+          if (AudioCapabilityProbe.isSupported) ...[
             _SectionHeader(l10n.settingsDetectedAudioCapabilities),
             ..._buildDetectedCapabilities(l10n),
+            _buildRedetectTile(),
           ],
         ],
       ),

@@ -18,6 +18,9 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.content.res.Configuration
 import android.graphics.drawable.Icon
+import android.media.AudioDeviceCallback
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -56,6 +59,9 @@ class MainActivity : AudioServiceActivity() {
     private var castChannel: MethodChannel? = null
     private var castEventsChannel: EventChannel? = null
     private var castEventsSink: EventChannel.EventSink? = null
+    private var audioCapsEventsChannel: EventChannel? = null
+    private var audioCapsSink: EventChannel.EventSink? = null
+    private var audioDeviceCallback: AudioDeviceCallback? = null
     private var castStatusListener: SessionManagerListener<CastSession>? = null
     private var dlnaChannel: MethodChannel? = null
     private var dlnaEventsChannel: EventChannel? = null
@@ -70,6 +76,20 @@ class MainActivity : AudioServiceActivity() {
     private var castMediaListener: RemoteMediaClient.Listener? = null
     private var castProgressListener: RemoteMediaClient.ProgressListener? = null
 
+    private fun emitAudioCapabilities() {
+        audioCapsSink?.success(AudioCapabilities.query(this))
+    }
+
+    private fun unregisterAudioDeviceCallback() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            audioDeviceCallback?.let { callback ->
+                (getSystemService(Context.AUDIO_SERVICE) as? AudioManager)
+                    ?.unregisterAudioDeviceCallback(callback)
+            }
+        }
+        audioDeviceCallback = null
+    }
+
     companion object {
         private const val CHANNEL = "org.moonfin.androidtv/pip"
         private const val CAST_CHANNEL = "com.moonfin/native_cast"
@@ -80,6 +100,8 @@ class MainActivity : AudioServiceActivity() {
         private const val ACTION_PLAY_PAUSE = "org.moonfin.androidtv.ACTION_PIP_PLAY_PAUSE"
         private const val DISMISS_DELAY_MS = 300L
         private const val PLATFORM_CHANNEL = "org.moonfin.androidtv/platform"
+        private const val AUDIO_CAPS_EVENTS_CHANNEL =
+            "org.moonfin.androidtv/audioCapabilitiesEvents"
         private const val UPDATE_CHANNEL = "org.moonfin.androidtv/update"
         private const val EXTERNAL_PLAYER_PROXY_REQUEST_CODE = 17115
         private const val EXTRA_EXTERNAL_PLAYER_LAUNCH_INTENT = "moonfin.external_player.launch_intent"
@@ -454,6 +476,42 @@ class MainActivity : AudioServiceActivity() {
             }
         })
 
+        // Re-probe audio capabilities whenever the audio route changes (e.g. an
+        // AVR is powered on after launch) and push the fresh result to Dart so
+        // the device profile self-heals without an app restart.
+        audioCapsEventsChannel = EventChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            AUDIO_CAPS_EVENTS_CHANNEL,
+        )
+        audioCapsEventsChannel?.setStreamHandler(object : EventChannel.StreamHandler {
+            override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                audioCapsSink = events
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    val audioManager =
+                        getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+                    val callback = object : AudioDeviceCallback() {
+                        override fun onAudioDevicesAdded(
+                            addedDevices: Array<out AudioDeviceInfo>?,
+                        ) = emitAudioCapabilities()
+
+                        override fun onAudioDevicesRemoved(
+                            removedDevices: Array<out AudioDeviceInfo>?,
+                        ) = emitAudioCapabilities()
+                    }
+                    audioDeviceCallback = callback
+                    audioManager?.registerAudioDeviceCallback(
+                        callback,
+                        Handler(Looper.getMainLooper()),
+                    )
+                }
+            }
+
+            override fun onCancel(arguments: Any?) {
+                unregisterAudioDeviceCallback()
+                audioCapsSink = null
+            }
+        })
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(
                 pipReceiver,
@@ -591,6 +649,8 @@ class MainActivity : AudioServiceActivity() {
         try { unregisterReceiver(screenReceiver) } catch (_: Exception) {}
         castChannel?.setMethodCallHandler(null)
         castEventsChannel?.setStreamHandler(null)
+        unregisterAudioDeviceCallback()
+        audioCapsEventsChannel?.setStreamHandler(null)
         dlnaController?.onDestroy()
         dlnaChannel?.setMethodCallHandler(null)
         dlnaEventsChannel?.setStreamHandler(null)

@@ -15,6 +15,21 @@ enum AudioFallbackCodec {
   flac,
 }
 
+/// High-level audio output choice shown to the user. It is a convenience that
+/// bulk-writes through to [AudioOutputMode] and the individual passthrough
+/// toggles, so the device-profile builder never needs to know about it.
+/// - [auto]: decode locally / let detection drive passthrough (toggles unset).
+/// - [surroundReceiver]: AVR passthrough; advertise everything the receiver
+///   reports it supports (toggles unset, capability-authoritative).
+/// - [stereo]: force a stereo downmix.
+/// - [advanced]: user manages [AudioOutputMode] + per-codec toggles directly.
+enum AudioPassthroughPreset {
+  auto,
+  surroundReceiver,
+  stereo,
+  advanced,
+}
+
 enum PlaybackEnginePreference {
   media3,
   mpv,

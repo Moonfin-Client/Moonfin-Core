@@ -16,10 +16,10 @@ import 'di/injection.dart';
 import 'playback/appletv_audio_now_playing_feeder.dart';
 import 'playback/appletv_mpv_backend.dart';
 import 'playback/audio_capability_profile.dart';
+import 'playback/audio_capability_probe.dart';
 import 'playback/audio_handler.dart';
 import 'playback/playback_lifecycle_handler.dart';
 import 'platform/web_runtime_config.dart';
-import 'preference/preference_constants.dart';
 import 'preference/user_preferences.dart';
 import 'util/platform_detection.dart';
 import 'util/tv_image_cache_stub.dart'
@@ -192,106 +192,70 @@ Future<void> _detectAndSetAppleTvCapabilities() async {
 }
 
 Future<void> _detectAndApplyAudioCapabilities(UserPreferences prefs) async {
-  if (!(PlatformDetection.isAndroid && PlatformDetection.isTV)) return;
+  if (!AudioCapabilityProbe.isSupported) return;
   try {
-    const channel = MethodChannel('org.moonfin.androidtv/platform');
-    final audioCaps = await channel.invokeMethod<Map<dynamic, dynamic>>(
-      'audioCapabilities',
-    );
-    if (audioCaps == null) {
-      PlatformDetection.setAudioCapabilities(null);
-      return;
+    // Probe with a short retry so a startup enumeration race doesn't strand us
+    // on an empty result, then publish so getDeviceProfile() picks it up.
+    final profile = await AudioCapabilityProbe.queryWithRetry();
+    AudioCapabilityProbe.apply(profile);
+
+    // Passthrough is no longer seeded into the toggle prefs: the tri-state
+    // resolvers compute it live from the detected capability, which also
+    // auto-adapts to later route changes. Existing installs whose toggles were
+    // auto-seeded by the old one-shot probe are migrated back to "Auto" once.
+    if (profile != null) {
+      await _migrateSeededPassthroughTogglesToAuto(prefs, profile);
     }
 
-    final profile = AudioCapabilityProfile.fromMap(
-      audioCaps.map((key, value) => MapEntry(key.toString(), value)),
-    );
+    // Re-probe whenever the audio route changes (e.g. the AVR is powered on
+    // after launch) so detection self-heals without an app restart.
+    AudioCapabilityProbe.listenForRouteChanges();
+  } catch (_) {}
+}
 
-    PlatformDetection.setAudioCapabilities(profile.toMap());
+/// One-time migration for installs that ran the old startup seeding, which
+/// copied probe results into the 8 passthrough toggle prefs. A stored value
+/// that still matches what the probe would have seeded was almost certainly
+/// auto-seeded (not a deliberate choice), so it is cleared to return the toggle
+/// to tri-state "Auto". A value that differs is treated as a deliberate user
+/// override and preserved.
+Future<void> _migrateSeededPassthroughTogglesToAuto(
+  UserPreferences prefs,
+  AudioCapabilityProfile profile,
+) async {
+  if (prefs.get(UserPreferences.audioPassthroughMigratedToAuto)) return;
 
-    final hasAutoDetected = prefs.get(UserPreferences.audioPrefsAutoDetected);
-    final hasPassthroughProbeSeeding =
-        prefs.get(UserPreferences.audioPassthroughProbeSeeded);
-    final hasOutputModeProbeSeeding =
-        prefs.get(UserPreferences.audioOutputModeProbeSeeded);
-    final hasSplitPrefsConfigured =
-        prefs.containsPreference(UserPreferences.audioOutputMode) &&
-        prefs.containsPreference(UserPreferences.ac3PassthroughEnabled) &&
-        prefs.containsPreference(UserPreferences.eac3PassthroughEnabled) &&
-        prefs.containsPreference(UserPreferences.eac3JocPassthroughEnabled) &&
-        prefs.containsPreference(UserPreferences.dtsCorePassthroughEnabled) &&
-        prefs.containsPreference(UserPreferences.dtsHdPassthroughEnabled) &&
-        prefs.containsPreference(UserPreferences.dtsXPassthroughEnabled) &&
-        prefs.containsPreference(UserPreferences.trueHdPassthroughEnabled) &&
-        prefs.containsPreference(UserPreferences.trueHdAtmosPassthroughEnabled) &&
-        prefs.containsPreference(UserPreferences.audioFallbackCodec);
-
-    if (hasAutoDetected &&
-        hasSplitPrefsConfigured &&
-        hasPassthroughProbeSeeding &&
-        hasOutputModeProbeSeeding) {
-      return;
-    }
-
+  if (prefs.get(UserPreferences.audioPassthroughProbeSeeded)) {
     final hasReceiverRoute =
         profile.activeRouteType == AudioRouteType.arc ||
         profile.activeRouteType == AudioRouteType.earc;
-
-    final currentOutputMode = prefs.get(UserPreferences.audioOutputMode);
-    if (!hasOutputModeProbeSeeding &&
-        (currentOutputMode == AudioOutputMode.auto ||
-            currentOutputMode == AudioOutputMode.avrPassthrough)) {
-      final outputMode = hasReceiverRoute && profile.hasCompressedPassthroughRoute
-          ? AudioOutputMode.avrPassthrough
-          : AudioOutputMode.auto;
-      await prefs.set(UserPreferences.audioOutputMode, outputMode);
+    final seededValues = {
+      UserPreferences.ac3PassthroughEnabled:
+          hasReceiverRoute && profile.canPassthroughAc3,
+      UserPreferences.eac3PassthroughEnabled:
+          hasReceiverRoute && profile.canPassthroughEac3,
+      UserPreferences.eac3JocPassthroughEnabled:
+          hasReceiverRoute && profile.canPassthroughEac3Joc,
+      UserPreferences.dtsCorePassthroughEnabled:
+          hasReceiverRoute && profile.canPassthroughDts,
+      UserPreferences.dtsHdPassthroughEnabled:
+          hasReceiverRoute && profile.canPassthroughDtsHd,
+      UserPreferences.dtsXPassthroughEnabled:
+          hasReceiverRoute && profile.canPassthroughDtsX,
+      UserPreferences.trueHdPassthroughEnabled:
+          hasReceiverRoute && profile.canPassthroughTrueHd,
+      UserPreferences.trueHdAtmosPassthroughEnabled:
+          hasReceiverRoute && profile.canPassthroughTrueHdJoc,
+    };
+    for (final entry in seededValues.entries) {
+      if (prefs.containsPreference(entry.key) &&
+          prefs.get(entry.key) == entry.value) {
+        await prefs.removePreference(entry.key);
+      }
     }
+  }
 
-    if (!prefs.containsPreference(UserPreferences.audioFallbackCodec)) {
-      await prefs.set(UserPreferences.audioFallbackCodec, AudioFallbackCodec.auto);
-    }
-
-    if (!hasPassthroughProbeSeeding) {
-      await prefs.set(
-        UserPreferences.ac3PassthroughEnabled,
-        hasReceiverRoute && profile.canPassthroughAc3,
-      );
-      await prefs.set(
-        UserPreferences.eac3PassthroughEnabled,
-        hasReceiverRoute && profile.canPassthroughEac3,
-      );
-      await prefs.set(
-        UserPreferences.eac3JocPassthroughEnabled,
-        hasReceiverRoute && profile.canPassthroughEac3Joc,
-      );
-      await prefs.set(
-        UserPreferences.dtsCorePassthroughEnabled,
-        hasReceiverRoute && profile.canPassthroughDts,
-      );
-      await prefs.set(
-        UserPreferences.dtsHdPassthroughEnabled,
-        hasReceiverRoute && profile.canPassthroughDtsHd,
-      );
-      await prefs.set(
-        UserPreferences.dtsXPassthroughEnabled,
-        hasReceiverRoute && profile.canPassthroughDtsX,
-      );
-      await prefs.set(
-        UserPreferences.trueHdPassthroughEnabled,
-        hasReceiverRoute && profile.canPassthroughTrueHd,
-      );
-      await prefs.set(
-        UserPreferences.trueHdAtmosPassthroughEnabled,
-        hasReceiverRoute && profile.canPassthroughTrueHdJoc,
-      );
-      await prefs.set(UserPreferences.audioPassthroughProbeSeeded, true);
-    }
-
-    if (!hasOutputModeProbeSeeding) {
-      await prefs.set(UserPreferences.audioOutputModeProbeSeeded, true);
-    }
-    await prefs.set(UserPreferences.audioPrefsAutoDetected, true);
-  } catch (_) {}
+  await prefs.set(UserPreferences.audioPassthroughMigratedToAuto, true);
 }
 
 class _PreferenceWriteFlushObserver with WidgetsBindingObserver {
