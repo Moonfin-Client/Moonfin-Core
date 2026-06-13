@@ -44,9 +44,9 @@ class WebSocketMessageParser {
       'UserDeleted' ||
       'UserUpdated' ||
       'ActivityLogEntry' => ServerEventMessage(
-          type: type,
-          data: data is Map<String, dynamic> ? data : const {},
-        ),
+        type: type,
+        data: data is Map<String, dynamic> ? data : const {},
+      ),
       _ => null,
     };
   }
@@ -64,7 +64,8 @@ class WebSocketMessageParser {
     if (data is! Map<String, dynamic>) return null;
     final userId = data['UserId'] as String?;
     if (userId == null) return null;
-    final itemIds = (data['UserDataList'] as List<dynamic>?)
+    final itemIds =
+        (data['UserDataList'] as List<dynamic>?)
             ?.map((e) => (e as Map<String, dynamic>)['ItemId'] as String?)
             .whereType<String>()
             .toList() ??
@@ -78,8 +79,12 @@ class WebSocketMessageParser {
     if (itemIds.isEmpty) return null;
     return PlayMessage(
       itemIds: itemIds,
-      startPositionTicks: data['StartPositionTicks'] as int?,
+      startPositionTicks: _intValue(data['StartPositionTicks']),
       playCommand: data['PlayCommand'] as String? ?? 'PlayNow',
+      startIndex: _intValue(data['StartIndex']) ?? 0,
+      audioStreamIndex: _intValue(data['AudioStreamIndex']),
+      subtitleStreamIndex: _intValue(data['SubtitleStreamIndex']),
+      mediaSourceId: data['MediaSourceId'] as String?,
     );
   }
 
@@ -97,8 +102,10 @@ class WebSocketMessageParser {
     if (data is! Map<String, dynamic>) return null;
     final name = data['Name'] as String?;
     if (name == null) return null;
-    final arguments = (data['Arguments'] as Map<String, dynamic>?)
-            ?.map((k, v) => MapEntry(k, v.toString())) ??
+    final arguments =
+        (data['Arguments'] as Map<String, dynamic>?)?.map(
+          (k, v) => MapEntry(k, v.toString()),
+        ) ??
         const {};
     return GeneralCommandMessage(name: name, arguments: arguments);
   }
@@ -124,10 +131,15 @@ class WebSocketMessageParser {
   }
 
   static List<String> _stringList(Map<String, dynamic> data, String key) =>
-      (data[key] as List<dynamic>?)
-          ?.map((e) => e.toString())
-          .toList() ??
+      (data[key] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
       const [];
+
+  static int? _intValue(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
 
   static SyncPlayCommandMessage? _parseSyncPlayCommand(dynamic data) {
     if (data is! Map<String, dynamic>) return null;
