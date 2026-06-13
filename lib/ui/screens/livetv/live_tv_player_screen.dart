@@ -85,6 +85,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
   final _tvPlayPauseFocus = FocusNode(debugLabel: 'LiveTvPlayPause');
   final _tvChannelsFocus = FocusNode(debugLabel: 'LiveTvChannels');
   final _tvPlaybackInfoFocus = FocusNode(debugLabel: 'LiveTvPlaybackInfo');
+  // Index of the currently focused OSD control (0=PlayPause, 1=Channels,
+  // 2=PlaybackInfo). Tracked explicitly so arrow navigation never depends on
+  // FocusManager.primaryFocus matching one of these exact nodes.
+  int _focusedControlIndex = 0;
   PlayerState get _state => _manager.state;
 
   @override
@@ -278,6 +282,13 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
 
   void _onControlFocusChanged() {
     if (!mounted || !PlatformDetection.isTV) return;
+    if (_tvPlayPauseFocus.hasFocus) {
+      _focusedControlIndex = 0;
+    } else if (_tvChannelsFocus.hasFocus) {
+      _focusedControlIndex = 1;
+    } else if (_tvPlaybackInfoFocus.hasFocus) {
+      _focusedControlIndex = 2;
+    }
     if (_tvPlayPauseFocus.hasFocus || _tvChannelsFocus.hasFocus) {
       _hideTimer?.cancel();
       if (!_infoVisible) {
@@ -752,10 +763,9 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
 
   void _moveControlFocus(int delta) {
     final order = [_tvPlayPauseFocus, _tvChannelsFocus, _tvPlaybackInfoFocus];
-    final current = FocusManager.instance.primaryFocus;
-    var index = current == null ? -1 : order.indexOf(current);
-    index = index < 0 ? 0 : (index + delta).clamp(0, order.length - 1);
-    order[index].requestFocus();
+    _focusedControlIndex =
+        (_focusedControlIndex + delta).clamp(0, order.length - 1);
+    order[_focusedControlIndex].requestFocus();
   }
 
   @override
@@ -1422,6 +1432,10 @@ class _LiveTvRoundControlButtonState extends State<_LiveTvRoundControlButton> {
       child: Tooltip(
         message: widget.tooltip,
         child: InkWell(
+          // The outer Focus is the single focus target for this button; a
+          // focusable InkWell would add a second, invisible focus node that
+          // breaks the OSD's manual arrow navigation.
+          canRequestFocus: false,
           customBorder: const CircleBorder(),
           onTap: widget.onPressed,
           child: AnimatedContainer(
