@@ -1878,7 +1878,7 @@ private final class InfoPanelViewController: UIViewController, UITableViewDataSo
     UITableViewDelegate
 {
     private let sections: [(title: String, rows: [(label: String, value: String)])]
-    private let tableView = UITableView(frame: .zero, style: .insetGrouped)
+    private let tableView = UITableView(frame: .zero, style: .grouped)
 
     init(sections: [(title: String, rows: [(label: String, value: String)])]) {
         self.sections = sections
@@ -1894,7 +1894,7 @@ private final class InfoPanelViewController: UIViewController, UITableViewDataSo
         view.backgroundColor = UIColor(white: 0, alpha: 0.4)
 
         // Glass panel.
-        let panel = UIVisualEffectView(effect: UIBlurEffect(style: .systemThickMaterialDark))
+        let panel = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         panel.translatesAutoresizingMaskIntoConstraints = false
         panel.layer.cornerRadius = 28
         panel.clipsToBounds = true
@@ -1910,7 +1910,6 @@ private final class InfoPanelViewController: UIViewController, UITableViewDataSo
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.backgroundColor = .clear
-        tableView.separatorStyle = .none
         tableView.dataSource = self
         tableView.delegate = self
         tableView.rowHeight = UITableView.automaticDimension
