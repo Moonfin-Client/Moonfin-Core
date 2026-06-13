@@ -8,6 +8,7 @@ import 'package:server_core/server_core.dart';
 
 import '../data/models/aggregated_item.dart';
 import '../data/services/media_server_client_factory.dart';
+import '../util/platform_detection.dart';
 
 class MoonfinAudioHandler extends BaseAudioHandler
     with QueueHandler, SeekHandler {
@@ -51,9 +52,27 @@ class MoonfinAudioHandler extends BaseAudioHandler
     ]);
   }
 
+  bool _drivesSession(dynamic raw) {
+    if (raw is! AggregatedItem) return false;
+    if (PlatformDetection.isTV) return raw.isAudioLike;
+    return true;
+  }
+
   void _pushPlaybackState() {
     final s = _manager.state;
     final q = _manager.queueService;
+
+    if (PlatformDetection.isTV && !_drivesSession(q.currentItem)) {
+      // No music session (TV video / nothing playing): emit idle so audio_service
+      // tears down the foreground notification and system controls.
+      playbackState.add(PlaybackState(
+        controls: const [],
+        systemActions: const {},
+        processingState: AudioProcessingState.idle,
+        playing: false,
+      ));
+      return;
+    }
 
     final controls = [
       MediaControl.skipToPrevious,
@@ -92,7 +111,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
 
   void _pushMediaItemForCurrentTrack() {
     final raw = _manager.queueService.currentItem;
-    if (raw is! AggregatedItem) {
+    if (raw is! AggregatedItem || (PlatformDetection.isTV && !raw.isAudioLike)) {
       mediaItem.add(null);
       return;
     }
