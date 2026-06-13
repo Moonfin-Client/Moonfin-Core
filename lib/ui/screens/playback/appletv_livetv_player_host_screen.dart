@@ -10,8 +10,10 @@ import 'package:server_core/server_core.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../playback/appletv_mpv_backend.dart';
+import '../../../playback/appletv_preview_player.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
+import '../livetv/live_tv_guide_screen.dart';
 
 class AppleTvLiveTvPlayerHostScreen extends StatefulWidget {
   final List<GuideChannel> channels;
@@ -41,6 +43,8 @@ class _AppleTvLiveTvPlayerHostScreenState
   late int _currentIndex;
   bool _exiting = false;
   bool _switching = false;
+  bool _inGuide = false;
+  AppleTvPreviewPlayer? _pipPlayer;
   Timer? _programRefreshTimer;
 
   GuideProgram? _currentProgram;
@@ -79,6 +83,7 @@ class _AppleTvLiveTvPlayerHostScreenState
     _actionSub?.cancel();
     _bringupSub?.cancel();
     _programRefreshTimer?.cancel();
+    unawaited(_pipPlayer?.dispose());
     unawaited(_backend?.dismissPlayer() ?? Future<void>.value());
     try {
       GetIt.instance<PlaybackManager>().stop(userInitiated: true);
@@ -145,6 +150,65 @@ class _AppleTvLiveTvPlayerHostScreenState
     } finally {
       _switching = false;
     }
+  }
+
+  Future<void> _enterGuideMode() async {
+    if (_inGuide || _switching || _exiting) return;
+    _inGuide = true;
+
+    final streamUrl = _manager.currentResolution?.streamUrl;
+
+    final pip = AppleTvPreviewPlayer();
+    _pipPlayer = pip;
+
+    // Dismiss the native player first for instant feedback, then open the PIP
+    // in the background: the guide appears immediately with the channel image
+    // and the live video swaps in reactively once the texture is ready, so a
+    // slow or session-conflicting live stream never blocks the transition.
+    await _backend?.dismissPlayer();
+    if (streamUrl != null && streamUrl.isNotEmpty) {
+      unawaited(() async {
+        try {
+          await pip.open(streamUrl, backend: 'mpv', live: true, volume: 100);
+          await pip.resume();
+        } catch (_) {}
+      }());
+    }
+
+    if (!mounted) {
+      await pip.dispose();
+      _pipPlayer = null;
+      _inGuide = false;
+      return;
+    }
+
+    String? selectedId;
+    try {
+      selectedId = await Navigator.of(context).push<String>(
+        MaterialPageRoute(
+          builder: (_) => LiveTvGuideScreen(
+            miniPlayerMode: true,
+            currentChannel: _currentChannel,
+            appleTvTextureId: pip.textureIdListenable,
+          ),
+        ),
+      );
+    } finally {
+      await pip.stop();
+      await pip.dispose();
+      _pipPlayer = null;
+      _inGuide = false;
+    }
+
+    if (!mounted) return;
+    if (selectedId != null && selectedId != _currentChannel.id) {
+      final idx = widget.channels.indexWhere((c) => c.id == selectedId);
+      if (idx >= 0) {
+        _currentIndex = idx;
+        _currentProgram = null;
+      }
+    }
+    await _playCurrentChannel();
   }
 
   void _startProgramRefresh() {
@@ -540,6 +604,9 @@ class _AppleTvLiveTvPlayerHostScreenState
 
   void _handleUiAction(Map<String, dynamic> action) {
     switch (action['event']?.toString()) {
+      case 'openGuide':
+        unawaited(_enterGuideMode());
+        return;
       case 'selectChannel':
         final id = action['channelId']?.toString();
         if (id != null && id.isNotEmpty) {
@@ -563,7 +630,7 @@ class _AppleTvLiveTvPlayerHostScreenState
   }
 
   void _handleExit() {
-    if (_exiting || !mounted) return;
+    if (_exiting || _inGuide || !mounted) return;
     _exiting = true;
     unawaited(_backend?.dismissPlayer() ?? Future<void>.value());
     if (context.canPop()) {

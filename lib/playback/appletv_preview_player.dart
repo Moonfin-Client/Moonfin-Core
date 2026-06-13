@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 /// Inline preview player for Apple TV backed by a native AVPlayer rendering
@@ -16,6 +17,7 @@ class AppleTvPreviewPlayer {
 
   final int _playerId;
   int? textureId;
+  final ValueNotifier<int?> textureIdListenable = ValueNotifier<int?>(null);
   bool _disposed = false;
 
   static Stream<Map<String, dynamic>> get _eventStream {
@@ -41,6 +43,7 @@ class AppleTvPreviewPlayer {
     Map<String, String>? headers,
     double volume = 0,
     String? backend,
+    bool live = false,
   }) async {
     if (_disposed) return;
     final result = await _control.invokeMethod<Map<dynamic, dynamic>>('open', {
@@ -49,10 +52,14 @@ class AppleTvPreviewPlayer {
       if (headers != null && headers.isNotEmpty) 'headers': headers,
       'volume': volume,
       'backend': ?backend,
+      if (live) 'live': true,
     });
     textureId = (result?['textureId'] as num?)?.toInt();
     if (textureId == null) {
       throw PlatformException(code: 'open_failed');
+    }
+    if (!_disposed) {
+      textureIdListenable.value = textureId;
     }
   }
 
@@ -76,6 +83,8 @@ class AppleTvPreviewPlayer {
     if (_disposed) return;
     _disposed = true;
     textureId = null;
+    textureIdListenable.value = null;
+    textureIdListenable.dispose();
     try {
       await _control.invokeMethod<void>('dispose', {'playerId': _playerId});
     } catch (_) {}

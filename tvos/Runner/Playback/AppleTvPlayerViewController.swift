@@ -11,6 +11,7 @@ final class AppleTvPlayerViewController: UIViewController {
     var onSetSpeed: ((Double) -> Void)?
     var onSetBitrate: ((Int) -> Void)?
     var onSelectChannel: ((String) -> Void)?
+    var onOpenGuide: (() -> Void)?
     var onToggleFavorite: (() -> Void)?
     var onStillWatchingContinue: (() -> Void)?
     var onStillWatchingStop: (() -> Void)?
@@ -468,7 +469,7 @@ final class AppleTvPlayerViewController: UIViewController {
         for stat in streamStats {
             statsStack.addArrangedSubview(makeStatChip(stat.label, stat.value))
         }
-        statsStack.isHidden = !isLive || streamStats.isEmpty
+        statsStack.isHidden = true
     }
 
     private func makeStatChip(_ label: String, _ value: String) -> UIView {
@@ -1215,7 +1216,7 @@ final class AppleTvPlayerViewController: UIViewController {
         case .info:
             presentInfoPanel()
         case .channels:
-            presentChannelList()
+            onOpenGuide?()
         case .favorite:
             onToggleFavorite?()
         case .syncplay:
@@ -1298,7 +1299,7 @@ final class AppleTvPlayerViewController: UIViewController {
         case .quality: return "Playback Quality"
         case .zoom: return "Zoom Mode"
         case .info: return "Playback Information"
-        case .channels: return "Channels"
+        case .channels: return "Guide"
         case .favorite: return isFavorite ? "Remove from Favorites" : "Add to Favorites"
         case .syncplay: return "SyncPlay"
         }

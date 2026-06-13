@@ -129,6 +129,7 @@ class AppleTvMpvBackend implements PlayerBackend {
       case 'setSpeed':
       case 'setBitrate':
       case 'selectChannel':
+      case 'openGuide':
       case 'toggleFavorite':
       case 'stillWatchingContinue':
       case 'stillWatchingStop':

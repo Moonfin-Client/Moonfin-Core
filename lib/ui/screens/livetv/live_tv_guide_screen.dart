@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -38,11 +39,13 @@ int _guideHoursForWidth(double availableWidth) {
 class LiveTvGuideScreen extends StatefulWidget {
   final bool miniPlayerMode;
   final GuideChannel? currentChannel;
+  final ValueListenable<int?>? appleTvTextureId;
 
   const LiveTvGuideScreen({
     super.key,
     this.miniPlayerMode = false,
     this.currentChannel,
+    this.appleTvTextureId,
   });
 
   @override
@@ -516,6 +519,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
       channelNumber: currentChannel?.number,
       programTitle: currentProgram?.name,
       showLiveVideo: true,
+      appleTvTextureId: widget.appleTvTextureId,
       onActivate: () => Navigator.of(context).pop(),
       focusNode: _miniPlayerFocusNode,
       onKeyEvent: (_, event) {

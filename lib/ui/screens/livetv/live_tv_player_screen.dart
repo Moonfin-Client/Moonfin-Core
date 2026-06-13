@@ -704,6 +704,9 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
           _showInfo();
           return KeyEventResult.handled;
         }
+        if (PlatformDetection.isTV) {
+          return KeyEventResult.handled;
+        }
         return KeyEventResult.ignored;
       case LogicalKeyboardKey.select:
       case LogicalKeyboardKey.enter:
@@ -726,7 +729,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
           return KeyEventResult.handled;
         }
         if (PlatformDetection.isTV) {
-          _tvPlayPauseFocus.requestFocus();
+          _moveControlFocus(-1);
           return KeyEventResult.handled;
         }
         _showInfo();
@@ -737,7 +740,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
           return KeyEventResult.handled;
         }
         if (PlatformDetection.isTV) {
-          _tvChannelsFocus.requestFocus();
+          _moveControlFocus(1);
           return KeyEventResult.handled;
         }
         _showInfo();
@@ -745,6 +748,14 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
       default:
         return KeyEventResult.ignored;
     }
+  }
+
+  void _moveControlFocus(int delta) {
+    final order = [_tvPlayPauseFocus, _tvChannelsFocus, _tvPlaybackInfoFocus];
+    final current = FocusManager.instance.primaryFocus;
+    var index = current == null ? -1 : order.indexOf(current);
+    index = index < 0 ? 0 : (index + delta).clamp(0, order.length - 1);
+    order[index].requestFocus();
   }
 
   @override
@@ -1023,8 +1034,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-            _buildStreamStatsRow(),
-            const SizedBox(height: AppSpacing.spaceXs),
+            if (!PlatformDetection.isTV) ...[
+              _buildStreamStatsRow(),
+              const SizedBox(height: AppSpacing.spaceXs),
+            ],
             _buildTimelineSection(),
             _buildPlaybackControlsRow(),
           ],
@@ -1398,19 +1411,6 @@ class _LiveTvRoundControlButtonState extends State<_LiveTvRoundControlButton> {
     return Focus(
       focusNode: _effectiveFocusNode,
       onKeyEvent: (_, event) {
-        if (event is KeyDownEvent || event is KeyRepeatEvent) {
-          if (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
-              event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            final moved = FocusScope.of(context).previousFocus();
-            return moved ? KeyEventResult.handled : KeyEventResult.ignored;
-          }
-          if (event.logicalKey == LogicalKeyboardKey.arrowRight ||
-              event.logicalKey == LogicalKeyboardKey.arrowDown) {
-            final moved = FocusScope.of(context).nextFocus();
-            return moved ? KeyEventResult.handled : KeyEventResult.ignored;
-          }
-        }
-
         if (event is KeyDownEvent &&
             (event.logicalKey == LogicalKeyboardKey.select ||
                 event.logicalKey == LogicalKeyboardKey.enter)) {

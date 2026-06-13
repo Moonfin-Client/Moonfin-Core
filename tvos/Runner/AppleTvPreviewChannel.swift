@@ -12,7 +12,7 @@ import Libmpv
 protocol PreviewBackend: AnyObject {
     var textureId: Int64 { get }
     func open(
-        url: String, headers: [String: String], volume: Float,
+        url: String, headers: [String: String], volume: Float, live: Bool,
         completion: @escaping (Bool) -> Void)
     func resume()
     func pause()
@@ -73,6 +73,7 @@ final class AppleTvPreviewChannel: NSObject, FlutterStreamHandler {
             }
             let headers = (args["headers"] as? [String: String]) ?? [:]
             let volume = (args["volume"] as? NSNumber)?.floatValue ?? 0
+            let live = (args["live"] as? Bool) ?? false
             let wantsMpv = (args["backend"] as? String) == "mpv"
             disposePlayer(playerId)
             let onEvent: ([String: Any]) -> Void = { [weak self] payload in
@@ -92,7 +93,7 @@ final class AppleTvPreviewChannel: NSObject, FlutterStreamHandler {
                 playerId: playerId, textures: textures, onEvent: onEvent)
             #endif
             players[playerId] = player
-            player.open(url: url, headers: headers, volume: volume) { ok in
+            player.open(url: url, headers: headers, volume: volume, live: live) { ok in
                 if ok {
                     result(["textureId": player.textureId])
                 } else {
@@ -153,7 +154,7 @@ private final class PreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
     }
 
     func open(
-        url urlString: String, headers: [String: String], volume: Float,
+        url urlString: String, headers: [String: String], volume: Float, live: Bool,
         completion: @escaping (Bool) -> Void
     ) {
         guard let url = URL(string: urlString) else {
@@ -292,6 +293,7 @@ private final class MpvPreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
     nonisolated(unsafe) private var openCompletion: ((Bool) -> Void)?
     nonisolated(unsafe) private var isAlive = true
     nonisolated(unsafe) private var contextFreed = false
+    nonisolated(unsafe) private var isLive = false
 
     nonisolated private let stateLock = NSLock()
     nonisolated private let workQueue = DispatchQueue(label: "moonfin.mpvpreview.render")
@@ -311,7 +313,7 @@ private final class MpvPreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
     }
 
     func open(
-        url: String, headers: [String: String], volume: Float,
+        url: String, headers: [String: String], volume: Float, live: Bool,
         completion: @escaping (Bool) -> Void
     ) {
         guard let created = mpv_create() else {
@@ -319,6 +321,7 @@ private final class MpvPreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
             return
         }
         handle = created
+        isLive = live
 
         setOpt("vo", "libmpv")
         setOpt("hwdec", "videotoolbox")
@@ -327,6 +330,10 @@ private final class MpvPreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
         setOpt("cache", "yes")
         setOpt("network-timeout", "30")
         setOpt("keepaspect", "yes")
+        if live {
+            setOpt("cache-secs", "10")
+            setOpt("demuxer-readahead-secs", "5")
+        }
 
         let muted = volume <= 0
         if muted {
@@ -475,7 +482,7 @@ private final class MpvPreviewPlayer: NSObject, FlutterTexture, PreviewBackend {
                     if end.reason == MPV_END_FILE_REASON_ERROR {
                         finishOpen(false)
                         emit("error")
-                    } else if end.reason == MPV_END_FILE_REASON_EOF {
+                    } else if end.reason == MPV_END_FILE_REASON_EOF, !isLive {
                         emit("completed")
                     }
                 }

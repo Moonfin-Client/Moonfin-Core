@@ -176,6 +176,9 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         vc.onSelectChannel = { [weak self] channelId in
             self?.send(["event": "selectChannel", "channelId": channelId])
         }
+        vc.onOpenGuide = { [weak self] in
+            self?.send(["event": "openGuide"])
+        }
         vc.onToggleFavorite = { [weak self] in
             self?.send(["event": "toggleFavorite"])
         }

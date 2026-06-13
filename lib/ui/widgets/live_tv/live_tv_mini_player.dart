@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -24,6 +25,7 @@ class LiveTvMiniPlayer extends StatefulWidget {
   final FocusNode? focusNode;
   final FocusOnKeyEventCallback? onKeyEvent;
   final bool showLiveVideo;
+  final ValueListenable<int?>? appleTvTextureId;
 
   const LiveTvMiniPlayer({
     super.key,
@@ -35,6 +37,7 @@ class LiveTvMiniPlayer extends StatefulWidget {
     this.focusNode,
     this.onKeyEvent,
     this.showLiveVideo = false,
+    this.appleTvTextureId,
   });
 
   @override
@@ -234,6 +237,30 @@ class _LiveTvMiniPlayerState extends State<LiveTvMiniPlayer> {
   }
 
   Widget? _buildLiveVideoSurface() {
+    if (PlatformDetection.isAppleTV) {
+      final listenable = widget.appleTvTextureId;
+      if (listenable == null) {
+        return null;
+      }
+      return ValueListenableBuilder<int?>(
+        valueListenable: listenable,
+        builder: (context, textureId, _) {
+          if (textureId == null) {
+            return _buildImageFallback();
+          }
+          return FittedBox(
+            fit: BoxFit.cover,
+            clipBehavior: Clip.hardEdge,
+            child: SizedBox(
+              width: 1280,
+              height: 720,
+              child: Texture(textureId: textureId),
+            ),
+          );
+        },
+      );
+    }
+
     final prefersMedia3 =
         _prefs.get(UserPreferences.playbackEnginePreference) ==
         PlaybackEnginePreference.media3;
