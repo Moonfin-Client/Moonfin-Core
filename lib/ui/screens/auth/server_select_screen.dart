@@ -918,6 +918,10 @@ class _AddServerDialogState extends State<_AddServerDialog> {
   Future<void> _submit() async {
     final address = widget.controller.text.trim();
     if (address.isEmpty) return;
+    if (PlatformDetection.isTV) {
+      _tvFieldKey.currentState?.hideKeyboard();
+      _connectFocus.requestFocus();
+    }
 
     setState(() {
       _isConnecting = true;
@@ -944,7 +948,9 @@ class _AddServerDialogState extends State<_AddServerDialog> {
       _errorMessage = message;
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _connectFocus.requestFocus();
+      if (!mounted) return;
+      _tvFieldKey.currentState?.hideKeyboard();
+      _connectFocus.requestFocus();
     });
   }
 

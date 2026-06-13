@@ -292,8 +292,12 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
   }
 
   void closeKeyboard() {
+    hideKeyboard(submit: true);
+  }
+
+  void hideKeyboard({bool submit = false}) {
     if (_keyboardController.isVisible) {
-      _keyboardController.hide(true);
+      _keyboardController.hide(submit);
       return;
     }
     _deactivateSystemIme();
@@ -324,6 +328,8 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
     setState(() {
       _useSystemImeSession = false;
     });
+    _systemInputFocusNode.unfocus();
+    SystemChannels.textInput.invokeMethod<void>('TextInput.hide');
     _notifyVisibilityChanged();
   }
 
