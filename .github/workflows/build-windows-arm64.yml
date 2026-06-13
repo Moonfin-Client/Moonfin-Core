@@ -144,11 +144,15 @@ jobs:
             throw "No moonfin.exe was found under an arm64 build folder."
           }
 
-          $headers = dumpbin /headers $releaseExe.FullName
-          $headers | Select-String "machine"
+          # Read the PE COFF header's Machine field directly instead of shelling
+          # out to dumpbin. 
+          $bytes = [System.IO.File]::ReadAllBytes($releaseExe.FullName)
+          $peOffset = [System.BitConverter]::ToInt32($bytes, 0x3C)
+          $machine = [System.BitConverter]::ToUInt16($bytes, $peOffset + 4)
+          Write-Host ("machine: 0x{0:X4}" -f $machine)
 
-          if (-not ($headers | Select-String "ARM64")) {
-            throw "Built executable is not ARM64"
+          if ($machine -ne 0xAA64) {
+            throw "Built executable is not ARM64 (machine=0x$($machine.ToString('X4')))"
           }
 
           "RELEASE_EXE=$($releaseExe.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
