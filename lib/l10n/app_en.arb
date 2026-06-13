@@ -7405,5 +7405,88 @@
   "autoHdrSwitching": "Auto HDR Switching",
   "autoHdrSwitchingDescription": "Automatically enable HDR for HDR video playback and restore display mode on exit.",
   "whenFullscreen": "When fullscreen",
-  "transcodingLimits": "Transcoding Limits"
+  "changeArtwork": "Change Artwork",
+  "missing": "Missing",
+  "transcodingLimits": "Transcoding Limits",
+  "clearAllArtworkButton": "Clear all artwork?",
+  "clearAllArtworkWarning": "Are you sure you want to clear all downloaded artwork?",
+  "confirmClear": "Confirm Clear",
+  "confirmClearMessage": "Are you sure you would like to clear this {itemType}?",
+  "@confirmClearMessage": {
+    "description": "Confirmation message when clearing a specific artwork",
+    "placeholders": {
+      "itemType": {
+        "type": "String"
+      }
+    }
+  },
+  "uploadButton": "Upload?",
+  "resolutionLabel": "Resolution: ",
+  "onlyShowInterfaceLanguage": "Only show artwork in interface language",
+  "confirmClearAll": "Confirm Clear All",
+  "imageUploadSuccess": "Image uploaded successfully!",
+  "imageUploadFailed": "Failed to upload image: {error}",
+  "@imageUploadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "imageDownloadFailed": "Failed to set image: {error}",
+  "@imageDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "imageDeleteFailed": "Failed to delete image: {error}",
+  "@imageDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "clearAllArtworkFailed": "Failed to clear all artwork: {error}",
+  "@clearAllArtworkFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "yes": "Yes",
+  "no": "No",
+  "posterCategory": "Poster",
+  "backdropsCategory": "Backdrops",
+  "bannerCategory": "Banner",
+  "logoCategory": "Logo",
+  "thumbnailCategory": "Thumbnail",
+  "artCategory": "Art",
+  "discArtCategory": "Disc Art",
+  "screenshotCategory": "Screenshot",
+  "boxCoverCategory": "Box Cover",
+  "boxRearCoverCategory": "Box Rear Cover",
+  "menuArtCategory": "Menu Art",
+  "confirmItemPoster": "poster",
+  "confirmItemBackdrop": "backdrop",
+  "confirmItemBanner": "banner",
+  "confirmItemLogo": "logo",
+  "confirmItemThumbnail": "thumbnail",
+  "confirmItemArt": "art",
+  "confirmItemDiscArt": "disc art",
+  "confirmItemScreenshot": "screenshot",
+  "confirmItemBoxCover": "box cover",
+  "confirmItemBoxRearCover": "box rear cover",
+  "confirmItemMenuArt": "menu art",
+  "resolutionAll": "All",
+  "resolutionHigh": "High (1080p+)",
+  "resolutionMedium": "Medium (720p)",
+  "resolutionLow": "Low (<720p)",
+  "sources": "Sources",
+  "@sources": {
+    "description": "Title of the artwork source-provider filter dialog"
+  }
 }

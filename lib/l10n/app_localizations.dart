@@ -14399,11 +14399,269 @@ abstract class AppLocalizations {
   /// **'When fullscreen'**
   String get whenFullscreen;
 
+  /// No description provided for @changeArtwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Artwork'**
+  String get changeArtwork;
+
+  /// No description provided for @missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing'**
+  String get missing;
+
   /// No description provided for @transcodingLimits.
   ///
   /// In en, this message translates to:
   /// **'Transcoding Limits'**
   String get transcodingLimits;
+
+  /// No description provided for @clearAllArtworkButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all artwork?'**
+  String get clearAllArtworkButton;
+
+  /// No description provided for @clearAllArtworkWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to clear all downloaded artwork?'**
+  String get clearAllArtworkWarning;
+
+  /// No description provided for @confirmClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Clear'**
+  String get confirmClear;
+
+  /// Confirmation message when clearing a specific artwork
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you would like to clear this {itemType}?'**
+  String confirmClearMessage(String itemType);
+
+  /// No description provided for @uploadButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload?'**
+  String get uploadButton;
+
+  /// No description provided for @resolutionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution: '**
+  String get resolutionLabel;
+
+  /// No description provided for @onlyShowInterfaceLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Only show artwork in interface language'**
+  String get onlyShowInterfaceLanguage;
+
+  /// No description provided for @confirmClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Clear All'**
+  String get confirmClearAll;
+
+  /// No description provided for @imageUploadSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Image uploaded successfully!'**
+  String get imageUploadSuccess;
+
+  /// No description provided for @imageUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload image: {error}'**
+  String imageUploadFailed(String error);
+
+  /// No description provided for @imageDownloadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to set image: {error}'**
+  String imageDownloadFailed(String error);
+
+  /// No description provided for @imageDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete image: {error}'**
+  String imageDeleteFailed(String error);
+
+  /// No description provided for @clearAllArtworkFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to clear all artwork: {error}'**
+  String clearAllArtworkFailed(String error);
+
+  /// No description provided for @yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yes;
+
+  /// No description provided for @posterCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Poster'**
+  String get posterCategory;
+
+  /// No description provided for @backdropsCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Backdrops'**
+  String get backdropsCategory;
+
+  /// No description provided for @bannerCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Banner'**
+  String get bannerCategory;
+
+  /// No description provided for @logoCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Logo'**
+  String get logoCategory;
+
+  /// No description provided for @thumbnailCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Thumbnail'**
+  String get thumbnailCategory;
+
+  /// No description provided for @artCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Art'**
+  String get artCategory;
+
+  /// No description provided for @discArtCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Disc Art'**
+  String get discArtCategory;
+
+  /// No description provided for @screenshotCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshot'**
+  String get screenshotCategory;
+
+  /// No description provided for @boxCoverCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Box Cover'**
+  String get boxCoverCategory;
+
+  /// No description provided for @boxRearCoverCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Box Rear Cover'**
+  String get boxRearCoverCategory;
+
+  /// No description provided for @menuArtCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu Art'**
+  String get menuArtCategory;
+
+  /// No description provided for @confirmItemPoster.
+  ///
+  /// In en, this message translates to:
+  /// **'poster'**
+  String get confirmItemPoster;
+
+  /// No description provided for @confirmItemBackdrop.
+  ///
+  /// In en, this message translates to:
+  /// **'backdrop'**
+  String get confirmItemBackdrop;
+
+  /// No description provided for @confirmItemBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'banner'**
+  String get confirmItemBanner;
+
+  /// No description provided for @confirmItemLogo.
+  ///
+  /// In en, this message translates to:
+  /// **'logo'**
+  String get confirmItemLogo;
+
+  /// No description provided for @confirmItemThumbnail.
+  ///
+  /// In en, this message translates to:
+  /// **'thumbnail'**
+  String get confirmItemThumbnail;
+
+  /// No description provided for @confirmItemArt.
+  ///
+  /// In en, this message translates to:
+  /// **'art'**
+  String get confirmItemArt;
+
+  /// No description provided for @confirmItemDiscArt.
+  ///
+  /// In en, this message translates to:
+  /// **'disc art'**
+  String get confirmItemDiscArt;
+
+  /// No description provided for @confirmItemScreenshot.
+  ///
+  /// In en, this message translates to:
+  /// **'screenshot'**
+  String get confirmItemScreenshot;
+
+  /// No description provided for @confirmItemBoxCover.
+  ///
+  /// In en, this message translates to:
+  /// **'box cover'**
+  String get confirmItemBoxCover;
+
+  /// No description provided for @confirmItemBoxRearCover.
+  ///
+  /// In en, this message translates to:
+  /// **'box rear cover'**
+  String get confirmItemBoxRearCover;
+
+  /// No description provided for @confirmItemMenuArt.
+  ///
+  /// In en, this message translates to:
+  /// **'menu art'**
+  String get confirmItemMenuArt;
+
+  /// No description provided for @resolutionAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get resolutionAll;
+
+  /// No description provided for @resolutionHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High (1080p+)'**
+  String get resolutionHigh;
+
+  /// No description provided for @resolutionMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium (720p)'**
+  String get resolutionMedium;
+
+  /// No description provided for @resolutionLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low (<720p)'**
+  String get resolutionLow;
+
+  /// Title of the artwork source-provider filter dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Sources'**
+  String get sources;
 }
 
 class _AppLocalizationsDelegate

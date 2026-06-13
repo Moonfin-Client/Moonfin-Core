@@ -25,6 +25,7 @@ import '../../util/search_group_title_localizer.dart';
 import '../../widgets/library_row.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/navigation_layout.dart';
+import '../../widgets/focus/context_menu_sheet.dart';
 
 class SearchScreen extends StatefulWidget {
   final String? initialQuery;
@@ -1067,6 +1068,13 @@ class _SearchScreenState extends State<SearchScreen> {
                       serverId: item.serverId,
                       type: item.type,
                     ),
+                  ),
+                  onLongPress: () => showContextMenu(
+                    context,
+                    item,
+                    onChanged: () {
+                      if (mounted) setState(() {});
+                    },
                   ),
                 );
               }).toList(),

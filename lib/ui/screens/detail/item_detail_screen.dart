@@ -32,10 +32,12 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
 import '../../../auth/repositories/user_repository.dart';
+import '../../../util/focus/key_event_utils.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/add_to_playlist_dialog.dart';
 import '../../widgets/logo_view.dart';
 import '../../widgets/media_card.dart';
+import '../../widgets/change_artwork_dialog.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/horizontal_scroll_section.dart';
 import '../../widgets/rating_display.dart';
@@ -1584,6 +1586,7 @@ class _DetailContentState extends State<_DetailContent> {
             seasons: viewModel.seasons,
             imageApi: viewModel.imageApi,
             prefs: prefs,
+            onItemLongPress: _showItemContextMenu,
             scrollController: _trackSectionScrollController(
               seasonsFocusNode,
               ctrl,
@@ -1686,7 +1689,11 @@ class _DetailContentState extends State<_DetailContent> {
         ...viewModel.episodes.map(
           (ep) => Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: _EpisodeCard(episode: ep, imageApi: viewModel.imageApi),
+            child: _EpisodeCard(
+              episode: ep,
+              imageApi: viewModel.imageApi,
+              onChanged: () => viewModel.load(),
+            ),
           ),
         ),
       ],
@@ -1819,6 +1826,7 @@ class _DetailContentState extends State<_DetailContent> {
             episodes: viewModel.episodes,
             currentEpisodeId: item.id,
             imageApi: viewModel.imageApi,
+            onChanged: () => viewModel.load(),
             scrollController: _trackSectionScrollController(
               episodesFocusNode,
               ctrl,
@@ -1978,6 +1986,7 @@ class _DetailContentState extends State<_DetailContent> {
             items: viewModel.features,
             imageApi: viewModel.imageApi,
             prefs: prefs,
+            onItemLongPress: _showItemContextMenu,
             scrollController: _trackSectionScrollController(
               _firstFeatureFocusNode,
               ctrl,
@@ -2145,6 +2154,7 @@ class _DetailContentState extends State<_DetailContent> {
             items: movies,
             imageApi: viewModel.imageApi,
             prefs: prefs,
+            onItemLongPress: _showItemContextMenu,
             scrollController: _trackSectionScrollController(
               moviesFocusNode,
               ctrl,
@@ -2171,6 +2181,7 @@ class _DetailContentState extends State<_DetailContent> {
             items: series,
             imageApi: viewModel.imageApi,
             prefs: prefs,
+            onItemLongPress: _showItemContextMenu,
             scrollController: _trackSectionScrollController(
               seriesFocusNode,
               ctrl,
@@ -2196,6 +2207,7 @@ class _DetailContentState extends State<_DetailContent> {
             items: guestAppearances,
             imageApi: viewModel.imageApi,
             prefs: prefs,
+            onItemLongPress: _showItemContextMenu,
             scrollController: _trackSectionScrollController(
               guestAppearancesFocusNode,
               ctrl,
@@ -2218,6 +2230,7 @@ class _DetailContentState extends State<_DetailContent> {
             items: musicVideos,
             imageApi: viewModel.imageApi,
             prefs: prefs,
+            onItemLongPress: _showItemContextMenu,
             scrollController: _trackSectionScrollController(
               musicVideosFocusNode,
               ctrl,
@@ -2305,6 +2318,7 @@ class _DetailContentState extends State<_DetailContent> {
             albums: viewModel.albums,
             imageApi: viewModel.imageApi,
             prefs: prefs,
+            onItemLongPress: _showItemContextMenu,
             scrollController: _trackSectionScrollController(
               albumsFocusNode,
               ctrl,
@@ -5369,8 +5383,27 @@ class _ActionButtonsState extends State<_ActionButtons> {
     AggregatedItem item, {
     bool forceStartOver = false,
   }) async {
+    final l10n = AppLocalizations.of(context);
     final resume = !forceStartOver && (item.playbackPosition?.inMilliseconds ?? 0) > 0;
+    
+    final client = GetIt.instance<MediaServerClient>();
+    final canChangeArtwork = client.serverType == ServerType.jellyfin;
+
     final options = [
+      if (canChangeArtwork)
+        _AdvancedPlaybackOption(
+          label: l10n.changeArtwork,
+          icon: Icons.image_outlined,
+          onTap: () async {
+            final changed = await ChangeArtworkDialog.show(
+              context,
+              item: item,
+            );
+            if (changed == true) {
+              viewModel.load();
+            }
+          },
+        ),
       if (PlatformDetection.isAndroid &&
           GetIt.instance<UserPreferences>()
               .get(UserPreferences.externalPlayerComponentName)
@@ -8328,6 +8361,7 @@ class _FeaturesRow extends StatelessWidget {
   final ScrollController? scrollController;
   final FocusNode? firstItemFocusNode;
   final KeyEventResult Function(int index, KeyEvent event)? onItemKeyEvent;
+  final void Function(AggregatedItem item)? onItemLongPress;
 
   const _FeaturesRow({
     required this.items,
@@ -8336,6 +8370,7 @@ class _FeaturesRow extends StatelessWidget {
     this.scrollController,
     this.firstItemFocusNode,
     this.onItemKeyEvent,
+    this.onItemLongPress,
   });
 
   @override
@@ -8385,6 +8420,9 @@ class _FeaturesRow extends StatelessWidget {
             onKeyEvent: onItemKeyEvent == null
                 ? null
                 : (_, event) => onItemKeyEvent!(index, event),
+            onLongPress: onItemLongPress != null
+                ? () => onItemLongPress!(item)
+                : null,
             onTap: () => context.push(
               Destinations.item(item.id, serverId: item.serverId),
             ),
@@ -8839,6 +8877,7 @@ class _SeasonsRow extends StatelessWidget {
   final ScrollController? scrollController;
   final FocusNode? firstItemFocusNode;
   final KeyEventResult Function(int index, KeyEvent event)? onItemKeyEvent;
+  final void Function(AggregatedItem item)? onItemLongPress;
 
   const _SeasonsRow({
     required this.seasons,
@@ -8847,6 +8886,7 @@ class _SeasonsRow extends StatelessWidget {
     this.scrollController,
     this.firstItemFocusNode,
     this.onItemKeyEvent,
+    this.onItemLongPress,
   });
 
   @override
@@ -8895,6 +8935,9 @@ class _SeasonsRow extends StatelessWidget {
             onTap: () => context.push(
               Destinations.item(season.id, serverId: season.serverId),
             ),
+            onLongPress: onItemLongPress != null
+                ? () => onItemLongPress!(season)
+                : null,
           );
         },
       ),
@@ -8961,6 +9004,7 @@ class _EpisodesRow extends StatelessWidget {
   final ScrollController? scrollController;
   final FocusNode? firstItemFocusNode;
   final KeyEventResult Function(int index, KeyEvent event)? onItemKeyEvent;
+  final VoidCallback? onChanged;
 
   const _EpisodesRow({
     required this.episodes,
@@ -8969,6 +9013,7 @@ class _EpisodesRow extends StatelessWidget {
     this.scrollController,
     this.firstItemFocusNode,
     this.onItemKeyEvent,
+    this.onChanged,
   });
 
   @override
@@ -8996,6 +9041,7 @@ class _EpisodesRow extends StatelessWidget {
             onKeyEvent: onItemKeyEvent == null
                 ? null
                 : (event) => onItemKeyEvent!(index, event),
+            onChanged: onChanged,
           );
         },
       ),
@@ -9010,6 +9056,7 @@ class _EpisodeListCard extends StatefulWidget {
   final bool isMobile;
   final FocusNode? focusNode;
   final KeyEventResult Function(KeyEvent event)? onKeyEvent;
+  final VoidCallback? onChanged;
 
   const _EpisodeListCard({
     required this.episode,
@@ -9018,6 +9065,7 @@ class _EpisodeListCard extends StatefulWidget {
     required this.isMobile,
     this.focusNode,
     this.onKeyEvent,
+    this.onChanged,
   });
 
   @override
@@ -9026,6 +9074,22 @@ class _EpisodeListCard extends StatefulWidget {
 
 class _EpisodeListCardState extends State<_EpisodeListCard>
     with FocusStateMixin {
+  final _selectKeyHandler = LongPressSelectKeyHandler();
+
+  @override
+  void dispose() {
+    _selectKeyHandler.dispose();
+    super.dispose();
+  }
+
+  void _handleLongPress() {
+    showContextMenu(
+      context,
+      widget.episode,
+      onChanged: widget.onChanged,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final ep = widget.episode;
@@ -9056,15 +9120,23 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
           if (customResult != null && customResult != KeyEventResult.ignored) {
             return customResult;
           }
-          if (isActivateKey(event)) {
-            context.push(Destinations.item(ep.id, serverId: ep.serverId));
-            return KeyEventResult.handled;
+          final handlerResult = _selectKeyHandler.handleKeyEvent(
+            event,
+            onTap: () => context.push(
+              Destinations.item(ep.id, serverId: ep.serverId),
+            ),
+            onLongPress: _handleLongPress,
+          );
+          if (handlerResult != KeyEventResult.ignored) {
+            return handlerResult;
           }
           return KeyEventResult.ignored;
         },
         child: GestureDetector(
           onTap: () =>
               context.push(Destinations.item(ep.id, serverId: ep.serverId)),
+          onLongPress: _handleLongPress,
+          onSecondaryTap: _handleLongPress,
           child: Container(
             width: widget.isMobile ? 180.0 : 220.0 * desktopScale,
             decoration: BoxDecoration(
@@ -9358,14 +9430,35 @@ class _NextUpCardState extends State<_NextUpCard> with FocusStateMixin {
 class _EpisodeCard extends StatefulWidget {
   final AggregatedItem episode;
   final ImageApi imageApi;
+  final VoidCallback? onChanged;
 
-  const _EpisodeCard({required this.episode, required this.imageApi});
+  const _EpisodeCard({
+    required this.episode,
+    required this.imageApi,
+    this.onChanged,
+  });
 
   @override
   State<_EpisodeCard> createState() => _EpisodeCardState();
 }
 
 class _EpisodeCardState extends State<_EpisodeCard> with FocusStateMixin {
+  final _selectKeyHandler = LongPressSelectKeyHandler();
+
+  @override
+  void dispose() {
+    _selectKeyHandler.dispose();
+    super.dispose();
+  }
+
+  void _handleLongPress() {
+    showContextMenu(
+      context,
+      widget.episode,
+      onChanged: widget.onChanged,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final episode = widget.episode;
@@ -9396,11 +9489,15 @@ class _EpisodeCardState extends State<_EpisodeCard> with FocusStateMixin {
       child: Focus(
         onFocusChange: (focused) => setFocused(focused),
         onKeyEvent: (_, event) {
-          if (isActivateKey(event)) {
-            context.push(
+          final handlerResult = _selectKeyHandler.handleKeyEvent(
+            event,
+            onTap: () => context.push(
               Destinations.item(episode.id, serverId: episode.serverId),
-            );
-            return KeyEventResult.handled;
+            ),
+            onLongPress: _handleLongPress,
+          );
+          if (handlerResult != KeyEventResult.ignored) {
+            return handlerResult;
           }
           return KeyEventResult.ignored;
         },
@@ -9408,6 +9505,8 @@ class _EpisodeCardState extends State<_EpisodeCard> with FocusStateMixin {
           onTap: () => context.push(
             Destinations.item(episode.id, serverId: episode.serverId),
           ),
+          onLongPress: _handleLongPress,
+          onSecondaryTap: _handleLongPress,
           child: AnimatedScale(
             scale: cardExpansion && showFocusBorder ? 1.02 : 1.0,
             duration: const Duration(milliseconds: 120),
@@ -9995,6 +10094,7 @@ class _FilmographyRow extends StatelessWidget {
   final ScrollController? scrollController;
   final FocusNode? firstFocusNode;
   final KeyEventResult Function(int index, KeyEvent event)? onItemKeyEvent;
+  final void Function(AggregatedItem item)? onItemLongPress;
 
   const _FilmographyRow({
     required this.items,
@@ -10003,6 +10103,7 @@ class _FilmographyRow extends StatelessWidget {
     this.scrollController,
     this.firstFocusNode,
     this.onItemKeyEvent,
+    this.onItemLongPress,
   });
 
   @override
@@ -10086,6 +10187,9 @@ class _FilmographyRow extends StatelessWidget {
             onKeyEvent: onItemKeyEvent == null
                 ? null
                 : (_, event) => onItemKeyEvent!(index, event),
+            onLongPress: onItemLongPress != null
+                ? () => onItemLongPress!(item)
+                : null,
             onTap: () => context.push(
               Destinations.item(item.id, serverId: item.serverId),
             ),
@@ -10555,6 +10659,7 @@ class _AlbumsRow extends StatelessWidget {
   final ScrollController? scrollController;
   final FocusNode? firstItemFocusNode;
   final KeyEventResult Function(int index, KeyEvent event)? onItemKeyEvent;
+  final void Function(AggregatedItem item)? onItemLongPress;
 
   const _AlbumsRow({
     required this.albums,
@@ -10563,6 +10668,7 @@ class _AlbumsRow extends StatelessWidget {
     this.scrollController,
     this.firstItemFocusNode,
     this.onItemKeyEvent,
+    this.onItemLongPress,
   });
 
   @override
@@ -10603,6 +10709,9 @@ class _AlbumsRow extends StatelessWidget {
             onKeyEvent: onItemKeyEvent == null
                 ? null
                 : (_, event) => onItemKeyEvent!(index, event),
+            onLongPress: onItemLongPress != null
+                ? () => onItemLongPress!(album)
+                : null,
             onTap: () => context.push(
               Destinations.item(album.id, serverId: album.serverId),
             ),

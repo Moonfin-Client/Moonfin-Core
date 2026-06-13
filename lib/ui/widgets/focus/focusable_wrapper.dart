@@ -22,6 +22,7 @@ class FocusableWrapper extends StatefulWidget {
   final double borderRadius;
   final bool autoScroll;
   final double scrollAlignment;
+  final ScrollPositionAlignmentPolicy alignmentPolicy;
   final bool useComfortableZone;
   final bool descendantsAreFocusable;
   final bool disableScale;
@@ -31,6 +32,7 @@ class FocusableWrapper extends StatefulWidget {
   final Duration longPressDuration;
   final FocusOnKeyEventCallback? onKeyEvent;
   final String? semanticLabel;
+  final bool suppressFocusGlow;
 
   const FocusableWrapper({
     super.key,
@@ -48,6 +50,7 @@ class FocusableWrapper extends StatefulWidget {
     this.borderRadius = FocusTheme.defaultBorderRadius,
     this.autoScroll = false,
     this.scrollAlignment = 0.5,
+    this.alignmentPolicy = ScrollPositionAlignmentPolicy.explicit,
     this.useComfortableZone = false,
     this.descendantsAreFocusable = true,
     this.disableScale = false,
@@ -57,6 +60,7 @@ class FocusableWrapper extends StatefulWidget {
     this.longPressDuration = const Duration(milliseconds: 500),
     this.onKeyEvent,
     this.semanticLabel,
+    this.suppressFocusGlow = false,
   });
 
   @override
@@ -122,6 +126,7 @@ class _FocusableWrapperState extends State<FocusableWrapper>
         Scrollable.ensureVisible(
           ctx,
           alignment: widget.scrollAlignment,
+          alignmentPolicy: widget.alignmentPolicy,
           duration: FocusTheme.animationDuration,
           curve: Curves.easeOut,
         );
@@ -140,7 +145,7 @@ class _FocusableWrapperState extends State<FocusableWrapper>
     Scrollable.ensureVisible(
       ctx,
       alignment: widget.scrollAlignment,
-      alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+      alignmentPolicy: widget.alignmentPolicy,
       duration: FocusTheme.animationDuration,
       curve: Curves.easeOut,
     );
@@ -206,11 +211,13 @@ class _FocusableWrapperState extends State<FocusableWrapper>
             backgroundColor: _focused
                 ? color.withValues(alpha: 0.18)
                 : null,
+            suppressFocusGlow: widget.suppressFocusGlow,
           )
         : FocusTheme.focusDecoration(
             isFocused: _focused,
             radius: widget.borderRadius,
             color: color,
+            suppressFocusGlow: widget.suppressFocusGlow,
           );
 
     Widget content = AnimatedContainer(
