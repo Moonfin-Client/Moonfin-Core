@@ -23,6 +23,40 @@ import 'util/platform_detection.dart';
 import 'util/tv_image_cache_stub.dart'
     if (dart.library.io) 'util/tv_image_cache_io.dart';
 
+DateTime? _lastIosRouteResync;
+
+/// iOS-only audio route handling. audio_service owns the AVAudioSession, so we
+/// observe route changes directly to (a) pause when the current output device
+/// disappears (AirPods removed, cable unplugged) and (b) re-sync A/V when a new
+/// output is connected mid-playback (AirPlay/HomePod), which otherwise leaves
+/// libmpv writing to a stale clock and drifts audio out of sync.
+void _attachIosAudioRouteHandling() {
+  final session = AVAudioSession();
+  session.routeChangeStream.listen((change) async {
+    final manager = GetIt.instance<PlaybackManager>();
+    switch (change.reason) {
+      case AVAudioSessionRouteChangeReason.oldDeviceUnavailable:
+        manager.pause();
+        break;
+      case AVAudioSessionRouteChangeReason.newDeviceAvailable:
+        if (!manager.state.isPlaying) return;
+        final now = DateTime.now();
+        final last = _lastIosRouteResync;
+        if (last != null &&
+            now.difference(last) < const Duration(milliseconds: 500)) {
+          return;
+        }
+        _lastIosRouteResync = now;
+        // A same-position seek re-primes libmpv's audio/video clock without an
+        // audible pause, realigning A/V after the output switch.
+        await manager.seekTo(manager.state.position);
+        break;
+      default:
+        break;
+    }
+  });
+}
+
 void _configureImageCache() {
   final imageCache = PaintingBinding.instance.imageCache;
   if (PlatformDetection.isWeb) {
@@ -373,28 +407,37 @@ void main() async {
         manager: GetIt.instance<PlaybackManager>(),
         clientFactory: GetIt.instance<MediaServerClientFactory>(),
       );
-    } catch (_) {}
+    } catch (e, st) {
+      debugPrint('initAudioService failed (lock-screen controls disabled): $e\n$st');
+    }
   }
 
-  try {
-    final session = await AudioSession.instance;
-    final iosCategoryOptions =
-        AVAudioSessionCategoryOptions.allowAirPlay |
-        AVAudioSessionCategoryOptions.allowBluetooth |
-        AVAudioSessionCategoryOptions.allowBluetoothA2dp;
-    await session.configure(AudioSessionConfiguration(
-      avAudioSessionCategory: AVAudioSessionCategory.playback,
-      avAudioSessionCategoryOptions: iosCategoryOptions,
-      androidAudioAttributes: AndroidAudioAttributes(
-        contentType: AndroidAudioContentType.music,
-        usage: AndroidAudioUsage.media,
-      ),
-    ));
-    await session.setActive(true);
-    session.becomingNoisyEventStream.listen((_) {
-      GetIt.instance<PlaybackManager>().pause();
-    });
-  } catch (_) {}
+  // Audio session ownership differs per platform:
+  // - Android: the audio_session package configures and activates the session for
+  //   the foreground media notification.
+  // - iOS: audio_service owns the AVAudioSession so that lock-screen / Control
+  //   Center Now Playing works. Configuring/activating it again here would detach
+  //   audio_service's Now Playing wiring, so we don't. Route handling (pause on
+  //   disconnect, A/V re-sync on connect) is done in _attachIosAudioRouteHandling.
+  if (PlatformDetection.isAndroid) {
+    try {
+      final session = await AudioSession.instance;
+      await session.configure(AudioSessionConfiguration(
+        androidAudioAttributes: AndroidAudioAttributes(
+          contentType: AndroidAudioContentType.music,
+          usage: AndroidAudioUsage.media,
+        ),
+      ));
+      await session.setActive(true);
+      session.becomingNoisyEventStream.listen((_) {
+        GetIt.instance<PlaybackManager>().pause();
+      });
+    } catch (_) {}
+  } else if (PlatformDetection.isIOS) {
+    try {
+      _attachIosAudioRouteHandling();
+    } catch (_) {}
+  }
 
   if (!GetIt.instance.isRegistered<PlaybackLifecycleHandler>()) {
     GetIt.instance.registerSingleton<PlaybackLifecycleHandler>(

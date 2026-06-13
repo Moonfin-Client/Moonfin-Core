@@ -16,6 +16,8 @@ class MoonfinAudioHandler extends BaseAudioHandler
 
   final List<StreamSubscription> _subs = [];
 
+  DateTime? _lastPositionPush;
+
   MoonfinAudioHandler(this._manager, this._clientFactory) {
     _bindStreams();
   }
@@ -27,6 +29,19 @@ class MoonfinAudioHandler extends BaseAudioHandler
     _subs.addAll([
       s.playingStream.listen((_) => _pushPlaybackState()),
       s.bufferingStream.listen((_) => _pushPlaybackState()),
+      // Keep the lock-screen / notification scrubber advancing during steady
+      // playback. positionStream fires several times a second, so throttle the
+      // pushes to ~1 Hz to avoid flooding the platform channel.
+      s.positionStream.listen((_) {
+        final now = DateTime.now();
+        final last = _lastPositionPush;
+        if (last != null &&
+            now.difference(last) < const Duration(seconds: 1)) {
+          return;
+        }
+        _lastPositionPush = now;
+        _pushPlaybackState();
+      }),
       s.durationStream.listen((_) => _pushMediaItemForCurrentTrack()),
       q.queueChangedStream.listen((_) {
         _pushQueue();
@@ -63,7 +78,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
               : AudioProcessingState.idle,
       playing: s.isPlaying,
       updatePosition: s.position,
-      bufferedPosition: s.position,
+      bufferedPosition: s.buffer,
       speed: s.playbackSpeed,
       queueIndex: q.currentIndex,
     ));

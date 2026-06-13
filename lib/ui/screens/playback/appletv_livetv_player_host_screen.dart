@@ -604,6 +604,10 @@ class _AppleTvLiveTvPlayerHostScreenState
 
   void _handleUiAction(Map<String, dynamic> action) {
     switch (action['event']?.toString()) {
+      case 'play':
+        unawaited(_manager.resume());
+      case 'pause':
+        unawaited(_manager.pause());
       case 'openGuide':
         unawaited(_enterGuideMode());
         return;

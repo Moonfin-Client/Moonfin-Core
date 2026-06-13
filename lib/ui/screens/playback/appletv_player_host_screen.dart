@@ -1180,6 +1180,15 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     final manager = _manager;
     if (manager == null) return;
     switch (action['event']?.toString()) {
+      case 'play':
+        unawaited(manager.resume());
+      case 'pause':
+        unawaited(manager.pause());
+      case 'seek':
+        final positionMs = (action['positionMs'] as num?)?.toInt();
+        if (positionMs != null) {
+          unawaited(manager.seekTo(Duration(milliseconds: positionMs)));
+        }
       case 'next':
         unawaited(manager.next());
       case 'previous':

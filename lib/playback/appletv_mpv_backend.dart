@@ -122,6 +122,9 @@ class AppleTvMpvBackend implements PlayerBackend {
         _bufferingStream.add(false);
       case 'userExited':
         _userExitStream.add(null);
+      case 'play':
+      case 'pause':
+      case 'seek':
       case 'next':
       case 'previous':
       case 'selectAudio':

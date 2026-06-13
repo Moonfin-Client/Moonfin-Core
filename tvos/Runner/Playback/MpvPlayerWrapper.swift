@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import AVFoundation
+import MediaPlayer
 import Darwin
 import os
 #if canImport(Metal)
@@ -102,6 +103,15 @@ class MpvPlayerWrapper: NSObject, ObservableObject {
 
     var isPlaying: Bool { state == .playing }
 
+    /// Registers Moonfin as the system Now Playing app (lock-screen / Control
+    /// Center / AirPods stem) and forwards remote transport commands to Flutter.
+    let nowPlaying = NowPlayingController()
+
+    /// Set by the platform channel. Remote commands (AirPods stem, Control
+    /// Center, Siri Remote) are forwarded to Flutter so PlaybackManager stays
+    /// the source of truth for transport and server progress reporting.
+    var onNowPlayingCommand: (([String: Any]) -> Void)?
+
     private let logger = Logger(subsystem: "org.moonfin.appletv", category: "MpvPlayer")
     nonisolated(unsafe) private var lifecycleObservers: [NSObjectProtocol] = []
     private var wasPlayingBeforeBackground = false
@@ -154,6 +164,7 @@ class MpvPlayerWrapper: NSObject, ObservableObject {
     override init() {
         super.init()
         registerLifecycleObservers()
+        wireNowPlaying()
     }
 
     deinit {
@@ -161,10 +172,55 @@ class MpvPlayerWrapper: NSObject, ObservableObject {
             stopRenderScheduler()
             resetEngine()
             videoSurface.teardown()
+            nowPlaying.teardown()
         }
         for observer in lifecycleObservers {
             NotificationCenter.default.removeObserver(observer)
         }
+    }
+
+    private func wireNowPlaying() {
+        nowPlaying.onPlay = { [weak self] in
+            self?.onNowPlayingCommand?(["event": "play"])
+        }
+        nowPlaying.onPause = { [weak self] in
+            self?.onNowPlayingCommand?(["event": "pause"])
+        }
+        nowPlaying.onToggle = { [weak self] in
+            guard let self else { return }
+            self.onNowPlayingCommand?(["event": self.isPlaying ? "pause" : "play"])
+        }
+        nowPlaying.onSeek = { [weak self] seconds in
+            self?.onNowPlayingCommand?([
+                "event": "seek",
+                "positionMs": Int((seconds * 1000).rounded()),
+            ])
+        }
+        nowPlaying.onNext = { [weak self] in
+            self?.onNowPlayingCommand?(["event": "next"])
+        }
+        nowPlaying.onPrevious = { [weak self] in
+            self?.onNowPlayingCommand?(["event": "previous"])
+        }
+        nowPlaying.registerCommands()
+    }
+
+    /// Populate the system Now Playing card from the UI metadata Flutter already
+    /// pushes for the on-screen overlay (title / subtitle / artwork).
+    func applyNowPlayingMetadata(_ args: [String: Any]) {
+        let title = (args["topTitle"] as? String) ?? ""
+        let subtitle = (args["topSubtitle"] as? String) ?? ""
+        let logo = args["logoUrl"] as? String
+        nowPlaying.updateMetadata(
+            title: title,
+            subtitle: subtitle,
+            durationSeconds: duration,
+            artworkURL: (logo?.isEmpty ?? true) ? nil : logo)
+        nowPlaying.setQueueCapabilities(
+            hasNext: (args["hasNext"] as? Bool) ?? false,
+            hasPrevious: (args["hasPrevious"] as? Bool) ?? false)
+        nowPlaying.updatePlaybackState(
+            isPlaying: isPlaying, elapsed: currentTime, duration: duration, rate: rate)
     }
 
     func attachVideoView(_ view: UIView) {
@@ -352,24 +408,31 @@ class MpvPlayerWrapper: NSObject, ObservableObject {
             position = Float(max(0, min(1, currentTime / duration)))
         }
         lastPositionPublishAt = now
+        nowPlaying.updatePlaybackState(
+            isPlaying: isPlaying, elapsed: currentTime, duration: duration, rate: rate)
     }
 
     func pause() {
         cancelMpvResumeGate()
         _ = engine?.setPause(true)
         state = .paused
+        nowPlaying.updatePlaybackState(
+            isPlaying: false, elapsed: currentTime, duration: duration, rate: rate)
     }
 
     func resume() {
         cancelMpvResumeGate()
         _ = engine?.setPause(false)
         state = .playing
+        nowPlaying.updatePlaybackState(
+            isPlaying: true, elapsed: currentTime, duration: duration, rate: rate)
     }
 
     func stop() {
         stopPlaybackOnly()
         audioSessionActive = false
         resetEngine()
+        nowPlaying.clear()
     }
 
     func stopPlaybackOnly() {
@@ -1307,10 +1370,186 @@ class MpvPlayerWrapper: NSObject, ObservableObject {
                 }
             }
         )
+
+        // Pause when the current output device disappears (AirPods removed,
+        // headphones unplugged). The system does not interrupt for this, so it
+        // must be handled as a route change.
+        lifecycleObservers.append(
+            center.addObserver(
+                forName: AVAudioSession.routeChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] notification in
+                MainActor.assumeIsolated {
+                    guard let self else { return }
+                    guard
+                        let rawReason = notification.userInfo?[
+                            AVAudioSessionRouteChangeReasonKey] as? UInt,
+                        let reason = AVAudioSession.RouteChangeReason(rawValue: rawReason)
+                    else {
+                        return
+                    }
+                    if reason == .oldDeviceUnavailable, self.isPlaying {
+                        self.pause()
+                        self.onNowPlayingCommand?(["event": "pause"])
+                    }
+                }
+            }
+        )
     }
 
     static func makePlayer() -> MpvPlayerWrapper {
         return MpvPlayerWrapper()
+    }
+}
+
+/// Bridges the player to the system Now Playing infrastructure: it owns the
+/// `MPNowPlayingInfoCenter` payload and `MPRemoteCommandCenter` handlers so
+/// Moonfin becomes the active Now Playing app. Without this, AirPods stem
+/// clicks and Control Center transport controls fall through to whatever app
+/// last held the Now Playing session. Requires no entitlement; the private 
+/// `com.apple.mediaremote.set-playback-state` is not used.
+@MainActor
+final class NowPlayingController {
+    var onPlay: (@MainActor () -> Void)?
+    var onPause: (@MainActor () -> Void)?
+    var onToggle: (@MainActor () -> Void)?
+    var onSeek: (@MainActor (TimeInterval) -> Void)?
+    var onNext: (@MainActor () -> Void)?
+    var onPrevious: (@MainActor () -> Void)?
+
+    private var commandsRegistered = false
+    private var registeredTargets: [(MPRemoteCommand, Any)] = []
+    private var info: [String: Any] = [:]
+    private var artworkURLString: String?
+
+    func registerCommands() {
+        guard !commandsRegistered else { return }
+        commandsRegistered = true
+        let center = MPRemoteCommandCenter.shared()
+
+        addTarget(center.playCommand) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.onPlay?()
+                return .success
+            }
+        }
+        addTarget(center.pauseCommand) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.onPause?()
+                return .success
+            }
+        }
+        addTarget(center.togglePlayPauseCommand) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.onToggle?()
+                return .success
+            }
+        }
+        addTarget(center.changePlaybackPositionCommand) { [weak self] event in
+            MainActor.assumeIsolated {
+                guard let self,
+                    let positionEvent = event as? MPChangePlaybackPositionCommandEvent
+                else {
+                    return .commandFailed
+                }
+                self.onSeek?(positionEvent.positionTime)
+                return .success
+            }
+        }
+        addTarget(center.nextTrackCommand) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.onNext?()
+                return .success
+            }
+        }
+        addTarget(center.previousTrackCommand) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.onPrevious?()
+                return .success
+            }
+        }
+
+        center.playCommand.isEnabled = true
+        center.pauseCommand.isEnabled = true
+        center.togglePlayPauseCommand.isEnabled = true
+        center.changePlaybackPositionCommand.isEnabled = true
+    }
+
+    func setQueueCapabilities(hasNext: Bool, hasPrevious: Bool) {
+        let center = MPRemoteCommandCenter.shared()
+        center.nextTrackCommand.isEnabled = hasNext
+        center.previousTrackCommand.isEnabled = hasPrevious
+    }
+
+    func updateMetadata(
+        title: String, subtitle: String, durationSeconds: TimeInterval, artworkURL: String?
+    ) {
+        info[MPMediaItemPropertyTitle] = title
+        info[MPMediaItemPropertyArtist] = subtitle
+        info[MPMediaItemPropertyAlbumTitle] = subtitle
+        if durationSeconds > 0 {
+            info[MPMediaItemPropertyPlaybackDuration] = durationSeconds
+        }
+        info[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.video.rawValue
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+        loadArtwork(artworkURL)
+    }
+
+    func updatePlaybackState(
+        isPlaying: Bool, elapsed: TimeInterval, duration: TimeInterval, rate: Float
+    ) {
+        guard !info.isEmpty else { return }
+        if duration > 0 {
+            info[MPMediaItemPropertyPlaybackDuration] = duration
+        }
+        info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = max(0, elapsed)
+        info[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? Double(rate <= 0 ? 1 : rate) : 0
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+    }
+
+    func clear() {
+        info = [:]
+        artworkURLString = nil
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+    }
+
+    func teardown() {
+        for (command, token) in registeredTargets {
+            command.removeTarget(token)
+        }
+        registeredTargets.removeAll()
+        commandsRegistered = false
+        clear()
+    }
+
+    private func addTarget(
+        _ command: MPRemoteCommand,
+        handler: @escaping (MPRemoteCommandEvent) -> MPRemoteCommandHandlerStatus
+    ) {
+        let token = command.addTarget(handler: handler)
+        registeredTargets.append((command, token))
+    }
+
+    private func loadArtwork(_ urlString: String?) {
+        guard let urlString, !urlString.isEmpty, urlString != artworkURLString,
+            let url = URL(string: urlString)
+        else {
+            return
+        }
+        artworkURLString = urlString
+        Task { @MainActor [weak self] in
+            guard let (data, _) = try? await URLSession.shared.data(from: url) else { return }
+            self?.applyArtworkData(data, for: urlString)
+        }
+    }
+
+    private func applyArtworkData(_ data: Data, for urlString: String) {
+        guard artworkURLString == urlString, let image = UIImage(data: data) else { return }
+        info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
+            image
+        }
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
     }
 }
 

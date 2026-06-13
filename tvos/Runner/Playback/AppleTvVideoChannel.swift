@@ -64,6 +64,7 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         case "setUiMetadata":
             lastMetadata = args
             playerVC?.applyUiMetadata(args)
+            player?.applyNowPlayingMetadata(args)
         case "showRemoteSubtitles":
             let results = (args["results"] as? [[String: Any]]) ?? []
             playerVC?.presentRemoteSubtitleResults(results)
@@ -151,6 +152,9 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         }
         let created: MpvPlayerWrapper = NativePlayerWrapper()
         player = created
+        created.onNowPlayingCommand = { [weak self] payload in
+            self?.send(payload)
+        }
         if audioOnly {
             startStateTimer()
             send(["event": "presented"])
