@@ -436,16 +436,7 @@ class SessionRepository {
 
     switch (command) {
       case 'playnow':
-        _ensurePlayerRouteForItem(items[startIndex]);
-        await manager.playItems(
-          items,
-          startIndex: startIndex,
-          startPosition:
-              _durationFromTicks(message.startPositionTicks) ?? Duration.zero,
-          audioStreamIndex: message.audioStreamIndex,
-          subtitleStreamIndex: message.subtitleStreamIndex,
-          mediaSourceId: message.mediaSourceId,
-        );
+        await _playRemoteItems(manager, items, startIndex, message);
         break;
       case 'playnext':
         for (final item in items.reversed) {
@@ -457,18 +448,47 @@ class SessionRepository {
         manager.queueService.addItems(items);
         break;
       default:
-        _ensurePlayerRouteForItem(items[startIndex]);
-        await manager.playItems(
-          items,
-          startIndex: startIndex,
-          startPosition:
-              _durationFromTicks(message.startPositionTicks) ?? Duration.zero,
-          audioStreamIndex: message.audioStreamIndex,
-          subtitleStreamIndex: message.subtitleStreamIndex,
-          mediaSourceId: message.mediaSourceId,
-        );
+        await _playRemoteItems(manager, items, startIndex, message);
         break;
     }
+  }
+
+  Future<void> _playRemoteItems(
+    PlaybackManager manager,
+    List<AggregatedItem> items,
+    int startIndex,
+    PlayMessage message,
+  ) async {
+    final item = items[startIndex];
+    final isLiveTv = _isLiveTvItem(item);
+    final allowDirect = isLiveTv
+        ? GetIt.instance<UserPreferences>().get(
+            UserPreferences.liveTvDirectPlayEnabled,
+          )
+        : true;
+
+    _ensurePlayerRouteForItem(item);
+    await manager.playItems(
+      items,
+      startIndex: startIndex,
+      startPosition:
+          _durationFromTicks(message.startPositionTicks) ?? Duration.zero,
+      audioStreamIndex: message.audioStreamIndex,
+      subtitleStreamIndex: message.subtitleStreamIndex,
+      mediaSourceId: message.mediaSourceId,
+      enableDirectPlay: allowDirect,
+      enableDirectStream: allowDirect,
+      enableTranscoding: !isLiveTv || !allowDirect,
+    );
+  }
+
+  bool _isLiveTvItem(AggregatedItem item) {
+    final type = item.type;
+    return type == 'TvChannel' ||
+        type == 'LiveTvChannel' ||
+        type == 'Program' ||
+        item.rawData['ChannelId'] != null ||
+        item.rawData['TimerId'] != null;
   }
 
   void _ensurePlayerRouteForItem(AggregatedItem item) {
