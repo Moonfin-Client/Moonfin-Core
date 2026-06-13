@@ -273,6 +273,13 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
                 rangeType: args["videoRangeType"] as? String)
         }
 
+        if !audioOnly {
+            player.configureDynamicRangeIntent(
+                contentRange: VideoCapabilityDetector.dynamicRange(
+                    fromRangeType: args["videoRangeType"] as? String),
+                sinkIsHdrCapable: VideoCapabilityDetector.displaySupportsHdr())
+        }
+
         Task {
             await player.play(
                 streamUrl: url, startPosition: startMs / 1000.0, audioOnly: audioOnly)

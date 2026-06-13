@@ -53,8 +53,35 @@ enum VideoCapabilityDetector {
         }
     }
 
+    static func activeScreen() -> UIScreen {
+        if let sceneScreen = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive })?
+            .screen
+        {
+            return sceneScreen
+        }
+        return UIScreen.main
+    }
+
     static func displaySupportsHdr() -> Bool {
-        return UIScreen.main.traitCollection.displayGamut == .P3
+        let supportsHdr10: Bool
+        switch currentGeneration() {
+        case .hd:
+            supportsHdr10 = false
+        case .k4Gen1, .k4Gen2, .k4Gen3, .unknown:
+            supportsHdr10 = true
+        }
+        return supportsHdr10 && activeScreen().traitCollection.displayGamut == .P3
+    }
+
+    static func dynamicRange(fromRangeType rangeType: String?) -> VideoDynamicRange {
+        let value = (rangeType ?? "").uppercased()
+        if value.contains("DOVI") || value.contains("DOLBYVISION") { return .dolbyVision }
+        if value.contains("HDR10PLUS") || value.contains("HDR10+") { return .hdr10Plus }
+        if value.contains("HLG") { return .hlg }
+        if value.contains("HDR") { return .hdr10 }
+        return .sdr
     }
 
     static func deviceProfileCapabilities() -> [String: Any] {
