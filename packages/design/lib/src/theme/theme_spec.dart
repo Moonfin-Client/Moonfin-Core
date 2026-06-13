@@ -382,6 +382,11 @@ class ThemeSpec {
   /// overlay colour and opacity preference are applied.
   final bool transparentNavbarSurface;
 
+  /// When `true`, surfaces render the Apple "Liquid Glass" treatment — a
+  /// drifting gradient backdrop plus real frosted-material panels — instead of
+  /// flat fills. Widgets check this via `AppColorScheme.isGlass`.
+  final bool isGlass;
+
   const ThemeSpec({
     required this.id,
     required this.displayName,
@@ -393,6 +398,7 @@ class ThemeSpec {
     this.textGlow = const [],
     this.navColorCycle = const [],
     this.transparentNavbarSurface = false,
+    this.isGlass = false,
   });
 
   factory ThemeSpec.fromJson(Map<String, dynamic> json) {
@@ -441,6 +447,7 @@ class ThemeSpec {
       textGlow: _parseTextShadowList(json['textGlow']),
       navColorCycle: _parseColorList(json['navColorCycle']),
       transparentNavbarSurface: (json['transparentNavbarSurface'] as bool?) ?? false,
+      isGlass: (json['isGlass'] as bool?) ?? false,
     );
   }
 
@@ -454,6 +461,7 @@ class ThemeSpec {
         if (navColorCycle.isNotEmpty)
           'navColorCycle': navColorCycle.map(_encodeColor).toList(),
         if (transparentNavbarSurface) 'transparentNavbarSurface': true,
+        if (isGlass) 'isGlass': true,
         'colors': colors.toJson(),
         'borders': borders.toJson(),
         'semantic': semantic.toJson(),

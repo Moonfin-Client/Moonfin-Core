@@ -166,6 +166,13 @@ class AppLocalizationsMn extends AppLocalizations {
       'Нил ягаан өнгийн туяа, хөх өнгийн текст, илүү хүчтэй хром тодосгогч бүхий Synthwave загвар';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'Emby Connect бүртгэлээрээ нэвтэрнэ үү';
 

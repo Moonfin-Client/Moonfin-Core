@@ -2637,11 +2637,12 @@ class _SlideInfo extends StatelessWidget {
     final theme = Theme.of(context);
     final isMobile = PlatformDetection.useMobileUi;
     final cardAlpha = (kIsWeb ? 1.0 : 0.75) * overlayOpacity;
+    final glass = AppColorScheme.isGlass;
 
     final infoCard = Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: compact ? 6 : 12),
-      decoration: compact
+      decoration: (compact || glass)
           ? null
           : BoxDecoration(
               color: overlayColor.withValues(alpha: cardAlpha.clamp(0.0, 1.0)),
@@ -2709,15 +2710,21 @@ class _SlideInfo extends StatelessWidget {
       ),
       child: compact
           ? infoCard
-          : ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: kIsWeb
-                  ? infoCard
-                  : BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                      child: infoCard,
-                    ),
-            ),
+          : glass
+              ? GlassSurface(
+                  cornerRadius: 16,
+                  fallbackColor: Colors.transparent,
+                  child: infoCard,
+                )
+              : ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: kIsWeb
+                      ? infoCard
+                      : BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                          child: infoCard,
+                        ),
+                ),
     );
   }
 }

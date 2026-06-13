@@ -50,19 +50,30 @@ class SettingsPanel extends StatelessWidget {
         : PlatformDetection.useMobileUi
             ? (screenWidth - 8).clamp(320.0, screenWidth)
             : (screenWidth - 16).clamp(320.0, 420.0);
+    final glass = AppColorScheme.isGlass;
+    final Widget body = SizedBox(
+      width: panelWidth,
+      height: double.infinity,
+      child: SettingsListTypography(
+        child: _SettingsNavigator(initial: child),
+      ),
+    );
     return Align(
       alignment: Alignment.centerRight,
       child: Material(
-        color: Theme.of(context).colorScheme.surface,
+        color: glass
+            ? Colors.transparent
+            : Theme.of(context).colorScheme.surface,
         borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
         clipBehavior: Clip.antiAlias,
-        child: SizedBox(
-          width: panelWidth,
-          height: double.infinity,
-          child: SettingsListTypography(
-            child: _SettingsNavigator(initial: child),
-          ),
-        ),
+        child: glass
+            ? GlassSurface(
+                cornerRadius: 16,
+                reinforced: true,
+                fallbackColor: Colors.transparent,
+                child: body,
+              )
+            : body,
       ),
     );
   }

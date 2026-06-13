@@ -15,6 +15,7 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
     private var didComplete = false
     private var lastMetadata: [String: Any]?
     private var lastSubtitleStyle: [String: Any]?
+    private var lastThemeConfig: [String: Any]?
     static var lastCommand = "-"
 
     init(messenger: FlutterBinaryMessenger, rootViewController: UIViewController) {
@@ -71,6 +72,9 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         case "configureSubtitleStyle":
             lastSubtitleStyle = args
             applySubtitleStyle(args)
+        case "setThemeConfig":
+            lastThemeConfig = args
+            playerVC?.applyThemeConfig(args)
         case "play":
             player?.resume()
         case "pause":
@@ -209,6 +213,9 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         }
         if let style = lastSubtitleStyle {
             applySubtitleStyle(style, on: created, vc: vc)
+        }
+        if let theme = lastThemeConfig {
+            vc.applyThemeConfig(theme)
         }
         playerVC = vc
         rootViewController?.present(vc, animated: false) { [weak self] in

@@ -166,6 +166,13 @@ class AppLocalizationsKn extends AppLocalizations {
       'ಮೆಜೆಂಟಾ ಗ್ಲೋ, ಸಯಾನ್ ಪಠ್ಯ ಮತ್ತು ಬಲವಾದ ಕ್ರೋಮ್ ಕಾಂಟ್ರಾಸ್ಟ್‌ನೊಂದಿಗೆ ಸಿಂಥ್ವೇವ್ ಸ್ಟೈಲಿಂಗ್';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'ನಿಮ್ಮ Emby ಸಂಪರ್ಕ ಖಾತೆಯೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ';
 

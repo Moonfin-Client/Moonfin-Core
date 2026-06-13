@@ -118,9 +118,10 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer> {
       },
       child: GestureDetector(
         onTap: () => appRouter.push(Destinations.audioPlayer),
-        child: Container(
+        child: GlassSurface(
+          cornerRadius: 0,
+          fallbackColor: AppColorScheme.surface,
           padding: EdgeInsets.only(bottom: bottomPad),
-          color: AppColorScheme.surface,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -350,8 +351,9 @@ class _TvMiniAudioBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FocusTraversalGroup(
-      child: Container(
-        color: AppColorScheme.surface,
+      child: GlassSurface(
+        cornerRadius: 0,
+        fallbackColor: AppColorScheme.surface,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

@@ -167,6 +167,13 @@ class AppLocalizationsTh extends AppLocalizations {
       'สไตล์ซินธ์เวฟพร้อมเรืองแสงสีม่วงแดง ข้อความสีฟ้า และคอนทราสต์ของโครเมียมที่เข้มกว่า';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'ลงชื่อเข้าใช้ด้วยบัญชี Emby เชื่อมต่อของคุณ';
 

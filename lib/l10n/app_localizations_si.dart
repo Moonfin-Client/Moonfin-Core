@@ -166,6 +166,13 @@ class AppLocalizationsSi extends AppLocalizations {
       'මැජෙන්ටා දිලිසීම, සයන් පෙළ සහ ශක්තිමත් ක්‍රෝම් ප්‍රතිවිරෝධය සහිත සින්ත්වේව් මෝස්තරය';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle => 'ඔබගේ Emby Connect ගිණුමෙන් පුරන්න';
 
   @override

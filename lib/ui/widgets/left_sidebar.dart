@@ -477,7 +477,16 @@ class _LeftSidebarState extends State<LeftSidebar> {
             node: _sidebarFocus,
             onFocusChange: _onSidebarFocusChange,
             onKeyEvent: _onKeyEvent,
-            child: Container(
+            child: AppColorScheme.isGlass
+                ? GlassSurface(
+                    cornerRadius: 18,
+                    reinforced: _isMobile,
+                    fallbackColor: Colors.transparent,
+                    child: _isMobile
+                        ? SafeArea(right: false, child: _buildContent())
+                        : _buildContent(),
+                  )
+                : Container(
               decoration: BoxDecoration(
                 gradient: _isMobile
                     ? null
@@ -616,55 +625,65 @@ class _LeftSidebarState extends State<LeftSidebar> {
                     width: _kExpandedWidthTV,
                     child: Stack(
                       children: [
-                        Container(
-                          width: _kExpandedBackdropWidthTV,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                              colors: [
-                                overlayColor.withValues(
-                                  alpha: math.max(opacity, 0.7),
-                                ),
-                                overlayColor.withValues(
-                                  alpha: math.max(opacity, 0.5),
-                                ),
-                              ],
+                        if (AppColorScheme.isGlass)
+                          SizedBox(
+                            width: _kExpandedBackdropWidthTV,
+                            child: const GlassSurface(
+                              cornerRadius: 18,
+                              fallbackColor: Colors.transparent,
                             ),
-                            border: isNeon
-                                ? Border(
-                                    right: ThemeRegistry
-                                        .active
-                                        .borders
-                                        .chipBorder
-                                        .copyWith(
-                                          color: AppColorScheme.accent,
-                                          width: 1.2,
-                                        ),
-                                  )
-                                : null,
-                          ),
-                        ),
-                        Positioned(
-                          left: _kExpandedBackdropWidthTV,
-                          top: 0,
-                          bottom: 0,
-                          child: Container(
-                            width: _kBackdropEdgeBlendWidthTV,
+                          )
+                        else
+                          Container(
+                            width: _kExpandedBackdropWidthTV,
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 begin: Alignment.centerLeft,
                                 end: Alignment.centerRight,
                                 colors: [
                                   overlayColor.withValues(
+                                    alpha: math.max(opacity, 0.7),
+                                  ),
+                                  overlayColor.withValues(
                                     alpha: math.max(opacity, 0.5),
                                   ),
-                                  Colors.transparent,
                                 ],
+                              ),
+                              border: isNeon
+                                  ? Border(
+                                      right: ThemeRegistry
+                                          .active
+                                          .borders
+                                          .chipBorder
+                                          .copyWith(
+                                            color: AppColorScheme.accent,
+                                            width: 1.2,
+                                          ),
+                                    )
+                                  : null,
+                            ),
+                          ),
+                        if (!AppColorScheme.isGlass)
+                          Positioned(
+                            left: _kExpandedBackdropWidthTV,
+                            top: 0,
+                            bottom: 0,
+                            child: Container(
+                              width: _kBackdropEdgeBlendWidthTV,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    overlayColor.withValues(
+                                      alpha: math.max(opacity, 0.5),
+                                    ),
+                                    Colors.transparent,
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                   ),

@@ -163,6 +163,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get themeNeonPulseSubtitle => 'Synthwave 样式具有洋红色发光、青色文本和更强的镀铬对比度';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle => '使用您的 Emby Connect 帐户登录';
 
   @override

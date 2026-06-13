@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
@@ -17,6 +18,7 @@ import '../../../auth/repositories/user_repository.dart';
 import '../../../playback/appletv_mpv_backend.dart';
 import '../../../playback/playback_profile_diagnostics.dart';
 import '../../../syncplay/syncplay_manager.dart';
+import '../../theme/app_theme_controller.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 
@@ -43,6 +45,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   String? _stillWatchingLastItemId;
   bool _pendingStillWatching = false;
   SyncPlayManager? _syncPlay;
+  AppThemeController? _themeController;
 
   AppleTvMpvBackend? get _backend {
     try {
@@ -82,7 +85,41 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _pushMetadata();
       _pushSubtitleStyle();
+      _pushThemeConfig();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    AppThemeController? controller;
+    try {
+      controller = AppThemeScope.of(context);
+    } catch (_) {
+      controller = null;
+    }
+    if (!identical(controller, _themeController)) {
+      _themeController?.removeListener(_onThemeChanged);
+      _themeController = controller;
+      _themeController?.addListener(_onThemeChanged);
+    }
+  }
+
+  void _onThemeChanged() => _pushThemeConfig();
+
+  void _pushThemeConfig() {
+    final backend = _backend;
+    if (backend == null) return;
+    unawaited(
+      backend.setThemeConfig(
+        isGlass: AppColorScheme.isGlass,
+        accentARGB: AppColorScheme.accent.toARGB32(),
+        surfaceARGB: AppColorScheme.surface.toARGB32(),
+        onSurfaceARGB: AppColorScheme.onSurface.toARGB32(),
+        rangeProgressARGB: AppColorScheme.rangeProgress.toARGB32(),
+        rangeTrackARGB: AppColorScheme.rangeTrack.toARGB32(),
+      ),
+    );
   }
 
   void _pushSubtitleStyle() {
@@ -1253,6 +1290,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     _bringupSub?.cancel();
     _actionSub?.cancel();
     _syncPlay?.removeListener(_onSyncPlayChanged);
+    _themeController?.removeListener(_onThemeChanged);
     unawaited(_backend?.dismissPlayer() ?? Future<void>.value());
     try {
       GetIt.instance<PlaybackManager>().stop(userInitiated: true);

@@ -167,7 +167,7 @@ class _TopToolbarState extends State<TopToolbar> {
   }
 
   Color _toolbarSurfaceColor() {
-    if (ThemeRegistry.active.id == ThemeRegistry.neonPulseId) {
+    if (ThemeRegistry.active.transparentNavbarSurface) {
       return Colors.transparent;
     }
     return _overlayColor().withValues(alpha: _overlayOpacity());
@@ -638,26 +638,9 @@ class _TopToolbarState extends State<TopToolbar> {
     }
 
     return Center(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(_kPillRadius),
-        child: Container(
-          padding: EdgeInsets.zero,
-          decoration: BoxDecoration(
-            color: _toolbarSurfaceColor(),
-            borderRadius: BorderRadius.circular(_kPillRadius),
-            border: isNeon
-                ? Border.fromBorderSide(
-                    ThemeRegistry.active.borders.chipBorder.copyWith(
-                      color: AppColorScheme.accent,
-                      width: 1.0,
-                    ),
-                  )
-                : null,
-            boxShadow: isNeon
-                ? const [BoxShadow(color: Color(0x33FF2E92), blurRadius: 6)]
-                : null,
-          ),
-          child: SingleChildScrollView(
+      child: _wrapPill(
+        isNeon: isNeon,
+        child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -856,6 +839,37 @@ class _TopToolbarState extends State<TopToolbar> {
             ),
           ),
         ),
+    );
+  }
+
+  Widget _wrapPill({required bool isNeon, required Widget child}) {
+    if (AppColorScheme.isGlass) {
+      return GlassSurface(
+        cornerRadius: _kPillRadius,
+        fallbackColor: Colors.transparent,
+        child: child,
+      );
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(_kPillRadius),
+      child: Container(
+        padding: EdgeInsets.zero,
+        decoration: BoxDecoration(
+          color: _toolbarSurfaceColor(),
+          borderRadius: BorderRadius.circular(_kPillRadius),
+          border: isNeon
+              ? Border.fromBorderSide(
+                  ThemeRegistry.active.borders.chipBorder.copyWith(
+                    color: AppColorScheme.accent,
+                    width: 1.0,
+                  ),
+                )
+              : null,
+          boxShadow: isNeon
+              ? const [BoxShadow(color: Color(0x33FF2E92), blurRadius: 6)]
+              : null,
+        ),
+        child: child,
       ),
     );
   }

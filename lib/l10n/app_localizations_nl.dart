@@ -167,6 +167,13 @@ class AppLocalizationsNl extends AppLocalizations {
       'Synthwave-stijl met magenta gloed, cyaan tekst en sterker chroomcontrast';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'Meld u aan met uw Emby Connect-account';
 

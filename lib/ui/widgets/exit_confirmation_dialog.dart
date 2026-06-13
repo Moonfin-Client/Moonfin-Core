@@ -87,13 +87,19 @@ class _ExitConfirmationContentState extends State<_ExitConfirmationContent> {
 
   @override
   Widget build(BuildContext context) {
+    final glass = AppColorScheme.isGlass;
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 500),
       child: Container(
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: AppColorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
+          color: glass ? const Color(0xD90E1117) : AppColorScheme.surface,
+          borderRadius: BorderRadius.circular(glass ? 20 : 16),
+          border: glass
+              ? const Border.fromBorderSide(
+                  BorderSide(color: Color(0x33FFFFFF), width: 1),
+                )
+              : null,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

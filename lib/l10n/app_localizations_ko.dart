@@ -164,6 +164,13 @@ class AppLocalizationsKo extends AppLocalizations {
       '마젠타 빛, 청록색 텍스트 및 더 강한 크롬 대비를 사용한 신스웨이브 스타일';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle => 'Emby Connect 계정으로 로그인하세요';
 
   @override

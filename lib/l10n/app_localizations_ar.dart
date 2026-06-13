@@ -165,6 +165,13 @@ class AppLocalizationsAr extends AppLocalizations {
       'تصميم Synthwave مع توهج أرجواني ونص سماوي وتباين أقوى للكروم';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'قم بتسجيل الدخول باستخدام حساب Emby Connect الخاص بك';
 

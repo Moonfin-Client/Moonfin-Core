@@ -166,6 +166,13 @@ class AppLocalizationsVi extends AppLocalizations {
       'Kiểu dáng Synthwave với ánh sáng đỏ tươi, văn bản màu lục lam và độ tương phản chrome mạnh hơn';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'Đăng nhập bằng tài khoản Emby Connect của bạn';
 

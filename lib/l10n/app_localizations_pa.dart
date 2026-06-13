@@ -166,6 +166,13 @@ class AppLocalizationsPa extends AppLocalizations {
       'ਮੈਜੈਂਟਾ ਗਲੋ, ਸਿਆਨ ਟੈਕਸਟ, ਅਤੇ ਮਜ਼ਬੂਤ ​​ਕ੍ਰੋਮ ਕੰਟ੍ਰਾਸਟ ਦੇ ਨਾਲ ਸਿੰਥਵੇਵ ਸਟਾਈਲਿੰਗ';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'ਆਪਣੇ Emby ਕਨੈਕਟ ਖਾਤੇ ਨਾਲ ਸਾਈਨ ਇਨ ਕਰੋ';
 

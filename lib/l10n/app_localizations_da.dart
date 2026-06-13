@@ -168,6 +168,13 @@ class AppLocalizationsDa extends AppLocalizations {
       'Synthwave-styling med magenta glød, cyan tekst og stærkere kromkontrast';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle => 'Log ind med din Emby Connect-konto';
 
   @override

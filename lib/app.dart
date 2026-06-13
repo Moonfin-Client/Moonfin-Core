@@ -165,16 +165,29 @@ class _MoonfinAppState extends State<MoonfinApp> {
                               const RepaintBoundary(child: CastMiniPlayer()),
                           ],
                         );
+                        final glass = AppColorScheme.isGlass;
+                        final Widget content =
+                            (glass || PlatformDetection.isTV)
+                            ? Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  if (glass)
+                                    Positioned.fill(
+                                      child: GlassBackdrop(
+                                        animated: !PlatformDetection.isTV,
+                                      ),
+                                    ),
+                                  shell,
+                                  if (PlatformDetection.isTV)
+                                    const ScreensaverHost(),
+                                ],
+                              )
+                            : shell;
                         return InputModeTracker(
                           child: _GlobalShortcutScope(
                             child: Material(
                               type: MaterialType.transparency,
-                              child: PlatformDetection.isTV
-                                  ? Stack(
-                                      fit: StackFit.expand,
-                                      children: [shell, const ScreensaverHost()],
-                                    )
-                                  : shell,
+                              child: content,
                             ),
                           ),
                         );
@@ -894,9 +907,17 @@ class _AdminMessageDialogState extends State<_AdminMessageDialog> {
             child: Container(
               padding: const EdgeInsets.all(32),
               decoration: BoxDecoration(
-                color: AppColorScheme.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.fromBorderSide(ThemeRegistry.active.borders.chipBorder),
+                color: AppColorScheme.isGlass
+                    ? const Color(0xD90E1117)
+                    : AppColorScheme.surface,
+                borderRadius: BorderRadius.circular(
+                  AppColorScheme.isGlass ? 20 : 16,
+                ),
+                border: Border.fromBorderSide(
+                  AppColorScheme.isGlass
+                      ? const BorderSide(color: Color(0x33FFFFFF), width: 1)
+                      : ThemeRegistry.active.borders.chipBorder,
+                ),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,

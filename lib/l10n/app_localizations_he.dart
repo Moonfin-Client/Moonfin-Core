@@ -165,6 +165,13 @@ class AppLocalizationsHe extends AppLocalizations {
       'עיצוב גלי סינת\' עם זוהר מגנטה, טקסט בצבע ציאן וניגודיות כרום חזקה יותר';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle => 'היכנס עם חשבון Emby Connect שלך';
 
   @override

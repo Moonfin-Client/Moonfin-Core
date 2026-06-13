@@ -166,6 +166,13 @@ class AppLocalizationsUg extends AppLocalizations {
       'Magenta پارقىراقلىقى ، سىئەن تېكىستى ۋە تېخىمۇ كۈچلۈك خروم سېلىشتۇرمىسى بىلەن Synthwave ئۇسلۇبى';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'Emby ئۇلىنىش ھېساباتىڭىز بىلەن كىرىڭ';
 

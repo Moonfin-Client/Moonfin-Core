@@ -452,6 +452,24 @@ class AppleTvMpvBackend implements PlayerBackend {
     await _invoke<void>('showRemoteSubtitles', {'results': results});
   }
 
+  Future<void> setThemeConfig({
+    required bool isGlass,
+    required int accentARGB,
+    required int surfaceARGB,
+    required int onSurfaceARGB,
+    required int rangeProgressARGB,
+    required int rangeTrackARGB,
+  }) async {
+    await _invoke<void>('setThemeConfig', {
+      'isGlass': isGlass,
+      'accent': accentARGB,
+      'surface': surfaceARGB,
+      'onSurface': onSurfaceARGB,
+      'rangeProgress': rangeProgressARGB,
+      'rangeTrack': rangeTrackARGB,
+    });
+  }
+
   @override
   Future<void> setPlaybackSpeed(double speed) async {
     _playbackSpeed = speed;

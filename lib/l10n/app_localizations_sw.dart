@@ -166,6 +166,13 @@ class AppLocalizationsSw extends AppLocalizations {
       'Mtindo wa Synthwave wenye mng\'ao wa magenta, maandishi ya samawati na utofautishaji thabiti wa chrome';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'Ingia ukitumia akaunti yako ya Emby Connect';
 

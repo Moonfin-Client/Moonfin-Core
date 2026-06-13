@@ -162,6 +162,7 @@ enum AppTheme {
 enum VisualThemeId {
   moonfin,
   neonPulse,
+  glass,
 }
 
 enum RatingType {

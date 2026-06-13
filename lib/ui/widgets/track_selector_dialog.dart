@@ -27,19 +27,22 @@ Future<T?> showStyledPlayerDialog<T>(
           mediaQuery.padding.vertical -
           mediaQuery.viewInsets.vertical -
           24;
-      return Dialog(
-        backgroundColor: Colors.transparent,
-        child: Container(
+      final glass = AppColorScheme.isGlass;
+      final inner = Container(
           constraints: BoxConstraints(
             minWidth: 340,
             maxWidth: maxWidth,
             maxHeight: maxDialogHeight,
           ),
-          decoration: BoxDecoration(
-            color: AppColorScheme.surface.withValues(alpha: 0.9),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.fromBorderSide(ThemeRegistry.active.borders.chipBorder),
-          ),
+          decoration: glass
+              ? null
+              : BoxDecoration(
+                  color: AppColorScheme.surface.withValues(alpha: 0.9),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.fromBorderSide(
+                    ThemeRegistry.active.borders.chipBorder,
+                  ),
+                ),
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -89,7 +92,17 @@ Future<T?> showStyledPlayerDialog<T>(
               ],
             ],
           ),
-        ),
+        );
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        child: glass
+            ? GlassSurface(
+                cornerRadius: 20,
+                reinforced: true,
+                fallbackColor: Colors.transparent,
+                child: inner,
+              )
+            : inner,
       );
     },
   );

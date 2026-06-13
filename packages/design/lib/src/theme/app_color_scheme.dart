@@ -6,6 +6,10 @@ import 'theme_registry.dart';
 class AppColorScheme {
   const AppColorScheme._();
 
+  /// Whether the active theme uses the Liquid-Glass treatment (frosted
+  /// surfaces + animated backdrop). Cheap check for glass-aware widgets.
+  static bool get isGlass => ThemeRegistry.active.isGlass;
+
   // Background & Surface
   static Color get background => ThemeRegistry.active.colors.background;
   static Color get onBackground => ThemeRegistry.active.colors.onBackground;

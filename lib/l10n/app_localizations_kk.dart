@@ -165,6 +165,13 @@ class AppLocalizationsKk extends AppLocalizations {
       'Күлгін түсті жарқыл, көгілдір мәтін және күшті хром контрастымен Synthwave стилі';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'Emby Connect есептік жазбасымен кіріңіз';
 

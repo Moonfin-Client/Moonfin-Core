@@ -166,6 +166,13 @@ class AppLocalizationsBn extends AppLocalizations {
       'ম্যাজেন্টা গ্লো, সায়ান টেক্সট এবং শক্তিশালী ক্রোম কনট্রাস্ট সহ সিনথওয়েভ স্টাইলিং';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'আপনার Emby কানেক্ট অ্যাকাউন্ট দিয়ে সাইন ইন করুন';
 

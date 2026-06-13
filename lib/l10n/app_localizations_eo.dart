@@ -166,6 +166,13 @@ class AppLocalizationsEo extends AppLocalizations {
       'Synthwave-stilado kun magenta brilo, cejana teksto kaj pli forta kroma kontrasto';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle => 'Ensalutu per via Emby Connect-konto';
 
   @override

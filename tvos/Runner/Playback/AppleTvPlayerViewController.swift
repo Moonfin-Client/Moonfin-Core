@@ -135,6 +135,15 @@ final class AppleTvPlayerViewController: UIViewController {
     private let channelNameLabel = UILabel()
     private let recordingDot = UIView()
     private let programLabel = UILabel()
+    private let upNextLabel = UILabel()
+
+    private let defaultAccent = UIColor(red: 0.9, green: 0.1, blue: 0.55, alpha: 1)
+    private var glassActive = false
+    private var glassAccent = UIColor(red: 0.04, green: 0.52, blue: 1.0, alpha: 1)
+    private var glassRangeProgress = UIColor(red: 0.04, green: 0.52, blue: 1.0, alpha: 1)
+    private var glassRangeTrack = UIColor(white: 1, alpha: 0.2)
+    private var glassSurface = UIColor(white: 1, alpha: 0.12)
+    private var glassOnSurface = UIColor.white
     private let statsStack = UIStackView()
 
     private let nextUpCard = UIView()
@@ -174,6 +183,45 @@ final class AppleTvPlayerViewController: UIViewController {
         rebuildControls()
         layoutHeader()
         rebuildStats()
+        restyleForTheme()
+    }
+
+    func applyThemeConfig(_ args: [String: Any]) {
+        glassActive = (args["isGlass"] as? Bool) ?? false
+        if let v = (args["accent"] as? NSNumber)?.intValue {
+            glassAccent = Self.color(fromARGB: v)
+        }
+        if let v = (args["surface"] as? NSNumber)?.intValue {
+            glassSurface = Self.color(fromARGB: v)
+        }
+        if let v = (args["onSurface"] as? NSNumber)?.intValue {
+            glassOnSurface = Self.color(fromARGB: v)
+        }
+        if let v = (args["rangeProgress"] as? NSNumber)?.intValue {
+            glassRangeProgress = Self.color(fromARGB: v)
+        }
+        if let v = (args["rangeTrack"] as? NSNumber)?.intValue {
+            glassRangeTrack = Self.color(fromARGB: v)
+        }
+        if isViewLoaded {
+            restyleForTheme()
+        }
+    }
+
+    private static func color(fromARGB value: Int) -> UIColor {
+        let a = CGFloat((value >> 24) & 0xFF) / 255.0
+        let r = CGFloat((value >> 16) & 0xFF) / 255.0
+        let g = CGFloat((value >> 8) & 0xFF) / 255.0
+        let b = CGFloat(value & 0xFF) / 255.0
+        return UIColor(red: r, green: g, blue: b, alpha: a)
+    }
+
+    private func restyleForTheme() {
+        let accent = glassActive ? glassAccent : defaultAccent
+        let progress = glassActive ? glassRangeProgress : defaultAccent
+        scrubber.progressTintColor = progress
+        channelBadge.backgroundColor = accent
+        upNextLabel.textColor = accent
     }
 
     private func setupOsd() {
@@ -540,11 +588,11 @@ final class AppleTvPlayerViewController: UIViewController {
         nextUpImage.clipsToBounds = true
         nextUpCard.addSubview(nextUpImage)
 
-        let upNext = UILabel()
+        let upNext = upNextLabel
         upNext.translatesAutoresizingMaskIntoConstraints = false
         upNext.text = "UP NEXT"
         upNext.font = .systemFont(ofSize: 20, weight: .bold)
-        upNext.textColor = UIColor(red: 0.9, green: 0.1, blue: 0.55, alpha: 1)
+        upNext.textColor = defaultAccent
         nextUpCard.addSubview(upNext)
 
         nextUpTitleLabel.translatesAutoresizingMaskIntoConstraints = false

@@ -7846,7 +7846,11 @@ class _DetailActionButtonState extends State<_DetailActionButton>
               ? (widget.activeColor ?? (isNeon ? neonAccent : Colors.white))
               : (isNeon ? neonAccent : Colors.white));
     final labelColor = showHighlight
-        ? (isNeon ? neonAccent : AppColorScheme.onButtonFocused)
+        ? (isNeon
+              ? neonAccent
+              : (AppColorScheme.isGlass
+                    ? Colors.white
+                    : AppColorScheme.onButtonFocused))
         : (isNeon ? neonAccent : Colors.white);
 
     return MouseRegion(

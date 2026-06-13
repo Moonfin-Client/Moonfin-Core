@@ -137,8 +137,14 @@ class AppTheme {
         shape: JellyfinTokens.shapes.extraLargeShape,
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: c.surface,
-        shape: JellyfinTokens.shapes.largeShape,
+        backgroundColor: spec.isGlass ? const Color(0xD90E1117) : c.surface,
+        surfaceTintColor: spec.isGlass ? Colors.transparent : null,
+        shape: spec.isGlass
+            ? RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: const BorderSide(color: Color(0x33FFFFFF), width: 1),
+              )
+            : JellyfinTokens.shapes.largeShape,
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {

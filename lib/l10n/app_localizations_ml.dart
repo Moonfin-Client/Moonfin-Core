@@ -166,6 +166,13 @@ class AppLocalizationsMl extends AppLocalizations {
       'മജന്ത ഗ്ലോ, സിയാൻ ടെക്‌സ്‌റ്റ്, ശക്തമായ ക്രോം കോൺട്രാസ്റ്റ് എന്നിവയ്‌ക്കൊപ്പം സിന്ത്‌വേവ് സ്‌റ്റൈലിംഗ്';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'നിങ്ങളുടെ Emby കണക്റ്റ് അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക';
 

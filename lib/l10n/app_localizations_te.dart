@@ -166,6 +166,13 @@ class AppLocalizationsTe extends AppLocalizations {
       'మెజెంటా గ్లో, సియాన్ టెక్స్ట్ మరియు బలమైన క్రోమ్ కాంట్రాస్ట్‌తో సింథ్‌వేవ్ స్టైలింగ్';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'మీ Emby Connect ఖాతాతో సైన్ ఇన్ చేయండి';
 

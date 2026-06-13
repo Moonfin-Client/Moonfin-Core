@@ -4,6 +4,7 @@ import 'dart:math' show min;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
@@ -14,6 +15,7 @@ import '../../../playback/appletv_preview_player.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
 import '../livetv/live_tv_guide_screen.dart';
+import '../../theme/app_theme_controller.dart';
 
 class AppleTvLiveTvPlayerHostScreen extends StatefulWidget {
   final List<GuideChannel> channels;
@@ -51,6 +53,7 @@ class _AppleTvLiveTvPlayerHostScreenState
   final Map<String, String> _nowPlayingByChannel = {};
   List<Map<String, dynamic>>? _channelListCache;
   bool _sweepInFlight = false;
+  AppThemeController? _themeController;
 
   AppleTvMpvBackend? get _backend {
     try {
@@ -71,10 +74,44 @@ class _AppleTvLiveTvPlayerHostScreenState
     _bringupSub = _manager.bringupStateStream.listen((_) => _pushMetadata());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _pushSubtitleStyle();
+      _pushThemeConfig();
       _playCurrentChannel();
       _fetchAllNowPlaying();
     });
     _startProgramRefresh();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    AppThemeController? controller;
+    try {
+      controller = AppThemeScope.of(context);
+    } catch (_) {
+      controller = null;
+    }
+    if (!identical(controller, _themeController)) {
+      _themeController?.removeListener(_onThemeChanged);
+      _themeController = controller;
+      _themeController?.addListener(_onThemeChanged);
+    }
+  }
+
+  void _onThemeChanged() => _pushThemeConfig();
+
+  void _pushThemeConfig() {
+    final backend = _backend;
+    if (backend == null) return;
+    unawaited(
+      backend.setThemeConfig(
+        isGlass: AppColorScheme.isGlass,
+        accentARGB: AppColorScheme.accent.toARGB32(),
+        surfaceARGB: AppColorScheme.surface.toARGB32(),
+        onSurfaceARGB: AppColorScheme.onSurface.toARGB32(),
+        rangeProgressARGB: AppColorScheme.rangeProgress.toARGB32(),
+        rangeTrackARGB: AppColorScheme.rangeTrack.toARGB32(),
+      ),
+    );
   }
 
   @override
@@ -83,6 +120,7 @@ class _AppleTvLiveTvPlayerHostScreenState
     _actionSub?.cancel();
     _bringupSub?.cancel();
     _programRefreshTimer?.cancel();
+    _themeController?.removeListener(_onThemeChanged);
     unawaited(_pipPlayer?.dispose());
     unawaited(_backend?.dismissPlayer() ?? Future<void>.value());
     try {

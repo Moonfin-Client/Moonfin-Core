@@ -166,6 +166,13 @@ class AppLocalizationsLt extends AppLocalizations {
       'Synthwave stilius su purpuriniu švytėjimu, žalsvai mėlynu tekstu ir stipresniu chromo kontrastu';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'Prisijunkite naudodami savo Emby Connect paskyrą';
 

@@ -166,6 +166,13 @@ class AppLocalizationsTa extends AppLocalizations {
       'மெஜந்தா பளபளப்பு, சியான் உரை மற்றும் வலுவான குரோம் மாறுபாடு கொண்ட சின்த்வேவ் ஸ்டைலிங்';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'உங்கள் Emby Connect கணக்கில் உள்நுழையவும்';
 

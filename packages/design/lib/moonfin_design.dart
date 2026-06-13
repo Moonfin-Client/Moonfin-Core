@@ -8,3 +8,5 @@ export 'src/theme/app_spacing.dart';
 export 'src/theme/app_shapes.dart';
 export 'src/theme/theme_spec.dart';
 export 'src/theme/theme_registry.dart';
+export 'src/widgets/glass_surface.dart';
+export 'src/widgets/glass_backdrop.dart';

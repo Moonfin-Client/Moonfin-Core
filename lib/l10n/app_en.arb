@@ -216,6 +216,14 @@
   "@themeNeonPulseSubtitle": {
     "description": "Preview description for the Neon Pulse theme"
   },
+  "themeGlass": "Glass",
+  "@themeGlass": {
+    "description": "Display name for the Glass theme"
+  },
+  "themeGlassSubtitle": "Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent",
+  "@themeGlassSubtitle": {
+    "description": "Preview description for the Glass theme"
+  },
   "embyConnectSignInSubtitle": "Sign in with your Emby Connect account",
   "@embyConnectSignInSubtitle": {
     "description": "Subtitle on the Emby Connect sign-in screen"

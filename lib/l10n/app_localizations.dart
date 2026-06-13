@@ -503,6 +503,18 @@ abstract class AppLocalizations {
   /// **'Synthwave styling with magenta glow, cyan text, and stronger chrome contrast'**
   String get themeNeonPulseSubtitle;
 
+  /// Display name for the Glass theme
+  ///
+  /// In en, this message translates to:
+  /// **'Glass'**
+  String get themeGlass;
+
+  /// Preview description for the Glass theme
+  ///
+  /// In en, this message translates to:
+  /// **'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent'**
+  String get themeGlassSubtitle;
+
   /// Subtitle on the Emby Connect sign-in screen
   ///
   /// In en, this message translates to:

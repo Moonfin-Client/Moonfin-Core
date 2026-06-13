@@ -166,6 +166,13 @@ class AppLocalizationsHi extends AppLocalizations {
       'मैजेंटा चमक, सियान टेक्स्ट और मजबूत क्रोम कंट्रास्ट के साथ सिंथवेव स्टाइल';
 
   @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+
+  @override
   String get embyConnectSignInSubtitle =>
       'Emby कनेक्ट या चयनित सर्वर से संपर्क करते समय नेटवर्क त्रुटि';
 
