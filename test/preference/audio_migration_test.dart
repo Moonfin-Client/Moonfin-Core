@@ -16,7 +16,7 @@ void main() {
   const legacyAudioFallbackToStereoAacKey = 'audio_fallback_to_stereo_aac';
 
   group('audio preference split migration', () {
-    test('maps explicit legacy audio preferences to split keys', () async {
+    test('auto-first: carries only explicitly-enabled legacy codecs', () async {
       SharedPreferences.setMockInitialValues(<String, Object>{
         legacyAudioBehaviorKey: legacyAudioBehaviorDownmixValue,
         legacyAc3EnabledKey: false,
@@ -34,20 +34,61 @@ void main() {
         store.getString(UserPreferences.audioOutputMode.key),
         AudioOutputMode.forceStereo.name,
       );
-      expect(store.getBool(UserPreferences.ac3PassthroughEnabled.key), isFalse);
-      expect(store.getBool(UserPreferences.eac3PassthroughEnabled.key), isFalse);
+      expect(
+        store.containsKey(UserPreferences.ac3PassthroughEnabled.key),
+        isFalse,
+      );
+      expect(
+        store.containsKey(UserPreferences.eac3PassthroughEnabled.key),
+        isFalse,
+      );
+      expect(
+        store.containsKey(UserPreferences.trueHdPassthroughEnabled.key),
+        isFalse,
+      );
+      expect(
+        store.containsKey(UserPreferences.trueHdAtmosPassthroughEnabled.key),
+        isFalse,
+      );
+      // DTS was on, so its group is carried over and the user lands in Advanced.
       expect(store.getBool(UserPreferences.dtsCorePassthroughEnabled.key), isTrue);
       expect(store.getBool(UserPreferences.dtsHdPassthroughEnabled.key), isTrue);
-      expect(store.getBool(UserPreferences.trueHdPassthroughEnabled.key), isFalse);
+      expect(store.getBool(UserPreferences.dtsXPassthroughEnabled.key), isTrue);
       expect(
-        store.getBool(UserPreferences.trueHdAtmosPassthroughEnabled.key),
-        isFalse,
+        store.getString(UserPreferences.audioPassthroughPreset.key),
+        AudioPassthroughPreset.advanced.name,
       );
       expect(
         store.getString(UserPreferences.audioFallbackCodec.key),
         AudioFallbackCodec.aac.name,
       );
       expect(store.getBool('pref_audio_preference_split_v3'), isTrue);
+    });
+
+    test('pure downmix user maps to the Stereo preset', () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        legacyAudioBehaviorKey: legacyAudioBehaviorDownmixValue,
+        legacyAc3EnabledKey: false,
+        legacyDtsEnabledKey: false,
+        legacyTrueHdEnabledKey: false,
+      });
+
+      final store = PreferenceStore();
+      await store.init();
+
+      await migrateAudioPreferenceSplit(store);
+
+      expect(
+        store.getString(UserPreferences.audioPassthroughPreset.key),
+        AudioPassthroughPreset.stereo.name,
+      );
+      expect(
+        store.getString(UserPreferences.audioOutputMode.key),
+        AudioOutputMode.forceStereo.name,
+      );
+      for (final pref in UserPreferences.passthroughTogglePreferences) {
+        expect(store.containsKey(pref.key), isFalse, reason: pref.key);
+      }
     });
 
     test('does not overwrite split values when already present', () async {
@@ -97,11 +138,32 @@ void main() {
       await migrateAudioPreferenceSplit(store);
 
       expect(store.containsKey(UserPreferences.audioOutputMode.key), isFalse);
-      expect(store.containsKey(UserPreferences.ac3PassthroughEnabled.key), isFalse);
-      expect(store.containsKey(UserPreferences.eac3PassthroughEnabled.key), isFalse);
-      expect(store.containsKey(UserPreferences.dtsCorePassthroughEnabled.key), isFalse);
-      expect(store.containsKey(UserPreferences.trueHdPassthroughEnabled.key), isFalse);
+      expect(
+        store.containsKey(UserPreferences.audioPassthroughPreset.key),
+        isFalse,
+      );
+      for (final pref in UserPreferences.passthroughTogglePreferences) {
+        expect(store.containsKey(pref.key), isFalse, reason: pref.key);
+      }
       expect(store.getBool('pref_audio_preference_split_v3'), isTrue);
+    });
+
+    test('carries an explicitly-enabled codec into Advanced', () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        legacyAc3EnabledKey: true,
+      });
+
+      final store = PreferenceStore();
+      await store.init();
+
+      await migrateAudioPreferenceSplit(store);
+
+      expect(store.getBool(UserPreferences.ac3PassthroughEnabled.key), isTrue);
+      expect(store.getBool(UserPreferences.eac3PassthroughEnabled.key), isTrue);
+      expect(
+        store.getString(UserPreferences.audioPassthroughPreset.key),
+        AudioPassthroughPreset.advanced.name,
+      );
     });
   });
 }

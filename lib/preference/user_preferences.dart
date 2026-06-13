@@ -299,27 +299,11 @@ class UserPreferences extends ChangeNotifier {
         trueHdAtmosPassthroughEnabled,
       ];
 
-  /// Derives the high-level preset from current state so the UI stays honest:
-  /// any explicit per-codec override (or an explicit Advanced choice) surfaces
-  /// as [AudioPassthroughPreset.advanced]; otherwise it maps from the output
-  /// mode.
-  AudioPassthroughPreset resolveAudioPassthroughPreset() {
-    if (passthroughTogglePreferences.any(containsPreference)) {
-      return AudioPassthroughPreset.advanced;
-    }
-    if (get(audioPassthroughPreset) == AudioPassthroughPreset.advanced) {
-      return AudioPassthroughPreset.advanced;
-    }
-    return switch (get(audioOutputMode)) {
-      AudioOutputMode.forceStereo => AudioPassthroughPreset.stereo,
-      AudioOutputMode.avrPassthrough => AudioPassthroughPreset.surroundReceiver,
-      AudioOutputMode.auto => AudioPassthroughPreset.auto,
-    };
-  }
-
   /// Applies a high-level preset by bulk-writing the output mode and clearing
-  /// per-codec overrides (so detection drives passthrough). [advanced] leaves
-  /// the output mode and toggles untouched for manual control.
+  /// per-codec overrides (so detection drives passthrough). Auto and AVR also
+  /// reset Max Channels to Auto so the detected route maxes out (e.g. 8 on
+  /// eARC, stereo on a stereo-only TV). [advanced] leaves the output mode,
+  /// channels, and toggles untouched for manual control.
   Future<void> applyAudioPassthroughPreset(
     AudioPassthroughPreset preset,
   ) async {
@@ -327,9 +311,11 @@ class UserPreferences extends ChangeNotifier {
     switch (preset) {
       case AudioPassthroughPreset.auto:
         await set(audioOutputMode, AudioOutputMode.auto);
+        await set(maxAudioChannels, 0);
         await clearPassthroughOverrides();
       case AudioPassthroughPreset.surroundReceiver:
         await set(audioOutputMode, AudioOutputMode.avrPassthrough);
+        await set(maxAudioChannels, 0);
         await clearPassthroughOverrides();
       case AudioPassthroughPreset.stereo:
         await set(audioOutputMode, AudioOutputMode.forceStereo);

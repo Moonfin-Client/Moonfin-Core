@@ -34,10 +34,6 @@ const _legacyAc3EnabledKey = 'pref_bitstream_ac3';
 const _legacyTrueHdEnabledKey = 'pref_bitstream_truncated_hd';
 const _legacyDtsEnabledKey = 'pref_bitstream_dts';
 
-bool _legacyBitstreamDefaultForPlatform() {
-  return !(PlatformDetection.isAndroid && PlatformDetection.isTV);
-}
-
 bool _legacyStereoAacFallbackDefaultForPlatform() {
   return !PlatformDetection.isAndroid || PlatformDetection.isTV;
 }
@@ -289,41 +285,45 @@ Future<void> migrateAudioPreferenceSplit(PreferenceStore store) async {
     }
   }
 
-  if (store.containsKey(_legacyAudioBehaviorKey)) {
-    final legacyAudioBehavior = store.getString(_legacyAudioBehaviorKey);
+  bool legacyOn(String key) =>
+      store.containsKey(key) && (store.getBool(key) ?? false);
+
+  var carriedOver = false;
+  if (legacyOn(_legacyAc3EnabledKey)) {
+    await setBoolIfMissing(UserPreferences.ac3PassthroughEnabled, true);
+    await setBoolIfMissing(UserPreferences.eac3PassthroughEnabled, true);
+    carriedOver = true;
+  }
+  if (legacyOn(_legacyDtsEnabledKey)) {
+    await setBoolIfMissing(UserPreferences.dtsCorePassthroughEnabled, true);
+    await setBoolIfMissing(UserPreferences.dtsHdPassthroughEnabled, true);
+    await setBoolIfMissing(UserPreferences.dtsXPassthroughEnabled, true);
+    carriedOver = true;
+  }
+  if (legacyOn(_legacyTrueHdEnabledKey)) {
+    await setBoolIfMissing(UserPreferences.trueHdPassthroughEnabled, true);
+    await setBoolIfMissing(UserPreferences.trueHdAtmosPassthroughEnabled, true);
+    carriedOver = true;
+  }
+
+  final wasDownmix =
+      store.containsKey(_legacyAudioBehaviorKey) &&
+      store.getString(_legacyAudioBehaviorKey) ==
+          _legacyAudioBehaviorDownmixValue;
+  if (wasDownmix) {
     await setEnumIfMissing(
       UserPreferences.audioOutputMode,
-      legacyAudioBehavior == _legacyAudioBehaviorDownmixValue
-          ? AudioOutputMode.forceStereo
-          : AudioOutputMode.auto,
+      AudioOutputMode.forceStereo,
     );
   }
 
-  if (store.containsKey(_legacyAc3EnabledKey)) {
-    final legacyAc3 =
-        store.getBool(_legacyAc3EnabledKey) ??
-        _legacyBitstreamDefaultForPlatform();
-    await setBoolIfMissing(UserPreferences.ac3PassthroughEnabled, legacyAc3);
-    await setBoolIfMissing(UserPreferences.eac3PassthroughEnabled, legacyAc3);
-  }
-
-  if (store.containsKey(_legacyDtsEnabledKey)) {
-    final legacyDts = store.getBool(_legacyDtsEnabledKey) ?? false;
-    await setBoolIfMissing(UserPreferences.dtsCorePassthroughEnabled, legacyDts);
-    await setBoolIfMissing(UserPreferences.dtsHdPassthroughEnabled, legacyDts);
-    await setBoolIfMissing(UserPreferences.dtsXPassthroughEnabled, legacyDts);
-  } else {
-    await setBoolIfMissing(UserPreferences.dtsXPassthroughEnabled, false);
-  }
-
-  if (store.containsKey(_legacyTrueHdEnabledKey)) {
-    final legacyTrueHd =
-        store.getBool(_legacyTrueHdEnabledKey) ??
-        _legacyBitstreamDefaultForPlatform();
-    await setBoolIfMissing(UserPreferences.trueHdPassthroughEnabled, legacyTrueHd);
-    await setBoolIfMissing(
-      UserPreferences.trueHdAtmosPassthroughEnabled,
-      legacyTrueHd,
+  final migratedPreset = carriedOver
+      ? AudioPassthroughPreset.advanced
+      : (wasDownmix ? AudioPassthroughPreset.stereo : null);
+  if (migratedPreset != null) {
+    await setEnumIfMissing(
+      UserPreferences.audioPassthroughPreset,
+      migratedPreset,
     );
   }
 
@@ -337,10 +337,6 @@ Future<void> migrateAudioPreferenceSplit(PreferenceStore store) async {
           ? AudioFallbackCodec.aac
           : AudioFallbackCodec.auto,
     );
-  }
-
-  if (store.containsKey(_legacyAc3EnabledKey)) {
-    await setBoolIfMissing(UserPreferences.eac3JocPassthroughEnabled, false);
   }
 
   final savedFallbackCodec = store.getString(UserPreferences.audioFallbackCodec.key);

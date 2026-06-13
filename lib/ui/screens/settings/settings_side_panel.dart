@@ -2520,53 +2520,6 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
     AudioPassthroughPreset.advanced => 'Advanced',
   };
 
-  String _audioPresetDescription(AudioPassthroughPreset preset) =>
-      switch (preset) {
-        AudioPassthroughPreset.auto => PlatformDetection.isAppleTV
-            ? 'Decode locally and output the most channels your TV or receiver accepts.'
-            : 'Recommended. Plays everything your equipment supports automatically.',
-        AudioPassthroughPreset.surroundReceiver =>
-          'Bitstream Dolby/DTS to your AV receiver, including Atmos and DTS:X when supported.',
-        AudioPassthroughPreset.stereo => 'Always downmix to 2.0 stereo.',
-        AudioPassthroughPreset.advanced =>
-          'Manually control output mode, channels, and per-codec passthrough.',
-      };
-
-  Widget _buildAudioPresetTile() {
-    final current = _prefs.resolveAudioPassthroughPreset();
-    return _TvSettingsListTile(
-      leading: const Icon(Icons.surround_sound),
-      title: const Text('Audio Output'),
-      subtitle: Text(
-        '${_audioPresetLabel(current)}\n${_audioPresetDescription(current)}',
-      ),
-      trailing: const Icon(Icons.chevron_right),
-      onTap: () => _showAudioPresetPicker(current),
-    );
-  }
-
-  Future<void> _showAudioPresetPicker(AudioPassthroughPreset current) async {
-    final selected = await showDialog<AudioPassthroughPreset>(
-      context: context,
-      builder: (dialogContext) => SimpleDialog(
-        backgroundColor: AppColorScheme.surface,
-        title: const Text('Audio Output'),
-        children: [
-          for (final preset in _availablePresets)
-            ListTile(
-              title: Text(_audioPresetLabel(preset)),
-              subtitle: Text(_audioPresetDescription(preset)),
-              trailing: preset == current ? const Icon(Icons.check) : null,
-              onTap: () => Navigator.of(dialogContext).pop(preset),
-            ),
-        ],
-      ),
-    );
-    if (selected != null) {
-      await _prefs.applyAudioPassthroughPreset(selected);
-    }
-  }
-
   Widget _buildRedetectTile() {
     return _TvSettingsListTile(
       leading: const Icon(Icons.refresh),
@@ -2608,7 +2561,7 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isAdvanced =
-        _prefs.resolveAudioPassthroughPreset() ==
+        _prefs.get(UserPreferences.audioPassthroughPreset) ==
         AudioPassthroughPreset.advanced;
     return Scaffold(
       appBar: buildSettingsAppBar(context, Text(l10n.settingsAudioPreferences)),
@@ -2633,7 +2586,18 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
 
           if (!PlatformDetection.isWeb) ...[
             const _SectionHeader('Audio Output'),
-            _buildAudioPresetTile(),
+            EnumPreferenceTile<AudioPassthroughPreset>(
+              preference: UserPreferences.audioPassthroughPreset,
+              values: _availablePresets,
+              title: 'Audio Output',
+              description: PlatformDetection.isAppleTV
+                  ? 'How audio is sent to your TV or receiver.'
+                  : 'How audio is sent to your TV or receiver. Choose Advanced for per-codec control.',
+              icon: Icons.surround_sound,
+              labelOf: _audioPresetLabel,
+              onChangedValue: (preset) =>
+                  _prefs.applyAudioPassthroughPreset(preset),
+            ),
             if (isAdvanced) ...[
               const _SectionHeader('Advanced'),
               EnumPreferenceTile<AudioOutputMode>(

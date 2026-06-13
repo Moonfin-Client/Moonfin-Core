@@ -313,6 +313,7 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
   final String Function(T value) labelOf;
   final String Function(T value)? dialogLabelOf;
   final VoidCallback? onChanged;
+  final ValueChanged<T>? onChangedValue;
   final List<T>? values;
 
   const EnumPreferenceTile({
@@ -324,6 +325,7 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
     this.description,
     this.icon,
     this.onChanged,
+    this.onChangedValue,
     this.values,
   });
 
@@ -425,6 +427,7 @@ class _EnumPreferenceTileState<T extends Enum>
     if (!mounted || result == null || result == _binding.value) return;
     _binding.value = result;
     widget.onChanged?.call();
+    widget.onChangedValue?.call(result);
   }
 }
 

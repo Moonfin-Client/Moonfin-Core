@@ -203,4 +203,63 @@ void main() {
       expect(codecs, isNot(contains('eac3')));
     });
   });
+
+  group('applyAudioPassthroughPreset', () {
+    test('auto resets channels to 0 and clears overrides', () async {
+      final prefs = await _prefs();
+      await prefs.set(UserPreferences.maxAudioChannels, 2);
+      await prefs.set(UserPreferences.trueHdPassthroughEnabled, true);
+
+      await prefs.applyAudioPassthroughPreset(AudioPassthroughPreset.auto);
+
+      expect(prefs.get(UserPreferences.audioOutputMode), AudioOutputMode.auto);
+      expect(prefs.get(UserPreferences.maxAudioChannels), 0);
+      expect(
+        prefs.containsPreference(UserPreferences.trueHdPassthroughEnabled),
+        isFalse,
+      );
+    });
+
+    test('surroundReceiver sets avrPassthrough and resets channels', () async {
+      final prefs = await _prefs();
+      await prefs.set(UserPreferences.maxAudioChannels, 2);
+
+      await prefs.applyAudioPassthroughPreset(
+        AudioPassthroughPreset.surroundReceiver,
+      );
+
+      expect(
+        prefs.get(UserPreferences.audioOutputMode),
+        AudioOutputMode.avrPassthrough,
+      );
+      expect(prefs.get(UserPreferences.maxAudioChannels), 0);
+    });
+
+    test('stereo forces stereo and leaves channels untouched', () async {
+      final prefs = await _prefs();
+      await prefs.set(UserPreferences.maxAudioChannels, 6);
+
+      await prefs.applyAudioPassthroughPreset(AudioPassthroughPreset.stereo);
+
+      expect(
+        prefs.get(UserPreferences.audioOutputMode),
+        AudioOutputMode.forceStereo,
+      );
+      expect(prefs.get(UserPreferences.maxAudioChannels), 6);
+    });
+
+    test('advanced materializes effective values into explicit toggles', () async {
+      final prefs = await _prefs();
+
+      await prefs.applyAudioPassthroughPreset(AudioPassthroughPreset.advanced);
+
+      for (final pref in UserPreferences.passthroughTogglePreferences) {
+        expect(prefs.containsPreference(pref), isTrue, reason: pref.key);
+      }
+      expect(
+        prefs.get(UserPreferences.audioPassthroughPreset),
+        AudioPassthroughPreset.advanced,
+      );
+    });
+  });
 }
