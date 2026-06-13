@@ -184,7 +184,7 @@ class _SeerrBrowseScreenState extends State<SeerrBrowseScreen> {
     }
 
     final cardWidth =
-      _prefs.get(UserPreferences.posterSize).portraitHeight * (2 / 3);
+      _prefs.resolveLibraryPosterSize().portraitHeight * (2 / 3);
     const spacing = 12.0;
 
     return LayoutBuilder(
@@ -937,7 +937,7 @@ class _SeerrSettingsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final current = prefs.get(UserPreferences.posterSize);
+    final current = prefs.resolveLibraryPosterSize();
     final dialogWidth = (MediaQuery.sizeOf(context).width - 32).clamp(
       280.0,
       380.0,
@@ -982,7 +982,7 @@ class _SeerrSettingsDialog extends StatelessWidget {
                 label: _posterSizeLabel(option, l10n),
                 selected: current == option,
                 onTap: () async {
-                  await prefs.set(UserPreferences.posterSize, option);
+                  await prefs.set(UserPreferences.libraryPosterSize, option);
                   if (context.mounted) {
                     Navigator.of(context).pop();
                   }
