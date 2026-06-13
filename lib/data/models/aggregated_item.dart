@@ -20,6 +20,14 @@ class AggregatedItem {
 
   String get name => rawData['Name'] as String? ?? '';
   String? get type => rawData['Type'] as String?;
+
+  /// Whether this item is music/audio content (track, audiobook, or any item
+  /// whose server MediaType is Audio). Used to decide when to show the music
+  /// mini-player and when to keep the audio media session alive.
+  bool get isAudioLike =>
+      type == 'Audio' ||
+      type == 'AudioBook' ||
+      rawData['MediaType'] == 'Audio';
   bool get canDelete => rawData['CanDelete'] as bool? ?? false;
   String? get seriesName => rawData['SeriesName'] as String?;
   int? get productionYear => _toInt(rawData['ProductionYear']);

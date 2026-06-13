@@ -9,9 +9,11 @@ import 'package:server_core/server_core.dart';
 
 import '../../data/models/aggregated_item.dart';
 import '../../data/services/media_server_client_factory.dart';
+import '../../util/focus/dpad_keys.dart';
 import '../../util/platform_detection.dart';
 import '../navigation/app_router.dart';
 import '../navigation/destinations.dart';
+import '../screensaver/screensaver_controller.dart';
 
 class MiniAudioPlayer extends StatefulWidget {
   const MiniAudioPlayer({super.key});
@@ -79,20 +81,31 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    if (PlatformDetection.isTV) {
-      return const SizedBox.shrink();
-    }
-
     final item = _currentItem;
-    if (item == null || !_isAudioLikeItem(item)) {
-      return const SizedBox.shrink();
-    }
-    if (_dismissedItemId == item.id) {
+    if (item == null || !item.isAudioLike) {
       return const SizedBox.shrink();
     }
 
     final isPlaying = _state.isPlaying;
     final artUrl = _artUrl(item);
+
+    if (PlatformDetection.isTV) {
+      return _TvMiniAudioBar(
+        item: item,
+        artUrl: artUrl,
+        isPlaying: isPlaying,
+        state: _state,
+        onPrev: _manager.previous,
+        onPlayPause: isPlaying ? _manager.pause : _manager.resume,
+        onNext: _manager.next,
+        onStop: () => unawaited(_manager.stop(userInitiated: true)),
+        onOpen: () => appRouter.push(Destinations.audioPlayer),
+      );
+    }
+
+    if (_dismissedItemId == item.id) {
+      return const SizedBox.shrink();
+    }
 
     final bottomPad = MediaQuery.of(context).viewPadding.bottom;
 
@@ -138,11 +151,6 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer> {
         ),
       ),
     );
-  }
-
-  bool _isAudioLikeItem(AggregatedItem item) {
-    final mediaType = item.rawData['MediaType'] as String?;
-    return item.type == 'Audio' || item.type == 'AudioBook' || mediaType == 'Audio';
   }
 }
 
@@ -309,6 +317,236 @@ class _TransportButtons extends StatelessWidget {
           onPressed: onNext,
         ),
       ],
+    );
+  }
+}
+
+/// TV variant of the mini player: a D-pad navigable bottom bar. Track info opens
+/// the full audio player, transport has prev / play-pause / next and a dedicated
+/// Stop (there is no swipe-to-dismiss on a remote).
+class _TvMiniAudioBar extends StatelessWidget {
+  final AggregatedItem item;
+  final String? artUrl;
+  final bool isPlaying;
+  final PlayerState state;
+  final VoidCallback onPrev;
+  final VoidCallback onPlayPause;
+  final VoidCallback onNext;
+  final VoidCallback onStop;
+  final VoidCallback onOpen;
+
+  const _TvMiniAudioBar({
+    required this.item,
+    required this.artUrl,
+    required this.isPlaying,
+    required this.state,
+    required this.onPrev,
+    required this.onPlayPause,
+    required this.onNext,
+    required this.onStop,
+    required this.onOpen,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return FocusTraversalGroup(
+      child: Container(
+        color: AppColorScheme.surface,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RepaintBoundary(child: _ProgressSliver(state: state)),
+            SizedBox(
+              height: 84,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 28),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _TvFocusable(
+                        onSelect: onOpen,
+                        builder: (focused) => _TvTrackInfo(
+                          item: item,
+                          artUrl: artUrl,
+                          focused: focused,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    _TvFocusable(
+                      onSelect: onPrev,
+                      builder: (f) => _tvCircle(Icons.skip_previous, f),
+                    ),
+                    const SizedBox(width: 12),
+                    _TvFocusable(
+                      onSelect: onPlayPause,
+                      builder: (f) => _tvCircle(
+                        isPlaying ? Icons.pause : Icons.play_arrow,
+                        f,
+                        large: true,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    _TvFocusable(
+                      onSelect: onNext,
+                      builder: (f) => _tvCircle(Icons.skip_next, f),
+                    ),
+                    const SizedBox(width: 12),
+                    _TvFocusable(
+                      onSelect: onStop,
+                      builder: (f) => _tvCircle(Icons.stop, f),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+Widget _tvCircle(IconData icon, bool focused, {bool large = false}) {
+  final diameter = large ? 56.0 : 48.0;
+  return AnimatedContainer(
+    duration: const Duration(milliseconds: 90),
+    width: diameter,
+    height: diameter,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: focused
+          ? AppColorScheme.onSurface
+          : AppColorScheme.onSurface.withValues(alpha: 0.10),
+    ),
+    child: Icon(
+      icon,
+      size: large ? 30 : 26,
+      color: focused ? AppColorScheme.surface : AppColorScheme.onSurface,
+    ),
+  );
+}
+
+class _TvTrackInfo extends StatelessWidget {
+  final AggregatedItem item;
+  final String? artUrl;
+  final bool focused;
+  const _TvTrackInfo({
+    required this.item,
+    required this.artUrl,
+    required this.focused,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final artist = item.artists.isNotEmpty
+        ? item.artists.join(', ')
+        : item.albumArtist ?? '';
+    final fg = focused ? AppColorScheme.surface : AppColorScheme.onSurface;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 90),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: focused ? AppColorScheme.onSurface : Colors.transparent,
+      ),
+      child: Row(
+        children: [
+          _ArtThumbnail(artUrl: artUrl),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.name,
+                  style: TextStyle(
+                    color: fg,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (artist.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    artist,
+                    style: TextStyle(
+                      color: fg.withValues(alpha: 0.7),
+                      fontSize: 13,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A focusable D-pad target: activates [onSelect] on the remote Select/OK key
+/// and shows focus via [builder]'s `focused` flag. Directional keys are left
+/// unhandled so Flutter's focus traversal moves naturally (Up escapes the bar
+/// back to content; the bar never traps focus, and never autofocuses on launch).
+class _TvFocusable extends StatefulWidget {
+  final VoidCallback onSelect;
+  final Widget Function(bool focused) builder;
+  const _TvFocusable({required this.onSelect, required this.builder});
+
+  @override
+  State<_TvFocusable> createState() => _TvFocusableState();
+}
+
+class _TvFocusableState extends State<_TvFocusable> {
+  final _node = FocusNode();
+  bool _focused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _node.addListener(_onFocusChanged);
+  }
+
+  void _onFocusChanged() {
+    if (_focused != _node.hasFocus && mounted) {
+      setState(() => _focused = _node.hasFocus);
+    }
+  }
+
+  @override
+  void dispose() {
+    _node.removeListener(_onFocusChanged);
+    _node.dispose();
+    super.dispose();
+  }
+
+  KeyEventResult _onKey(FocusNode node, KeyEvent event) {
+    if (GetIt.instance<ScreensaverController>().visible.value) {
+      return KeyEventResult.ignored;
+    }
+    if (isActivateKey(event)) {
+      widget.onSelect();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      focusNode: _node,
+      onKeyEvent: _onKey,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: widget.onSelect,
+        child: widget.builder(_focused),
+      ),
     );
   }
 }

@@ -13,6 +13,8 @@ import 'data/services/cast/airplay_command_bridge.dart';
 import 'data/services/download_notification_service.dart';
 import 'data/services/media_server_client_factory.dart';
 import 'di/injection.dart';
+import 'playback/appletv_audio_now_playing_feeder.dart';
+import 'playback/appletv_mpv_backend.dart';
 import 'playback/audio_capability_profile.dart';
 import 'playback/audio_handler.dart';
 import 'playback/playback_lifecycle_handler.dart';
@@ -401,7 +403,12 @@ void main() async {
     await notificationService.initialize();
   } catch (_) {}
 
-  if (PlatformDetection.isMobile) {
+  // Android TV also gets the MediaSession so music is controllable from the
+  // system quick-access / screensaver after leaving the app. Apple
+  // TV and Tizen are excluded: they have no audio_service backend (tvOS uses the
+  // native NowPlayingController instead).
+  if (PlatformDetection.isMobile ||
+      (PlatformDetection.isAndroid && PlatformDetection.isTV)) {
     try {
       await initAudioService(
         manager: GetIt.instance<PlaybackManager>(),
@@ -436,6 +443,20 @@ void main() async {
   } else if (PlatformDetection.isIOS) {
     try {
       _attachIosAudioRouteHandling();
+    } catch (_) {}
+  }
+
+  // tvOS: keep the system Now Playing card fed for music (the native
+  // NowPlayingController handles video; audio has no view controller to feed it).
+  if (PlatformDetection.isAppleTV &&
+      !GetIt.instance.isRegistered<AppleTvAudioNowPlayingFeeder>()) {
+    try {
+      final feeder = AppleTvAudioNowPlayingFeeder(
+        manager: GetIt.instance<PlaybackManager>(),
+        clientFactory: GetIt.instance<MediaServerClientFactory>(),
+        backend: GetIt.instance<AppleTvMpvBackend>(),
+      )..start();
+      GetIt.instance.registerSingleton<AppleTvAudioNowPlayingFeeder>(feeder);
     } catch (_) {}
   }
 
