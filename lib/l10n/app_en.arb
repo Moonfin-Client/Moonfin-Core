@@ -3668,7 +3668,7 @@
   "@syncing": {
     "description": "Label while syncing"
   },
-  "syncToProfile": "Sync To Profile",
+  "syncToProfile": "Sync Profile",
   "@syncToProfile": {
     "description": "Button to sync to a profile"
   },
@@ -4419,7 +4419,7 @@
   "@ratingSourcesDescription": {
     "description": "Description for rating sources"
   },
-  "pluginLabel": "Plugin",
+  "pluginLabel": "Moonbase Plugin",
   "@pluginLabel": {
     "description": "Settings title for plugin"
   },

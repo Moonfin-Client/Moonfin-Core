@@ -4808,7 +4808,7 @@ abstract class AppLocalizations {
   /// Button to sync to a profile
   ///
   /// In en, this message translates to:
-  /// **'Sync To Profile'**
+  /// **'Sync Profile'**
   String get syncToProfile;
 
   /// Title when profile sync is hidden
@@ -5876,7 +5876,7 @@ abstract class AppLocalizations {
   /// Settings title for plugin
   ///
   /// In en, this message translates to:
-  /// **'Plugin'**
+  /// **'Moonbase Plugin'**
   String get pluginLabel;
 
   /// Status when plugin is detected

@@ -247,29 +247,30 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
                   ),
                   child: Column(
                     children: [
-                      Focus(
-                        canRequestFocus: false,
-                        skipTraversal: true,
-                        onFocusChange: (focused) {
-                          if (focused) {
+                      Builder(
+                        builder: (tileContext) => Focus(
+                          canRequestFocus: false,
+                          skipTraversal: true,
+                          onFocusChange: (focused) {
+                            if (!focused) return;
                             WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (!context.mounted) return;
+                              if (!tileContext.mounted) return;
                               Scrollable.ensureVisible(
-                                context,
+                                tileContext,
                                 alignment: 0.1,
                                 alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
                                 duration: const Duration(milliseconds: 120),
                                 curve: Curves.easeOut,
                               );
                             });
-                          }
-                        },
-                        child: SwitchPreferenceTile(
-                          preference: UserPreferences.pluginSyncEnabled,
-                          title: l10n.serverPluginSync,
-                          subtitle: l10n.syncSettingsWithPlugin,
-                          icon: Icons.sync,
-                          onChanged: _pushSync,
+                          },
+                          child: SwitchPreferenceTile(
+                            preference: UserPreferences.pluginSyncEnabled,
+                            title: l10n.serverPluginSync,
+                            subtitle: l10n.syncSettingsWithPlugin,
+                            icon: Icons.sync,
+                            onChanged: _pushSync,
+                          ),
                         ),
                       ),
                       Padding(
@@ -414,9 +415,7 @@ class _ProfileSyncSection extends StatelessWidget {
                   ),
                   onPressed: busy ? null : onSave,
                   icon: const Icon(Icons.cloud_upload),
-                  label: Text(l10n.localeName.startsWith('en')
-                      ? 'Sync Profile'
-                      : l10n.syncToProfile),
+                  label: Text(l10n.syncToProfile),
                 ),
               ),
             ],

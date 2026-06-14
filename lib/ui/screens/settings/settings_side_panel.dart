@@ -1180,7 +1180,7 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
               _TvSettingsListTile(
                 autofocus: true,
                 leading: const Icon(Icons.extension),
-                title: const Text('Moonbase Plugin'),
+                title: Text(l10n.pluginLabel),
                 subtitle: Text(l10n.serverSyncAndPluginStatus),
                 onTap: () => context.pushSettingsScreen(const _PluginScreen()),
               ),
@@ -1294,7 +1294,7 @@ class _PluginScreenState extends State<_PluginScreen> {
             child: Scaffold(
               appBar: buildSettingsAppBar(
                 context,
-                const Text('Moonbase Plugin'),
+                Text(l10n.pluginLabel),
                 actions: [
                   IconButton(
                     focusNode: _refreshFocusNode,

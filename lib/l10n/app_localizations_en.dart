@@ -2623,7 +2623,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get syncing => 'Syncing...';
 
   @override
-  String get syncToProfile => 'Sync To Profile';
+  String get syncToProfile => 'Sync Profile';
 
   @override
   String get profileSyncHidden => 'Profile Sync Hidden';
@@ -3189,7 +3189,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enable and reorder the rating sources shown throughout the app';
 
   @override
-  String get pluginLabel => 'Plugin';
+  String get pluginLabel => 'Moonbase Plugin';
 
   @override
   String get pluginDetected => 'Plugin Detected';
