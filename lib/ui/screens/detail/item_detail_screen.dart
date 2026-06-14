@@ -8792,7 +8792,6 @@ class _MetadataChipState extends State<_MetadataChip> with FocusStateMixin {
 class _MetadataSection extends StatefulWidget {
   final ItemDetailViewModel viewModel;
   final FocusNode? firstItemFocusNode;
-  final FocusNode? upTarget;
 
   const _MetadataSection({
     required this.viewModel,
