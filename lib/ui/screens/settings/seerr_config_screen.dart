@@ -584,6 +584,8 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
   final _passwordFocus = FocusNode(debugLabel: 'seerr_password');
   final _localAuthFocus = FocusNode(debugLabel: 'seerr_auth_local');
   final _signInFocus = FocusNode(debugLabel: 'seerr_sign_in');
+  final _signInButtonFocus = FocusNode(canRequestFocus: false, debugLabel: 'seerr_sign_in_btn');
+  final _signOutButtonFocus = FocusNode(canRequestFocus: false, debugLabel: 'seerr_sign_out_btn');
   final _usernameTvFieldKey = GlobalKey<CustomTVTextFieldState>();
   final _passwordTvFieldKey = GlobalKey<CustomTVTextFieldState>();
 
@@ -685,6 +687,8 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
     _passwordFocus.dispose();
     _localAuthFocus.dispose();
     _signInFocus.dispose();
+    _signInButtonFocus.dispose();
+    _signOutButtonFocus.dispose();
     super.dispose();
   }
 
@@ -1242,6 +1246,7 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
                                   : null,
                             ),
                             child: FilledButton(
+                              focusNode: PlatformDetection.isTV ? _signOutButtonFocus : null,
                               style: FilledButton.styleFrom(
                                 foregroundColor: colorScheme.onPrimary,
                                 backgroundColor: colorScheme.primary,
@@ -1387,6 +1392,7 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
                                   : null,
                             ),
                             child: FilledButton(
+                              focusNode: PlatformDetection.isTV ? _signInButtonFocus : null,
                               onPressed: _canSignIn ? _submitSignIn : null,
                               style: FilledButton.styleFrom(
                                 shape: RoundedRectangleBorder(
