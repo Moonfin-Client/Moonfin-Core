@@ -2277,41 +2277,70 @@ class _ContentRowsState extends State<_ContentRows>
   ) {
     final desktopScale = _desktopUiScaleFactor();
     final metadataScale = desktopScale;
+    double extent;
     if (row.isLoading) {
-      return _libraryRowExtent(220 * metadataScale, metadataScale: metadataScale);
-    }
-
-    if (row.rowType == HomeRowType.liveTv ||
+      extent = _libraryRowExtent(220 * metadataScale, metadataScale: metadataScale);
+    } else if (row.rowType == HomeRowType.liveTv ||
         row.rowType == HomeRowType.libraryTilesSmall) {
       final squarePosterSide = _squarePosterSide(posterSize);
       final rowHeight = squarePosterSide + (56 * metadataScale);
-      return _libraryRowExtent(rowHeight, metadataScale: metadataScale);
+      extent = _libraryRowExtent(rowHeight, metadataScale: metadataScale);
+    } else {
+      final isSeerrRowOverride = _isSeerrFilterRow(row);
+      final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !isSeerrRowOverride;
+      final rowImageType = isSeerrRowOverride
+          ? ImageType.thumb
+          : (isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs));
+      final platformScale = PlatformDetection.isTV ? 0.8 * desktopScale : desktopScale;
+      var maxCardHeight = 220.0 * metadataScale;
+      if (isRowsV2) {
+        final imageHeight = posterSize.portraitHeight.toDouble() * platformScale * 2;
+        maxCardHeight = imageHeight + (_v2MetadataHeightBudget(prefs) * metadataScale);
+      } else {
+        for (final item in row.items) {
+          final aspectRatio = _aspectRatioForRowItem(item, row, rowImageType);
+          final imageHeight = (aspectRatio > 1
+              ? posterSize.landscapeHeight.toDouble()
+              : posterSize.portraitHeight.toDouble()) * platformScale;
+          final cardHeight = imageHeight + (46 * metadataScale);
+          if (cardHeight > maxCardHeight) {
+            maxCardHeight = cardHeight;
+          }
+        }
+      }
+      extent = _libraryRowExtent(maxCardHeight, metadataScale: metadataScale);
     }
 
-    final isSeerrRowOverride = _isSeerrFilterRow(row);
-    final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !isSeerrRowOverride;
-    final rowImageType = isSeerrRowOverride
-        ? ImageType.thumb
-        : (isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs));
-    final platformScale = PlatformDetection.isTV ? 0.8 * desktopScale : desktopScale;
-    var maxCardHeight = 220.0 * metadataScale;
-    if (isRowsV2) {
-      final imageHeight = posterSize.portraitHeight.toDouble() * platformScale * 2;
-      maxCardHeight = imageHeight + (_v2MetadataHeightBudget(prefs) * metadataScale);
-    } else {
-      for (final item in row.items) {
-        final aspectRatio = _aspectRatioForRowItem(item, row, rowImageType);
-        final imageHeight = (aspectRatio > 1
-            ? posterSize.landscapeHeight.toDouble()
-            : posterSize.portraitHeight.toDouble()) * platformScale;
-        final cardHeight = imageHeight + (46 * metadataScale);
-        if (cardHeight > maxCardHeight) {
-          maxCardHeight = cardHeight;
+    final fullScreenRows = PlatformDetection.isTV && prefs.get(UserPreferences.fullScreenRows);
+    if (fullScreenRows) {
+      final viewportHeight = MediaQuery.sizeOf(context).height;
+      final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isSeerrFilterRow(row);
+      final navbarHeight = 95.0;
+      double overlayBottom;
+      if (isRowsV2) {
+        overlayBottom = navbarHeight;
+      } else {
+        final showInfoOverlay = prefs.get(UserPreferences.homeRowInfoOverlay);
+        if (showInfoOverlay) {
+          final safeTop = MediaQuery.paddingOf(context).top;
+          final infoTopBasePadding = (navbarHeight == 0) ? 14.0 : 8.0;
+          final infoTopPadding = safeTop + navbarHeight + infoTopBasePadding;
+          final infoAreaHeight = InfoArea.fixedHeight(
+            isMobile: false,
+            desktopScale: desktopScale,
+          );
+          overlayBottom = infoTopPadding + infoAreaHeight;
+        } else {
+          overlayBottom = 0.0;
         }
+      }
+      final targetExtent = viewportHeight - overlayBottom - 8.0;
+      if (extent < targetExtent) {
+        extent = targetExtent;
       }
     }
 
-    return _libraryRowExtent(maxCardHeight, metadataScale: metadataScale);
+    return extent;
   }
 
   List<double> _computeRowExtents(
@@ -2374,14 +2403,10 @@ class _ContentRowsState extends State<_ContentRows>
   double _v2MetadataHeightBudget(UserPreferences prefs) {
     final hasAdditionalRatings =
         prefs.get(UserPreferences.enableAdditionalRatings);
-    final fullScreenRows =
-        PlatformDetection.isTV && prefs.get(UserPreferences.fullScreenRows);
     final hasAdditionalRatingsPadding =
         hasAdditionalRatings ? 8.0 : 0.0;
-    final fullScreenRowsPadding =
-        fullScreenRows ? 156.0 : 0.0;
     final heightBudget =
-        136.0 + hasAdditionalRatingsPadding + fullScreenRowsPadding;
+        136.0 + hasAdditionalRatingsPadding;
     return heightBudget;
   }
 
@@ -2710,7 +2735,7 @@ class _ContentRowsState extends State<_ContentRows>
                   isLoading: true,
                   children: const [],
                 );
-                return Padding(
+                final itemWidget = Padding(
                   padding: EdgeInsets.only(left: rowLeftInset),
                   child: _buildShiftedRow(
                     child: rowChild,
@@ -2721,6 +2746,13 @@ class _ContentRowsState extends State<_ContentRows>
                     overlayBottom: overlayBottom,
                   ),
                 );
+                if (fullScreenRows) {
+                  return SizedBox(
+                    height: rowExtents[rowIndex],
+                    child: itemWidget,
+                  );
+                }
+                return itemWidget;
               } else if (row.rowType == HomeRowType.liveTv) {
                 rowChild = _buildLiveTvRow(
                   row,
@@ -2753,7 +2785,7 @@ class _ContentRowsState extends State<_ContentRows>
                   l10n: l10n,
                 );
               }
-              return Padding(
+              final itemWidget = Padding(
                 padding: EdgeInsets.only(left: rowLeftInset),
                 child: AnimatedPadding(
                   duration: _focusedRowSpacingDuration,
@@ -2775,6 +2807,17 @@ class _ContentRowsState extends State<_ContentRows>
                   ),
                 ),
               );
+              if (fullScreenRows) {
+                return SizedBox(
+                  height: rowExtents[rowIndex] +
+                      ((PlatformDetection.isTV &&
+                              rowIndex == _activeFocusedRowIndex)
+                          ? _focusedRowExtraSpacing * 2
+                          : 0.0),
+                  child: itemWidget,
+                );
+              }
+              return itemWidget;
               },
             ),
           ),

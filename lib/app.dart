@@ -205,9 +205,11 @@ class _MoonfinAppState extends State<MoonfinApp> {
                   builder: (context, _) {
                     final scale =
                         _prefs.get(UserPreferences.desktopUiScale).scaleFactor;
+                    final systemScale =
+                        MediaQuery.textScalerOf(context).scale(1.0);
                     return MediaQuery(
                       data: MediaQuery.of(context).copyWith(
-                        textScaler: TextScaler.linear(scale),
+                        textScaler: TextScaler.linear(scale * systemScale),
                       ),
                       child: mainChild,
                     );
