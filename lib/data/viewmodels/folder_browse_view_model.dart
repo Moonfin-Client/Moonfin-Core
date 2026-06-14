@@ -108,8 +108,13 @@ class FolderBrowseViewModel extends ChangeNotifier {
     _loadingMore = true;
     _notify();
 
+    final prevLength = _items.length;
     try {
       await _fetchPage(currentFolderId, _items.length);
+      if (!_disposed && _items.length <= prevLength) {
+        _totalCount = _items.length;
+        _hasMoreFromPageSize = false;
+      }
     } catch (_) {}
 
     if (_disposed) return;

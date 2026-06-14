@@ -247,6 +247,8 @@ class FavoritesViewModel extends ChangeNotifier {
       if (newItems.isNotEmpty) {
         _rowItems[type] = [...items, ...newItems];
         notifyListeners();
+      } else {
+        _rowTotalCounts[type] = items.length;
       }
     } catch (_) {
     } finally {
@@ -321,8 +323,12 @@ class FavoritesViewModel extends ChangeNotifier {
     _loadingMoreGrid = true;
     notifyListeners();
 
+    final prevLength = _gridItems.length;
     try {
       await _fetchGridPage(_gridItems.length);
+      if (_gridItems.length <= prevLength) {
+        _gridTotalCount = _gridItems.length;
+      }
     } catch (_) {}
 
     _loadingMoreGrid = false;

@@ -249,8 +249,13 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _loadingMore = true;
     notifyListeners();
 
+    final prevLength = _items.length;
     try {
       await _fetchPage(_items.length);
+      if (_items.length <= prevLength) {
+        _totalCount = _items.length;
+        _hasMoreFromPageSize = false;
+      }
     } catch (_) {}
 
     _loadingMore = false;

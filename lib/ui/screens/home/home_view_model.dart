@@ -464,10 +464,13 @@ class HomeViewModel extends ChangeNotifier {
       _rowOffsets[row.id] = currentOffset + 15;
 
       final filteredItems = _filterEmptyElements(result.$1);
+      final newTotalCount = filteredItems.length <= row.items.length
+          ? filteredItems.length
+          : (result.$2 - (result.$1.length - filteredItems.length));
       _rows = List.of(_rows);
       _rows[rowIndex] = row.copyWith(
         items: filteredItems,
-        totalCount: result.$2 - (result.$1.length - filteredItems.length),
+        totalCount: newTotalCount,
       );
       notifyListeners();
     } catch (_) {
