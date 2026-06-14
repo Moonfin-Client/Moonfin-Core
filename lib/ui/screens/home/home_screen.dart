@@ -2271,13 +2271,22 @@ class _ContentRowsState extends State<_ContentRows>
     final fullScreenRows = !PlatformDetection.useMobileUi && prefs.get(UserPreferences.fullScreenRows);
     if (!fullScreenRows) return;
 
+    if (_mediaBarFocusNode.hasFocus) return;
+
     final currentOffset = _scrollController.offset;
     double minDiff = double.infinity;
     double bestOffset = currentOffset;
 
+    final List<double> targets = [];
+    if (_isMediaBarIncluded()) {
+      targets.add(0.0);
+    }
     for (var i = 0; i < _rowTopOffsets.length; i++) {
-      final target = (_rowTopOffsets[i] - (_overlayBottom + 8.0))
-          .clamp(0.0, _scrollController.position.maxScrollExtent);
+      targets.add((_rowTopOffsets[i] - (_overlayBottom + 8.0))
+          .clamp(0.0, _scrollController.position.maxScrollExtent));
+    }
+
+    for (final target in targets) {
       final diff = (target - currentOffset).abs();
       if (diff < minDiff) {
         minDiff = diff;
