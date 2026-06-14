@@ -2270,21 +2270,20 @@ class _ContentRowsState extends State<_ContentRows>
     return posterSize.portraitHeight.toDouble() * platformScale;
   }
 
-  double _estimatedRowExtent(
+  double _rowContentHeight(
     HomeRow row,
     PosterSize posterSize,
     UserPreferences prefs,
   ) {
     final desktopScale = _desktopUiScaleFactor();
     final metadataScale = desktopScale;
-    double extent;
     if (row.isLoading) {
-      extent = _libraryRowExtent(220 * metadataScale, metadataScale: metadataScale);
+      return _libraryRowExtent(220 * metadataScale, metadataScale: metadataScale);
     } else if (row.rowType == HomeRowType.liveTv ||
         row.rowType == HomeRowType.libraryTilesSmall) {
       final squarePosterSide = _squarePosterSide(posterSize);
       final rowHeight = squarePosterSide + (56 * metadataScale);
-      extent = _libraryRowExtent(rowHeight, metadataScale: metadataScale);
+      return _libraryRowExtent(rowHeight, metadataScale: metadataScale);
     } else {
       final isSeerrRowOverride = _isSeerrFilterRow(row);
       final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !isSeerrRowOverride;
@@ -2308,33 +2307,50 @@ class _ContentRowsState extends State<_ContentRows>
           }
         }
       }
-      extent = _libraryRowExtent(maxCardHeight, metadataScale: metadataScale);
+      return _libraryRowExtent(maxCardHeight, metadataScale: metadataScale);
     }
+  }
+
+  double _estimatedRowExtent(
+    HomeRow row,
+    PosterSize posterSize,
+    UserPreferences prefs,
+  ) {
+    var extent = _rowContentHeight(row, posterSize, prefs);
 
     final fullScreenRows = PlatformDetection.isTV && prefs.get(UserPreferences.fullScreenRows);
     if (fullScreenRows) {
+      final desktopScale = _desktopUiScaleFactor();
       final viewportHeight = MediaQuery.sizeOf(context).height;
+      final safeTop = MediaQuery.paddingOf(context).top;
       final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isSeerrFilterRow(row);
-      final navbarHeight = 95.0;
-      double overlayBottom;
+
+      final navbarIsTop = prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
+      final navbarHeight = PlatformDetection.isTV
+          ? 95.0
+          : (navbarIsTop
+              ? (PlatformDetection.useMobileUi ? 60.0 : 80.0)
+              : 0.0);
+
+      double topOffset;
       if (isRowsV2) {
-        overlayBottom = navbarHeight;
+        topOffset = safeTop + navbarHeight + 8.0;
       } else {
         final showInfoOverlay = prefs.get(UserPreferences.homeRowInfoOverlay);
         if (showInfoOverlay) {
-          final safeTop = MediaQuery.paddingOf(context).top;
           final infoTopBasePadding = (navbarHeight == 0) ? 14.0 : 8.0;
           final infoTopPadding = safeTop + navbarHeight + infoTopBasePadding;
           final infoAreaHeight = InfoArea.fixedHeight(
             isMobile: false,
             desktopScale: desktopScale,
           );
-          overlayBottom = infoTopPadding + infoAreaHeight;
+          topOffset = infoTopPadding + infoAreaHeight + 8.0;
         } else {
-          overlayBottom = 0.0;
+          topOffset = safeTop + 56.0;
         }
       }
-      final targetExtent = viewportHeight - overlayBottom - 8.0;
+
+      final targetExtent = viewportHeight - topOffset;
       if (extent < targetExtent) {
         extent = targetExtent;
       }
@@ -2548,9 +2564,9 @@ class _ContentRowsState extends State<_ContentRows>
             : (navbarIsTop
                 ? 45.0
                 : 15.0))
-        : (PlatformDetection.useMobileUi
-            ? 60.0
-            : 80.0);
+        : (navbarIsTop
+            ? (PlatformDetection.useMobileUi ? 60.0 : 80.0)
+            : (fullScreenRows ? 0.0 : 80.0));
     final listTopPadding = includeMediaBar || showInfoOverlay
         ? 0.0
         : _isHomeRowsStyleV2()
@@ -2586,7 +2602,7 @@ class _ContentRowsState extends State<_ContentRows>
         ? navbarHeight
         : showInfoOverlay
             ? infoTopPadding + infoAreaHeight
-            : 0.0;
+            : (fullScreenRows ? safeTop + 48.0 : 0.0);
     final rowExtents = _computeRowExtents(rows, posterSize, prefs);
     final rowTopOffsets = <double>[];
     var currentTop = listTopPadding + infoPlaceholderHeight;
@@ -2735,24 +2751,6 @@ class _ContentRowsState extends State<_ContentRows>
                   isLoading: true,
                   children: const [],
                 );
-                final itemWidget = Padding(
-                  padding: EdgeInsets.only(left: rowLeftInset),
-                  child: _buildShiftedRow(
-                    child: rowChild,
-                    rowIndex: rowIndex,
-                    rowTopOffsets: rowTopOffsets,
-                    rowExtents: rowExtents,
-                    showInfoOverlay: showInfoOverlay,
-                    overlayBottom: overlayBottom,
-                  ),
-                );
-                if (fullScreenRows) {
-                  return SizedBox(
-                    height: rowExtents[rowIndex],
-                    child: itemWidget,
-                  );
-                }
-                return itemWidget;
               } else if (row.rowType == HomeRowType.liveTv) {
                 rowChild = _buildLiveTvRow(
                   row,
@@ -2785,6 +2783,41 @@ class _ContentRowsState extends State<_ContentRows>
                   l10n: l10n,
                 );
               }
+
+              final contentHeight = _rowContentHeight(row, posterSize, prefs);
+              final targetExtent = rowExtents[rowIndex];
+              final extraTopPadding = fullScreenRows
+                  ? ((targetExtent - contentHeight) / 2.0).clamp(0.0, double.infinity)
+                  : 0.0;
+
+              final paddedRowChild = extraTopPadding > 0.0
+                  ? Padding(
+                      padding: EdgeInsets.only(top: extraTopPadding),
+                      child: rowChild,
+                    )
+                  : rowChild;
+
+              if (row.isLoading) {
+                final itemWidget = Padding(
+                  padding: EdgeInsets.only(left: rowLeftInset),
+                  child: _buildShiftedRow(
+                    child: paddedRowChild,
+                    rowIndex: rowIndex,
+                    rowTopOffsets: rowTopOffsets,
+                    rowExtents: rowExtents,
+                    showInfoOverlay: showInfoOverlay,
+                    overlayBottom: overlayBottom,
+                  ),
+                );
+                if (fullScreenRows) {
+                  return SizedBox(
+                    height: rowExtents[rowIndex],
+                    child: itemWidget,
+                  );
+                }
+                return itemWidget;
+              }
+
               final itemWidget = Padding(
                 padding: EdgeInsets.only(left: rowLeftInset),
                 child: AnimatedPadding(
@@ -2798,7 +2831,7 @@ class _ContentRowsState extends State<_ContentRows>
                         : 0,
                   ),
                   child: _buildShiftedRow(
-                    child: rowChild,
+                    child: paddedRowChild,
                     rowIndex: rowIndex,
                     rowTopOffsets: rowTopOffsets,
                     rowExtents: rowExtents,
