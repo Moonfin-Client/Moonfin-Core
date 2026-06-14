@@ -2060,25 +2060,6 @@ private final class InfoCell: UITableViewCell {
 
     private let highlight = UIView()
 
-    private static func makeNameLabel() -> UILabel {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 20, weight: .regular)
-        label.textColor = UIColor(white: 1, alpha: 0.55)
-        label.numberOfLines = 0
-        return label
-    }
-
-    private static func makeValueLabel() -> UILabel {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .systemFont(ofSize: 20, weight: .medium)
-        label.textColor = .white
-        label.numberOfLines = 1
-        label.lineBreakMode = .byTruncatingTail
-        return label
-    }
-
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = UIColor(white: 1, alpha: 0.05)
@@ -2090,7 +2071,20 @@ private final class InfoCell: UITableViewCell {
         highlight.layer.cornerRadius = 10
         contentView.addSubview(highlight)
 
-        for label in [leftName, leftValue, rightName, rightValue] {
+        for label in [leftName, rightName] {
+            label.translatesAutoresizingMaskIntoConstraints = false
+            label.font = .systemFont(ofSize: 20, weight: .regular)
+            label.textColor = UIColor(white: 1, alpha: 0.55)
+            label.numberOfLines = 1
+            label.lineBreakMode = .byTruncatingTail
+            contentView.addSubview(label)
+        }
+        for label in [leftValue, rightValue] {
+            label.translatesAutoresizingMaskIntoConstraints = false
+            label.font = .systemFont(ofSize: 20, weight: .medium)
+            label.textColor = .white
+            label.numberOfLines = 1
+            label.lineBreakMode = .byTruncatingTail
             contentView.addSubview(label)
         }
 

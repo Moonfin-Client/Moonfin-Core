@@ -56,7 +56,10 @@ final class DisplayCriteriaManager {
             diag["dc_applied"] = "tvos_lt_17"
             return
         }
-        let dynamicRange = Self.dynamicRange(from: rangeType)
+        var dynamicRange = Self.dynamicRange(from: rangeType)
+        if dynamicRange == .dolbyVision {
+            dynamicRange = .hdr10
+        }
         let refreshRate = resolvedRefreshRate(frameRate: frameRate, screen: window.screen)
         guard
             let formatDescription = makeFormatDescription(

@@ -261,15 +261,24 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         let audioCodec = (args["audioCodec"] as? String ?? "").lowercased()
         let audioProfile = (args["audioProfile"] as? String ?? "").lowercased()
         let audioChannels = (args["audioChannels"] as? NSNumber)?.intValue ?? 0
+        let rangeType = (args["videoRangeType"] as? String ?? "").uppercased()
+        let isDolbyVision =
+            rangeType.contains("DOVI") || rangeType.contains("DOLBYVISION")
         let isAtmosFamily =
             audioCodec == "truehd" || audioCodec == "mlp"
             || (audioCodec == "eac3" && audioProfile.contains("joc"))
         let preferNative =
             !audioOnly
-            && ((dvProfile == 7 && nativeDvEnabled)
+            && ((isDolbyVision && nativeDvEnabled)
                 || (atmosPassthrough && isAtmosFamily && audioChannels != 2))
         player.configurePreferredBackendForNextPlayback(
             preferNative ? .native : .mpv, fallbackReason: nil)
+        if preferNative && isDolbyVision {
+            player.configureDolbyVisionMetadata(
+                profile: dvProfile >= 0 ? dvProfile : nil,
+                level: nil,
+                blSignalCompatibilityId: nil)
+        }
 
         if !preferNative && !audioOnly {
             lastStreamCriteria = StreamCriteria(
