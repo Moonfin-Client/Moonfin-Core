@@ -483,7 +483,7 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
         keys.contains(LogicalKeyboardKey.controlRight);
 
     final isBackspace = key == LogicalKeyboardKey.backspace;
-    if (key.isBackKey || isBackspace) {
+    if (key.isBackKey) {
       if (isBackspace && _isEditingText()) {
         return false;
       }

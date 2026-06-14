@@ -72,12 +72,11 @@ echo "Cleaning previous Flutter outputs..."
 echo "Resolving packages..."
 "$FLUTTER" pub get
 
-echo "Building Android release APK (arm64-v8a only)..."
+echo "Building Android release APK (arm64-v8a, armeabi-v7a, x86_64)..."
 "$FLUTTER" build apk --release \
   --flavor mobile \
   --build-name "$APP_VERSION" \
   --build-number "$APP_BUILD_NUMBER" \
-  --target-platform android-arm64 \
   --dart-define=DISTRIBUTION_CHANNEL=apk
 
 if [ ! -f "$APK_SOURCE" ]; then

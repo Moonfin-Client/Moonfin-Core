@@ -2884,11 +2884,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (_isCurrentPreroll) {
       if (event is KeyUpEvent) {
-        final isBackKey =
-            event.logicalKey == LogicalKeyboardKey.goBack ||
-            event.logicalKey == LogicalKeyboardKey.escape ||
-            event.logicalKey == LogicalKeyboardKey.browserBack ||
-            event.logicalKey == LogicalKeyboardKey.backspace;
+        final isBackKey = event.logicalKey.isBackKey;
         if (isBackKey) {
           return KeyEventResult.handled;
         }
@@ -2900,11 +2896,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       }
 
       if (event is KeyDownEvent) {
-        final isBackKey =
-            event.logicalKey == LogicalKeyboardKey.goBack ||
-            event.logicalKey == LogicalKeyboardKey.escape ||
-            event.logicalKey == LogicalKeyboardKey.browserBack ||
-            event.logicalKey == LogicalKeyboardKey.backspace;
+        final isBackKey = event.logicalKey.isBackKey;
 
         if (isBackKey) {
           if (!_isBackNavigationSuppressed()) {
@@ -2943,11 +2935,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       }
 
       if (event is KeyRepeatEvent) {
-        final isBackKey =
-            event.logicalKey == LogicalKeyboardKey.goBack ||
-            event.logicalKey == LogicalKeyboardKey.escape ||
-            event.logicalKey == LogicalKeyboardKey.browserBack ||
-            event.logicalKey == LogicalKeyboardKey.backspace;
+        final isBackKey = event.logicalKey.isBackKey;
         if (isBackKey) {
           return KeyEventResult.handled;
         }
@@ -2975,11 +2963,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       if (temporarySpeedResult != KeyEventResult.ignored) {
         return temporarySpeedResult;
       }
-      final isBackKey =
-          event.logicalKey == LogicalKeyboardKey.goBack ||
-          event.logicalKey == LogicalKeyboardKey.escape ||
-          event.logicalKey == LogicalKeyboardKey.browserBack ||
-          event.logicalKey == LogicalKeyboardKey.backspace;
+      final isBackKey = event.logicalKey.isBackKey;
       if (isBackKey) {
         // KeyUp for Back should be consumed to avoid a second route pop.
         return KeyEventResult.handled;

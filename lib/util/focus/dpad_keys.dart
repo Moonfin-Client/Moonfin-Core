@@ -19,6 +19,7 @@ final Set<LogicalKeyboardKey> _backKeys = <LogicalKeyboardKey>{
   LogicalKeyboardKey.goBack,
   LogicalKeyboardKey.browserBack,
   LogicalKeyboardKey.gameButtonB,
+  LogicalKeyboardKey.backspace,
 };
 
 final Set<LogicalKeyboardKey> _contextMenuKeys = <LogicalKeyboardKey>{

@@ -63,6 +63,18 @@ function(check_directory_exists_and_not_empty dir result_var)
   endif()
 endfunction()
 
+# Windows ARM64 support:
+# Locate a real 7-Zip executable. The ARM64 native-lib archives are compressed
+# with 7-Zip's ARM64 BCJ branch filter (codec 0x0a, added in 7-Zip 23.00), which
+# the libarchive bundled inside the VS2022 CMake cannot decode -- `cmake -E tar`
+# fails on them with "Unexpected codec ID: a". The windows-11-arm runner ships
+# 7-Zip 26.00, which extracts them correctly.
+find_program(SEVENZIP_EXECUTABLE
+  NAMES 7z 7za 7zr
+  HINTS "$ENV{ProgramW6432}/7-Zip" "$ENV{ProgramFiles}/7-Zip"
+        "$ENV{ProgramFiles\(x86\)}/7-Zip" "C:/Program Files/7-Zip"
+)
+
 # libmpv archive containing the pre-built shared libraries & headers.
 #
 # MOONFIN PATCH (Windows ARM64 support):
@@ -106,14 +118,32 @@ if(NOT LIBMPV_SRC_VALID)
   message(STATUS "Extracting ${LIBMPV}...")
   make_directory("${LIBMPV_SRC}")
   add_custom_target("${PROJECT_NAME}_LIBMPV_EXTRACT" ALL)
-  add_custom_command(
-    TARGET "${PROJECT_NAME}_LIBMPV_EXTRACT"
-    COMMAND "${CMAKE_COMMAND}" -E tar xzf "\"${LIBMPV_ARCHIVE}\""
-    COMMAND xcopy "\"${LIBMPV_SRC}/include/mpv\"" "\"${LIBMPV_SRC}/mpv\"" /E /H /C /I
-    COMMAND rmdir "\"${LIBMPV_SRC}/include\"" /S /Q
-    COMMAND ren "\"${LIBMPV_SRC}/mpv\"" "\"include\""
-    WORKING_DIRECTORY "${LIBMPV_SRC}"
-  )
+  # extract the ARM64 archive with 7-Zip (see SEVENZIP_EXECUTABLE
+  # note above); keep x64 on `cmake -E tar` (unchanged).
+  if(FLUTTER_TARGET_PLATFORM STREQUAL "windows-arm64")
+    if(NOT SEVENZIP_EXECUTABLE)
+      message(FATAL_ERROR
+        "7-Zip is required to extract the ARM64 libmpv archive (it may use the 7-Zip ARM64 BCJ "
+        "filter, codec 0x0a, which 'cmake -E tar' cannot decode). Install 7-Zip >= 23.00.")
+    endif()
+    add_custom_command(
+      TARGET "${PROJECT_NAME}_LIBMPV_EXTRACT"
+      COMMAND "${SEVENZIP_EXECUTABLE}" x -y "-o${LIBMPV_SRC}" "\"${LIBMPV_ARCHIVE}\""
+      COMMAND xcopy "\"${LIBMPV_SRC}/include/mpv\"" "\"${LIBMPV_SRC}/mpv\"" /E /H /C /I
+      COMMAND rmdir "\"${LIBMPV_SRC}/include\"" /S /Q
+      COMMAND ren "\"${LIBMPV_SRC}/mpv\"" "\"include\""
+      WORKING_DIRECTORY "${LIBMPV_SRC}"
+    )
+  else()
+    add_custom_command(
+      TARGET "${PROJECT_NAME}_LIBMPV_EXTRACT"
+      COMMAND "${CMAKE_COMMAND}" -E tar xzf "\"${LIBMPV_ARCHIVE}\""
+      COMMAND xcopy "\"${LIBMPV_SRC}/include/mpv\"" "\"${LIBMPV_SRC}/mpv\"" /E /H /C /I
+      COMMAND rmdir "\"${LIBMPV_SRC}/include\"" /S /Q
+      COMMAND ren "\"${LIBMPV_SRC}/mpv\"" "\"include\""
+      WORKING_DIRECTORY "${LIBMPV_SRC}"
+    )
+  endif()
 endif()
 
 # ------------------------------------------------------------------------------
@@ -150,11 +180,27 @@ if(NOT ANGLE_SRC_VALID)
   message(STATUS "Extracting ${ANGLE}...")
   make_directory("${ANGLE_SRC}")
   add_custom_target("${PROJECT_NAME}_ANGLE_EXTRACT" ALL)
-  add_custom_command(
-    TARGET "${PROJECT_NAME}_ANGLE_EXTRACT"
-    COMMAND "${CMAKE_COMMAND}" -E tar xzf "\"${ANGLE_ARCHIVE}\""
-    WORKING_DIRECTORY "${ANGLE_SRC}"
-  )
+  # the ARM64 ANGLE archive uses the 7-Zip ARM64 BCJ filter
+  # (codec 0x0a) that `cmake -E tar` cannot decode, so extract it with 7-Zip;
+  # keep x64 on `cmake -E tar` (unchanged).
+  if(FLUTTER_TARGET_PLATFORM STREQUAL "windows-arm64")
+    if(NOT SEVENZIP_EXECUTABLE)
+      message(FATAL_ERROR
+        "7-Zip is required to extract the ARM64 ANGLE archive (it uses the 7-Zip ARM64 BCJ "
+        "filter, codec 0x0a, which 'cmake -E tar' cannot decode). Install 7-Zip >= 23.00.")
+    endif()
+    add_custom_command(
+      TARGET "${PROJECT_NAME}_ANGLE_EXTRACT"
+      COMMAND "${SEVENZIP_EXECUTABLE}" x -y "-o${ANGLE_SRC}" "\"${ANGLE_ARCHIVE}\""
+      WORKING_DIRECTORY "${ANGLE_SRC}"
+    )
+  else()
+    add_custom_command(
+      TARGET "${PROJECT_NAME}_ANGLE_EXTRACT"
+      COMMAND "${CMAKE_COMMAND}" -E tar xzf "\"${ANGLE_ARCHIVE}\""
+      WORKING_DIRECTORY "${ANGLE_SRC}"
+    )
+  endif()
 endif()
 
 # ------------------------------------------------------------------------------
@@ -200,5 +246,17 @@ set(
   "${ANGLE_SRC}/vk_swiftshader.dll"
   "${ANGLE_SRC}/vulkan-1.dll"
   "${ANGLE_SRC}/zlib.dll"
+)
+
+# the ARM64 ANGLE DLLs dynamically link libc++.dll (shipped in the
+# ARM64 archive but absent from the upstream x64 archive), so bundle it for ARM64
+# only -- listing it unconditionally would break x64 packaging (file not present).
+if(FLUTTER_TARGET_PLATFORM STREQUAL "windows-arm64")
+  list(APPEND media_kit_libs_windows_video_bundled_libraries "${ANGLE_SRC}/libc++.dll")
+endif()
+
+set(
+  media_kit_libs_windows_video_bundled_libraries
+  "${media_kit_libs_windows_video_bundled_libraries}"
   PARENT_SCOPE
 )

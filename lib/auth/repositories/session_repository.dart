@@ -102,6 +102,7 @@ class SessionRepository {
     if (serverId.isEmpty || userId.isEmpty) return null;
     return _authStore.getUser(serverId, userId)?.name;
   }
+
   SessionState get state => _state;
   Stream<SessionState> get stateStream => _stateController.stream;
 
@@ -161,7 +162,9 @@ class SessionRepository {
     final accessToken = user.accessToken.isNotEmpty ? user.accessToken : token;
 
     if (accessToken == null || accessToken.isEmpty) {
-      _logger.w('No access token available for user $userId on server $serverId');
+      _logger.w(
+        'No access token available for user $userId on server $serverId',
+      );
       _setState(SessionState.ready);
       return false;
     }
@@ -188,14 +191,15 @@ class SessionRepository {
     await _authPrefs.setLastServerId(serverId);
     await _authPrefs.setLastUserId(userId);
 
-    final shouldPrioritizeInitialSync =
-        !_pluginSyncService.isSyncInitializedForServer(
-          client,
-          serverId: serverId,
-        );
-    final Future<void> postLoginSyncFuture =
-        _postLoginSync(client, user, serverId, username, password)
-        .catchError((_) {});
+    final shouldPrioritizeInitialSync = !_pluginSyncService
+        .isSyncInitializedForServer(client, serverId: serverId);
+    final Future<void> postLoginSyncFuture = _postLoginSync(
+      client,
+      user,
+      serverId,
+      username,
+      password,
+    ).catchError((_) {});
 
     if (shouldPrioritizeInitialSync) {
       // Give first-login server sync a short head start so Home can build
@@ -245,10 +249,11 @@ class SessionRepository {
         _userRepository.setCurrentUser(updatedUser);
       }
 
-       // init language prefs if not already set
+      // init language prefs if not already set
       if (serverUser.configuration != null) {
-        GetIt.instance<UserPreferences>()
-            .initLanguagePrefs(serverUser.configuration!);
+        GetIt.instance<UserPreferences>().initLanguagePrefs(
+          serverUser.configuration!,
+        );
       }
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
@@ -259,8 +264,7 @@ class SessionRepository {
         );
         return;
       }
-    } catch (_) {
-    }
+    } catch (_) {}
 
     await _pluginSyncService.syncOnLogin(client, serverId: serverId);
 
@@ -426,10 +430,83 @@ class SessionRepository {
       return;
     }
 
+    final startIndex = message.startIndex.clamp(0, items.length - 1).toInt();
     final manager = GetIt.instance<PlaybackManager>();
+    final command = message.playCommand.toLowerCase();
+
+    switch (command) {
+      case 'playnow':
+        await _playRemoteItems(manager, items, startIndex, message);
+        break;
+      case 'playnext':
+        for (final item in items.reversed) {
+          manager.queueService.insertNext(item);
+        }
+        break;
+      case 'playlast':
+      case 'enqueue':
+        manager.queueService.addItems(items);
+        break;
+      default:
+        await _playRemoteItems(manager, items, startIndex, message);
+        break;
+    }
+  }
+
+  Future<void> _playRemoteItems(
+    PlaybackManager manager,
+    List<AggregatedItem> items,
+    int startIndex,
+    PlayMessage message,
+  ) async {
+    final item = items[startIndex];
+    final isLiveTv = _isLiveTvItem(item);
+    final allowDirect = isLiveTv
+        ? GetIt.instance<UserPreferences>().get(
+            UserPreferences.liveTvDirectPlayEnabled,
+          )
+        : true;
+
+    _ensurePlayerRouteForItem(item);
     await manager.playItems(
       items,
-      startPosition: _durationFromTicks(message.startPositionTicks) ?? Duration.zero,
+      startIndex: startIndex,
+      startPosition:
+          _durationFromTicks(message.startPositionTicks) ?? Duration.zero,
+      audioStreamIndex: message.audioStreamIndex,
+      subtitleStreamIndex: message.subtitleStreamIndex,
+      mediaSourceId: message.mediaSourceId,
+      enableDirectPlay: allowDirect,
+      enableDirectStream: allowDirect,
+      enableTranscoding: !isLiveTv || !allowDirect,
+    );
+  }
+
+  bool _isLiveTvItem(AggregatedItem item) {
+    final type = item.type;
+    return type == 'TvChannel' ||
+        type == 'LiveTvChannel' ||
+        type == 'Program' ||
+        item.rawData['ChannelId'] != null ||
+        item.rawData['TimerId'] != null;
+  }
+
+  void _ensurePlayerRouteForItem(AggregatedItem item) {
+    final currentPath = appRouter.routerDelegate.currentConfiguration.uri.path;
+    if (currentPath == Destinations.videoPlayer ||
+        currentPath == Destinations.audioPlayer) {
+      return;
+    }
+
+    final mediaType = item.rawData['MediaType'] as String?;
+    final isAudio =
+        item.type == 'Audio' ||
+        item.type == 'MusicAlbum' ||
+        item.type == 'AudioBook' ||
+        mediaType == 'Audio';
+
+    appRouter.push(
+      isAudio ? Destinations.audioPlayer : Destinations.videoPlayer,
     );
   }
 
@@ -457,7 +534,9 @@ class SessionRepository {
     }
   }
 
-  Future<void> _handleGeneralCommandMessage(GeneralCommandMessage message) async {
+  Future<void> _handleGeneralCommandMessage(
+    GeneralCommandMessage message,
+  ) async {
     final manager = GetIt.instance<PlaybackManager>();
     switch (message.name.toLowerCase()) {
       case 'displaymessage':

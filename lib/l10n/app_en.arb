@@ -3676,7 +3676,7 @@
   "@syncing": {
     "description": "Label while syncing"
   },
-  "syncToProfile": "Sync To Profile",
+  "syncToProfile": "Sync Profile",
   "@syncToProfile": {
     "description": "Button to sync to a profile"
   },
@@ -4427,7 +4427,7 @@
   "@ratingSourcesDescription": {
     "description": "Description for rating sources"
   },
-  "pluginLabel": "Plugin",
+  "pluginLabel": "Moonbase Plugin",
   "@pluginLabel": {
     "description": "Settings title for plugin"
   },
@@ -7178,6 +7178,7 @@
   "appearance": "Appearance",
   "cardSize": "Home Row Card Display Size",
   "externalPlayerApp": "External player app",
+  "externalPlayerAppDescription": "Set external player to enable long-press play option",
   "externalPlayerAskEachTimeSubtitle": "Show app chooser when playback starts.",
   "loadingInstalledPlayers": "Loading installed players...",
   "connection": "Connection",
@@ -7196,7 +7197,7 @@
   "playerRouting": "Player Routing",
   "preferSoftwareDecoders": "Prefer software decoders",
   "preferSoftwareDecodersSubtitle": "Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.",
-  "useExternalPlayer": "Use external player",
+  "useExternalPlayer": "Always use external player",
   "useExternalPlayerSubtitle": "Open video playback in your selected external app on Android TV.",
   "automaticQueuing": "Automatic Queuing",
   "preferSdhSubtitles": "Prefer SDH subtitles",
@@ -7412,5 +7413,87 @@
   "autoHdrSwitching": "Auto HDR Switching",
   "autoHdrSwitchingDescription": "Automatically enable HDR for HDR video playback and restore display mode on exit.",
   "whenFullscreen": "When fullscreen",
-  "transcodingLimits": "Transcoding Limits"
+  "changeArtwork": "Change Artwork",
+  "missing": "Missing",
+  "transcodingLimits": "Transcoding Limits",
+  "clearAllArtworkButton": "Clear all artwork?",
+  "clearAllArtworkWarning": "Are you sure you want to clear all downloaded artwork?",
+  "confirmClear": "Confirm Clear",
+  "confirmClearMessage": "Are you sure you would like to clear this {itemType}?",
+  "@confirmClearMessage": {
+    "description": "Confirmation message when clearing a specific artwork",
+    "placeholders": {
+      "itemType": {
+        "type": "String"
+      }
+    }
+  },
+  "uploadButton": "Upload?",
+  "resolutionLabel": "Resolution: ",
+  "onlyShowInterfaceLanguage": "Only show artwork in interface language",
+  "confirmClearAll": "Confirm Clear All",
+  "imageUploadSuccess": "Image uploaded successfully!",
+  "imageUploadFailed": "Failed to upload image: {error}",
+  "@imageUploadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "imageDownloadFailed": "Failed to set image: {error}",
+  "@imageDownloadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "imageDeleteFailed": "Failed to delete image: {error}",
+  "@imageDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "clearAllArtworkFailed": "Failed to clear all artwork: {error}",
+  "@clearAllArtworkFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "yes": "Yes",
+  "posterCategory": "Poster",
+  "backdropsCategory": "Backdrops",
+  "bannerCategory": "Banner",
+  "logoCategory": "Logo",
+  "thumbnailCategory": "Thumbnail",
+  "artCategory": "Art",
+  "discArtCategory": "Disc Art",
+  "screenshotCategory": "Screenshot",
+  "boxCoverCategory": "Box Cover",
+  "boxRearCoverCategory": "Box Rear Cover",
+  "menuArtCategory": "Menu Art",
+  "confirmItemPoster": "poster",
+  "confirmItemBackdrop": "backdrop",
+  "confirmItemBanner": "banner",
+  "confirmItemLogo": "logo",
+  "confirmItemThumbnail": "thumbnail",
+  "confirmItemArt": "art",
+  "confirmItemDiscArt": "disc art",
+  "confirmItemScreenshot": "screenshot",
+  "confirmItemBoxCover": "box cover",
+  "confirmItemBoxRearCover": "box rear cover",
+  "confirmItemMenuArt": "menu art",
+  "resolutionAll": "All",
+  "resolutionHigh": "High (1080p+)",
+  "resolutionMedium": "Medium (720p)",
+  "resolutionLow": "Low (<720p)",
+  "sources": "Sources",
+  "@sources": {
+    "description": "Title of the artwork source-provider filter dialog"
+  }
 }

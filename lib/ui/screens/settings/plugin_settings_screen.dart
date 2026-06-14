@@ -8,7 +8,6 @@ import '../../../preference/user_preferences.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../widgets/focus/request_initial_focus.dart';
 
 class PluginSettingsSection extends StatefulWidget {
   const PluginSettingsSection({super.key});
@@ -120,8 +119,7 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      RequestInitialFocus(child: _buildContent(context));
+  Widget build(BuildContext context) => _buildContent(context);
 
   Widget _buildContent(BuildContext context) {
     return withCleanSettingsTypography(
@@ -249,15 +247,73 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
                   ),
                   child: Column(
                     children: [
-                      SwitchPreferenceTile(
-                        preference: UserPreferences.pluginSyncEnabled,
-                        title: l10n.serverPluginSync,
-                        subtitle: l10n.syncSettingsWithPlugin,
-                        icon: Icons.sync,
-                        onChanged: _pushSync,
+                      Builder(
+                        builder: (tileContext) => Focus(
+                          canRequestFocus: false,
+                          skipTraversal: true,
+                          onFocusChange: (focused) {
+                            if (!focused) return;
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (!tileContext.mounted) return;
+                              Scrollable.ensureVisible(
+                                tileContext,
+                                alignment: 0.1,
+                                alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+                                duration: const Duration(milliseconds: 120),
+                                curve: Curves.easeOut,
+                              );
+                            });
+                          },
+                          child: SwitchPreferenceTile(
+                            preference: UserPreferences.pluginSyncEnabled,
+                            title: l10n.serverPluginSync,
+                            subtitle: l10n.syncSettingsWithPlugin,
+                            icon: Icons.sync,
+                            onChanged: _pushSync,
+                          ),
+                        ),
                       ),
-                      if (showProfileSync)
-                        const Divider(height: 1),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                size: 20,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      l10n.whatSyncControls,
+                                      style: theme.textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      l10n.syncControlsDescription,
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                       if (showProfileSync)
                         _ProfileSyncSection(
                           syncService: _syncService,
@@ -266,45 +322,6 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
                           onLoad: _pullSelectedProfile,
                           onSave: _pushSelectedProfile,
                         ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                  decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerLow,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        size: 20,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l10n.whatSyncControls,
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              l10n.syncControlsDescription,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -337,7 +354,6 @@ class _ProfileSyncSection extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final borders = ThemeRegistry.active.borders;
     final selected = syncService.selectedCustomizationProfile;
     final currentDeviceProfile = syncService.currentDeviceProfile;
     final profiles = PluginSyncService.supportedProfiles;
@@ -366,31 +382,21 @@ class _ProfileSyncSection extends StatelessWidget {
             runSpacing: 8,
             children: [
               for (final profile in profiles)
-                ChoiceChip(
+                _ProfileChip(
+                  label: profileLabel(profile),
                   selected: selected == profile,
-                  showCheckmark: false,
-                  avatar: currentDeviceProfile == profile
-                      ? Icon(
-                          Icons.circle,
-                          size: 10,
-                          color: AppColorScheme.statusAvailable,
-                        )
-                      : null,
-                  label: Text(profileLabel(profile)),
-                  side: borders.chipBorder,
-                  shape: RoundedRectangleBorder(borderRadius: borders.chipRadius),
-                  backgroundColor: borders.chipBackground,
-                  selectedColor: AppColorScheme.accent.withValues(alpha: 0.22),
-                  onSelected: (_) {
+                  isCurrentDevice: currentDeviceProfile == profile,
+                  onSelected: () {
                     syncService.setSelectedCustomizationProfile(profile);
                   },
                 ),
             ],
           ),
           const SizedBox(height: 12),
-          Row(
+          Column(
             children: [
-              Expanded(
+              SizedBox(
+                width: double.infinity,
                 child: OutlinedButton.icon(
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(42),
@@ -400,15 +406,16 @@ class _ProfileSyncSection extends StatelessWidget {
                   label: Text(l10n.loadProfile),
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: FilledButton.icon(
-                  style: FilledButton.styleFrom(
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(42),
                   ),
                   onPressed: busy ? null : onSave,
                   icon: const Icon(Icons.cloud_upload),
-                  label: Text(l10n.serverPluginSync),
+                  label: Text(l10n.syncToProfile),
                 ),
               ),
             ],
@@ -423,3 +430,109 @@ class _ProfileSyncSection extends StatelessWidget {
     );
   }
 }
+
+class _ProfileChip extends StatefulWidget {
+  final String label;
+  final bool selected;
+  final bool isCurrentDevice;
+  final VoidCallback onSelected;
+
+  const _ProfileChip({
+    required this.label,
+    required this.selected,
+    required this.isCurrentDevice,
+    required this.onSelected,
+  });
+
+  @override
+  State<_ProfileChip> createState() => _ProfileChipState();
+}
+
+class _ProfileChipState extends State<_ProfileChip> {
+  late final FocusNode _focusNode;
+  bool _focused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode(debugLabel: 'ProfileChip_${widget.label}');
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (!mounted) return;
+    setState(() {
+      _focused = _focusNode.hasFocus;
+    });
+    if (_focusNode.hasFocus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        Scrollable.ensureVisible(
+          context,
+          alignment: 0.15,
+          alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+          duration: const Duration(milliseconds: 120),
+          curve: Curves.easeOut,
+        );
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final borders = ThemeRegistry.active.borders;
+
+    final borderSide = _focused
+        ? BorderSide(
+            color: AppColorScheme.accent.withValues(alpha: 0.82),
+            width: 1.5,
+          )
+        : borders.chipBorder;
+
+    final glow = _focused
+        ? (borders.focusGlow.isNotEmpty
+            ? borders.focusGlow
+            : [
+                BoxShadow(
+                  color: AppColorScheme.accent.withValues(alpha: 0.22),
+                  blurRadius: 10,
+                  spreadRadius: 1.0,
+                )
+              ])
+        : null;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 120),
+      decoration: BoxDecoration(
+        borderRadius: borders.chipRadius,
+        boxShadow: glow,
+      ),
+      child: ChoiceChip(
+        focusNode: _focusNode,
+        selected: widget.selected,
+        showCheckmark: false,
+        avatar: widget.isCurrentDevice
+            ? Icon(
+                Icons.circle,
+                size: 10,
+                color: AppColorScheme.statusAvailable,
+              )
+            : null,
+        label: Text(widget.label),
+        side: borderSide,
+        shape: RoundedRectangleBorder(borderRadius: borders.chipRadius),
+        backgroundColor: borders.chipBackground,
+        selectedColor: AppColorScheme.accent.withValues(alpha: 0.22),
+        onSelected: (_) => widget.onSelected(),
+      ),
+    );
+  }
+}
+

@@ -149,7 +149,20 @@ class ExternalPlayerService {
     return raw
         .whereType<Map>()
         .map((entry) => ExternalPlayerApp.fromMap(entry.cast<String, dynamic>()))
-        .where((entry) => entry.component.isNotEmpty)
+        .where((entry) {
+          final pkg = entry.packageName.toLowerCase();
+          return entry.component.isNotEmpty &&
+                 pkg != 'com.nvidia.lightbox' &&
+                 pkg != 'com.nvidia.lightbox.beta' &&
+                 pkg != 'com.nvidia.gallery3d' &&
+                 pkg != 'com.android.gallery3d' &&
+                 pkg != 'com.android.videoplayer' &&
+                 pkg != 'com.google.android.videos' &&
+                 pkg != 'com.google.android.youtube' &&
+                 pkg != 'com.google.android.youtube.tv' &&
+                 pkg != 'com.google.android.tv.frameworkpackagestubs' &&
+                 !pkg.startsWith('org.moonfin.androidtv');
+        })
         .toList(growable: false);
   }
 

@@ -23,6 +23,10 @@ on:
         description: Run Windows job
         type: boolean
         default: false
+      windows_arm64:
+        description: Run Windows ARM64 job
+        type: boolean
+        default: false
       linux:
         description: Run Linux job
         type: boolean
@@ -243,6 +247,66 @@ jobs:
           path: Moonfin_Windows_v*.exe
           if-no-files-found: error
 
+  # Windows ARM64 installer EXE (native build on an ARM64 runner)
+  windows-arm64:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.windows_arm64 }}
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify ARM64 runner
+        shell: pwsh
+        run: |
+          Write-Host "PROCESSOR_ARCHITECTURE=$env:PROCESSOR_ARCHITECTURE"
+          if ($env:PROCESSOR_ARCHITECTURE -ne "ARM64") {
+            throw "This job must run on a native ARM64 Windows runner"
+          }
+
+      # subosito/flutter-action does not provide a native ARM64 SDK, so clone the
+      # SDK directly to get the windows_arm64 Dart SDK (required for an ARM64 build).
+      - name: Set up Flutter (native ARM64)
+        shell: pwsh
+        run: |
+          git clone https://github.com/flutter/flutter.git --branch $env:FLUTTER_VERSION --depth 1 C:\flutter
+          echo "C:\flutter\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Assert Flutter is using a native ARM64 Dart SDK
+        shell: pwsh
+        run: |
+          $dartVersion = (& dart --version 2>&1 | Out-String)
+          Write-Host $dartVersion
+          if ($dartVersion -notmatch 'windows_arm64|arm64') {
+            throw "Flutter is using an x64 Dart SDK on this ARM64 runner ($($dartVersion.Trim())). Bump FLUTTER_VERSION to a release that ships the arm64 Dart SDK (>= 3.44.0)."
+          }
+
+      - name: Enable Windows desktop
+        shell: pwsh
+        run: flutter config --enable-windows-desktop
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup -y --no-progress
+
+      - name: Build ARM64 installer
+        shell: pwsh
+        run: .\build-windows.ps1 -Architecture arm64
+
+      - name: Verify Windows ARM64 artifact
+        shell: pwsh
+        run: |
+          $artifacts = Get-ChildItem -Path . -Filter "Moonfin_WindowsARM64_v*.exe" -File -ErrorAction SilentlyContinue
+          if (-not $artifacts -or $artifacts.Count -eq 0) {
+            throw "Windows ARM64 build did not produce Moonfin_WindowsARM64_v*.exe"
+          }
+          Write-Host "Found Windows ARM64 artifact(s):"
+          $artifacts | ForEach-Object { Write-Host "  - $($_.Name)" }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-arm64-exe
+          path: Moonfin_WindowsARM64_v*.exe
+          if-no-files-found: error
+
   # Linux packages
   linux:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_all || inputs.linux }}
@@ -347,7 +411,7 @@ jobs:
   # GitHub Release
   release:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: [android, ios, macos, windows, linux]
+    needs: [android, ios, macos, windows, windows-arm64, linux]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4

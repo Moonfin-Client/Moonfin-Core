@@ -7,9 +7,24 @@ import '../../../preference/user_preferences.dart';
 import '../../theme/app_theme_controller.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import 'settings_app_bar.dart';
+import '../../../util/platform_detection.dart';
+import '../../widgets/focus/request_initial_focus.dart';
 
-class AppearanceThemeScreen extends StatelessWidget {
+class AppearanceThemeScreen extends StatefulWidget {
   const AppearanceThemeScreen({super.key});
+
+  @override
+  State<AppearanceThemeScreen> createState() => _AppearanceThemeScreenState();
+}
+
+class _AppearanceThemeScreenState extends State<AppearanceThemeScreen> {
+  final _moonfinFocusNode = FocusNode(debugLabel: 'theme_moonfin');
+
+  @override
+  void dispose() {
+    _moonfinFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,32 +54,36 @@ class AppearanceThemeScreen extends StatelessWidget {
                 );
               });
 
-            return ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                Text(
-                  l10n.settingsAppearanceThemeSubtitle,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.74),
+            return RequestInitialFocus(
+              targetNode: PlatformDetection.isTV ? _moonfinFocusNode : null,
+              child: ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
+                  Text(
+                    l10n.settingsAppearanceThemeSubtitle,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.74),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                for (var i = 0; i < themes.length; i++) ...[
-                  _ThemePreviewCard(
-                    themeId: themes[i].id,
-                    title: _titleForTheme(l10n, themes[i]),
-                    subtitle: _subtitleForTheme(l10n, themes[i]),
-                    selected: selectedThemeId == themes[i].id,
-                    stripes: [
-                      themes[i].colors.background,
-                      themes[i].colors.surface,
-                      themes[i].colors.accent,
-                      themes[i].colors.rangeProgress,
-                    ],
-                  ),
-                  if (i != themes.length - 1) const SizedBox(height: 16),
+                  const SizedBox(height: 20),
+                  for (var i = 0; i < themes.length; i++) ...[
+                    _ThemePreviewCard(
+                      focusNode: themes[i].id == ThemeRegistry.moonfinId ? _moonfinFocusNode : null,
+                      themeId: themes[i].id,
+                      title: _titleForTheme(l10n, themes[i]),
+                      subtitle: _subtitleForTheme(l10n, themes[i]),
+                      selected: selectedThemeId == themes[i].id,
+                      stripes: [
+                        themes[i].colors.background,
+                        themes[i].colors.surface,
+                        themes[i].colors.accent,
+                        themes[i].colors.rangeProgress,
+                      ],
+                    ),
+                    if (i != themes.length - 1) const SizedBox(height: 16),
+                  ],
                 ],
-              ],
+              ),
             );
           },
         ),
@@ -98,8 +117,9 @@ class AppearanceThemeScreen extends StatelessWidget {
   }
 }
 
-class _ThemePreviewCard extends StatelessWidget {
+class _ThemePreviewCard extends StatefulWidget {
   const _ThemePreviewCard({
+    this.focusNode,
     required this.themeId,
     required this.title,
     this.subtitle,
@@ -107,6 +127,7 @@ class _ThemePreviewCard extends StatelessWidget {
     required this.stripes,
   });
 
+  final FocusNode? focusNode;
   final String themeId;
   final String title;
   final String? subtitle;
@@ -114,45 +135,79 @@ class _ThemePreviewCard extends StatelessWidget {
   final List<Color> stripes;
 
   @override
+  State<_ThemePreviewCard> createState() => _ThemePreviewCardState();
+}
+
+class _ThemePreviewCardState extends State<_ThemePreviewCard> {
+  bool _focused = false;
+
+  @override
   Widget build(BuildContext context) {
     final prefs = GetIt.instance<UserPreferences>();
     final controller = AppThemeScope.of(context);
     final theme = Theme.of(context);
 
+    final borderTokens = ThemeRegistry.active.borders;
+
+    final borderSide = _focused
+        ? borderTokens.focusBorder.copyWith(
+            color: AppColorScheme.accent.withValues(alpha: 0.72),
+            width: 2.0,
+          )
+        : (widget.selected
+            ? borderTokens.chipBorder.copyWith(
+                color: AppColorScheme.accent,
+                width: 2.0,
+              )
+            : borderTokens.chipBorder.copyWith(
+                color: theme.colorScheme.outlineVariant,
+                width: 1.0,
+              ));
+
+    final shadow = _focused
+        ? (borderTokens.focusGlow.isNotEmpty
+            ? borderTokens.focusGlow
+            : [
+                BoxShadow(
+                  color: AppColorScheme.accent.withValues(alpha: 0.22),
+                  blurRadius: 14,
+                  spreadRadius: 0.5,
+                ),
+              ])
+        : null;
+
     return InkWell(
+      focusNode: widget.focusNode,
+      autofocus: PlatformDetection.isTV && widget.themeId == ThemeRegistry.moonfinId,
       borderRadius: BorderRadius.circular(18),
+      onFocusChange: (f) {
+        setState(() => _focused = f);
+      },
       onTap: () async {
-        await controller.applyThemeById(prefs, themeId);
+        await controller.applyThemeById(prefs, widget.themeId);
       },
       child: Ink(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(18),
-          border: Border.fromBorderSide(
-            ThemeRegistry.active.borders.chipBorder.copyWith(
-              color: selected
-                  ? AppColorScheme.accent
-                  : theme.colorScheme.outlineVariant,
-              width: selected ? 2 : 1,
-            ),
-          ),
-          boxShadow: selected ? ThemeRegistry.active.borders.focusGlow : null,
+          border: Border.fromBorderSide(borderSide),
+          boxShadow: shadow,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Expanded(child: Text(title, style: theme.textTheme.titleMedium)),
-                if (selected)
+                Expanded(child: Text(widget.title, style: theme.textTheme.titleMedium)),
+                if (widget.selected)
                   Icon(Icons.check_circle, color: AppColorScheme.accent),
               ],
             ),
             const SizedBox(height: 6),
-            if (subtitle != null) ...[
+            if (widget.subtitle != null) ...[
               Text(
-                subtitle!,
+                widget.subtitle!,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.74),
                 ),
@@ -169,7 +224,7 @@ class _ThemePreviewCard extends StatelessWidget {
                   children: [
                     DecoratedBox(
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: stripes),
+                        gradient: LinearGradient(colors: widget.stripes),
                       ),
                     ),
                     Align(
@@ -182,7 +237,7 @@ class _ThemePreviewCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(999),
                           border: Border.fromBorderSide(
                             ThemeRegistry.active.borders.chipBorder.copyWith(
-                              color: stripes.last.withValues(alpha: 0.8),
+                              color: widget.stripes.last.withValues(alpha: 0.8),
                             ),
                           ),
                         ),

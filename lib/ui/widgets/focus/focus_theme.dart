@@ -13,6 +13,7 @@ class FocusTheme {
     double radius = defaultBorderRadius,
     Color? color,
     Color? backgroundColor,
+    bool suppressFocusGlow = false,
   }) {
     final borders = ThemeRegistry.active.borders;
     return BoxDecoration(
@@ -23,7 +24,7 @@ class FocusTheme {
               borders.focusBorder.copyWith(color: color),
             )
           : null,
-      boxShadow: isFocused && borders.focusGlow.isNotEmpty
+      boxShadow: isFocused && !suppressFocusGlow && borders.focusGlow.isNotEmpty
           ? borders.focusGlow
           : null,
     );

@@ -11,6 +11,7 @@ import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import 'settings_app_bar.dart';
 import '../../widgets/focus/request_initial_focus.dart';
+import '../../../util/platform_detection.dart';
 
 class LibraryVisibilityScreen extends StatefulWidget {
   const LibraryVisibilityScreen({super.key});
@@ -29,10 +30,18 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
   Future<void> _saveQueue = Future.value();
   int _lastQueuedOpId = 0;
 
+  FocusNode? _firstLibraryFocusNode;
+
   @override
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _firstLibraryFocusNode?.dispose();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -46,6 +55,11 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
         _libraries = results[0] as List<AggregatedLibrary>;
         _config = results[1] as UserConfiguration;
         _isLoading = false;
+
+        _firstLibraryFocusNode?.dispose();
+        if (_libraries != null && _libraries!.isNotEmpty) {
+          _firstLibraryFocusNode = FocusNode(debugLabel: 'first_library_tile');
+        }
       });
     } catch (_) {
       if (!mounted) return;
@@ -89,7 +103,10 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
 
   @override
   Widget build(BuildContext context) =>
-      RequestInitialFocus(child: _buildContent(context));
+      RequestInitialFocus(
+        targetNode: PlatformDetection.isTV ? _firstLibraryFocusNode : null,
+        child: _buildContent(context),
+      );
 
   Widget _buildContent(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -120,6 +137,7 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
     final l10n = AppLocalizations.of(context);
     final config = _config!;
     final libraries = _libraries!;
+    final firstLibId = libraries.isNotEmpty ? libraries.first.id : null;
 
     return [
       for (final lib in libraries) ...[
@@ -129,6 +147,7 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
         ),
         TvFocusHighlight(
           builder: (_, focused) => SwitchListTile(
+            focusNode: lib.id == firstLibId ? _firstLibraryFocusNode : null,
             secondary: Icon(Icons.visibility,
                 color: focused
                     ? AppColors.black.withValues(alpha: 0.54)

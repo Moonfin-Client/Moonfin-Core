@@ -8,6 +8,8 @@ class GridButtonCard extends StatefulWidget {
   final Widget Function(double size, Color color)? iconBuilder;
   final String label;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
+  final VoidCallback? onSecondaryTap;
   final double width;
   final double height;
   final Color? focusColor;
@@ -23,6 +25,8 @@ class GridButtonCard extends StatefulWidget {
     this.iconBuilder,
     required this.label,
     required this.onTap,
+    this.onLongPress,
+    this.onSecondaryTap,
     this.width = 160,
     this.height = 120,
     this.focusColor,
@@ -66,6 +70,8 @@ class _GridButtonCardState extends State<GridButtonCard> with FocusStateMixin {
 
     final inner = GestureDetector(
       onTap: widget.onTap,
+      onLongPress: widget.onLongPress,
+      onSecondaryTap: widget.onSecondaryTap,
       child: AnimatedScale(
         scale: scale,
         duration: const Duration(milliseconds: 150),

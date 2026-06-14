@@ -2918,6 +2918,11 @@ class _ContentRowsState extends State<_ContentRows>
         ),
         onLeftEdge: _onRowLeftEdge,
         onTap: (_, item) => _navigateToLibrary(context, item),
+        onLongPress: (_, item) => showContextMenu(
+          context,
+          item,
+          onChanged: () => setState(() {}),
+        ),
         itemBuilder: (ctx, item, idx, isFocused) {
           final collectionType =
               (item.rawData['CollectionType'] as String? ?? '').toLowerCase();
@@ -2935,6 +2940,16 @@ class _ContentRowsState extends State<_ContentRows>
                 cardFocusExpansion: cardExpansion,
                 externalIsFocused: isFocused,
                 onTap: () => _navigateToLibrary(context, item),
+                onLongPress: () => showContextMenu(
+                  context,
+                  item,
+                  onChanged: () => setState(() {}),
+                ),
+                onSecondaryTap: () => showContextMenu(
+                  context,
+                  item,
+                  onChanged: () => setState(() {}),
+                ),
               ),
             ),
           );

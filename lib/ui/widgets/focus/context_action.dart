@@ -11,6 +11,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../navigation/destinations.dart';
 import '../add_to_collection_dialog.dart';
 import '../add_to_playlist_dialog.dart';
+import '../change_artwork_dialog.dart';
 
 class ItemContextAction {
   final IconData icon;
@@ -160,6 +161,27 @@ List<ItemContextAction> contextActionsFor(
         },
       ));
     }
+
+  }
+
+  final canChangeArtwork = (isMediaType || type == 'Folder' || type == 'CollectionFolder' || type == 'UserView') &&
+      client.serverType == ServerType.jellyfin;
+
+  if (canChangeArtwork) {
+    actions.add(ItemContextAction(
+      icon: Icons.image_outlined,
+      label: l10n.changeArtwork,
+      onSelect: () async {
+        if (!context.mounted) return;
+        final changed = await ChangeArtworkDialog.show(
+          context,
+          item: item,
+        );
+        if (changed == true) {
+          onChanged?.call();
+        }
+      },
+    ));
   }
 
   if (type == 'Episode' && (item.seriesId?.isNotEmpty ?? false)) {

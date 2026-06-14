@@ -1247,11 +1247,37 @@ class _PluginScreenState extends State<_PluginScreen> {
     debugLabel: 'PluginSettingsScope',
     traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
   );
+  final _scrollController = ScrollController();
+  final _refreshFocusNode = FocusNode(debugLabel: 'PluginRefreshButton');
+
+  @override
+  void initState() {
+    super.initState();
+    _refreshFocusNode.addListener(_onRefreshFocusChange);
+  }
 
   @override
   void dispose() {
+    _refreshFocusNode.removeListener(_onRefreshFocusChange);
+    _refreshFocusNode.dispose();
+    _scrollController.dispose();
     _pluginScope.dispose();
     super.dispose();
+  }
+
+  void _onRefreshFocusChange() {
+    if (_refreshFocusNode.hasFocus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            0,
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
   }
 
   @override
@@ -1263,12 +1289,43 @@ class _PluginScreenState extends State<_PluginScreen> {
           final theme = Theme.of(context);
           final colorScheme = theme.colorScheme;
           final l10n = AppLocalizations.of(context);
-          return Scaffold(
-            appBar: buildSettingsAppBar(context, Text(l10n.pluginLabel)),
-            body: FocusScope(
-              node: _pluginScope,
-              autofocus: true,
-              child: ListView(
+          return FocusScope(
+            node: _pluginScope,
+            autofocus: true,
+            child: Scaffold(
+              appBar: buildSettingsAppBar(
+                context,
+                Text(l10n.pluginLabel),
+                actions: [
+                  IconButton(
+                    focusNode: _refreshFocusNode,
+                    autofocus: true,
+                    icon: const Icon(Icons.refresh),
+                    onPressed: () async {
+                      if (GetIt.instance.isRegistered<MediaServerClient>()) {
+                        final client = GetIt.instance<MediaServerClient>();
+                        final syncService = GetIt.instance<PluginSyncService>();
+                        await syncService.refreshAvailability(client);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                syncService.pluginAvailable
+                                    ? l10n.pluginDetected
+                                    : l10n.pluginNotDetected,
+                              ),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ],
+              ),
+              body: ListView(
+                controller: _scrollController,
+                padding: const EdgeInsets.only(bottom: 48),
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
@@ -1322,10 +1379,12 @@ class _MetadataRatingsScreenState extends State<_MetadataRatingsScreen> {
     debugLabel: 'MetadataRatingsSettingsScope',
     traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
   );
+  final _additionalRatingsFocusNode = FocusNode(debugLabel: 'additional_ratings');
 
   @override
   void dispose() {
     _metadataScope.dispose();
+    _additionalRatingsFocusNode.dispose();
     super.dispose();
   }
 
@@ -1336,18 +1395,21 @@ class _MetadataRatingsScreenState extends State<_MetadataRatingsScreen> {
       Builder(
         builder: (context) {
           final l10n = AppLocalizations.of(context);
-          return Scaffold(
-            appBar: buildSettingsAppBar(
-              context,
-              Text(l10n.settingsMetadataAndRatings),
-            ),
-            body: FocusScope(
-              node: _metadataScope,
-              autofocus: true,
-              child: ListView(
-                children: [
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.enableAdditionalRatings,
+          return RequestInitialFocus(
+            targetNode: PlatformDetection.isTV ? _additionalRatingsFocusNode : null,
+            child: Scaffold(
+              appBar: buildSettingsAppBar(
+                context,
+                Text(l10n.settingsMetadataAndRatings),
+              ),
+              body: FocusScope(
+                node: _metadataScope,
+                autofocus: true,
+                child: ListView(
+                  children: [
+                    SwitchPreferenceTile(
+                      focusNode: _additionalRatingsFocusNode,
+                      preference: UserPreferences.enableAdditionalRatings,
                     title: l10n.additionalRatings,
                     subtitle: l10n.showMdbListAndTmdbRatings,
                     icon: Icons.star,
@@ -1384,11 +1446,12 @@ class _MetadataRatingsScreenState extends State<_MetadataRatingsScreen> {
                 ],
               ),
             ),
-          );
-        },
-      ),
-    );
-  }
+          ),
+        );
+      },
+    ),
+  );
+}
 }
 
 class _OfflineDownloadsScreen extends StatefulWidget {
@@ -2180,20 +2243,17 @@ class _ExternalPlayerAppPickerTile extends StatefulWidget {
 class _ExternalPlayerAppPickerTileState
     extends State<_ExternalPlayerAppPickerTile> {
   final _service = GetIt.instance<ExternalPlayerService>();
-  late final PreferenceBinding<bool> _enabledBinding;
   late final PreferenceBinding<String> _componentBinding;
   List<ExternalPlayerApp> _players = const [];
   bool _loading = false;
   bool _pickerOpen = false;
+  late final FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
+    _focusNode = FocusNode();
     final store = GetIt.instance<PreferenceStore>();
-    _enabledBinding = PreferenceBinding(
-      store,
-      UserPreferences.useExternalPlayer,
-    );
     _componentBinding = PreferenceBinding(
       store,
       UserPreferences.externalPlayerComponentName,
@@ -2203,7 +2263,7 @@ class _ExternalPlayerAppPickerTileState
 
   @override
   void dispose() {
-    _enabledBinding.dispose();
+    _focusNode.dispose();
     _componentBinding.dispose();
     super.dispose();
   }
@@ -2280,7 +2340,6 @@ class _ExternalPlayerAppPickerTileState
                 },
               ),
             ),
-            if (_players.isNotEmpty) const Divider(height: 1),
             ..._players.asMap().entries.map((entry) {
               final index = entry.key;
               final player = entry.value;
@@ -2316,22 +2375,59 @@ class _ExternalPlayerAppPickerTileState
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: _enabledBinding,
-      builder: (context, enabled, _) {
-        return ValueListenableBuilder<String>(
-          valueListenable: _componentBinding,
-          builder: (context, component, _) {
-            final subtitle = _loading
-                ? AppLocalizations.of(context).loadingInstalledPlayers
-                : _selectedLabel(component);
-            return _TvSettingsListTile(
-              leading: const Icon(Icons.apps),
-              title: Text(AppLocalizations.of(context).externalPlayerApp),
-              subtitle: Text(subtitle),
-              onTap: enabled ? () => _showPicker(component) : null,
-            );
+    return ValueListenableBuilder<String>(
+      valueListenable: _componentBinding,
+      builder: (context, component, _) {
+        final label = _loading
+            ? AppLocalizations.of(context).loadingInstalledPlayers
+            : _selectedLabel(component);
+        return Focus(
+          canRequestFocus: false,
+          skipTraversal: true,
+          onKeyEvent: (_, event) {
+            if (!event.logicalKey.isSelectKey) return KeyEventResult.ignored;
+            if (event is KeyDownEvent) {
+              _showPicker(component);
+            }
+            return KeyEventResult.handled;
           },
+          child: TvFocusHighlight(
+            builder: (context, focused) => ListTile(
+              focusNode: _focusNode,
+              focusColor: Colors.transparent,
+              hoverColor: Colors.transparent,
+              leading: buildSettingsLeadingIconShell(
+                context,
+                icon: const Icon(Icons.apps),
+                focused: focused,
+                iconColor: focused
+                    ? AppColors.black.withValues(alpha: 0.54)
+                    : AppColorScheme.onSurface.withValues(alpha: 0.78),
+              ),
+              title: DefaultTextStyle.merge(
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: focused
+                      ? AppColors.black.withValues(alpha: 0.87)
+                      : AppColorScheme.onSurface,
+                ),
+                child: Text(AppLocalizations.of(context).externalPlayerApp),
+              ),
+              subtitle: DefaultTextStyle.merge(
+                style: TextStyle(
+                  fontSize: 12,
+                  color: focused
+                      ? AppColors.black.withValues(alpha: 0.54)
+                      : AppColorScheme.onSurface.withValues(alpha: 0.7),
+                ),
+                child: Text(AppLocalizations.of(context).externalPlayerAppDescription),
+              ),
+              isThreeLine: true,
+              trailing: buildSettingsSelectionBubble(context, label, focused),
+              onTap: () => _showPicker(component),
+            ),
+          ),
         );
       },
     );
@@ -3070,6 +3166,7 @@ class _SyncPlaySettingsScreenState extends State<_SyncPlaySettingsScreen> {
           children: [
             const _SectionHeader('Active Sessions'),
             _TvSettingsListTile(
+              autofocus: true,
               leading: const Icon(Icons.group_work),
               title: Text(l10n.settingsOpenGroups),
               subtitle: Text(l10n.settingsOpenGroupsSubtitle),
@@ -3385,35 +3482,45 @@ class _DoubleSliderTileState extends State<_DoubleSliderTile> {
             subtitleTextStyle: const TextStyle(fontSize: 12),
             child: ValueListenableBuilder<double>(
               valueListenable: widget.binding,
-              builder: (_, value, _) => ListTile(
-                focusColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                leading: Icon(widget.icon),
-                title: Text(widget.title),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizations.of(
-                        context,
-                      ).settingsMillisecondsValue(value.round()),
-                      style: TextStyle(
-                        color: _outerFocused
-                            ? AppColors.black.withValues(alpha: 0.54)
-                            : AppColorScheme.onSurface.withValues(alpha: 0.7),
+              builder: (context, value, _) {
+                final iconColor = _outerFocused
+                    ? AppColors.black.withValues(alpha: 0.54)
+                    : AppColorScheme.onSurface.withValues(alpha: 0.78);
+                return ListTile(
+                  focusColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  leading: buildSettingsLeadingIconShell(
+                    context,
+                    icon: Icon(widget.icon),
+                    focused: _outerFocused,
+                    iconColor: iconColor,
+                  ),
+                  title: Text(widget.title),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppLocalizations.of(
+                          context,
+                        ).settingsMillisecondsValue(value.round()),
+                        style: TextStyle(
+                          color: _outerFocused
+                              ? AppColors.black.withValues(alpha: 0.54)
+                              : AppColorScheme.onSurface.withValues(alpha: 0.7),
+                        ),
                       ),
-                    ),
-                    Slider(
-                      focusNode: _sliderInternalNode,
-                      value: value.clamp(widget.min, widget.max),
-                      min: widget.min,
-                      max: widget.max,
-                      divisions: 40,
-                      onChanged: (v) => widget.binding.value = v,
-                    ),
-                  ],
-                ),
-              ),
+                      Slider(
+                        focusNode: _sliderInternalNode,
+                        value: value.clamp(widget.min, widget.max),
+                        min: widget.min,
+                        max: widget.max,
+                        divisions: 40,
+                        onChanged: (v) => widget.binding.value = v,
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ),

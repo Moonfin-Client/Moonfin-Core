@@ -19,6 +19,7 @@ import '../../widgets/library_row.dart';
 import '../../widgets/media_card.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/home_row_title_localizer.dart';
+import '../../widgets/focus/context_menu_sheet.dart';
 
 Color get _navyBackground => AppColorScheme.background;
 const _horizontalPadding = 60.0;
@@ -195,6 +196,11 @@ class _LibraryViewScreenState extends State<LibraryViewScreen> {
                   serverId: item.serverId,
                   type: item.type,
                 ),
+              ),
+              onLongPress: () => showContextMenu(
+                context,
+                item,
+                onChanged: _onChanged,
               ),
             );
           }).toList(),

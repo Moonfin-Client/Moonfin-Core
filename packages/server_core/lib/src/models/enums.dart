@@ -153,7 +153,11 @@ enum ImageType {
   thumb,
   logo,
   art,
-  screenshot;
+  screenshot,
+  disc,
+  box,
+  boxRear,
+  menu;
 
   static ImageType fromServerString(String? value) => switch (value) {
         'Primary' => primary,
@@ -163,6 +167,10 @@ enum ImageType {
         'Logo' => logo,
         'Art' => art,
         'Screenshot' => screenshot,
+        'Disc' => disc,
+        'Box' => box,
+        'BoxRear' => boxRear,
+        'Menu' => menu,
         _ => primary,
       };
 
@@ -174,6 +182,10 @@ enum ImageType {
         logo => 'Logo',
         art => 'Art',
         screenshot => 'Screenshot',
+        disc => 'Disc',
+        box => 'Box',
+        boxRear => 'BoxRear',
+        menu => 'Menu',
       };
 }
 

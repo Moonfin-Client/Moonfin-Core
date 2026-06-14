@@ -7655,6 +7655,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get externalPlayerApp => 'Aplicación de reproductor externo';
 
   @override
+  String get externalPlayerAppDescription =>
+      'Set external player to enable long-press play option';
+
+  @override
   String get externalPlayerAskEachTimeSubtitle =>
       'Mostrar el selector de aplicaciones cuando comience la reproducción.';
 
@@ -8187,7 +8191,148 @@ class AppLocalizationsEs extends AppLocalizations {
   String get whenFullscreen => 'Cuando pantalla completa';
 
   @override
+  String get changeArtwork => 'Change Artwork';
+
+  @override
+  String get missing => 'Missing';
+
+  @override
   String get transcodingLimits => 'Límites de transcodificación';
+
+  @override
+  String get clearAllArtworkButton => 'Clear all artwork?';
+
+  @override
+  String get clearAllArtworkWarning =>
+      'Are you sure you want to clear all downloaded artwork?';
+
+  @override
+  String get confirmClear => 'Confirm Clear';
+
+  @override
+  String confirmClearMessage(String itemType) {
+    return 'Are you sure you would like to clear this $itemType?';
+  }
+
+  @override
+  String get uploadButton => 'Upload?';
+
+  @override
+  String get resolutionLabel => 'Resolution: ';
+
+  @override
+  String get onlyShowInterfaceLanguage =>
+      'Only show artwork in interface language';
+
+  @override
+  String get confirmClearAll => 'Confirm Clear All';
+
+  @override
+  String get imageUploadSuccess => 'Image uploaded successfully!';
+
+  @override
+  String imageUploadFailed(String error) {
+    return 'Failed to upload image: $error';
+  }
+
+  @override
+  String imageDownloadFailed(String error) {
+    return 'Failed to set image: $error';
+  }
+
+  @override
+  String imageDeleteFailed(String error) {
+    return 'Failed to delete image: $error';
+  }
+
+  @override
+  String clearAllArtworkFailed(String error) {
+    return 'Failed to clear all artwork: $error';
+  }
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get posterCategory => 'Poster';
+
+  @override
+  String get backdropsCategory => 'Backdrops';
+
+  @override
+  String get bannerCategory => 'Banner';
+
+  @override
+  String get logoCategory => 'Logo';
+
+  @override
+  String get thumbnailCategory => 'Thumbnail';
+
+  @override
+  String get artCategory => 'Art';
+
+  @override
+  String get discArtCategory => 'Disc Art';
+
+  @override
+  String get screenshotCategory => 'Screenshot';
+
+  @override
+  String get boxCoverCategory => 'Box Cover';
+
+  @override
+  String get boxRearCoverCategory => 'Box Rear Cover';
+
+  @override
+  String get menuArtCategory => 'Menu Art';
+
+  @override
+  String get confirmItemPoster => 'poster';
+
+  @override
+  String get confirmItemBackdrop => 'backdrop';
+
+  @override
+  String get confirmItemBanner => 'banner';
+
+  @override
+  String get confirmItemLogo => 'logo';
+
+  @override
+  String get confirmItemThumbnail => 'thumbnail';
+
+  @override
+  String get confirmItemArt => 'art';
+
+  @override
+  String get confirmItemDiscArt => 'disc art';
+
+  @override
+  String get confirmItemScreenshot => 'screenshot';
+
+  @override
+  String get confirmItemBoxCover => 'box cover';
+
+  @override
+  String get confirmItemBoxRearCover => 'box rear cover';
+
+  @override
+  String get confirmItemMenuArt => 'menu art';
+
+  @override
+  String get resolutionAll => 'All';
+
+  @override
+  String get resolutionHigh => 'High (1080p+)';
+
+  @override
+  String get resolutionMedium => 'Medium (720p)';
+
+  @override
+  String get resolutionLow => 'Low (<720p)';
+
+  @override
+  String get sources => 'Sources';
 }
 
 /// The translations for Spanish Castilian, as used in Latin America and the Caribbean (`es_419`).

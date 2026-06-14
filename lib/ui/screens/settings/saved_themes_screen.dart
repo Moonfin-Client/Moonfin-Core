@@ -14,6 +14,10 @@ import '../../../preference/user_preferences.dart';
 import '../../theme/app_theme_controller.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import 'settings_app_bar.dart';
+import '../../../util/platform_detection.dart';
+import '../../widgets/focus/request_initial_focus.dart';
+import '../../widgets/settings/preference_tiles.dart';
+import '../../widgets/overlay_sheet.dart';
 
 class SavedThemesScreen extends StatefulWidget {
   const SavedThemesScreen({super.key});
@@ -28,6 +32,9 @@ class _SavedThemesScreenState extends State<SavedThemesScreen> {
   final _sessionRepo = GetIt.instance<SessionRepository>();
   final _client = GetIt.instance<MediaServerClient>();
 
+  final _refreshFocusNode = FocusNode(debugLabel: 'saved_themes_refresh');
+  final _firstItemFocusNode = FocusNode(debugLabel: 'saved_themes_first_item');
+
   bool _loading = true;
   String? _statusMessage;
   String? _deletingThemeId;
@@ -37,6 +44,13 @@ class _SavedThemesScreenState extends State<SavedThemesScreen> {
   void initState() {
     super.initState();
     unawaited(_loadSavedThemes());
+  }
+
+  @override
+  void dispose() {
+    _refreshFocusNode.dispose();
+    _firstItemFocusNode.dispose();
+    super.dispose();
   }
 
   String _serverSyncKey() {
@@ -116,7 +130,7 @@ class _SavedThemesScreenState extends State<SavedThemesScreen> {
 
   Future<void> _confirmDelete(_SavedThemeFile theme) async {
     final l10n = AppLocalizations.of(context);
-    final shouldDelete = await showDialog<bool>(
+    final shouldDelete = await showFocusRestoringDialog<bool>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
@@ -198,90 +212,176 @@ class _SavedThemesScreenState extends State<SavedThemesScreen> {
     }
   }
 
+  Future<void> _showThemeActionsDialog(_SavedThemeFile themeSpecFile) async {
+    final l10n = AppLocalizations.of(context);
+    final controller = AppThemeScope.of(context);
+    final selectedCustomId = _prefs.get(UserPreferences.customThemeId);
+    final isCurrent = selectedCustomId == themeSpecFile.spec.id;
+
+    await showFocusRestoringDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColorScheme.surface.withValues(alpha: 0.9),
+          title: Text(themeSpecFile.spec.displayName),
+          actions: [
+            if (!isCurrent)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  unawaited(controller.applyThemeById(_prefs, themeSpecFile.spec.id));
+                },
+                child: Text(l10n.apply),
+              ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                unawaited(_confirmDelete(themeSpecFile));
+              },
+              child: Text(
+                l10n.delete,
+                style: TextStyle(color: AppColorScheme.statusRequested),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l10n.cancel),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final selectedCustomId = _prefs.get(UserPreferences.customThemeId);
+    final themeController = AppThemeScope.of(context);
+    final selectedCustomId = themeController.activeCustomId;
 
     return withCleanSettingsTypography(
       context,
-      Scaffold(
-        appBar: buildSettingsAppBar(
-          context,
-          Text(l10n.savedThemesTitle),
-          actions: [
-            IconButton(
-              onPressed: _loading ? null : () => unawaited(_loadSavedThemes()),
-              icon: const Icon(Icons.refresh),
-              tooltip: l10n.refresh,
-            ),
-          ],
-        ),
-        body: _loading
-            ? const Center(child: CircularProgressIndicator())
-            : ListView(
-                padding: const EdgeInsets.all(20),
-                children: [
-                  Text(
-                    l10n.savedThemesDescription,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(
-                        alpha: 0.74,
-                      ),
-                    ),
-                  ),
-                  if (_statusMessage != null) ...[
-                    const SizedBox(height: 16),
+      RequestInitialFocus(
+        targetNode: PlatformDetection.isTV
+            ? (_savedThemes.isNotEmpty ? _firstItemFocusNode : _refreshFocusNode)
+            : null,
+        child: Scaffold(
+          appBar: buildSettingsAppBar(
+            context,
+            Text(l10n.savedThemesTitle),
+            actions: [
+              IconButton(
+                focusNode: _refreshFocusNode,
+                style: IconButton.styleFrom(
+                  focusColor: AppColorScheme.accent.withValues(alpha: 0.18),
+                ),
+                onPressed: _loading ? null : () => unawaited(_loadSavedThemes()),
+                icon: const Icon(Icons.refresh),
+                tooltip: l10n.refresh,
+              ),
+            ],
+          ),
+          body: _loading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView(
+                  padding: const EdgeInsets.all(20),
+                  children: [
                     Text(
-                      _statusMessage!,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withValues(
-                          alpha: 0.78,
-                        ),
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 20),
-                  if (_savedThemes.isEmpty)
-                    Text(
-                      l10n.savedThemesEmpty,
+                      l10n.savedThemesDescription,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface.withValues(
                           alpha: 0.74,
                         ),
                       ),
                     ),
-                  for (final entry in _savedThemes) ...[
-                    Card(
-                      child: ListTile(
-                        leading: const Icon(Icons.download_done_outlined),
-                        title: Text(entry.spec.displayName),
-                        subtitle: Text(
-                          selectedCustomId == entry.spec.id
-                          ? l10n.savedThemesCurrentThemeId(entry.spec.id)
-                              : entry.spec.id,
+                    if (_statusMessage != null) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        _statusMessage!,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.78,
+                          ),
                         ),
-                        trailing: _deletingThemeId == entry.spec.id
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : IconButton(
-                                onPressed: () =>
-                                    unawaited(_confirmDelete(entry)),
-                                icon: const Icon(Icons.delete_outline),
-                                tooltip: l10n.savedThemesDeleteTooltip,
-                              ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
+                    ],
+                    const SizedBox(height: 20),
+                    if (_savedThemes.isEmpty)
+                      Text(
+                        l10n.savedThemesEmpty,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.74,
+                          ),
+                        ),
+                      ),
+                    for (final (i, entry) in _savedThemes.indexed) ...[
+                      if (PlatformDetection.isTV) ...[
+                        TvFocusHighlight(
+                          builder: (context, focused) => ListTile(
+                            focusNode: i == 0 ? _firstItemFocusNode : null,
+                            leading: const Icon(Icons.download_done_outlined),
+                            title: Text(entry.spec.displayName),
+                            subtitle: Text(
+                              selectedCustomId == entry.spec.id
+                                  ? l10n.savedThemesCurrentThemeId(entry.spec.id)
+                                  : entry.spec.id,
+                            ),
+                            onTap: () => unawaited(_showThemeActionsDialog(entry)),
+                            trailing: _deletingThemeId == entry.spec.id
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Icon(
+                                    Icons.delete_outline,
+                                    color: focused
+                                        ? AppColors.black.withValues(alpha: 0.54)
+                                        : null,
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ] else ...[
+                        Card(
+                          child: ListTile(
+                            leading: const Icon(Icons.download_done_outlined),
+                            title: Text(entry.spec.displayName),
+                            subtitle: Text(
+                              selectedCustomId == entry.spec.id
+                                  ? l10n.savedThemesCurrentThemeId(entry.spec.id)
+                                  : entry.spec.id,
+                            ),
+                            onTap: () async {
+                              final controller = AppThemeScope.of(context);
+                              await controller.applyThemeById(_prefs, entry.spec.id);
+                            },
+                            trailing: _deletingThemeId == entry.spec.id
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : IconButton(
+                                    onPressed: () =>
+                                        unawaited(_confirmDelete(entry)),
+                                    icon: const Icon(Icons.delete_outline),
+                                    tooltip: l10n.savedThemesDeleteTooltip,
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                    ],
                   ],
-                ],
-              ),
+                ),
+        ),
       ),
     );
   }

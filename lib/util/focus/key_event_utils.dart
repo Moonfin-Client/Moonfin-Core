@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -87,4 +88,61 @@ KeyEventResult consumeIfEdge(
   if (atTopEdge && k.isUpKey) return KeyEventResult.handled;
   if (atBottomEdge && k.isDownKey) return KeyEventResult.handled;
   return KeyEventResult.ignored;
+}
+
+class LongPressSelectKeyHandler {
+  bool _selectDownSeen = false;
+  bool _longPressFired = false;
+  Timer? _longPressTimer;
+
+  void dispose() {
+    _longPressTimer?.cancel();
+  }
+
+  KeyEventResult handleKeyEvent(
+    KeyEvent event, {
+    required VoidCallback onTap,
+    required VoidCallback onLongPress,
+  }) {
+    final key = event.logicalKey;
+
+    if (key.isSelectKey) {
+      if (event is KeyDownEvent) {
+        _selectDownSeen = true;
+        _longPressFired = false;
+        _longPressTimer?.cancel();
+        _longPressTimer = Timer(
+          const Duration(milliseconds: 500),
+          () {
+            _longPressFired = true;
+            onLongPress();
+          },
+        );
+        return KeyEventResult.handled;
+      }
+      if (event is KeyRepeatEvent) {
+        return _selectDownSeen
+            ? KeyEventResult.handled
+            : KeyEventResult.ignored;
+      }
+      if (event is KeyUpEvent) {
+        if (!_selectDownSeen) return KeyEventResult.ignored;
+        _selectDownSeen = false;
+        _longPressTimer?.cancel();
+        _longPressTimer = null;
+        if (!_longPressFired) {
+          onTap();
+        }
+        _longPressFired = false;
+        return KeyEventResult.handled;
+      }
+    }
+
+    if (key.isContextMenuKey && event is KeyDownEvent) {
+      onLongPress();
+      return KeyEventResult.handled;
+    }
+
+    return KeyEventResult.ignored;
+  }
 }

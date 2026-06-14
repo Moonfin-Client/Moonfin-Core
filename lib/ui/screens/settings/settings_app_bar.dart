@@ -12,5 +12,6 @@ AppBar buildSettingsAppBar(
     actions: actions,
     automaticallyImplyLeading: !PlatformDetection.isTV,
     leading: PlatformDetection.isTV ? const SizedBox.shrink() : null,
+    scrolledUnderElevation: 0,
   );
 }

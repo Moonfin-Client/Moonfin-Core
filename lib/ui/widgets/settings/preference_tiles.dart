@@ -8,7 +8,7 @@ import '../../../util/focus/dpad_keys.dart';
 import '../overlay_sheet.dart';
 import 'preference_binding.dart';
 
-Widget _withBackClose(BuildContext dialogContext, Widget child) {
+Widget withBackClose(BuildContext dialogContext, Widget child) {
   final closeDialog = createDialogBackCloseHandler(dialogContext);
 
   return Shortcuts(
@@ -134,7 +134,7 @@ BoxDecoration _settingsTileDecoration(
   );
 }
 
-Widget _buildSelectionBubble(BuildContext context, String label, bool focused) {
+Widget buildSettingsSelectionBubble(BuildContext context, String label, bool focused) {
   final theme = Theme.of(context);
   final colorScheme = theme.colorScheme;
   return Container(
@@ -224,6 +224,7 @@ class SwitchPreferenceTile extends StatefulWidget {
 
   final bool inverted;
   final bool enabled;
+  final FocusNode? focusNode;
 
   const SwitchPreferenceTile({
     super.key,
@@ -235,6 +236,7 @@ class SwitchPreferenceTile extends StatefulWidget {
     this.onChanged,
     this.inverted = false,
     this.enabled = true,
+    this.focusNode,
   });
 
   @override
@@ -286,6 +288,7 @@ class _SwitchPreferenceTileState extends State<SwitchPreferenceTile> {
         return ValueListenableBuilder<bool>(
           valueListenable: _binding,
           builder: (context, value, _) => SwitchListTile(
+            focusNode: widget.focusNode,
             secondary: secondary,
             title: Text(widget.title, style: _kSettingsTitleTextStyle),
             subtitle: widget.subtitle != null
@@ -374,7 +377,7 @@ class _EnumPreferenceTileState<T extends Enum>
                   )
                 : null,
             title: Text(widget.title, style: _kSettingsTitleTextStyle),
-            trailing: _buildSelectionBubble(context, label, focused),
+            trailing: buildSettingsSelectionBubble(context, label, focused),
             subtitle: widget.description != null
                 ? Text(widget.description!, style: _kSettingsDescriptionTextStyle)
                 : null,
@@ -396,7 +399,7 @@ class _EnumPreferenceTileState<T extends Enum>
     final result = await showFocusRestoringDialog<T>(
       context: context,
       useRootNavigator: false,
-      builder: (ctx) => _withBackClose(
+      builder: (ctx) => withBackClose(
         ctx,
         SimpleDialog(
           title: Text(widget.title, style: _kSettingsTitleTextStyle),
@@ -662,7 +665,7 @@ class _StringPickerPreferenceTileState
                   )
                 : null,
             title: Text(widget.title, style: _kSettingsTitleTextStyle),
-            trailing: _buildSelectionBubble(context, label, focused),
+            trailing: buildSettingsSelectionBubble(context, label, focused),
             subtitle: widget.description != null
                 ? Text(widget.description!, style: _kSettingsDescriptionTextStyle)
                 : null,
@@ -684,7 +687,7 @@ class _StringPickerPreferenceTileState
     final result = await showFocusRestoringDialog<String>(
       context: context,
       useRootNavigator: false,
-      builder: (ctx) => _withBackClose(
+      builder: (ctx) => withBackClose(
         ctx,
         SimpleDialog(
           title: Text(widget.title, style: _kSettingsTitleTextStyle),
@@ -778,7 +781,7 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
                   )
                 : null,
             title: Text(widget.title, style: _kSettingsTitleTextStyle),
-            trailing: _buildSelectionBubble(context, label, focused),
+            trailing: buildSettingsSelectionBubble(context, label, focused),
             subtitle: widget.description != null
                 ? Text(widget.description!, style: _kSettingsDescriptionTextStyle)
                 : null,
@@ -800,7 +803,7 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
     final result = await showFocusRestoringDialog<int>(
       context: context,
       useRootNavigator: false,
-      builder: (ctx) => _withBackClose(
+      builder: (ctx) => withBackClose(
         ctx,
         SimpleDialog(
           title: Text(widget.title, style: _kSettingsTitleTextStyle),
@@ -836,11 +839,13 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
 class TvFocusHighlight extends StatefulWidget {
   final Widget Function(BuildContext context, bool focused) builder;
   final bool enabled;
+  final FocusNode? focusNode;
 
   const TvFocusHighlight({
     super.key,
     required this.builder,
     this.enabled = true,
+    this.focusNode,
   });
 
   @override
@@ -848,18 +853,21 @@ class TvFocusHighlight extends StatefulWidget {
 }
 
 class _TvFocusHighlightState extends State<TvFocusHighlight> {
-  late final FocusNode _focusNode;
+  FocusNode? _internalFocusNode;
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ??
+      (_internalFocusNode ??= FocusNode(debugLabel: 'TvFocusHighlightScope'));
   bool _focused = false;
 
   @override
   void initState() {
     super.initState();
-    _focusNode = FocusNode(debugLabel: 'TvFocusHighlightScope');
+    _focused = _effectiveFocusNode.hasFocus;
   }
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    _internalFocusNode?.dispose();
     super.dispose();
   }
 
@@ -873,7 +881,7 @@ class _TvFocusHighlightState extends State<TvFocusHighlight> {
   @override
   Widget build(BuildContext context) {
     return Focus(
-      focusNode: _focusNode,
+      focusNode: _effectiveFocusNode,
       canRequestFocus: false,
       skipTraversal: true,
       descendantsAreFocusable: widget.enabled,
