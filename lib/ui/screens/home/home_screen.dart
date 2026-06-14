@@ -552,6 +552,10 @@ class _ContentRowsState extends State<_ContentRows>
   List<HomeRow>? _cachedExtentRows;
   PosterSize? _cachedExtentPosterSize;
   double? _cachedExtentDesktopScale;
+  bool? _cachedExtentFullScreenRows;
+  HomeRowsStyle? _cachedExtentHomeRowsStyle;
+  bool? _cachedExtentShowInfoOverlay;
+  NavbarPosition? _cachedExtentNavbarPosition;
   int _cachedExtentPrefsVersion = -1;
   List<double>? _cachedRowExtents;
   int _layoutPrefsVersion = 0;
@@ -2061,7 +2065,8 @@ class _ContentRowsState extends State<_ContentRows>
                 : 768.0;
             final overlayEnabled = _showHomeRowInfoOverlay();
 
-            if (PlatformDetection.isTV &&
+            final fullScreenRows = !PlatformDetection.useMobileUi && widget.prefs.get(UserPreferences.fullScreenRows);
+            if ((PlatformDetection.isTV || fullScreenRows) &&
                 _scrollController.hasClients) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (!mounted || !_scrollController.hasClients) {
@@ -2171,9 +2176,10 @@ class _ContentRowsState extends State<_ContentRows>
       }
       final indexChanged = _activeFocusedRowIndex != rowIndex;
       _activeFocusedRowIndex = rowIndex;
+      final fullScreenRows = !PlatformDetection.useMobileUi && widget.prefs.get(UserPreferences.fullScreenRows);
       if (!isMobileUi && _mediaBarVisible && !_verticalNavInFlight) {
         setState(() => _mediaBarVisible = false);
-      } else if (indexChanged && PlatformDetection.isTV) {
+      } else if (indexChanged && (PlatformDetection.isTV || fullScreenRows)) {
         setState(() {});
       }
     } else if (_activeFocusedRowIndex == rowIndex) {
@@ -2227,6 +2233,7 @@ class _ContentRowsState extends State<_ContentRows>
     _scrollIdleTimer = Timer(const Duration(milliseconds: 250), () {
       if (!mounted) return;
       _isActivelyScrolling = false;
+      _snapToNearestRow();
       setState(() {});
     });
     if (_activePreviewKey != null) {
@@ -2254,6 +2261,35 @@ class _ContentRowsState extends State<_ContentRows>
       setState(() => _scrollOffset = offset);
     } else {
       _scrollOffset = offset;
+    }
+  }
+
+  void _snapToNearestRow() {
+    if (!mounted || !_scrollController.hasClients) return;
+    final prefs = widget.prefs;
+    final fullScreenRows = !PlatformDetection.useMobileUi && prefs.get(UserPreferences.fullScreenRows);
+    if (!fullScreenRows) return;
+
+    final currentOffset = _scrollController.offset;
+    double minDiff = double.infinity;
+    double bestOffset = currentOffset;
+
+    for (var i = 0; i < _rowTopOffsets.length; i++) {
+      final target = (_rowTopOffsets[i] - (_overlayBottom + 8.0))
+          .clamp(0.0, _scrollController.position.maxScrollExtent);
+      final diff = (target - currentOffset).abs();
+      if (diff < minDiff) {
+        minDiff = diff;
+        bestOffset = target;
+      }
+    }
+
+    if ((bestOffset - currentOffset).abs() > 1.0) {
+      _scrollController.animateTo(
+        bestOffset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+      );
     }
   }
 
@@ -2318,7 +2354,7 @@ class _ContentRowsState extends State<_ContentRows>
   ) {
     var extent = _rowContentHeight(row, posterSize, prefs);
 
-    final fullScreenRows = PlatformDetection.isTV && prefs.get(UserPreferences.fullScreenRows);
+    final fullScreenRows = !PlatformDetection.useMobileUi && prefs.get(UserPreferences.fullScreenRows);
     if (fullScreenRows) {
       final desktopScale = _desktopUiScaleFactor();
       final viewportHeight = MediaQuery.sizeOf(context).height;
@@ -2334,7 +2370,7 @@ class _ContentRowsState extends State<_ContentRows>
 
       double topOffset;
       if (isRowsV2) {
-        topOffset = safeTop + navbarHeight + 8.0;
+        topOffset = (safeTop + navbarHeight + 8.0).clamp(56.0, double.infinity);
       } else {
         final showInfoOverlay = prefs.get(UserPreferences.homeRowInfoOverlay);
         if (showInfoOverlay) {
@@ -2365,10 +2401,19 @@ class _ContentRowsState extends State<_ContentRows>
     UserPreferences prefs,
   ) {
     final desktopScale = _desktopUiScaleFactor();
+    final fullScreenRows = !PlatformDetection.useMobileUi && prefs.get(UserPreferences.fullScreenRows);
+    final homeRowsStyle = prefs.get(UserPreferences.homeRowsStyle);
+    final showInfoOverlay = prefs.get(UserPreferences.homeRowInfoOverlay);
+    final navbarPosition = prefs.get(UserPreferences.navbarPosition);
+
     if (_cachedRowExtents != null &&
         identical(_cachedExtentRows, rows) &&
         _cachedExtentPosterSize == posterSize &&
         _cachedExtentDesktopScale == desktopScale &&
+        _cachedExtentFullScreenRows == fullScreenRows &&
+        _cachedExtentHomeRowsStyle == homeRowsStyle &&
+        _cachedExtentShowInfoOverlay == showInfoOverlay &&
+        _cachedExtentNavbarPosition == navbarPosition &&
         _cachedExtentPrefsVersion == _layoutPrefsVersion) {
       return _cachedRowExtents!;
     }
@@ -2379,6 +2424,10 @@ class _ContentRowsState extends State<_ContentRows>
     _cachedExtentRows = rows;
     _cachedExtentPosterSize = posterSize;
     _cachedExtentDesktopScale = desktopScale;
+    _cachedExtentFullScreenRows = fullScreenRows;
+    _cachedExtentHomeRowsStyle = homeRowsStyle;
+    _cachedExtentShowInfoOverlay = showInfoOverlay;
+    _cachedExtentNavbarPosition = navbarPosition;
     _cachedExtentPrefsVersion = _layoutPrefsVersion;
     _cachedRowExtents = extents;
     return extents;
@@ -2447,15 +2496,16 @@ class _ContentRowsState extends State<_ContentRows>
     required bool showInfoOverlay,
     required double overlayBottom,
   }) {
+    final fullScreenRows = !PlatformDetection.useMobileUi && widget.prefs.get(UserPreferences.fullScreenRows);
     if (!showInfoOverlay || !_infoRevealed) {
       return child;
     }
 
-    if (!PlatformDetection.isTV && !_isMediaBarIncluded()) {
+    if (!PlatformDetection.isTV && !fullScreenRows && !_isMediaBarIncluded()) {
       return child;
     }
 
-    if (PlatformDetection.isTV) {
+    if (PlatformDetection.isTV || fullScreenRows) {
       final focusedRowIndex = _focusedRowIndex(FocusManager.instance.primaryFocus);
       final rowViewportTop = rowTopOffsets[rowIndex] - _scrollOffset;
       final rowBottom = rowViewportTop + rowExtents[rowIndex];
@@ -2555,7 +2605,7 @@ class _ContentRowsState extends State<_ContentRows>
     final showInfoOverlay = _showHomeRowInfoOverlay();
     final safeTop = MediaQuery.of(context).padding.top;
     final desktopScale = _desktopUiScaleFactor();
-    final fullScreenRows = PlatformDetection.isTV && prefs.get(UserPreferences.fullScreenRows);
+    final fullScreenRows = !PlatformDetection.useMobileUi && prefs.get(UserPreferences.fullScreenRows);
     final navbarIsTop = widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
     final navbarIsLeft = !navbarIsTop;
     final navbarHeight = PlatformDetection.isTV
@@ -2570,7 +2620,9 @@ class _ContentRowsState extends State<_ContentRows>
     final listTopPadding = includeMediaBar || showInfoOverlay
         ? 0.0
         : _isHomeRowsStyleV2()
-            ? safeTop + navbarHeight + 8
+            ? (fullScreenRows
+                ? (safeTop + navbarHeight + 8.0).clamp(56.0, double.infinity)
+                : safeTop + navbarHeight + 8)
             : safeTop + 56;
     final tvTopNavbarInset =
         navbarIsTop && PlatformDetection.isTV && !PlatformDetection.useMobileUi
@@ -2579,9 +2631,8 @@ class _ContentRowsState extends State<_ContentRows>
     final navbarLeftInset = navbarIsTop ? 16.0 + tvTopNavbarInset : 56.0;
     final infoHeaderLeftInset =
       (!PlatformDetection.useMobileUi && navbarIsTop) ? 8.0 : 0.0;
-    final rowLeftInset = navbarIsLeft && !PlatformDetection.useMobileUi
-        ? 56.0
-        : tvTopNavbarInset;
+    final rowLeftInset = (navbarIsLeft && !PlatformDetection.useMobileUi ? 56.0 : tvTopNavbarInset) +
+        (!PlatformDetection.useMobileUi ? 16.0 : 0.0);
     final infoTopBasePadding =
       (!PlatformDetection.useMobileUi && navbarHeight == 0) ? 14.0 : 8.0;
     final infoTopPadding = safeTop + navbarHeight + infoTopBasePadding;
@@ -2599,7 +2650,7 @@ class _ContentRowsState extends State<_ContentRows>
         ? (_infoRevealed ? infoOverlayPlaceholder : 0.0)
         : infoOverlayPlaceholder;
     final overlayBottom = _isHomeRowsStyleV2()
-        ? navbarHeight
+        ? (fullScreenRows ? (navbarHeight > 48.0 ? navbarHeight : 48.0) : navbarHeight)
         : showInfoOverlay
             ? infoTopPadding + infoAreaHeight
             : (fullScreenRows ? safeTop + 48.0 : 0.0);
@@ -2863,7 +2914,7 @@ class _ContentRowsState extends State<_ContentRows>
               child: IgnorePointer(
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(
-                    navbarLeftInset,
+                    PlatformDetection.useMobileUi ? navbarLeftInset : rowLeftInset,
                     infoTopPadding,
                     16,
                     8,
@@ -3058,8 +3109,10 @@ class _ContentRowsState extends State<_ContentRows>
     final v2FocusedWidth = v2ImageHeight * v2FocusedAspect;
     final navbarIsTopV2 =
         widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
-    final rowLeftInsetV2 =
-        (!navbarIsTopV2 && !PlatformDetection.useMobileUi) ? 56.0 : 0.0;
+    final rowLeftInsetV2 = (navbarIsTopV2
+            ? (PlatformDetection.isTV && !PlatformDetection.useMobileUi ? 48.0 : 0.0)
+            : (!PlatformDetection.useMobileUi ? 56.0 : 0.0)) +
+        (!PlatformDetection.useMobileUi ? 16.0 : 0.0);
     final v2ExtendedWidth = isRowsV2
       ? (MediaQuery.of(context).size.width -
           rowLeftInsetV2 -

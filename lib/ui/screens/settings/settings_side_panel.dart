@@ -970,7 +970,7 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
             icon: Icons.image_aspect_ratio,
             onChanged: _pushPersonalizationSync,
           ),
-          if (PlatformDetection.isTV)
+          if (!PlatformDetection.useMobileUi)
             SwitchPreferenceTile(
               preference: UserPreferences.fullScreenRows,
               title: l10n.fullScreenRows,
