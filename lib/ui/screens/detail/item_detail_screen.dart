@@ -8798,7 +8798,6 @@ class _MetadataSection extends StatefulWidget {
   const _MetadataSection({
     required this.viewModel,
     this.firstItemFocusNode,
-    this.downTarget,
   });
 
   @override
