@@ -656,6 +656,11 @@ class _SearchScreenState extends State<SearchScreen> {
       return _requestResultFocus(firstRow, 0);
     }
     if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      if (PlatformDetection.isAppleTV) {
+        return _tryFocusSidebar()
+            ? KeyEventResult.handled
+            : KeyEventResult.ignored;
+      }
       _voiceFocus.requestFocus();
       return KeyEventResult.handled;
     }
@@ -810,8 +815,10 @@ class _SearchScreenState extends State<SearchScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 48),
                 child: Row(
                   children: [
-                    _buildVoiceActivation(),
-                    const SizedBox(width: 14),
+                    if (!PlatformDetection.isAppleTV) ...[
+                      _buildVoiceActivation(),
+                      const SizedBox(width: 14),
+                    ],
                     Expanded(
                       child: PlatformDetection.isTV
                           ? Focus(
