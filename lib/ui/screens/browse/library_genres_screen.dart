@@ -331,7 +331,6 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
   }
 
   double _desktopUiScaleFactor() {
-    if (!PlatformDetection.useDesktopUi) return 1.0;
     return _prefs.get(UserPreferences.desktopUiScale).scaleFactor;
   }
 
@@ -466,11 +465,9 @@ class _GenresHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMobile = _isCompact(context);
-    final desktopScale = PlatformDetection.useDesktopUi
-        ? GetIt.instance<UserPreferences>()
-              .get(UserPreferences.desktopUiScale)
-              .scaleFactor
-        : 1.0;
+    final desktopScale = GetIt.instance<UserPreferences>()
+          .get(UserPreferences.desktopUiScale)
+          .scaleFactor;
     final topPadding = isMobile ? MediaQuery.of(context).padding.top : 8.0;
     final horizontalPadding = isMobile
         ? _mobileHorizontalPadding

@@ -75,7 +75,6 @@ bool _useDesktopDetailLayout(BuildContext context) {
 }
 
 double _desktopUiScale({UserPreferences? prefs}) {
-  if (!PlatformDetection.useDesktopUi) return 1.0;
   final effectivePrefs = prefs ?? GetIt.instance<UserPreferences>();
   return effectivePrefs.get(UserPreferences.desktopUiScale).scaleFactor;
 }
@@ -965,7 +964,7 @@ class _DetailContentState extends State<_DetailContent> {
                           48,
                           MediaQuery.of(context).padding.top + 80.0,
                           48,
-                          48,
+                          48 * _desktopUiScale(),
                         ),
                         sliver: SliverList(
                           delegate: SliverChildListDelegate(
@@ -1009,7 +1008,7 @@ class _DetailContentState extends State<_DetailContent> {
                           _isCompact(context) ? 16 : 48,
                           0,
                           _isCompact(context) ? 16 : 48,
-                          MediaQuery.of(context).padding.bottom + 32,
+                          (MediaQuery.of(context).padding.bottom + 48.0) * _desktopUiScale(),
                         ),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate(
@@ -1368,9 +1367,13 @@ class _DetailContentState extends State<_DetailContent> {
         : null;
     final actionButtonsFocusNode = _sectionFocusNode('detailActionButtons');
     final overviewFocusNode = _headerOverviewFocusNode(item);
+    final metadataFocusNode = _hasMetadata(item) ? _sectionFocusNode('detailMovieMetadata') : null;
+    final movieDownTarget = hasChapters
+        ? _firstChapterFocusNode
+        : (hasFeatures ? _firstFeatureFocusNode : (castFocusNode ?? collectionFocusNode ?? similarFocusNode));
     final chapterFeatureLastNode = hasFeatures
         ? _firstFeatureFocusNode
-        : (hasChapters ? _firstChapterFocusNode : actionButtonsFocusNode);
+        : (hasChapters ? _firstChapterFocusNode : (metadataFocusNode ?? actionButtonsFocusNode));
     final chapterFeatureNextNode =
         castFocusNode ?? collectionFocusNode ?? similarFocusNode;
     final collectionUpTarget = castFocusNode ?? chapterFeatureLastNode;
@@ -1384,26 +1387,29 @@ class _DetailContentState extends State<_DetailContent> {
         tvPlayFocusNode: actionButtonsFocusNode,
         upTarget: overviewFocusNode,
         onRequestFocus: _requestSectionFocus,
-        downTarget: hasChapters
-            ? _firstChapterFocusNode
-            : (hasFeatures ? _firstFeatureFocusNode : chapterFeatureNextNode),
+        downTarget: metadataFocusNode ?? movieDownTarget,
         autoPlay: widget.autoPlay,
       ),
       if (_hasMetadata(item)) ...[
         const SizedBox(height: 24),
-        _MetadataSection(viewModel: viewModel),
+        _MetadataSection(
+          viewModel: viewModel,
+          firstItemFocusNode: metadataFocusNode,
+          upTarget: actionButtonsFocusNode,
+          downTarget: movieDownTarget,
+        ),
       ],
       ..._buildChapterAndFeatureSections(
         context,
         item,
         selectedMediaSourceId: selectedMediaSourceId,
-        prevSectionFocusNode: actionButtonsFocusNode,
+        prevSectionFocusNode: metadataFocusNode ?? actionButtonsFocusNode,
         nextSectionFocusNode: chapterFeatureNextNode,
       ),
       if (viewModel.actors.isNotEmpty) ...[
         const SizedBox(height: 32),
         HorizontalScrollSection(
-          title: l10n.castAndCrew,
+          title: l10n.cast,
           titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
             color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
                 ? AppColorScheme.onSurface
@@ -1505,6 +1511,12 @@ class _DetailContentState extends State<_DetailContent> {
         : null;
     final actionButtonsFocusNode = _sectionFocusNode('detailActionButtons');
     final overviewFocusNode = _headerOverviewFocusNode(item);
+    final metadataFocusNode = _hasMetadata(item) ? _sectionFocusNode('detailSeriesMetadata') : null;
+    final seriesDownTarget =
+        seriesNextUpFocusNode ??
+        seasonsFocusNode ??
+        castFocusNode ??
+        similarFocusNode;
 
     return [
       _ActionButtons(
@@ -1515,16 +1527,17 @@ class _DetailContentState extends State<_DetailContent> {
         tvPlayFocusNode: actionButtonsFocusNode,
         upTarget: overviewFocusNode,
         onRequestFocus: _requestSectionFocus,
-        downTarget:
-            seriesNextUpFocusNode ??
-            seasonsFocusNode ??
-            castFocusNode ??
-            similarFocusNode,
+        downTarget: metadataFocusNode ?? seriesDownTarget,
         autoPlay: widget.autoPlay,
       ),
       if (_hasMetadata(item)) ...[
         const SizedBox(height: 24),
-        _MetadataSection(viewModel: viewModel),
+        _MetadataSection(
+          viewModel: viewModel,
+          firstItemFocusNode: metadataFocusNode,
+          upTarget: actionButtonsFocusNode,
+          downTarget: seriesDownTarget,
+        ),
       ],
       if (hasNextUp) ...[
         const SizedBox(height: 32),
@@ -1559,7 +1572,7 @@ class _DetailContentState extends State<_DetailContent> {
               return KeyEventResult.handled;
             }
             if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-              return _requestSectionFocus(actionButtonsFocusNode);
+              return _requestSectionFocus(metadataFocusNode ?? actionButtonsFocusNode);
             }
             if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
               return _requestSectionFocus(
@@ -1591,7 +1604,7 @@ class _DetailContentState extends State<_DetailContent> {
             firstItemFocusNode: seasonsFocusNode,
             onItemKeyEvent: _buildVerticalRowHandler(
               sourceFocusNode: seasonsFocusNode,
-              upTarget: seriesNextUpFocusNode ?? actionButtonsFocusNode,
+              upTarget: seriesNextUpFocusNode ?? metadataFocusNode ?? actionButtonsFocusNode,
               downTarget: castFocusNode ?? similarFocusNode,
               itemCount: viewModel.seasons.length,
             ),
@@ -1601,7 +1614,7 @@ class _DetailContentState extends State<_DetailContent> {
       if (hasCast) ...[
         const SizedBox(height: 32),
         HorizontalScrollSection(
-          title: l10n.castAndCrew,
+          title: l10n.cast,
           titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
             color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
                 ? AppColorScheme.onSurface
@@ -1622,6 +1635,7 @@ class _DetailContentState extends State<_DetailContent> {
               upTarget:
                   seasonsFocusNode ??
                   seriesNextUpFocusNode ??
+                  metadataFocusNode ??
                   actionButtonsFocusNode,
               downTarget: similarFocusNode,
               itemCount: viewModel.actors.length,
@@ -1655,6 +1669,7 @@ class _DetailContentState extends State<_DetailContent> {
                   castFocusNode ??
                   seasonsFocusNode ??
                   seriesNextUpFocusNode ??
+                  metadataFocusNode ??
                   actionButtonsFocusNode,
               itemCount: viewModel.similar.length,
               consumeDownWhenNoTarget: true,
@@ -1723,14 +1738,18 @@ class _DetailContentState extends State<_DetailContent> {
     final nextEpisodeFocusNode = nextEpisode != null
         ? _nextEpisodeFocusNode
         : null;
-    final chapterFeatureLastNode = hasFeatures
-        ? _firstFeatureFocusNode
-        : (hasChapters ? _firstChapterFocusNode : actionButtonsFocusNode);
+    final metadataFocusNode = _hasMetadata(item) ? _sectionFocusNode('detailEpisodeMetadata') : null;
     final chapterFeatureNextNode =
         nextEpisodeFocusNode ??
         episodesFocusNode ??
         castFocusNode ??
         similarFocusNode;
+    final episodeDownTarget = hasChapters
+        ? _firstChapterFocusNode
+        : (hasFeatures ? _firstFeatureFocusNode : chapterFeatureNextNode);
+    final chapterFeatureLastNode = hasFeatures
+        ? _firstFeatureFocusNode
+        : (hasChapters ? _firstChapterFocusNode : (metadataFocusNode ?? actionButtonsFocusNode));
 
     return [
       _ActionButtons(
@@ -1741,20 +1760,23 @@ class _DetailContentState extends State<_DetailContent> {
         tvPlayFocusNode: actionButtonsFocusNode,
         upTarget: overviewFocusNode,
         onRequestFocus: _requestSectionFocus,
-        downTarget: hasChapters
-            ? _firstChapterFocusNode
-            : (hasFeatures ? _firstFeatureFocusNode : chapterFeatureNextNode),
+        downTarget: metadataFocusNode ?? episodeDownTarget,
         autoPlay: widget.autoPlay,
       ),
       if (_hasMetadata(item)) ...[
         const SizedBox(height: 24),
-        _MetadataSection(viewModel: viewModel),
+        _MetadataSection(
+          viewModel: viewModel,
+          firstItemFocusNode: metadataFocusNode,
+          upTarget: actionButtonsFocusNode,
+          downTarget: episodeDownTarget,
+        ),
       ],
       ..._buildChapterAndFeatureSections(
         context,
         item,
         selectedMediaSourceId: selectedMediaSourceId,
-        prevSectionFocusNode: actionButtonsFocusNode,
+        prevSectionFocusNode: metadataFocusNode ?? actionButtonsFocusNode,
         nextSectionFocusNode: chapterFeatureNextNode,
       ),
       if (nextEpisode != null) ...[
@@ -1836,7 +1858,7 @@ class _DetailContentState extends State<_DetailContent> {
       if (hasCast) ...[
         const SizedBox(height: 32),
         HorizontalScrollSection(
-          title: l10n.castAndCrew,
+          title: l10n.cast,
           titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
             color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
                 ? AppColorScheme.onSurface
@@ -2672,6 +2694,11 @@ class _DetailContentState extends State<_DetailContent> {
     final castFocusNode = viewModel.actors.isNotEmpty
         ? _sectionFocusNode('detailBoxSetCast')
         : null;
+    final metadataFocusNode = _hasMetadata(item) ? _sectionFocusNode('detailBoxSetMetadata') : null;
+    final boxSetDownTarget = moviesFocusNode ??
+        seriesFocusNode ??
+        otherFocusNode ??
+        castFocusNode;
 
     return [
       if (!_hasMetadata(item)) _NavbarFocusPoint(focusNode: firstFocus),
@@ -2682,16 +2709,16 @@ class _DetailContentState extends State<_DetailContent> {
         onSelectedMediaSourceChanged: onSelectedMediaSourceChanged,
         tvPlayFocusNode: actionButtonsFocusNode,
         onRequestFocus: _requestSectionFocus,
-        downTarget: moviesFocusNode ??
-            seriesFocusNode ??
-            otherFocusNode ??
-            castFocusNode,
+        downTarget: metadataFocusNode ?? boxSetDownTarget,
         autoPlay: widget.autoPlay,
       ),
       if (_hasMetadata(item)) ...[
         const SizedBox(height: 24),
         _MetadataSection(
           viewModel: viewModel,
+          firstItemFocusNode: metadataFocusNode,
+          upTarget: actionButtonsFocusNode,
+          downTarget: boxSetDownTarget,
         ),
       ],
       if (movies.isNotEmpty) ...[
@@ -2710,7 +2737,7 @@ class _DetailContentState extends State<_DetailContent> {
             firstItemFocusNode: moviesFocusNode,
             onItemKeyEvent: _buildVerticalRowHandler(
               sourceFocusNode: moviesFocusNode,
-              upTarget: actionButtonsFocusNode,
+              upTarget: metadataFocusNode ?? actionButtonsFocusNode,
               downTarget: seriesFocusNode ?? otherFocusNode ?? castFocusNode,
               itemCount: movies.length,
             ),
@@ -2733,7 +2760,7 @@ class _DetailContentState extends State<_DetailContent> {
             firstItemFocusNode: seriesFocusNode,
             onItemKeyEvent: _buildVerticalRowHandler(
               sourceFocusNode: seriesFocusNode,
-              upTarget: moviesFocusNode ?? actionButtonsFocusNode,
+              upTarget: moviesFocusNode ?? metadataFocusNode ?? actionButtonsFocusNode,
               downTarget: otherFocusNode ?? castFocusNode,
               itemCount: series.length,
             ),
@@ -2756,7 +2783,7 @@ class _DetailContentState extends State<_DetailContent> {
             firstItemFocusNode: otherFocusNode,
             onItemKeyEvent: _buildVerticalRowHandler(
               sourceFocusNode: otherFocusNode,
-              upTarget: seriesFocusNode ?? moviesFocusNode ?? actionButtonsFocusNode,
+              upTarget: seriesFocusNode ?? moviesFocusNode ?? metadataFocusNode ?? actionButtonsFocusNode,
               downTarget: castFocusNode,
               itemCount: other.length,
             ),
@@ -2766,7 +2793,7 @@ class _DetailContentState extends State<_DetailContent> {
       if (viewModel.actors.isNotEmpty) ...[
         const SizedBox(height: 32),
         HorizontalScrollSection(
-          title: l10n.castAndCrew,
+          title: l10n.cast,
           titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
             color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
                 ? AppColorScheme.onSurface
@@ -2784,7 +2811,7 @@ class _DetailContentState extends State<_DetailContent> {
             firstItemFocusNode: castFocusNode,
             onItemKeyEvent: _buildVerticalRowHandler(
               sourceFocusNode: castFocusNode,
-              upTarget: otherFocusNode ?? seriesFocusNode ?? moviesFocusNode ?? actionButtonsFocusNode,
+              upTarget: otherFocusNode ?? seriesFocusNode ?? moviesFocusNode ?? metadataFocusNode ?? actionButtonsFocusNode,
               itemCount: viewModel.actors.length,
             ),
           ),
@@ -4561,7 +4588,9 @@ class _ActionButtonsState extends State<_ActionButtons> {
 
   int _calculateMaxVisibleButtons(BuildContext context) {
     if (PlatformDetection.isTV) {
-      return 7;
+      final desktopScale = _desktopUiScale();
+      final maxTVButtons = (7 / desktopScale).floor();
+      return maxTVButtons > 2 ? maxTVButtons : 2;
     }
     final screenWidth = MediaQuery.sizeOf(context).width;
     final compact = !_useDesktopDetailLayout(context);
@@ -8602,179 +8631,412 @@ class _ChapterListCardState extends State<_ChapterListCard>
   }
 }
 
-class _MetadataSection extends StatelessWidget {
-  final ItemDetailViewModel viewModel;
+class _MetadataItem {
+  final String name;
+  final String? id;
+  final VoidCallback? onTap;
 
-  const _MetadataSection({
-    required this.viewModel,
+  const _MetadataItem({
+    required this.name,
+    this.id,
+    this.onTap,
+  });
+}
+
+class _MetadataGroup {
+  final String title;
+  final List<_MetadataItem> items;
+
+  const _MetadataGroup({
+    required this.title,
+    required this.items,
+  });
+}
+
+class _MetadataChip extends StatefulWidget {
+  final _MetadataItem item;
+  final FocusNode? focusNode;
+  final VoidCallback? onArrowLeft;
+  final VoidCallback? onArrowRight;
+
+  const _MetadataChip({
+    required this.item,
+    this.focusNode,
+    this.onArrowLeft,
+    this.onArrowRight,
   });
 
   @override
+  State<_MetadataChip> createState() => _MetadataChipState();
+}
+
+class _MetadataChipState extends State<_MetadataChip> with FocusStateMixin {
+  @override
   Widget build(BuildContext context) {
-    final item = viewModel.item!;
-    final entries = <MapEntry<String, String>>[];
+    final theme = Theme.of(context);
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+    final focusColor = Color(
+      GetIt.instance<UserPreferences>()
+          .get(UserPreferences.focusColor)
+          .colorValue,
+    );
+
+    return MouseRegion(
+      cursor: widget.item.onTap != null
+          ? SystemMouseCursors.click
+          : SystemMouseCursors.basic,
+      onEnter: (_) => setHovered(true),
+      onExit: (_) => setHovered(false),
+      child: Focus(
+        focusNode: widget.focusNode,
+        onFocusChange: (focused) => setFocused(focused),
+        onKeyEvent: (node, event) {
+          if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+            return KeyEventResult.ignored;
+          }
+          if (isActivateKey(event)) {
+            widget.item.onTap?.call();
+            return KeyEventResult.handled;
+          }
+          if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+            if (widget.onArrowLeft != null) {
+              widget.onArrowLeft!();
+              return KeyEventResult.handled;
+            }
+          }
+          if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+            if (widget.onArrowRight != null) {
+              widget.onArrowRight!();
+              return KeyEventResult.handled;
+            }
+          }
+          return KeyEventResult.ignored;
+        },
+        child: GestureDetector(
+          onTap: widget.item.onTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: showFocusBorder
+                  ? focusColor.withValues(alpha: 0.15)
+                  : Colors.white.withValues(alpha: 0.04),
+              border: Border.all(
+                color: showFocusBorder
+                    ? focusColor
+                    : (isNeon
+                        ? AppColorScheme.accent.withValues(alpha: 0.3)
+                        : Colors.white.withValues(alpha: 0.1)),
+                width: showFocusBorder ? 1.5 : 1.0,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              widget.item.name,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: showFocusBorder
+                    ? (isNeon ? AppColorScheme.onSurface : Colors.white)
+                    : Colors.white.withValues(alpha: 0.85),
+                fontWeight: showFocusBorder ? FontWeight.bold : FontWeight.normal,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MetadataSection extends StatefulWidget {
+  final ItemDetailViewModel viewModel;
+  final FocusNode? firstItemFocusNode;
+  final FocusNode? upTarget;
+  final FocusNode? downTarget;
+
+  const _MetadataSection({
+    required this.viewModel,
+    this.firstItemFocusNode,
+    this.upTarget,
+    this.downTarget,
+  });
+
+  @override
+  State<_MetadataSection> createState() => _MetadataSectionState();
+}
+
+class _MetadataSectionState extends State<_MetadataSection> {
+  final List<FocusNode> _focusNodes = [];
+  List<_MetadataGroup> _groups = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _buildGroupsAndFocusNodes();
+  }
+
+  @override
+  void didUpdateWidget(covariant _MetadataSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.viewModel.item != oldWidget.viewModel.item) {
+      _buildGroupsAndFocusNodes();
+    }
+  }
+
+  void _buildGroupsAndFocusNodes() {
+    for (final node in _focusNodes) {
+      if (node != widget.firstItemFocusNode) {
+        node.dispose();
+      }
+    }
+    _focusNodes.clear();
+
+    final item = widget.viewModel.item!;
     final l10n = AppLocalizations.of(context);
+    final serverId = widget.viewModel.item?.serverId;
+    final newGroups = <_MetadataGroup>[];
 
-    if (viewModel.directors.isNotEmpty) {
-      entries.add(
-        MapEntry(
-          l10n.director,
-          viewModel.directors.map((d) => d['Name'] as String).join(', '),
+    if (widget.viewModel.directors.isNotEmpty) {
+      newGroups.add(
+        _MetadataGroup(
+          title: l10n.director,
+          items: widget.viewModel.directors.map((d) {
+            final name = d['Name'] as String? ?? '';
+            final id = d['Id'] as String?;
+            return _MetadataItem(
+              name: name,
+              id: id,
+              onTap: id != null
+                  ? () => context.push(Destinations.item(id, serverId: serverId))
+                  : null,
+            );
+          }).toList(),
         ),
       );
     }
-    if (viewModel.writers.isNotEmpty) {
-      entries.add(
-        MapEntry(
-          l10n.writers,
-          viewModel.writers.map((w) => w['Name'] as String).join(', '),
+
+    if (widget.viewModel.writers.isNotEmpty) {
+      newGroups.add(
+        _MetadataGroup(
+          title: l10n.writers,
+          items: widget.viewModel.writers.map((w) {
+            final name = w['Name'] as String? ?? '';
+            final id = w['Id'] as String?;
+            return _MetadataItem(
+              name: name,
+              id: id,
+              onTap: id != null
+                  ? () => context.push(Destinations.item(id, serverId: serverId))
+                  : null,
+            );
+          }).toList(),
         ),
       );
     }
+
     if (item.studios.isNotEmpty) {
-      final studioNames = item.studios.map((s) => s['Name'] as String).toList();
-      final display = studioNames.length > 5
-          ? '${studioNames.take(5).join(', ')} ${l10n.studioMoreCount(studioNames.length - 5)}'
-          : studioNames.join(', ');
-      entries.add(MapEntry(l10n.studio, display));
+      newGroups.add(
+        _MetadataGroup(
+          title: l10n.studio,
+          items: item.studios.map((s) {
+            final name = s['Name'] as String? ?? '';
+            final id = s['Id'] as String?;
+            return _MetadataItem(
+              name: name,
+              id: id,
+              onTap: name.isNotEmpty
+                  ? () => context.push(Destinations.searchWith('studio:$name'))
+                  : null,
+            );
+          }).toList(),
+        ),
+      );
     }
 
-    if (entries.isEmpty) return const SizedBox.shrink();
+    _groups = newGroups;
+
+    int index = 0;
+    for (final group in _groups) {
+      for (final _ in group.items) {
+        FocusNode node;
+        if (index == 0 && widget.firstItemFocusNode != null) {
+          node = widget.firstItemFocusNode!;
+        } else {
+          node = FocusNode(debugLabel: 'metadata_chip_$index');
+        }
+        _focusNodes.add(node);
+        index++;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final node in _focusNodes) {
+      if (node != widget.firstItemFocusNode) {
+        node.dispose();
+      }
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_groups.isEmpty) return const SizedBox.shrink();
 
     final isMobile = _isCompact(context);
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
-    final cellPadding = isMobile
-        ? const EdgeInsets.symmetric(horizontal: 12, vertical: 10)
-        : const EdgeInsets.symmetric(horizontal: 16, vertical: 14);
 
-    final mainContent = entries.isEmpty
-        ? const SizedBox.shrink()
-        : Container(
-            decoration: BoxDecoration(
+    // Calculate first FocusNode of each group
+    final List<FocusNode> firstNodesOfGroups = [];
+    int runningIndex = 0;
+    for (final group in _groups) {
+      if (group.items.isNotEmpty && runningIndex < _focusNodes.length) {
+        firstNodesOfGroups.add(_focusNodes[runningIndex]);
+        runningIndex += group.items.length;
+      }
+    }
+
+    return FocusTraversalGroup(
+      child: Container(
+        decoration: BoxDecoration(
+          color: isNeon
+              ? AppColorScheme.background.withValues(alpha: 0.25)
+              : Colors.white.withValues(alpha: 0.03),
+          border: Border.fromBorderSide(
+            ThemeRegistry.active.borders.cardBorder.copyWith(
               color: isNeon
-                  ? AppColorScheme.background.withValues(alpha: 0.25)
-                  : Colors.white.withValues(alpha: 0.03),
-              border: Border.fromBorderSide(
-                ThemeRegistry.active.borders.cardBorder.copyWith(
-                  color: isNeon
-                      ? AppColorScheme.accent.withValues(alpha: 0.95)
-                      : Colors.white.withValues(alpha: 0.06),
-                  width: isNeon ? 1.2 : null,
+                  ? AppColorScheme.accent.withValues(alpha: 0.95)
+                  : Colors.white.withValues(alpha: 0.06),
+              width: isNeon ? 1.2 : null,
+            ),
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: isMobile
+            ? Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _groups.map((group) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            group.title,
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: isNeon
+                                  ? AppColorScheme.accent
+                                  : Colors.white.withValues(alpha: 0.4),
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.0,
+                              fontSize: 10,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: group.items.map((item) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 6),
+                                child: _MetadataChip(item: item),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              )
+            : IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: _groups.asMap().entries.map((e) {
+                    final groupIndex = e.key;
+                    final group = e.value;
+                    return Expanded(
+                      child: Row(
+                        children: [
+                          if (groupIndex > 0)
+                            Container(
+                              width: 1,
+                              color: isNeon
+                                  ? AppColorScheme.accent.withValues(alpha: 0.8)
+                                  : Colors.white.withValues(alpha: 0.08),
+                            ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    group.title,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelSmall
+                                        ?.copyWith(
+                                          color: isNeon
+                                              ? AppColorScheme.accent
+                                              : Colors.white.withValues(alpha: 0.4),
+                                          fontWeight: FontWeight.w600,
+                                          letterSpacing: 1.0,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: group.items.asMap().entries.map((itemEntry) {
+                                      final itemIndexInGroup = itemEntry.key;
+                                      final item = itemEntry.value;
+
+                                      int chipIndex = 0;
+                                      for (int i = 0; i < groupIndex; i++) {
+                                        chipIndex += _groups[i].items.length;
+                                      }
+                                      chipIndex += itemIndexInGroup;
+                                      if (chipIndex >= _focusNodes.length) {
+                                        return Padding(
+                                          padding: const EdgeInsets.only(bottom: 8),
+                                          child: _MetadataChip(item: item),
+                                        );
+                                      }
+                                      final node = _focusNodes[chipIndex];
+                                      final totalGroups = _groups.length;
+
+                                      return Padding(
+                                        padding: const EdgeInsets.only(bottom: 8),
+                                        child: _MetadataChip(
+                                          item: item,
+                                          focusNode: node,
+                                          onArrowLeft: groupIndex == 0
+                                              ? () {} // cap left
+                                              : () => firstNodesOfGroups[groupIndex - 1].requestFocus(),
+                                          onArrowRight: groupIndex == totalGroups - 1
+                                              ? () {} // cap right
+                                              : () => firstNodesOfGroups[groupIndex + 1].requestFocus(),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: isMobile
-                ? Wrap(
-                    children: entries.asMap().entries.map((e) {
-                      final entry = e.value;
-                      return FractionallySizedBox(
-                        widthFactor: entries.length <= 2 ? 1.0 : 0.5,
-                        child: Padding(
-                          padding: cellPadding,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                entry.key,
-                                style: Theme.of(context).textTheme.labelSmall
-                                    ?.copyWith(
-                                      color: isNeon
-                                          ? AppColorScheme.accent
-                                          : Colors.white.withValues(alpha: 0.4),
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 1.0,
-                                      fontSize: 10,
-                                    ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                entry.value,
-                                style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(
-                                      color: isNeon
-                                          ? AppColorScheme.onSurface
-                                          : Colors.white.withValues(alpha: 0.9),
-                                      fontSize: 12,
-                                    ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  )
-                : IntrinsicHeight(
-                    child: Row(
-                      children: [
-                        ...entries.asMap().entries.map((e) {
-                          final index = e.key;
-                          final entry = e.value;
-                          return Expanded(
-                            child: Row(
-                              children: [
-                                if (index > 0)
-                                  Container(
-                                    width: 1,
-                                    color: isNeon
-                                        ? AppColorScheme.accent.withValues(alpha: 0.8)
-                                        : Colors.white.withValues(alpha: 0.08),
-                                  ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 14,
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          entry.key,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelSmall
-                                              ?.copyWith(
-                                                color: isNeon
-                                                    ? AppColorScheme.accent
-                                                    : Colors.white.withValues(
-                                                        alpha: 0.4,
-                                                      ),
-                                                fontWeight: FontWeight.w600,
-                                                letterSpacing: 1.0,
-                                              ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          entry.value,
-                                          style: Theme.of(context).textTheme.bodySmall
-                                              ?.copyWith(
-                                                color: isNeon
-                                                    ? AppColorScheme.onSurface
-                                                    : Colors.white.withValues(
-                                                        alpha: 0.9,
-                                                      ),
-                                              ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                      ],
-                    ),
-                  ),
-          );
-
-    return mainContent;
+      ),
+    );
   }
 }
 
@@ -10013,8 +10275,8 @@ class _FilmographyRow extends StatelessWidget {
     final desktopScale = _desktopUiScale(prefs: prefs);
 
     // Aligned with the Home Screen's scaling logic:
-    final platformScale = PlatformDetection.isTV ? 0.8 : desktopScale;
-    final metadataScale = PlatformDetection.useDesktopUi ? desktopScale : 1.0;
+    final platformScale = PlatformDetection.isTV ? 0.8 * desktopScale : desktopScale;
+    final metadataScale = desktopScale;
     final isRowsV2 =
         prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
     final rowScale = isRowsV2 ? 2.0 : 1.0;
@@ -10118,8 +10380,8 @@ class _SeerrAppearancesRow extends StatelessWidget {
     final desktopScale = _desktopUiScale(prefs: prefs);
 
     // Aligned with the Home Screen's scaling logic:
-    final platformScale = PlatformDetection.isTV ? 0.8 : desktopScale;
-    final metadataScale = PlatformDetection.useDesktopUi ? desktopScale : 1.0;
+    final platformScale = PlatformDetection.isTV ? 0.8 * desktopScale : desktopScale;
+    final metadataScale = desktopScale;
     final isRowsV2 =
         prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
     final rowScale = isRowsV2 ? 2.0 : 1.0;

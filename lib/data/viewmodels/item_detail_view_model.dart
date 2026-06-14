@@ -700,8 +700,18 @@ class ItemDetailViewModel extends ChangeNotifier {
   List<Map<String, dynamic>> get writers =>
       _item?.people.where((p) => p['Type'] == 'Writer').toList() ?? const [];
 
-  List<Map<String, dynamic>> get actors =>
-      _item?.people.where((p) => p['Type'] == 'Actor').toList() ?? const [];
+  List<Map<String, dynamic>> get actors {
+    final list = _item?.people ?? const [];
+    final dirNames = directors.map((d) => d['Name'] as String?).toSet();
+    final writNames = writers.map((w) => w['Name'] as String?).toSet();
+    return list.where((p) {
+      final type = p['Type'] as String?;
+      if (type != 'Actor' && type != 'GuestStar') return false;
+      final name = p['Name'] as String?;
+      if (dirNames.contains(name) || writNames.contains(name)) return false;
+      return true;
+    }).toList();
+  }
 
   List<AggregatedItem> get filmographyMovies =>
       _filmography.where((i) => i.type == 'Movie').toList();

@@ -183,12 +183,9 @@ class _MoonfinAppState extends State<MoonfinApp> {
                   ],
                 );
 
-                if (!PlatformDetection.useDesktopUi) {
-                  if (PlatformDetection.isAppleTV) {
-                    return _TvUiScale(child: overlay);
-                  }
-                  return overlay;
-                }
+                final mainChild = PlatformDetection.isAppleTV
+                    ? _TvUiScale(child: overlay)
+                    : overlay;
 
                 return ListenableBuilder(
                   listenable: _prefs,
@@ -196,10 +193,10 @@ class _MoonfinAppState extends State<MoonfinApp> {
                     final scale =
                         _prefs.get(UserPreferences.desktopUiScale).scaleFactor;
                     return MediaQuery(
-                      data: MediaQuery.of(
-                        context,
-                      ).copyWith(textScaler: TextScaler.linear(scale)),
-                      child: overlay,
+                      data: MediaQuery.of(context).copyWith(
+                        textScaler: TextScaler.linear(scale),
+                      ),
+                      child: mainChild,
                     );
                   },
                 );

@@ -6723,7 +6723,7 @@
   "libraryNameWithServer": "{libraryName} ({serverName})",
   "latestLibraryName": "Latest {libraryName}",
   "discNumber": "Disc {number}",
-  "desktopUiScale": "Desktop UI Scale",
+  "desktopUiScale": "UI Scaling",
   "nextUpDisplay": "Next Up Display",
   "settingsNextUpDisplayDescription": "Extended shows a full card with episode artwork and description. Minimal shows a compact countdown overlay. Disabled hides the prompt entirely.",
   "@discNumber": {
@@ -6735,7 +6735,7 @@
     }
   },
   "@desktopUiScale": {
-    "description": "Setting for desktop UI scale"
+    "description": "Setting for UI scaling"
   },
   "@nextUpDisplay": {
     "description": "Setting for next up behavior"
