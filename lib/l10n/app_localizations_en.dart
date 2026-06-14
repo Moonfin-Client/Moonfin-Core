@@ -1980,7 +1980,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get focusExpansionAnimation => 'Focus Expansion Animation';
 
   @override
-  String get desktopUiScale => 'Desktop UI Scale';
+  String get desktopUiScale => 'UI Scaling';
 
   @override
   String get scaleFocusedCards => 'Scale focused or hovered cards and tiles';
@@ -10147,7 +10147,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get focusExpansionAnimation => 'Focus Expansion Animation';
 
   @override
-  String get desktopUiScale => 'Desktop UI Scale';
+  String get desktopUiScale => 'UI Scaling';
 
   @override
   String get scaleFocusedCards => 'Scale focused or hovered cards and tiles';

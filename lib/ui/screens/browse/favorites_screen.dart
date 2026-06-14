@@ -36,7 +36,6 @@ bool _isCompact(BuildContext context) =>
     MediaQuery.sizeOf(context).width < _kCompactBreakpoint;
 
 double _desktopUiScaleFactor() {
-  if (!PlatformDetection.useDesktopUi) return 1.0;
   return GetIt.instance<UserPreferences>()
       .get(UserPreferences.desktopUiScale)
       .scaleFactor;
@@ -492,9 +491,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
         final hasSubtitles = _vm.gridItems.any(
           (item) => (_cardSubtitle(item)?.isNotEmpty ?? false),
         );
-        final desktopTextScale = PlatformDetection.useDesktopUi
-            ? MediaQuery.textScalerOf(context).scale(1.0)
-            : 1.0;
+        final desktopTextScale = MediaQuery.textScalerOf(context).scale(1.0);
         final textHeight = (hasSubtitles ? 42.0 : 24.0) * desktopTextScale;
         final childAspectRatio = cellWidth / (cellWidth / ar + textHeight);
         final focusColor = Color(

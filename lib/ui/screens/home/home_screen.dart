@@ -2261,12 +2261,12 @@ class _ContentRowsState extends State<_ContentRows>
       rowHeight + (34 * metadataScale);
 
   double _desktopUiScaleFactor() {
-    if (!PlatformDetection.useDesktopUi) return 1.0;
     return widget.prefs.get(UserPreferences.desktopUiScale).scaleFactor;
   }
 
   double _squarePosterSide(PosterSize posterSize) {
-    final platformScale = PlatformDetection.isTV ? 0.8 : _desktopUiScaleFactor();
+    final scaleFactor = _desktopUiScaleFactor();
+    final platformScale = PlatformDetection.isTV ? 0.8 * scaleFactor : scaleFactor;
     return posterSize.portraitHeight.toDouble() * platformScale;
   }
 
@@ -2276,7 +2276,7 @@ class _ContentRowsState extends State<_ContentRows>
     UserPreferences prefs,
   ) {
     final desktopScale = _desktopUiScaleFactor();
-    final metadataScale = PlatformDetection.useDesktopUi ? desktopScale : 1.0;
+    final metadataScale = desktopScale;
     if (row.isLoading) {
       return _libraryRowExtent(220 * metadataScale, metadataScale: metadataScale);
     }
@@ -2293,7 +2293,7 @@ class _ContentRowsState extends State<_ContentRows>
     final rowImageType = isSeerrRowOverride
         ? ImageType.thumb
         : (isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs));
-    final platformScale = PlatformDetection.isTV ? 0.8 : desktopScale;
+    final platformScale = PlatformDetection.isTV ? 0.8 * desktopScale : desktopScale;
     var maxCardHeight = 220.0 * metadataScale;
     if (isRowsV2) {
       final imageHeight = posterSize.portraitHeight.toDouble() * platformScale * 2;
@@ -2505,7 +2505,6 @@ class _ContentRowsState extends State<_ContentRows>
 
     final includeMediaBar = _isMediaBarIncluded();
     final bannerMode = _isBannerMode();
-    final includeBigMediaBar = includeMediaBar && !bannerMode;
     final mediaBarHeight = _mediaBarHeight();
     final carouselPaused =
       widget.isHoverPaused ||
@@ -2814,9 +2813,7 @@ class _ContentRowsState extends State<_ContentRows>
     required List<HomeRow> rows,
   }) {
     final l10n = AppLocalizations.of(context);
-    final metadataScale = PlatformDetection.useDesktopUi
-        ? _desktopUiScaleFactor()
-        : 1.0;
+    final metadataScale = _desktopUiScaleFactor();
     final squarePosterSide = _squarePosterSide(posterSize);
     final rowHeight = squarePosterSide + (56 * metadataScale);
     final actions = <_LiveTvAction>[
@@ -2886,9 +2883,7 @@ class _ContentRowsState extends State<_ContentRows>
     required List<HomeRow> rows,
   }) {
     final l10n = AppLocalizations.of(context);
-    final metadataScale = PlatformDetection.useDesktopUi
-        ? _desktopUiScaleFactor()
-        : 1.0;
+    final metadataScale = _desktopUiScaleFactor();
     final squarePosterSide = _squarePosterSide(posterSize);
     final rowHeight = squarePosterSide + (56 * metadataScale);
     return _buildTitledRow(
@@ -2977,8 +2972,8 @@ class _ContentRowsState extends State<_ContentRows>
         ? ImageType.thumb
         : (isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs));
     final desktopScale = _desktopUiScaleFactor();
-    final metadataScale = PlatformDetection.useDesktopUi ? desktopScale : 1.0;
-    final platformScale = PlatformDetection.isTV ? 0.8 : desktopScale;
+    final metadataScale = desktopScale;
+    final platformScale = PlatformDetection.isTV ? 0.8 * desktopScale : desktopScale;
     final v2ImageHeight = posterSize.portraitHeight.toDouble() * platformScale * 2;
     final v2MetadataHeightBudget = _v2MetadataHeightBudget(prefs);
     const v2PortraitAspect = 2 / 3;

@@ -35,11 +35,9 @@ class _LibraryRowState extends State<LibraryRow> {
     final l10n = AppLocalizations.of(context);
     final hasItems = widget.children.isNotEmpty;
     final showControls = hasItems && PlatformDetection.useDesktopUi;
-    final desktopScale = PlatformDetection.useDesktopUi
-        ? GetIt.instance<UserPreferences>()
-            .get(UserPreferences.desktopUiScale)
-            .scaleFactor
-        : 1.0;
+    final desktopScale = GetIt.instance<UserPreferences>()
+        .get(UserPreferences.desktopUiScale)
+        .scaleFactor;
     final rowHeight = (widget.rowHeight ?? 220) * desktopScale;
     return HorizontalScrollSection(
       title: widget.title,

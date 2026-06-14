@@ -63,18 +63,16 @@ class InfoArea extends StatelessWidget {
     required bool isMobile,
     double desktopScale = 1.0,
   }) {
-    return isMobile ? 184.0 : 212.0 * desktopScale;
+    return (isMobile ? 184.0 : 212.0) * desktopScale;
   }
 
   @override
   Widget build(BuildContext context) {
     final item = this.item;
     final isMobile = PlatformDetection.useMobileUi;
-    final desktopScale = PlatformDetection.useDesktopUi
-        ? GetIt.instance<UserPreferences>()
-              .get(UserPreferences.desktopUiScale)
-              .scaleFactor
-        : 1.0;
+    final desktopScale = GetIt.instance<UserPreferences>()
+          .get(UserPreferences.desktopUiScale)
+          .scaleFactor;
     final fixedHeight = InfoArea.fixedHeight(
       isMobile: isMobile,
       desktopScale: desktopScale,

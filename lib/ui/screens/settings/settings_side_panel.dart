@@ -697,19 +697,18 @@ class _GeneralStyleScreenState extends State<_GeneralStyleScreen> {
                 subtitle: l10n.scaleFocusedCards,
                 icon: Icons.zoom_in,
               ),
-            if (PlatformDetection.useDesktopUi)
-              EnumPreferenceTile<DesktopUiScale>(
-                preference: UserPreferences.desktopUiScale,
-                title: l10n.desktopUiScale,
-                icon: Icons.zoom_out_map,
-                labelOf: (v) => switch (v) {
-                  DesktopUiScale.small => l10n.small,
-                  DesktopUiScale.medium => l10n.medium,
-                  DesktopUiScale.large => l10n.large,
-                  DesktopUiScale.extraLarge => l10n.extraLarge,
-                },
-                onChanged: _pushPersonalizationSync,
-              ),
+            EnumPreferenceTile<DesktopUiScale>(
+              preference: UserPreferences.desktopUiScale,
+              title: l10n.desktopUiScale,
+              icon: Icons.zoom_out_map,
+              labelOf: (v) => switch (v) {
+                DesktopUiScale.small => l10n.small,
+                DesktopUiScale.medium => l10n.medium,
+                DesktopUiScale.large => l10n.large,
+                DesktopUiScale.extraLarge => l10n.extraLarge,
+              },
+              onChanged: _pushPersonalizationSync,
+            ),
             SwitchPreferenceTile(
               preference: UserPreferences.backdropEnabled,
               title: l10n.backgroundBackdrops,

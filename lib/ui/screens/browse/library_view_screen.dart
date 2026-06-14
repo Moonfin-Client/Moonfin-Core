@@ -11,7 +11,6 @@ import '../../../data/services/background_service.dart';
 import '../../../data/services/row_data_source.dart';
 import '../../../data/viewmodels/library_view_view_model.dart';
 import '../../../preference/user_preferences.dart';
-import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/fullscreen_backdrop_switcher.dart';
@@ -76,7 +75,6 @@ class _LibraryViewScreenState extends State<LibraryViewScreen> {
   }
 
   double _desktopUiScaleFactor() {
-    if (!PlatformDetection.useDesktopUi) return 1.0;
     return _prefs.get(UserPreferences.desktopUiScale).scaleFactor;
   }
 
@@ -247,7 +245,7 @@ class _LibraryViewHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scale = PlatformDetection.useDesktopUi ? desktopScale : 1.0;
+    final scale = desktopScale;
     return Padding(
       padding: EdgeInsets.fromLTRB(
         _horizontalPadding * scale,

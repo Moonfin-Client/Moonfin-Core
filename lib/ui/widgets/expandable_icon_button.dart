@@ -128,11 +128,9 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
   Widget build(BuildContext context) {
     final isMobile = PlatformDetection.useMobileUi;
     final isTV = PlatformDetection.isTV;
-    final desktopScale = PlatformDetection.useDesktopUi
-        ? _prefs.get(UserPreferences.desktopUiScale).scaleFactor
-        : 1.0;
-    final btnSize = isMobile ? 40.0 : (isTV ? 44.0 : 56.0 * desktopScale);
-    final iconSize = isMobile ? 22.0 : (isTV ? 24.0 : 30.0 * desktopScale);
+    final desktopScale = _prefs.get(UserPreferences.desktopUiScale).scaleFactor;
+    final btnSize = (isMobile ? 40.0 : (isTV ? 44.0 : 56.0)) * desktopScale;
+    final iconSize = (isMobile ? 22.0 : (isTV ? 24.0 : 30.0)) * desktopScale;
     final focusColor = Color(_prefs.get(UserPreferences.focusColor).colorValue);
 
     final hoverActive = _isHovered && !isTV;

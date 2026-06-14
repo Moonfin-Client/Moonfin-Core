@@ -3,7 +3,6 @@ import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../preference/user_preferences.dart';
-import '../../util/platform_detection.dart';
 import 'bounded_network_image.dart';
 import 'marquee_text.dart';
 import '../../util/focus/dpad_keys.dart';
@@ -54,11 +53,9 @@ class _GenreGridCardState extends State<GenreGridCard> with FocusStateMixin {
         widget.focusColor ?? ThemeRegistry.active.borders.focusBorder.color;
     final showMarquee = hovered || focused;
     final imageUrl = widget.genre.imageUrl ?? widget.genre.backdropUrl;
-    final desktopScale = PlatformDetection.useDesktopUi
-        ? GetIt.instance<UserPreferences>()
-            .get(UserPreferences.desktopUiScale)
-            .scaleFactor
-        : 1.0;
+    final desktopScale = GetIt.instance<UserPreferences>()
+        .get(UserPreferences.desktopUiScale)
+        .scaleFactor;
     final titleStyle = TextStyle(
       fontSize: (widget.centerTitle ? 15 : 16) * desktopScale,
       fontWeight: FontWeight.w600,
