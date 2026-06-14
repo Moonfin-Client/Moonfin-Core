@@ -556,6 +556,7 @@ class _ContentRowsState extends State<_ContentRows>
   HomeRowsStyle? _cachedExtentHomeRowsStyle;
   bool? _cachedExtentShowInfoOverlay;
   NavbarPosition? _cachedExtentNavbarPosition;
+  double? _cachedExtentViewportHeight;
   int _cachedExtentPrefsVersion = -1;
   List<double>? _cachedRowExtents;
   int _layoutPrefsVersion = 0;
