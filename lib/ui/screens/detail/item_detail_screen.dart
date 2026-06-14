@@ -1397,8 +1397,6 @@ class _DetailContentState extends State<_DetailContent> {
         _MetadataSection(
           viewModel: viewModel,
           firstItemFocusNode: metadataFocusNode,
-          upTarget: actionButtonsFocusNode,
-          downTarget: movieDownTarget,
         ),
       ],
       ..._buildChapterAndFeatureSections(
@@ -1537,8 +1535,6 @@ class _DetailContentState extends State<_DetailContent> {
         _MetadataSection(
           viewModel: viewModel,
           firstItemFocusNode: metadataFocusNode,
-          upTarget: actionButtonsFocusNode,
-          downTarget: seriesDownTarget,
         ),
       ],
       if (hasNextUp) ...[
@@ -1775,8 +1771,6 @@ class _DetailContentState extends State<_DetailContent> {
         _MetadataSection(
           viewModel: viewModel,
           firstItemFocusNode: metadataFocusNode,
-          upTarget: actionButtonsFocusNode,
-          downTarget: episodeDownTarget,
         ),
       ],
       ..._buildChapterAndFeatureSections(
@@ -2731,8 +2725,6 @@ class _DetailContentState extends State<_DetailContent> {
         _MetadataSection(
           viewModel: viewModel,
           firstItemFocusNode: metadataFocusNode,
-          upTarget: actionButtonsFocusNode,
-          downTarget: boxSetDownTarget,
         ),
       ],
       if (movies.isNotEmpty) ...[
