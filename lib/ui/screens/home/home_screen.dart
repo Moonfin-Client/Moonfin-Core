@@ -660,6 +660,7 @@ class _ContentRowsState extends State<_ContentRows>
       ? true
       : onMediaBar ||
           _holdMediaBarWhileSidebarFocused ||
+          (_verticalNavInFlight && _mediaBarVisible) ||
           (!onSidebar && _activeFocusedRowIndex == null);
     final chromeChanged = _chromeFocusActive != chromeFocusActive ||
         _chromeAudioActive != chromeAudioActive;
@@ -1751,6 +1752,7 @@ class _ContentRowsState extends State<_ContentRows>
         setState(() {
           _infoRevealed = false;
           _mediaBarVisible = true;
+          _activeFocusedRowIndex = null;
         });
       }
       if (!_isMediaBarIncluded()) {
@@ -1788,6 +1790,13 @@ class _ContentRowsState extends State<_ContentRows>
         onTimeout: () {},
       );
       _mediaBarFocusNode.removeListener(focusListener);
+
+      if (mounted && !_mediaBarFocusNode.hasFocus) {
+        if (!_mediaBarVisible) {
+          setState(() => _mediaBarVisible = true);
+        }
+        _requestMediaBarFocus(force: true);
+      }
     } finally {
       _verticalNavInFlight = false;
     }
@@ -2162,7 +2171,7 @@ class _ContentRowsState extends State<_ContentRows>
       }
       final indexChanged = _activeFocusedRowIndex != rowIndex;
       _activeFocusedRowIndex = rowIndex;
-      if (!isMobileUi && _mediaBarVisible) {
+      if (!isMobileUi && _mediaBarVisible && !_verticalNavInFlight) {
         setState(() => _mediaBarVisible = false);
       } else if (indexChanged && PlatformDetection.isTV) {
         setState(() {});
