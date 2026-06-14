@@ -2825,9 +2825,9 @@
   "@focusExpansionAnimation": {
     "description": "Setting for focus expansion animation"
   },
-  "desktopUiScale": "Desktop UI Scale",
+  "desktopUiScale": "UI Scaling",
   "@desktopUiScale": {
-    "description": "Setting for desktop UI scale"
+    "description": "Setting for UI scaling"
   },
   "scaleFocusedCards": "Scale focused or hovered cards and tiles",
   "@scaleFocusedCards": {

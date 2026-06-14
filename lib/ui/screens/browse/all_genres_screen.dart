@@ -288,7 +288,6 @@ class _AllGenresScreenState extends State<AllGenresScreen> {
   }
 
   double _desktopUiScaleFactor() {
-    if (!PlatformDetection.useDesktopUi) return 1.0;
     return _prefs.get(UserPreferences.desktopUiScale).scaleFactor;
   }
 

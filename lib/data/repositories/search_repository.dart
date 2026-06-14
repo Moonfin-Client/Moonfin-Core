@@ -19,6 +19,7 @@ class SearchRepository {
   }) async {
     final trimmed = query.trim();
     if (trimmed.isEmpty) return const [];
+    if (trimmed.toLowerCase().startsWith('studio:')) return const [];
     final normalizedQuery = trimmed.toLowerCase();
 
     final response = await _client.itemsApi.getItems(
@@ -54,13 +55,18 @@ class SearchRepository {
     String? parentId,
     int? limit,
   }) async {
+    final isStudioQuery = query.toLowerCase().startsWith('studio:');
+    final searchTerm = isStudioQuery ? null : query;
+    final studios = isStudioQuery ? [query.substring('studio:'.length)] : null;
+
     final response = await _client.itemsApi.getItems(
-      searchTerm: query,
+      searchTerm: searchTerm,
       parentId: parentId,
       includeItemTypes: includeItemTypes,
       limit: limit ?? 24,
       recursive: true,
       fields: _searchFields,
+      studios: studios,
     );
 
     final items = response['Items'] as List? ?? [];
