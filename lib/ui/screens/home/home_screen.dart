@@ -2430,6 +2430,7 @@ class _ContentRowsState extends State<_ContentRows>
     _cachedExtentHomeRowsStyle = homeRowsStyle;
     _cachedExtentShowInfoOverlay = showInfoOverlay;
     _cachedExtentNavbarPosition = navbarPosition;
+    _cachedExtentViewportHeight = viewportHeight;
     _cachedExtentPrefsVersion = _layoutPrefsVersion;
     _cachedRowExtents = extents;
     return extents;
