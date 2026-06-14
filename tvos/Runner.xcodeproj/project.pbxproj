@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,16 +12,16 @@
 		19D9E6BE3FA8EE28B6403EF0 /* MoonfinTvosStubs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801CE2E73F4BC2A1B34A231A /* MoonfinTvosStubs.swift */; };
 		25FF46D745C1E582C7E57181 /* MPVKit in Frameworks */ = {isa = PBXBuildFile; productRef = BB0919487984CFCD5A613D23 /* MPVKit */; };
 		2B65D00E1B996987D1068274 /* VTDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C792C58696D522266D9D1EBB /* VTDecoder.swift */; };
-		337D6DF5382996FA5E5A23CC /* MoonfinTopShelf.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AFC8523FE7AAB0D9378753BF /* MoonfinTopShelf.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, CodeSignOnCopy, ); }; };
+		337D6DF5382996FA5E5A23CC /* MoonfinTopShelf.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AFC8523FE7AAB0D9378753BF /* MoonfinTopShelf.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		392FA88E3B70132920CBF0FF /* MpvPlayerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89E585754437193C3D9997B9 /* MpvPlayerWrapper.swift */; };
 		3B3967161E833CAB004F5970 /* Flutter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAB004F5970 /* Flutter.framework */; };
 		3E667EB6FA1A725FA86597C7 /* DisplayCriteriaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99109D0268859C9931C2BB69 /* DisplayCriteriaManager.swift */; };
 		4AFB7564397FC850A08E65BA /* AudioRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF6254FE139BE2ABD845050 /* AudioRenderer.swift */; };
 		4E5A5870850C50C8C2179B09 /* AudioUnitInterpose.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B21837790FBF0F01F83A222 /* AudioUnitInterpose.c */; };
 		5BA7845828F41526E1B65D24 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E49740A9B3056886C7389DA /* Pods_Runner.framework */; };
+		5CE155E72FDE599A002FEC36 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CE155E62FDE599A002FEC36 /* AVKit.framework */; };
 		6BDB0CA2F17384360FC7A86A /* NativePlayerWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BB983BF44E10FDD7C1C6A86 /* NativePlayerWrapper.swift */; };
 		6E8429C73DFB8688BD40C60F /* AppleTvSystemChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D05FC70CE4F8BD2EC3962C /* AppleTvSystemChannel.swift */; };
-		AD10AD10AD10AD10AD100001 /* AppleTvAudioChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD10AD10AD10AD10AD100002 /* AppleTvAudioChannel.swift */; };
 		7BC8A8140C07EF63D219CAE4 /* SubtitleDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D8FB1F102374E32454EA3D4 /* SubtitleDecoder.swift */; };
 		8557BDEED1364C160FDCCA78 /* FFDemuxer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2C5316F2396D410BF8F85E /* FFDemuxer.swift */; };
 		86EBDA29EC9F3F8B48EC6A25 /* AppleTvPreviewChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B3D4A2E4C583DF7B8CAE4BA /* AppleTvPreviewChannel.swift */; };
@@ -34,6 +34,7 @@
 		9DAC7F059A7480839BA11950 /* SubtitleOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8241334D38FB25BD2E009065 /* SubtitleOverlay.swift */; };
 		9F8983DDEF9A4015C052340A /* PlaybackSurfaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3890B80B269CACDD79E803ED /* PlaybackSurfaceView.swift */; };
 		A0A9A43E975A45351F5BAC7A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AA2EEAB62F9513C16D8925F /* Foundation.framework */; };
+		AD10AD10AD10AD10AD100001 /* AppleTvAudioChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD10AD10AD10AD10AD100002 /* AppleTvAudioChannel.swift */; };
 		C557DEB3826898C325D08A5A /* AppleTvVideoChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C7E472F4F533204C68EA04 /* AppleTvVideoChannel.swift */; };
 		D806D8D63D0DFDE94D61895A /* TVServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 69C2A2281BE7FC2256E62A2C /* TVServices.framework */; };
 		DC8916296F406B350E0E7238 /* ServiceProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEF4B8C13F871646DA3AA02 /* ServiceProvider.swift */; };
@@ -83,13 +84,14 @@
 		1E49740A9B3056886C7389DA /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1EE89F1EA89993C2ABEC53B7 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		262ACA82479C66EBA778DB00 /* Runner.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
-		2B21837790FBF0F01F83A222 /* AudioUnitInterpose.c */ = {isa = PBXFileReference; includeInIndex = 1; path = AudioUnitInterpose.c; sourceTree = "<group>"; };
+		2B21837790FBF0F01F83A222 /* AudioUnitInterpose.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = AudioUnitInterpose.c; sourceTree = "<group>"; };
 		2D0DB225C5FD5F802D648CC0 /* TopShelfChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TopShelfChannel.swift; sourceTree = "<group>"; };
 		3890B80B269CACDD79E803ED /* PlaybackSurfaceView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlaybackSurfaceView.swift; sourceTree = "<group>"; };
 		3B3967151E833CAB004F5970 /* Flutter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Flutter.framework; path = Flutter/Flutter.framework; sourceTree = "<group>"; };
 		42C7E472F4F533204C68EA04 /* AppleTvVideoChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvVideoChannel.swift; sourceTree = "<group>"; };
 		4AA2EEAB62F9513C16D8925F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		5B3D4A2E4C583DF7B8CAE4BA /* AppleTvPreviewChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvPreviewChannel.swift; sourceTree = "<group>"; };
+		5CE155E62FDE599A002FEC36 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		69C2A2281BE7FC2256E62A2C /* TVServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = TVServices.framework; path = System/Library/Frameworks/TVServices.framework; sourceTree = SDKROOT; };
 		7159A7791642FD80F3643C71 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
@@ -109,10 +111,10 @@
 		99109D0268859C9931C2BB69 /* DisplayCriteriaManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DisplayCriteriaManager.swift; sourceTree = "<group>"; };
 		9D8FB1F102374E32454EA3D4 /* SubtitleDecoder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SubtitleDecoder.swift; sourceTree = "<group>"; };
 		A0D05FC70CE4F8BD2EC3962C /* AppleTvSystemChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvSystemChannel.swift; sourceTree = "<group>"; };
-		AD10AD10AD10AD10AD100002 /* AppleTvAudioChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvAudioChannel.swift; sourceTree = "<group>"; };
 		AAA000000000000000000003 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		ABB61EC1F545441192DA6CA2 /* NativeVideoSurface.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NativeVideoSurface.swift; sourceTree = "<group>"; };
 		ACEF4B8C13F871646DA3AA02 /* ServiceProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ServiceProvider.swift; sourceTree = "<group>"; };
+		AD10AD10AD10AD10AD100002 /* AppleTvAudioChannel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleTvAudioChannel.swift; sourceTree = "<group>"; };
 		AFC8523FE7AAB0D9378753BF /* MoonfinTopShelf.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MoonfinTopShelf.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C792C58696D522266D9D1EBB /* VTDecoder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VTDecoder.swift; sourceTree = "<group>"; };
 		CA2C5316F2396D410BF8F85E /* FFDemuxer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FFDemuxer.swift; sourceTree = "<group>"; };
@@ -136,6 +138,7 @@
 			files = (
 				3B3967161E833CAB004F5970 /* Flutter.framework in Frameworks */,
 				5BA7845828F41526E1B65D24 /* Pods_Runner.framework in Frameworks */,
+				5CE155E72FDE599A002FEC36 /* AVKit.framework in Frameworks */,
 				25FF46D745C1E582C7E57181 /* MPVKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -163,7 +166,6 @@
 				8241334D38FB25BD2E009065 /* SubtitleOverlay.swift */,
 				99109D0268859C9931C2BB69 /* DisplayCriteriaManager.swift */,
 			);
-			name = Native;
 			path = Native;
 			sourceTree = "<group>";
 		};
@@ -174,7 +176,6 @@
 				06981437AF8387C9BD61CC96 /* Pods-Runner.release.xcconfig */,
 				1EE89F1EA89993C2ABEC53B7 /* Pods-Runner.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -248,6 +249,7 @@
 		97C146F01CF9000082B4168F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5CE155E62FDE599A002FEC36 /* AVKit.framework */,
 				3B3967151E833CAB004F5970 /* Flutter.framework */,
 				1E49740A9B3056886C7389DA /* Pods_Runner.framework */,
 				20EBA61DB96FDD7390F82AD5 /* tvOS */,
@@ -263,7 +265,6 @@
 				912CE3E99D0758A55751A1AC /* Info.plist */,
 				EC66562038A8BA35AC8B1733 /* MoonfinTopShelf.entitlements */,
 			);
-			name = MoonfinTopShelf;
 			path = MoonfinTopShelf;
 			sourceTree = "<group>";
 		};
@@ -437,9 +438,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

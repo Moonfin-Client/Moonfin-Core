@@ -1979,7 +1979,7 @@ private final class InfoPanelViewController: UIViewController, UITableViewDataSo
                 equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 48),
             panel.bottomAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -48),
-            panel.widthAnchor.constraint(equalToConstant: 720),
+            panel.widthAnchor.constraint(equalToConstant: 1240),
 
             title.topAnchor.constraint(equalTo: content.topAnchor, constant: 28),
             title.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 36),
@@ -1999,7 +1999,7 @@ private final class InfoPanelViewController: UIViewController, UITableViewDataSo
     func numberOfSections(in tableView: UITableView) -> Int { sections.count }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        sections[section].rows.count
+        (sections[section].rows.count + 1) / 2
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int)
@@ -2030,8 +2030,16 @@ private final class InfoPanelViewController: UIViewController, UITableViewDataSo
     {
         let cell =
             tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! InfoCell
-        let row = sections[indexPath.section].rows[indexPath.row]
-        cell.configure(label: row.label, value: row.value)
+        let rows = sections[indexPath.section].rows
+        let leftIndex = indexPath.row * 2
+        let rightIndex = leftIndex + 1
+        let left = rows[leftIndex]
+        let right = rightIndex < rows.count ? rows[rightIndex] : nil
+        cell.configure(
+            leftLabel: left.label,
+            leftValue: left.value,
+            rightLabel: right?.label,
+            rightValue: right?.value)
         return cell
     }
 
@@ -2045,10 +2053,31 @@ private final class InfoPanelViewController: UIViewController, UITableViewDataSo
 }
 
 private final class InfoCell: UITableViewCell {
-    private let nameLabel = UILabel()
-    private let valueLabel = UILabel()
+    private let leftName = UILabel()
+    private let leftValue = UILabel()
+    private let rightName = UILabel()
+    private let rightValue = UILabel()
 
     private let highlight = UIView()
+
+    private static func makeNameLabel() -> UILabel {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 20, weight: .regular)
+        label.textColor = UIColor(white: 1, alpha: 0.55)
+        label.numberOfLines = 0
+        return label
+    }
+
+    private static func makeValueLabel() -> UILabel {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 20, weight: .medium)
+        label.textColor = .white
+        label.numberOfLines = 1
+        label.lineBreakMode = .byTruncatingTail
+        return label
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -2061,18 +2090,11 @@ private final class InfoCell: UITableViewCell {
         highlight.layer.cornerRadius = 10
         contentView.addSubview(highlight)
 
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.font = .systemFont(ofSize: 20, weight: .regular)
-        nameLabel.textColor = UIColor(white: 1, alpha: 0.55)
-        nameLabel.numberOfLines = 0
-        contentView.addSubview(nameLabel)
+        for label in [leftName, leftValue, rightName, rightValue] {
+            contentView.addSubview(label)
+        }
 
-        valueLabel.translatesAutoresizingMaskIntoConstraints = false
-        valueLabel.font = .systemFont(ofSize: 20, weight: .medium)
-        valueLabel.textColor = .white
-        valueLabel.numberOfLines = 1
-        valueLabel.lineBreakMode = .byTruncatingTail
-        contentView.addSubview(valueLabel)
+        let divider = contentView.centerXAnchor
 
         NSLayoutConstraint.activate([
             highlight.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
@@ -2080,19 +2102,26 @@ private final class InfoCell: UITableViewCell {
             highlight.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 2),
             highlight.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -2),
 
-            nameLabel.leadingAnchor.constraint(
+            leftName.leadingAnchor.constraint(
                 equalTo: contentView.leadingAnchor, constant: 16),
-            nameLabel.topAnchor.constraint(
-                equalTo: contentView.topAnchor, constant: 9),
-            nameLabel.bottomAnchor.constraint(
-                equalTo: contentView.bottomAnchor, constant: -9),
-            nameLabel.widthAnchor.constraint(equalToConstant: 240),
+            leftName.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 9),
+            leftName.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -9),
+            leftName.widthAnchor.constraint(equalToConstant: 190),
 
-            valueLabel.leadingAnchor.constraint(
-                equalTo: nameLabel.trailingAnchor, constant: 20),
-            valueLabel.trailingAnchor.constraint(
+            leftValue.leadingAnchor.constraint(
+                equalTo: leftName.trailingAnchor, constant: 16),
+            leftValue.trailingAnchor.constraint(equalTo: divider, constant: -16),
+            leftValue.centerYAnchor.constraint(equalTo: leftName.centerYAnchor),
+
+            rightName.leadingAnchor.constraint(equalTo: divider, constant: 16),
+            rightName.centerYAnchor.constraint(equalTo: leftName.centerYAnchor),
+            rightName.widthAnchor.constraint(equalToConstant: 190),
+
+            rightValue.leadingAnchor.constraint(
+                equalTo: rightName.trailingAnchor, constant: 16),
+            rightValue.trailingAnchor.constraint(
                 equalTo: contentView.trailingAnchor, constant: -16),
-            valueLabel.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
+            rightValue.centerYAnchor.constraint(equalTo: leftName.centerYAnchor),
         ])
     }
 
@@ -2100,9 +2129,16 @@ private final class InfoCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(label: String, value: String) {
-        nameLabel.text = label
-        valueLabel.text = value
+    func configure(
+        leftLabel: String, leftValue: String, rightLabel: String?, rightValue: String?
+    ) {
+        leftName.text = leftLabel
+        self.leftValue.text = leftValue
+        let hasRight = rightLabel != nil
+        rightName.text = rightLabel
+        self.rightValue.text = rightValue
+        rightName.isHidden = !hasRight
+        self.rightValue.isHidden = !hasRight
     }
 
     override func didUpdateFocus(
