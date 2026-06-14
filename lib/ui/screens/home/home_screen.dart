@@ -2406,6 +2406,7 @@ class _ContentRowsState extends State<_ContentRows>
     final homeRowsStyle = prefs.get(UserPreferences.homeRowsStyle);
     final showInfoOverlay = prefs.get(UserPreferences.homeRowInfoOverlay);
     final navbarPosition = prefs.get(UserPreferences.navbarPosition);
+    final viewportHeight = MediaQuery.sizeOf(context).height;
 
     if (_cachedRowExtents != null &&
         identical(_cachedExtentRows, rows) &&
