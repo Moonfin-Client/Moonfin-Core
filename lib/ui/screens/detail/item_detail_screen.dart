@@ -8793,7 +8793,6 @@ class _MetadataSection extends StatefulWidget {
   final ItemDetailViewModel viewModel;
   final FocusNode? firstItemFocusNode;
   final FocusNode? upTarget;
-  final FocusNode? downTarget;
 
   const _MetadataSection({
     required this.viewModel,
