@@ -28,7 +28,6 @@ String playbackMethodLabel({
       .toList(growable: false);
   final isRemux =
       playMethod == StreamPlayMethod.transcode &&
-      lowerReasons.isNotEmpty &&
       !lowerReasons.any(_videoReEncodeReasons.contains);
 
   if (playMethod != null) {

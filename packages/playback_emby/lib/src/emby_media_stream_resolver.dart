@@ -22,9 +22,39 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
   }) async {
     final itemId = MediaStreamResolver.extractItemId(mediaItem);
 
+    String? resolvedMediaSourceId = mediaSourceId;
+    if (mediaSourceId != null && mediaSourceId.isNotEmpty) {
+      try {
+        final dynamic item = mediaItem;
+        final List<dynamic>? staticSources = item.mediaSources as List<dynamic>?;
+        if (staticSources != null && staticSources.isNotEmpty) {
+          final staticIds = staticSources
+              .map((s) => (s is Map ? (s['Id'] ?? s['id']) : s.id).toString())
+              .toSet();
+          if (!staticIds.contains(mediaSourceId)) {
+            resolvedMediaSourceId = staticIds.first;
+          }
+        }
+      } catch (_) {
+        try {
+          if (mediaItem is Map) {
+            final List<dynamic>? staticSources = mediaItem['MediaSources'] as List<dynamic>?;
+            if (staticSources != null && staticSources.isNotEmpty) {
+              final staticIds = staticSources
+                  .map((s) => (s is Map ? (s['Id'] ?? s['id']) : s['id']).toString())
+                  .toSet();
+              if (!staticIds.contains(mediaSourceId)) {
+                resolvedMediaSourceId = staticIds.first;
+              }
+            }
+          }
+        } catch (_) {}
+      }
+    }
+
     final request = PlaybackInfoRequest(
       itemId: itemId,
-      mediaSourceId: mediaSourceId,
+      mediaSourceId: resolvedMediaSourceId,
       deviceProfile: deviceProfile,
       maxStreamingBitrate: maxStreamingBitrate,
       audioStreamIndex: audioStreamIndex,
@@ -50,7 +80,7 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
       throw Exception('No media sources available for item $itemId');
     }
 
-    final source = _selectBestSource(info.mediaSources, preferredId: mediaSourceId);
+    final source = _selectBestSource(info.mediaSources, preferredId: resolvedMediaSourceId);
     var (url, playMethod) = _resolveStreamUrl(
       itemId,
       source,

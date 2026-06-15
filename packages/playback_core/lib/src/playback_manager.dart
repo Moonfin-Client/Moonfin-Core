@@ -1434,14 +1434,7 @@ class PlaybackManager implements AudioOwnable {
       }
     }
 
-    if (!_isOfflinePlayback &&
-        !(_backend?.supportsRuntimeTrackSelection ?? true)) {
-      await _reResolveAtCurrentPosition();
-      return;
-    }
-
-    if (_currentResolution?.playMethod == StreamPlayMethod.directPlay ||
-        _isOfflinePlayback) {
+    if (_isOfflinePlayback) {
       final mpvId = _mpvTrackIdForStream(streamIndex, 'Audio');
       if (mpvId != null) {
         await _backend?.setAudioTrack(mpvId);
