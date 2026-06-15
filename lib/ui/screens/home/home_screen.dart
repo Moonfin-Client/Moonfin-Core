@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:flutter/gestures.dart';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -589,6 +591,7 @@ class _ContentRowsState extends State<_ContentRows>
   bool _suppressNextRowPreviewFromMediaBar = false;
   bool _forceRevealOnNextRowFocusFromMediaBar = false;
   DateTime? _lastScrollTime;
+  DateTime? _lastMouseWheelTime;
   DateTime? _lastVerticalNavAt;
   bool _verticalNavInFlight = false;
   bool _chromeFocusActive = false;
@@ -2230,13 +2233,19 @@ class _ContentRowsState extends State<_ContentRows>
       _isActivelyScrolling = true;
       if (mounted) setState(() {});
     }
+    final isMouseScroll = _lastMouseWheelTime != null &&
+        DateTime.now().difference(_lastMouseWheelTime!).inMilliseconds < 100;
+
     _scrollIdleTimer?.cancel();
-    _scrollIdleTimer = Timer(const Duration(milliseconds: 250), () {
-      if (!mounted) return;
-      _isActivelyScrolling = false;
-      _snapToNearestRow();
-      setState(() {});
-    });
+    _scrollIdleTimer = Timer(
+      Duration(milliseconds: isMouseScroll ? 1000 : 250),
+      () {
+        if (!mounted) return;
+        _isActivelyScrolling = false;
+        _snapToNearestRow();
+        setState(() {});
+      },
+    );
     if (_activePreviewKey != null) {
       final scrollDelta = (offset - _previewStartScrollOffset).abs();
       if (scrollDelta > _previewScrollThreshold) {
@@ -2731,6 +2740,11 @@ class _ContentRowsState extends State<_ContentRows>
     return Listener(
       behavior: HitTestBehavior.translucent,
       onPointerDown: (_) => _markUserGesture(),
+      onPointerSignal: (pointerSignal) {
+        if (pointerSignal is PointerScrollEvent) {
+          _lastMouseWheelTime = DateTime.now();
+        }
+      },
       child: Stack(
         children: [
         Positioned.fill(
