@@ -219,6 +219,15 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         _lastFocusedBackdropItemId = null;
         _backgroundService.setBackground(item, context: BlurContext.details);
         _backdropUrl = _backgroundService.currentUrl;
+
+        if (item.mediaSources.isNotEmpty) {
+          _selectedMediaSourceId = item.mediaSources.first['Id'] as String?;
+        } else {
+          _selectedMediaSourceId = null;
+        }
+
+        _viewModel.selectedAudioIndex = null;
+        _viewModel.selectedSubtitleIndex = null;
       }
       if (!_themeMusicStarted) {
         _themeMusicStarted = true;
@@ -5983,6 +5992,8 @@ class _ActionButtonsState extends State<_ActionButtons> {
               startPosition: startPosition,
               audioStreamIndex: audioStreamIndex,
               subtitleStreamIndex: subtitleStreamIndex,
+              audioSelectionExplicit: viewModel.selectedAudioIndex != null,
+              subtitleSelectionExplicit: viewModel.selectedSubtitleIndex != null,
               enableDirectPlay: directAllowed,
               enableDirectStream: directAllowed,
             );
@@ -6015,6 +6026,8 @@ class _ActionButtonsState extends State<_ActionButtons> {
               startPosition: startPosition,
               audioStreamIndex: audioStreamIndex,
               subtitleStreamIndex: subtitleStreamIndex,
+              audioSelectionExplicit: viewModel.selectedAudioIndex != null,
+              subtitleSelectionExplicit: viewModel.selectedSubtitleIndex != null,
               enableDirectPlay: directAllowed,
               enableDirectStream: directAllowed,
             );
@@ -6070,6 +6083,8 @@ class _ActionButtonsState extends State<_ActionButtons> {
                 startPosition: startPosition,
                 audioStreamIndex: audioStreamIndex,
                 subtitleStreamIndex: subtitleStreamIndex,
+                audioSelectionExplicit: viewModel.selectedAudioIndex != null,
+                subtitleSelectionExplicit: viewModel.selectedSubtitleIndex != null,
                 mediaSourceId: widget.selectedMediaSourceId,
                 enableDirectPlay: directAllowed,
                 enableDirectStream: directAllowed,
@@ -6132,6 +6147,8 @@ class _ActionButtonsState extends State<_ActionButtons> {
               startPosition: startPosition,
               audioStreamIndex: audioStreamIndex,
               subtitleStreamIndex: subtitleStreamIndex,
+              audioSelectionExplicit: viewModel.selectedAudioIndex != null,
+              subtitleSelectionExplicit: viewModel.selectedSubtitleIndex != null,
               enableDirectPlay: directAllowed,
               enableDirectStream: directAllowed,
             );
@@ -6176,6 +6193,10 @@ class _ActionButtonsState extends State<_ActionButtons> {
               subtitleStreamIndex: applyMainItemStreamOverrides
                   ? subtitleStreamIndex
                   : null,
+              audioSelectionExplicit: applyMainItemStreamOverrides &&
+                  viewModel.selectedAudioIndex != null,
+              subtitleSelectionExplicit: applyMainItemStreamOverrides &&
+                  viewModel.selectedSubtitleIndex != null,
               mediaSourceId: applyMainItemStreamOverrides
                   ? selectedMediaSourceId
                   : null,
@@ -6188,6 +6209,8 @@ class _ActionButtonsState extends State<_ActionButtons> {
                 audioStreamIndex: audioStreamIndex,
                 subtitleStreamIndex: subtitleStreamIndex,
                 mediaSourceId: selectedMediaSourceId,
+                audioSelectionExplicit: viewModel.selectedAudioIndex != null,
+                subtitleSelectionExplicit: viewModel.selectedSubtitleIndex != null,
               );
             }
             await playItemsFuture;
