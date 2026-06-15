@@ -1156,7 +1156,7 @@ class _IntegrationsScreen extends StatefulWidget {
 class _IntegrationsScreenState extends State<_IntegrationsScreen> {
   final _integrationsScope = FocusScopeNode(
     debugLabel: 'IntegrationsSettingsScope',
-    traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
+    traversalEdgeBehavior: TraversalEdgeBehavior.stop,
   );
 
   @override
@@ -1244,7 +1244,7 @@ class _PluginScreen extends StatefulWidget {
 class _PluginScreenState extends State<_PluginScreen> {
   final _pluginScope = FocusScopeNode(
     debugLabel: 'PluginSettingsScope',
-    traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
+    traversalEdgeBehavior: TraversalEdgeBehavior.stop,
   );
   final _scrollController = ScrollController();
   final _refreshFocusNode = FocusNode(debugLabel: 'PluginRefreshButton');
@@ -1376,7 +1376,7 @@ class _MetadataRatingsScreen extends StatefulWidget {
 class _MetadataRatingsScreenState extends State<_MetadataRatingsScreen> {
   final _metadataScope = FocusScopeNode(
     debugLabel: 'MetadataRatingsSettingsScope',
-    traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
+    traversalEdgeBehavior: TraversalEdgeBehavior.stop,
   );
   final _additionalRatingsFocusNode = FocusNode(debugLabel: 'additional_ratings');
 
@@ -1464,7 +1464,7 @@ class _OfflineDownloadsScreen extends StatefulWidget {
 class _OfflineDownloadsScreenState extends State<_OfflineDownloadsScreen> {
   final _offlineScope = FocusScopeNode(
     debugLabel: 'OfflineDownloadsSettingsScope',
-    traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
+    traversalEdgeBehavior: TraversalEdgeBehavior.stop,
   );
 
   @override
@@ -2986,7 +2986,7 @@ class _AdvancedOptionsScreen extends StatefulWidget {
 class _AdvancedOptionsScreenState extends State<_AdvancedOptionsScreen> {
   final _advancedScope = FocusScopeNode(
     debugLabel: 'AdvancedOptionsSettingsScope',
-    traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
+    traversalEdgeBehavior: TraversalEdgeBehavior.stop,
   );
 
   @override

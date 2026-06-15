@@ -92,7 +92,7 @@ class _SettingsNavigatorState extends State<_SettingsNavigator> {
   final _navKey = GlobalKey<NavigatorState>();
   final _trapScope = FocusScopeNode(
     debugLabel: 'SettingsPanelTrap',
-    traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
+    traversalEdgeBehavior: TraversalEdgeBehavior.stop,
   );
   bool _rootDismissInProgress = false;
 
