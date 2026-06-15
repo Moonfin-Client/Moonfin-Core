@@ -1,7 +1,7 @@
-import '../preference/preference_constants.dart';
+
 import '../preference/user_preferences.dart';
 import '../util/platform_detection.dart';
-import 'audio_capability_profile.dart';
+
 import 'device_profile_builder.dart';
 import 'known_defects.dart';
 
@@ -13,11 +13,7 @@ Map<String, dynamic> buildHtmlVideoBackendDeviceProfile(
   final maxResolution = prefs.get(UserPreferences.maxVideoResolution);
   final audioOutputMode = prefs.resolveAudioOutputMode();
   final audioFallbackCodec = prefs.resolveAudioFallbackCodec();
-  final audioCapabilityProfile = PlatformDetection.hasAudioCapabilities
-      ? AudioCapabilityProfile.fromMap(
-          PlatformDetection.audioCapabilitiesSnapshot,
-        )
-      : const AudioCapabilityProfile.optimistic();
+  final audioCapabilityProfile = prefs.detectedAudioCapabilities;
 
   return DeviceProfileBuilder.build(
     maxBitrateMbps: maxBitrate,

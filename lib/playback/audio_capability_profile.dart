@@ -1,3 +1,5 @@
+import '../preference/preference_constants.dart';
+
 enum AudioRouteType { hdmi, arc, earc, bluetooth, speaker, other }
 
 class AudioCapabilityProfile {
@@ -102,7 +104,10 @@ class AudioCapabilityProfile {
       activeRouteType == AudioRouteType.arc ||
       activeRouteType == AudioRouteType.earc;
 
-  factory AudioCapabilityProfile.fromMap(Map<String, dynamic>? values) {
+  factory AudioCapabilityProfile.fromMap(
+    Map<String, dynamic>? values, {
+    AudioOutputMode audioOutputMode = AudioOutputMode.auto,
+  }) {
     if (values == null || values.isEmpty) {
       return const AudioCapabilityProfile.optimistic();
     }
@@ -111,7 +116,10 @@ class AudioCapabilityProfile {
     final legacyDts = _asBool(values['supportsDts']);
     final legacyTrueHd = _asBool(values['supportsTrueHd']);
 
-    final activeRouteType = _parseRouteType(values['activeRouteType']);
+    final rawRouteType = _parseRouteType(values['activeRouteType']);
+    final activeRouteType = audioOutputMode == AudioOutputMode.avrPassthrough
+        ? (rawRouteType == AudioRouteType.earc ? AudioRouteType.earc : AudioRouteType.hdmi)
+        : rawRouteType;
 
     // ARC (plain Audio Return Channel) only carries compressed audio: AC3, DTS
     // core, and DD+/EAC3 (incl. EAC3-JOC Atmos). The lossless/HD formats
@@ -120,7 +128,12 @@ class AudioCapabilityProfile {
     // gated here, otherwise the capability-authoritative resolvers would
     // advertise passthrough ARC cannot carry. Gate on `arc` specifically:
     // plain HDMI can carry HD audio.
-    final isArc = activeRouteType == AudioRouteType.arc;
+    // Lossless/HD formats (TrueHD, TrueHD-Atmos, DTS-HD MA, DTS:X) require
+    // a direct HDMI connection to an AVR/Soundbar or an eARC link. They are
+    // not supported on plain ARC (due to bandwidth limits) or on stereo
+    // endpoints (built-in speakers, Bluetooth, or other generic outputs).
+    final isHdRoute = activeRouteType == AudioRouteType.hdmi ||
+        activeRouteType == AudioRouteType.earc;
 
     return AudioCapabilityProfile(
       canDecodeAc3: _readBool(values, 'canDecodeAc3', defaultValue: true),
@@ -158,18 +171,23 @@ class AudioCapabilityProfile {
         defaultValue: legacyDts,
       ),
       canPassthroughDtsHd:
-          !isArc &&
+          isHdRoute &&
           _readBool(values, 'canPassthroughDtsHd', defaultValue: legacyDts),
       canPassthroughDtsX:
-          !isArc &&
+          isHdRoute &&
           _readBool(values, 'canPassthroughDtsX', defaultValue: false),
       canPassthroughTrueHd:
-          !isArc &&
+          isHdRoute &&
           _readBool(values, 'canPassthroughTrueHd', defaultValue: legacyTrueHd),
       canPassthroughTrueHdJoc:
-          !isArc &&
+          isHdRoute &&
           _readBool(values, 'canPassthroughTrueHdJoc', defaultValue: false),
-      maxPcmChannels: _readInt(values, 'maxPcmChannels', defaultValue: 8),
+      maxPcmChannels: (() {
+        final rawMaxChannels = _readInt(values, 'maxPcmChannels', defaultValue: 8);
+        return audioOutputMode == AudioOutputMode.avrPassthrough && rawMaxChannels < 8
+            ? 8
+            : rawMaxChannels;
+      })(),
       activeRouteType: activeRouteType,
       routeSupportsHdAudio: _readBool(
         values,

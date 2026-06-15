@@ -8,7 +8,7 @@ import '../../data/models/aggregated_item.dart';
 import '../../data/repositories/offline_repository.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/offline_playback_tracker.dart';
-import '../../playback/audio_capability_profile.dart';
+
 import '../../playback/hdr_stream_capability.dart';
 import '../../playback/html_video_backend.dart';
 import '../../playback/known_defects.dart';
@@ -460,11 +460,7 @@ void registerPlaybackModule() {
     return startPosition - rewind;
   });
   manager.setPlaybackDecisionLogger((context) {
-    final audioCapabilityProfile = AudioCapabilityProfile.fromMap(
-      PlatformDetection.hasAudioCapabilities
-          ? PlatformDetection.audioCapabilitiesSnapshot
-          : null,
-    );
+    final audioCapabilityProfile = prefs.detectedAudioCapabilities;
 
     final audioSpdifCodecs = context.backend is MediaKitPlayerBackend
         ? _passthroughCodecsForDiagnostics(prefs)

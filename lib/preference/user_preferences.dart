@@ -320,6 +320,7 @@ class UserPreferences extends ChangeNotifier {
       PlatformDetection.hasAudioCapabilities
       ? AudioCapabilityProfile.fromMap(
           PlatformDetection.audioCapabilitiesSnapshot,
+          audioOutputMode: resolveAudioOutputMode(),
         )
       : const AudioCapabilityProfile.optimistic();
 

@@ -12,7 +12,7 @@ import 'package:playback_core/playback_core.dart';
 import '../preference/preference_constants.dart';
 import '../preference/user_preferences.dart';
 import '../util/platform_detection.dart';
-import 'audio_capability_profile.dart';
+
 import 'device_profile_builder.dart';
 import 'known_defects.dart';
 
@@ -465,13 +465,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
             allowDolbyVisionProfile7DirectPlay:
                 allowDolbyVisionProfile7DirectPlay,
           );
-    final audioCapabilityProfile = PlatformDetection.hasAudioCapabilities
-        ? AudioCapabilityProfile.fromMap(
-            PlatformDetection.audioCapabilitiesSnapshot,
-          )
-        : PlatformDetection.isIOS
-        ? const AudioCapabilityProfile.appleMobile()
-        : const AudioCapabilityProfile.optimistic();
+    final audioCapabilityProfile = _prefs.detectedAudioCapabilities;
 
     return DeviceProfileBuilder.build(
       maxBitrateMbps: maxBitrate,
