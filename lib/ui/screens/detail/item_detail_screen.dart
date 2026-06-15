@@ -601,9 +601,23 @@ class _DetailContentState extends State<_DetailContent> {
 
   void _focusSectionTarget(FocusNode target, {double alignment = 0.2}) {
     target.requestFocus();
-    final context = target.context;
-    if (context != null && !_shouldSkipSectionEnsureVisible(target)) {
-      unawaited(_ensureSectionVisible(context, alignment: alignment));
+    final isActionButtons = target == widget.initialFocusNode ||
+        target.debugLabel == 'detailActionButtons' ||
+        target.debugLabel == 'detailBoxSetActionButtons';
+
+    if (isActionButtons) {
+      if (_scrollController.hasClients) {
+        unawaited(_scrollController.animateTo(
+          _scrollController.position.minScrollExtent,
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+        ));
+      }
+    } else {
+      final context = target.context;
+      if (context != null && !_shouldSkipSectionEnsureVisible(target)) {
+        unawaited(_ensureSectionVisible(context, alignment: alignment));
+      }
     }
   }
 
@@ -1012,6 +1026,16 @@ class _DetailContentState extends State<_DetailContent> {
                       prefs: widget.prefs,
                       selectedMediaSource: selectedMediaSource,
                       overviewFocusNode: headerOverviewFocusNode,
+                      onArrowUp: _tryFocusNavbar,
+                      onArrowDown: () {
+                        final type = item.type;
+                        final targetNode = switch (type) {
+                          'BoxSet' => _sectionFocusNode('detailBoxSetActionButtons'),
+                          _ => widget.initialFocusNode ?? _sectionFocusNode('detailActionButtons'),
+                        };
+                        _requestSectionFocus(targetNode);
+                      },
+                      onArrowLeft: () => _tryFocusSidebar(),
                     ),
                   ),
                 SliverPadding(
@@ -1185,6 +1209,10 @@ class _DetailContentState extends State<_DetailContent> {
     final overviewFocusNode = hasOverview
         ? _sectionFocusNode('detailBookOverview')
         : null;
+    final actionButtonsFocusNode = widget.initialFocusNode ?? _sectionFocusNode('detailActionButtons');
+    final similarFocusNode = viewModel.similar.isNotEmpty
+        ? _sectionFocusNode('detailBookSimilar')
+        : null;
     final coverTag = item.primaryImageTag;
     final coverUrl = coverTag == null
         ? null
@@ -1285,7 +1313,7 @@ class _DetailContentState extends State<_DetailContent> {
         itemId: viewModel.item?.id,
         selectedMediaSourceId: selectedMediaSourceId,
         onSelectedMediaSourceChanged: onSelectedMediaSourceChanged,
-        tvPlayFocusNode: _sectionFocusNode('detailActionButtons'),
+        tvPlayFocusNode: actionButtonsFocusNode,
         downTarget: overviewFocusNode,
         onRequestFocus: _requestSectionFocus,
         autoPlay: widget.autoPlay,
@@ -1297,6 +1325,11 @@ class _DetailContentState extends State<_DetailContent> {
         _OverviewText(
           text: overview,
           focusNode: overviewFocusNode,
+          onArrowUp: () => _requestSectionFocus(actionButtonsFocusNode),
+          onArrowDown: similarFocusNode != null
+              ? () => _requestSectionFocus(similarFocusNode)
+              : null,
+          onArrowLeft: () => _tryFocusSidebar(),
           style: const TextStyle(
             color: Color(0xFFD7E8F6),
             fontSize: 14,
@@ -1361,6 +1394,7 @@ class _DetailContentState extends State<_DetailContent> {
             items: viewModel.similar,
             imageApi: viewModel.imageApi,
             prefs: prefs,
+            firstItemFocusNode: similarFocusNode,
             onItemLongPress: _showItemContextMenu,
             scrollController: ctrl,
           ),
@@ -2351,7 +2385,15 @@ class _DetailContentState extends State<_DetailContent> {
       ),
       if (hasOverview) ...[
         const SizedBox(height: 24),
-        _OverviewText(text: item.overview!, focusNode: overviewFocusNode),
+        _OverviewText(
+          text: item.overview!,
+          focusNode: overviewFocusNode,
+          onArrowUp: () => _requestSectionFocus(widget.initialFocusNode),
+          onArrowDown: (albumsFocusNode ?? similarFocusNode) != null
+              ? () => _requestSectionFocus(albumsFocusNode ?? similarFocusNode)
+              : null,
+          onArrowLeft: () => _tryFocusSidebar(),
+        ),
       ],
       if (viewModel.albums.isNotEmpty) ...[
         const SizedBox(height: 32),
@@ -2925,12 +2967,18 @@ class _HeaderSection extends StatelessWidget {
   final UserPreferences prefs;
   final Map<String, dynamic>? selectedMediaSource;
   final FocusNode? overviewFocusNode;
+  final VoidCallback? onArrowUp;
+  final VoidCallback? onArrowDown;
+  final VoidCallback? onArrowLeft;
 
   const _HeaderSection({
     required this.viewModel,
     required this.prefs,
     this.selectedMediaSource,
     this.overviewFocusNode,
+    this.onArrowUp,
+    this.onArrowDown,
+    this.onArrowLeft,
   });
 
   @override
@@ -3069,6 +3117,9 @@ class _HeaderSection extends StatelessWidget {
           _OverviewText(
             text: item.overview!,
             focusNode: overviewFocusNode,
+            onArrowUp: onArrowUp,
+            onArrowDown: onArrowDown,
+            onArrowLeft: onArrowLeft,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
                   ? AppColorScheme.onSurface
@@ -9143,12 +9194,20 @@ class _OverviewText extends StatelessWidget {
   final TextStyle? style;
   final TextAlign? textAlign;
   final FocusNode? focusNode;
+  final FocusNode? upTarget;
+  final VoidCallback? onArrowUp;
+  final VoidCallback? onArrowDown;
+  final VoidCallback? onArrowLeft;
 
   const _OverviewText({
     required this.text,
     this.style,
     this.textAlign,
     this.focusNode,
+    this.upTarget,
+    this.onArrowUp,
+    this.onArrowDown,
+    this.onArrowLeft,
   });
 
   @override
@@ -9157,6 +9216,10 @@ class _OverviewText extends StatelessWidget {
     return _ExpandableBiography(
       text: text,
       toggleFocusNode: focusNode,
+      upTarget: upTarget,
+      onArrowUp: onArrowUp,
+      onArrowDown: onArrowDown,
+      onArrowLeft: onArrowLeft,
       style:
           style ??
           Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -10237,6 +10300,19 @@ class _ExpandableBiographyState extends State<_ExpandableBiography> {
 
     final focusNavbar = NavigationLayout.focusNavbarNotifier.value;
     if (focusNavbar != null) {
+      final scrollable = Scrollable.maybeOf(context);
+      if (scrollable != null) {
+        try {
+          final position = scrollable.position;
+          if (position.pixels > position.minScrollExtent) {
+            position.animateTo(
+              position.minScrollExtent,
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOut,
+            );
+          }
+        } catch (_) {}
+      }
       focusNavbar();
       return true;
     }
