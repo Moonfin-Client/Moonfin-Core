@@ -215,12 +215,24 @@ object AudioCapabilities {
             }
         }
 
-        // TrueHD-Atmos (JOC) capability must come from a real probe only. We no
-        // longer infer it from plain TrueHD support + route: that over-reported
-        // Atmos on receivers that decode TrueHD but not Atmos, and under the
-        // capability-authoritative resolvers that would auto-advertise Atmos the
-        // AVR can't handle. Users who know their receiver supports it can still
-        // turn the TrueHD-Atmos passthrough toggle on explicitly (override wins).
+        // Since Android has no separate AudioFormat constant for Dolby TrueHD JOC (lossless Atmos)
+        // in standard AOSP, we infer TrueHD JOC support from plain TrueHD passthrough support
+        // when the specific JOC encoding constant is not defined by the platform.
+        if (encodingDolbyTrueHdJoc == null) {
+            canPassthroughTrueHdJoc = canPassthroughTrueHd
+        }
+
+        // Similarly, E-AC3 JOC (Dolby Digital Plus with Atmos) is transmitted over the same
+        // underlying E-AC3 bitstream format. If the device supports E-AC3, it supports E-AC3 JOC.
+        if (canPassthroughEac3) {
+            canPassthroughEac3Joc = true
+        }
+
+        // DTS:X is encapsulated within the DTS-HD Master Audio bitstream. If the device
+        // supports DTS-HD passthrough, it natively supports DTS:X passthrough.
+        if (canPassthroughDtsHd) {
+            canPassthroughDtsX = true
+        }
 
         // ARC (plain Audio Return Channel) only carries compressed audio. Force
         // the lossless/HD caps off so we never advertise TrueHD / TrueHD-Atmos /
