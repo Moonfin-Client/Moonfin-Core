@@ -890,9 +890,11 @@ class PlaybackManager implements AudioOwnable {
     _externalSubsLoaded = null;
 
     await _resetSubtitleRendererMode();
+    if (sessionToken != _playbackSessionToken) return;
 
     if (_resolverConfigurator != null) {
       await _resolverConfigurator!(item);
+      if (sessionToken != _playbackSessionToken) return;
     }
 
     if (_resolver == null) {
@@ -924,6 +926,11 @@ class PlaybackManager implements AudioOwnable {
       enableDirectStream: enableDirectStream,
       enableTranscoding: enableTranscoding,
     );
+
+    if (sessionToken != _playbackSessionToken) {
+      _cleanupPreemptedSession(item, resolution);
+      return;
+    }
 
     _setBringupState(
       PlaybackBringupState(
@@ -1028,11 +1035,23 @@ class PlaybackManager implements AudioOwnable {
         normalizationGainDb: resolution.normalizationGainDb,
       );
       await _arbiter?.acquire(AudioProducer.mainPlayback);
+      if (sessionToken != _playbackSessionToken) {
+        _cleanupPreemptedSession(item, resolution);
+        return;
+      }
       await _backend!.play(
         backendMediaPayload,
         startPosition: useNativeStart ? startPosition : Duration.zero,
       );
+      if (sessionToken != _playbackSessionToken) {
+        _cleanupPreemptedSession(item, resolution);
+        return;
+      }
       await _syncBackendRepeatModeIfSupported();
+      if (sessionToken != _playbackSessionToken) {
+        _cleanupPreemptedSession(item, resolution);
+        return;
+      }
       if (_backend!.requiresStartupMediaReadyCheck) {
         _setBringupState(
           PlaybackBringupState(
@@ -1050,11 +1069,21 @@ class PlaybackManager implements AudioOwnable {
       } else {
         mediaReady = true;
       }
+      if (sessionToken != _playbackSessionToken) {
+        _cleanupPreemptedSession(item, resolution);
+        return;
+      }
     } catch (e, st) {
+      if (sessionToken != _playbackSessionToken) return;
       startupError = e;
       startupStackTrace = st;
     } finally {
       _waitingForMedia = false;
+    }
+
+    if (sessionToken != _playbackSessionToken) {
+      _cleanupPreemptedSession(item, resolution);
+      return;
     }
 
     if (!mediaReady) {
@@ -1169,7 +1198,8 @@ class PlaybackManager implements AudioOwnable {
       _externalSubsLoaded = Future.value();
     }
 
-    if (resolution.playMethod == StreamPlayMethod.directPlay) {
+    if (resolution.playMethod == StreamPlayMethod.directPlay ||
+        resolution.playMethod == StreamPlayMethod.directStream) {
       final hasRequestedTrackSelection =
           _audioStreamIndex != null ||
           (_subtitleStreamIndex != null && _subtitleStreamIndex != -1);
@@ -1183,8 +1213,7 @@ class PlaybackManager implements AudioOwnable {
       if (_subtitleStreamIndex == -1) {
         _waitAndDisableSubtitles(sessionToken);
       }
-    } else if (resolution.playMethod == StreamPlayMethod.transcode ||
-        resolution.playMethod == StreamPlayMethod.directStream) {
+    } else if (resolution.playMethod == StreamPlayMethod.transcode) {
       if (_subtitleStreamIndex != null && _subtitleStreamIndex != -1) {
         final isBurnedIn =
             (_isSubtitleBitmap(_subtitleStreamIndex!) &&
@@ -2059,9 +2088,7 @@ class PlaybackManager implements AudioOwnable {
             _lastKnownPosition.inMicroseconds,
           ].reduce((a, b) => a > b ? a : b),
         );
-        try {
-          await _service?.onPlaybackStop(reportItem, resolution, pos);
-        } catch (_) {}
+        unawaited(_service?.onPlaybackStop(reportItem, resolution, pos).catchError((_) => null));
       }
       _currentResolution = null;
       _lastPlaybackItem = null;
@@ -2085,6 +2112,12 @@ class PlaybackManager implements AudioOwnable {
       if (identical(_stopInFlight, stopFuture)) {
         _stopInFlight = null;
       }
+    }
+  }
+
+  void _cleanupPreemptedSession(dynamic item, StreamResolutionResult? resolution) {
+    if (item != null && resolution != null) {
+      unawaited(_service?.onPlaybackStop(item, resolution, Duration.zero).catchError((_) => null));
     }
   }
 
