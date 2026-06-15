@@ -282,7 +282,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   @override
   Widget build(BuildContext context) {
     final type = _viewModel.item?.type;
-    final useTargetNode = type == 'Person' || type == 'BoxSet';
+    final useTargetNode = type != null && type != 'Photo';
     final node = useTargetNode ? _ensureInitialFocusNode() : null;
     final isAlbumOrPlaylist = type == 'MusicAlbum' || type == 'Playlist';
     final showNavigationChrome =
@@ -503,6 +503,9 @@ class _DetailContentState extends State<_DetailContent> {
   }
 
   bool _shouldSkipSectionEnsureVisible(FocusNode target) {
+    if (widget.viewModel.item?.type != 'Person') {
+      return false;
+    }
     final favoriteFocusNode =
         widget.initialFocusNode ?? _sectionFocusNodes['detailPersonFavorite'];
     final seerrFocusNode = _sectionFocusNodes['detailPersonSeerrButton'];
@@ -612,9 +615,23 @@ class _DetailContentState extends State<_DetailContent> {
       return;
     }
 
-    final sectionContext = _sectionContainerContext(target);
-    if (sectionContext != null && !_shouldSkipSectionEnsureVisible(target)) {
-      unawaited(_ensureSectionVisible(sectionContext, alignment: alignment));
+    final isActionButtons = target == widget.initialFocusNode ||
+        target.debugLabel == 'detailActionButtons' ||
+        target.debugLabel == 'detailBoxSetActionButtons';
+
+    if (isActionButtons) {
+      if (_scrollController.hasClients) {
+        unawaited(_scrollController.animateTo(
+          _scrollController.position.minScrollExtent,
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+        ));
+      }
+    } else {
+      final sectionContext = _sectionContainerContext(target);
+      if (sectionContext != null && !_shouldSkipSectionEnsureVisible(target)) {
+        unawaited(_ensureSectionVisible(sectionContext, alignment: alignment));
+      }
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1367,7 +1384,7 @@ class _DetailContentState extends State<_DetailContent> {
     final similarFocusNode = hasSimilar
         ? _sectionFocusNode('detailMovieSimilar')
         : null;
-    final actionButtonsFocusNode = _sectionFocusNode('detailActionButtons');
+    final actionButtonsFocusNode = widget.initialFocusNode ?? _sectionFocusNode('detailActionButtons');
     final overviewFocusNode = _headerOverviewFocusNode(item);
     final metadataFocusNode = _hasMetadata(item) ? _sectionFocusNode('detailMovieMetadata') : null;
     final movieDownTarget = hasChapters
@@ -1397,6 +1414,9 @@ class _DetailContentState extends State<_DetailContent> {
         _MetadataSection(
           viewModel: viewModel,
           firstItemFocusNode: metadataFocusNode,
+          upTarget: actionButtonsFocusNode,
+          downTarget: movieDownTarget,
+          onRequestFocus: _requestSectionFocus,
         ),
       ],
       ..._buildChapterAndFeatureSections(
@@ -1509,7 +1529,7 @@ class _DetailContentState extends State<_DetailContent> {
     final similarFocusNode = hasSimilar
         ? _sectionFocusNode('detailSeriesSimilar')
         : null;
-    final actionButtonsFocusNode = _sectionFocusNode('detailActionButtons');
+    final actionButtonsFocusNode = widget.initialFocusNode ?? _sectionFocusNode('detailActionButtons');
     final overviewFocusNode = _headerOverviewFocusNode(item);
     final metadataFocusNode = _hasMetadata(item) ? _sectionFocusNode('detailSeriesMetadata') : null;
     final seriesDownTarget =
@@ -1535,6 +1555,9 @@ class _DetailContentState extends State<_DetailContent> {
         _MetadataSection(
           viewModel: viewModel,
           firstItemFocusNode: metadataFocusNode,
+          upTarget: actionButtonsFocusNode,
+          downTarget: seriesDownTarget,
+          onRequestFocus: _requestSectionFocus,
         ),
       ],
       if (hasNextUp) ...[
@@ -1728,7 +1751,7 @@ class _DetailContentState extends State<_DetailContent> {
     final similarFocusNode = hasSimilar
         ? _sectionFocusNode('detailEpisodeSimilar')
         : null;
-    final actionButtonsFocusNode = _sectionFocusNode('detailActionButtons');
+    final actionButtonsFocusNode = widget.initialFocusNode ?? _sectionFocusNode('detailActionButtons');
     final overviewFocusNode = _headerOverviewFocusNode(item);
     final currentEpisodeIndex = viewModel.episodes.indexWhere(
       (ep) => ep.id == item.id,
@@ -1771,6 +1794,9 @@ class _DetailContentState extends State<_DetailContent> {
         _MetadataSection(
           viewModel: viewModel,
           firstItemFocusNode: metadataFocusNode,
+          upTarget: actionButtonsFocusNode,
+          downTarget: episodeDownTarget,
+          onRequestFocus: _requestSectionFocus,
         ),
       ],
       ..._buildChapterAndFeatureSections(
@@ -2317,6 +2343,7 @@ class _DetailContentState extends State<_DetailContent> {
       _AlbumActions(
         item: item,
         tracks: viewModel.tracks,
+        playFocusNode: widget.initialFocusNode,
         showAddToPlaylist: false,
         onPlayDown: () {
           _requestSectionFocus(overviewFocusNode ?? albumsFocusNode);
@@ -2405,7 +2432,7 @@ class _DetailContentState extends State<_DetailContent> {
       _AlbumActions(
         item: item,
         tracks: viewModel.tracks,
-        playFocusNode: PlatformDetection.isTV ? _albumPlayFocusNode : null,
+        playFocusNode: widget.initialFocusNode ?? _albumPlayFocusNode,
         autofocusPlay: PlatformDetection.isTV,
         onPlayDown: () {
           if (!_firstTrackFocusNode.canRequestFocus) return;
@@ -2725,6 +2752,9 @@ class _DetailContentState extends State<_DetailContent> {
         _MetadataSection(
           viewModel: viewModel,
           firstItemFocusNode: metadataFocusNode,
+          upTarget: actionButtonsFocusNode,
+          downTarget: boxSetDownTarget,
+          onRequestFocus: _requestSectionFocus,
         ),
       ],
       if (movies.isNotEmpty) ...[
@@ -4867,7 +4897,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
             : isBook
             ? Icons.menu_book
             : Icons.play_arrow,
-        focusNode: PlatformDetection.isTV ? _tvPlayFocusNode : null,
+        focusNode: _tvPlayFocusNode,
         autofocus: PlatformDetection.isTV,
         onPressed: () => _play(context, item, resume: isBoxSet ? (!boxSetAllWatched && !boxSetAllUnwatched) : (!isPhoto && hasProgress)),
         onLongPress: isVideo
@@ -8692,12 +8722,16 @@ class _MetadataChip extends StatefulWidget {
   final FocusNode? focusNode;
   final VoidCallback? onArrowLeft;
   final VoidCallback? onArrowRight;
+  final VoidCallback? onArrowUp;
+  final VoidCallback? onArrowDown;
 
   const _MetadataChip({
     required this.item,
     this.focusNode,
     this.onArrowLeft,
     this.onArrowRight,
+    this.onArrowUp,
+    this.onArrowDown,
   });
 
   @override
@@ -8744,6 +8778,18 @@ class _MetadataChipState extends State<_MetadataChip> with FocusStateMixin {
               return KeyEventResult.handled;
             }
           }
+          if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            if (widget.onArrowUp != null) {
+              widget.onArrowUp!();
+              return KeyEventResult.handled;
+            }
+          }
+          if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+            if (widget.onArrowDown != null) {
+              widget.onArrowDown!();
+              return KeyEventResult.handled;
+            }
+          }
           return KeyEventResult.ignored;
         },
         child: GestureDetector(
@@ -8784,10 +8830,16 @@ class _MetadataChipState extends State<_MetadataChip> with FocusStateMixin {
 class _MetadataSection extends StatefulWidget {
   final ItemDetailViewModel viewModel;
   final FocusNode? firstItemFocusNode;
+  final FocusNode? upTarget;
+  final FocusNode? downTarget;
+  final KeyEventResult Function(FocusNode? target)? onRequestFocus;
 
   const _MetadataSection({
     required this.viewModel,
     this.firstItemFocusNode,
+    this.upTarget,
+    this.downTarget,
+    this.onRequestFocus,
   });
 
   @override
@@ -8926,8 +8978,7 @@ class _MetadataSectionState extends State<_MetadataSection> {
       }
     }
 
-    return FocusTraversalGroup(
-      child: Container(
+    return Container(
         decoration: BoxDecoration(
           color: isNeon
               ? AppColorScheme.background.withValues(alpha: 0.25)
@@ -9051,6 +9102,24 @@ class _MetadataSectionState extends State<_MetadataSection> {
                                           onArrowRight: groupIndex == totalGroups - 1
                                               ? () {} // cap right
                                               : () => firstNodesOfGroups[groupIndex + 1].requestFocus(),
+                                          onArrowUp: itemIndexInGroup == 0
+                                              ? () {
+                                                  if (widget.onRequestFocus != null) {
+                                                    widget.onRequestFocus!(widget.upTarget);
+                                                  } else {
+                                                    widget.upTarget?.requestFocus();
+                                                  }
+                                                }
+                                              : () => _focusNodes[chipIndex - 1].requestFocus(),
+                                          onArrowDown: itemIndexInGroup == group.items.length - 1
+                                              ? () {
+                                                  if (widget.onRequestFocus != null) {
+                                                    widget.onRequestFocus!(widget.downTarget);
+                                                  } else {
+                                                    widget.downTarget?.requestFocus();
+                                                  }
+                                                }
+                                              : () => _focusNodes[chipIndex + 1].requestFocus(),
                                         ),
                                       );
                                     }).toList(),
@@ -9065,7 +9134,6 @@ class _MetadataSectionState extends State<_MetadataSection> {
                   }).toList(),
                 ),
               ),
-      ),
     );
   }
 }
