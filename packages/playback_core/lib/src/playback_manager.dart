@@ -990,17 +990,15 @@ class PlaybackManager implements AudioOwnable {
     bool needsReResolve = false;
 
     if (_lastExplicitAudioLanguage != null) {
-      final audioStreams = resolution.mediaStreams.where((s) => s['Type'] == 'Audio').toList();
-      final targetIdx = audioStreams.indexWhere(
-        (s) => _languagesMatch(s, _lastExplicitAudioLanguage),
+      final matchedIdx = _matchStreamIndexByLanguage(
+        resolution.mediaStreams,
+        _lastExplicitAudioLanguage,
+        'Audio',
       );
-      if (targetIdx >= 0) {
-        final matchedIdx = audioStreams[targetIdx]['Index'] as int?;
-        if (_audioStreamIndex != matchedIdx) {
-          _audioStreamIndex = matchedIdx;
-          if (resolution.playMethod == StreamPlayMethod.transcode) {
-            needsReResolve = true;
-          }
+      if (matchedIdx != null && _audioStreamIndex != matchedIdx) {
+        _audioStreamIndex = matchedIdx;
+        if (resolution.playMethod == StreamPlayMethod.transcode) {
+          needsReResolve = true;
         }
       }
     }
@@ -1013,17 +1011,15 @@ class PlaybackManager implements AudioOwnable {
         }
       }
     } else if (_lastExplicitSubtitleLanguage != null) {
-      final subtitleStreams = resolution.mediaStreams.where((s) => s['Type'] == 'Subtitle').toList();
-      final targetIdx = subtitleStreams.indexWhere(
-        (s) => _languagesMatch(s, _lastExplicitSubtitleLanguage),
+      final matchedIdx = _matchStreamIndexByLanguage(
+        resolution.mediaStreams,
+        _lastExplicitSubtitleLanguage,
+        'Subtitle',
       );
-      if (targetIdx >= 0) {
-        final matchedIdx = subtitleStreams[targetIdx]['Index'] as int?;
-        if (_subtitleStreamIndex != matchedIdx) {
-          _subtitleStreamIndex = matchedIdx;
-          if (resolution.playMethod == StreamPlayMethod.transcode) {
-            needsReResolve = true;
-          }
+      if (matchedIdx != null && _subtitleStreamIndex != matchedIdx) {
+        _subtitleStreamIndex = matchedIdx;
+        if (resolution.playMethod == StreamPlayMethod.transcode) {
+          needsReResolve = true;
         }
       }
     }
@@ -2277,15 +2273,11 @@ class PlaybackManager implements AudioOwnable {
     }
 
     if (_lastExplicitAudioLanguage != null) {
-      final audioStreams = newStreams.where((s) => s['Type'] == 'Audio').toList();
-      final targetIdx = audioStreams.indexWhere(
-        (s) => _languagesMatch(s, _lastExplicitAudioLanguage),
+      _audioStreamIndex = _matchStreamIndexByLanguage(
+        newStreams,
+        _lastExplicitAudioLanguage,
+        'Audio',
       );
-      if (targetIdx >= 0) {
-        _audioStreamIndex = audioStreams[targetIdx]['Index'] as int?;
-      } else {
-        _audioStreamIndex = null;
-      }
     } else {
       _audioStreamIndex = null;
     }
@@ -2293,15 +2285,11 @@ class PlaybackManager implements AudioOwnable {
     if (_lastExplicitSubtitleEnabled == false) {
       _subtitleStreamIndex = -1;
     } else if (_lastExplicitSubtitleLanguage != null) {
-      final subtitleStreams = newStreams.where((s) => s['Type'] == 'Subtitle').toList();
-      final targetIdx = subtitleStreams.indexWhere(
-        (s) => _languagesMatch(s, _lastExplicitSubtitleLanguage),
+      _subtitleStreamIndex = _matchStreamIndexByLanguage(
+        newStreams,
+        _lastExplicitSubtitleLanguage,
+        'Subtitle',
       );
-      if (targetIdx >= 0) {
-        _subtitleStreamIndex = subtitleStreams[targetIdx]['Index'] as int?;
-      } else {
-        _subtitleStreamIndex = null;
-      }
     } else {
       _subtitleStreamIndex = null;
     }
@@ -2405,6 +2393,12 @@ bool _languagesMatch(Map? stream, String? targetLanguage) {
   final iso3Candidate = _toIso3(normCandidate);
   final iso3Target = _toIso3(normTarget);
   return iso3Candidate.isNotEmpty && iso3Candidate == iso3Target;
+}
+
+int? _matchStreamIndexByLanguage(List<Map<String, dynamic>> streams, String? lang, String type) {
+  final candidates = streams.where((s) => s['Type'] == type).toList();
+  final i = candidates.indexWhere((s) => _languagesMatch(s, lang));
+  return i >= 0 ? candidates[i]['Index'] as int? : null;
 }
 
 String? _extractLanguage(Map? stream) {

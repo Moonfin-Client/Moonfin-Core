@@ -221,7 +221,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         _backdropUrl = _backgroundService.currentUrl;
 
         if (item.mediaSources.isNotEmpty) {
-          _selectedMediaSourceId = item.mediaSources.first['Id'] as String?;
+          _selectedMediaSourceId = item.mediaSources.first['Id']?.toString();
         } else {
           _selectedMediaSourceId = null;
         }
@@ -6914,7 +6914,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
       selectedIndex: currentIdx >= 0 ? currentIdx : 0,
     );
     if (result != null && result < sources.length) {
-      final id = sources[result]['Id'] as String?;
+      final id = sources[result]['Id']?.toString();
       widget.onSelectedMediaSourceChanged(id);
     }
   }
@@ -6931,7 +6931,7 @@ Map<String, dynamic>? _selectedMediaSourceForItem(
     return item.mediaSources.first;
   }
   for (final source in item.mediaSources) {
-    final id = source['Id'] as String?;
+    final id = source['Id']?.toString();
     if (id == selectedMediaSourceId) {
       return source;
     }
