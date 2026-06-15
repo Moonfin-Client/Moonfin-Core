@@ -7428,6 +7428,13 @@ class AppLocalizationsLt extends AppLocalizations {
       'Taikykite šrifto dydžio užuominas, įterptas į subtitrų takelį. Neleiskite naudoti subtitrų dydžio pagal savo stiliaus nuostatas.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Naudokite išsamias antraštes';
 
   @override

@@ -7470,6 +7470,13 @@ class AppLocalizationsBg extends AppLocalizations {
       'Прилагане на съвети за размера на шрифта, вградени в пистата със субтитри. Деактивирайте, за да използвате размера на субтитрите от вашите стилови предпочитания.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Използвайте подробни подзаглавия';
 
   @override

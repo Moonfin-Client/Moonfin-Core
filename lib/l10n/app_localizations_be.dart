@@ -7426,6 +7426,13 @@ class AppLocalizationsBe extends AppLocalizations {
       'Прымяніць падказкі памеру шрыфта, убудаваныя ў дарожку субтытраў. Адключыце выкарыстанне памеру субтытраў з вашых налад стылю.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings =>
       'Выкарыстоўвайце падрабязныя падзагалоўкі';
 

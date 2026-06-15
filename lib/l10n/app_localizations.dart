@@ -13180,6 +13180,18 @@ abstract class AppLocalizations {
   /// **'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.'**
   String get subtitlesUseEmbeddedFontSizesSubtitle;
 
+  /// Setting title to show/hide focused media details at the top of the library page
+  ///
+  /// In en, this message translates to:
+  /// **'Show Media Details'**
+  String get showMediaDetailsOnLibraryPage;
+
+  /// Setting description to show/hide focused media details at the top of the library page
+  ///
+  /// In en, this message translates to:
+  /// **'Show details of the selected item at the top of Library pages.'**
+  String get showMediaDetailsOnLibraryPageDescription;
+
   /// Label for setting to toggle detailed or minimal subrow on library pages
   ///
   /// In en, this message translates to:

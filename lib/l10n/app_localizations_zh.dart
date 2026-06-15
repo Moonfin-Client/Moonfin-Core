@@ -7149,6 +7149,13 @@ class AppLocalizationsZh extends AppLocalizations {
       '应用嵌入在字幕轨道中的字体大小提示。禁止使用您的样式首选项中的字幕大小。';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => '使用详细的副标题';
 
   @override

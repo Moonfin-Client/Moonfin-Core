@@ -7463,6 +7463,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wenden Sie Hinweise zur Schriftgröße an, die in die Untertitelspur eingebettet sind. Deaktivieren Sie die Verwendung der Untertitelgröße aus Ihren Stileinstellungen.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings =>
       'Verwenden Sie detaillierte Unterüberschriften';
 

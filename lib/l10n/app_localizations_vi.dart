@@ -7407,6 +7407,13 @@ class AppLocalizationsVi extends AppLocalizations {
       'Áp dụng gợi ý về kích thước phông chữ được nhúng trong phụ đề. Tắt để sử dụng kích thước phụ đề từ tùy chọn kiểu của bạn.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Sử dụng các tiêu đề phụ chi tiết';
 
   @override

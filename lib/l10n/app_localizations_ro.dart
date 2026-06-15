@@ -7446,6 +7446,13 @@ class AppLocalizationsRo extends AppLocalizations {
       'Aplicați indicii privind dimensiunea fontului încorporate în pista de subtitrare. Dezactivați utilizarea dimensiunii subtitrarilor din preferințele dvs. de stil.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Utilizați subtitluri detaliate';
 
   @override

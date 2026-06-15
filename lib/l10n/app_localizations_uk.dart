@@ -7445,6 +7445,13 @@ class AppLocalizationsUk extends AppLocalizations {
       'Застосуйте підказки щодо розміру шрифту, вбудовані в доріжку субтитрів. Вимкніть використання розміру субтитрів у ваших налаштуваннях стилю.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Використовуйте детальні підзаголовки';
 
   @override

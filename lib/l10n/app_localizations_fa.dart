@@ -7360,6 +7360,13 @@ class AppLocalizationsFa extends AppLocalizations {
       'نکات اندازه فونت تعبیه شده در آهنگ زیرنویس را اعمال کنید. غیرفعال کردن استفاده از اندازه زیرنویس از تنظیمات برگزیده سبک.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'از عناوین فرعی تفصیلی استفاده کنید';
 
   @override

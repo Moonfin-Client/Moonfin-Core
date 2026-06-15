@@ -7405,6 +7405,13 @@ class AppLocalizationsAf extends AppLocalizations {
       'Pas lettergrootte-wenke toe wat in die onderskrifsnit ingebed is. Deaktiveer om die ondertitelgrootte van jou stylvoorkeure te gebruik.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Gebruik gedetailleerde subopskrifte';
 
   @override

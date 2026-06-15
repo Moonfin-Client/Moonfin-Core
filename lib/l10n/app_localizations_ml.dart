@@ -7493,6 +7493,13 @@ class AppLocalizationsMl extends AppLocalizations {
       'സബ്‌ടൈറ്റിൽ ട്രാക്കിൽ ഉൾച്ചേർത്ത ഫോണ്ട് സൈസ് സൂചനകൾ പ്രയോഗിക്കുക. നിങ്ങളുടെ ശൈലി മുൻഗണനകളിൽ നിന്ന് സബ്‌ടൈറ്റിൽ സൈസ് ഉപയോഗിക്കുന്നത് പ്രവർത്തനരഹിതമാക്കുക.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'വിശദമായ ഉപതലക്കെട്ടുകൾ ഉപയോഗിക്കുക';
 
   @override

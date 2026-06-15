@@ -7393,6 +7393,13 @@ class AppLocalizationsBn extends AppLocalizations {
       'সাবটাইটেল ট্র্যাকে এমবেড করা ফন্ট-আকারের ইঙ্গিতগুলি প্রয়োগ করুন৷ আপনার শৈলী পছন্দগুলি থেকে সাবটাইটেল আকার ব্যবহার করতে অক্ষম করুন৷';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'বিস্তারিত উপ-শিরোনাম ব্যবহার করুন';
 
   @override

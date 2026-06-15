@@ -7485,6 +7485,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Appliquez des conseils sur la taille de la police intégrés à la piste de sous-titres. Désactivez l\'utilisation de la taille des sous-titres dans vos préférences de style.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Utiliser des sous-titres détaillés';
 
   @override

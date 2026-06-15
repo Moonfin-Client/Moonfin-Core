@@ -7412,6 +7412,13 @@ class AppLocalizationsEt extends AppLocalizations {
       'Rakendage subtiitrite rajale manustatud fondisuuruse vihjeid. Keelake oma stiilieelistuste alusel subtiitrite suuruse kasutamine.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Kasutage üksikasjalikke alapealkirju';
 
   @override

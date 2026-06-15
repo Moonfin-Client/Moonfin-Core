@@ -7454,6 +7454,13 @@ class AppLocalizationsPt extends AppLocalizations {
       'Aplique dicas de tamanho de fonte incorporadas na faixa de legenda. Desative o uso do tamanho da legenda em suas preferências de estilo.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Use subtítulos detalhados';
 
   @override

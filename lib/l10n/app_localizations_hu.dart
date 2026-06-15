@@ -7466,6 +7466,13 @@ class AppLocalizationsHu extends AppLocalizations {
       'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
 
   @override

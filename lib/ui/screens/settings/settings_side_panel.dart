@@ -1064,6 +1064,13 @@ class _LibrariesCategoryScreen extends StatelessWidget {
             onChanged: _pushPersonalizationSync,
           ),
           SwitchPreferenceTile(
+            preference: UserPreferences.showMediaDetailsOnLibraryPage,
+            title: l10n.showMediaDetailsOnLibraryPage,
+            subtitle: l10n.showMediaDetailsOnLibraryPageDescription,
+            icon: Icons.info_outline,
+            onChanged: _pushPersonalizationSync,
+          ),
+          SwitchPreferenceTile(
             preference: UserPreferences.useDetailedSubHeadings,
             title: l10n.useDetailedSubHeadings,
             subtitle: l10n.useDetailedSubHeadingsDescription,

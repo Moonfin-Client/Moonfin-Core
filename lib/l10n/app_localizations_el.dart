@@ -7512,6 +7512,13 @@ class AppLocalizationsEl extends AppLocalizations {
       'Εφαρμόστε υποδείξεις μεγέθους γραμματοσειράς που είναι ενσωματωμένες στο κομμάτι υπότιτλων. Απενεργοποιήστε τη χρήση του μεγέθους υποτίτλων από τις προτιμήσεις στυλ σας.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings =>
       'Χρησιμοποιήστε λεπτομερείς υποεπικεφαλίδες';
 

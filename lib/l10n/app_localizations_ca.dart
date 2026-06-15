@@ -7512,6 +7512,13 @@ class AppLocalizationsCa extends AppLocalizations {
       'Apliqueu consells de mida de lletra incrustats a la pista de subtítols. Desactiveu l\'ús de la mida dels subtítols de les vostres preferències d\'estil.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Utilitzeu subtítols detallats';
 
   @override

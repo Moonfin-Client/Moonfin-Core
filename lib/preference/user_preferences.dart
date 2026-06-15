@@ -622,6 +622,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final showMediaDetailsOnLibraryPage = Preference(
+    key: 'pref_show_media_details_on_library_page',
+    defaultValue: true,
+  );
+
   static final useDetailedSubHeadings = Preference(
     key: 'pref_use_detailed_sub_headings',
     defaultValue: true,

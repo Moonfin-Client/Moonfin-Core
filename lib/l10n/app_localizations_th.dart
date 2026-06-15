@@ -7349,6 +7349,13 @@ class AppLocalizationsTh extends AppLocalizations {
       'ใช้คำแนะนำขนาดตัวอักษรที่ฝังอยู่ในแทร็กคำบรรยาย ปิดการใช้งานเพื่อใช้ขนาดคำบรรยายจากการตั้งค่าสไตล์ของคุณ';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'ใช้หัวข้อย่อยโดยละเอียด';
 
   @override

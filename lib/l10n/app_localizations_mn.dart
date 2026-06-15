@@ -7428,6 +7428,13 @@ class AppLocalizationsMn extends AppLocalizations {
       'Хадмал орчуулгад суулгасан үсгийн хэмжээтэй зөвлөмжийг ашиглана уу. Загварын сонголтоос хадмал орчуулгын хэмжээг ашиглахыг идэвхгүй болго.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Нарийвчилсан дэд гарчгийг ашиглана уу';
 
   @override

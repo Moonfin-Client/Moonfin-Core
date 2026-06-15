@@ -7408,6 +7408,13 @@ class AppLocalizationsCs extends AppLocalizations {
       'Použijte rady pro velikost písma vložené do stopy titulků. Zakažte použití velikosti titulků z vašich předvoleb stylu.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Použijte podrobné podnadpisy';
 
   @override

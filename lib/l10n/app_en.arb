@@ -7089,6 +7089,14 @@
   "@subtitlesUseEmbeddedFontSizesSubtitle": {
     "description": "Setting subtitle for embedded font sizes toggle"
   },
+  "showMediaDetailsOnLibraryPage": "Show Media Details",
+  "@showMediaDetailsOnLibraryPage": {
+    "description": "Setting title to show/hide focused media details at the top of the library page"
+  },
+  "showMediaDetailsOnLibraryPageDescription": "Show details of the selected item at the top of Library pages.",
+  "@showMediaDetailsOnLibraryPageDescription": {
+    "description": "Setting description to show/hide focused media details at the top of the library page"
+  },
   "useDetailedSubHeadings": "Use Detailed Sub-Headings",
   "@useDetailedSubHeadings": {
     "description": "Label for setting to toggle detailed or minimal subrow on library pages"

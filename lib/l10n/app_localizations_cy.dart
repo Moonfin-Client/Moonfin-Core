@@ -7422,6 +7422,13 @@ class AppLocalizationsCy extends AppLocalizations {
       'Cymhwyso awgrymiadau maint ffont sydd wedi\'u hymgorffori yn y trac is-deitl. Analluogi defnyddio maint yr is-deitl o\'ch dewisiadau arddull.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Defnyddiwch Is-benawdau Manwl';
 
   @override

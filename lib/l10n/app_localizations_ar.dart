@@ -7356,6 +7356,13 @@ class AppLocalizationsAr extends AppLocalizations {
       'قم بتطبيق تلميحات حجم الخط المضمنة في مسار الترجمة. قم بتعطيل استخدام حجم الترجمة من تفضيلات النمط الخاص بك.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'استخدم العناوين الفرعية التفصيلية';
 
   @override

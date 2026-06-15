@@ -7398,6 +7398,13 @@ class AppLocalizationsDa extends AppLocalizations {
       'Anvend tip til skriftstørrelse, der er indlejret i undertekstsporet. Deaktiver for at bruge undertekststørrelsen fra dine stilpræferencer.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Brug detaljerede underoverskrifter';
 
   @override

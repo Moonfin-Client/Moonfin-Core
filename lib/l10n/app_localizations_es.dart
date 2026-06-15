@@ -7473,6 +7473,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'Aplique sugerencias de tamaño de fuente incrustadas en la pista de subtítulos. Desactive el uso del tamaño de los subtítulos en sus preferencias de estilo.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Utilice subtítulos detallados';
 
   @override

@@ -7435,6 +7435,13 @@ class AppLocalizationsLv extends AppLocalizations {
       'Lietojiet subtitru celiņā iegultos fonta lieluma ieteikumus. Atspējojiet, lai izmantotu subtitru izmēru no jūsu stila preferencēm.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings =>
       'Izmantojiet detalizētus apakšvirsrakstus';
 

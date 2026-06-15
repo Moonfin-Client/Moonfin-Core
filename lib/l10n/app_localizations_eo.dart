@@ -7387,6 +7387,13 @@ class AppLocalizationsEo extends AppLocalizations {
       'Apliku tipargrandajn sugestojn enkonstruitajn en la subtitola trako. Malebligu uzi la subtitolon de viaj stilaj preferoj.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'Uzu Detalaj Sub-Titoloj';
 
   @override

@@ -7448,6 +7448,13 @@ class AppLocalizationsTe extends AppLocalizations {
       'ఉపశీర్షిక ట్రాక్‌లో పొందుపరిచిన ఫాంట్-పరిమాణ సూచనలను వర్తింపజేయండి. మీ శైలి ప్రాధాన్యతల నుండి ఉపశీర్షిక పరిమాణాన్ని ఉపయోగించడాన్ని నిలిపివేయండి.';
 
   @override
+  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+
+  @override
+  String get showMediaDetailsOnLibraryPageDescription =>
+      'Show details of the selected item at the top of Library pages.';
+
+  @override
   String get useDetailedSubHeadings => 'వివరణాత్మక ఉపశీర్షికలను ఉపయోగించండి';
 
   @override

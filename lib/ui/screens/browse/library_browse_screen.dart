@@ -3894,6 +3894,9 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
                 enabledRatings: _prefs.get(UserPreferences.enabledRatings),
                 showLabels: _prefs.get(UserPreferences.showRatingLabels),
                 showBadges: _prefs.get(UserPreferences.showRatingBadges),
+                showMediaDetails: _prefs.get(
+                  UserPreferences.showMediaDetailsOnLibraryPage,
+                ),
                 sortBy: _vm.sortBy,
                 letterFilter: _vm.letterFilter,
                 isMusicBrowse: _vm.isMusicBrowse,
@@ -4318,6 +4321,7 @@ class _LibraryHeader extends StatelessWidget {
   final String enabledRatings;
   final bool showLabels;
   final bool showBadges;
+  final bool showMediaDetails;
   final LibrarySortBy sortBy;
   final String letterFilter;
   final bool isMusicBrowse;
@@ -4344,6 +4348,7 @@ class _LibraryHeader extends StatelessWidget {
     this.enabledRatings = 'tomatoes,stars',
     this.showLabels = true,
     this.showBadges = true,
+    required this.showMediaDetails,
     required this.sortBy,
     required this.letterFilter,
     this.isMusicBrowse = false,
@@ -4408,7 +4413,7 @@ class _LibraryHeader extends StatelessWidget {
               ],
             ],
           ),
-          if (!isMobile && !isBookBrowse) ...[
+          if (showMediaDetails && !isMobile && !isBookBrowse) ...[
             const SizedBox(height: 2),
             _FocusedItemHud(
               item: focusedItem,
