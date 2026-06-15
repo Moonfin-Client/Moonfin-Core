@@ -28,6 +28,7 @@ import '../../../playback/media3_player_backend.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../widgets/exit_confirmation_dialog.dart';
+import '../../widgets/overlay_sheet.dart';
 import '../../../util/app_exit.dart';
 import '../../../util/global_shortcut_focus.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
@@ -1420,7 +1421,9 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   bool _mayRestoreHomeFocus() {
-    return _isHomeRouteActive() && !SettingsPanel.isOpenNotifier.value;
+    return _isHomeRouteActive() &&
+        !SettingsPanel.isOpenNotifier.value &&
+        !OverlaySheetController.hasOpenSheet;
   }
 
   bool _isHomeRowsStyleV2() {
