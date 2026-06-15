@@ -1,6 +1,6 @@
 {
     "@@locale": "da",
-    "appTitle": "Månefinne",
+    "appTitle": "Moonfin",
     "@appTitle": {
         "description": "The application title"
     },
@@ -70,7 +70,7 @@
             }
         }
     },
-    "whosWatching": "Hvem ser på?",
+    "whosWatching": "Hvem ser med?",
     "@whosWatching": {
         "description": "Server user selection heading"
     },
@@ -78,7 +78,7 @@
     "@addUser": {
         "description": "Button to add a new user on the server screen"
     },
-    "selectServer": "Vælg Server",
+    "selectServer": "Vælg server",
     "@selectServer": {
         "description": "Button to navigate back to server selection"
     },
@@ -95,7 +95,7 @@
     "@savedServers": {
         "description": "Section heading for previously saved servers"
     },
-    "discoveredServers": "Opdagede servere",
+    "discoveredServers": "Fundne servere",
     "@discoveredServers": {
         "description": "Section heading for auto-discovered local servers"
     },
@@ -111,7 +111,7 @@
     "@addServer": {
         "description": "Button to manually add a server address"
     },
-    "embyConnect": "Emby Tilslut",
+    "embyConnect": "Emby Connect",
     "@embyConnect": {
         "description": "Emby Connect sign-in option label"
     },
@@ -128,11 +128,11 @@
             }
         }
     },
-    "cancel": "Ophæve",
+    "cancel": "Annullér",
     "@cancel": {
         "description": "Generic cancel button label"
     },
-    "remove": "Fjerne",
+    "remove": "Fjern",
     "@remove": {
         "description": "Remove button label in confirmation dialogs"
     },
@@ -140,15 +140,15 @@
     "@connectToServer": {
         "description": "Dialog title for adding a server by address"
     },
-    "serverAddress": "Server adresse",
+    "serverAddress": "Server-adresse",
     "@serverAddress": {
         "description": "Label for the server URL input field"
     },
-    "serverAddressHint": "https://din-server.example.com",
+    "serverAddressHint": "https://din-server.eksempel.dk",
     "@serverAddressHint": {
         "description": "Hint text for the server URL input field"
     },
-    "connect": "Forbinde",
+    "connect": "Forbind",
     "@connect": {
         "description": "Button to initiate connection to a server"
     },
@@ -156,7 +156,7 @@
     "@secureStorageUnavailable": {
         "description": "Dialog title when system keyring is inaccessible"
     },
-    "secureStorageUnavailableMessage": "Moonfin kunne ikke få adgang til dit systemnøglering. Login kan fortsætte, men sikker token-opbevaring er muligvis ikke tilgængelig, før nøgleringen er låst op.",
+    "secureStorageUnavailableMessage": "Moonfin kunne ikke få adgang til din systemnøglering. Login kan fortsætte, men sikker token-opbevaring er muligvis ikke tilgængelig, før nøgleringen er låst op.",
     "@secureStorageUnavailableMessage": {
         "description": "Explanation when secure storage is not available"
     },
@@ -172,15 +172,15 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "Månefinne",
+    "themeMoonfin": "Moonfin",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
-    "themeMoonfinSubtitle": "Det nuværende Moonfin-look, som du alle er kommet til at elske",
+    "themeMoonfinSubtitle": "Det nuværende Moonfin-udseende, som alle vil komme til at elske",
     "@themeMoonfinSubtitle": {
         "description": "Preview description for the Moonfin theme"
     },
-    "themeNeonPulse": "Neon puls",
+    "themeNeonPulse": "Neon Pulse",
     "@themeNeonPulse": {
         "description": "Display name for the Neon Pulse theme"
     },
@@ -6785,7 +6785,7 @@
     "@mediaPreviewDescription": {
         "description": "Description for media preview"
     },
-    "keyboardPreferSystemIme": "Foretrækker systemtastatur",
+    "keyboardPreferSystemIme": "Foretræk systemtastatur",
     "@keyboardPreferSystemIme": {
         "description": "Settings label for preferring the native system keyboard instead of the custom TV keyboard"
     },
@@ -7446,5 +7446,21 @@
     "@settingsNone": {
         "description": "Option label to hide all decorations on media segment countdown overlay"
     },
-    "settingsShowSeerrButtonInNavigation": ""
+    "settingsShowSeerrButtonInNavigation": "",
+    "interfaceLanguage": "Sprog i brugerflade",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "empty": "Tom",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "systemLanguageDefault": "Samme som system",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "accountPreferences": "Kontoindstillinger",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    }
 }
