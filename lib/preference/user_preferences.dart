@@ -197,7 +197,7 @@ class UserPreferences extends ChangeNotifier {
         pref.key.startsWith('homeRowImageType_');
   }
 
-  Preference<dynamic> getEffectivePreference(Preference<dynamic> pref) {
+  Preference<T> getEffectivePreference<T>(Preference<T> pref) {
     if (_isScopedPreference(pref)) {
       final scoped = _scopedPreference(pref);
       if (scoped != null) {
@@ -207,27 +207,19 @@ class UserPreferences extends ChangeNotifier {
     return pref;
   }
 
-  Preference<dynamic>? _scopedPreference(Preference<dynamic> pref) {
+  Preference<T>? _scopedPreference<T>(Preference<T> pref) {
     final scopeSuffix = _activeProfileScopeSuffix();
     if (scopeSuffix == null) {
       return null;
     }
-    final scopedKey = '${pref.key}_$scopeSuffix';
-    if (pref is EnumPreference) {
-      return EnumPreference<Enum>(
-        key: scopedKey,
-        defaultValue: pref.defaultValue,
-        values: pref.values.cast<Enum>(),
-      );
-    }
-    return Preference<dynamic>(key: scopedKey, defaultValue: pref.defaultValue);
+    return pref.withKey('${pref.key}_$scopeSuffix');
   }
 
   T get<T>(Preference<T> pref) {
     if (_isScopedPreference(pref)) {
       final scoped = _scopedPreference(pref);
       if (scoped != null && _store.containsKey(scoped.key)) {
-        return _store.get(scoped) as T;
+        return _store.get(scoped);
       }
       return _store.get(pref);
     }
@@ -374,12 +366,13 @@ class UserPreferences extends ChangeNotifier {
         profile,
       );
 
-  bool resolveTrueHdAtmosPassthroughEnabled([AudioCapabilityProfile? profile]) =>
-      _resolvePassthrough(
-        trueHdAtmosPassthroughEnabled,
-        (p) => p.canPassthroughTrueHdJoc,
-        profile,
-      );
+  bool resolveTrueHdAtmosPassthroughEnabled([
+    AudioCapabilityProfile? profile,
+  ]) => _resolvePassthrough(
+    trueHdAtmosPassthroughEnabled,
+    (p) => p.canPassthroughTrueHdJoc,
+    profile,
+  );
 
   /// The eight per-codec passthrough toggle preferences.
   static List<Preference<bool>> get passthroughTogglePreferences =>

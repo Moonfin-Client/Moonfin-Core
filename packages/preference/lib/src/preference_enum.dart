@@ -8,4 +8,11 @@ class EnumPreference<T extends Enum> extends Preference<T> {
     required super.defaultValue,
     required this.values,
   });
+
+  @override
+  EnumPreference<T> withKey(String newKey) => EnumPreference<T>(
+    key: newKey,
+    defaultValue: defaultValue,
+    values: values,
+  );
 }
