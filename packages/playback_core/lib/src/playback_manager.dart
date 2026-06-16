@@ -1025,17 +1025,20 @@ class PlaybackManager implements AudioOwnable {
       }
     }
 
-    iif (needsReResolve && !_reResolvingForTrackMatch) {
-  _reResolvingForTrackMatch = true;
-  try {
-      await _playCurrentItem(
-        startPosition: startPosition,
-        enableDirectPlay: enableDirectPlay,
-        enableDirectStream: enableDirectStream,
-        enableTranscoding: enableTranscoding,
-        allowStartupRecovery: allowStartupRecovery,
-      );
-      return;
+    if (needsReResolve && !_reResolvingForTrackMatch) {
+      _reResolvingForTrackMatch = true;
+      try {
+        await _playCurrentItem(
+          startPosition: startPosition,
+          enableDirectPlay: enableDirectPlay,
+          enableDirectStream: enableDirectStream,
+          enableTranscoding: enableTranscoding,
+          allowStartupRecovery: allowStartupRecovery,
+        );
+        return;
+      } finally {
+        _reResolvingForTrackMatch = false;
+      }
     }
 
     _currentResolution = resolution;
@@ -2472,7 +2475,6 @@ String _normalizeLanguage(String? language) {
   final normalized = language.trim().toLowerCase();
   if (normalized.isEmpty) return '';
   return normalized.split(RegExp(r'[-_]')).first;
-  return base;
 }
 
 String _toIso3(String language) {
