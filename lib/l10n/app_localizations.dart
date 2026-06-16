@@ -2086,6 +2086,18 @@ abstract class AppLocalizations {
   /// **'DIRECTOR'**
   String get director;
 
+  /// Metadata label for directors
+  ///
+  /// In en, this message translates to:
+  /// **'DIRECTORS'**
+  String get directors;
+
+  /// Metadata label for writer
+  ///
+  /// In en, this message translates to:
+  /// **'WRITER'**
+  String get writer;
+
   /// Metadata label for writers
   ///
   /// In en, this message translates to:

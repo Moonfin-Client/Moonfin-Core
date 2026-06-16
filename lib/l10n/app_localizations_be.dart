@@ -1070,6 +1070,12 @@ class AppLocalizationsBe extends AppLocalizations {
   String get director => 'ДЫРЭКТАР';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'ПІСЬМЕННІКІ';
 
   @override

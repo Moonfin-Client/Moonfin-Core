@@ -1066,6 +1066,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get director => 'DIRECTOR';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'WRITERS';
 
   @override

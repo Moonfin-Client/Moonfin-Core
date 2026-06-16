@@ -1076,6 +1076,12 @@ class AppLocalizationsCy extends AppLocalizations {
   String get director => 'CYFARWYDDWR';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'YSGRIFENWYR';
 
   @override

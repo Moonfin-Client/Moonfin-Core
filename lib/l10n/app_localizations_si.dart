@@ -1065,6 +1065,12 @@ class AppLocalizationsSi extends AppLocalizations {
   String get director => 'අධ්යක්ෂක';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'ලේඛකයින්';
 
   @override

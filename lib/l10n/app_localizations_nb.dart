@@ -1069,6 +1069,12 @@ class AppLocalizationsNb extends AppLocalizations {
   String get director => 'DIREKTØR';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'FORRETTER';
 
   @override

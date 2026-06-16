@@ -1076,6 +1076,12 @@ class AppLocalizationsNl extends AppLocalizations {
   String get director => 'DIRECTEUR';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'SCHRIJVERS';
 
   @override

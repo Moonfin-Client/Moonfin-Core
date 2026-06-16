@@ -1071,6 +1071,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get director => 'ŘEDITEL';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'SPISOVATELÉ';
 
   @override

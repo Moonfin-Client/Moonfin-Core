@@ -1074,6 +1074,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get director => 'DIRETOR';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'ROTEIRISTAS';
 
   @override

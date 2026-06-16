@@ -1082,6 +1082,12 @@ class AppLocalizationsCa extends AppLocalizations {
   String get director => 'DIRECTORA';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'ESCRITORS';
 
   @override

@@ -1080,6 +1080,12 @@ class AppLocalizationsSw extends AppLocalizations {
   String get director => 'MKURUGENZI';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'WAANDISHI';
 
   @override

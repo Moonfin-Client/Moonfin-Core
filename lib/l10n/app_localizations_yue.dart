@@ -1039,6 +1039,12 @@ class AppLocalizationsYue extends AppLocalizations {
   String get director => '導演';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => '作家';
 
   @override

@@ -1085,6 +1085,12 @@ class AppLocalizationsEl extends AppLocalizations {
   String get director => 'ΔΙΕΥΘΥΝΤΗΣ';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'ΣΥΓΓΡΑΦΕΙΣ';
 
   @override

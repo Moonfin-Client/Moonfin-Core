@@ -1073,6 +1073,12 @@ class AppLocalizationsIt extends AppLocalizations {
   String get director => 'REGISTA';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'SCENEGGIATORI';
 
   @override

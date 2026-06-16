@@ -1076,6 +1076,12 @@ class AppLocalizationsAf extends AppLocalizations {
   String get director => 'DIREKTEUR';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'SKRYWERS';
 
   @override

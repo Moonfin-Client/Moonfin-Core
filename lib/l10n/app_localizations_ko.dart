@@ -1043,6 +1043,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get director => '감독';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => '작가';
 
   @override

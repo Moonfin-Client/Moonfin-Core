@@ -1078,6 +1078,12 @@ class AppLocalizationsMl extends AppLocalizations {
   String get director => 'ഡയറക്ടർ';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'എഴുത്തുകാർ';
 
   @override

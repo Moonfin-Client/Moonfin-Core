@@ -1067,6 +1067,12 @@ class AppLocalizationsBn extends AppLocalizations {
   String get director => 'পরিচালক';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'লেখক';
 
   @override

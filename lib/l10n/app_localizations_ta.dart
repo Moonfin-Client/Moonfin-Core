@@ -1078,6 +1078,12 @@ class AppLocalizationsTa extends AppLocalizations {
   String get director => 'இயக்குனர்';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'எழுத்தாளர்கள்';
 
   @override

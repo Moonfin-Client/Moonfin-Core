@@ -1071,6 +1071,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get director => 'YÖNETMEN';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'YAZARLAR';
 
   @override

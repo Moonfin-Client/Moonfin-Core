@@ -1073,6 +1073,12 @@ class AppLocalizationsHr extends AppLocalizations {
   String get director => 'DIREKTOR';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'KNJIŽEVNICI';
 
   @override

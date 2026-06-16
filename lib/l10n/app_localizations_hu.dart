@@ -1074,6 +1074,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get director => 'IGAZGATÓ';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'ÍRÓK';
 
   @override

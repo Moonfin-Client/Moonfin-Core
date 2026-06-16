@@ -1079,6 +1079,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get director => 'RÉALISATEUR';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'SCÉNARISTES';
 
   @override

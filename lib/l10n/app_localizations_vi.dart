@@ -1074,6 +1074,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get director => 'GIÁM ĐỐC';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'nhà văn';
 
   @override

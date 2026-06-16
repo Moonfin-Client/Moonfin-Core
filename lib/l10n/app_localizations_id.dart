@@ -1076,6 +1076,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get director => 'DIREKTUR';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'PENULIS';
 
   @override

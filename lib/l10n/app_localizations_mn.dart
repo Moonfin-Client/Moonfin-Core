@@ -1070,6 +1070,12 @@ class AppLocalizationsMn extends AppLocalizations {
   String get director => 'ЗАХИРАЛ';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'ЗОХИОЛЧИД';
 
   @override

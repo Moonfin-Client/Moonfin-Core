@@ -1080,6 +1080,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get director => 'REGIE';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'DREHBUCH';
 
   @override

@@ -8864,6 +8864,7 @@ class _MetadataGroupCell extends StatefulWidget {
   final VoidCallback? onRight;
   final VoidCallback onUp;
   final VoidCallback onDown;
+  final BorderRadius borderRadius;
 
   const _MetadataGroupCell({
     required this.title,
@@ -8876,6 +8877,7 @@ class _MetadataGroupCell extends StatefulWidget {
     required this.onEnter,
     required this.onUp,
     required this.onDown,
+    required this.borderRadius,
     this.onLeft,
     this.onRight,
   });
@@ -8933,7 +8935,7 @@ class _MetadataGroupCellState extends State<_MetadataGroupCell>
             color: showCellBorder ? focusColor : Colors.transparent,
             width: 1.5,
           ),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: widget.borderRadius,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -9042,7 +9044,9 @@ class _MetadataSectionState extends State<_MetadataSection> {
     if (widget.viewModel.directors.isNotEmpty) {
       newGroups.add(
         _MetadataGroup(
-          title: l10n.director,
+          title: widget.viewModel.directors.length == 1
+              ? l10n.director
+              : l10n.directors,
           items: widget.viewModel.directors.map((d) {
             final name = d['Name'] as String? ?? '';
             final id = d['Id'] as String?;
@@ -9061,7 +9065,9 @@ class _MetadataSectionState extends State<_MetadataSection> {
     if (widget.viewModel.writers.isNotEmpty) {
       newGroups.add(
         _MetadataGroup(
-          title: l10n.writers,
+          title: widget.viewModel.writers.length == 1
+              ? l10n.writer
+              : l10n.writers,
           items: widget.viewModel.writers.map((w) {
             final name = w['Name'] as String? ?? '';
             final id = w['Id'] as String?;
@@ -9275,6 +9281,12 @@ class _MetadataSectionState extends State<_MetadataSection> {
                                       .requestFocus(),
                               onUp: () => _focusTarget(widget.upTarget),
                               onDown: () => _focusTarget(widget.downTarget),
+                              borderRadius: BorderRadius.only(
+                                topLeft: groupIndex == 0 ? const Radius.circular(11) : Radius.zero,
+                                bottomLeft: groupIndex == 0 ? const Radius.circular(11) : Radius.zero,
+                                topRight: groupIndex == _groups.length - 1 ? const Radius.circular(11) : Radius.zero,
+                                bottomRight: groupIndex == _groups.length - 1 ? const Radius.circular(11) : Radius.zero,
+                              ),
                             ),
                           ),
                         ],

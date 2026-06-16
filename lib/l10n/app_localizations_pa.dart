@@ -1070,6 +1070,12 @@ class AppLocalizationsPa extends AppLocalizations {
   String get director => 'ਡਾਇਰੈਕਟਰ';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'ਲੇਖਕ';
 
   @override

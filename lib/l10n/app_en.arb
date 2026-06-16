@@ -1470,6 +1470,14 @@
   "@director": {
     "description": "Metadata label for director"
   },
+  "directors": "DIRECTORS",
+  "@directors": {
+    "description": "Metadata label for directors"
+  },
+  "writer": "WRITER",
+  "@writer": {
+    "description": "Metadata label for writer"
+  },
   "writers": "WRITERS",
   "@writers": {
     "description": "Metadata label for writers"

@@ -1073,6 +1073,12 @@ class AppLocalizationsKn extends AppLocalizations {
   String get director => 'ನಿರ್ದೇಶಕ';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'ಬರಹಗಾರರು';
 
   @override

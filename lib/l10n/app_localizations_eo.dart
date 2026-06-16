@@ -1069,6 +1069,12 @@ class AppLocalizationsEo extends AppLocalizations {
   String get director => 'DIRECTORO';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'SKRIBOJ';
 
   @override

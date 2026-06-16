@@ -1068,6 +1068,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get director => 'निदेशक';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'लेखक';
 
   @override

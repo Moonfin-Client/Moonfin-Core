@@ -1074,6 +1074,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get director => 'ДИРЕКТОР';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'ПИСАТЕЛИ';
 
   @override

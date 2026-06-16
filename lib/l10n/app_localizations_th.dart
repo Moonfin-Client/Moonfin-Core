@@ -1063,6 +1063,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get director => 'ผู้อำนวยการ';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'นักเขียน';
 
   @override

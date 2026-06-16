@@ -1075,6 +1075,12 @@ class AppLocalizationsSk extends AppLocalizations {
   String get director => 'RIADITEĽ';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'SPISOVATELIA';
 
   @override

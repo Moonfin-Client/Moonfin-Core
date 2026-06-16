@@ -1078,6 +1078,12 @@ class AppLocalizationsSq extends AppLocalizations {
   String get director => 'DREJTOR';
 
   @override
+  String get directors => 'DIRECTORS';
+
+  @override
+  String get writer => 'WRITER';
+
+  @override
   String get writers => 'SHKRIMTARËT';
 
   @override
