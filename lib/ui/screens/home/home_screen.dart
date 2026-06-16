@@ -1900,14 +1900,69 @@ class _ContentRowsState extends State<_ContentRows>
     return _rowKeys[rowIndex]?.currentState as LockedFocusRowState?;
   }
 
+  double _staticRowHeight(int rowIndex) {
+    final row = rowIndex < widget.viewModel.rows.length ? widget.viewModel.rows[rowIndex] : null;
+    if (row == null) return 0.0;
+
+    final prefs = widget.prefs;
+    final posterSize =
+        (_isHomeRowsStyleV2() &&
+            !prefs.containsPreference(UserPreferences.posterSize))
+        ? PosterSize.small
+        : prefs.get(UserPreferences.posterSize);
+
+    final desktopScale = _desktopUiScaleFactor();
+    final metadataScale = desktopScale;
+    final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isSeerrFilterRow(row);
+
+    double childHeight = 0.0;
+    if (row.isLoading) {
+      childHeight = 220.0 * metadataScale;
+    } else if (row.rowType == HomeRowType.liveTv ||
+        row.rowType == HomeRowType.libraryTilesSmall) {
+      final squarePosterSide = _squarePosterSide(posterSize);
+      childHeight = squarePosterSide + (56 * metadataScale);
+    } else {
+      final isSeerrRowOverride = _isSeerrFilterRow(row);
+      final rowImageType = isSeerrRowOverride
+          ? ImageType.thumb
+          : (isRowsV2 ? ImageType.poster : _homeRowImageTypeForRow(row, prefs));
+      final platformScale = PlatformDetection.isTV ? 0.8 * desktopScale : desktopScale;
+      var maxCardHeight = 220.0 * metadataScale;
+      if (isRowsV2) {
+        final imageHeight = posterSize.portraitHeight.toDouble() * platformScale * 2;
+        maxCardHeight = imageHeight + (_v2MetadataHeightBudget(prefs) * metadataScale);
+      } else {
+        for (final item in row.items) {
+          final aspectRatio = _aspectRatioForRowItem(item, row, rowImageType);
+          final imageHeight = (aspectRatio > 1
+              ? posterSize.landscapeHeight.toDouble()
+              : posterSize.portraitHeight.toDouble()) * platformScale;
+          final cardHeight = imageHeight + (46 * metadataScale);
+          if (cardHeight > maxCardHeight) {
+            maxCardHeight = cardHeight;
+          }
+        }
+      }
+      childHeight = maxCardHeight + (10 * metadataScale);
+    }
+
+    final isSeerrRow = row.id.startsWith('seerr_');
+    final hasSubtitle = isSeerrRow && (row.rowType != HomeRowType.liveTv && row.rowType != HomeRowType.libraryTilesSmall);
+    final headerPaddingTop = isRowsV2 ? 6.0 : 16.0;
+    final headerPaddingBottom = isRowsV2 ? 1.0 : 8.0;
+    final titleHeight = 20.0 * metadataScale;
+    final subtitleHeight = hasSubtitle ? (18.0 * metadataScale) : 0.0;
+    final headerHeight = headerPaddingTop + headerPaddingBottom + titleHeight + subtitleHeight;
+
+    return childHeight + headerHeight;
+  }
+
   double _tvTargetTopForRow(int rowIndex) {
     final defaultTop = _overlayBottom + 8.0;
-    final row = rowIndex < widget.viewModel.rows.length
-        ? widget.viewModel.rows[rowIndex]
-        : null;
-    final isRowsV2 =
-        row != null &&
-        widget.prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 &&
+    final row = rowIndex < widget.viewModel.rows.length ? widget.viewModel.rows[rowIndex] : null;
+    if (row == null) return defaultTop;
+    final isRowsV2 = widget.prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 &&
         !_isSeerrFilterRow(row);
 
     if (rowIndex == 0 && _rowTopOffsets.isNotEmpty) {
@@ -1919,20 +1974,9 @@ class _ContentRowsState extends State<_ContentRows>
       }
     }
 
-    final containerCtx = _rowContainerKeys[rowIndex]?.currentContext;
     final stackRender = context.findRenderObject();
-    if (containerCtx == null || stackRender is! RenderBox) {
-      return rowIndex == 0 && _rowTopOffsets.isNotEmpty
-          ? _rowTopOffsets[0]
-          : defaultTop;
-    }
-    final containerRender = containerCtx.findRenderObject();
-    if (containerRender is! RenderBox ||
-        !stackRender.hasSize ||
-        !containerRender.hasSize) {
-      return rowIndex == 0 && _rowTopOffsets.isNotEmpty
-          ? _rowTopOffsets[0]
-          : defaultTop;
+    if (stackRender is! RenderBox || !stackRender.hasSize) {
+      return rowIndex == 0 && _rowTopOffsets.isNotEmpty ? _rowTopOffsets[0] : defaultTop;
     }
 
     final viewportHeight = stackRender.size.height;
@@ -1943,7 +1987,7 @@ class _ContentRowsState extends State<_ContentRows>
         widget.prefs.get(UserPreferences.enableAdditionalRatings) as bool? ??
         false;
     final extraHeight = ratingsEnabled ? (32.0 * desktopScale) : 0.0;
-    final rowHeight = containerRender.size.height + extraHeight;
+    final rowHeight = _staticRowHeight(rowIndex) + extraHeight;
 
     if (rowIndex == 0 && _rowTopOffsets.isNotEmpty) {
       final safeBottomMargin = 40.0 * desktopScale;
@@ -1969,31 +2013,14 @@ class _ContentRowsState extends State<_ContentRows>
   Future<void> _scrollTvRowIntoOverlayBand(int rowIndex) async {
     if (!mounted || !_scrollController.hasClients) return;
 
-    final containerCtx = _rowContainerKeys[rowIndex]?.currentContext;
-    final stackRender = context.findRenderObject();
-    if (containerCtx == null || stackRender is! RenderBox) {
-      return;
-    }
-
-    final containerRender = containerCtx.findRenderObject();
-    if (containerRender is! RenderBox ||
-        !stackRender.hasSize ||
-        !containerRender.hasSize) {
-      return;
-    }
-
-    final containerTopInStack = containerRender
-        .localToGlobal(Offset.zero, ancestor: stackRender)
-        .dy;
 
     final targetTop = _tvTargetTopForRow(rowIndex);
-    final scrollDelta = containerTopInStack - targetTop;
-    final currentOffset = _scrollController.offset;
-    final targetOffset = (currentOffset + scrollDelta).clamp(
+    final targetOffset = (_rowTopOffsets[rowIndex] - targetTop).clamp(
       0.0,
       _scrollController.position.maxScrollExtent,
     );
 
+    final currentOffset = _scrollController.offset;
     if ((targetOffset - currentOffset).abs() <= 1.0) {
       return;
     }
@@ -2498,11 +2525,12 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   double _estimatedRowExtent(
+    int rowIndex,
     HomeRow row,
     PosterSize posterSize,
     UserPreferences prefs,
   ) {
-    var extent = _rowContentHeight(row, posterSize, prefs);
+    var extent = _staticRowHeight(rowIndex);
 
     final fullScreenRows =
         !PlatformDetection.useMobileUi &&
@@ -2574,9 +2602,10 @@ class _ContentRowsState extends State<_ContentRows>
         _cachedExtentPrefsVersion == _layoutPrefsVersion) {
       return _cachedRowExtents!;
     }
-    final extents = rows
-        .map((row) => _estimatedRowExtent(row, posterSize, prefs))
-        .toList(growable: false);
+    final extents = <double>[];
+    for (var i = 0; i < rows.length; i++) {
+      extents.add(_estimatedRowExtent(i, rows[i], posterSize, prefs));
+    }
     _rowImageUrlCache.clear();
     _cachedExtentRows = rows;
     _cachedExtentPosterSize = posterSize;
@@ -2831,7 +2860,7 @@ class _ContentRowsState extends State<_ContentRows>
     if (includeMediaBar) {
       currentTop += mediaBarHeight;
     }
-    final focusedRowSpacing = PlatformDetection.isTV
+    final focusedRowSpacing = PlatformDetection.isTV && !fullScreenRows
         ? _focusedRowExtraSpacing * 2
         : 0.0;
     for (var i = 0; i < rowExtents.length; i++) {
@@ -2897,207 +2926,189 @@ class _ContentRowsState extends State<_ContentRows>
       },
       child: Stack(
         children: [
-          Positioned.fill(
-            child: Focus(
-              canRequestFocus: false,
-              skipTraversal: true,
-              onKeyEvent: (_, event) => _handleRowsKeyEvent(event),
-              child: ListView.builder(
-                controller: _scrollController,
-                padding: EdgeInsets.only(
-                  top: listTopPadding,
-                  bottom: neededBottomPadding,
-                ),
-                itemCount: rows.length + headerCount,
-                cacheExtent: 600,
-                itemBuilder: (context, index) {
-                  if (includeMediaBar && index == 0) {
-                    return AnimatedOpacity(
-                      duration: _mediaBarFadeDuration,
-                      curve: Curves.easeInOutCubic,
-                      opacity: _mediaBarVisible ? 1.0 : 0.0,
-                      child: IgnorePointer(
-                        ignoring: !_mediaBarVisible,
-                        child: bannerMode
-                            ? BannerMediaBar(
-                                viewModel: widget.mediaBarViewModel,
-                                prefs: prefs,
-                                height: mediaBarHeight,
-                                externallyPaused:
-                                    carouselPaused ||
-                                    !_mediaBarVisible ||
-                                    _activePreviewKey != null,
-                                focusNode: _mediaBarFocusNode,
-                                onNavigateDown: _moveFocusFromMediaBarToRows,
-                                onNavigateUp: _navigateFromMediaBarToNavbar,
-                                onNavigateLeft: navbarIsLeft
-                                    ? _navigateFromMediaBarToNavbar
-                                    : null,
-                                onOpen: (item) => context.push(
-                                  Destinations.item(
-                                    item.itemId,
-                                    serverId: item.serverId,
-                                  ),
-                                ),
-                                onPlay: (item) => context.push(
-                                  Destinations.item(
-                                    item.itemId,
-                                    serverId: item.serverId,
-                                    autoPlay: true,
-                                  ),
-                                ),
-                              )
-                            : MediaBar(
-                                viewModel: widget.mediaBarViewModel,
-                                prefs: prefs,
-                                externallyPaused:
-                                    carouselPaused ||
-                                    !_mediaBarVisible ||
-                                    _activePreviewKey != null,
-                                height: mediaBarHeight,
-                                onNavigateDown: _moveFocusFromMediaBarToRows,
-                                onNavigateUp: _navigateFromMediaBarToNavbar,
-                                onNavigateLeft: navbarIsLeft
-                                    ? _navigateFromMediaBarToNavbar
-                                    : null,
-                                focusNode: _mediaBarFocusNode,
-                              ),
-                      ),
-                    );
-                  }
-                  final infoIndex = includeMediaBar ? 1 : 0;
-                  if (index == infoIndex) {
-                    return SizedBox(height: infoPlaceholderHeight);
-                  }
-                  final row = rows[index - headerCount];
-                  final rowIndex = index - headerCount;
-                  final l10n = AppLocalizations.of(context);
-                  late final Widget rowChild;
-                  if (row.isLoading) {
-                    rowChild = LibraryRow(
-                      title: _localizedRowTitle(row, l10n),
-                      isLoading: true,
-                      children: const [],
-                    );
-                  } else if (row.rowType == HomeRowType.liveTv) {
-                    rowChild = _buildLiveTvRow(
-                      row,
-                      focusColor,
-                      cardExpansion,
-                      posterSize: posterSize,
-                      rowIndex: rowIndex,
-                      rows: rows,
-                    );
-                  } else if (row.rowType == HomeRowType.libraryTilesSmall) {
-                    rowChild = _buildLibraryButtonsRow(
-                      row,
-                      focusColor,
-                      cardExpansion,
-                      posterSize: posterSize,
-                      rowIndex: rowIndex,
-                      rows: rows,
-                    );
-                  } else {
-                    rowChild = _buildMediaRow(
-                      row: row,
-                      rowIndex: rowIndex,
-                      rows: rows,
-                      prefs: prefs,
-                      posterSize: posterSize,
-                      watchedBehavior: watchedBehavior,
-                      focusColor: focusColor,
-                      cardExpansion: cardExpansion,
-                      useSeriesThumbs: useSeriesThumbs,
-                      l10n: l10n,
-                    );
-                  }
-
-                  final contentHeight = _rowContentHeight(
-                    row,
-                    posterSize,
-                    prefs,
-                  );
-                  final targetExtent = rowExtents[rowIndex];
-                  final isRowsV2 =
-                      prefs.get(UserPreferences.homeRowsStyle) ==
-                          HomeRowsStyle.v2 &&
-                      !_isSeerrFilterRow(row);
-                  final extraTopPadding = fullScreenRows
-                      ? (isRowsV2
-                            ? ((targetExtent - contentHeight) * 0.1).clamp(
-                                0.0,
-                                double.infinity,
-                              )
-                            : ((targetExtent - contentHeight) / 2.0).clamp(
-                                0.0,
-                                double.infinity,
-                              ))
-                      : 0.0;
-
-                  final paddedRowChild = extraTopPadding > 0.0
-                      ? Padding(
-                          padding: EdgeInsets.only(top: extraTopPadding),
-                          child: rowChild,
-                        )
-                      : rowChild;
-
-                  if (row.isLoading) {
-                    final itemWidget = Padding(
-                      padding: EdgeInsets.only(left: rowLeftInset),
-                      child: _buildShiftedRow(
-                        child: paddedRowChild,
-                        rowIndex: rowIndex,
-                        rowTopOffsets: rowTopOffsets,
-                        rowExtents: rowExtents,
-                        showInfoOverlay: showInfoOverlay,
-                        overlayBottom: overlayBottom,
-                      ),
-                    );
-                    if (fullScreenRows) {
-                      return SizedBox(
-                        height: rowExtents[rowIndex],
-                        child: itemWidget,
-                      );
-                    }
-                    return itemWidget;
-                  }
-
-                  final itemWidget = Padding(
-                    padding: EdgeInsets.only(left: rowLeftInset),
-                    child: AnimatedPadding(
-                      duration: _focusedRowSpacingDuration,
-                      curve: Curves.easeOut,
-                      padding: EdgeInsets.symmetric(
-                        vertical:
-                            (PlatformDetection.isTV &&
-                                rowIndex == _activeFocusedRowIndex)
-                            ? _focusedRowExtraSpacing
-                            : 0,
-                      ),
-                      child: _buildShiftedRow(
-                        child: paddedRowChild,
-                        rowIndex: rowIndex,
-                        rowTopOffsets: rowTopOffsets,
-                        rowExtents: rowExtents,
-                        showInfoOverlay: showInfoOverlay,
-                        overlayBottom: overlayBottom,
-                      ),
-                    ),
-                  );
-                  if (fullScreenRows) {
-                    return SizedBox(
-                      height:
-                          rowExtents[rowIndex] +
-                          ((PlatformDetection.isTV &&
-                                  rowIndex == _activeFocusedRowIndex)
-                              ? _focusedRowExtraSpacing * 2
-                              : 0.0),
-                      child: itemWidget,
-                    );
-                  }
-                  return itemWidget;
-                },
+        Positioned.fill(
+          child: Focus(
+            canRequestFocus: false,
+            skipTraversal: true,
+            onKeyEvent: (_, event) => _handleRowsKeyEvent(event),
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: EdgeInsets.only(
+                top: listTopPadding,
+                bottom: neededBottomPadding,
               ),
+              itemCount: rows.length + headerCount,
+              cacheExtent: 600,
+              itemBuilder: (context, index) {
+              if (includeMediaBar && index == 0) {
+                return AnimatedOpacity(
+                  duration: _mediaBarFadeDuration,
+                  curve: Curves.easeInOutCubic,
+                  opacity: _mediaBarVisible ? 1.0 : 0.0,
+                  child: IgnorePointer(
+                    ignoring: !_mediaBarVisible,
+                    child: bannerMode
+                        ? BannerMediaBar(
+                            viewModel: widget.mediaBarViewModel,
+                            prefs: prefs,
+                            height: mediaBarHeight,
+                            externallyPaused:
+                                carouselPaused ||
+                                !_mediaBarVisible ||
+                                _activePreviewKey != null,
+                            focusNode: _mediaBarFocusNode,
+                            onNavigateDown: _moveFocusFromMediaBarToRows,
+                            onNavigateUp: _navigateFromMediaBarToNavbar,
+                            onNavigateLeft: navbarIsLeft
+                                ? _navigateFromMediaBarToNavbar
+                                : null,
+                            onOpen: (item) => context.push(
+                              Destinations.item(
+                                item.itemId,
+                                serverId: item.serverId,
+                              ),
+                            ),
+                            onPlay: (item) => context.push(
+                              Destinations.item(
+                                item.itemId,
+                                serverId: item.serverId,
+                                autoPlay: true,
+                              ),
+                            ),
+                          )
+                        : MediaBar(
+                            viewModel: widget.mediaBarViewModel,
+                            prefs: prefs,
+                            externallyPaused:
+                                carouselPaused ||
+                                !_mediaBarVisible ||
+                                _activePreviewKey != null,
+                            height: mediaBarHeight,
+                            onNavigateDown: _moveFocusFromMediaBarToRows,
+                            onNavigateUp: _navigateFromMediaBarToNavbar,
+                            onNavigateLeft: navbarIsLeft
+                                ? _navigateFromMediaBarToNavbar
+                                : null,
+                            focusNode: _mediaBarFocusNode,
+                          ),
+                  ),
+                );
+              }
+              final infoIndex = includeMediaBar ? 1 : 0;
+              if (index == infoIndex) {
+                return SizedBox(height: infoPlaceholderHeight);
+              }
+              final row = rows[index - headerCount];
+              final rowIndex = index - headerCount;
+              final l10n = AppLocalizations.of(context);
+              late final Widget rowChild;
+              if (row.isLoading) {
+                rowChild = LibraryRow(
+                  title: _localizedRowTitle(row, l10n),
+                  isLoading: true,
+                  children: const [],
+                );
+              } else if (row.rowType == HomeRowType.liveTv) {
+                rowChild = _buildLiveTvRow(
+                  row,
+                  focusColor,
+                  cardExpansion,
+                  posterSize: posterSize,
+                  rowIndex: rowIndex,
+                  rows: rows,
+                );
+              } else if (row.rowType == HomeRowType.libraryTilesSmall) {
+                rowChild = _buildLibraryButtonsRow(
+                  row,
+                  focusColor,
+                  cardExpansion,
+                  posterSize: posterSize,
+                  rowIndex: rowIndex,
+                  rows: rows,
+                );
+              } else {
+                rowChild = _buildMediaRow(
+                  row: row,
+                  rowIndex: rowIndex,
+                  rows: rows,
+                  prefs: prefs,
+                  posterSize: posterSize,
+                  watchedBehavior: watchedBehavior,
+                  focusColor: focusColor,
+                  cardExpansion: cardExpansion,
+                  useSeriesThumbs: useSeriesThumbs,
+                  l10n: l10n,
+                );
+              }
+
+              final contentHeight = _rowContentHeight(row, posterSize, prefs);
+              final targetExtent = rowExtents[rowIndex];
+              final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isSeerrFilterRow(row);
+              final extraTopPadding = fullScreenRows
+                  ? (isRowsV2
+                      ? ((targetExtent - contentHeight) * 0.1).clamp(0.0, double.infinity)
+                      : ((targetExtent - contentHeight) / 2.0).clamp(0.0, double.infinity))
+                  : 0.0;
+
+              final paddedRowChild = extraTopPadding > 0.0
+                  ? Padding(
+                      padding: EdgeInsets.only(top: extraTopPadding),
+                      child: rowChild,
+                    )
+                  : rowChild;
+
+              if (row.isLoading) {
+                final itemWidget = Padding(
+                  padding: EdgeInsets.only(left: rowLeftInset),
+                  child: _buildShiftedRow(
+                    child: paddedRowChild,
+                    rowIndex: rowIndex,
+                    rowTopOffsets: rowTopOffsets,
+                    rowExtents: rowExtents,
+                    showInfoOverlay: showInfoOverlay,
+                    overlayBottom: overlayBottom,
+                  ),
+                );
+                if (fullScreenRows) {
+                  return SizedBox(
+                    height: rowExtents[rowIndex],
+                    child: itemWidget,
+                  );
+                }
+                return itemWidget;
+              }
+
+              final itemWidget = Padding(
+                padding: EdgeInsets.only(left: rowLeftInset),
+                child: AnimatedPadding(
+                  duration: _focusedRowSpacingDuration,
+                  curve: Curves.easeOut,
+                  padding: EdgeInsets.symmetric(
+                    vertical:
+                        (PlatformDetection.isTV &&
+                            !fullScreenRows &&
+                            rowIndex == _activeFocusedRowIndex)
+                        ? _focusedRowExtraSpacing
+                        : 0,
+                  ),
+                  child: _buildShiftedRow(
+                    child: paddedRowChild,
+                    rowIndex: rowIndex,
+                    rowTopOffsets: rowTopOffsets,
+                    rowExtents: rowExtents,
+                    showInfoOverlay: showInfoOverlay,
+                    overlayBottom: overlayBottom,
+                  ),
+                ),
+              );
+              if (fullScreenRows) {
+                return SizedBox(
+                  height: rowExtents[rowIndex],
+                  child: itemWidget,
+                );
+              }
+              return itemWidget;
+              },
             ),
           ),
           if (_infoRevealed && showInfoOverlay)
