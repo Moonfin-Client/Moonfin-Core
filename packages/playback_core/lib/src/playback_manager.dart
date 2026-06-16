@@ -45,6 +45,7 @@ class PlaybackManager implements AudioOwnable {
   StreamResolutionResult? _currentResolution;
   dynamic _lastPlaybackItem;
   StreamResolutionResult? _lastPlaybackResolution;
+  bool _reResolvingForTrackMatch = false;
   int? _audioStreamIndex;
   int? _subtitleStreamIndex;
   bool _audioSelectionExplicit = false;
