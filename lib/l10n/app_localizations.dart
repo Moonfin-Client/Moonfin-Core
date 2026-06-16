@@ -868,6 +868,24 @@ abstract class AppLocalizations {
   /// **'Extra Large'**
   String get extraLarge;
 
+  /// Section header for scroll direction selection in library display settings
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll Direction'**
+  String get scrollDirection;
+
+  /// Library scroll direction option: vertical grid (default)
+  ///
+  /// In en, this message translates to:
+  /// **'Vertical'**
+  String get scrollDirectionVertical;
+
+  /// Library scroll direction option: horizontal grid for ultrawide displays
+  ///
+  /// In en, this message translates to:
+  /// **'Horizontal'**
+  String get scrollDirectionHorizontal;
+
   /// Header title showing library name with genres suffix
   ///
   /// In en, this message translates to:

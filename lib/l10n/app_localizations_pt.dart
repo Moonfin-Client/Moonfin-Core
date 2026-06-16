@@ -367,6 +367,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get extraLarge => 'Extra Grande';
 
   @override
+  String get scrollDirection => 'Scroll Direction';
+
+  @override
+  String get scrollDirectionVertical => 'Vertical';
+
+  @override
+  String get scrollDirectionHorizontal => 'Horizontal';
+
+  @override
   String libraryGenresTitle(String name) {
     return '$name — Gêneros';
   }
