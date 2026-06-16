@@ -2475,6 +2475,7 @@ String _normalizeLanguage(String? language) {
 }
 
 String _toIso3(String language) {
+  if (_kLanguageKeywords.containsKey(language)) return _kLanguageKeywords[language]!;
   if (language.length == 3) return language;
   return _kIso6391To6392[language] ?? language;
 }
