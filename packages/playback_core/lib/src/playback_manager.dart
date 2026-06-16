@@ -45,9 +45,13 @@ class PlaybackManager implements AudioOwnable {
   StreamResolutionResult? _currentResolution;
   dynamic _lastPlaybackItem;
   StreamResolutionResult? _lastPlaybackResolution;
+  bool _reResolvingForTrackMatch = false;
   int? _audioStreamIndex;
   int? _subtitleStreamIndex;
+  bool _audioSelectionExplicit = false;
   bool _subtitleSelectionExplicit = false;
+  bool _pendingItemAudioSelectionExplicit = false;
+  bool _pendingItemSubtitleSelectionExplicit = false;
   String? _mediaSourceId;
   String? _pendingItemOverrideId;
   int? _pendingItemAudioStreamIndex;
@@ -182,6 +186,8 @@ class PlaybackManager implements AudioOwnable {
     int? audioStreamIndex,
     int? subtitleStreamIndex,
     String? mediaSourceId,
+    bool audioSelectionExplicit = false,
+    bool subtitleSelectionExplicit = false,
   }) {
     final normalizedItemId = itemId.trim();
     if (normalizedItemId.isEmpty) {
@@ -195,6 +201,8 @@ class PlaybackManager implements AudioOwnable {
     _pendingItemMediaSourceId = mediaSourceId == null || mediaSourceId.isEmpty
         ? null
         : mediaSourceId;
+    _pendingItemAudioSelectionExplicit = audioSelectionExplicit;
+    _pendingItemSubtitleSelectionExplicit = subtitleSelectionExplicit;
   }
 
   List<Map<String, dynamic>> get _currentMediaStreams {
@@ -579,7 +587,8 @@ class PlaybackManager implements AudioOwnable {
 
     _audioStreamIndex = _pendingItemAudioStreamIndex;
     _subtitleStreamIndex = _pendingItemSubtitleStreamIndex;
-    _subtitleSelectionExplicit = false;
+    _audioSelectionExplicit = _pendingItemAudioSelectionExplicit;
+    _subtitleSelectionExplicit = _pendingItemSubtitleSelectionExplicit;
     _mediaSourceId = _pendingItemMediaSourceId;
     _clearPendingItemOverrides();
     return true;
@@ -756,6 +765,8 @@ class PlaybackManager implements AudioOwnable {
     int? audioStreamIndex,
     int? subtitleStreamIndex,
     String? mediaSourceId,
+    bool audioSelectionExplicit = false,
+    bool subtitleSelectionExplicit = false,
     bool enableDirectPlay = true,
     bool enableDirectStream = true,
     bool enableTranscoding = true,
@@ -783,7 +794,8 @@ class PlaybackManager implements AudioOwnable {
     _resetBackendSelectionLock();
     _audioStreamIndex = audioStreamIndex;
     _subtitleStreamIndex = subtitleStreamIndex;
-    _subtitleSelectionExplicit = false;
+    _audioSelectionExplicit = audioSelectionExplicit;
+    _subtitleSelectionExplicit = subtitleSelectionExplicit;
     _mediaSourceId = mediaSourceId;
     _forceTranscodeForQueue = !enableDirectPlay && !enableDirectStream;
     final adjuster = _startPositionAdjuster;
@@ -976,11 +988,92 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
 
+    bool needsReResolve = false;
+
+    if (_lastExplicitAudioLanguage != null) {
+      final matchedIdx = _matchStreamIndexByLanguage(
+        resolution.mediaStreams,
+        _lastExplicitAudioLanguage,
+        'Audio',
+      );
+      if (matchedIdx != null && _audioStreamIndex != matchedIdx) {
+        _audioStreamIndex = matchedIdx;
+        if (resolution.playMethod == StreamPlayMethod.transcode) {
+          needsReResolve = true;
+        }
+      }
+    }
+
+    if (_lastExplicitSubtitleEnabled == false) {
+      if (_subtitleStreamIndex != -1) {
+        _subtitleStreamIndex = -1;
+        if (resolution.playMethod == StreamPlayMethod.transcode) {
+          needsReResolve = true;
+        }
+      }
+    } else if (_lastExplicitSubtitleLanguage != null) {
+      final matchedIdx = _matchStreamIndexByLanguage(
+        resolution.mediaStreams,
+        _lastExplicitSubtitleLanguage,
+        'Subtitle',
+      );
+      if (matchedIdx != null && _subtitleStreamIndex != matchedIdx) {
+        _subtitleStreamIndex = matchedIdx;
+        if (resolution.playMethod == StreamPlayMethod.transcode) {
+          needsReResolve = true;
+        }
+      }
+    }
+
+    if (needsReResolve && !_reResolvingForTrackMatch) {
+      _reResolvingForTrackMatch = true;
+      try {
+        await _playCurrentItem(
+          startPosition: startPosition,
+          enableDirectPlay: enableDirectPlay,
+          enableDirectStream: enableDirectStream,
+          enableTranscoding: enableTranscoding,
+          allowStartupRecovery: allowStartupRecovery,
+        );
+        return;
+      } finally {
+        _reResolvingForTrackMatch = false;
+      }
+    }
+
     _currentResolution = resolution;
     _lastPlaybackItem = item;
     _lastPlaybackResolution = resolution;
     _mediaSourceId = resolution.mediaSourceId;
     _itemKnownDuration = _resolvedItemDuration(item, resolution.mediaSourceId);
+
+    if (_audioStreamIndex != null && _audioSelectionExplicit) {
+      final audioStreams = resolution.mediaStreams.where((s) => s['Type'] == 'Audio').toList();
+      final stream = audioStreams.firstWhere(
+        (s) => s['Index'] == _audioStreamIndex,
+        orElse: () => const <String, dynamic>{},
+      );
+      if (stream.isNotEmpty) {
+        _lastExplicitAudioLanguage = _extractLanguage(stream);
+      }
+    }
+
+    if (_subtitleStreamIndex != null && _subtitleSelectionExplicit) {
+      if (_subtitleStreamIndex == -1) {
+        _lastExplicitSubtitleEnabled = false;
+        _lastExplicitSubtitleLanguage = null;
+      } else {
+        _lastExplicitSubtitleEnabled = true;
+        final subtitleStreams = resolution.mediaStreams.where((s) => s['Type'] == 'Subtitle').toList();
+        final stream = subtitleStreams.firstWhere(
+          (s) => s['Index'] == _subtitleStreamIndex,
+          orElse: () => const <String, dynamic>{},
+        );
+        if (stream.isNotEmpty) {
+          _lastExplicitSubtitleLanguage = _extractLanguage(stream);
+        }
+      }
+    }
 
     if (_audioStreamIndex == null) {
       // Keep the server-selected audio index for later re-resolves.
@@ -1423,6 +1516,7 @@ class PlaybackManager implements AudioOwnable {
 
   Future<void> changeAudioTrack(int streamIndex) async {
     _audioStreamIndex = streamIndex;
+    _audioSelectionExplicit = true;
     final streams = _currentMediaStreams;
     if (streams.isNotEmpty) {
       final selectedStream = streams.firstWhere(
@@ -1430,7 +1524,7 @@ class PlaybackManager implements AudioOwnable {
         orElse: () => const <String, dynamic>{},
       );
       if (selectedStream.isNotEmpty) {
-        _lastExplicitAudioLanguage = selectedStream['Language'] as String?;
+        _lastExplicitAudioLanguage = _extractLanguage(selectedStream);
       }
     }
 
@@ -1611,7 +1705,7 @@ class PlaybackManager implements AudioOwnable {
           orElse: () => const <String, dynamic>{},
         );
         if (selectedStream.isNotEmpty) {
-          _lastExplicitSubtitleLanguage = selectedStream['Language'] as String?;
+          _lastExplicitSubtitleLanguage = _extractLanguage(selectedStream);
         }
       }
     } else {
@@ -2185,15 +2279,11 @@ class PlaybackManager implements AudioOwnable {
     }
 
     if (_lastExplicitAudioLanguage != null) {
-      final audioStreams = newStreams.where((s) => s['Type'] == 'Audio').toList();
-      final targetIdx = audioStreams.indexWhere(
-        (s) => s['Language']?.toString().toLowerCase() == _lastExplicitAudioLanguage!.toLowerCase(),
+      _audioStreamIndex = _matchStreamIndexByLanguage(
+        newStreams,
+        _lastExplicitAudioLanguage,
+        'Audio',
       );
-      if (targetIdx >= 0) {
-        _audioStreamIndex = audioStreams[targetIdx]['Index'] as int?;
-      } else {
-        _audioStreamIndex = null;
-      }
     } else {
       _audioStreamIndex = null;
     }
@@ -2201,15 +2291,11 @@ class PlaybackManager implements AudioOwnable {
     if (_lastExplicitSubtitleEnabled == false) {
       _subtitleStreamIndex = -1;
     } else if (_lastExplicitSubtitleLanguage != null) {
-      final subtitleStreams = newStreams.where((s) => s['Type'] == 'Subtitle').toList();
-      final targetIdx = subtitleStreams.indexWhere(
-        (s) => s['Language']?.toString().toLowerCase() == _lastExplicitSubtitleLanguage!.toLowerCase(),
+      _subtitleStreamIndex = _matchStreamIndexByLanguage(
+        newStreams,
+        _lastExplicitSubtitleLanguage,
+        'Subtitle',
       );
-      if (targetIdx >= 0) {
-        _subtitleStreamIndex = subtitleStreams[targetIdx]['Index'] as int?;
-      } else {
-        _subtitleStreamIndex = null;
-      }
     } else {
       _subtitleStreamIndex = null;
     }
@@ -2298,3 +2384,288 @@ class PlaybackBringupState {
       playMethod = null,
       error = null;
 }
+
+bool _languagesMatch(Map? stream, String? targetLanguage) {
+  if (stream == null || targetLanguage == null) return false;
+  final candidateLang = _extractLanguage(stream);
+  if (candidateLang == null) return false;
+
+  final normCandidate = _normalizeLanguage(candidateLang);
+  final normTarget = _normalizeLanguage(targetLanguage);
+  if (normCandidate.isEmpty || normTarget.isEmpty) return false;
+  if (normCandidate == 'und' || normTarget == 'und') return false;
+  if (normCandidate == normTarget) return true;
+
+  final iso3Candidate = _toIso3(normCandidate);
+  final iso3Target = _toIso3(normTarget);
+  return iso3Candidate.isNotEmpty && iso3Candidate == iso3Target;
+}
+
+int? _matchStreamIndexByLanguage(List<Map<String, dynamic>> streams, String? lang, String type) {
+  final candidates = streams.where((s) => s['Type'] == type).toList();
+  final i = candidates.indexWhere((s) => _languagesMatch(s, lang));
+  return i >= 0 ? candidates[i]['Index'] as int? : null;
+}
+
+String? _extractLanguage(Map? stream) {
+  if (stream == null) return null;
+  final lang = stream['Language']?.toString();
+  if (lang != null && lang.isNotEmpty && lang.toLowerCase() != 'und') {
+    return lang;
+  }
+  for (final field in const ['Title', 'DisplayTitle']) {
+    final title = stream[field]?.toString().toLowerCase();
+    if (title != null && title.isNotEmpty) {
+      final tokens = title.split(RegExp(r'[^a-z]')).where((t) => t.isNotEmpty);
+      for (final token in tokens) {
+        if (_kLanguageKeywords.containsKey(token)) {
+          return _kLanguageKeywords[token];
+        }
+      }
+    }
+  }
+  return lang;
+}
+
+const Map<String, String> _kLanguageKeywords = {
+  'arabic': 'ara',
+  'ara': 'ara',
+  'english': 'eng',
+  'eng': 'eng',
+  'french': 'fra',
+  'fra': 'fra',
+  'fre': 'fra',
+  'german': 'deu',
+  'deu': 'deu',
+  'ger': 'deu',
+  'spanish': 'spa',
+  'spa': 'spa',
+  'italian': 'ita',
+  'ita': 'ita',
+  'japanese': 'jpn',
+  'jpn': 'jpn',
+  'chinese': 'zho',
+  'zho': 'zho',
+  'chi': 'zho',
+  'portuguese': 'por',
+  'por': 'por',
+  'russian': 'rus',
+  'rus': 'rus',
+  'korean': 'kor',
+  'kor': 'kor',
+  'dutch': 'nld',
+  'nld': 'nld',
+  'dut': 'nld',
+  'swedish': 'swe',
+  'swe': 'swe',
+  'turkish': 'tur',
+  'tur': 'tur',
+  'vietnamese': 'vie',
+  'vie': 'vie',
+  'polish': 'pol',
+  'pol': 'pol',
+  'hebrew': 'heb',
+  'heb': 'heb',
+  'hindi': 'hin',
+  'hin': 'hin',
+};
+
+String _normalizeLanguage(String? language) {
+  if (language == null) return '';
+  final normalized = language.trim().toLowerCase();
+  if (normalized.isEmpty) return '';
+  return normalized.split(RegExp(r'[-_]')).first;
+}
+
+String _toIso3(String language) {
+  if (_kLanguageKeywords.containsKey(language)) return _kLanguageKeywords[language]!;
+  if (language.length == 3) return language;
+  return _kIso6391To6392[language] ?? language;
+}
+
+const Map<String, String> _kIso6391To6392 = {
+  'aa': 'aar',
+  'ab': 'abk',
+  'af': 'afr',
+  'ak': 'aka',
+  'am': 'amh',
+  'an': 'arg',
+  'ar': 'ara',
+  'as': 'asm',
+  'av': 'ava',
+  'ae': 'ave',
+  'ay': 'aym',
+  'az': 'aze',
+  'ba': 'bak',
+  'bm': 'bam',
+  'be': 'bel',
+  'bn': 'ben',
+  'bh': 'bih',
+  'bi': 'bis',
+  'bo': 'bod',
+  'bs': 'bos',
+  'br': 'bre',
+  'bg': 'bul',
+  'ca': 'cat',
+  'cs': 'ces',
+  'ch': 'cha',
+  'ce': 'che',
+  'cu': 'chu',
+  'cv': 'chv',
+  'kw': 'cor',
+  'co': 'cos',
+  'cr': 'cre',
+  'cy': 'cym',
+  'da': 'dan',
+  'de': 'deu',
+  'dv': 'div',
+  'dz': 'dzo',
+  'el': 'ell',
+  'en': 'eng',
+  'eo': 'epo',
+  'et': 'est',
+  'eu': 'eus',
+  'ee': 'ewe',
+  'fo': 'fao',
+  'fa': 'fas',
+  'fj': 'fij',
+  'fi': 'fin',
+  'fr': 'fra',
+  'fy': 'fry',
+  'ff': 'ful',
+  'gd': 'gla',
+  'ga': 'gle',
+  'gl': 'glg',
+  'gv': 'glv',
+  'gn': 'grn',
+  'gu': 'guj',
+  'ht': 'hat',
+  'ha': 'hau',
+  'he': 'heb',
+  'hz': 'her',
+  'hi': 'hin',
+  'ho': 'hmo',
+  'hr': 'hrv',
+  'hu': 'hun',
+  'hy': 'hye',
+  'ig': 'ibo',
+  'is': 'isl',
+  'io': 'ido',
+  'ii': 'iii',
+  'iu': 'iku',
+  'ie': 'ile',
+  'ia': 'ina',
+  'id': 'ind',
+  'ik': 'ipk',
+  'it': 'ita',
+  'jv': 'jav',
+  'ja': 'jpn',
+  'kl': 'kal',
+  'kn': 'kan',
+  'ks': 'kas',
+  'ka': 'kat',
+  'kr': 'kau',
+  'kk': 'kaz',
+  'km': 'khm',
+  'ki': 'kik',
+  'rw': 'kin',
+  'ky': 'kir',
+  'kv': 'kom',
+  'kg': 'kon',
+  'ko': 'kor',
+  'kj': 'kua',
+  'ku': 'kur',
+  'lo': 'lao',
+  'la': 'lat',
+  'lv': 'lav',
+  'li': 'lim',
+  'ln': 'lin',
+  'lt': 'lit',
+  'lb': 'ltz',
+  'lu': 'lub',
+  'lg': 'lug',
+  'mh': 'mah',
+  'ml': 'mal',
+  'mr': 'mar',
+  'mk': 'mkd',
+  'mg': 'mlg',
+  'mt': 'mlt',
+  'mn': 'mon',
+  'mi': 'mri',
+  'ms': 'msa',
+  'my': 'mya',
+  'na': 'nau',
+  'nv': 'nav',
+  'nr': 'nbl',
+  'nd': 'nde',
+  'ng': 'ndo',
+  'ne': 'nep',
+  'nl': 'nld',
+  'nn': 'nno',
+  'nb': 'nob',
+  'no': 'nor',
+  'ny': 'nya',
+  'oc': 'oci',
+  'oj': 'oji',
+  'or': 'ori',
+  'om': 'orm',
+  'os': 'oss',
+  'pa': 'pan',
+  'pi': 'pli',
+  'pl': 'pol',
+  'pt': 'por',
+  'ps': 'pus',
+  'qu': 'que',
+  'rm': 'roh',
+  'ro': 'ron',
+  'rn': 'run',
+  'ru': 'rus',
+  'sg': 'sag',
+  'sa': 'san',
+  'sr': 'srp',
+  'si': 'sin',
+  'sk': 'slk',
+  'sl': 'slv',
+  'se': 'sme',
+  'sm': 'smo',
+  'sn': 'sna',
+  'sd': 'snd',
+  'so': 'som',
+  'st': 'sot',
+  'es': 'spa',
+  'sq': 'sqi',
+  'sc': 'srd',
+  'ss': 'ssw',
+  'su': 'sun',
+  'sw': 'swa',
+  'sv': 'swe',
+  'ty': 'tah',
+  'ta': 'tam',
+  'tt': 'tat',
+  'te': 'tel',
+  'tg': 'tgk',
+  'tl': 'tgl',
+  'th': 'tha',
+  'ti': 'tir',
+  'to': 'ton',
+  'tn': 'tsn',
+  'ts': 'tso',
+  'tk': 'tuk',
+  'tr': 'tur',
+  'tw': 'twi',
+  'ug': 'uig',
+  'uk': 'ukr',
+  'ur': 'urd',
+  'uz': 'uzb',
+  've': 'ven',
+  'vi': 'vie',
+  'vo': 'vol',
+  'wa': 'wln',
+  'wo': 'wol',
+  'xh': 'xho',
+  'yi': 'yid',
+  'yo': 'yor',
+  'za': 'zha',
+  'zh': 'zho',
+  'zu': 'zul',
+};
