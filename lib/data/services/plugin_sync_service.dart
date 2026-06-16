@@ -63,6 +63,9 @@ class PluginSyncService extends ChangeNotifier {
   bool _settingsStreamReconnectPending = false;
   int _settingsStreamReconnectAttempt = 0;
 
+  bool _isSyncingFromServer = false;
+  Timer? _pushDebounceTimer;
+
   PluginSyncService(this._prefs, this._store) : _dio = Dio() {
     configureServerDio(_dio);
     _dio.interceptors.add(redirectInterceptor(_dio));
@@ -88,6 +91,7 @@ class PluginSyncService extends ChangeNotifier {
         handler.next(error);
       },
     ));
+    _prefs.addListener(_onPrefsChanged);
   }
 
   String _serverSyncKey(MediaServerClient client, {String? serverId}) {
@@ -791,9 +795,11 @@ class PluginSyncService extends ChangeNotifier {
   }
 
   Future<void> _applyServerSettings(Map<String, dynamic> resolved) async {
-    _applyString(
-      resolved,
-      'visualTheme',
+    _isSyncingFromServer = true;
+    try {
+      _applyString(
+        resolved,
+        'visualTheme',
       UserPreferences.visualTheme,
       enumValues: prefs.VisualThemeId.values,
     );
@@ -1139,9 +1145,12 @@ class PluginSyncService extends ChangeNotifier {
     if (currentNavbarPos != navbarPos) {
       await _prefs.set(UserPreferences.navbarPosition, navbarPos);
     }
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      NavigationLayout.positionNotifier.value = navbarPos;
-    });
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        NavigationLayout.positionNotifier.value = navbarPos;
+      });
+    } finally {
+      _isSyncingFromServer = false;
+    }
   }
 
   Future<void> _applyFallbackHomeRows({
@@ -1398,8 +1407,24 @@ class PluginSyncService extends ChangeNotifier {
     };
   }
 
+  void _onPrefsChanged() {
+    if (_isSyncingFromServer) return;
+    if (!_pluginAvailable || !_prefs.get(UserPreferences.pluginSyncEnabled)) return;
+    _pushDebounceTimer?.cancel();
+    _pushDebounceTimer = Timer(const Duration(milliseconds: 1000), () {
+      final client = GetIt.instance.isRegistered<MediaServerClient>()
+          ? GetIt.instance<MediaServerClient>()
+          : null;
+      if (client != null && client.accessToken != null && client.accessToken!.isNotEmpty) {
+        pushSettings(client);
+      }
+    });
+  }
+
   @override
   void dispose() {
+    _prefs.removeListener(_onPrefsChanged);
+    _pushDebounceTimer?.cancel();
     _stopSettingsStream();
     super.dispose();
   }
