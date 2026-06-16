@@ -7,6 +7,32 @@ abstract class MediaStreamResolver {
     return mediaItem.id as String;
   }
 
+  static String? resolveStaticMediaSourceId(
+    dynamic mediaItem,
+    String? mediaSourceId,
+  ) {
+    if (mediaSourceId == null || mediaSourceId.isEmpty) return mediaSourceId;
+    final sources = _staticMediaSources(mediaItem);
+    if (sources == null || sources.isEmpty) return mediaSourceId;
+    final staticIds = sources.map(_mediaSourceId).toSet();
+    if (staticIds.contains(mediaSourceId)) return mediaSourceId;
+    return staticIds.first;
+  }
+
+  static List<dynamic>? _staticMediaSources(dynamic mediaItem) {
+    if (mediaItem is Map) return mediaItem['MediaSources'] as List<dynamic>?;
+    try {
+      return mediaItem.mediaSources as List<dynamic>?;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static String _mediaSourceId(dynamic source) {
+    if (source is Map) return (source['Id'] ?? source['id']).toString();
+    return source.id.toString();
+  }
+
   /// Whether a managed live stream (Live TV) should be played directly from its
   /// source `path` instead of the server's HLS transcode session.
   ///

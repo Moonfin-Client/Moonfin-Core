@@ -22,35 +22,8 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
   }) async {
     final itemId = MediaStreamResolver.extractItemId(mediaItem);
 
-    String? resolvedMediaSourceId = mediaSourceId;
-    if (mediaSourceId != null && mediaSourceId.isNotEmpty) {
-      try {
-        final dynamic item = mediaItem;
-        final List<dynamic>? staticSources = item.mediaSources as List<dynamic>?;
-        if (staticSources != null && staticSources.isNotEmpty) {
-          final staticIds = staticSources
-              .map((s) => (s is Map ? (s['Id'] ?? s['id']) : s.id).toString())
-              .toSet();
-          if (!staticIds.contains(mediaSourceId)) {
-            resolvedMediaSourceId = staticIds.first;
-          }
-        }
-      } catch (_) {
-        try {
-          if (mediaItem is Map) {
-            final List<dynamic>? staticSources = mediaItem['MediaSources'] as List<dynamic>?;
-            if (staticSources != null && staticSources.isNotEmpty) {
-              final staticIds = staticSources
-                  .map((s) => (s is Map ? (s['Id'] ?? s['id']) : s['id']).toString())
-                  .toSet();
-              if (!staticIds.contains(mediaSourceId)) {
-                resolvedMediaSourceId = staticIds.first;
-              }
-            }
-          }
-        } catch (_) {}
-      }
-    }
+    final resolvedMediaSourceId =
+        MediaStreamResolver.resolveStaticMediaSourceId(mediaItem, mediaSourceId);
 
     final request = PlaybackInfoRequest(
       itemId: itemId,
