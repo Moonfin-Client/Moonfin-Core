@@ -7358,62 +7358,6 @@
     "whenFullscreen": "When fullscreen",
     "transcodingLimits": "Transcoding Limits",
     "settingsSupportMoonfinSubtitle": "Donate a coffee to the developer",
-    "displayPlaylistsRowsSubtitle": "",
-    "showSeerrButton": "",
-    "@showSeerrButton": {
-        "description": "Setting for showing Seerr button"
-    },
-    "displayPlaylistsRows": "",
-    "settingsProgressBar": "",
-    "@settingsProgressBar": {
-        "description": "Option label to show only progress bar on media segment countdown overlay"
-    },
-    "seerrDiscoveryRows": "",
-    "@seerrDiscoveryRows": {
-        "description": "Subtitle shown under Seerr discovery home rows"
-    },
-    "displaySeerrRowsSubtitle": "",
-    "homeRowTogglesSubtitle": "",
-    "enableTunnelingSubtitle": "",
-    "@enableTunnelingSubtitle": {
-        "description": "Setting subtitle for enable tunneling"
-    },
-    "enableTunnelingTitle": "",
-    "@enableTunnelingTitle": {
-        "description": "Setting title: enable tunneled video playback (advanced)"
-    },
-    "currentUser": "",
-    "@currentUser": {
-        "description": "Option: current user"
-    },
-    "settingsTimer": "",
-    "@settingsTimer": {
-        "description": "Option label to show only countdown timer on media segment countdown overlay"
-    },
-    "fullScreenRows": "",
-    "@fullScreenRows": {
-        "description": "Setting for full screen home rows"
-    },
-    "playlistsRowSorting": "",
-    "fullScreenRowsDescription": "",
-    "@fullScreenRowsDescription": {
-        "description": "Description for full screen home rows"
-    },
-    "homeRowDisplay": "",
-    "homeRowSections": "",
-    "homeRowTogglesDescription": "",
-    "displaySeerrRows": "",
-    "homeRowToggles": "",
-    "settingsMediaSegmentCountdown": "",
-    "@settingsMediaSegmentCountdown": {
-        "description": "Setting label for media segment countdown customizations"
-    },
-    "playlistsRowSortingDescription": "",
-    "settingsNone": "",
-    "@settingsNone": {
-        "description": "Option label to hide all decorations on media segment countdown overlay"
-    },
-    "settingsShowSeerrButtonInNavigation": "",
     "endsIn": "{time} içinde sona eriyor",
     "@endsIn": {
         "description": "Label showing remaining time for segment or timeout",

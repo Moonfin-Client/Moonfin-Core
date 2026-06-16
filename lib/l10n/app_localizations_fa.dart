@@ -12,19 +12,19 @@ class AppLocalizationsFa extends AppLocalizations {
   String get appTitle => 'باله ماه';
 
   @override
-  String get accountPreferences => '';
+  String get accountPreferences => 'ACCOUNT PREFERENCES';
 
   @override
-  String get interfaceLanguage => '';
+  String get interfaceLanguage => 'Interface Language';
 
   @override
-  String get systemLanguageDefault => '';
+  String get systemLanguageDefault => 'System Default';
 
   @override
   String get signIn => 'وارد شوید';
 
   @override
-  String get empty => '';
+  String get empty => 'Empty';
 
   @override
   String connectingToServer(String serverName) {
@@ -831,7 +831,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String endsIn(String time) {
-    return '';
+    return 'Ends in $time';
   }
 
   @override
@@ -2074,22 +2074,23 @@ class AppLocalizationsFa extends AppLocalizations {
   String get playerZoomMode => 'حالت زوم بازیکن';
 
   @override
-  String get settingsScrollWheelAction => '';
+  String get settingsScrollWheelAction => 'Mouse scroll wheel';
 
   @override
-  String get settingsScrollWheelActionDescription => '';
+  String get settingsScrollWheelActionDescription =>
+      'Choose what scrolling the mouse wheel over the video does during playback.';
 
   @override
-  String get scrollWheelActionOff => '';
+  String get scrollWheelActionOff => 'Off';
 
   @override
-  String get scrollWheelActionSeek => '';
+  String get scrollWheelActionSeek => 'Seek (forward / back)';
 
   @override
-  String get scrollWheelActionVolume => '';
+  String get scrollWheelActionVolume => 'Volume';
 
   @override
-  String get playerTooltipVolume => '';
+  String get playerTooltipVolume => 'Volume';
 
   @override
   String get fit => 'مناسب';
@@ -2737,7 +2738,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get showLibrariesInToolbar => 'نمایش کتابخانه ها در نوار ابزار';
 
   @override
-  String get showSeerrButton => '';
+  String get showSeerrButton => 'Show Seerr Button';
 
   @override
   String get navbarOpacity => 'کدورت نوار ناوبری';
@@ -2993,10 +2994,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get combineBothRows => 'هر دو ردیف را در یک بخش خانه ترکیب کنید';
 
   @override
-  String get fullScreenRows => '';
+  String get fullScreenRows => 'Expanded Home Rows';
 
   @override
-  String get fullScreenRowsDescription => '';
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'نوع تصویر در هر ردیف';
@@ -3011,7 +3012,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get lastUser => 'آخرین کاربر';
 
   @override
-  String get currentUser => '';
+  String get currentUser => 'Current User';
 
   @override
   String get alwaysAuthenticate => 'همیشه احراز هویت';
@@ -3264,7 +3265,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get networks => 'شبکه ها';
 
   @override
-  String get seerrDiscoveryRows => '';
+  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
 
   @override
   String get resetRowsToDefaults => 'سطرها را به حالت پیش فرض بازنشانی کنید';
@@ -6917,7 +6918,8 @@ class AppLocalizationsFa extends AppLocalizations {
       'نمایش دکمه کتابخانه ها در نوار پیمایش';
 
   @override
-  String get settingsShowSeerrButtonInNavigation => '';
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -7067,16 +7069,16 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'از معرفی و برون رفت بگذرید؟';
 
   @override
-  String get settingsMediaSegmentCountdown => '';
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
 
   @override
-  String get settingsProgressBar => '';
+  String get settingsProgressBar => 'Progress Bar';
 
   @override
-  String get settingsTimer => '';
+  String get settingsTimer => 'Timer';
 
   @override
-  String get settingsNone => '';
+  String get settingsNone => 'None';
 
   @override
   String get settingsPromptUser => 'کاربر سریع';
@@ -7331,10 +7333,11 @@ class AppLocalizationsFa extends AppLocalizations {
       'اجباری پخش بدون تونل. برای دستگاه‌هایی با ناپیوستگی‌های صوتی/تصویری تونل‌سازی مفید است.';
 
   @override
-  String get enableTunnelingTitle => '';
+  String get enableTunnelingTitle => 'Enable tunneling';
 
   @override
-  String get enableTunnelingSubtitle => '';
+  String get enableTunnelingSubtitle =>
+      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
 
   @override
   String get mapDolbyVisionP7Title => 'نمایه 7 Dolby Vision را به HEVC نگاشت';
@@ -7442,19 +7445,21 @@ class AppLocalizationsFa extends AppLocalizations {
   String get homeRowsSection => 'ردیف های صفحه اصلی';
 
   @override
-  String get homeRowDisplay => '';
+  String get homeRowDisplay => 'Home Row Display';
 
   @override
-  String get homeRowSections => '';
+  String get homeRowSections => 'Home Row Sections';
 
   @override
-  String get homeRowToggles => '';
+  String get homeRowToggles => 'Home Row Toggles';
 
   @override
-  String get homeRowTogglesSubtitle => '';
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
 
   @override
-  String get homeRowTogglesDescription => '';
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'نوع ردیف';
@@ -7513,22 +7518,25 @@ class AppLocalizationsFa extends AppLocalizations {
       'نمایش فیلم، سریال یا هر دو در ردیف‌های ژانر.';
 
   @override
-  String get displayPlaylistsRows => '';
+  String get displayPlaylistsRows => 'Display Playlist Rows';
 
   @override
-  String get displayPlaylistsRowsSubtitle => '';
+  String get displayPlaylistsRowsSubtitle =>
+      'Show Playlist rows in Home Sections.';
 
   @override
-  String get playlistsRowSorting => '';
+  String get playlistsRowSorting => 'Playlist Row Sorting';
 
   @override
-  String get playlistsRowSortingDescription => '';
+  String get playlistsRowSortingDescription =>
+      'Sort Playlist rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displaySeerrRows => '';
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
 
   @override
-  String get displaySeerrRowsSubtitle => '';
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'ظاهر';

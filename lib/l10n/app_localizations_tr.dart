@@ -2753,7 +2753,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get showLibrariesInToolbar => 'Kitaplıkları Araç Çubuğunda Göster';
 
   @override
-  String get showSeerrButton => '';
+  String get showSeerrButton => 'Show Seerr Button';
 
   @override
   String get navbarOpacity => 'Gezinti Çubuğunun Opaklığı';
@@ -3012,10 +3012,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Her iki satırı tek bir ana bölümde birleştirin';
 
   @override
-  String get fullScreenRows => '';
+  String get fullScreenRows => 'Expanded Home Rows';
 
   @override
-  String get fullScreenRowsDescription => '';
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Satır Başına Görüntü Türü';
@@ -3030,7 +3030,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get lastUser => 'Son Kullanıcı';
 
   @override
-  String get currentUser => '';
+  String get currentUser => 'Current User';
 
   @override
   String get alwaysAuthenticate => 'Daima Kimlik Doğrula';
@@ -3286,7 +3286,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get networks => 'Ağlar';
 
   @override
-  String get seerrDiscoveryRows => '';
+  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
 
   @override
   String get resetRowsToDefaults => 'Satırları varsayılanlara sıfırla';
@@ -6958,7 +6958,8 @@ class AppLocalizationsTr extends AppLocalizations {
       'Gezinti çubuğunda kitaplıklar düğmesini göster';
 
   @override
-  String get settingsShowSeerrButtonInNavigation => '';
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -7111,16 +7112,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => 'Giriş ve Çıkışlar atlansın mı?';
 
   @override
-  String get settingsMediaSegmentCountdown => '';
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
 
   @override
-  String get settingsProgressBar => '';
+  String get settingsProgressBar => 'Progress Bar';
 
   @override
-  String get settingsTimer => '';
+  String get settingsTimer => 'Timer';
 
   @override
-  String get settingsNone => '';
+  String get settingsNone => 'None';
 
   @override
   String get settingsPromptUser => 'Kullanıcıya Sor';
@@ -7376,10 +7377,11 @@ class AppLocalizationsTr extends AppLocalizations {
       'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
 
   @override
-  String get enableTunnelingTitle => '';
+  String get enableTunnelingTitle => 'Enable tunneling';
 
   @override
-  String get enableTunnelingSubtitle => '';
+  String get enableTunnelingSubtitle =>
+      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
 
   @override
   String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
@@ -7486,19 +7488,21 @@ class AppLocalizationsTr extends AppLocalizations {
   String get homeRowsSection => 'Home Rows';
 
   @override
-  String get homeRowDisplay => '';
+  String get homeRowDisplay => 'Home Row Display';
 
   @override
-  String get homeRowSections => '';
+  String get homeRowSections => 'Home Row Sections';
 
   @override
-  String get homeRowToggles => '';
+  String get homeRowToggles => 'Home Row Toggles';
 
   @override
-  String get homeRowTogglesSubtitle => '';
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
 
   @override
-  String get homeRowTogglesDescription => '';
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Rows Type';
@@ -7556,22 +7560,25 @@ class AppLocalizationsTr extends AppLocalizations {
       'Show Movies, Series, or both in Genres rows.';
 
   @override
-  String get displayPlaylistsRows => '';
+  String get displayPlaylistsRows => 'Display Playlist Rows';
 
   @override
-  String get displayPlaylistsRowsSubtitle => '';
+  String get displayPlaylistsRowsSubtitle =>
+      'Show Playlist rows in Home Sections.';
 
   @override
-  String get playlistsRowSorting => '';
+  String get playlistsRowSorting => 'Playlist Row Sorting';
 
   @override
-  String get playlistsRowSortingDescription => '';
+  String get playlistsRowSortingDescription =>
+      'Sort Playlist rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displaySeerrRows => '';
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
 
   @override
-  String get displaySeerrRowsSubtitle => '';
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Appearance';

@@ -12,19 +12,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appTitle => 'Moonfin';
 
   @override
-  String get accountPreferences => '';
+  String get accountPreferences => 'ACCOUNT PREFERENCES';
 
   @override
-  String get interfaceLanguage => '';
+  String get interfaceLanguage => 'Interface Language';
 
   @override
-  String get systemLanguageDefault => '';
+  String get systemLanguageDefault => 'System Default';
 
   @override
   String get signIn => '登入';
 
   @override
-  String get empty => '';
+  String get empty => 'Empty';
 
   @override
   String connectingToServer(String serverName) {
@@ -805,7 +805,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String endsIn(String time) {
-    return '';
+    return 'Ends in $time';
   }
 
   @override
@@ -2035,22 +2035,23 @@ class AppLocalizationsZh extends AppLocalizations {
   String get playerZoomMode => '播放器缩放模式';
 
   @override
-  String get settingsScrollWheelAction => '';
+  String get settingsScrollWheelAction => 'Mouse scroll wheel';
 
   @override
-  String get settingsScrollWheelActionDescription => '';
+  String get settingsScrollWheelActionDescription =>
+      'Choose what scrolling the mouse wheel over the video does during playback.';
 
   @override
-  String get scrollWheelActionOff => '';
+  String get scrollWheelActionOff => 'Off';
 
   @override
-  String get scrollWheelActionSeek => '';
+  String get scrollWheelActionSeek => 'Seek (forward / back)';
 
   @override
-  String get scrollWheelActionVolume => '';
+  String get scrollWheelActionVolume => 'Volume';
 
   @override
-  String get playerTooltipVolume => '';
+  String get playerTooltipVolume => 'Volume';
 
   @override
   String get fit => '合身';
@@ -2681,7 +2682,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get showLibrariesInToolbar => '在工具栏中显示库';
 
   @override
-  String get showSeerrButton => '';
+  String get showSeerrButton => 'Show Seerr Button';
 
   @override
   String get navbarOpacity => '导航栏不透明度';
@@ -2926,10 +2927,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get combineBothRows => '将两行合并为一个主页部分';
 
   @override
-  String get fullScreenRows => '';
+  String get fullScreenRows => 'Expanded Home Rows';
 
   @override
-  String get fullScreenRowsDescription => '';
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => '每行图像类型';
@@ -2944,7 +2945,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get lastUser => '最后一个用户';
 
   @override
-  String get currentUser => '';
+  String get currentUser => 'Current User';
 
   @override
   String get alwaysAuthenticate => '始终进行身份验证';
@@ -3185,7 +3186,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get networks => '网络';
 
   @override
-  String get seerrDiscoveryRows => '';
+  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
 
   @override
   String get resetRowsToDefaults => '将行重置为默认值';
@@ -6737,7 +6738,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsShowLibrariesButtonInNavigation => '在导航栏中显示库按钮';
 
   @override
-  String get settingsShowSeerrButtonInNavigation => '';
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -6877,16 +6879,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsSkipIntrosAndOutros => '跳过片头和片尾？';
 
   @override
-  String get settingsMediaSegmentCountdown => '';
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
 
   @override
-  String get settingsProgressBar => '';
+  String get settingsProgressBar => 'Progress Bar';
 
   @override
-  String get settingsTimer => '';
+  String get settingsTimer => 'Timer';
 
   @override
-  String get settingsNone => '';
+  String get settingsNone => 'None';
 
   @override
   String get settingsPromptUser => '提示用户';
@@ -7122,10 +7124,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get disableTunnelingSubtitle => '强制非隧道播放。对于具有隧道音频/视频不连续性的设备很有用。';
 
   @override
-  String get enableTunnelingTitle => '';
+  String get enableTunnelingTitle => 'Enable tunneling';
 
   @override
-  String get enableTunnelingSubtitle => '';
+  String get enableTunnelingSubtitle =>
+      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
 
   @override
   String get mapDolbyVisionP7Title => '将 Dolby Vision 配置文件 7 映射到 HEVC';
@@ -7227,19 +7230,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeRowsSection => '主场行';
 
   @override
-  String get homeRowDisplay => '';
+  String get homeRowDisplay => 'Home Row Display';
 
   @override
-  String get homeRowSections => '';
+  String get homeRowSections => 'Home Row Sections';
 
   @override
-  String get homeRowToggles => '';
+  String get homeRowToggles => 'Home Row Toggles';
 
   @override
-  String get homeRowTogglesSubtitle => '';
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
 
   @override
-  String get homeRowTogglesDescription => '';
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => '行类型';
@@ -7290,22 +7295,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get genresRowItemsDescription => '在流派行中显示电影、连续剧或两者。';
 
   @override
-  String get displayPlaylistsRows => '';
+  String get displayPlaylistsRows => 'Display Playlist Rows';
 
   @override
-  String get displayPlaylistsRowsSubtitle => '';
+  String get displayPlaylistsRowsSubtitle =>
+      'Show Playlist rows in Home Sections.';
 
   @override
-  String get playlistsRowSorting => '';
+  String get playlistsRowSorting => 'Playlist Row Sorting';
 
   @override
-  String get playlistsRowSortingDescription => '';
+  String get playlistsRowSortingDescription =>
+      'Sort Playlist rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displaySeerrRows => '';
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
 
   @override
-  String get displaySeerrRowsSubtitle => '';
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => '外貌';
@@ -7968,19 +7976,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get appTitle => 'Moonfin';
 
   @override
-  String get accountPreferences => '';
-
-  @override
-  String get interfaceLanguage => '';
-
-  @override
-  String get systemLanguageDefault => '';
-
-  @override
   String get signIn => '登入';
-
-  @override
-  String get empty => '';
 
   @override
   String connectingToServer(String serverName) {
@@ -8750,11 +8746,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String endsAt(String time) {
     return 'Ends at $time';
-  }
-
-  @override
-  String endsIn(String time) {
-    return '';
   }
 
   @override
@@ -9984,24 +9975,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get playerZoomMode => '播放器縮放模式';
 
   @override
-  String get settingsScrollWheelAction => '';
-
-  @override
-  String get settingsScrollWheelActionDescription => '';
-
-  @override
-  String get scrollWheelActionOff => '';
-
-  @override
-  String get scrollWheelActionSeek => '';
-
-  @override
-  String get scrollWheelActionVolume => '';
-
-  @override
-  String get playerTooltipVolume => '';
-
-  @override
   String get fit => '合身';
 
   @override
@@ -10569,9 +10542,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get showLibrariesInToolbar => '在工具列中顯示庫';
 
   @override
-  String get showSeerrButton => '';
-
-  @override
   String get navbarOpacity => '導覽列不透明度';
 
   @override
@@ -10814,12 +10784,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get combineBothRows => '將兩行合併為一個主頁部分';
 
   @override
-  String get fullScreenRows => '';
-
-  @override
-  String get fullScreenRowsDescription => '';
-
-  @override
   String get perRowImageType => '每行圖像類型';
 
   @override
@@ -10830,9 +10794,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get lastUser => '最後一個用戶';
-
-  @override
-  String get currentUser => '';
 
   @override
   String get alwaysAuthenticate => '始終進行身份驗證';
@@ -11065,9 +11026,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get networks => '網路';
-
-  @override
-  String get seerrDiscoveryRows => '';
 
   @override
   String get resetRowsToDefaults => '將行重設為預設值';
@@ -14619,9 +14577,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get settingsShowLibrariesButtonInNavigation => '在導覽列中顯示庫按鈕';
 
   @override
-  String get settingsShowSeerrButtonInNavigation => '';
-
-  @override
   String get settingsLibraryVisibilitySubtitle =>
       '切換每個庫的主頁可見性。重新啟動 Moonfin 以使變更生效。';
 
@@ -14758,18 +14713,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get settingsSkipIntrosAndOutros => '跳過片頭和片尾？';
-
-  @override
-  String get settingsMediaSegmentCountdown => '';
-
-  @override
-  String get settingsProgressBar => '';
-
-  @override
-  String get settingsTimer => '';
-
-  @override
-  String get settingsNone => '';
 
   @override
   String get settingsPromptUser => '提示用戶';
@@ -15006,12 +14949,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
 
   @override
-  String get enableTunnelingTitle => '';
-
-  @override
-  String get enableTunnelingSubtitle => '';
-
-  @override
   String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
 
   @override
@@ -15109,21 +15046,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get homeRowsSection => 'Home Rows';
 
   @override
-  String get homeRowDisplay => '';
-
-  @override
-  String get homeRowSections => '';
-
-  @override
-  String get homeRowToggles => '';
-
-  @override
-  String get homeRowTogglesSubtitle => '';
-
-  @override
-  String get homeRowTogglesDescription => '';
-
-  @override
   String get rowsType => 'Rows Type';
 
   @override
@@ -15177,24 +15099,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get genresRowItemsDescription =>
       'Show Movies, Series, or both in Genres rows.';
-
-  @override
-  String get displayPlaylistsRows => '';
-
-  @override
-  String get displayPlaylistsRowsSubtitle => '';
-
-  @override
-  String get playlistsRowSorting => '';
-
-  @override
-  String get playlistsRowSortingDescription => '';
-
-  @override
-  String get displaySeerrRows => '';
-
-  @override
-  String get displaySeerrRowsSubtitle => '';
 
   @override
   String get appearance => 'Appearance';

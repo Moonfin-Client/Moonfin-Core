@@ -12,19 +12,19 @@ class AppLocalizationsBe extends AppLocalizations {
   String get appTitle => 'Месяцовы плаўнік';
 
   @override
-  String get accountPreferences => '';
+  String get accountPreferences => 'ACCOUNT PREFERENCES';
 
   @override
-  String get interfaceLanguage => '';
+  String get interfaceLanguage => 'Interface Language';
 
   @override
-  String get systemLanguageDefault => '';
+  String get systemLanguageDefault => 'System Default';
 
   @override
   String get signIn => 'Увайдзіце';
 
   @override
-  String get empty => '';
+  String get empty => 'Empty';
 
   @override
   String connectingToServer(String serverName) {
@@ -833,7 +833,7 @@ class AppLocalizationsBe extends AppLocalizations {
 
   @override
   String endsIn(String time) {
-    return '';
+    return 'Ends in $time';
   }
 
   @override
@@ -2087,22 +2087,23 @@ class AppLocalizationsBe extends AppLocalizations {
   String get playerZoomMode => 'Рэжым маштабавання прайгравальніка';
 
   @override
-  String get settingsScrollWheelAction => '';
+  String get settingsScrollWheelAction => 'Mouse scroll wheel';
 
   @override
-  String get settingsScrollWheelActionDescription => '';
+  String get settingsScrollWheelActionDescription =>
+      'Choose what scrolling the mouse wheel over the video does during playback.';
 
   @override
-  String get scrollWheelActionOff => '';
+  String get scrollWheelActionOff => 'Off';
 
   @override
-  String get scrollWheelActionSeek => '';
+  String get scrollWheelActionSeek => 'Seek (forward / back)';
 
   @override
-  String get scrollWheelActionVolume => '';
+  String get scrollWheelActionVolume => 'Volume';
 
   @override
-  String get playerTooltipVolume => '';
+  String get playerTooltipVolume => 'Volume';
 
   @override
   String get fit => 'Прыстасаваны';
@@ -2755,7 +2756,7 @@ class AppLocalizationsBe extends AppLocalizations {
       'Паказаць бібліятэкі на панэлі інструментаў';
 
   @override
-  String get showSeerrButton => '';
+  String get showSeerrButton => 'Show Seerr Button';
 
   @override
   String get navbarOpacity => 'Непразрыстасць панэлі навігацыі';
@@ -3014,10 +3015,10 @@ class AppLocalizationsBe extends AppLocalizations {
       'Аб\'яднайце абодва шэрагу ў адну хатнюю секцыю';
 
   @override
-  String get fullScreenRows => '';
+  String get fullScreenRows => 'Expanded Home Rows';
 
   @override
-  String get fullScreenRowsDescription => '';
+  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
 
   @override
   String get perRowImageType => 'Тып выявы ў радку';
@@ -3032,7 +3033,7 @@ class AppLocalizationsBe extends AppLocalizations {
   String get lastUser => 'Апошні карыстальнік';
 
   @override
-  String get currentUser => '';
+  String get currentUser => 'Current User';
 
   @override
   String get alwaysAuthenticate => 'Заўсёды правяраць сапраўднасць';
@@ -3286,7 +3287,7 @@ class AppLocalizationsBe extends AppLocalizations {
   String get networks => 'Сеткі';
 
   @override
-  String get seerrDiscoveryRows => '';
+  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
 
   @override
   String get resetRowsToDefaults => 'Скінуць радкі да значэнняў па змаўчанні';
@@ -6970,7 +6971,8 @@ class AppLocalizationsBe extends AppLocalizations {
       'Паказаць кнопку бібліятэк на панэлі навігацыі';
 
   @override
-  String get settingsShowSeerrButtonInNavigation => '';
+  String get settingsShowSeerrButtonInNavigation =>
+      'Show the Seerr button in the navigation bar';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -7124,16 +7126,16 @@ class AppLocalizationsBe extends AppLocalizations {
       'Прапусціць уводныя і канчатковыя часткі?';
 
   @override
-  String get settingsMediaSegmentCountdown => '';
+  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
 
   @override
-  String get settingsProgressBar => '';
+  String get settingsProgressBar => 'Progress Bar';
 
   @override
-  String get settingsTimer => '';
+  String get settingsTimer => 'Timer';
 
   @override
-  String get settingsNone => '';
+  String get settingsNone => 'None';
 
   @override
   String get settingsPromptUser => 'Запрасіць карыстальніка';
@@ -7396,10 +7398,11 @@ class AppLocalizationsBe extends AppLocalizations {
       'Прымусовае нетунэляванае прайграванне. Карысна на прыладах з разрывамі тунэлявання аўдыё/відэа.';
 
   @override
-  String get enableTunnelingTitle => '';
+  String get enableTunnelingTitle => 'Enable tunneling';
 
   @override
-  String get enableTunnelingSubtitle => '';
+  String get enableTunnelingSubtitle =>
+      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
 
   @override
   String get mapDolbyVisionP7Title =>
@@ -7510,19 +7513,21 @@ class AppLocalizationsBe extends AppLocalizations {
   String get homeRowsSection => 'Хатнія шэрагі';
 
   @override
-  String get homeRowDisplay => '';
+  String get homeRowDisplay => 'Home Row Display';
 
   @override
-  String get homeRowSections => '';
+  String get homeRowSections => 'Home Row Sections';
 
   @override
-  String get homeRowToggles => '';
+  String get homeRowToggles => 'Home Row Toggles';
 
   @override
-  String get homeRowTogglesSubtitle => '';
+  String get homeRowTogglesSubtitle =>
+      'Enable or disable different home row categories';
 
   @override
-  String get homeRowTogglesDescription => '';
+  String get homeRowTogglesDescription =>
+      'Enable the following toggles to display the rows in Home Sections.';
 
   @override
   String get rowsType => 'Тып радкоў';
@@ -7581,22 +7586,25 @@ class AppLocalizationsBe extends AppLocalizations {
       'Паказаць фільмы, серыялы або абодва ў радках жанраў.';
 
   @override
-  String get displayPlaylistsRows => '';
+  String get displayPlaylistsRows => 'Display Playlist Rows';
 
   @override
-  String get displayPlaylistsRowsSubtitle => '';
+  String get displayPlaylistsRowsSubtitle =>
+      'Show Playlist rows in Home Sections.';
 
   @override
-  String get playlistsRowSorting => '';
+  String get playlistsRowSorting => 'Playlist Row Sorting';
 
   @override
-  String get playlistsRowSortingDescription => '';
+  String get playlistsRowSortingDescription =>
+      'Sort Playlist rows by date added, release date, alphabetically, and more.';
 
   @override
-  String get displaySeerrRows => '';
+  String get displaySeerrRows => 'Display Seerr Discovery Rows';
 
   @override
-  String get displaySeerrRowsSubtitle => '';
+  String get displaySeerrRowsSubtitle =>
+      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Знешні выгляд';
