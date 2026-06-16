@@ -160,7 +160,7 @@ class PluginSyncService extends ChangeNotifier {
     if (_prefs.get(UserPreferences.seerrEnabled) == enabled) {
       return;
     }
-    _store.set(UserPreferences.seerrEnabled, enabled);
+    _store.set(_prefs.getEffectivePreference(UserPreferences.seerrEnabled), enabled);
     _prefs.notifyPreferenceChanged();
   }
 
@@ -731,7 +731,7 @@ class PluginSyncService extends ChangeNotifier {
     final customThemeId = _prefs.get(UserPreferences.customThemeId);
     if (customThemeId.isNotEmpty &&
         !ThemeRegistry.availableThemes.containsKey(customThemeId)) {
-      _store.set(UserPreferences.customThemeId, '');
+      _store.set(_prefs.getEffectivePreference(UserPreferences.customThemeId), '');
       _prefs.notifyPreferenceChanged();
     }
   }
@@ -1064,7 +1064,7 @@ class PluginSyncService extends ChangeNotifier {
       final sources = (resolved['mdblistRatingSources'] as List)
           .cast<String>()
           .join(',');
-      _store.set(UserPreferences.enabledRatings, sources);
+      _store.set(_prefs.getEffectivePreference(UserPreferences.enabledRatings), sources);
     }
 
     if (resolved['homeRowOrder'] is List) {
@@ -1186,7 +1186,7 @@ class PluginSyncService extends ChangeNotifier {
   ) {
     final value = data[serverKey];
     if (value is bool) {
-      _store.set(pref, value);
+      _store.set(_prefs.getEffectivePreference(pref), value);
     }
   }
 
@@ -1197,10 +1197,11 @@ class PluginSyncService extends ChangeNotifier {
   ) {
     final value = data[serverKey];
     if (value is int) {
-      if (pref.defaultValue is String) {
-        _store.set(pref as Preference<String>, value.toString());
+      final effective = _prefs.getEffectivePreference(pref);
+      if (effective.defaultValue is String) {
+        _store.set(effective as Preference<String>, value.toString());
       } else {
-        _store.set(pref as Preference<int>, value);
+        _store.set(effective as Preference<int>, value);
       }
     }
   }
@@ -1215,28 +1216,30 @@ class PluginSyncService extends ChangeNotifier {
     final value = data[serverKey];
     if (value == null) return;
 
+    final effective = _prefs.getEffectivePreference(pref);
+
     if (intFromString && value is String) {
       final parsed = int.tryParse(value);
       if (parsed != null) {
-        _store.set(pref as Preference<int>, parsed);
+        _store.set(effective as Preference<int>, parsed);
       }
       return;
     }
 
-    if (enumValues != null && pref is EnumPreference) {
+    if (enumValues != null && effective is EnumPreference) {
       if (value is String) {
         final match = enumValues.cast<Enum>().where(
           (e) => e.name.toLowerCase() == value.toLowerCase(),
         );
         if (match.isNotEmpty) {
-          _store.set(pref, match.first as T);
+          _store.set(effective, match.first as T);
         }
       }
       return;
     }
 
     if (value is String) {
-      _store.set(pref as Preference<String>, value);
+      _store.set(effective as Preference<String>, value);
     }
   }
 
@@ -1247,7 +1250,7 @@ class PluginSyncService extends ChangeNotifier {
   ) {
     final value = data[serverKey];
     if (value is List) {
-      _store.set(pref, value.cast<String>().join(','));
+      _store.set(_prefs.getEffectivePreference(pref), value.cast<String>().join(','));
     }
   }
 
@@ -1255,9 +1258,9 @@ class PluginSyncService extends ChangeNotifier {
     final modeFromServer = _readString(data, 'mediaBarMode');
     if (modeFromServer != null && modeFromServer.trim().isNotEmpty) {
       final normalized = UserPreferences.normalizeMediaBarMode(modeFromServer);
-      _store.set(UserPreferences.mediaBarMode, normalized);
+      _store.set(_prefs.getEffectivePreference(UserPreferences.mediaBarMode), normalized);
       _store.set(
-        UserPreferences.mediaBarEnabled,
+        _prefs.getEffectivePreference(UserPreferences.mediaBarEnabled),
         UserPreferences.isMediaBarModeEnabled(normalized),
       );
       return;
@@ -1265,9 +1268,9 @@ class PluginSyncService extends ChangeNotifier {
 
     final legacyEnabled = _readBool(data, 'mediaBarEnabled');
     if (legacyEnabled != null) {
-      _store.set(UserPreferences.mediaBarEnabled, legacyEnabled);
+      _store.set(_prefs.getEffectivePreference(UserPreferences.mediaBarEnabled), legacyEnabled);
       _store.set(
-        UserPreferences.mediaBarMode,
+        _prefs.getEffectivePreference(UserPreferences.mediaBarMode),
         legacyEnabled
             ? UserPreferences.mediaBarModeMoonfin
             : UserPreferences.mediaBarModeOff,

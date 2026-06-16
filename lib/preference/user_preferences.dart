@@ -129,10 +129,82 @@ class UserPreferences extends ChangeNotifier {
     'subtitles_use_embedded_styles',
     'subtitles_use_embedded_font_sizes',
     'prefer_sdh_subtitles',
+    'app_theme_id',
+    'pref_custom_theme_id',
+    'pref_navbar_position',
+    'focus_color',
+    'pref_watched_indicator_behavior',
+    'pref_card_focus_expansion',
+    'pref_home_rows_style',
+    'poster_size',
+    'pref_display_favorites_rows',
+    'pref_display_collections_rows',
+    'pref_display_genres_rows',
+    'pref_favorites_row_sort_by',
+    'pref_collections_row_sort_by',
+    'pref_genres_row_sort_by',
+    'pref_genres_row_item_filter',
+    'pref_show_shuffle_button',
+    'pref_show_genres_button',
+    'pref_show_favorites_button',
+    'pref_show_syncplay_button',
+    'pref_show_libraries_in_toolbar',
+    'pref_shuffle_content_type',
+    'pref_merge_continue_watching_next_up',
+    'enable_multi_server_libraries',
+    'enable_folder_view',
+    'seasonal_surprise',
+    'mediaBarEnabled',
+    'mediaBarMode',
+    'mediaBarContentType',
+    'mediaBarItemCount',
+    'mediaBarOverlayOpacity',
+    'mediaBarOverlayColor',
+    'navbarOpacity',
+    'navbarColor',
+    'mediaBarAutoAdvance',
+    'mediaBarIntervalMs',
+    'mediaBarTrailerPreview',
+    'mediaBarTrailerAudio',
+    'episodePreviewEnabled',
+    'previewAudioEnabled',
+    'mediaBarLibraryIds',
+    'mediaBarCollectionIds',
+    'mediaBarExcludedGenres',
+    'themeMusicEnabled',
+    'themeMusicVolume',
+    'themeMusicOnHomeRows',
+    'homeRowsUniversalOverride',
+    'homeRowsUniversalImageType',
+    'pref_enable_series_thumbnails',
+    'pref_show_backdrop',
+    'detailsBackgroundBlurAmount',
+    'browsingBackgroundBlurAmount',
+    'enableAdditionalRatings',
+    'mdblistApiKey',
+    'showRatingLabels',
+    'showRatingBadges',
+    'enableEpisodeRatings',
+    'tmdbApiKey',
+    'seerrEnabled',
+    'jellyseerrBlockNsfw',
+    'enabledRatings',
+    'home_sections_config',
   };
 
   bool _isScopedPreference<T>(Preference<T> pref) {
-    return _scopedPreferenceKeys.contains(pref.key);
+    return _scopedPreferenceKeys.contains(pref.key) ||
+        pref.key.startsWith('homeRowImageType_');
+  }
+
+  Preference<dynamic> getEffectivePreference(Preference<dynamic> pref) {
+    if (_isScopedPreference(pref)) {
+      final scoped = _scopedPreference(pref);
+      if (scoped != null) {
+        return scoped;
+      }
+    }
+    return pref;
   }
 
   Preference<dynamic>? _scopedPreference(Preference<dynamic> pref) {
