@@ -4028,7 +4028,7 @@
     "@configureImageTypeForEachRow": {
         "description": "Description for per-row image type selection"
     },
-    "mergeContinueWatchingAndNextUp": "Mesclar Continuar a Ver e Próximo",
+    "mergeContinueWatchingAndNextUp": "Combinar «Continuar a Ver» e «Próximo»",
     "@mergeContinueWatchingAndNextUp": {
         "description": "Setting for merging continue watching and next up"
     },
