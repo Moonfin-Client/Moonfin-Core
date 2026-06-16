@@ -2469,7 +2469,6 @@ String _normalizeLanguage(String? language) {
   final normalized = language.trim().toLowerCase();
   if (normalized.isEmpty) return '';
   final base = normalized.split(RegExp(r'[-_]')).first;
-  if (base == 'english') return 'eng';
   return base;
 }
 
