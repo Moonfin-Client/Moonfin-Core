@@ -1024,7 +1024,9 @@ class PlaybackManager implements AudioOwnable {
       }
     }
 
-    if (needsReResolve) {
+    iif (needsReResolve && !_reResolvingForTrackMatch) {
+  _reResolvingForTrackMatch = true;
+  try {
       await _playCurrentItem(
         startPosition: startPosition,
         enableDirectPlay: enableDirectPlay,
