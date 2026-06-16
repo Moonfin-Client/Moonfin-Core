@@ -667,7 +667,8 @@ class _ContentRowsState extends State<_ContentRows>
 
     final nextMediaBarVisible = isMobileUi
       ? true
-      : onMediaBar ||
+      : (_isMediaBarIncluded() && _isBannerMode()) ||
+          onMediaBar ||
           _holdMediaBarWhileSidebarFocused ||
           (_verticalNavInFlight && _mediaBarVisible) ||
           (!onSidebar && _activeFocusedRowIndex == null);
@@ -1728,10 +1729,11 @@ class _ContentRowsState extends State<_ContentRows>
     _finishSharedPreview(releaseResources: true);
     _suppressNextRowPreviewFromMediaBar = true;
     _forceRevealOnNextRowFocusFromMediaBar = true;
-    if (mounted && _mediaBarVisible) {
+    final isBanner = _isBannerMode();
+    if (mounted && _mediaBarVisible && !isBanner) {
       setState(() => _mediaBarVisible = false);
     }
-    if (_scrollController.hasClients) {
+    if (!isBanner && _scrollController.hasClients) {
       final offsetAdjustment = _isBookshelfMode() ? (_overlayBottom + 8) : 0.0;
       final target = (_mediaBarHeight() - offsetAdjustment)
           .clamp(0.0, _scrollController.position.maxScrollExtent);
@@ -1882,6 +1884,61 @@ class _ContentRowsState extends State<_ContentRows>
     return _rowKeys[rowIndex]?.currentState as LockedFocusRowState?;
   }
 
+  double _tvTargetTopForRow(int rowIndex) {
+    final defaultTop = _overlayBottom + 8.0;
+    final row = rowIndex < widget.viewModel.rows.length ? widget.viewModel.rows[rowIndex] : null;
+    final isRowsV2 = row != null &&
+        widget.prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 &&
+        !_isSeerrFilterRow(row);
+
+    if (rowIndex == 0 && _rowTopOffsets.isNotEmpty) {
+      if (_isMediaBarIncluded() && !_isBannerMode()) {
+        return defaultTop;
+      }
+      if (!_isMediaBarIncluded() || !isRowsV2) {
+        return _rowTopOffsets[0];
+      }
+    }
+
+    final containerCtx = _rowContainerKeys[rowIndex]?.currentContext;
+    final stackRender = context.findRenderObject();
+    if (containerCtx == null || stackRender is! RenderBox) {
+      return rowIndex == 0 && _rowTopOffsets.isNotEmpty ? _rowTopOffsets[0] : defaultTop;
+    }
+    final containerRender = containerCtx.findRenderObject();
+    if (containerRender is! RenderBox ||
+        !stackRender.hasSize ||
+        !containerRender.hasSize) {
+      return rowIndex == 0 && _rowTopOffsets.isNotEmpty ? _rowTopOffsets[0] : defaultTop;
+    }
+
+    final viewportHeight = stackRender.size.height;
+    final desktopScale = widget.prefs.get(UserPreferences.desktopUiScale).scaleFactor;
+    final ratingsEnabled = widget.prefs.get(UserPreferences.enableAdditionalRatings) as bool? ?? false;
+    final extraHeight = ratingsEnabled ? (32.0 * desktopScale) : 0.0;
+    final rowHeight = containerRender.size.height + extraHeight;
+
+    if (rowIndex == 0 && _rowTopOffsets.isNotEmpty) {
+      final safeBottomMargin = 40.0 * desktopScale;
+      final preferredTop = viewportHeight - rowHeight - safeBottomMargin;
+      return preferredTop.clamp(defaultTop, _rowTopOffsets[0]);
+    }
+
+    if (isRowsV2) {
+      final safeBottomMargin = 40.0 * desktopScale;
+      final remainingHeight = viewportHeight - defaultTop;
+      if (rowHeight + safeBottomMargin > remainingHeight) {
+        double targetTop = viewportHeight - rowHeight - safeBottomMargin;
+        const minTargetTop = 8.0;
+        if (targetTop < minTargetTop) {
+          targetTop = minTargetTop;
+        }
+        return targetTop;
+      }
+    }
+    return defaultTop;
+  }
+
   Future<void> _scrollTvRowIntoOverlayBand(int rowIndex) async {
     if (!mounted || !_scrollController.hasClients) return;
 
@@ -1900,7 +1957,9 @@ class _ContentRowsState extends State<_ContentRows>
 
     final containerTopInStack =
         containerRender.localToGlobal(Offset.zero, ancestor: stackRender).dy;
-    final scrollDelta = containerTopInStack - (_overlayBottom + 8);
+
+    final targetTop = _tvTargetTopForRow(rowIndex);
+    final scrollDelta = containerTopInStack - targetTop;
     final currentOffset = _scrollController.offset;
     final targetOffset = (currentOffset + scrollDelta).clamp(
       0.0,
@@ -2184,7 +2243,7 @@ class _ContentRowsState extends State<_ContentRows>
       final indexChanged = _activeFocusedRowIndex != rowIndex;
       _activeFocusedRowIndex = rowIndex;
       final fullScreenRows = !PlatformDetection.useMobileUi && widget.prefs.get(UserPreferences.fullScreenRows);
-      if (!isMobileUi && _mediaBarVisible && !_verticalNavInFlight) {
+      if (!isMobileUi && _mediaBarVisible && !_verticalNavInFlight && !_isBannerMode()) {
         setState(() => _mediaBarVisible = false);
       } else if (indexChanged && (PlatformDetection.isTV || fullScreenRows)) {
         setState(() {});
@@ -2285,6 +2344,17 @@ class _ContentRowsState extends State<_ContentRows>
 
     if (_mediaBarFocusNode.hasFocus) return;
 
+    if (_activeFocusedRowIndex == null) {
+      if (_scrollController.hasClients && _scrollController.offset > 0.0) {
+        _scrollController.animateTo(
+          0.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+        );
+      }
+      return;
+    }
+
     final currentOffset = _scrollController.offset;
     double minDiff = double.infinity;
     double bestOffset = currentOffset;
@@ -2294,7 +2364,8 @@ class _ContentRowsState extends State<_ContentRows>
       targets.add(0.0);
     }
     for (var i = 0; i < _rowTopOffsets.length; i++) {
-      targets.add((_rowTopOffsets[i] - (_overlayBottom + 8.0))
+      final targetTop = _tvTargetTopForRow(i);
+      targets.add((_rowTopOffsets[i] - targetTop)
           .clamp(0.0, _scrollController.position.maxScrollExtent));
     }
 
@@ -2522,7 +2593,8 @@ class _ContentRowsState extends State<_ContentRows>
     required double overlayBottom,
   }) {
     final fullScreenRows = !PlatformDetection.useMobileUi && widget.prefs.get(UserPreferences.fullScreenRows);
-    if (!showInfoOverlay || !_infoRevealed) {
+    final isRowsV2 = widget.prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
+    if ((!showInfoOverlay || !_infoRevealed) && !(isRowsV2 && fullScreenRows)) {
       return child;
     }
 
@@ -2534,10 +2606,18 @@ class _ContentRowsState extends State<_ContentRows>
       final focusedRowIndex = _focusedRowIndex(FocusManager.instance.primaryFocus);
       final rowViewportTop = rowTopOffsets[rowIndex] - _scrollOffset;
       final rowBottom = rowViewportTop + rowExtents[rowIndex];
-      if (focusedRowIndex != null && rowIndex < focusedRowIndex) {
-        return IgnorePointer(
-          child: Opacity(opacity: 0, child: child),
-        );
+      if (focusedRowIndex != null) {
+        if (fullScreenRows) {
+          if (rowIndex != focusedRowIndex) {
+            return IgnorePointer(
+              child: Opacity(opacity: 0, child: child),
+            );
+          }
+        } else if (rowIndex < focusedRowIndex) {
+          return IgnorePointer(
+            child: Opacity(opacity: 0, child: child),
+          );
+        }
       }
       if (rowBottom < overlayBottom - 80) {
         return IgnorePointer(
@@ -2867,8 +2947,11 @@ class _ContentRowsState extends State<_ContentRows>
 
               final contentHeight = _rowContentHeight(row, posterSize, prefs);
               final targetExtent = rowExtents[rowIndex];
+              final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isSeerrFilterRow(row);
               final extraTopPadding = fullScreenRows
-                  ? ((targetExtent - contentHeight) / 2.0).clamp(0.0, double.infinity)
+                  ? (isRowsV2
+                      ? ((targetExtent - contentHeight) * 0.1).clamp(0.0, double.infinity)
+                      : ((targetExtent - contentHeight) / 2.0).clamp(0.0, double.infinity))
                   : 0.0;
 
               final paddedRowChild = extraTopPadding > 0.0
