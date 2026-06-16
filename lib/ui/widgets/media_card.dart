@@ -360,20 +360,29 @@ class _CardImage extends StatelessWidget {
       aspectRatio: aspectRatio,
       child: Stack(
         fit: StackFit.expand,
+        clipBehavior: Clip.none,
         children: [
           if (showGlow)
-            IgnorePointer(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: isCircular
-                      ? BorderRadius.circular(radius)
-                      : borders.cardRadius,
-                  boxShadow: borders.focusGlow,
+            Positioned(
+              top: -1.0,
+              bottom: -1.0,
+              left: -1.0,
+              right: -1.0,
+              child: IgnorePointer(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: isCircular
+                        ? BorderRadius.circular(radius + 1.0)
+                        : borders.cardRadius + BorderRadius.circular(1.0),
+                    boxShadow: borders.focusGlow,
+                  ),
                 ),
               ),
             ),
           ClipRRect(
-            borderRadius: BorderRadius.circular(radius),
+            borderRadius: isCircular
+                ? BorderRadius.circular(radius)
+                : borders.cardRadius,
             child: Stack(
               fit: StackFit.expand,
               children: [
@@ -445,14 +454,20 @@ class _CardImage extends StatelessWidget {
             ),
           ),
           if (showBorder)
-            IgnorePointer(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: isCircular
-                      ? BorderRadius.circular(radius)
-                      : borders.cardRadius,
-                  border: Border.fromBorderSide(
-                    borders.focusBorder.copyWith(color: borderColor),
+            Positioned(
+              top: -1.0,
+              bottom: -1.0,
+              left: -1.0,
+              right: -1.0,
+              child: IgnorePointer(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: isCircular
+                        ? BorderRadius.circular(radius + 1.0)
+                        : borders.cardRadius + BorderRadius.circular(1.0),
+                    border: Border.fromBorderSide(
+                      borders.focusBorder.copyWith(color: borderColor),
+                    ),
                   ),
                 ),
               ),

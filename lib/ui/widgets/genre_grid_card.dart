@@ -49,8 +49,9 @@ class GenreGridCard extends StatefulWidget {
 class _GenreGridCardState extends State<GenreGridCard> with FocusStateMixin {
   @override
   Widget build(BuildContext context) {
+    final borders = ThemeRegistry.active.borders;
     final borderColor =
-        widget.focusColor ?? ThemeRegistry.active.borders.focusBorder.color;
+        widget.focusColor ?? borders.focusBorder.color;
     final showMarquee = hovered || focused;
     final imageUrl = widget.genre.imageUrl ?? widget.genre.backdropUrl;
     final desktopScale = GetIt.instance<UserPreferences>()
@@ -95,23 +96,31 @@ class _GenreGridCardState extends State<GenreGridCard> with FocusStateMixin {
             child: Stack(
               clipBehavior: Clip.none,
               children: [
-                if (showFocusBorder && ThemeRegistry.active.borders.focusGlow.isNotEmpty)
-                  Positioned.fill(
+                if (showFocusBorder && borders.focusGlow.isNotEmpty)
+                  Positioned(
+                    top: -1.0,
+                    bottom: -1.0,
+                    left: -1.0,
+                    right: -1.0,
                     child: IgnorePointer(
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: ThemeRegistry.active.borders.focusGlow,
+                          borderRadius: borders.cardRadius + BorderRadius.circular(1.0),
+                          boxShadow: borders.focusGlow,
                         ),
                       ),
                     ),
                   )
                 else if (showFocusBorder)
-                  Positioned.fill(
+                  Positioned(
+                    top: -1.0,
+                    bottom: -1.0,
+                    left: -1.0,
+                    right: -1.0,
                     child: IgnorePointer(
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: borders.cardRadius + BorderRadius.circular(1.0),
                           boxShadow: [
                             BoxShadow(
                               color: AppColorScheme.accent.withAlpha(145),
@@ -124,7 +133,7 @@ class _GenreGridCardState extends State<GenreGridCard> with FocusStateMixin {
                     ),
                   ),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: borders.cardRadius,
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
@@ -197,13 +206,17 @@ class _GenreGridCardState extends State<GenreGridCard> with FocusStateMixin {
                   ),
                 ),
                 if (showFocusBorder)
-                  Positioned.fill(
+                  Positioned(
+                    top: -1.0,
+                    bottom: -1.0,
+                    left: -1.0,
+                    right: -1.0,
                     child: IgnorePointer(
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: borders.cardRadius + BorderRadius.circular(1.0),
                           border: Border.fromBorderSide(
-                            ThemeRegistry.active.borders.focusBorder.copyWith(
+                            borders.focusBorder.copyWith(
                               color: borderColor,
                               width: 2.4,
                             ),
