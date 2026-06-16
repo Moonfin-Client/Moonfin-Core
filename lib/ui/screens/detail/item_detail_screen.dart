@@ -81,6 +81,16 @@ double _desktopUiScale({UserPreferences? prefs}) {
   return effectivePrefs.get(UserPreferences.desktopUiScale).scaleFactor;
 }
 
+/// Smoothly scrolls a position back to the top. Ignore if already there.
+void _animateScrollToTop(ScrollPosition position) {
+  if (position.pixels <= position.minScrollExtent) return;
+  unawaited(position.animateTo(
+    position.minScrollExtent,
+    duration: const Duration(milliseconds: 220),
+    curve: Curves.easeOut,
+  ));
+}
+
 Future<bool> _showDeleteConfirmationDialog(
   BuildContext context, {
   required String title,
@@ -518,16 +528,7 @@ class _DetailContentState extends State<_DetailContent> {
   }
 
   bool _tryFocusNavbar() {
-    if (_scrollController.hasClients) {
-      final position = _scrollController.position;
-      if (position.pixels > position.minScrollExtent) {
-        position.animateTo(
-          position.minScrollExtent,
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOut,
-        );
-      }
-    }
+    _scrollMainToTop();
 
     final focusNavbar = NavigationLayout.focusNavbarNotifier.value;
     if (focusNavbar != null) {
@@ -599,20 +600,21 @@ class _DetailContentState extends State<_DetailContent> {
     return controller.position.context.storageContext;
   }
 
+  void _scrollMainToTop() {
+    if (_scrollController.hasClients) {
+      _animateScrollToTop(_scrollController.position);
+    }
+  }
+
+  bool _isActionButtonTarget(FocusNode target) =>
+      target == widget.initialFocusNode ||
+      target.debugLabel == 'detailActionButtons' ||
+      target.debugLabel == 'detailBoxSetActionButtons';
+
   void _focusSectionTarget(FocusNode target, {double alignment = 0.2}) {
     target.requestFocus();
-    final isActionButtons = target == widget.initialFocusNode ||
-        target.debugLabel == 'detailActionButtons' ||
-        target.debugLabel == 'detailBoxSetActionButtons';
-
-    if (isActionButtons) {
-      if (_scrollController.hasClients) {
-        unawaited(_scrollController.animateTo(
-          _scrollController.position.minScrollExtent,
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOut,
-        ));
-      }
+    if (_isActionButtonTarget(target)) {
+      _scrollMainToTop();
     } else {
       final context = target.context;
       if (context != null && !_shouldSkipSectionEnsureVisible(target)) {
@@ -629,18 +631,8 @@ class _DetailContentState extends State<_DetailContent> {
       return;
     }
 
-    final isActionButtons = target == widget.initialFocusNode ||
-        target.debugLabel == 'detailActionButtons' ||
-        target.debugLabel == 'detailBoxSetActionButtons';
-
-    if (isActionButtons) {
-      if (_scrollController.hasClients) {
-        unawaited(_scrollController.animateTo(
-          _scrollController.position.minScrollExtent,
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOut,
-        ));
-      }
+    if (_isActionButtonTarget(target)) {
+      _scrollMainToTop();
     } else {
       final sectionContext = _sectionContainerContext(target);
       if (sectionContext != null && !_shouldSkipSectionEnsureVisible(target)) {
@@ -725,13 +717,7 @@ class _DetailContentState extends State<_DetailContent> {
         _resetSectionHorizontalOffset(sourceFocusNode);
         if (upTarget != null) {
           if (upTarget == favoriteFocusNode) {
-            if (_scrollController.hasClients) {
-              _scrollController.animateTo(
-                _scrollController.position.minScrollExtent,
-                duration: const Duration(milliseconds: 220),
-                curve: Curves.easeOut,
-              );
-            }
+            _scrollMainToTop();
           }
           _requestSectionFocus(upTarget);
           return KeyEventResult.handled;
@@ -935,16 +921,7 @@ class _DetailContentState extends State<_DetailContent> {
             event.logicalKey == LogicalKeyboardKey.arrowUp) {
           final navbarPos = prefs.get(UserPreferences.navbarPosition);
           if (navbarPos == NavbarPosition.top) {
-            if (_scrollController.hasClients) {
-              final position = _scrollController.position;
-              if (position.pixels > position.minScrollExtent) {
-                position.animateTo(
-                  position.minScrollExtent,
-                  duration: const Duration(milliseconds: 220),
-                  curve: Curves.easeOut,
-                );
-              }
-            }
+            _scrollMainToTop();
             NavigationLayout.focusNavbarNotifier.value?.call();
             return KeyEventResult.handled;
           }
@@ -10302,16 +10279,7 @@ class _ExpandableBiographyState extends State<_ExpandableBiography> {
     if (focusNavbar != null) {
       final scrollable = Scrollable.maybeOf(context);
       if (scrollable != null) {
-        try {
-          final position = scrollable.position;
-          if (position.pixels > position.minScrollExtent) {
-            position.animateTo(
-              position.minScrollExtent,
-              duration: const Duration(milliseconds: 220),
-              curve: Curves.easeOut,
-            );
-          }
-        } catch (_) {}
+        _animateScrollToTop(scrollable.position);
       }
       focusNavbar();
       return true;
