@@ -841,7 +841,7 @@ class PluginSyncService extends ChangeNotifier {
         UserPreferences.homeRowsStyle,
         enumValues: prefs.HomeRowsStyle.values,
       );
-      _applyBool{
+      _applyBool(
         resolved,
         'fullScreenRows',
         UserPreferences.fullScreenRows,
