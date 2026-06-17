@@ -3111,28 +3111,29 @@ class _ContentRowsState extends State<_ContentRows>
               },
             ),
           ),
-          if (_infoRevealed && showInfoOverlay)
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: IgnorePointer(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    PlatformDetection.useMobileUi
-                        ? navbarLeftInset
-                        : rowLeftInset,
-                    infoTopPadding,
-                    16,
-                    8,
-                  ),
-                  child: InfoArea(
-                    item: widget.selectedItem,
-                    headerLeftInset: infoHeaderLeftInset,
-                  ),
+        ),
+        if (_infoRevealed && showInfoOverlay)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: IgnorePointer(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  PlatformDetection.useMobileUi
+                      ? navbarLeftInset
+                      : rowLeftInset,
+                  infoTopPadding,
+                  16,
+                  8,
+                ),
+                child: InfoArea(
+                  item: widget.selectedItem,
+                  headerLeftInset: infoHeaderLeftInset,
                 ),
               ),
             ),
+          ),
         ],
       ),
     );
