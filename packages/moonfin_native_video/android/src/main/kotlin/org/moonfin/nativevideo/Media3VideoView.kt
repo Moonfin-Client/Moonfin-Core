@@ -1449,7 +1449,8 @@ class Media3VideoView(
         selectedSubtitleIsExternal = false
         selectedSubtitleIsBitmap = false
         selectedExternalSubtitleUrl = null
-        subtitleTrackEnabled = false
+        val forceSubtitlesDisabledOnStart = args["forceSubtitlesDisabledOnStart"] as? Boolean ?: false
+        subtitleTrackEnabled = !forceSubtitlesDisabledOnStart
         pendingSubtitleIndex = null
         pendingSubtitleCodec = null
         pendingSubtitleIsExternal = null
@@ -1840,6 +1841,7 @@ class Media3VideoView(
             .setPreferredTextLanguage(preferredTextLanguage)
             .setSelectUndeterminedTextLanguage(selectUndeterminedTextLanguage)
             .setTunnelingEnabled(shouldEnableTunneling)
+            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, !subtitleTrackEnabled)
 
         if (mapDolbyVisionProfile7ToHevc) {
             parametersBuilder.setPreferredVideoMimeType(MimeTypes.VIDEO_H265)
