@@ -6414,14 +6414,6 @@ class AppLocalizationsEo extends AppLocalizations {
       'Ankoraŭ neniuj Jellyfin-serviloj raportantaj la kromaĵon.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Detektu vicojn agorditajn per la kromaĵo \"KefinTweaks\" de ranaldsgift. Propraj sekcioj, lastatempe liberigitaj, rigardataj denove, laŭsezonaj, kaj lastatempe aldonitaj en biblioteko estas spegulitaj de la KefinTweaks-agordo sur ĉiu Jellyfin-servilo.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Ankoraŭ neniuj Jellyfin-serviloj raportantaj KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Malfermu Hejmajn Sekciojn';
 
   @override
@@ -7449,9 +7441,6 @@ class AppLocalizationsEo extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Administru elŝutitajn kromtemojn sur ĉi tiu aparato';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Ĉefekranaj Sekcioj';

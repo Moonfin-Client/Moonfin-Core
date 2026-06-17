@@ -6418,14 +6418,6 @@ class AppLocalizationsPa extends AppLocalizations {
       'ਕੋਈ Jellyfin ਸਰਵਰ ਅਜੇ ਪਲੱਗਇਨ ਦੀ ਰਿਪੋਰਟ ਕਰ ਰਹੇ ਹਨ।';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'ranaldsgift ਦੇ \"KefinTweaks\" ਪਲੱਗਇਨ ਰਾਹੀਂ ਸੰਰਚਿਤ ਕੀਤੀਆਂ ਕਤਾਰਾਂ ਦਾ ਪਤਾ ਲਗਾਓ। ਕਸਟਮ ਸੈਕਸ਼ਨ, ਹਾਲ ਹੀ ਵਿੱਚ ਜਾਰੀ ਕੀਤੇ ਗਏ, ਦੁਬਾਰਾ ਦੇਖੋ, ਮੌਸਮੀ, ਅਤੇ ਹਾਲ ਹੀ ਵਿੱਚ ਲਾਇਬ੍ਰੇਰੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤੇ ਗਏ, ਹਰੇਕ Jellyfin ਸਰਵਰ \'ਤੇ KefinTweaks ਸੰਰਚਨਾ ਤੋਂ ਪ੍ਰਤੀਬਿੰਬ ਕੀਤੇ ਗਏ ਹਨ।';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'ਅਜੇ ਤੱਕ ਕੋਈ Jellyfin ਸਰਵਰ KefinTweaks ਦੀ ਰਿਪੋਰਟ ਨਹੀਂ ਕਰ ਰਹੇ ਹਨ।';
-
-  @override
   String get integrationOpenHomeSections => 'ਹੋਮ ਸੈਕਸ਼ਨ ਖੋਲ੍ਹੋ';
 
   @override
@@ -7443,9 +7435,6 @@ class AppLocalizationsPa extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

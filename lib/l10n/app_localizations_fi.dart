@@ -6451,14 +6451,6 @@ class AppLocalizationsFi extends AppLocalizations {
       'Yksikään Jellyfin-palvelin ei ole vielä ilmoittanut laajennuksesta.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Tunnista ranaldsgiftin KefinTweaks-laajennuksen kautta määritetyt rivit. Äskettäin julkaistut mukautetut osiot, katso uudelleen, kausiluonteiset ja äskettäin kirjastoon lisätyt osiot peilataan jokaisen Jellyfin-palvelimen KefinTweaks-kokoonpanosta.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Yksikään Jellyfin-palvelin ei raportoi vielä KefinTweaksista.';
-
-  @override
   String get integrationOpenHomeSections => 'Avaa Koti-osiot';
 
   @override
@@ -7487,9 +7479,6 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Hallinnoi ladattuja laajennusteemoja tällä laitteella';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Aloitusnäytön osiot';

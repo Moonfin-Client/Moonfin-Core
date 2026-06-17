@@ -6482,14 +6482,6 @@ class AppLocalizationsSq extends AppLocalizations {
       'Nuk ka ende serverë Jellyfin që raportojnë shtesën.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Zbuloni rreshtat e konfiguruar nëpërmjet shtojcës \"KefinTweaks\" të ranaldsgift. Seksionet e personalizuara, të lëshuara së fundmi, shikimi përsëri, sezonal dhe të shtuar së fundi në bibliotekë pasqyrohen nga konfigurimi i KefinTweaks në çdo server Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Ende nuk ka serverë Jellyfin që raportojnë KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Hapni seksionet kryesore';
 
   @override
@@ -7523,9 +7515,6 @@ class AppLocalizationsSq extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

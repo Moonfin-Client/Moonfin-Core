@@ -6466,14 +6466,6 @@ class AppLocalizationsRo extends AppLocalizations {
       'Niciun server Jellyfin nu raportează încă pluginul.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Detectați rândurile configurate prin pluginul „KefinTweaks” de la ranaldsgift. Secțiunile personalizate, lansate recent, vizionați din nou, sezoniere și adăugate recent în bibliotecă sunt reflectate din configurația KefinTweaks pe fiecare server Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Încă niciun server Jellyfin nu raportează KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Deschideți secțiunile de pornire';
 
   @override
@@ -7508,9 +7500,6 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Gestionați temele de plugin descărcate pe acest dispozitiv';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Secțiunile ecranului de pornire';

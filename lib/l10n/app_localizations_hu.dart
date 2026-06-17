@@ -6482,14 +6482,6 @@ class AppLocalizationsHu extends AppLocalizations {
       'Még nincs Jellyfin szerver, amely jelentené a beépülő modult.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'A ranaldsgift „KefinTweaks” bővítményével konfigurált sorok észlelése. A közelmúltban megjelent, újból megtekinthető, szezonális és nemrégiben a könyvtárba felvett egyéni szakaszok tükröződnek a KefinTweaks konfigurációjában minden Jellyfin szerveren.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Még nincs olyan Jellyfin szerver, amely jelentené a KefinTweaks-et.';
-
-  @override
   String get integrationOpenHomeSections => 'Nyissa meg a Kezdőlap szakaszokat';
 
   @override
@@ -7527,9 +7519,6 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

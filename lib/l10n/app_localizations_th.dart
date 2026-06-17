@@ -6392,14 +6392,6 @@ class AppLocalizationsTh extends AppLocalizations {
       'ยังไม่มีเซิร์ฟเวอร์ Jellyfin รายงานปลั๊กอิน';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'ตรวจหาแถวที่กำหนดค่าผ่านปลั๊กอิน \"KefinTweaks\" ของ ranaldsgift ส่วนที่กำหนดเอง เพิ่งเปิดตัว ดูอีกครั้ง ตามฤดูกาล และเพิ่มล่าสุดในไลบรารีจะถูกมิเรอร์จากการกำหนดค่า KefinTweaks บนเซิร์ฟเวอร์ Jellyfin แต่ละตัว';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'ยังไม่มีเซิร์ฟเวอร์ Jellyfin ที่รายงาน KefinTweaks';
-
-  @override
   String get integrationOpenHomeSections => 'เปิดส่วนหน้าแรก';
 
   @override
@@ -7410,9 +7402,6 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'จัดการธีมปลั๊กอินที่ดาวน์โหลดบนอุปกรณ์นี้';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'ส่วนหน้าจอหลัก';

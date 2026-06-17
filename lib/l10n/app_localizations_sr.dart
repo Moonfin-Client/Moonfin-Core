@@ -6447,14 +6447,6 @@ class AppLocalizationsSr extends AppLocalizations {
       'Још нема __АРБ_ТЕРМ_0__ сервера који пријављују додатак.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Откријте редове конфигурисане преко раналдсгифтовог додатка „КефинТвеакс“. Прилагођени одељци, недавно објављени, поново гледајте, сезонски и недавно додати у библиотеку, пресликавају се из КефинТвеакс конфигурације на сваком __АРБ_ТЕРМ_0__ серверу.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Још нема __АРБ_ТЕРМ_0__ сервера који пријављују КефинТвеакс.';
-
-  @override
   String get integrationOpenHomeSections => 'Отворите Хоме Сецтионс';
 
   @override
@@ -7488,9 +7480,6 @@ class AppLocalizationsSr extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

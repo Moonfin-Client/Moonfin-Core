@@ -43,7 +43,6 @@ import '../../widgets/support_dialog.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../home/home_view_model.dart';
 import 'home_screen_sections_integration_screen.dart';
-import 'kefin_tweaks_integration_screen.dart';
 import 'appearance_theme_screen.dart';
 import 'diagnostics_settings_screen.dart';
 import 'saved_themes_screen.dart';
@@ -1219,18 +1218,6 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
                 subtitle: Text(l10n.homeScreenSectionsIntegrationDescription),
                 onTap: () => context.pushSettingsScreen(
                   const HomeScreenSectionsIntegrationScreen(),
-                ),
-              ),
-              _TvSettingsListTile(
-                leading: Image.asset(
-                  'assets/icons/kf.png',
-                  width: 24,
-                  height: 24,
-                ),
-                title: Text(l10n.kefinTweaksTitle),
-                subtitle: Text(l10n.kefinTweaksIntegrationDescription),
-                onTap: () => context.pushSettingsScreen(
-                  const KefinTweaksIntegrationScreen(),
                 ),
               ),
             ],

@@ -6394,14 +6394,6 @@ class AppLocalizationsAr extends AppLocalizations {
       'لا توجد خوادم Jellyfin تقوم بالإبلاغ عن المكون الإضافي حتى الآن.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'اكتشاف الصفوف التي تم تكوينها عبر البرنامج المساعد \"KefinTweaks\" الخاص بـ ranaldsgift. يتم عكس الأقسام المخصصة، التي تم إصدارها مؤخرًا، والمشاهدة مرة أخرى، والموسمية، والتي تمت إضافتها مؤخرًا في المكتبة من تكوين KefinTweaks على كل خادم Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'لا توجد خوادم Jellyfin تقوم بالإبلاغ عن KefinTweaks حتى الآن.';
-
-  @override
   String get integrationOpenHomeSections => 'فتح الأقسام الرئيسية';
 
   @override
@@ -7417,9 +7409,6 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'إدارة سمات المكونات الإضافية التي تم تنزيلها على هذا الجهاز';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'أقسام الشاشة الرئيسية';

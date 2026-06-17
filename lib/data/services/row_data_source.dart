@@ -1319,10 +1319,9 @@ class RowDataSource {
     );
   }
 
-  /// Loads items for a dynamic section provided by a third-party plugin.
+  /// Loads items for a dynamic section provided by a third-party plugin or dynamic source.
   /// Dispatches on [pluginSource] so callers can mix HSS rows (server-driven
-  /// REST endpoint) and KefinTweaks rows (client-side spec issued against
-  /// `/Items`).
+  /// REST endpoint) and other dynamic source rows (like collections, genres, or playlists).
   Future<HomeRow> loadDynamicSection({
     required String rowId,
     required String section,
@@ -1424,13 +1423,7 @@ class RowDataSource {
             rowType: HomeRowType.playlists,
           );
         }
-      case HomeSectionPluginSource.kefinTweaks:
-        return _loadKefinSection(
-          rowId: rowId,
-          title: title,
-          serverId: serverId,
-          additionalData: additionalData,
-        );
+
       case HomeSectionPluginSource.hss:
         return _loadHssSection(
           rowId: rowId,
@@ -1481,211 +1474,7 @@ class RowDataSource {
     }
   }
 
-  Future<HomeRow> _loadKefinSection({
-    required String rowId,
-    required String title,
-    required String serverId,
-    String? additionalData,
-  }) async {
-    Map<String, dynamic>? spec;
-    if (additionalData != null && additionalData.isNotEmpty) {
-      try {
-        final decoded = jsonDecode(additionalData);
-        if (decoded is Map<String, dynamic>) spec = decoded;
-      } catch (_) {}
-    }
-    HomeRow emptyRow() =>
-        HomeRow(id: rowId, title: title, rowType: HomeRowType.pluginDynamic);
-    if (spec == null) return emptyRow();
 
-    try {
-      final response = await _runKefinSpec(spec);
-      if (response == null) return emptyRow();
-      return _buildRow(
-        id: rowId,
-        title: title,
-        response: response,
-        serverId: serverId,
-        rowType: HomeRowType.pluginDynamic,
-      );
-    } catch (_) {
-      return emptyRow();
-    }
-  }
-
-  Future<Map<String, dynamic>?> _runKefinSpec(Map<String, dynamic> spec) async {
-    final kind = spec['kind']?.toString() ?? '';
-    final limit = (spec['limit'] as num?)?.toInt() ?? 200;
-    switch (kind) {
-      case 'recentlyReleasedMovies':
-        return _client.itemsApi.getItems(
-          includeItemTypes: const ['Movie'],
-          recursive: true,
-          sortBy: 'PremiereDate',
-          sortOrder: 'Descending',
-          minPremiereDate: DateTime.now().subtract(const Duration(days: 7)),
-          limit: limit,
-          fields: _fields,
-          enableImageTypes: _imageTypes,
-          imageTypeLimit: _imageTypeLimit,
-        );
-      case 'recentlyReleasedEpisodes':
-        return _client.itemsApi.getItems(
-          includeItemTypes: const ['Episode'],
-          recursive: true,
-          sortBy: 'PremiereDate',
-          sortOrder: 'Descending',
-          minPremiereDate: DateTime.now().subtract(const Duration(days: 7)),
-          limit: limit,
-          fields: _fields,
-          enableImageTypes: _imageTypes,
-          imageTypeLimit: _imageTypeLimit,
-        );
-      case 'watchAgain':
-        return _client.itemsApi.getItems(
-          includeItemTypes: const ['Movie', 'Series'],
-          recursive: true,
-          filters: const ['IsPlayed'],
-          sortBy: 'DatePlayed',
-          sortOrder: 'Descending',
-          limit: limit,
-          fields: _fields,
-          enableImageTypes: _imageTypes,
-          imageTypeLimit: _imageTypeLimit,
-        );
-      case 'recentlyAddedInLibrary':
-        return _runKefinRecentlyAddedInLibrary(spec, limit);
-      case 'custom':
-        return _runKefinCustom(spec, limit);
-    }
-    return null;
-  }
-
-  Future<Map<String, dynamic>?> _runKefinRecentlyAddedInLibrary(
-    Map<String, dynamic> spec,
-    int limit,
-  ) async {
-    final libraryIds =
-        (spec['libraryIds'] as List?)
-            ?.map((e) => e?.toString())
-            .whereType<String>()
-            .toList() ??
-        const <String>[];
-    if (libraryIds.isEmpty) return null;
-    final all = <Map<String, dynamic>>[];
-    for (final id in libraryIds) {
-      try {
-        final response = await _client.itemsApi.getLatestItems(
-          parentId: id,
-          limit: limit,
-          fields: _fields,
-          enableImageTypes: _imageTypes,
-          imageTypeLimit: _imageTypeLimit,
-        );
-        final items = response['Items'];
-        if (items is List) {
-          all.addAll(
-            items.whereType<Map>().map((m) => m.cast<String, dynamic>()),
-          );
-        }
-      } catch (_) {}
-    }
-    if (all.isEmpty) return null;
-    final trimmed = all.take(limit).toList(growable: false);
-    return {'Items': trimmed, 'TotalRecordCount': trimmed.length};
-  }
-
-  Future<Map<String, dynamic>?> _runKefinCustom(
-    Map<String, dynamic> spec,
-    int limit,
-  ) async {
-    final type = (spec['type']?.toString() ?? '').toLowerCase();
-    final source = spec['source']?.toString() ?? '';
-    if (source.isEmpty) return null;
-    final includeItemTypes =
-        (spec['includeItemTypes'] as List?)
-            ?.map((e) => e?.toString())
-            .whereType<String>()
-            .toList() ??
-        const ['Movie', 'Series'];
-    final sortBy = _kefinSortBy(spec['sortBy']?.toString());
-    final sortOrder = _kefinSortOrder(spec['sortOrderDirection']?.toString());
-
-    switch (type) {
-      case 'tag':
-        return _client.itemsApi.getItems(
-          includeItemTypes: includeItemTypes,
-          recursive: true,
-          sortBy: sortBy,
-          sortOrder: sortOrder,
-          tags: [source],
-          limit: limit,
-          fields: _fields,
-          enableImageTypes: _imageTypes,
-          imageTypeLimit: _imageTypeLimit,
-        );
-      case 'genre':
-        return _client.itemsApi.getItems(
-          includeItemTypes: includeItemTypes,
-          recursive: true,
-          sortBy: sortBy,
-          sortOrder: sortOrder,
-          genres: [source],
-          limit: limit,
-          fields: _fields,
-          enableImageTypes: _imageTypes,
-          imageTypeLimit: _imageTypeLimit,
-        );
-      case 'parent':
-      case 'collection':
-      case 'playlist':
-        return _client.itemsApi.getItems(
-          parentId: source,
-          includeItemTypes: includeItemTypes,
-          recursive: true,
-          sortBy: sortBy,
-          sortOrder: sortOrder,
-          limit: limit,
-          fields: _fields,
-          enableImageTypes: _imageTypes,
-          imageTypeLimit: _imageTypeLimit,
-        );
-    }
-    return null;
-  }
-
-  static String _kefinSortBy(String? value) {
-    switch (value?.toLowerCase()) {
-      case 'releasedate':
-      case 'premieredate':
-        return 'PremiereDate';
-      case 'dateadded':
-      case 'datecreated':
-        return 'DateCreated';
-      case 'name':
-      case 'sortname':
-        return 'SortName';
-      case 'communityrating':
-        return 'CommunityRating';
-      case 'datelastcontentadded':
-        return 'DateLastContentAdded';
-      case 'random':
-      case null:
-      case '':
-        return 'Random';
-      default:
-        return value!;
-    }
-  }
-
-  static String _kefinSortOrder(String? value) {
-    switch (value?.toLowerCase()) {
-      case 'descending':
-        return 'Descending';
-      default:
-        return 'Ascending';
-    }
-  }
 
   Future<Map<String, dynamic>> _enrichItemsWithFields(
     Map<String, dynamic> response,

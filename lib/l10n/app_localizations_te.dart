@@ -6463,14 +6463,6 @@ class AppLocalizationsTe extends AppLocalizations {
       'ఇంకా Jellyfin సర్వర్‌లు ప్లగిన్‌ను నివేదించలేదు.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Ranaldsgift యొక్క \"KefinTweaks\" ప్లగ్ఇన్ ద్వారా కాన్ఫిగర్ చేయబడిన అడ్డు వరుసలను గుర్తించండి. ప్రతి Jellyfin సర్వర్‌లోని కెఫిన్‌ట్వీక్స్ కాన్ఫిగరేషన్ నుండి ఇటీవల విడుదల చేసిన అనుకూల విభాగాలు, మళ్లీ చూడండి, కాలానుగుణమైనవి మరియు ఇటీవల లైబ్రరీలో జోడించబడ్డాయి.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'KefinTweaksని ఇంకా Jellyfin సర్వర్‌లు నివేదించలేదు.';
-
-  @override
   String get integrationOpenHomeSections => 'హోమ్ విభాగాలను తెరవండి';
 
   @override
@@ -7510,9 +7502,6 @@ class AppLocalizationsTe extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'ఈ పరికరంలో డౌన్‌లోడ్ చేయబడిన ప్లగిన్ థీమ్‌లను నిర్వహించండి';
-
-  @override
-  String get kefinTweaksTitle => 'కెఫిన్‌ట్వీక్స్';
 
   @override
   String get homeScreenSectionsTitle => 'హోమ్ స్క్రీన్ విభాగాలు';

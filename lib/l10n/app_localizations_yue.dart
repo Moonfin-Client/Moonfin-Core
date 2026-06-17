@@ -6241,14 +6241,6 @@ class AppLocalizationsYue extends AppLocalizations {
       '尚無 Jellyfin 伺服器報告該外掛程式。';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      '偵測透過 ranaldsgift 的「KefinTweaks」插件配置的行。自訂部分、最近發布的、再次觀看的、季節性的以及最近添加到庫中的內容均從每個 Jellyfin 伺服器上的 KefinTweaks 配置進行鏡像。';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      '尚無 Jellyfin 伺服器報告 KefinTweaks。';
-
-  @override
   String get integrationOpenHomeSections => '開放主頁部分';
 
   @override
@@ -7218,9 +7210,6 @@ class AppLocalizationsYue extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';
@@ -14137,14 +14126,6 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   String get homeScreenSectionsIntegrationNoServers => '尚无 Jellyfin 服务器报告该插件。';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      '检测通过 ranaldsgift 的“KefinTweaks”插件配置的行。自定义部分、最近发布的、再次观看的、季节性的以及最近添加到库中的内容均从每个 Jellyfin 服务器上的 KefinTweaks 配置进行镜像。';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      '尚无 Jellyfin 服务器报告 KefinTweaks。';
-
-  @override
   String get integrationOpenHomeSections => '开放主页部分';
 
   @override
@@ -15085,9 +15066,6 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';
@@ -21807,14 +21785,6 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
       '尚無 Jellyfin 伺服器報告該外掛程式。';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      '偵測透過 ranaldsgift 的「KefinTweaks」插件配置的行。自訂部分、最近發布的、再次觀看的、季節性的以及最近添加到庫中的內容均從每個 Jellyfin 伺服器上的 KefinTweaks 配置進行鏡像。';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      '尚無 Jellyfin 伺服器報告 KefinTweaks。';
-
-  @override
   String get integrationOpenHomeSections => '開放主頁部分';
 
   @override
@@ -22754,9 +22724,6 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

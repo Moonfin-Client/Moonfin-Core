@@ -6518,14 +6518,6 @@ class AppLocalizationsCa extends AppLocalizations {
       'Encara no hi ha cap servidor Jellyfin que informi del connector.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Detecteu les files configurades mitjançant el connector \"KefinTweaks\" de ranaldsgift. Les seccions personalitzades, llançades recentment, tornar a veure, estacionals i afegides recentment a la biblioteca es reflecteixen des de la configuració de KefinTweaks a cada servidor Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Encara no hi ha cap servidor Jellyfin que informi de KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Obriu les seccions d\'inici';
 
   @override
@@ -7571,9 +7563,6 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Gestiona els temes de connectors baixats en aquest dispositiu';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Seccions de la pantalla d\'inici';

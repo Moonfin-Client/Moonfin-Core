@@ -6441,14 +6441,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'Henüz eklentiyi bildiren Jellyfin sunucusu yok.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Ranaldsgift\'in \"KefinTweaks\" eklentisi aracılığıyla yapılandırılan satırları tespit edin. Yakın zamanda piyasaya sürülen, tekrar izlenen, sezonluk ve kitaplığa yakın zamanda eklenen özel bölümler, her Jellyfin sunucusundaki KefinTweaks yapılandırmasından yansıtılır.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Henüz KefinTweaks\'i bildiren Jellyfin sunucusu yok.';
-
-  @override
   String get integrationOpenHomeSections => 'Ana Sayfa Bölümlerini Aç';
 
   @override
@@ -7477,9 +7469,6 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Bu cihazdaki indirilen eklenti temalarını yönetin';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

@@ -6437,14 +6437,6 @@ class AppLocalizationsVi extends AppLocalizations {
       'Chưa có máy chủ Jellyfin nào báo cáo plugin.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Phát hiện các hàng được định cấu hình thông qua plugin \"KefinTweaks\" của ranaldsgift. Các phần tùy chỉnh, được phát hành gần đây, xem lại, theo mùa và được thêm gần đây vào thư viện, được phản ánh từ cấu hình KefinTweaks trên mỗi máy chủ Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Chưa có máy chủ Jellyfin nào báo cáo KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Mở phần trang chủ';
 
   @override
@@ -7469,9 +7461,6 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Quản lý các chủ đề plugin đã tải xuống trên thiết bị này';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTinh chỉnh';
 
   @override
   String get homeScreenSectionsTitle => 'Phần màn hình chính';

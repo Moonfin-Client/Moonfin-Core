@@ -6457,14 +6457,6 @@ class AppLocalizationsLv extends AppLocalizations {
       'Pagaidām neviens Jellyfin serveris neziņo par spraudni.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Noteikt rindas, kas konfigurētas, izmantojot ranaldsgift spraudni \"KefinTweaks\". Pielāgotas sadaļas, kas nesen izlaistas, skatīties vēlreiz, sezonālas un nesen pievienotas bibliotēkā, tiek atspoguļotas no KefinTweaks konfigurācijas katrā Jellyfin serverī.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Pagaidām neviens Jellyfin serveris neziņo par KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Atveriet sākuma sadaļas';
 
   @override
@@ -7498,9 +7490,6 @@ class AppLocalizationsLv extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Pārvaldiet šajā ierīcē lejupielādētos spraudņu motīvus';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Sākuma ekrāna sadaļas';

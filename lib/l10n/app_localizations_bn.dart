@@ -6423,14 +6423,6 @@ class AppLocalizationsBn extends AppLocalizations {
       'কোন Jellyfin সার্ভার এখনো প্লাগইন রিপোর্ট করছে।';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Ranaldsgift-এর \"KefinTweaks\" প্লাগইনের মাধ্যমে কনফিগার করা সারিগুলি সনাক্ত করুন৷ কাস্টম বিভাগগুলি, সম্প্রতি প্রকাশিত, আবার দেখুন, মৌসুমী এবং সম্প্রতি লাইব্রেরিতে যোগ করা প্রতিটি Jellyfin সার্ভারে KefinTweaks কনফিগারেশন থেকে মিরর করা হয়েছে।';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'কোন Jellyfin সার্ভার এখনও কেফিনটুইক্স রিপোর্ট করছে।';
-
-  @override
   String get integrationOpenHomeSections => 'হোম বিভাগ খুলুন';
 
   @override
@@ -7455,9 +7447,6 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'এই ডিভাইসে ডাউনলোড করা প্লাগইন থিম পরিচালনা করুন';
-
-  @override
-  String get kefinTweaksTitle => 'কেফিনটুইকস';
 
   @override
   String get homeScreenSectionsTitle => 'হোম স্ক্রীন বিভাগ';

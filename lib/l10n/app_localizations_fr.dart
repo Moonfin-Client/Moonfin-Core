@@ -6513,14 +6513,6 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucun serveur Jellyfin n\'a encore signalé le plugin.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Détectez les rangées configurées via le plugin \"KefinTweaks\" de ranaldsgift. Les sections personnalisées, récemment publiées, à revoir, saisonnières et récemment ajoutées à la bibliothèque sont reflétées à partir de la configuration KefinTweaks sur chaque serveur Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Aucun serveur Jellyfin ne signale KefinTweaks pour le moment.';
-
-  @override
   String get integrationOpenHomeSections => 'Sections d\'accueil ouvertes';
 
   @override
@@ -7556,9 +7548,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Gérer les thèmes de plugin téléchargés sur cet appareil';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Sections de l\'écran d\'accueil';

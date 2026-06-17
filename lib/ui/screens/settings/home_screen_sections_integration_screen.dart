@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
-import '../../../data/services/kefin_tweaks_service.dart';
 import '../../../data/services/home_screen_sections_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -122,9 +121,7 @@ class _HomeScreenSectionsIntegrationScreenState
   bool _canOpenHomeSections() {
     final hssAvailable = GetIt.instance.isRegistered<HomeScreenSectionsService>() &&
         GetIt.instance<HomeScreenSectionsService>().availableServers.isNotEmpty;
-    final kefinAvailable = GetIt.instance.isRegistered<KefinTweaksService>() &&
-        GetIt.instance<KefinTweaksService>().availableServers.isNotEmpty;
-    return hssAvailable || kefinAvailable;
+    return hssAvailable;
   }
 
   Widget _buildCapabilityTile(HomeScreenSectionsCapability cap) {

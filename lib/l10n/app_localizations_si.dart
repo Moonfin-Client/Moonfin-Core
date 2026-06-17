@@ -6421,14 +6421,6 @@ class AppLocalizationsSi extends AppLocalizations {
       'Jellyfin සේවාදායකයන් තවමත් ප්ලගිනය වාර්තා නොකරයි.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Ranaldsgift හි \"KefinTweaks\" ප්ලගිනය හරහා වින්‍යාස කර ඇති පේළි හඳුනා ගන්න. අභිරුචි කොටස්, මෑතකදී නිකුත් කරන ලද, නැවත නරඹන්න, සෘතුමය සහ මෑතකදී එකතු කරන ලද පුස්තකාලයේ එක් එක් Jellyfin සේවාදායකයේ KefinTweaks වින්‍යාසයෙන් පිළිබිඹු වේ.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'KefinTweaks තවමත් Jellyfin සේවාදායකයක් වාර්තා නොකරයි.';
-
-  @override
   String get integrationOpenHomeSections => 'මුල් පිටුව කොටස් විවෘත කරන්න';
 
   @override
@@ -7451,9 +7443,6 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

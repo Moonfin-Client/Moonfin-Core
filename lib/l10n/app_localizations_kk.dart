@@ -6459,14 +6459,6 @@ class AppLocalizationsKk extends AppLocalizations {
       'Плагин туралы әлі ешқандай Jellyfin серверлері есеп бермейді.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Ranaldsgift \"KefinTweaks\" плагині арқылы конфигурацияланған жолдарды анықтау. Жақында шығарылған, қайта қарау, маусымдық және кітапханаға жақында қосылған теңшелетін бөлімдер әрбір Jellyfin серверіндегі KefinTweaks конфигурациясынан бейнеленген.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'KefinTweaks туралы хабарлайтын Jellyfin серверлері әлі жоқ.';
-
-  @override
   String get integrationOpenHomeSections => 'Негізгі бөлімдерді ашыңыз';
 
   @override
@@ -7495,9 +7487,6 @@ class AppLocalizationsKk extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

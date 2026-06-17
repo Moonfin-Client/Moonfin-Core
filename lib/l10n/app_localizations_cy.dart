@@ -6445,14 +6445,6 @@ class AppLocalizationsCy extends AppLocalizations {
       'Dim gweinyddwyr Jellyfin yn adrodd am yr ategyn eto.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Canfod rhesi sydd wedi\'u ffurfweddu trwy ategyn \"KefinTweaks\" ranaldsgift. Mae adrannau personol, a ryddhawyd yn ddiweddar, gwylio eto, tymhorol, ac a ychwanegwyd yn ddiweddar yn y llyfrgell yn cael eu hadlewyrchu o gyfluniad KefinTweaks ar bob gweinydd Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Dim gweinyddwyr Jellyfin yn adrodd am KefinTweaks eto.';
-
-  @override
   String get integrationOpenHomeSections => 'Adrannau Cartref Agored';
 
   @override
@@ -7484,9 +7476,6 @@ class AppLocalizationsCy extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Rheoli themâu ategyn wedi\'u lawrlwytho ar y ddyfais hon';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Adrannau Sgrin Cartref';

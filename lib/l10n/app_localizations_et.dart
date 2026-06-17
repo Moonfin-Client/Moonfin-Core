@@ -6436,14 +6436,6 @@ class AppLocalizationsEt extends AppLocalizations {
       'Ükski Jellyfini server pole pistikprogrammist veel teatanud.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Tuvastage read, mis on konfigureeritud ranaldsgifti pistikprogrammi \"KefinTweaks\" kaudu. Hiljuti välja antud, uuesti vaadatavad, hooajalised ja hiljuti teeki lisatud kohandatud jaotised peegelduvad iga Jellyfini serveri KefinTweaksi konfiguratsioonist.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Ükski Jellyfini server ei teatanud veel KefinTweaksist.';
-
-  @override
   String get integrationOpenHomeSections => 'Avage jaotised Avaleht';
 
   @override
@@ -7474,9 +7466,6 @@ class AppLocalizationsEt extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Hallake selles seadmes allalaaditud pistikprogrammide teemasid';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Avakuva jaotised';

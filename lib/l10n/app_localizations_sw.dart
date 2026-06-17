@@ -6472,14 +6472,6 @@ class AppLocalizationsSw extends AppLocalizations {
       'Bado hakuna seva za Jellyfin zinazoripoti programu-jalizi.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Tambua safu mlalo zilizosanidiwa kupitia programu-jalizi ya \"KefinTweaks\" ya ranaldsgift. Sehemu maalum, iliyotolewa hivi majuzi, tazama tena, msimu, na iliyoongezwa hivi majuzi kwenye maktaba huakisiwa kutoka kwa usanidi wa KefinTweaks kwenye kila seva ya Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Bado hakuna seva za Jellyfin zinazoripoti KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Fungua Sehemu za Nyumbani';
 
   @override
@@ -7515,9 +7507,6 @@ class AppLocalizationsSw extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

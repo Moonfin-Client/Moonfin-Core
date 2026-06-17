@@ -6433,14 +6433,6 @@ class AppLocalizationsAf extends AppLocalizations {
       'Geen Jellyfin-bedieners wat die inprop nog rapporteer nie.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Bespeur rye wat gekonfigureer is via ranaldsgift se \"KefinTweaks\"-inprop. Gepasmaakte afdelings, wat onlangs vrygestel is, weer kyk, seisoenaal en onlangs in die biblioteek bygevoeg is, word weerspieël vanaf die KefinTweaks-konfigurasie op elke Jellyfin-bediener.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Geen Jellyfin-bedieners wat KefinTweaks rapporteer nie.';
-
-  @override
   String get integrationOpenHomeSections => 'Maak Tuisafdelings oop';
 
   @override
@@ -7467,9 +7459,6 @@ class AppLocalizationsAf extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Bestuur afgelaaide inprop-temas op hierdie toestel';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Tuisskerm-afdelings';

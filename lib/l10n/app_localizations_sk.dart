@@ -6454,14 +6454,6 @@ class AppLocalizationsSk extends AppLocalizations {
       'Doplnok zatiaľ nenahlásili žiadne servery Jellyfin.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Zistiť riadky nakonfigurované prostredníctvom doplnku „KefinTweaks“ ranaldsgift. Vlastné sekcie, nedávno vydané, pozerané znova, sezónne a nedávno pridané do knižnice, sa zrkadlia z konfigurácie KefinTweaks na každom serveri Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Zatiaľ žiadne servery Jellyfin nehlásia KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Otvorte sekcie Domov';
 
   @override
@@ -7495,9 +7487,6 @@ class AppLocalizationsSk extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

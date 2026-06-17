@@ -6449,14 +6449,6 @@ class AppLocalizationsMn extends AppLocalizations {
       'Одоогоор залгаасын талаар мэдээлсэн Jellyfin сервер алга.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Ranaldsgift-ийн \"KefinTweaks\" залгаасаар тохируулсан мөрүүдийг илрүүлэх. Саяхан гарсан, дахин үзэх, улирлын чанартай, номын санд саяхан нэмсэн захиалгат хэсгүүдийг Jellyfin сервер бүр дээрх KefinTweaks тохиргооноос тусгадаг.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'KefinTweaks-г мэдээлсэн Jellyfin сервер одоогоор алга.';
-
-  @override
   String get integrationOpenHomeSections => 'Нүүр хуудасны хэсгийг нээнэ үү';
 
   @override
@@ -7489,9 +7481,6 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Татаж авсан залгаасын загваруудыг энэ төхөөрөмж дээр удирдаарай';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Үндсэн дэлгэцийн хэсгүүд';

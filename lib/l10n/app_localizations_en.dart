@@ -6380,14 +6380,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'No Jellyfin servers reporting the plugin yet.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Detect rows configured via ranaldsgift\'s \"KefinTweaks\" plugin. Custom sections, recently released, watch again, seasonal, and recently added in library are mirrored from the KefinTweaks configuration on each Jellyfin server.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'No Jellyfin servers reporting KefinTweaks yet.';
-
-  @override
   String get integrationOpenHomeSections => 'Open Home Sections';
 
   @override
@@ -7404,9 +7396,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';
@@ -14470,14 +14459,6 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
       'No Jellyfin servers reporting the plugin yet.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Detect rows configured via ranaldsgift\'s \"KefinTweaks\" plugin. Custom sections, recently released, watch again, seasonal, and recently added in library are mirrored from the KefinTweaks configuration on each Jellyfin server.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'No Jellyfin servers reporting KefinTweaks yet.';
-
-  @override
   String get integrationOpenHomeSections => 'Open Home Sections';
 
   @override
@@ -15464,9 +15445,6 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

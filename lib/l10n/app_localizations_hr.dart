@@ -6443,14 +6443,6 @@ class AppLocalizationsHr extends AppLocalizations {
       'Još nijedan Jellyfin poslužitelj nije prijavio dodatak.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Otkrij retke konfigurirane putem dodatka \"KefinTweaks\" tvrtke ranaldsgift. Prilagođeni odjeljci, nedavno objavljeni, ponovno gledajte, sezonski i nedavno dodani u biblioteku odražavaju se iz KefinTweaks konfiguracije na svakom poslužitelju Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Još nijedan Jellyfin poslužitelj ne prijavljuje KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Otvorite početne odjeljke';
 
   @override
@@ -7484,9 +7476,6 @@ class AppLocalizationsHr extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

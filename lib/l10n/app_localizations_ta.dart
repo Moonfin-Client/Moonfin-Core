@@ -6476,14 +6476,6 @@ class AppLocalizationsTa extends AppLocalizations {
       'Jellyfin சேவையகங்கள் இன்னும் செருகுநிரலைப் புகாரளிக்கவில்லை.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'ranaldsgift இன் \"KefinTweaks\" செருகுநிரல் வழியாக கட்டமைக்கப்பட்ட வரிசைகளைக் கண்டறியவும். ஒவ்வொரு Jellyfin சர்வரிலும் உள்ள KefinTweaks உள்ளமைவில் இருந்து சமீபத்தில் வெளியிடப்பட்ட தனிப்பயன் பிரிவுகள், மீண்டும் பார்க்கவும், பருவகாலம் மற்றும் சமீபத்தில் நூலகத்தில் சேர்க்கப்பட்டவை.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'இதுவரை எந்த Jellyfin சேவையகங்களும் KefinTweaks ஐப் புகாரளிக்கவில்லை.';
-
-  @override
   String get integrationOpenHomeSections => 'முகப்புப் பிரிவுகளைத் திற';
 
   @override
@@ -7518,9 +7510,6 @@ class AppLocalizationsTa extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

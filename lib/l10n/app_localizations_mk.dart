@@ -6470,14 +6470,6 @@ class AppLocalizationsMk extends AppLocalizations {
       'Сè уште нема Jellyfin сервери кои го пријавуваат приклучокот.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Откријте редови конфигурирани преку приклучокот „KefinTweaks“ на ranaldsgift. Прилагодените делови, неодамна објавени, повторно гледање, сезонски и неодамна додадени во библиотеката се пресликани од конфигурацијата KefinTweaks на секој Jellyfin сервер.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Сè уште нема Jellyfin сервери кои известуваат за KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Отворете ги почетните делови';
 
   @override
@@ -7513,9 +7505,6 @@ class AppLocalizationsMk extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

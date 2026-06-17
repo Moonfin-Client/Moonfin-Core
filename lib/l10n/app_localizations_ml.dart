@@ -6502,14 +6502,6 @@ class AppLocalizationsMl extends AppLocalizations {
       'Jellyfin സെർവറുകളൊന്നും ഇതുവരെ പ്ലഗിൻ റിപ്പോർട്ട് ചെയ്യുന്നില്ല.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Ranaldsgift-ൻ്റെ \"KefinTweaks\" പ്ലഗിൻ വഴി കോൺഫിഗർ ചെയ്ത വരികൾ കണ്ടെത്തുക. ഇഷ്‌ടാനുസൃത വിഭാഗങ്ങൾ, അടുത്തിടെ പുറത്തിറക്കിയ, വീണ്ടും കാണുക, സീസണൽ, അടുത്തിടെ ലൈബ്രറിയിൽ ചേർത്തത് എന്നിവ ഓരോ Jellyfin സെർവറിലുമുള്ള KefinTweaks കോൺഫിഗറേഷനിൽ നിന്ന് പ്രതിഫലിപ്പിക്കുന്നു.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'KefinTweaks ഇതുവരെ Jellyfin സെർവറുകൾ റിപ്പോർട്ട് ചെയ്യുന്നില്ല.';
-
-  @override
   String get integrationOpenHomeSections => 'ഹോം സെക്ഷനുകൾ തുറക്കുക';
 
   @override
@@ -7555,9 +7547,6 @@ class AppLocalizationsMl extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'ഈ ഉപകരണത്തിൽ ഡൗൺലോഡ് ചെയ്‌ത പ്ലഗിൻ തീമുകൾ നിയന്ത്രിക്കുക';
-
-  @override
-  String get kefinTweaksTitle => 'കെഫിൻ ട്വീക്സ്';
 
   @override
   String get homeScreenSectionsTitle => 'ഹോം സ്‌ക്രീൻ വിഭാഗങ്ങൾ';

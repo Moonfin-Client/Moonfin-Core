@@ -6472,14 +6472,6 @@ class AppLocalizationsPt extends AppLocalizations {
       'Nenhum servidor Jellyfin reportando o plugin ainda.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Detecte linhas configuradas por meio do plugin \"KefinTweaks\" do ranaldsgift. Seções personalizadas, lançadas recentemente, assistidas novamente, sazonais e adicionadas recentemente na biblioteca são espelhadas da configuração KefinTweaks em cada servidor Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Nenhum servidor Jellyfin reportando KefinTweaks ainda.';
-
-  @override
   String get integrationOpenHomeSections => 'Abrir seções iniciais';
 
   @override
@@ -7516,9 +7508,6 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Gerenciar temas de plug-ins baixados neste dispositivo';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Seções da tela inicial';
@@ -14679,14 +14668,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       'Nenhum servidor Jellyfin reportando o plugin ainda.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Detecte linhas configuradas por meio do plugin \"KefinTweaks\" do ranaldsgift. Seções personalizadas, lançadas recentemente, assistidas novamente, sazonais e adicionadas recentemente na biblioteca são espelhadas da configuração KefinTweaks em cada servidor Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Nenhum servidor Jellyfin reportando KefinTweaks ainda.';
-
-  @override
   String get integrationOpenHomeSections => 'Abrir seções iniciais';
 
   @override
@@ -15689,9 +15670,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';
@@ -22699,14 +22677,6 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
       'Nenhum servidor Jellyfin a reportar o plugin ainda.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Deteta linhas configuradas através do plugin \"KefinTweaks\" do ranaldsgift. Secções personalizadas, lançadas recentemente, vistas novamente, sazonais e adicionadas recentemente na biblioteca são espelhadas da configuração KefinTweaks em cada servidor Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Nenhum servidor Jellyfin a reportar KefinTweaks ainda.';
-
-  @override
   String get integrationOpenHomeSections => 'Abrir secções iniciais';
 
   @override
@@ -23738,9 +23708,6 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
   @override
   String get savedThemesManageSubtitle =>
       'Gerir temas de plugins baixados neste dispositivo';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Secções do ecrã inicial';

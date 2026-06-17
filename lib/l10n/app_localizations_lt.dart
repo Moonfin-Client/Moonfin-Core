@@ -6445,14 +6445,6 @@ class AppLocalizationsLt extends AppLocalizations {
       'Dar nė vienas Jellyfin serveris nepraneša apie papildinį.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Aptikti eilutes, sukonfigūruotas naudojant „ranaldsgift“ papildinį „KefinTweaks“. Pasirinktiniai skyriai, neseniai išleisti, žiūrėti dar kartą, sezoniniai ir neseniai įtraukti į biblioteką, atspindi KefinTweaks konfigūraciją kiekviename Jellyfin serveryje.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Dar nėra „Jellyfin“ serverių, pranešančių apie „KefinTweaks“.';
-
-  @override
   String get integrationOpenHomeSections => 'Atidarykite pagrindinius skyrius';
 
   @override
@@ -7489,9 +7481,6 @@ class AppLocalizationsLt extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Tvarkykite atsisiųstų papildinių temas šiame įrenginyje';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Pagrindinio ekrano skyriai';

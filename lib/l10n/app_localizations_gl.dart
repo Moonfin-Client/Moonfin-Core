@@ -6511,14 +6511,6 @@ class AppLocalizationsGl extends AppLocalizations {
       'Aínda non hai servidores Jellyfin que informen do complemento.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Detecta filas configuradas mediante o complemento \"KefinTweaks\" de ranaldsgift. As seccións personalizadas, publicadas recentemente, ver de novo, estacionais e engadidas recentemente na biblioteca reflícanse desde a configuración de KefinTweaks en cada servidor Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Aínda non hai servidores Jellyfin que informen de KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Abrir seccións de inicio';
 
   @override
@@ -7559,9 +7551,6 @@ class AppLocalizationsGl extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

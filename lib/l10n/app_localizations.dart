@@ -11494,18 +11494,6 @@ abstract class AppLocalizations {
   /// **'No Jellyfin servers reporting the plugin yet.'**
   String get homeScreenSectionsIntegrationNoServers;
 
-  /// No description provided for @kefinTweaksIntegrationDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Detect rows configured via ranaldsgift\'s \"KefinTweaks\" plugin. Custom sections, recently released, watch again, seasonal, and recently added in library are mirrored from the KefinTweaks configuration on each Jellyfin server.'**
-  String get kefinTweaksIntegrationDescription;
-
-  /// No description provided for @kefinTweaksIntegrationNoServers.
-  ///
-  /// In en, this message translates to:
-  /// **'No Jellyfin servers reporting KefinTweaks yet.'**
-  String get kefinTweaksIntegrationNoServers;
-
   /// No description provided for @integrationOpenHomeSections.
   ///
   /// In en, this message translates to:
@@ -13275,12 +13263,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage downloaded plugin themes on this device'**
   String get savedThemesManageSubtitle;
-
-  /// No description provided for @kefinTweaksTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'KefinTweaks'**
-  String get kefinTweaksTitle;
 
   /// No description provided for @homeScreenSectionsTitle.
   ///

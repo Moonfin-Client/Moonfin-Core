@@ -6440,14 +6440,6 @@ class AppLocalizationsId extends AppLocalizations {
       'Belum ada server Jellyfin yang melaporkan plugin tersebut.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Deteksi baris yang dikonfigurasi melalui plugin \"KefinTweaks\" ranaldsgift. Bagian khusus, yang baru dirilis, tonton lagi, musiman, dan baru ditambahkan di perpustakaan dicerminkan dari konfigurasi KefinTweaks di setiap server Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Belum ada server Jellyfin yang melaporkan KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Buka Bagian Rumah';
 
   @override
@@ -7472,9 +7464,6 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

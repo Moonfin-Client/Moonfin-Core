@@ -28,9 +28,6 @@ enum HomeSectionPluginSource {
   /// IAmParadox27 "Home Screen Sections" plugin.
   hss('hss'),
 
-  /// ranaldsgift "KefinTweaks" front-end plugin.
-  kefinTweaks('kefinTweaks'),
-
   collections('collections'),
 
   genres('genres'),

@@ -6520,14 +6520,6 @@ class AppLocalizationsEl extends AppLocalizations {
       'Δεν υπάρχουν ακόμη διακομιστές Jellyfin που να αναφέρουν την προσθήκη.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Εντοπίστε σειρές που έχουν διαμορφωθεί μέσω της προσθήκης \"KefinTweaks\" του ranaldsgift. Οι προσαρμοσμένες ενότητες, που κυκλοφόρησαν πρόσφατα, παρακολουθήστε ξανά, εποχιακά και προστέθηκαν πρόσφατα στη βιβλιοθήκη αντικατοπτρίζονται από τη διαμόρφωση KefinTweaks σε κάθε διακομιστή Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Δεν υπάρχουν ακόμη διακομιστές Jellyfin που να αναφέρουν το KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Ανοίξτε τις Αρχικές Ενότητες';
 
   @override
@@ -7575,9 +7567,6 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Διαχειριστείτε τα ληφθέντα θέματα προσθηκών σε αυτήν τη συσκευή';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Ενότητες αρχικής οθόνης';

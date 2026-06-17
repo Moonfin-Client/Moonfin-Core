@@ -6395,14 +6395,6 @@ class AppLocalizationsFa extends AppLocalizations {
       'هنوز هیچ سرور Jellyfin این افزونه را گزارش نکرده است.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'ردیف های پیکربندی شده از طریق پلاگین \"KefinTweaks\" ranaldsgift را شناسایی کنید. بخش‌های سفارشی، اخیراً منتشر شده، تماشای مجدد، فصلی و اخیراً اضافه شده در کتابخانه از پیکربندی KefinTweaks در هر سرور Jellyfin منعکس شده‌اند.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'هنوز هیچ سرور Jellyfin KefinTweaks را گزارش نکرده است.';
-
-  @override
   String get integrationOpenHomeSections => 'بخش های صفحه اصلی را باز کنید';
 
   @override
@@ -7421,9 +7413,6 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'مضامین بارگیری شده افزونه را در این دستگاه مدیریت کنید';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'بخش های صفحه اصلی';

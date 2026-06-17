@@ -6424,14 +6424,6 @@ class AppLocalizationsDa extends AppLocalizations {
       'Ingen Jellyfin-servere rapporterer pluginnet endnu.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Registrer rækker konfigureret via ranaldsgifts \"KefinTweaks\" plugin. Brugerdefinerede sektioner, for nylig udgivet, se igen, sæsonbestemt og for nylig tilføjet i biblioteket, spejles fra KefinTweaks-konfigurationen på hver Jellyfin-server.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Ingen Jellyfin-servere rapporterer KefinTweaks endnu.';
-
-  @override
   String get integrationOpenHomeSections => 'Åbn Home Sektioner';
 
   @override
@@ -7459,9 +7451,6 @@ class AppLocalizationsDa extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Administrer downloadede plugin-temaer på denne enhed';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Sektioner på startskærmen';

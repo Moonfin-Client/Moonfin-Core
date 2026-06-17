@@ -6272,14 +6272,6 @@ class AppLocalizationsKo extends AppLocalizations {
       '아직 플러그인을 보고하는 Jellyfin 서버가 없습니다.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'ranaldsgift의 \"KefinTweaks\" 플러그인을 통해 구성된 행을 감지합니다. 최근 출시된 사용자 정의 섹션, 다시 보기, 시즌별, 최근 라이브러리에 추가된 섹션은 각 Jellyfin 서버의 KefinTweaks 구성에서 미러링됩니다.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      '아직 KefinTweaks를 보고하는 Jellyfin 서버가 없습니다.';
-
-  @override
   String get integrationOpenHomeSections => '홈 섹션 열기';
 
   @override
@@ -7261,9 +7253,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

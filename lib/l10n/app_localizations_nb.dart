@@ -6426,14 +6426,6 @@ class AppLocalizationsNb extends AppLocalizations {
       'Ingen Jellyfin-servere rapporterer plugin-modulen ennå.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Oppdag rader konfigurert via ranaldsgifts \"KefinTweaks\"-plugin. Egendefinerte seksjoner, nylig utgitt, se igjen, sesongbaserte og nylig lagt til i biblioteket, speiles fra KefinTweaks-konfigurasjonen på hver Jellyfin-server.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Ingen Jellyfin-servere rapporterer KefinTweaks ennå.';
-
-  @override
   String get integrationOpenHomeSections => 'Åpne Hjem-seksjoner';
 
   @override
@@ -7463,9 +7455,6 @@ class AppLocalizationsNb extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

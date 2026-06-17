@@ -6439,14 +6439,6 @@ class AppLocalizationsUg extends AppLocalizations {
       'قىستۇرمىنى دوكلات قىلىدىغان Jellyfin مۇلازىمېتىرلىرى يوق.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Rnaldsgift نىڭ «KefinTweaks» قىستۇرمىسى ئارقىلىق سەپلەنگەن قۇرلارنى ئېنىقلاڭ. يېقىندا ئېلان قىلىنغان ، قايتا كۆرۈڭ ، پەسىللىك ۋە يېقىندا كۈتۈپخانىغا قوشۇلغان ئىختىيارى بۆلەكلەر ھەر بىر Jellyfin مۇلازىمېتىرىدىكى KefinTweaks سەپلىمىسىدىن ئەينەك قىلىنغان.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'KefinTweaks نى دوكلات قىلىدىغان Jellyfin مۇلازىمېتىرلىرى تېخى يوق.';
-
-  @override
   String get integrationOpenHomeSections => 'ئۆي بۆلەكلىرىنى ئېچىڭ';
 
   @override
@@ -7470,9 +7462,6 @@ class AppLocalizationsUg extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

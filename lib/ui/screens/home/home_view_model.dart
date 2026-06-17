@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
@@ -214,7 +213,7 @@ class HomeViewModel extends ChangeNotifier {
           .toList(growable: false);
 
       // Filter out plugin-dynamic rows that duplicate already-enabled built-ins
-      // and collapse equivalent rows across HSS/KefinTweaks so only the first
+      // and collapse equivalent plugin-dynamic rows so only the first
       // configured plugin row in a duplicate group remains visible.
       final enabledBuiltinKeys = visibleConfigsRaw
           .where((c) => c.isBuiltin)
@@ -642,11 +641,6 @@ class HomeViewModel extends ChangeNotifier {
         return builtin == null
             ? const <String>{}
             : _duplicateKeysForBuiltin(builtin);
-      case HomeSectionPluginSource.kefinTweaks:
-        return _duplicateKeysForKefinSection(
-          cfg.pluginSection,
-          cfg.pluginAdditionalData,
-        );
     }
   }
 
@@ -728,42 +722,6 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  static Set<String> _duplicateKeysForKefinSection(
-    String? section,
-    String? additionalData,
-  ) {
-    final kind = _kefinKind(section, additionalData);
-    switch (kind) {
-      case 'recentlyReleasedMovies':
-      case 'recentlyReleasedEpisodes':
-        return _duplicateKeysForBuiltin(HomeSectionType.recentlyReleased);
-      case 'recentlyAddedInLibrary':
-        return _duplicateKeysForBuiltin(HomeSectionType.latestMedia);
-      default:
-        return const <String>{};
-    }
-  }
-
-  static String? _kefinKind(String? section, String? additionalData) {
-    if (additionalData != null && additionalData.isNotEmpty) {
-      try {
-        final decoded = jsonDecode(additionalData);
-        if (decoded is Map<String, dynamic>) {
-          final kind = decoded['kind']?.toString();
-          if (kind != null && kind.isNotEmpty) {
-            return kind;
-          }
-        }
-      } catch (_) {}
-    }
-
-    if (section == null || section.isEmpty) return null;
-    final prefixIndex = section.indexOf(':');
-    if (prefixIndex >= 0 && prefixIndex + 1 < section.length) {
-      return section.substring(prefixIndex + 1);
-    }
-    return section;
-  }
 
   Future<List<HomeRow>> _loadSection(HomeSectionType section) async {
     final l10n = currentAppLocalizations();

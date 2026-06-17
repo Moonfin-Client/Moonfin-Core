@@ -6280,14 +6280,6 @@ class AppLocalizationsJa extends AppLocalizations {
       'プラグインを報告している Jellyfin サーバーはまだありません。';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'ranaldsgift の「KefinTweaks」プラグインを介して構成された行を検出します。カスタム セクション、最近リリースされたセクション、再度監視されたセクション、季節限定セクション、最近ライブラリに追加されたセクションは、各 Jellyfin サーバー上の KefinTweaks 構成からミラーリングされます。';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'KefinTweaks を報告する Jellyfin サーバーはまだありません。';
-
-  @override
   String get integrationOpenHomeSections => 'ホームセクションを開く';
 
   @override
@@ -7266,9 +7258,6 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';

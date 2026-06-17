@@ -9,7 +9,6 @@ import 'package:server_core/server_core.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/utils/playlist_utils.dart';
 import '../../../data/services/home_screen_sections_service.dart';
-import '../../../data/services/kefin_tweaks_service.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
@@ -414,8 +413,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
 
   int _getSectionCategory(HomeSectionConfig section) {
     if (section.isPluginDynamic) {
-      if (section.pluginSource == HomeSectionPluginSource.kefinTweaks ||
-          section.pluginSource == HomeSectionPluginSource.hss) {
+      if (section.pluginSource == HomeSectionPluginSource.hss) {
         return 7;
       }
       if (section.pluginSource == HomeSectionPluginSource.collections) {
@@ -563,9 +561,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       if (GetIt.instance.isRegistered<HomeScreenSectionsService>()) {
         futures.add(GetIt.instance<HomeScreenSectionsService>().refreshAll());
       }
-      if (GetIt.instance.isRegistered<KefinTweaksService>()) {
-        futures.add(GetIt.instance<KefinTweaksService>().refreshAll());
-      }
       if (futures.isNotEmpty) {
         try {
           await Future.wait(futures);
@@ -615,12 +610,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
   }
 
   /// Adds plugin-dynamic sections discovered by the Home Screen Sections
-  /// plugin and KefinTweaks into the in-memory list (disabled by default)
+  /// plugin into the in-memory list (disabled by default)
   /// and prunes stale entries whose section is no longer reported.
   bool _mergeDiscoveredPluginSections() {
     final hssChanged = _mergeHssSections();
-    final kefinChanged = _mergeKefinSections();
-    return hssChanged || kefinChanged;
+    return hssChanged;
   }
 
   Future<List<_DiscoveredCollectionRow>> _fetchCollectionsForHomeSections() async {
@@ -1000,64 +994,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     return changed;
   }
 
-  bool _mergeKefinSections() {
-    if (!GetIt.instance.isRegistered<KefinTweaksService>()) return false;
-    final service = GetIt.instance<KefinTweaksService>();
-    final discovered = service.availableServers.toList();
-    final allProbed = service.allCapabilities.toList();
-    if (allProbed.isEmpty) return false;
-    var changed = false;
 
-    final existing = <String, HomeSectionConfig>{
-      for (final cfg in _sections.where((c) =>
-          c.isPluginDynamic &&
-          c.pluginSource == HomeSectionPluginSource.kefinTweaks))
-        cfg.stableId: cfg,
-    };
-
-    final freshIds = <String>{};
-    var nextOrder = _sections.length;
-    for (final cap in discovered) {
-      for (final section in cap.sections) {
-        final base = kefinSectionToConfig(
-          section,
-          cap.serverId,
-          enabled: false,
-          order: nextOrder++,
-        );
-        final cfg = base.copyWith(
-          enabled: existing[base.stableId]?.enabled ?? false,
-        );
-        freshIds.add(cfg.stableId);
-        final idx = _sections.indexWhere((s) => s.stableId == cfg.stableId);
-        if (idx >= 0) {
-          final updated = _sections[idx].copyWith(
-            pluginDisplayText: cfg.pluginDisplayText,
-            pluginAdditionalData: cfg.pluginAdditionalData,
-          );
-          if (_sections[idx].pluginDisplayText != updated.pluginDisplayText ||
-              _sections[idx].pluginAdditionalData != updated.pluginAdditionalData) {
-            _sections[idx] = updated;
-            changed = true;
-          }
-        } else {
-          _addSection(cfg);
-          changed = true;
-        }
-      }
-    }
-
-    final probedServers = allProbed.map((c) => c.serverId).toSet();
-    final before = _sections.length;
-    _sections.removeWhere((s) =>
-        s.isPluginDynamic &&
-        s.pluginSource == HomeSectionPluginSource.kefinTweaks &&
-        s.serverId != null &&
-        probedServers.contains(s.serverId) &&
-        !freshIds.contains(s.stableId));
-    if (_sections.length != before) changed = true;
-    return changed;
-  }
 
   void _rebuildFocusNodes() {
     final activeIds = _sections.map((s) => s.stableId).toSet();
@@ -1540,13 +1477,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       },
     );
   }
-
   String _pluginSubtitle(HomeSectionConfig section) {
     return switch (section.pluginSource) {
       HomeSectionPluginSource.collections => 'Collections row',
       HomeSectionPluginSource.genres => 'Genres row',
       HomeSectionPluginSource.playlists => 'Playlists row',
-      HomeSectionPluginSource.kefinTweaks => 'KefinTweaks plugin',
       HomeSectionPluginSource.hss => 'Home Screen Sections plugin',
     };
   }

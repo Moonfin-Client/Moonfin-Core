@@ -6440,14 +6440,6 @@ class AppLocalizationsBe extends AppLocalizations {
       'Пакуль няма сервераў Jellyfin, якія паведамляюць пра плагін.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Выяўляць радкі, настроеныя з дапамогай плагіна \"KefinTweaks\" ranaldsgift. Карыстальніцкія раздзелы, нядаўна выпушчаныя, яшчэ раз, сезонныя і нядаўна дададзеныя ў бібліятэку, адлюстроўваюцца з канфігурацыі KefinTweaks на кожным серверы Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Пакуль няма сервераў Jellyfin, якія паведамляюць пра KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Адкрыйце хатнія раздзелы';
 
   @override
@@ -7489,9 +7481,6 @@ class AppLocalizationsBe extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Кіруйце спампаванымі тэмамі плагінаў на гэтай прыладзе';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Раздзелы галоўнага экрана';
