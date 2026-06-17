@@ -345,6 +345,25 @@ class _SearchScreenState extends State<SearchScreen> {
 
     final key = event.logicalKey;
 
+    if (key == LogicalKeyboardKey.play ||
+        key == LogicalKeyboardKey.mediaPlay ||
+        key == LogicalKeyboardKey.mediaPlayPause) {
+      if (event is KeyDownEvent) {
+        if (rowIndex < _vm.results.length) {
+          final group = _vm.results[rowIndex];
+          final item = group.items[itemIndex];
+          context.push(
+            Destinations.item(
+              item.id,
+              serverId: item.serverId,
+              autoPlay: true,
+            ),
+          );
+        }
+      }
+      return KeyEventResult.handled;
+    }
+
     if (key.isLeftKey && itemIndex <= 0) {
       if (event is KeyDownEvent) {
         return _tryFocusSidebar()

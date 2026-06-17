@@ -6268,10 +6268,82 @@ class _ActionButtonsState extends State<_ActionButtons> {
             );
             break;
 
-          case 'MusicAlbum':
-            final tracks = viewModel.tracks;
-            if (tracks.isEmpty) return;
+          case 'MusicArtist':
+            final client = _clientForItem(item);
+            final data = await client.itemsApi.getItems(
+              artistIds: [item.id],
+              includeItemTypes: const ['Audio'],
+              sortBy: 'Album,ParentIndexNumber,IndexNumber,SortName',
+              recursive: true,
+              fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
+            );
+            final tracks = _mapRawItemsForServer(data['Items'], item.serverId);
+            if (tracks.isEmpty) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(AppLocalizations.of(context).noItemsFound)),
+                );
+              }
+              throw PlaybackStartupRecoveryAbortedException();
+            }
             await manager.playItems(tracks);
+            break;
+
+          case 'MusicAlbum':
+            var tracks = viewModel.tracks;
+            if (tracks.isEmpty) {
+              final client = _clientForItem(item);
+              final data = await client.itemsApi.getItems(
+                parentId: item.id,
+                includeItemTypes: const ['Audio'],
+                sortBy: 'ParentIndexNumber,IndexNumber,SortName',
+                fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
+              );
+              tracks = _mapRawItemsForServer(data['Items'], item.serverId);
+            }
+            if (tracks.isEmpty) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(AppLocalizations.of(context).noItemsFound)),
+                );
+              }
+              throw PlaybackStartupRecoveryAbortedException();
+            }
+            await manager.playItems(tracks);
+            break;
+
+          case 'Playlist':
+            var tracks = viewModel.tracks;
+            if (tracks.isEmpty) {
+              final client = _clientForItem(item);
+              final data = await client.itemsApi.getPlaylistItems(item.id);
+              tracks = _mapRawItemsForServer(data['Items'], item.serverId);
+            }
+            if (tracks.isEmpty) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(AppLocalizations.of(context).noItemsFound)),
+                );
+              }
+              throw PlaybackStartupRecoveryAbortedException();
+            }
+            await manager.playItems(tracks);
+            break;
+
+          case 'AudioBook':
+            final client = _clientForItem(item);
+            final data = await client.itemsApi.getItems(
+              parentId: item.id,
+              includeItemTypes: const ['Audio', 'AudioBook'],
+              sortBy: 'ParentIndexNumber,IndexNumber,SortName',
+              fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
+            );
+            final tracks = _mapRawItemsForServer(data['Items'], item.serverId);
+            if (tracks.isEmpty) {
+              continue defaultCase;
+            }
+            await manager.playItems(tracks);
+            break;
 
           defaultCase:
           default:
