@@ -607,7 +607,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final mergeContinueWatchingNextUp = Preference(
     key: 'pref_merge_continue_watching_next_up',
-    defaultValue: false,
+    defaultValue: true,
   );
 
   static final focusColor = EnumPreference(
@@ -1041,7 +1041,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final subtitlesBackgroundColor = Preference(
     key: 'subtitles_background_color',
-    defaultValue: 0xAA000000,
+    defaultValue: 0x00000000,
   );
 
   static final subtitlesTextWeight = Preference(
@@ -1061,12 +1061,12 @@ class UserPreferences extends ChangeNotifier {
 
   static final subtitlesTextSize = Preference(
     key: 'subtitles_text_size',
-    defaultValue: 24.0,
+    defaultValue: 20.0,
   );
 
   static final subtitlesOffsetPosition = Preference(
     key: 'subtitles_offset_position',
-    defaultValue: 0.08,
+    defaultValue: 0.04,
   );
 
   static final subtitlesDefaultToNone = Preference(
@@ -1141,7 +1141,9 @@ class UserPreferences extends ChangeNotifier {
 
   static final mediaBarMode = Preference(
     key: 'mediaBarMode',
-    defaultValue: mediaBarModeMoonfin,
+    defaultValue: PlatformDetection.useMobileUi
+        ? mediaBarModeGallery
+        : mediaBarModeMoonfin,
   );
 
   static final mediaBarContentType = Preference(
@@ -1211,7 +1213,7 @@ class UserPreferences extends ChangeNotifier {
 
   static final episodePreviewEnabled = Preference(
     key: 'episodePreviewEnabled',
-    defaultValue: true,
+    defaultValue: false,
   );
 
   static final previewAudioEnabled = Preference(
