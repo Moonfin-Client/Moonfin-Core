@@ -59,8 +59,7 @@ class SyncService extends ChangeNotifier {
 
           if (serverPlayed) {
             // Server already finished it, adopt played state locally.
-            await _offlineRepo.updatePlaybackPosition(item.itemId, 0);
-            await _offlineRepo.markProgressSynced(item.itemId);
+            await _offlineRepo.setSyncedPlaybackPosition(item.itemId, 0);
             synced++;
             continue;
           }
@@ -68,8 +67,7 @@ class SyncService extends ChangeNotifier {
           // Otherwise furthest progress wins, but a local completion outranks
           // any partial server position, so leave it to be pushed below.
           if (!localPlayed && serverTicks > item.playbackPositionTicks) {
-            await _offlineRepo.updatePlaybackPosition(item.itemId, serverTicks);
-            await _offlineRepo.markProgressSynced(item.itemId);
+            await _offlineRepo.setSyncedPlaybackPosition(item.itemId, serverTicks);
             synced++;
             continue;
           }

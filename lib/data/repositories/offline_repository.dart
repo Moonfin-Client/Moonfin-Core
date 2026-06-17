@@ -81,6 +81,17 @@ class OfflineRepository {
         .write(const DownloadedItemsCompanion(progressSynced: Value(true)));
   }
 
+  /// Adopts a server position locally and marks it synced in a single write,
+  /// used when resolving an online/offline progress conflict.
+  Future<void> setSyncedPlaybackPosition(String itemId, int positionTicks) async {
+    await (_db.update(_db.downloadedItems)
+          ..where((t) => t.itemId.equals(itemId)))
+        .write(DownloadedItemsCompanion(
+      playbackPositionTicks: Value(positionTicks),
+      progressSynced: const Value(true),
+    ));
+  }
+
   Future<void> deleteItem(String itemId) async {
     await (_db.delete(_db.downloadedItems)
           ..where((t) => t.itemId.equals(itemId)))
