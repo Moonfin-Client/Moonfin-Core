@@ -24,7 +24,6 @@ import 'ui/navigation/app_router.dart';
 import 'ui/theme/app_theme.dart';
 import 'ui/theme/app_theme_controller.dart';
 import 'ui/widgets/cast_mini_player.dart';
-import 'ui/widgets/mini_audio_player.dart';
 import 'ui/widgets/offline_banner.dart';
 import 'ui/widgets/exit_confirmation_dialog.dart';
 import 'ui/screensaver/screensaver_controller.dart';
@@ -653,18 +652,10 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
     if (PlatformDetection.isTV && key == LogicalKeyboardKey.arrowDown) {
       final primaryFocus = FocusManager.instance.primaryFocus;
       if (primaryFocus != null) {
-        if (primaryFocus.ancestors.contains(MiniAudioPlayer.tvFocusNode) ||
-            primaryFocus == MiniAudioPlayer.tvFocusNode) {
-          return KeyEventResult.ignored;
-        }
         final success = primaryFocus.focusInDirection(TraversalDirection.down);
         if (success) {
           return KeyEventResult.handled;
         }
-      }
-      if (MiniAudioPlayer.tvFocusNode.context != null) {
-        MiniAudioPlayer.tvFocusNode.requestFocus();
-        return KeyEventResult.handled;
       }
     }
 
