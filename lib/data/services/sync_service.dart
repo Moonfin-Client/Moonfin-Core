@@ -58,7 +58,9 @@ class SyncService extends ChangeNotifier {
           final localPlayed = item.playbackPositionTicks == 0;
 
           if (serverPlayed) {
-            // Server already finished it, adopt played state locally.
+            // A played item is the furthest possible progress, so a server
+            // completion wins even over a newer partial offline position.
+            // Adopt the played state locally.
             await _offlineRepo.setSyncedPlaybackPosition(
               item.itemId,
               0,
@@ -93,7 +95,8 @@ class SyncService extends ChangeNotifier {
         }
         await _offlineRepo.markProgressSynced(item.itemId);
         synced++;
-      } catch (_) {
+      } catch (e) {
+        debugPrint('[Sync] Failed to sync progress for ${item.itemId}: $e');
         failed++;
       }
     }
@@ -189,7 +192,8 @@ class SyncService extends ChangeNotifier {
             playbackPositionTicks: shouldUpdateTicks ? Value(serverTicks) : Value(localItem.playbackPositionTicks),
           ),
         );
-      } catch (_) {
+      } catch (e) {
+        debugPrint('[Sync] Failed to refresh metadata for ${item.itemId}: $e');
       }
     }
   }
