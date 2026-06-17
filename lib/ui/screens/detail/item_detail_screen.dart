@@ -6327,7 +6327,17 @@ class _ActionButtonsState extends State<_ActionButtons> {
               }
               throw PlaybackStartupRecoveryAbortedException();
             }
-            await manager.playItems(tracks);
+            if (!context.mounted) return;
+            // Playlists can contain video, so honor the Dolby Vision
+            // force-transcode check before allowing direct play/stream.
+            final dvForceTranscode =
+                await _shouldForceTranscodeForDolbyVision(context, tracks);
+            final directAllowed = !dvForceTranscode && !forceTranscode;
+            await manager.playItems(
+              tracks,
+              enableDirectPlay: directAllowed,
+              enableDirectStream: directAllowed,
+            );
             break;
 
           case 'AudioBook':

@@ -349,7 +349,8 @@ class _SearchScreenState extends State<SearchScreen> {
         key == LogicalKeyboardKey.mediaPlay ||
         key == LogicalKeyboardKey.mediaPlayPause) {
       if (event is KeyDownEvent) {
-        if (rowIndex < _vm.results.length) {
+        if (rowIndex < _vm.results.length &&
+            itemIndex < _vm.results[rowIndex].items.length) {
           final group = _vm.results[rowIndex];
           final item = group.items[itemIndex];
           context.push(
