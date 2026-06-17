@@ -2312,7 +2312,7 @@
             }
         }
     },
-    "seerr": "Regėtojas",
+    "seerr": "Seerr",
     "@seerr": {
         "description": "Seerr brand name"
     },
