@@ -160,8 +160,6 @@ class _MoonfinAppState extends State<MoonfinApp> {
                               ),
                             ),
                             if (!hidePlayer)
-                              const RepaintBoundary(child: MiniAudioPlayer()),
-                            if (!hidePlayer)
                               const RepaintBoundary(child: CastMiniPlayer()),
                           ],
                         );

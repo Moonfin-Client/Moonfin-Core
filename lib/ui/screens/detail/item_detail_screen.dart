@@ -920,6 +920,7 @@ class _DetailContentState extends State<_DetailContent> {
     final backdropEnabled = widget.prefs.get(UserPreferences.backdropEnabled);
     final useSplitLayout =
         item.type == 'Person' && _useDesktopDetailLayout(context);
+    final isAlbumOrPlaylist = item.type == 'MusicAlbum' || item.type == 'Playlist';
 
     return Focus(
       focusNode: _contentFocusNode,
@@ -1046,11 +1047,18 @@ class _DetailContentState extends State<_DetailContent> {
                           (MediaQuery.of(context).padding.bottom + 48.0) *
                               _desktopUiScale(),
                         ),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate(
-                      _buildContentForType(context, item),
-                    ),
-                  ),
+                  sliver: isAlbumOrPlaylist
+                      ? SliverToBoxAdapter(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: _buildContentForType(context, item),
+                          ),
+                        )
+                      : SliverList(
+                          delegate: SliverChildListDelegate(
+                            _buildContentForType(context, item),
+                          ),
+                        ),
                 ),
               ],
             ),
@@ -2520,8 +2528,9 @@ class _DetailContentState extends State<_DetailContent> {
           tracks: viewModel.tracks,
           firstTrackFocusNode: _firstTrackFocusNode,
           onFirstTrackUp: () {
-            if (!_albumPlayFocusNode.canRequestFocus) return;
-            _albumPlayFocusNode.requestFocus();
+            final targetNode = widget.initialFocusNode ?? _albumPlayFocusNode;
+            if (!targetNode.canRequestFocus) return;
+            targetNode.requestFocus();
           },
           onTrackFocused: onBackdropItemFocused,
           isAudiobook: isAudiobook,
@@ -11202,6 +11211,7 @@ class _AlbumActions extends StatelessWidget {
           _DetailActionButton(
             label: l10n.shuffle,
             icon: Icons.shuffle,
+            onArrowDown: onPlayDown,
             onPressed: () {
               if (tracks.isEmpty) return;
               final shuffled = List<AggregatedItem>.from(tracks)..shuffle();
@@ -11212,24 +11222,28 @@ class _AlbumActions extends StatelessWidget {
             _DetailActionButton(
               label: l10n.downloadAll,
               icon: Icons.download,
+              onArrowDown: onPlayDown,
               onPressed: onDownloadAll!,
             ),
           if (onDeleteDownloaded != null && hasDownloadedTracks)
             _DetailActionButton(
               label: l10n.deleteDownloaded,
               icon: Icons.delete_sweep,
+              onArrowDown: onPlayDown,
               onPressed: onDeleteDownloaded!,
             ),
           if (onDeletePlaylist != null)
             _DetailActionButton(
               label: l10n.delete,
               icon: Icons.delete_outline,
+              onArrowDown: onPlayDown,
               onPressed: onDeletePlaylist!,
             ),
           if (showAddToPlaylist)
             _DetailActionButton(
               label: l10n.playlist,
               icon: Icons.playlist_add,
+              onArrowDown: onPlayDown,
               onPressed: () => AddToPlaylistDialog.show(
                 context,
                 itemIds: [item.id],

@@ -159,7 +159,11 @@ CustomTransitionPage<T> _opaqueFullScreenPage<T>({
 
 final appRouter = GoRouter(
   initialLocation: Destinations.startup,
-  observers: [FocusRouteObserver(), routeLifecycleObserver],
+  observers: [
+    FocusRouteObserver(),
+    routeLifecycleObserver,
+    PlayerRouteObserver.instance,
+  ],
   redirect: (context, state) {
     final path = state.uri.path;
     if (_authRoutes.contains(path)) return null;
@@ -697,3 +701,53 @@ final appRouter = GoRouter(
     ),
   ],
 );
+
+class PlayerRouteObserver extends NavigatorObserver {
+  static final instance = PlayerRouteObserver();
+  final ValueNotifier<bool> isPlayerActive = ValueNotifier<bool>(false);
+  final List<Route<dynamic>> _playerRoutes = [];
+
+  bool _isPlayer(Route<dynamic> route) {
+    final name = route.settings.name;
+    return name != null &&
+        (name.startsWith('/player/') ||
+         name == '/live-tv/player' ||
+         name == Destinations.audioPlayer ||
+         name == Destinations.videoPlayer);
+  }
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    if (_isPlayer(route)) {
+      _playerRoutes.add(route);
+      isPlayerActive.value = true;
+    }
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    if (_isPlayer(route)) {
+      _playerRoutes.remove(route);
+      isPlayerActive.value = _playerRoutes.isNotEmpty;
+    }
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    if (_isPlayer(route)) {
+      _playerRoutes.remove(route);
+      isPlayerActive.value = _playerRoutes.isNotEmpty;
+    }
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    if (oldRoute != null && _isPlayer(oldRoute)) {
+      _playerRoutes.remove(oldRoute);
+    }
+    if (newRoute != null && _isPlayer(newRoute)) {
+      _playerRoutes.add(newRoute);
+    }
+    isPlayerActive.value = _playerRoutes.isNotEmpty;
+  }
+}

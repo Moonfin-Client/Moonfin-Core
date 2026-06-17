@@ -49,6 +49,7 @@ import '../../widgets/library_row.dart';
 import '../../widgets/media_bar.dart';
 import '../../widgets/mediabar/banner_media_bar.dart';
 import '../../widgets/media_card.dart';
+import '../../widgets/mini_audio_player.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/responsive_layout.dart';
 import '../../widgets/seasonal_effects.dart';
@@ -2300,20 +2301,35 @@ class _ContentRowsState extends State<_ContentRows>
 
   KeyEventResult _handleRowsKeyEvent(KeyEvent event) {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
-    if (!event.logicalKey.isUpKey) return KeyEventResult.ignored;
+    
+    final isUp = event.logicalKey.isUpKey;
+    final isDown = event.logicalKey.isDownKey;
+    if (!isUp && !isDown) return KeyEventResult.ignored;
 
     final current = FocusManager.instance.primaryFocus;
     if (current == null) return KeyEventResult.ignored;
 
-    if (_isMediaBarIncluded()) {
-      if (current == _mediaBarFocusNode) return KeyEventResult.ignored;
-      unawaited(_moveFocusFromRowsToMediaBar());
-      return KeyEventResult.handled;
-    }
+    if (isUp) {
+      if (_isMediaBarIncluded()) {
+        if (current == _mediaBarFocusNode) return KeyEventResult.ignored;
+        unawaited(_moveFocusFromRowsToMediaBar());
+        return KeyEventResult.handled;
+      }
 
-    if (_activeFocusedRowIndex == 0) {
-      _navigateFromMediaBarToNavbar();
-      return KeyEventResult.handled;
+      if (_activeFocusedRowIndex == 0) {
+        _navigateFromMediaBarToNavbar();
+        return KeyEventResult.handled;
+      }
+    } else if (isDown) {
+      final rows = widget.viewModel.rows;
+      if (_activeFocusedRowIndex == rows.length - 1) {
+        if (MiniAudioPlayer.tvFocusNode.context != null) {
+          MiniAudioPlayer.tvFocusNode.requestFocus();
+          if (MiniAudioPlayer.tvFocusNode.hasFocus) {
+            return KeyEventResult.handled;
+          }
+        }
+      }
     }
 
     return KeyEventResult.ignored;

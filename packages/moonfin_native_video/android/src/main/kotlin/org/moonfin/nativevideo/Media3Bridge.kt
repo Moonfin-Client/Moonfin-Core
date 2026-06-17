@@ -75,6 +75,10 @@ object Media3Bridge {
 
     fun attachView(view: Media3VideoView) {
         mainHandler.post {
+            val oldView = activeView
+            if (oldView != null && oldView !== view) {
+                oldView.forceReleasePlayer()
+            }
             activeView = view
             emitEvent(
                 mapOf(

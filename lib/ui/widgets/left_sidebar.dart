@@ -31,6 +31,12 @@ import 'seerr_icons.dart';
 import 'shuffle_overlay.dart';
 import 'user_menu_dialog.dart';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:playback_core/playback_core.dart';
+import '../../data/models/aggregated_item.dart';
+import '../../data/services/media_server_client_factory.dart';
+import '../navigation/app_router.dart';
+
 const _kExpandedWidthDesktop = 240.0;
 const _kExpandedWidthMobile = 260.0;
 const _kExpandDuration = Duration(milliseconds: 200);
@@ -69,6 +75,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
   final _homeFocusNode = FocusNode(debugLabel: 'LeftSidebarHome');
   final _settingsFocusNode = FocusNode(debugLabel: 'LeftSidebarSettings');
   final _profileFocusNode = FocusNode(debugLabel: 'LeftSidebarProfile');
+  final _musicCardFocusNode = FocusNode(debugLabel: 'SidebarMusicCard');
   late final VoidCallback _focusNavbarCallback;
   late final VoidCallback _focusAvatarCallback;
   VoidCallback? _previousFocusNavbarCallback;
@@ -177,6 +184,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
     _homeFocusNode.dispose();
     _settingsFocusNode.dispose();
     _profileFocusNode.dispose();
+    _musicCardFocusNode.dispose();
     _sidebarFocus.dispose();
     _scrollController.dispose();
     _userSub?.cancel();
@@ -351,14 +359,34 @@ class _LeftSidebarState extends State<LeftSidebar> {
 
   KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
     if (event is KeyDownEvent) {
+      final primary = FocusManager.instance.primaryFocus;
+      final insideMusicCard = primary != null && _isDescendantOf(primary, _musicCardFocusNode);
+
       if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+        if (insideMusicCard) {
+          final success = primary.focusInDirection(TraversalDirection.right);
+          if (success) {
+            return KeyEventResult.handled;
+          }
+        }
         _collapse();
         _restoreFocusOutsideSidebar();
         return KeyEventResult.handled;
       }
-      if (PlatformDetection.isTV &&
-          event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-        return KeyEventResult.handled;
+      if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+        if (insideMusicCard) {
+          final success = primary.focusInDirection(TraversalDirection.left);
+          if (success) {
+            return KeyEventResult.handled;
+          }
+          if (PlatformDetection.isTV) {
+            return KeyEventResult.handled;
+          }
+        } else {
+          if (PlatformDetection.isTV) {
+            return KeyEventResult.handled;
+          }
+        }
       }
       if (PlatformDetection.isTV &&
           event.logicalKey == LogicalKeyboardKey.arrowUp &&
@@ -370,6 +398,15 @@ class _LeftSidebarState extends State<LeftSidebar> {
       }
     }
     return KeyEventResult.ignored;
+  }
+
+  bool _isDescendantOf(FocusNode? child, FocusNode parent) {
+    FocusNode? current = child;
+    while (current != null) {
+      if (identical(current, parent)) return true;
+      current = current.parent;
+    }
+    return false;
   }
 
   void _trackPreviousFocus() {
@@ -1011,6 +1048,10 @@ class _LeftSidebarState extends State<LeftSidebar> {
             },
           ),
         ),
+        SidebarMusicCard(
+          isExpanded: _showLabels,
+          focusNode: _musicCardFocusNode,
+        ),
         if (showClock)
           Visibility(
             visible: _showLabels,
@@ -1432,6 +1473,317 @@ class _SidebarLibraryItemState extends State<_SidebarLibraryItem> {
                     )
                   : const SizedBox.shrink(),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SidebarMusicCard extends StatefulWidget {
+  final bool isExpanded;
+  final FocusNode? focusNode;
+  const SidebarMusicCard({
+    super.key,
+    required this.isExpanded,
+    this.focusNode,
+  });
+
+  @override
+  State<SidebarMusicCard> createState() => _SidebarMusicCardState();
+}
+
+class _SidebarMusicCardState extends State<SidebarMusicCard> {
+  final _manager = GetIt.instance<PlaybackManager>();
+  final _clientFactory = GetIt.instance<MediaServerClientFactory>();
+  StreamSubscription? _playSub;
+  StreamSubscription? _queueSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _playSub = _manager.state.playingStream.listen((_) {
+      if (mounted) setState(() {});
+    });
+    _queueSub = _manager.queueService.queueChangedStream.listen((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _playSub?.cancel();
+    _queueSub?.cancel();
+    super.dispose();
+  }
+
+  AggregatedItem? get _currentItem {
+    final raw = _manager.queueService.currentItem;
+    return raw is AggregatedItem ? raw : null;
+  }
+
+  String? _artUrl(AggregatedItem item) {
+    try {
+      final client = _clientFactory.getClientIfExists(item.serverId) ??
+          GetIt.instance<MediaServerClient>();
+      final albumTag = item.albumPrimaryImageTag;
+      final albumId = item.albumId;
+      if (item.type == 'Audio' && albumTag != null && albumId != null) {
+        return client.imageApi
+            .getPrimaryImageUrl(albumId, maxHeight: 120, tag: albumTag);
+      }
+      if (item.primaryImageTag != null) {
+        return client.imageApi
+            .getPrimaryImageUrl(item.id, maxHeight: 120, tag: item.primaryImageTag);
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  Widget _buildCardButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+    bool large = false,
+  }) {
+    return Focus(
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.select ||
+                event.logicalKey == LogicalKeyboardKey.enter)) {
+          onPressed();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: Builder(
+        builder: (context) {
+          final focused = Focus.of(context).hasFocus;
+          final diameter = large ? 38.0 : 32.0;
+          return GestureDetector(
+            onTap: onPressed,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 90),
+              width: diameter,
+              height: diameter,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: focused
+                    ? AppColorScheme.onSurface
+                    : AppColorScheme.onSurface.withValues(alpha: 0.10),
+              ),
+              child: Icon(
+                icon,
+                size: large ? 22 : 18,
+                color: focused ? AppColorScheme.surface : AppColorScheme.onSurface,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final item = _currentItem;
+    if (item == null || !item.isAudioLike) {
+      return const SizedBox.shrink();
+    }
+
+    final isPlaying = _manager.state.isPlaying;
+    final artUrl = _artUrl(item);
+
+    if (!widget.isExpanded) {
+      // Collapsed layout: show a single focusable circular avatar with the album art
+      return Focus(
+        onKeyEvent: (node, event) {
+          if (event is KeyDownEvent &&
+              (event.logicalKey == LogicalKeyboardKey.select ||
+                  event.logicalKey == LogicalKeyboardKey.enter)) {
+            appRouter.push(Destinations.audioPlayer);
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+        child: Builder(
+          builder: (context) {
+            final focused = Focus.of(context).hasFocus;
+            return GestureDetector(
+              onTap: () => appRouter.push(Destinations.audioPlayer),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Center(
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: focused ? AppColorScheme.accent : Colors.transparent,
+                        width: 2,
+                      ),
+                      boxShadow: focused
+                          ? [
+                              BoxShadow(
+                                color: AppColorScheme.accent.withValues(alpha: 0.4),
+                                blurRadius: 8,
+                                spreadRadius: 1,
+                              )
+                            ]
+                          : null,
+                    ),
+                    child: ClipOval(
+                      child: artUrl != null
+                          ? CachedNetworkImage(
+                              imageUrl: artUrl,
+                              fit: BoxFit.cover,
+                            )
+                          : Container(
+                              color: AppColorScheme.onSurface.withValues(alpha: 0.1),
+                              child: Icon(
+                                Icons.music_note,
+                                color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    }
+
+    // Expanded layout: beautiful square card inside the sidebar
+    final artist = item.artists.isNotEmpty
+        ? item.artists.join(', ')
+        : item.albumArtist ?? '';
+
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+    final border = isNeon
+        ? Border.all(
+            color: const Color(0xFF00F0FF),
+            width: 1.5,
+          )
+        : Border.all(
+            color: AppColorScheme.onSurface.withValues(alpha: 0.15),
+            width: 1.0,
+          );
+    final boxShadow = isNeon
+        ? const [
+            BoxShadow(
+              color: Color(0x3300F0FF),
+              blurRadius: 8,
+              spreadRadius: 1,
+            )
+          ]
+        : null;
+
+    final cardContent = GlassSurface(
+      cornerRadius: 16,
+      reinforced: true,
+      fallbackColor: AppColorScheme.surfaceVariant.withValues(alpha: 0.3),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            onTap: () => appRouter.push(Destinations.audioPlayer),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: artUrl != null
+                        ? CachedNetworkImage(
+                            imageUrl: artUrl,
+                            fit: BoxFit.cover,
+                          )
+                        : Container(
+                            color: AppColorScheme.onSurface.withValues(alpha: 0.1),
+                            child: Icon(
+                              Icons.music_note,
+                              color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+                            ),
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.name,
+                        style: TextStyle(
+                          color: AppColorScheme.onSurface,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (artist.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          artist,
+                          style: TextStyle(
+                            color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+                            fontSize: 11,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildCardButton(
+                icon: Icons.skip_previous,
+                onPressed: _manager.previous,
+              ),
+              _buildCardButton(
+                icon: isPlaying ? Icons.pause : Icons.play_arrow,
+                onPressed: isPlaying ? _manager.pause : _manager.resume,
+                large: true,
+              ),
+              _buildCardButton(
+                icon: Icons.skip_next,
+                onPressed: _manager.next,
+              ),
+              _buildCardButton(
+                icon: Icons.stop,
+                onPressed: () => unawaited(_manager.stop(userInitiated: true)),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+
+    return Focus(
+      focusNode: widget.focusNode,
+      canRequestFocus: false,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: FocusTraversalGroup(
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: border,
+              boxShadow: boxShadow,
+            ),
+            child: cardContent,
           ),
         ),
       ),

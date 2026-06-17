@@ -12,6 +12,8 @@ final Set<LogicalKeyboardKey> _selectKeys = <LogicalKeyboardKey>{
   LogicalKeyboardKey.enter,
   LogicalKeyboardKey.numpadEnter,
   LogicalKeyboardKey.gameButtonA,
+  LogicalKeyboardKey.accept,
+  LogicalKeyboardKey.space,
 };
 
 final Set<LogicalKeyboardKey> _backKeys = <LogicalKeyboardKey>{

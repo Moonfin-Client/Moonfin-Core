@@ -58,7 +58,18 @@ class ThemeMusicService {
   Future<void> playForItem(AggregatedItem item) async {
     if (!_prefs.get(UserPreferences.themeMusicEnabled)) return;
     final activeItem = _playbackManager.queueService.currentItem;
-    if (activeItem is AggregatedItem && activeItem.isAudioLike) return;
+    bool isAudio = false;
+    if (activeItem is AggregatedItem) {
+      isAudio = activeItem.isAudioLike;
+    } else if (activeItem is String) {
+      final meta = _playbackManager.currentOfflineMetadata;
+      if (meta != null) {
+        final type = meta['Type']?.toString();
+        final mediaType = meta['MediaType']?.toString();
+        isAudio = type == 'Audio' || type == 'AudioBook' || mediaType == 'Audio';
+      }
+    }
+    if (isAudio) return;
     if (_playbackManager.state.isPlaying) return;
     if (_externalAudioActive) return;
     if (_playSuppressed) return;

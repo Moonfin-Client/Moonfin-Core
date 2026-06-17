@@ -25,7 +25,18 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final currentItem = _manager.queueService.currentItem;
-    if (currentItem is AggregatedItem && currentItem.isAudioLike) {
+    bool isAudio = false;
+    if (currentItem is AggregatedItem) {
+      isAudio = currentItem.isAudioLike;
+    } else if (currentItem is String) {
+      final meta = _manager.currentOfflineMetadata;
+      if (meta != null) {
+        final type = meta['Type']?.toString();
+        final mediaType = meta['MediaType']?.toString();
+        isAudio = type == 'Audio' || type == 'AudioBook' || mediaType == 'Audio';
+      }
+    }
+    if (isAudio) {
       return;
     }
     switch (state) {

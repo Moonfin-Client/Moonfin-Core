@@ -33,6 +33,12 @@ import 'seerr_icons.dart';
 import 'shuffle_overlay.dart';
 import 'user_menu_dialog.dart';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:playback_core/playback_core.dart';
+import '../../data/models/aggregated_item.dart';
+import '../../data/services/media_server_client_factory.dart';
+import '../navigation/app_router.dart';
+
 const _kToolbarHeightTV = 95.0;
 const _kToolbarHeightDesktop = 80.0;
 const _kToolbarHeightMobile = 60.0;
@@ -59,9 +65,20 @@ class TopToolbar extends StatefulWidget {
 
   /// Total laid-out height of the toolbar for the current platform.
   static double heightFor(BuildContext context) {
-    if (PlatformDetection.useLeanbackUi) return _kToolbarHeightTV;
-    if (PlatformDetection.useMobileUi) return _kToolbarHeightMobile;
-    return _kToolbarHeightDesktop;
+    final manager = GetIt.instance<PlaybackManager>();
+    final item = manager.queueService.currentItem;
+    final isMusic = item is AggregatedItem && item.isAudioLike;
+
+    final baseHeight = PlatformDetection.useLeanbackUi
+        ? _kToolbarHeightTV
+        : PlatformDetection.useMobileUi
+        ? _kToolbarHeightMobile
+        : _kToolbarHeightDesktop;
+
+    if (isMusic) {
+      return baseHeight + (PlatformDetection.useLeanbackUi ? 64.0 : 54.0);
+    }
+    return baseHeight;
   }
 
   @override
@@ -84,6 +101,7 @@ class _TopToolbarState extends State<TopToolbar> {
     canRequestFocus: false,
     skipTraversal: true,
   );
+  final _musicBarFocusNode = FocusNode(debugLabel: 'TopMusicBar');
   late final VoidCallback _focusNavbarCallback;
   late final VoidCallback _focusAvatarCallback;
   VoidCallback? _previousFocusNavbarCallback;
@@ -94,6 +112,8 @@ class _TopToolbarState extends State<TopToolbar> {
   late final ValueNotifier<String> _currentTime;
   StreamSubscription? _userSub;
   String? _userImageUrl;
+  StreamSubscription? _playSub;
+  StreamSubscription? _queueSub;
 
   @override
   void initState() {
@@ -119,6 +139,13 @@ class _TopToolbarState extends State<TopToolbar> {
     _viewsRepo.addListener(_onUserViewsChanged);
     GetIt.instance<PluginSyncService>().addListener(_onPrefsChanged);
     _loadLibraries();
+    final manager = GetIt.instance<PlaybackManager>();
+    _playSub = manager.state.playingStream.listen((_) {
+      if (mounted) setState(() {});
+    });
+    _queueSub = manager.queueService.queueChangedStream.listen((_) {
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -144,6 +171,7 @@ class _TopToolbarState extends State<TopToolbar> {
     _homeFocus.dispose();
     _settingsFocus.dispose();
     _inlineLibrariesTriggerFocus.dispose();
+    _musicBarFocusNode.dispose();
     _userSub?.cancel();
     try {
       _viewsRepo.removeListener(_onUserViewsChanged);
@@ -153,6 +181,8 @@ class _TopToolbarState extends State<TopToolbar> {
     } catch (_) {}
     _prefs.removeListener(_onPrefsChanged);
     _currentTime.dispose();
+    _playSub?.cancel();
+    _queueSub?.cancel();
     super.dispose();
   }
 
@@ -261,6 +291,15 @@ class _TopToolbarState extends State<TopToolbar> {
     FocusNode? current = node;
     while (current != null) {
       if (identical(current, _toolbarScopeNode)) return true;
+      current = current.parent;
+    }
+    return false;
+  }
+
+  bool _isDescendantOf(FocusNode? child, FocusNode parent) {
+    FocusNode? current = child;
+    while (current != null) {
+      if (identical(current, parent)) return true;
       current = current.parent;
     }
     return false;
@@ -421,10 +460,17 @@ class _TopToolbarState extends State<TopToolbar> {
         ? _kToolbarHeightMobile
         : _kToolbarHeightDesktop;
 
+    final manager = GetIt.instance<PlaybackManager>();
+    final currentItem = manager.queueService.currentItem;
+    final isMusicActive = currentItem is AggregatedItem && currentItem.isAudioLike;
+    final totalHeight = isMusicActive
+        ? toolbarHeight + (isTV ? 64.0 : 54.0)
+        : toolbarHeight;
+
     return SafeArea(
       bottom: false,
       child: SizedBox(
-        height: toolbarHeight,
+        height: totalHeight,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: hPad, vertical: vPad),
           child: Focus(
@@ -432,48 +478,82 @@ class _TopToolbarState extends State<TopToolbar> {
             onKeyEvent: (_, event) {
               if (event is KeyDownEvent &&
                   event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                final primary = FocusManager.instance.primaryFocus;
+                if (primary != null) {
+                  final insideMusicBar = _isDescendantOf(primary, _musicBarFocusNode);
+                  if (!insideMusicBar && isMusicActive) {
+                    final target = _firstFocusableDescendant(_musicBarFocusNode);
+                    if (target != null) {
+                      target.requestFocus();
+                      return KeyEventResult.handled;
+                    }
+                  }
+
+                  final success = primary.focusInDirection(TraversalDirection.down);
+                  if (success) {
+                    final newFocus = FocusManager.instance.primaryFocus;
+                    if (newFocus != null && _isInsideToolbar(newFocus)) {
+                      return KeyEventResult.handled;
+                    }
+                  }
+                }
                 _restoreFocusBelowToolbar();
                 return KeyEventResult.handled;
               }
               return KeyEventResult.ignored;
             },
-            child: FocusTraversalGroup(
-              policy: WidgetOrderTraversalPolicy(),
-              child: isLandscape
-                  ? Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Align(
-                          alignment: Alignment.center,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: centerSidePadding,
-                            ),
-                            child: _buildCenter(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FocusTraversalGroup(
+                  policy: WidgetOrderTraversalPolicy(),
+                  child: isLandscape
+                      ? SizedBox(
+                          height: toolbarHeight - (vPad * 2),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Align(
+                                alignment: Alignment.center,
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: centerSidePadding,
+                                  ),
+                                  child: _buildCenter(),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: _buildStart(),
+                              ),
+                              if (!isMobile)
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: _buildEnd(),
+                                ),
+                            ],
+                          ),
+                        )
+                      : SizedBox(
+                          height: toolbarHeight - (vPad * 2),
+                          child: Row(
+                            children: [
+                              _buildStart(),
+                              const SizedBox(width: 12),
+                              Expanded(child: _buildCenter()),
+                              if (!isMobile) ...[
+                                const SizedBox(width: 12),
+                                _buildEnd(),
+                              ],
+                            ],
                           ),
                         ),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: _buildStart(),
-                        ),
-                        if (!isMobile)
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: _buildEnd(),
-                          ),
-                      ],
-                    )
-                  : Row(
-                      children: [
-                        _buildStart(),
-                        const SizedBox(width: 12),
-                        Expanded(child: _buildCenter()),
-                        if (!isMobile) ...[
-                          const SizedBox(width: 12),
-                          _buildEnd(),
-                        ],
-                      ],
-                    ),
+                ),
+                if (isMusicActive) ...[
+                  const SizedBox(height: 8),
+                  TopMusicBar(focusNode: _musicBarFocusNode),
+                ],
+              ],
             ),
           ),
         ),
@@ -1737,5 +1817,244 @@ class _LibraryDropdownItemState extends State<_LibraryDropdownItem> {
         ),
       ),
     );
+  }
+}
+
+class TopMusicBar extends StatefulWidget {
+  final FocusNode? focusNode;
+  const TopMusicBar({super.key, this.focusNode});
+
+  @override
+  State<TopMusicBar> createState() => _TopMusicBarState();
+}
+
+class _TopMusicBarState extends State<TopMusicBar> {
+  final _manager = GetIt.instance<PlaybackManager>();
+  final _clientFactory = GetIt.instance<MediaServerClientFactory>();
+  StreamSubscription? _playSub;
+  StreamSubscription? _queueSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _playSub = _manager.state.playingStream.listen((_) {
+      if (mounted) setState(() {});
+    });
+    _queueSub = _manager.queueService.queueChangedStream.listen((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _playSub?.cancel();
+    _queueSub?.cancel();
+    super.dispose();
+  }
+
+  AggregatedItem? get _currentItem {
+    final raw = _manager.queueService.currentItem;
+    return raw is AggregatedItem ? raw : null;
+  }
+
+  String? _artUrl(AggregatedItem item) {
+    try {
+      final client = _clientFactory.getClientIfExists(item.serverId) ??
+          GetIt.instance<MediaServerClient>();
+      final albumTag = item.albumPrimaryImageTag;
+      final albumId = item.albumId;
+      if (item.type == 'Audio' && albumTag != null && albumId != null) {
+        return client.imageApi
+            .getPrimaryImageUrl(albumId, maxHeight: 120, tag: albumTag);
+      }
+      if (item.primaryImageTag != null) {
+        return client.imageApi
+            .getPrimaryImageUrl(item.id, maxHeight: 120, tag: item.primaryImageTag);
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  Widget _buildBarButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+  }) {
+    return Focus(
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.select ||
+                event.logicalKey == LogicalKeyboardKey.enter)) {
+          onPressed();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: Builder(
+        builder: (context) {
+          final focused = Focus.of(context).hasFocus;
+          return GestureDetector(
+            onTap: onPressed,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 90),
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: focused
+                    ? AppColorScheme.onSurface
+                    : Colors.transparent,
+              ),
+              child: Icon(
+                icon,
+                size: 20,
+                color: focused ? AppColorScheme.surface : AppColorScheme.onSurface,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _wrapPill({required bool isNeon, required Widget child}) {
+    final border = isNeon
+        ? Border.all(
+            color: const Color(0xFF00F0FF), // cyan outline for Neon Pulse!
+            width: 1.5,
+          )
+        : Border.all(
+            color: AppColorScheme.onSurface.withValues(alpha: 0.15),
+            width: 1.0,
+          );
+    final boxShadow = isNeon
+        ? const [
+            BoxShadow(
+              color: Color(0x3300F0FF), // cyan glow!
+              blurRadius: 8,
+              spreadRadius: 1,
+            )
+          ]
+        : null;
+
+    if (AppColorScheme.isGlass) {
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          border: border,
+          boxShadow: boxShadow,
+        ),
+        child: GlassSurface(
+          cornerRadius: 24,
+          reinforced: true,
+          fallbackColor: Colors.transparent,
+          child: child,
+        ),
+      );
+    }
+    return Container(
+      decoration: BoxDecoration(
+        color: OverlayColorPalette.resolveColor(
+          GetIt.instance<UserPreferences>().get(UserPreferences.navbarColor),
+        ).withValues(
+          alpha: GetIt.instance<UserPreferences>().get(UserPreferences.navbarOpacity) / 100.0,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: border,
+        boxShadow: boxShadow,
+      ),
+      child: child,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final item = _currentItem;
+    if (item == null || !item.isAudioLike) {
+      return const SizedBox.shrink();
+    }
+
+    final isPlaying = _manager.state.isPlaying;
+    final artUrl = _artUrl(item);
+    final artist = item.artists.isNotEmpty
+        ? item.artists.join(', ')
+        : item.albumArtist ?? '';
+    final displayText = artist.isNotEmpty ? '${item.name} - $artist' : item.name;
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+
+    return Center(
+      child: _wrapPill(
+        isNeon: isNeon,
+        child: Focus(
+          focusNode: widget.focusNode,
+          canRequestFocus: false,
+          child: FocusTraversalGroup(
+            child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: artUrl != null
+                        ? CachedNetworkImage(
+                            imageUrl: artUrl,
+                            fit: BoxFit.cover,
+                          )
+                        : Container(
+                            color: AppColorScheme.onSurface.withValues(alpha: 0.1),
+                            child: Icon(
+                              Icons.music_note,
+                              size: 16,
+                              color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+                            ),
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Flexible(
+                  child: GestureDetector(
+                    onTap: () => appRouter.push(Destinations.audioPlayer),
+                    child: Text(
+                      displayText,
+                      style: TextStyle(
+                        color: AppColorScheme.onSurface,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 20),
+                _buildBarButton(
+                  icon: Icons.skip_previous,
+                  onPressed: _manager.previous,
+                ),
+                const SizedBox(width: 4),
+                _buildBarButton(
+                  icon: isPlaying ? Icons.pause : Icons.play_arrow,
+                  onPressed: isPlaying ? _manager.pause : _manager.resume,
+                ),
+                const SizedBox(width: 4),
+                _buildBarButton(
+                  icon: Icons.skip_next,
+                  onPressed: _manager.next,
+                ),
+                const SizedBox(width: 4),
+                _buildBarButton(
+                  icon: Icons.stop,
+                  onPressed: () => unawaited(_manager.stop(userInitiated: true)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
   }
 }

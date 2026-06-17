@@ -9,6 +9,14 @@ import 'left_sidebar.dart';
 import 'mobile_bottom_nav_bar.dart';
 import 'top_toolbar.dart';
 
+import 'dart:async';
+import 'package:flutter/services.dart';
+import 'package:moonfin_design/moonfin_design.dart';
+import 'package:playback_core/playback_core.dart';
+import '../../data/models/aggregated_item.dart';
+import '../navigation/app_router.dart';
+import '../navigation/destinations.dart';
+
 class NavigationLayout extends StatefulWidget {
   final String? activeRoute;
   final Widget child;
@@ -136,6 +144,7 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
       children: [
         Expanded(child: content),
         const DownloadProgressBar(),
+        const BottomMusicBar(),
         MobileBottomNavBar(activeRoute: widget.activeRoute),
       ],
     );
@@ -253,6 +262,159 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
         ),
         const DownloadProgressBar(),
       ],
+    );
+  }
+}
+
+class BottomMusicBar extends StatefulWidget {
+  const BottomMusicBar({super.key});
+
+  @override
+  State<BottomMusicBar> createState() => _BottomMusicBarState();
+}
+
+class _BottomMusicBarState extends State<BottomMusicBar> {
+  final _manager = GetIt.instance<PlaybackManager>();
+  StreamSubscription? _playSub;
+  StreamSubscription? _queueSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _playSub = _manager.state.playingStream.listen((_) {
+      if (mounted) setState(() {});
+    });
+    _queueSub = _manager.queueService.queueChangedStream.listen((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _playSub?.cancel();
+    _queueSub?.cancel();
+    super.dispose();
+  }
+
+  AggregatedItem? get _currentItem {
+    final raw = _manager.queueService.currentItem;
+    return raw is AggregatedItem ? raw : null;
+  }
+
+  Widget _buildBarButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+  }) {
+    return Focus(
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.select ||
+                event.logicalKey == LogicalKeyboardKey.enter)) {
+          onPressed();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: Builder(
+        builder: (context) {
+          final focused = Focus.of(context).hasFocus;
+          return GestureDetector(
+            onTap: onPressed,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 90),
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: focused
+                    ? AppColorScheme.onSurface
+                    : Colors.transparent,
+              ),
+              child: Icon(
+                icon,
+                size: 20,
+                color: focused ? AppColorScheme.surface : AppColorScheme.onSurface,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final item = _currentItem;
+    if (item == null || !item.isAudioLike) {
+      return const SizedBox.shrink();
+    }
+
+    final isPlaying = _manager.state.isPlaying;
+    final artist = item.artists.isNotEmpty
+        ? item.artists.join(', ')
+        : item.albumArtist ?? '';
+    final displayText = artist.isNotEmpty ? '${item.name} - $artist' : item.name;
+
+    return FocusTraversalGroup(
+      child: GlassSurface(
+        cornerRadius: 0,
+        reinforced: true,
+        fallbackColor: AppColorScheme.surfaceVariant.withValues(alpha: 0.3),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        child: SizedBox(
+          height: 38,
+          child: Row(
+            children: [
+              Icon(
+                Icons.music_note,
+                size: 16,
+                color: AppColorScheme.accent,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => appRouter.push(Destinations.audioPlayer),
+                  child: Text(
+                    displayText,
+                    style: TextStyle(
+                      color: AppColorScheme.onSurface,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildBarButton(
+                    icon: Icons.skip_previous,
+                    onPressed: _manager.previous,
+                  ),
+                  const SizedBox(width: 4),
+                  _buildBarButton(
+                    icon: isPlaying ? Icons.pause : Icons.play_arrow,
+                    onPressed: isPlaying ? _manager.pause : _manager.resume,
+                  ),
+                  const SizedBox(width: 4),
+                  _buildBarButton(
+                    icon: Icons.skip_next,
+                    onPressed: _manager.next,
+                  ),
+                  const SizedBox(width: 4),
+                  _buildBarButton(
+                    icon: Icons.stop,
+                    onPressed: () => unawaited(_manager.stop(userInitiated: true)),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

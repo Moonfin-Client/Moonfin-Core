@@ -403,6 +403,16 @@ class PlaybackManager implements AudioOwnable {
       try {
         isAudio = item?.isAudioLike == true;
       } catch (_) {}
+      if (!isAudio && item is String) {
+        try {
+          final meta = currentOfflineMetadata;
+          if (meta != null) {
+            final type = meta['Type']?.toString();
+            final mediaType = meta['MediaType']?.toString();
+            isAudio = type == 'Audio' || type == 'AudioBook' || mediaType == 'Audio';
+          }
+        } catch (_) {}
+      }
       if (isAudio) return;
       await pause();
     } else {

@@ -40,6 +40,12 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer> {
       _state.playingStream.listen((_) => _rebuild()),
       _queue.queueChangedStream.listen((_) => _rebuild()),
     ]);
+    appRouter.routerDelegate.addListener(_onRouteChanged);
+    PlayerRouteObserver.instance.isPlayerActive.addListener(_onRouteChanged);
+  }
+
+  void _onRouteChanged() {
+    if (mounted) setState(() {});
   }
 
   void _rebuild() {
@@ -55,6 +61,8 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer> {
     for (final sub in _subs) {
       sub.cancel();
     }
+    appRouter.routerDelegate.removeListener(_onRouteChanged);
+    PlayerRouteObserver.instance.isPlayerActive.removeListener(_onRouteChanged);
     super.dispose();
   }
 
@@ -83,6 +91,18 @@ class _MiniAudioPlayerState extends State<MiniAudioPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    final path = appRouter.routerDelegate.currentConfiguration.uri.path;
+    final hasPlayerMatch = appRouter.routerDelegate.currentConfiguration.matches.any(
+      (m) => m.matchedLocation.startsWith('/player/') ||
+             m.matchedLocation == '/live-tv/player',
+    );
+    if (path.startsWith('/player/') ||
+        path == '/live-tv/player' ||
+        hasPlayerMatch ||
+        PlayerRouteObserver.instance.isPlayerActive.value) {
+      return const SizedBox.shrink();
+    }
+
     final item = _currentItem;
     if (item == null || !item.isAudioLike) {
       return const SizedBox.shrink();
@@ -352,60 +372,69 @@ class _TvMiniAudioBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FocusTraversalGroup(
-      child: GlassSurface(
-        cornerRadius: 0,
-        fallbackColor: AppColorScheme.surface,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RepaintBoundary(child: _ProgressSliver(state: state)),
-            SizedBox(
-              height: 84,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _TvFocusable(
-                        focusNode: MiniAudioPlayer.tvFocusNode,
-                        onSelect: onOpen,
-                        builder: (focused) => _TvTrackInfo(
-                          item: item,
-                          artUrl: artUrl,
-                          focused: focused,
+    return Focus(
+      canRequestFocus: false,
+      onKeyEvent: (node, event) {
+        if (event.logicalKey.isDownKey) {
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: FocusTraversalGroup(
+        child: GlassSurface(
+          cornerRadius: 0,
+          fallbackColor: AppColorScheme.surface,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RepaintBoundary(child: _ProgressSliver(state: state)),
+              SizedBox(
+                height: 84,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 28),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _TvFocusable(
+                          focusNode: MiniAudioPlayer.tvFocusNode,
+                          onSelect: onOpen,
+                          builder: (focused) => _TvTrackInfo(
+                            item: item,
+                            artUrl: artUrl,
+                            focused: focused,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    _TvFocusable(
-                      onSelect: onPrev,
-                      builder: (f) => _tvCircle(Icons.skip_previous, f),
-                    ),
-                    const SizedBox(width: 12),
-                    _TvFocusable(
-                      onSelect: onPlayPause,
-                      builder: (f) => _tvCircle(
-                        isPlaying ? Icons.pause : Icons.play_arrow,
-                        f,
-                        large: true,
+                      const SizedBox(width: 16),
+                      _TvFocusable(
+                        onSelect: onPrev,
+                        builder: (f) => _tvCircle(Icons.skip_previous, f),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    _TvFocusable(
-                      onSelect: onNext,
-                      builder: (f) => _tvCircle(Icons.skip_next, f),
-                    ),
-                    const SizedBox(width: 12),
-                    _TvFocusable(
-                      onSelect: onStop,
-                      builder: (f) => _tvCircle(Icons.stop, f),
-                    ),
-                  ],
+                      const SizedBox(width: 12),
+                      _TvFocusable(
+                        onSelect: onPlayPause,
+                        builder: (f) => _tvCircle(
+                          isPlaying ? Icons.pause : Icons.play_arrow,
+                          f,
+                          large: true,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      _TvFocusable(
+                        onSelect: onNext,
+                        builder: (f) => _tvCircle(Icons.skip_next, f),
+                      ),
+                      const SizedBox(width: 12),
+                      _TvFocusable(
+                        onSelect: onStop,
+                        builder: (f) => _tvCircle(Icons.stop, f),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

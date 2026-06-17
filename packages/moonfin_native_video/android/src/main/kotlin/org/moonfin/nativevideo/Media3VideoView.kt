@@ -536,6 +536,8 @@ class Media3VideoView(
     // Replaced on every new cue group; cancelled on seek, source change, and dispose.
     private var pendingCueRunnable: Runnable? = null
     private var isDisposed = false
+    private var isDisposedByFlutter = false
+    private var isPlayerReleased = false
     private var firstFrameRendered = false
     private val externalSubtitleConfigurations = mutableListOf<MediaItem.SubtitleConfiguration>()
 
@@ -887,7 +889,9 @@ class Media3VideoView(
 
     override fun getView(): View = containerView
 
-    override fun dispose() {
+    fun forceReleasePlayer() {
+        if (isPlayerReleased) return
+        isPlayerReleased = true
         isDisposed = true
         cancelPendingSubtitleCue(clearView = false)
         cancelPendingAudioRekick()
@@ -902,6 +906,15 @@ class Media3VideoView(
         player.clearVideoSurface()
         Media3SessionController.releaseForPlayer(player)
         player.release()
+    }
+
+    override fun dispose() {
+        isDisposedByFlutter = true
+        if (currentMediaType == "audio") {
+            player.clearVideoSurface()
+            return
+        }
+        forceReleasePlayer()
         Media3Bridge.detachView(this)
     }
 
@@ -951,10 +964,12 @@ class Media3VideoView(
             .also {
                 attachAssOverlay(assHandler)
                 assHandler.init(it)
-                if (useSurfaceView) {
-                    it.setVideoSurfaceView(videoView as SurfaceView)
-                } else {
-                    it.setVideoTextureView(videoView as TextureView)
+                if (currentMediaType != "audio") {
+                    if (useSurfaceView) {
+                        it.setVideoSurfaceView(videoView as SurfaceView)
+                    } else {
+                        it.setVideoTextureView(videoView as TextureView)
+                    }
                 }
                 it.addListener(listener)
                 it.addAnalyticsListener(analyticsListener)
@@ -1079,11 +1094,19 @@ class Media3VideoView(
 
                 "stop" -> {
                     stopPlaybackAndRestoreDisplayMode()
+                    if (isDisposedByFlutter && currentMediaType != "audio") {
+                        forceReleasePlayer()
+                        Media3Bridge.detachView(this)
+                    }
                     result.success(null)
                 }
 
                 "release" -> {
                     releaseActivePlayer()
+                    if (isDisposedByFlutter && currentMediaType != "audio") {
+                        forceReleasePlayer()
+                        Media3Bridge.detachView(this)
+                    }
                     result.success(null)
                 }
 
@@ -1271,10 +1294,18 @@ class Media3VideoView(
 
                 "stop" -> {
                     stopPlaybackAndRestoreDisplayMode()
+                    if (isDisposedByFlutter && currentMediaType != "audio") {
+                        forceReleasePlayer()
+                        Media3Bridge.detachView(this)
+                    }
                 }
 
                 "release" -> {
                     releaseActivePlayer()
+                    if (isDisposedByFlutter && currentMediaType != "audio") {
+                        forceReleasePlayer()
+                        Media3Bridge.detachView(this)
+                    }
                 }
 
                 "seek" -> {
@@ -1400,7 +1431,13 @@ class Media3VideoView(
         restorePreferredDisplayMode()
         detectedFrameRate = null
 
-        if (decoderPreferenceDirty || playerHasLoadedSource) {
+        val nextMediaType = args["mediaType"]?.toString()?.lowercase() ?: "video"
+        val isAudio = nextMediaType == "audio"
+        val mediaTypeChanged = nextMediaType != currentMediaType
+
+        currentMediaType = nextMediaType
+
+        if (mediaTypeChanged || (!isAudio && (decoderPreferenceDirty || playerHasLoadedSource))) {
             rebuildPlayerForDecoderPreference()
             decoderPreferenceDirty = false
         }
@@ -1412,7 +1449,7 @@ class Media3VideoView(
             ?.trim()
             ?.lowercase()
             ?.takeIf { it.isNotEmpty() }
-        currentMediaType = args["mediaType"]?.toString()?.lowercase() ?: "video"
+        player.setPauseAtEndOfMediaItems(currentMediaType != "audio")
         audioOffloadRetryAttemptedForCurrentSource = false
         stereoDownmixRetryAttemptedForCurrentSource = false
         containerFallbackAttempted = false
