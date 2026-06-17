@@ -845,7 +845,6 @@ class PluginSyncService extends ChangeNotifier {
         resolved,
         'fullScreenRows',
         UserPreferences.fullScreenRows,
-        enumValues: prefs.fullScreenRows.values,
       );
       _applyString(
         resolved,
