@@ -48,15 +48,19 @@ Future<bool> playlistContainsOnlyMediaType(
   String mediaType, {
   bool assumeNonEmptyWhenUnknown = false,
 }) async {
-  if (item.type != 'Playlist' ||
-      !isPlaylistNonEmpty(
-        item,
-        assumeNonEmptyWhenUnknown: assumeNonEmptyWhenUnknown,
-      )) {
+  if (item.type != 'Playlist') {
+    return false;
+  }
+
+  final count = item.childCount ?? item.recursiveItemCount;
+  if (count == 0) {
     return false;
   }
 
   final summaryMediaType = item.rawData['MediaType'] as String?;
+  if (summaryMediaType != null && summaryMediaType != mediaType) {
+    return false;
+  }
 
   try {
     final response = await client.itemsApi.getPlaylistItems(item.id);
@@ -69,6 +73,9 @@ Future<bool> playlistContainsOnlyMediaType(
       (raw) => playlistItemMatchesMediaType(raw, mediaType),
     );
   } catch (_) {
+    if (count == null) {
+      return assumeNonEmptyWhenUnknown && summaryMediaType == mediaType;
+    }
     return summaryMediaType == mediaType;
   }
 }
@@ -87,10 +94,8 @@ Future<bool> playlistHasBrowsableItems(
   }
 
   final summaryMediaType = item.rawData['MediaType'] as String?;
-  if (summaryMediaType != null &&
-      summaryMediaType != 'Audio' &&
-      summaryMediaType != 'Unknown') {
-    return true;
+  if (summaryMediaType != null) {
+    return summaryMediaType != 'Audio' && summaryMediaType != 'Unknown';
   }
 
   try {

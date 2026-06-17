@@ -190,6 +190,14 @@ class UserPreferences extends ChangeNotifier {
     'jellyseerrBlockNsfw',
     'enabledRatings',
     'home_sections_config',
+    'pref_audio_display_latest',
+    'pref_audio_display_last_played',
+    'pref_audio_display_favorites',
+    'pref_audio_display_playlists',
+    'pref_audio_display_album_artists',
+    'pref_audio_display_artists',
+    'pref_audio_display_albums',
+    'pref_audio_sort_option',
   };
 
   bool _isScopedPreference<T>(Preference<T> pref) {
@@ -1557,5 +1565,45 @@ class UserPreferences extends ChangeNotifier {
   static final syncPlayAdvancedCorrectionEnabled = Preference(
     key: 'syncplay_advanced_correction_enabled',
     defaultValue: true,
+  );
+
+  static final displayAudioLatest = Preference(
+    key: 'pref_audio_display_latest',
+    defaultValue: true,
+  );
+
+  static final displayAudioLastPlayed = Preference(
+    key: 'pref_audio_display_last_played',
+    defaultValue: true,
+  );
+
+  static final displayAudioFavorites = Preference(
+    key: 'pref_audio_display_favorites',
+    defaultValue: true,
+  );
+
+  static final displayAudioPlaylists = Preference(
+    key: 'pref_audio_display_playlists',
+    defaultValue: true,
+  );
+
+  static final displayAudioAlbumArtists = Preference(
+    key: 'pref_audio_display_album_artists',
+    defaultValue: true,
+  );
+
+  static final displayAudioArtists = Preference(
+    key: 'pref_audio_display_artists',
+    defaultValue: true,
+  );
+
+  static final displayAudioAlbums = Preference(
+    key: 'pref_audio_display_albums',
+    defaultValue: true,
+  );
+
+  static final audioSortOption = Preference<String>(
+    key: 'pref_audio_sort_option',
+    defaultValue: 'name',
   );
 }

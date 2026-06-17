@@ -105,7 +105,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     return filterBrowsablePlaylists(
       _client,
       items,
-      assumeNonEmptyWhenUnknown: true,
+      mediaType: isMusicBrowse ? 'Audio' : null,
+      assumeNonEmptyWhenUnknown: !isMusicBrowse,
     );
   }
 

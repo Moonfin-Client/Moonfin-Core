@@ -103,6 +103,9 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
                   (data['ArtistCount'] as int? ?? 0) +
                   (data['MusicVideoCount'] as int? ?? 0),
         );
+      }).where((genre) {
+        if (_collectionType == 'music') return true;
+        return genre.itemCount > 0;
       }).toList();
     } catch (_) {}
 
@@ -156,6 +159,16 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
         imageTypeLimit: 1,
       );
       final items = (response['Items'] as List?) ?? [];
+
+      final rawTotalCount = response['TotalRecordCount'];
+      final totalCount =
+          rawTotalCount is num ? rawTotalCount.toInt() : items.length;
+      if (totalCount <= 0 || items.isEmpty) {
+        if (_genres.remove(genre) && !_disposed && mounted) {
+          setState(() {});
+        }
+        return;
+      }
 
       if (_collectionType == 'music') {
         for (final raw in items) {
@@ -361,6 +374,7 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
             children: [
               _GenresHeader(
                 libraryName: _libraryName,
+                isMusic: _collectionType == 'music',
                 onBack: () => PlatformDetection.isWeb
                     ? context.popOrHome()
                     : context.pop(),
@@ -458,9 +472,14 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
 
 class _GenresHeader extends StatelessWidget {
   final String libraryName;
+  final bool isMusic;
   final VoidCallback onBack;
 
-  const _GenresHeader({required this.libraryName, required this.onBack});
+  const _GenresHeader({
+    required this.libraryName,
+    this.isMusic = false,
+    required this.onBack,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -504,7 +523,9 @@ class _GenresHeader extends StatelessWidget {
             ),
           SizedBox(width: 12 * desktopScale),
           Text(
-            AppLocalizations.of(context).libraryGenresTitle(libraryName),
+            isMusic
+                ? AppLocalizations.of(context).genres
+                : AppLocalizations.of(context).libraryGenresTitle(libraryName),
             style: TextStyle(
               fontSize: 26 * desktopScale,
               fontWeight: FontWeight.w300,

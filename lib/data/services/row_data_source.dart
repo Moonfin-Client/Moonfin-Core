@@ -189,8 +189,9 @@ class RowDataSource {
       includeItemTypes: const ['Playlist'],
       sortBy: sortBy ?? 'SortName',
       sortOrder: sortOrder ?? 'Ascending',
-      recursive: false,
+      recursive: true,
       limit: _defaultLimit,
+      fields: '$_fields,ChildCount,RecursiveItemCount',
     );
     var row = _buildRow(
       id: 'playlists',
@@ -199,10 +200,11 @@ class RowDataSource {
       serverId: serverId,
       rowType: HomeRowType.playlists,
     );
+    final playlistsOnly = row.items.where((item) => item.type == 'Playlist').toList();
     row = row.copyWith(
       items: await filterBrowsablePlaylists(
         _client,
-        row.items,
+        playlistsOnly,
         mediaType: mediaType,
       ),
     );
@@ -551,12 +553,14 @@ class RowDataSource {
     String parentId,
     String serverId, {
     List<String>? includeItemTypes,
+    String sortBy = 'SortName',
+    String sortOrder = 'Ascending',
   }) async {
     final response = await _getItemsWithFallback(
       parentId: parentId,
       isFavorite: true,
-      sortBy: 'SortName',
-      sortOrder: 'Ascending',
+      sortBy: sortBy,
+      sortOrder: sortOrder,
       recursive: true,
       limit: _defaultLimit,
       includeItemTypes: includeItemTypes,
@@ -715,13 +719,16 @@ class RowDataSource {
         } else {
           final pageCount = (currentOffset / _defaultLimit).ceil();
           final startIndex = pageCount * _defaultLimit;
+          final sortOpt = prefs?.get(UserPreferences.audioSortOption) ?? 'name';
+          final (querySortBy, querySortOrder) = _resolveAudioSort(sortOpt, 'Playlist');
           response = await _getItemsWithFallback(
             includeItemTypes: const ['Playlist'],
-            sortBy: 'SortName',
-            sortOrder: 'Ascending',
-            recursive: false,
+            sortBy: querySortBy,
+            sortOrder: querySortOrder,
+            recursive: true,
             startIndex: startIndex,
             limit: _defaultLimit,
+            fields: '$_fields,ChildCount,RecursiveItemCount',
           );
         }
       case HomeRowType.favorites:
@@ -838,11 +845,13 @@ class RowDataSource {
           return (items, totalCount);
         } else if (row.id.startsWith('favorites_')) {
           final parentId = row.id.substring('favorites_'.length);
+          final sortOpt = prefs?.get(UserPreferences.audioSortOption) ?? 'name';
+          final (querySortBy, querySortOrder) = _resolveAudioSort(sortOpt, 'Favorites');
           response = await _getItemsWithFallback(
             parentId: parentId,
             isFavorite: true,
-            sortBy: 'SortName',
-            sortOrder: 'Ascending',
+            sortBy: querySortBy,
+            sortOrder: querySortOrder,
             recursive: true,
             startIndex: currentOffset,
             limit: _defaultLimit,
@@ -871,11 +880,13 @@ class RowDataSource {
           );
         } else if (row.id.startsWith('albumartist_')) {
           final parentId = row.id.substring('albumartist_'.length);
+          final sortOpt = prefs?.get(UserPreferences.audioSortOption) ?? 'name';
+          final (querySortBy, querySortOrder) = _resolveAudioSort(sortOpt, 'AlbumArtist');
           response = await _client.itemsApi.getAlbumArtists(
             parentId: parentId,
             userId: _client.userId,
-            sortBy: 'SortName',
-            sortOrder: 'Ascending',
+            sortBy: querySortBy,
+            sortOrder: querySortOrder,
             recursive: true,
             startIndex: currentOffset,
             limit: _defaultLimit,
@@ -886,14 +897,20 @@ class RowDataSource {
           if (underscoreIndex >= 0) {
             final type = row.id.substring(0, underscoreIndex);
             final parentId = row.id.substring(underscoreIndex + 1);
-            final itemType = type.isEmpty
+            var itemType = type.isEmpty
                 ? ''
                 : '${type[0].toUpperCase()}${type.substring(1)}';
+            if (itemType == 'Musicartist') itemType = 'MusicArtist';
+            if (itemType == 'Musicalbum') itemType = 'MusicAlbum';
+
+            final sortOpt = prefs?.get(UserPreferences.audioSortOption) ?? 'name';
+            final (querySortBy, querySortOrder) = _resolveAudioSort(sortOpt, itemType);
+
             response = await _getItemsWithFallback(
               parentId: parentId,
               includeItemTypes: [itemType],
-              sortBy: 'SortName',
-              sortOrder: 'Ascending',
+              sortBy: querySortBy,
+              sortOrder: querySortOrder,
               recursive: true,
               startIndex: currentOffset,
               limit: _defaultLimit,
@@ -943,6 +960,7 @@ class RowDataSource {
     int? startIndex,
     int? limit,
     bool? isFavorite,
+    String? fields,
   }) async {
     try {
       final response = await _client.itemsApi.getItems(
@@ -957,7 +975,7 @@ class RowDataSource {
         startIndex: startIndex,
         limit: limit,
         isFavorite: isFavorite,
-        fields: _fields,
+        fields: fields ?? _fields,
         enableImageTypes: _imageTypes,
         imageTypeLimit: _imageTypeLimit,
       );
@@ -982,7 +1000,7 @@ class RowDataSource {
         startIndex: startIndex,
         limit: limit,
         isFavorite: isFavorite,
-        fields: _fallbackFields,
+        fields: fields ?? _fallbackFields,
         enableImageTypes: _imageTypes,
         imageTypeLimit: _imageTypeLimit,
         enableTotalRecordCount: false,
@@ -1705,6 +1723,16 @@ class RowDataSource {
   Future<List<AggregatedItem>> _enrichNextUpItemsWithSeriesLastPlayed(
     List<AggregatedItem> items,
   ) => enrichNextUpItemsWithSeriesLastPlayed(items, _client);
+
+  (String, String) _resolveAudioSort(String? sortOpt, String itemType) {
+    if (sortOpt == 'release_year' &&
+        (itemType == 'MusicAlbum' || itemType == 'Favorites')) {
+      return ('ProductionYear,SortName', 'Descending');
+    } else if (sortOpt == 'date_added') {
+      return ('DateCreated', 'Descending');
+    }
+    return ('SortName', 'Ascending');
+  }
 }
 
 class _ParsedStableId {

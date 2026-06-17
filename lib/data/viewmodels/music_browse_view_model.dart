@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../l10n/current_app_localizations.dart';
+import '../../preference/user_preferences.dart';
 import '../models/aggregated_item.dart';
 import '../models/home_row.dart';
 import '../services/row_data_source.dart';
@@ -13,6 +15,9 @@ class MusicBrowseViewModel extends ChangeNotifier {
 
   List<HomeRow> _rows = [];
   List<HomeRow> get rows => _rows;
+
+  final Map<String, int> _rowOffsets = {};
+  final Set<String> _inFlightPagingRowIds = {};
 
   bool _isLoading = true;
   bool get isLoading => _isLoading;
@@ -41,7 +46,9 @@ class MusicBrowseViewModel extends ChangeNotifier {
   Future<void> load() async {
     _isLoading = true;
     notifyListeners();
+    _rowOffsets.clear();
     final l10n = currentAppLocalizations();
+    final prefs = GetIt.instance<UserPreferences>();
 
     try {
       final itemData = await _client.itemsApi.getItem(libraryId);
@@ -51,41 +58,75 @@ class MusicBrowseViewModel extends ChangeNotifier {
     }
 
     try {
+      final showLatest = prefs.get(UserPreferences.displayAudioLatest);
+      final showLastPlayed = prefs.get(UserPreferences.displayAudioLastPlayed);
+      final showFavorites = prefs.get(UserPreferences.displayAudioFavorites);
+      final showPlaylists = prefs.get(UserPreferences.displayAudioPlaylists);
+      final showAlbumArtists = prefs.get(UserPreferences.displayAudioAlbumArtists);
+      final showArtists = prefs.get(UserPreferences.displayAudioArtists);
+      final showAlbums = prefs.get(UserPreferences.displayAudioAlbums);
+
+      final sortOpt = prefs.get(UserPreferences.audioSortOption);
+
+      final (albumArtistSortBy, albumArtistSortOrder) = _resolveSort(sortOpt, 'AlbumArtist');
+      final (artistSortBy, artistSortOrder) = _resolveSort(sortOpt, 'MusicArtist');
+      final (albumSortBy, albumSortOrder) = _resolveSort(sortOpt, 'MusicAlbum');
+      final (playlistSortBy, playlistSortOrder) = _resolveSort(sortOpt, 'Playlist');
+      final (favoritesSortBy, favoritesSortOrder) = _resolveSort(sortOpt, 'Favorites');
+
       final results = await Future.wait([
-        _dataSource.loadLatestMedia(libraryId, _libraryName, _serverId),
-        _dataSource.loadLibraryLastPlayed(
-          libraryId,
-          _serverId,
-          includeItemTypes: ['Audio'],
-        ),
-        _dataSource.loadLibraryFavorites(
-          libraryId,
-          _serverId,
-          includeItemTypes: ['MusicAlbum'],
-        ),
-        _dataSource.loadPlaylists(_serverId, mediaType: 'Audio'),
-        _dataSource.loadLibraryItemsByType(
-          libraryId,
-          _serverId,
-          title: l10n.albumArtists,
-          includeItemTypes: ['AlbumArtist'],
-          sortBy: 'SortName',
-        ),
-        _dataSource.loadLibraryItemsByType(
-          libraryId,
-          _serverId,
-          title: l10n.artists,
-          includeItemTypes: ['MusicArtist'],
-          sortBy: 'SortName',
-        ),
-        _dataSource.loadLibraryItemsByType(
-          libraryId,
-          _serverId,
-          title: l10n.albums,
-          includeItemTypes: ['MusicAlbum'],
-          sortBy: 'DateCreated',
-          sortOrder: 'Descending',
-        ),
+        showLatest
+            ? _dataSource.loadLatestMedia(libraryId, _libraryName, _serverId)
+            : Future.value(HomeRow(id: 'latest_$libraryId', title: '', items: const [], rowType: HomeRowType.latestMedia)),
+        showLastPlayed
+            ? _dataSource.loadLibraryLastPlayed(
+                libraryId,
+                _serverId,
+                includeItemTypes: const ['Audio'],
+              )
+            : Future.value(HomeRow(id: 'lastPlayed_$libraryId', title: '', items: const [], rowType: HomeRowType.latestMedia)),
+        showFavorites
+            ? _dataSource.loadLibraryFavorites(
+                libraryId,
+                _serverId,
+                includeItemTypes: const ['MusicAlbum'],
+                sortBy: favoritesSortBy,
+                sortOrder: favoritesSortOrder,
+              )
+            : Future.value(HomeRow(id: 'favorites_$libraryId', title: '', items: const [], rowType: HomeRowType.favorites)),
+        showPlaylists
+            ? _dataSource.loadPlaylists(_serverId, mediaType: 'Audio', sortBy: playlistSortBy, sortOrder: playlistSortOrder)
+            : Future.value(HomeRow(id: 'playlists', title: '', items: const [], rowType: HomeRowType.playlists)),
+        showAlbumArtists
+            ? _dataSource.loadLibraryItemsByType(
+                libraryId,
+                _serverId,
+                title: l10n.albumArtists,
+                includeItemTypes: const ['AlbumArtist'],
+                sortBy: albumArtistSortBy,
+                sortOrder: albumArtistSortOrder,
+              )
+            : Future.value(HomeRow(id: 'albumartist_$libraryId', title: '', items: const [], rowType: HomeRowType.latestMedia)),
+        showArtists
+            ? _dataSource.loadLibraryItemsByType(
+                libraryId,
+                _serverId,
+                title: l10n.artists,
+                includeItemTypes: const ['MusicArtist'],
+                sortBy: artistSortBy,
+                sortOrder: artistSortOrder,
+              )
+            : Future.value(HomeRow(id: 'musicartist_$libraryId', title: '', items: const [], rowType: HomeRowType.latestMedia)),
+        showAlbums
+            ? _dataSource.loadLibraryItemsByType(
+                libraryId,
+                _serverId,
+                title: l10n.albums,
+                includeItemTypes: const ['MusicAlbum'],
+                sortBy: albumSortBy,
+                sortOrder: albumSortOrder,
+              )
+            : Future.value(HomeRow(id: 'musicalbum_$libraryId', title: '', items: const [], rowType: HomeRowType.latestMedia)),
       ]);
 
       _rows = results.where((r) => r.items.isNotEmpty).toList();
@@ -156,5 +197,43 @@ class MusicBrowseViewModel extends ChangeNotifier {
       );
     }
     return null;
+  }
+
+  Future<void> loadMoreForRow(int rowIndex) async {
+    if (rowIndex < 0 || rowIndex >= _rows.length) return;
+    final row = _rows[rowIndex];
+    if (!row.hasMore || _inFlightPagingRowIds.contains(row.id)) return;
+
+    _inFlightPagingRowIds.add(row.id);
+    try {
+      final int currentOffset = _rowOffsets[row.id] ?? row.items.length;
+      final (List<AggregatedItem> items, int totalCount) result = await _dataSource.loadMore(
+        row: row,
+        serverId: _serverId,
+        offset: currentOffset,
+      );
+      _rowOffsets[row.id] = currentOffset + 15;
+
+      _rows = List.of(_rows);
+      _rows[rowIndex] = row.copyWith(
+        items: result.$1,
+        totalCount: result.$2,
+      );
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Failed to load more for music row ${row.id}: $e');
+    } finally {
+      _inFlightPagingRowIds.remove(row.id);
+    }
+  }
+
+  (String, String) _resolveSort(String? sortOpt, String type) {
+    if (sortOpt == 'release_year' &&
+        (type == 'MusicAlbum' || type == 'Favorites')) {
+      return ('ProductionYear,SortName', 'Descending');
+    } else if (sortOpt == 'date_added') {
+      return ('DateCreated', 'Descending');
+    }
+    return ('SortName', 'Ascending');
   }
 }

@@ -3999,7 +3999,20 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
           Column(
             children: [
               _LibraryHeader(
-                libraryName: _vm.libraryName,
+                libraryName: () {
+                  if (_vm.includeItemTypes != null &&
+                      _vm.includeItemTypes!.isNotEmpty) {
+                    final type = _vm.includeItemTypes!.first;
+                    if (type == 'MusicAlbum') {
+                      return AppLocalizations.of(context).albums;
+                    } else if (type == 'AlbumArtist') {
+                      return AppLocalizations.of(context).albumArtists;
+                    } else if (type == 'MusicArtist') {
+                      return AppLocalizations.of(context).artists;
+                    }
+                  }
+                  return _vm.libraryName;
+                }(),
                 totalCount: _vm.totalCount,
                 focusedItem: _vm.focusedItem,
                 focusedRatings: _vm.focusedRatings,
@@ -4390,6 +4403,20 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
   String? _cardSubtitle(AggregatedItem item) {
     final parts = <String>[];
+    if (item.type == 'MusicAlbum') {
+      if (item.artists.isNotEmpty) return item.artists.join(', ');
+      if (item.albumArtists.isNotEmpty) {
+        return item.albumArtists
+            .map((a) => a['Name'] as String? ?? '')
+            .where((n) => n.isNotEmpty)
+            .join(', ');
+      }
+      final albumArtist = item.albumArtist;
+      if (albumArtist != null && albumArtist.isNotEmpty) {
+        return albumArtist;
+      }
+    }
+
     if (_vm.isNavigableFolder(item)) {
       if (item.childCount != null) {
         parts.add(
@@ -5002,9 +5029,15 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
                         LibrarySortBy.dateAdded,
                         LibrarySortBy.random,
                       ]
-                    : LibrarySortBy.values)
+                    : LibrarySortBy.values.where((o) => !vm.isMusicBrowse || (
+                        o != LibrarySortBy.rating &&
+                        o != LibrarySortBy.criticRating &&
+                        o != LibrarySortBy.communityRating
+                      )))
               _radioTile(
-                label: option.displayName,
+                label: (vm.isMusicBrowse && option == LibrarySortBy.premiereDate)
+                    ? 'Release Date'
+                    : option.displayName,
                 selected: vm.sortBy == option,
                 trailing: vm.sortBy == option
                     ? IconButton(
@@ -5036,25 +5069,27 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
               accent: accent,
               onSurface: onSurface,
             ),
-            Divider(color: dividerColor),
-            _sectionHeader(
-              isBookBrowse ? l10n.readingStatus : l10n.playedStatus,
-              sectionColor,
-            ),
-            for (final status in PlayedStatusFilter.values)
-              _radioTile(
-                label: switch (status) {
-                  PlayedStatusFilter.all => l10n.all,
-                  PlayedStatusFilter.watched =>
-                    isBookBrowse ? l10n.readStatus : l10n.watched,
-                  PlayedStatusFilter.unwatched =>
-                    isBookBrowse ? l10n.unread : l10n.unwatched,
-                },
-                selected: vm.playedFilter == status,
-                onTap: () => vm.setPlayedFilter(status),
-                accent: accent,
-                onSurface: onSurface,
+            if (!vm.isMusicBrowse) ...[
+              Divider(color: dividerColor),
+              _sectionHeader(
+                isBookBrowse ? l10n.readingStatus : l10n.playedStatus,
+                sectionColor,
               ),
+              for (final status in PlayedStatusFilter.values)
+                _radioTile(
+                  label: switch (status) {
+                    PlayedStatusFilter.all => l10n.all,
+                    PlayedStatusFilter.watched =>
+                      isBookBrowse ? l10n.readStatus : l10n.watched,
+                    PlayedStatusFilter.unwatched =>
+                      isBookBrowse ? l10n.unread : l10n.unwatched,
+                  },
+                  selected: vm.playedFilter == status,
+                  onTap: () => vm.setPlayedFilter(status),
+                  accent: accent,
+                  onSurface: onSurface,
+                ),
+            ],
             if (vm.isSeriesLibrary) ...[
               Divider(color: dividerColor),
               _sectionHeader(l10n.seriesStatus, sectionColor),
