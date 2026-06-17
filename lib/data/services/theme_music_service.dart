@@ -57,6 +57,8 @@ class ThemeMusicService {
 
   Future<void> playForItem(AggregatedItem item) async {
     if (!_prefs.get(UserPreferences.themeMusicEnabled)) return;
+    final activeItem = _playbackManager.queueService.currentItem;
+    if (activeItem is AggregatedItem && activeItem.isAudioLike) return;
     if (_playbackManager.state.isPlaying) return;
     if (_externalAudioActive) return;
     if (_playSuppressed) return;

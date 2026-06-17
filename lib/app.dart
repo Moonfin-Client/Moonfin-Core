@@ -652,6 +652,24 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
           : KeyEventResult.handled;
     }
 
+    if (PlatformDetection.isTV && key == LogicalKeyboardKey.arrowDown) {
+      final primaryFocus = FocusManager.instance.primaryFocus;
+      if (primaryFocus != null) {
+        if (primaryFocus.ancestors.contains(MiniAudioPlayer.tvFocusNode) ||
+            primaryFocus == MiniAudioPlayer.tvFocusNode) {
+          return KeyEventResult.ignored;
+        }
+        final success = primaryFocus.focusInDirection(TraversalDirection.down);
+        if (success) {
+          return KeyEventResult.handled;
+        }
+      }
+      if (MiniAudioPlayer.tvFocusNode.context != null) {
+        MiniAudioPlayer.tvFocusNode.requestFocus();
+        return KeyEventResult.handled;
+      }
+    }
+
     return KeyEventResult.ignored;
   }
 

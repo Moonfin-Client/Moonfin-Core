@@ -18,6 +18,8 @@ import '../screensaver/screensaver_controller.dart';
 class MiniAudioPlayer extends StatefulWidget {
   const MiniAudioPlayer({super.key});
 
+  static final tvFocusNode = FocusNode(debugLabel: 'MiniAudioPlayerTv');
+
   @override
   State<MiniAudioPlayer> createState() => _MiniAudioPlayerState();
 }
@@ -366,6 +368,7 @@ class _TvMiniAudioBar extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _TvFocusable(
+                        focusNode: MiniAudioPlayer.tvFocusNode,
                         onSelect: onOpen,
                         builder: (focused) => _TvTrackInfo(
                           item: item,
@@ -497,21 +500,27 @@ class _TvTrackInfo extends StatelessWidget {
 /// unhandled so Flutter's focus traversal moves naturally (Up escapes the bar
 /// back to content; the bar never traps focus, and never autofocuses on launch).
 class _TvFocusable extends StatefulWidget {
+  final FocusNode? focusNode;
   final VoidCallback onSelect;
   final Widget Function(bool focused) builder;
-  const _TvFocusable({required this.onSelect, required this.builder});
+  const _TvFocusable({
+    this.focusNode,
+    required this.onSelect,
+    required this.builder,
+  });
 
   @override
   State<_TvFocusable> createState() => _TvFocusableState();
 }
 
 class _TvFocusableState extends State<_TvFocusable> {
-  final _node = FocusNode();
+  late final FocusNode _node;
   bool _focused = false;
 
   @override
   void initState() {
     super.initState();
+    _node = widget.focusNode ?? FocusNode();
     _node.addListener(_onFocusChanged);
   }
 
@@ -524,7 +533,9 @@ class _TvFocusableState extends State<_TvFocusable> {
   @override
   void dispose() {
     _node.removeListener(_onFocusChanged);
-    _node.dispose();
+    if (widget.focusNode == null) {
+      _node.dispose();
+    }
     super.dispose();
   }
 
