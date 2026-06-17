@@ -50,10 +50,20 @@ class SyncService extends ChangeNotifier {
         if (userData != null) {
           final serverPlayed = userData['Played'] as bool? ?? false;
           final serverTicks = userData['PlaybackPositionTicks'] as int? ?? 0;
+          final localPlayed = item.playbackPositionTicks == 0;
 
-          // If the server progress is further ahead, adopt it and mark local as synced
-          if (serverPlayed || serverTicks > item.playbackPositionTicks) {
-            await _offlineRepo.updatePlaybackPosition(item.itemId, serverPlayed ? 0 : serverTicks);
+          if (serverPlayed) {
+            // Server already finished it, adopt played state locally.
+            await _offlineRepo.updatePlaybackPosition(item.itemId, 0);
+            await _offlineRepo.markProgressSynced(item.itemId);
+            synced++;
+            continue;
+          }
+
+          // Otherwise furthest progress wins, but a local completion outranks
+          // any partial server position, so leave it to be pushed below.
+          if (!localPlayed && serverTicks > item.playbackPositionTicks) {
+            await _offlineRepo.updatePlaybackPosition(item.itemId, serverTicks);
             await _offlineRepo.markProgressSynced(item.itemId);
             synced++;
             continue;
