@@ -1509,7 +1509,7 @@ class _ContentRowsState extends State<_ContentRows>
     required double v2FocusedWidth,
     required bool useSeriesThumbs,
   }) {
-    if (row.items.isEmpty) return;
+    if (row.isAudio || row.items.isEmpty) return;
     _prefetchV2FocusedImage(
       row.items.first,
       v2ImageHeight: v2ImageHeight,
@@ -3322,8 +3322,8 @@ class _ContentRowsState extends State<_ContentRows>
     final v2ImageHeight =
         posterSize.portraitHeight.toDouble() * platformScale * 2;
     final v2MetadataHeightBudget = _v2MetadataHeightBudget(prefs);
-    const v2PortraitAspect = 2 / 3;
-    const v2FocusedAspect = 16 / 9;
+    final v2PortraitAspect = row.isAudio ? 1.0 : 2 / 3;
+    final v2FocusedAspect = row.isAudio ? 1.0 : 16 / 9;
     final v2PortraitWidth = v2ImageHeight * v2PortraitAspect;
     final v2FocusedWidth = v2ImageHeight * v2FocusedAspect;
     final navbarIsTopV2 =
@@ -3371,8 +3371,9 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     if (firstCardWidth == 0) {
+      final defaultAspect = row.isAudio ? 1.0 : 2 / 3;
       firstCardWidth =
-          posterSize.portraitHeight.toDouble() * platformScale * (2 / 3);
+          posterSize.portraitHeight.toDouble() * platformScale * defaultAspect;
     }
     if (maxCardHeight == 0) {
       maxCardHeight =
@@ -3410,7 +3411,7 @@ class _ContentRowsState extends State<_ContentRows>
           final forceReveal = _forceRevealOnNextRowFocusFromMediaBar;
           _forceRevealOnNextRowFocusFromMediaBar = false;
           widget.onItemSelected(item);
-          if (isRowsV2) {
+          if (isRowsV2 && !row.isAudio) {
             _primeV2FocusedRatings(item);
             _prefetchV2FocusNeighbors(
               row: row,
@@ -3484,7 +3485,7 @@ class _ContentRowsState extends State<_ContentRows>
                     .clamp(v2PortraitWidth, v2ExtendedWidth)
                     .toDouble()
               : v2FocusedWidth;
-          final canUseExpandedV2Card = isRowsV2 && effectiveV2Focused;
+          final canUseExpandedV2Card = isRowsV2 && effectiveV2Focused && !row.isAudio;
 
           if (isRowsV2) {
             ar = canUseExpandedV2Card ? v2FocusedAspect : v2PortraitAspect;
@@ -3606,7 +3607,7 @@ class _ContentRowsState extends State<_ContentRows>
             }
           } else {
             cardTitle = item.name;
-            cardSubtitle = isRowsV2 && effectiveV2Focused
+            cardSubtitle = canUseExpandedV2Card
                 ? _v2MetadataLine(item)
                 : item.subtitle;
             cardSubtitleWidget = null;
@@ -3644,7 +3645,9 @@ class _ContentRowsState extends State<_ContentRows>
                 if (_mouseHoveredV2Key != previewKey) {
                   setState(() => _mouseHoveredV2Key = previewKey);
                 }
-                _primeV2FocusedRatings(item);
+                if (!row.isAudio) {
+                  _primeV2FocusedRatings(item);
+                }
               }
               if (!PlatformDetection.useMobileUi && canPreview) {
                 _schedulePreview(item, delay: _previewStartDelay);
@@ -3721,6 +3724,7 @@ class _ContentRowsState extends State<_ContentRows>
                     previewKey,
                     cardWidth: width,
                     extendedWidth: v2ExtendedWidth,
+                    isAudioRow: row.isAudio,
                   )
                 : null;
             return AnimatedSize(
@@ -3754,13 +3758,14 @@ class _ContentRowsState extends State<_ContentRows>
     String itemKey, {
     required double cardWidth,
     required double extendedWidth,
+    required bool isAudioRow,
   }) {
     final additionalRatings = _v2AdditionalRatingsByKey[itemKey] ?? {};
     final hasAnyRating =
         item.communityRating != null ||
         item.criticRating != null ||
         additionalRatings.isNotEmpty;
-    final overview = item.overview ?? '';
+    final overview = isAudioRow ? '' : (item.overview ?? '');
     if (!hasAnyRating && overview.isEmpty) {
       return SizedBox(width: cardWidth);
     }
@@ -3822,9 +3827,27 @@ class _ContentRowsState extends State<_ContentRows>
 
   static String _v2MetadataLine(AggregatedItem item) {
     final parts = <String>[];
-    final year = item.productionYear;
-    if (year != null) {
-      parts.add('$year');
+    if (item.type == 'MusicAlbum' || item.type == 'Audio') {
+      final artist = (item.albumArtist ?? '').trim().isNotEmpty
+          ? item.albumArtist!.trim()
+          : (item.albumArtists.isNotEmpty
+              ? (item.albumArtists.first['Name'] as String?)?.trim()
+              : (item.artists.isNotEmpty ? item.artists.first.trim() : ''));
+      final year = item.productionYear;
+      if (artist != null && artist.isNotEmpty) {
+        if (year != null) {
+          parts.add('$artist ($year)');
+        } else {
+          parts.add(artist);
+        }
+      } else if (year != null) {
+        parts.add('$year');
+      }
+    } else {
+      final year = item.productionYear;
+      if (year != null) {
+        parts.add('$year');
+      }
     }
     final genreLabel = item.genres.take(2).join(' • ');
     if (genreLabel.isNotEmpty) {
@@ -4168,6 +4191,9 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   static ImageType _homeRowImageTypeForRow(HomeRow row, UserPreferences prefs) {
+    if (row.isAudio) {
+      return ImageType.poster;
+    }
     if (_isSeerrFilterRow(row)) {
       return ImageType.thumb;
     }
@@ -4228,6 +4254,9 @@ class _ContentRowsState extends State<_ContentRows>
     HomeRow row,
     ImageType imageType,
   ) {
+    if (row.isAudio) {
+      return 1.0;
+    }
     if (_isSeerrFilterRow(row)) {
       return 16 / 9;
     }

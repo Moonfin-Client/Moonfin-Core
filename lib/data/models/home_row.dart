@@ -11,6 +11,9 @@ enum HomeRowType {
   libraryTiles,
   libraryTilesSmall,
   playlists,
+  audioArtists,
+  audioAlbums,
+  audioPlaylists,
   liveTv,
   liveTvOnNow,
   activeRecordings,
@@ -25,6 +28,7 @@ class HomeRow {
   final HomeRowType rowType;
   final bool isLoading;
   final int totalCount;
+  final bool isAudio;
 
   const HomeRow({
     required this.id,
@@ -33,6 +37,7 @@ class HomeRow {
     required this.rowType,
     this.isLoading = false,
     this.totalCount = 0,
+    this.isAudio = false,
   });
 
   HomeRow copyWith({
@@ -42,6 +47,7 @@ class HomeRow {
     HomeRowType? rowType,
     bool? isLoading,
     int? totalCount,
+    bool? isAudio,
   }) =>
       HomeRow(
         id: id ?? this.id,
@@ -50,6 +56,7 @@ class HomeRow {
         rowType: rowType ?? this.rowType,
         isLoading: isLoading ?? this.isLoading,
         totalCount: totalCount ?? this.totalCount,
+        isAudio: isAudio ?? this.isAudio,
       );
 
   bool get isEmpty => items.isEmpty && !isLoading;

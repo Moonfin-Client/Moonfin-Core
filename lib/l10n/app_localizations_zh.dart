@@ -7315,6 +7315,22 @@ class AppLocalizationsZh extends AppLocalizations {
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
 
   @override
+  String get displayAudioRows => 'Display Audio Rows';
+
+  @override
+  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
+
+  @override
+  String get audioRowsSorting => 'Audio Rows sorting';
+
+  @override
+  String get audioRowsSortingDescription =>
+      'Sort Audio rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get audioPlaylists => 'Audio Playlists';
+
+  @override
   String get displaySeerrRows => 'Display Seerr Discovery Rows';
 
   @override

@@ -87,6 +87,15 @@ class HomeViewModel extends ChangeNotifier {
     return type == HomeSectionType.playlists;
   }
 
+  static bool _isAudioSectionType(HomeSectionType type) {
+    return switch (type) {
+      HomeSectionType.audioArtists ||
+      HomeSectionType.audioAlbums ||
+      HomeSectionType.audioPlaylists => true,
+      _ => false,
+    };
+  }
+
   static bool _isSeerrSectionType(HomeSectionType type) {
     return type == HomeSectionType.seerrRecentRequests ||
         type == HomeSectionType.seerrRecentlyAdded ||
@@ -172,6 +181,7 @@ class HomeViewModel extends ChangeNotifier {
       final showPlaylistsRows = _prefs.get(
         UserPreferences.displayPlaylistsRows,
       );
+      final showAudioRows = _prefs.get(UserPreferences.displayAudioRows);
       final showSeerrRows =
           _prefs.get(UserPreferences.displaySeerrRows) &&
           GetIt.instance<PluginSyncService>().seerrAvailable;
@@ -198,6 +208,7 @@ class HomeViewModel extends ChangeNotifier {
                         (c.isPluginDynamic &&
                             c.pluginSource ==
                                 HomeSectionPluginSource.playlists))) &&
+                (showAudioRows || !_isAudioSectionType(c.type)) &&
                 (showSeerrRows || !_isSeerrSectionType(c.type)),
           )
           .toList(growable: false);
@@ -278,63 +289,62 @@ class HomeViewModel extends ChangeNotifier {
       final completers = <Future<void>>[];
       for (final cfg in nonResumeEffectiveConfigs) {
         completers.add(() async {
-          List<HomeRow> sectionRows;
           try {
-            sectionRows = await _loadConfig(cfg);
-          } catch (_) {
-            sectionRows = const <HomeRow>[];
-          }
-          final loadedRows = sectionRows
-              .map((r) => r.copyWith(items: _filterEmptyElements(r.items)))
-              .where(
-                (r) => r.items.isNotEmpty || r.rowType == HomeRowType.liveTv,
-              )
-              .toList();
-          final placeholder = _placeholderForConfig(cfg);
-          final loadedIds = loadedRows.map((r) => r.id).toSet();
-          // Find the row that immediately follows this section's placeholder /
-          // existing rows, so we can re-anchor after removals.
+            List<HomeRow> sectionRows = await _loadConfig(cfg);
+            final loadedRows = sectionRows
+                .map((r) => r.copyWith(items: _filterEmptyElements(r.items)))
+                .where(
+                  (r) => r.items.isNotEmpty || r.rowType == HomeRowType.liveTv,
+                )
+                .toList();
+            final placeholder = _placeholderForConfig(cfg);
+            final loadedIds = loadedRows.map((r) => r.id).toSet();
+            // Find the row that immediately follows this section's placeholder /
+            // existing rows, so we can re-anchor after removals.
 
-          String? anchorId;
-          {
-            // Walk forward past the section's current rows to find the next
-            // sibling row that won't be removed.
-            bool pastSection = false;
-            for (final r in _rows) {
-              final willRemove =
-                  (placeholder != null && r.id == placeholder.id) ||
-                  loadedIds.contains(r.id) ||
-                  _rowBelongsToConfig(r, cfg);
-              if (willRemove) {
-                pastSection = true;
-              } else if (pastSection) {
-                anchorId = r.id;
-                break;
+            String? anchorId;
+            {
+              // Walk forward past the section's current rows to find the next
+              // sibling row that won't be removed.
+              bool pastSection = false;
+              for (final r in _rows) {
+                final willRemove =
+                    (placeholder != null && r.id == placeholder.id) ||
+                    loadedIds.contains(r.id) ||
+                    _rowBelongsToConfig(r, cfg);
+                if (willRemove) {
+                  pastSection = true;
+                } else if (pastSection) {
+                  anchorId = r.id;
+                  break;
+                }
               }
             }
-          }
-          _rows.removeWhere(
-            (r) =>
-                (placeholder != null && r.id == placeholder.id) ||
-                loadedIds.contains(r.id) ||
-                // Also clear any stale rows that belonged to this section from a
-                // prior load but were not included in the fresh result. This
-                // prevents phantom rows when the section's row-set changes
-                // (e.g. library added/removed, latestItemsExcludes updated).
-                _rowBelongsToConfig(r, cfg),
-          );
+            _rows.removeWhere(
+              (r) =>
+                  (placeholder != null && r.id == placeholder.id) ||
+                  loadedIds.contains(r.id) ||
+                  // Also clear any stale rows that belonged to this section from a
+                  // prior load but were not included in the fresh result. This
+                  // prevents phantom rows when the section's row-set changes
+                  // (e.g. library added/removed, latestItemsExcludes updated).
+                  _rowBelongsToConfig(r, cfg),
+            );
 
-          if (loadedRows.isNotEmpty) {
-            final insertIndex = anchorId != null
-                ? _rows.indexWhere((r) => r.id == anchorId)
-                : -1;
-            if (insertIndex < 0) {
-              _rows.addAll(loadedRows);
-            } else {
-              _rows.insertAll(insertIndex, loadedRows);
+            if (loadedRows.isNotEmpty) {
+              final insertIndex = anchorId != null
+                  ? _rows.indexWhere((r) => r.id == anchorId)
+                  : -1;
+              if (insertIndex < 0) {
+                _rows.addAll(loadedRows);
+              } else {
+                _rows.insertAll(insertIndex, loadedRows);
+              }
             }
+            notifyListeners();
+          } catch (e, stack) {
+            print('ERROR LOADING SECTION: $cfg: $e\n$stack');
           }
-          notifyListeners();
         }());
       }
 
@@ -441,6 +451,12 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.playlists:
         return row.rowType == HomeRowType.playlists &&
             !row.id.startsWith('pluginDynamic:');
+      case HomeSectionType.audioArtists:
+        return row.rowType == HomeRowType.audioArtists;
+      case HomeSectionType.audioAlbums:
+        return row.rowType == HomeRowType.audioAlbums;
+      case HomeSectionType.audioPlaylists:
+        return row.rowType == HomeRowType.audioPlaylists;
       case HomeSectionType.liveTv:
         return row.rowType == HomeRowType.liveTv ||
             row.rowType == HomeRowType.liveTvOnNow;
@@ -696,6 +712,12 @@ class HomeViewModel extends ChangeNotifier {
         return const {'seerrSeriesGenres'};
       case HomeSectionType.seerrNetworks:
         return const {'seerrNetworks'};
+      case HomeSectionType.audioArtists:
+        return const {'audioArtists'};
+      case HomeSectionType.audioAlbums:
+        return const {'audioAlbums'};
+      case HomeSectionType.audioPlaylists:
+        return const {'audioPlaylists'};
       case HomeSectionType.mediaBar:
       case HomeSectionType.none:
         return const <String>{};
@@ -788,6 +810,48 @@ class HomeViewModel extends ChangeNotifier {
               : await _dataSource.loadPlaylists(
                   _serverId,
                   sortBy: playlistsSortBy,
+                  sortOrder: sortOrder,
+                ),
+        ];
+      case HomeSectionType.audioArtists:
+        final audioSortBy = _prefs.get(UserPreferences.audioRowsSortBy).apiValue;
+        return [
+          _multiServerEnabled
+              ? await _multiServerRepo.getAggregatedAudioArtists(
+                  sortBy: audioSortBy,
+                  sortOrder: sortOrder,
+                )
+              : await _dataSource.loadAudioArtists(
+                  _serverId,
+                  sortBy: audioSortBy,
+                  sortOrder: sortOrder,
+                ),
+        ];
+      case HomeSectionType.audioAlbums:
+        final audioSortBy = _prefs.get(UserPreferences.audioRowsSortBy).apiValue;
+        return [
+          _multiServerEnabled
+              ? await _multiServerRepo.getAggregatedAudioAlbums(
+                  sortBy: audioSortBy,
+                  sortOrder: sortOrder,
+                )
+              : await _dataSource.loadAudioAlbums(
+                  _serverId,
+                  sortBy: audioSortBy,
+                  sortOrder: sortOrder,
+                ),
+        ];
+      case HomeSectionType.audioPlaylists:
+        final audioSortBy = _prefs.get(UserPreferences.audioRowsSortBy).apiValue;
+        return [
+          _multiServerEnabled
+              ? await _multiServerRepo.getAggregatedAudioPlaylists(
+                  sortBy: audioSortBy,
+                  sortOrder: sortOrder,
+                )
+              : await _dataSource.loadAudioPlaylists(
+                  _serverId,
+                  sortBy: audioSortBy,
                   sortOrder: sortOrder,
                 ),
         ];
@@ -987,8 +1051,7 @@ class HomeViewModel extends ChangeNotifier {
     final filteredViews = views.cast<Map<String, dynamic>>().where((data) {
       final id = data['Id']?.toString() ?? '';
       final collectionType = (data['CollectionType'] as String?)?.toLowerCase();
-      if (collectionType == 'music' ||
-          collectionType == 'playlists' ||
+      if (collectionType == 'playlists' ||
           collectionType == 'boxsets' ||
           collectionType == 'livetv') {
         return false;
@@ -1055,6 +1118,30 @@ class HomeViewModel extends ChangeNotifier {
           title: l10n.playlists,
           rowType: HomeRowType.playlists,
           isLoading: true,
+        );
+      case HomeSectionType.audioArtists:
+        return HomeRow(
+          id: 'audioArtists',
+          title: l10n.artists,
+          rowType: HomeRowType.audioArtists,
+          isLoading: true,
+          isAudio: true,
+        );
+      case HomeSectionType.audioAlbums:
+        return HomeRow(
+          id: 'audioAlbums',
+          title: l10n.albums,
+          rowType: HomeRowType.audioAlbums,
+          isLoading: true,
+          isAudio: true,
+        );
+      case HomeSectionType.audioPlaylists:
+        return HomeRow(
+          id: 'audioPlaylists',
+          title: l10n.audioPlaylists,
+          rowType: HomeRowType.audioPlaylists,
+          isLoading: true,
+          isAudio: true,
         );
       case HomeSectionType.favoriteMovies:
       case HomeSectionType.favoriteSeries:

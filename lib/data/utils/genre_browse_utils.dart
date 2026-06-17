@@ -1,4 +1,4 @@
-const List<String> kBrowsableGenreItemTypes = ['Movie', 'Series'];
+const List<String> kBrowsableGenreItemTypes = ['Movie', 'Series', 'Audio', 'MusicAlbum'];
 
 List<String> normalizeBrowsableGenreItemTypes(List<String>? includeItemTypes) {
   final requested =
@@ -39,6 +39,8 @@ int browsableGenreCount(
     final countField = switch (type) {
       'Movie' => 'MovieCount',
       'Series' => 'SeriesCount',
+      'Audio' => 'SongCount',
+      'MusicAlbum' => 'AlbumCount',
       _ => null,
     };
 

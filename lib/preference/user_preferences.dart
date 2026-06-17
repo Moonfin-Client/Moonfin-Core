@@ -572,6 +572,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final displayAudioRows = Preference(
+    key: 'pref_display_audio_rows',
+    defaultValue: false,
+  );
+
   static final displaySeerrRows = Preference(
     key: 'pref_display_seerr_rows',
     defaultValue: false,
@@ -597,6 +602,12 @@ class UserPreferences extends ChangeNotifier {
 
   static final playlistsRowSortBy = EnumPreference(
     key: 'pref_playlists_row_sort_by',
+    defaultValue: LibrarySortBy.name,
+    values: LibrarySortBy.values,
+  );
+
+  static final audioRowsSortBy = EnumPreference(
+    key: 'pref_audio_rows_sort_by',
     defaultValue: LibrarySortBy.name,
     values: LibrarySortBy.values,
   );

@@ -6,6 +6,8 @@ import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../../data/models/aggregated_item.dart';
+import '../../../data/utils/playlist_utils.dart';
 import '../../../data/services/home_screen_sections_service.dart';
 import '../../../data/services/kefin_tweaks_service.dart';
 import '../../../data/services/plugin_sync_service.dart';
@@ -219,6 +221,60 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
               } catch (_) {}
             }());
             break;
+          case HomeSectionType.audioArtists:
+            tasks.add(() async {
+              try {
+                final response = await client.itemsApi.getItems(
+                  includeItemTypes: const ['MusicArtist'],
+                  limit: 1,
+                  recursive: true,
+                );
+                final total = response['TotalRecordCount'] as int? ?? 0;
+                final items = response['Items'] as List? ?? [];
+                setEmpty(stableId, total == 0 && items.isEmpty);
+              } catch (_) {}
+            }());
+            break;
+          case HomeSectionType.audioAlbums:
+            tasks.add(() async {
+              try {
+                final response = await client.itemsApi.getItems(
+                  includeItemTypes: const ['MusicAlbum'],
+                  limit: 1,
+                  recursive: true,
+                );
+                final total = response['TotalRecordCount'] as int? ?? 0;
+                final items = response['Items'] as List? ?? [];
+                setEmpty(stableId, total == 0 && items.isEmpty);
+              } catch (_) {}
+            }());
+            break;
+          case HomeSectionType.audioPlaylists:
+            tasks.add(() async {
+              try {
+                final response = await client.itemsApi.getItems(
+                  includeItemTypes: const ['Playlist'],
+                  recursive: true,
+                  fields: 'ChildCount,RecursiveItemCount',
+                );
+                final rawItems = response['Items'] as List? ?? [];
+                final parsedItems = rawItems.map((item) {
+                  final data = item as Map<String, dynamic>;
+                  return AggregatedItem(
+                    id: data['Id']?.toString() ?? '',
+                    serverId: '',
+                    rawData: data,
+                  );
+                }).toList();
+                final filtered = await filterBrowsablePlaylists(
+                  client,
+                  parsedItems,
+                  mediaType: 'Audio',
+                );
+                setEmpty(stableId, filtered.isEmpty);
+              } catch (_) {}
+            }());
+            break;
           case HomeSectionType.activeRecordings:
             tasks.add(() async {
               try {
@@ -324,6 +380,12 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     };
   }
 
+  bool _isAudioSectionType(HomeSectionType type) {
+    return type == HomeSectionType.audioArtists ||
+        type == HomeSectionType.audioAlbums ||
+        type == HomeSectionType.audioPlaylists;
+  }
+
   bool _isCollectionsSectionType(HomeSectionType type) {
     return type == HomeSectionType.collections;
   }
@@ -426,11 +488,14 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         (section.isPluginDynamic &&
           section.pluginSource == HomeSectionPluginSource.playlists));
     final hiddenBySeerr = !showSeerrRows && _isSeerrSectionType(section.type);
+    final showAudioRows = _prefs.get(UserPreferences.displayAudioRows);
+    final hiddenByAudio = !showAudioRows && _isAudioSectionType(section.type);
     return hiddenByFavorites ||
         hiddenByCollections ||
         hiddenByGenres ||
         hiddenByPlaylists ||
-        hiddenBySeerr;
+        hiddenBySeerr ||
+        hiddenByAudio;
   }
 
   List<int> _visibleSectionIndices() {
@@ -1122,6 +1187,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     HomeSectionType.activeRecordings => l10n.activeRecordings,
     HomeSectionType.nextUp => l10n.nextUp,
     HomeSectionType.playlists => l10n.playlists,
+    HomeSectionType.audioArtists => l10n.artists,
+    HomeSectionType.audioAlbums => l10n.albums,
+    HomeSectionType.audioPlaylists => l10n.audioPlaylists,
     HomeSectionType.favoriteMovies => 'Favorite ${FavoriteTypeFilter.movie.displayName}',
     HomeSectionType.favoriteSeries => 'Favorite ${FavoriteTypeFilter.series.displayName}',
     HomeSectionType.favoriteEpisodes => 'Favorite ${FavoriteTypeFilter.episode.displayName}',
@@ -1377,16 +1445,25 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                           color: AppColorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                       )
-                    : (_isSeerrSectionType(section.type)
+                    : (_isAudioSectionType(section.type)
                         ? Text(
-                            'Seerr Discovery Rows',
+                            'Audio row',
                             style: TextStyle(
                               fontSize: 12,
                               fontFamily: kCleanSettingsFontFamily,
                               color: AppColorScheme.onSurface.withValues(alpha: 0.7),
                             ),
                           )
-                        : null),
+                        : (_isSeerrSectionType(section.type)
+                            ? Text(
+                                'Seerr Discovery Rows',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontFamily: kCleanSettingsFontFamily,
+                                  color: AppColorScheme.onSurface.withValues(alpha: 0.7),
+                                ),
+                              )
+                            : null)),
                 onTap: isEmpty
                     ? null
                     : () {
@@ -1436,9 +1513,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
           label: _labelFor(section, l10n),
           subtitle: section.isPluginDynamic
               ? _pluginSubtitle(section)
-              : (_isSeerrSectionType(section.type)
-                  ? 'Seerr Discovery Rows'
-                  : null),
+              : (_isAudioSectionType(section.type)
+                  ? 'Audio row'
+                  : (_isSeerrSectionType(section.type)
+                      ? 'Seerr Discovery Rows'
+                      : null)),
           enabled: section.enabled,
           isFirst: visibleIndex == 0,
           isLast: visibleIndex == visibleIndices.length - 1,

@@ -19,6 +19,12 @@ String localizeHomeRowTitle({
       return l10n.latestMedia;
     case 'playlists':
       return l10n.playlists;
+    case 'audioPlaylists':
+      return l10n.audioPlaylists;
+    case 'audioArtists':
+      return l10n.artists;
+    case 'audioAlbums':
+      return l10n.albums;
     case 'collections':
       return l10n.collections;
     case 'genres':

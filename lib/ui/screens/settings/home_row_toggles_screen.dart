@@ -115,6 +115,12 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     setState(() {});
   }
 
+  void _onAudioRowsToggleChanged() {
+    _pushPersonalizationSync();
+    if (!mounted) return;
+    setState(() {});
+  }
+
   void _onSeerrRowsToggleChanged() {
     _pushPersonalizationSync();
     if (!mounted) return;
@@ -122,6 +128,11 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
   }
 
   void _onPlaylistsSortChanged() {
+    _pushPersonalizationSync();
+    _reloadHomeRows();
+  }
+
+  void _onAudioSortChanged() {
     _pushPersonalizationSync();
     _reloadHomeRows();
   }
@@ -137,6 +148,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     final showCollectionsRows = _prefs.get(UserPreferences.displayCollectionsRows);
     final showGenresRows = _prefs.get(UserPreferences.displayGenresRows);
     final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
+    final showAudioRows = _prefs.get(UserPreferences.displayAudioRows);
 
     final borderTokens = ThemeRegistry.active.borders;
     final baseBorder = borderTokens.cardBorder.color;
@@ -218,6 +230,32 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
               ),
             ),
             
+            _SectionHeader(l10n.audio),
+            SwitchPreferenceTile(
+              preference: UserPreferences.displayAudioRows,
+              title: l10n.displayAudioRows,
+              subtitle: l10n.displayAudioRowsSubtitle,
+              icon: Icons.music_note,
+              onChanged: _onAudioRowsToggleChanged,
+            ),
+            if (showAudioRows)
+              EnumPreferenceTile<LibrarySortBy>(
+                preference: UserPreferences.audioRowsSortBy,
+                title: l10n.audioRowsSorting,
+                description: l10n.audioRowsSortingDescription,
+                icon: Icons.sort,
+                values: const [
+                  LibrarySortBy.name,
+                  LibrarySortBy.dateAdded,
+                  LibrarySortBy.premiereDate,
+                  LibrarySortBy.runtime,
+                  LibrarySortBy.random,
+                ],
+                labelOf: (v) => v == LibrarySortBy.premiereDate ? 'Release Date' : v.displayName,
+                dialogLabelOf: (v) => v == LibrarySortBy.premiereDate ? 'Release Date' : v.displayName,
+                onChanged: _onAudioSortChanged,
+              ),
+
             _SectionHeader(l10n.collections),
             SwitchPreferenceTile(
               preference: UserPreferences.displayCollectionsRows,

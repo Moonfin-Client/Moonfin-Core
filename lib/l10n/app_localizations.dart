@@ -13480,6 +13480,36 @@ abstract class AppLocalizations {
   /// **'Sort Playlist rows by date added, release date, alphabetically, and more.'**
   String get playlistsRowSortingDescription;
 
+  /// No description provided for @displayAudioRows.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Audio Rows'**
+  String get displayAudioRows;
+
+  /// No description provided for @displayAudioRowsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Audio rows in Home Sections.'**
+  String get displayAudioRowsSubtitle;
+
+  /// No description provided for @audioRowsSorting.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Rows sorting'**
+  String get audioRowsSorting;
+
+  /// No description provided for @audioRowsSortingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Audio rows by date added, release date, alphabetically, and more.'**
+  String get audioRowsSortingDescription;
+
+  /// No description provided for @audioPlaylists.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Playlists'**
+  String get audioPlaylists;
+
   /// No description provided for @displaySeerrRows.
   ///
   /// In en, this message translates to:

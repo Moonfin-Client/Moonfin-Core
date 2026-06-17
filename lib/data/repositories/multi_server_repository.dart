@@ -279,8 +279,11 @@ class MultiServerRepository {
     int limit = _defaultLimit,
     String sortBy = _defaultSortBy,
     String sortOrder = _defaultSortOrder,
+    String? mediaType,
   }) async {
     final sessions = await getLoggedInServers();
+    final isAudio = mediaType == 'Audio';
+    final cacheKeyPrefix = isAudio ? 'audioPlaylists' : 'playlists';
 
     final results = await Future.wait(
       sessions.map(
@@ -291,18 +294,22 @@ class MultiServerRepository {
             sortOrder: sortOrder,
             recursive: true,
             limit: limit,
-            fields: _fields,
+            fields: '$_fields,ChildCount,RecursiveItemCount',
             enableImageTypes: _imageTypes,
             imageTypeLimit: _imageTypeLimit,
           );
+          final playlistsOnly = _parseItems(response, session.server.id)
+              .where((item) => item.type == 'Playlist')
+              .toList();
           final items = await filterBrowsablePlaylists(
             session.client,
-            _parseItems(response, session.server.id),
+            playlistsOnly,
+            mediaType: mediaType,
           );
-          _rowTotals['playlists_${session.server.id}'] =
+          _rowTotals['${cacheKeyPrefix}_${session.server.id}'] =
               response['TotalRecordCount'] as int? ?? items.length;
           return items;
-        }, label: 'playlists from ${session.server.name}'),
+        }, label: '$cacheKeyPrefix from ${session.server.name}'),
       ),
     );
 
@@ -319,17 +326,68 @@ class MultiServerRepository {
 
     final takenItems = all.take(limit).toList();
     final totalCount = sessions.fold<int>(0, (sum, session) {
-      return sum + (_rowTotals['playlists_${session.server.id}'] ?? 0);
+      return sum + (_rowTotals['${cacheKeyPrefix}_${session.server.id}'] ?? 0);
     });
 
     return HomeRow(
-      id: 'playlists',
-      title: _l10n.playlists,
+      id: cacheKeyPrefix,
+      title: isAudio ? _l10n.audioPlaylists : _l10n.playlists,
       items: takenItems,
-      rowType: HomeRowType.playlists,
+      rowType: isAudio ? HomeRowType.audioPlaylists : HomeRowType.playlists,
       totalCount: totalCount,
+      isAudio: isAudio,
     );
   }
+
+  Future<HomeRow> getAggregatedAudioArtists({
+    int limit = _defaultLimit,
+    String sortBy = _defaultSortBy,
+    String sortOrder = _defaultSortOrder,
+  }) async {
+    final row = await _getAggregatedSortedItemsRow(
+      id: 'audioArtists',
+      title: _l10n.artists,
+      rowType: HomeRowType.audioArtists,
+      includeItemTypes: const ['MusicArtist'],
+      limit: limit,
+      logPrefix: 'audioArtists',
+      sortBy: sortBy,
+      sortOrder: sortOrder,
+    );
+    return row.copyWith(isAudio: true);
+  }
+
+  Future<HomeRow> getAggregatedAudioAlbums({
+    int limit = _defaultLimit,
+    String sortBy = _defaultSortBy,
+    String sortOrder = _defaultSortOrder,
+  }) async {
+    final row = await _getAggregatedSortedItemsRow(
+      id: 'audioAlbums',
+      title: _l10n.albums,
+      rowType: HomeRowType.audioAlbums,
+      includeItemTypes: const ['MusicAlbum'],
+      limit: limit,
+      logPrefix: 'audioAlbums',
+      sortBy: sortBy,
+      sortOrder: sortOrder,
+    );
+    return row.copyWith(isAudio: true);
+  }
+
+  Future<HomeRow> getAggregatedAudioPlaylists({
+    int limit = _defaultLimit,
+    String sortBy = _defaultSortBy,
+    String sortOrder = _defaultSortOrder,
+  }) async {
+    return getAggregatedPlaylists(
+      limit: limit,
+      sortBy: sortBy,
+      sortOrder: sortOrder,
+      mediaType: 'Audio',
+    );
+  }
+
 
   Future<HomeRow> getAggregatedFavorites({
     required String rowId,
@@ -375,6 +433,9 @@ class MultiServerRepository {
     String sortOrder = _defaultSortOrder,
     List<String>? includeItemTypes,
   }) async {
+    const cacheKeyPrefix = 'genres';
+    const rowType = HomeRowType.genres;
+
     final browseItemTypes = normalizeBrowsableGenreItemTypes(includeItemTypes);
     final sessions = await getLoggedInServers();
     final perServer = (limit * 3).clamp(1, 100);
@@ -395,10 +456,10 @@ class MultiServerRepository {
             response,
             includeItemTypes: browseItemTypes,
           );
-          _rowTotals['genres_${session.server.id}'] =
+          _rowTotals['${cacheKeyPrefix}_${session.server.id}'] =
               response['TotalRecordCount'] as int? ?? items.length;
           return items;
-        }, label: 'genres from ${session.server.name}'),
+        }, label: '$cacheKeyPrefix from ${session.server.name}'),
       ),
     );
 
@@ -410,14 +471,14 @@ class MultiServerRepository {
 
     final takenItems = all.take(limit).toList();
     final totalCount = sessions.fold<int>(0, (sum, session) {
-      return sum + (_rowTotals['genres_${session.server.id}'] ?? 0);
+      return sum + (_rowTotals['${cacheKeyPrefix}_${session.server.id}'] ?? 0);
     });
 
     return HomeRow(
-      id: 'genres',
+      id: cacheKeyPrefix,
       title: _l10n.genres,
       items: takenItems,
-      rowType: HomeRowType.genres,
+      rowType: rowType,
       totalCount: totalCount,
     );
   }
@@ -475,6 +536,75 @@ class MultiServerRepository {
                 session.client,
                 _parseItems(response, serverId),
               );
+              _rowTotals[cacheKey] =
+                  response['TotalRecordCount'] as int? ?? items.length;
+              return items;
+            case HomeRowType.audioPlaylists:
+              final pageCount = (startIndex / _defaultLimit).ceil();
+              final targetStartIndex = pageCount * _defaultLimit;
+              _rowOffsets[cacheKey] = targetStartIndex + _defaultLimit;
+              final sortBy =
+                  prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
+                  _defaultSortBy;
+
+              final response = await session.client.itemsApi.getItems(
+                includeItemTypes: const ['Playlist'],
+                sortBy: sortBy,
+                sortOrder: 'Ascending',
+                recursive: true,
+                startIndex: targetStartIndex,
+                limit: _defaultLimit,
+                fields: _fields,
+                enableImageTypes: _imageTypes,
+                imageTypeLimit: _imageTypeLimit,
+              );
+              final items = await filterBrowsablePlaylists(
+                session.client,
+                _parseItems(response, serverId),
+                mediaType: 'Audio',
+              );
+              _rowTotals[cacheKey] =
+                  response['TotalRecordCount'] as int? ?? items.length;
+              return items;
+            case HomeRowType.audioArtists:
+              _rowOffsets[cacheKey] = startIndex + _defaultLimit;
+              final sortBy =
+                  prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
+                  _defaultSortBy;
+
+              final response = await session.client.itemsApi.getItems(
+                includeItemTypes: const ['MusicArtist'],
+                sortBy: sortBy,
+                sortOrder: 'Ascending',
+                recursive: true,
+                startIndex: startIndex,
+                limit: _defaultLimit,
+                fields: _fields,
+                enableImageTypes: _imageTypes,
+                imageTypeLimit: _imageTypeLimit,
+              );
+              final items = _parseItems(response, serverId);
+              _rowTotals[cacheKey] =
+                  response['TotalRecordCount'] as int? ?? items.length;
+              return items;
+            case HomeRowType.audioAlbums:
+              _rowOffsets[cacheKey] = startIndex + _defaultLimit;
+              final sortBy =
+                  prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
+                  _defaultSortBy;
+
+              final response = await session.client.itemsApi.getItems(
+                includeItemTypes: const ['MusicAlbum'],
+                sortBy: sortBy,
+                sortOrder: 'Ascending',
+                recursive: true,
+                startIndex: startIndex,
+                limit: _defaultLimit,
+                fields: _fields,
+                enableImageTypes: _imageTypes,
+                imageTypeLimit: _imageTypeLimit,
+              );
+              final items = _parseItems(response, serverId);
               _rowTotals[cacheKey] =
                   response['TotalRecordCount'] as int? ?? items.length;
               return items;
@@ -628,11 +758,13 @@ class MultiServerRepository {
 
     final List<AggregatedItem> sortedCombined;
     if (row.rowType == HomeRowType.playlists ||
+        row.rowType == HomeRowType.audioPlaylists ||
         row.rowType == HomeRowType.latestMedia) {
-      if (row.rowType == HomeRowType.playlists) {
-        final sortBy =
-            prefs?.get(UserPreferences.playlistsRowSortBy).apiValue ??
-            _defaultSortBy;
+      if (row.rowType == HomeRowType.playlists ||
+          row.rowType == HomeRowType.audioPlaylists) {
+        final sortBy = row.rowType == HomeRowType.audioPlaylists
+            ? (prefs?.get(UserPreferences.audioRowsSortBy).apiValue ?? _defaultSortBy)
+            : (prefs?.get(UserPreferences.playlistsRowSortBy).apiValue ?? _defaultSortBy);
         if (sortBy == 'SortName') {
           uniqueCombined.sort((a, b) => a.name.compareTo(b.name));
         } else {
@@ -654,6 +786,10 @@ class MultiServerRepository {
               _defaultSortBy,
         HomeRowType.genres =>
           prefs?.get(UserPreferences.genresRowSortBy).apiValue ??
+              _defaultSortBy,
+        HomeRowType.audioArtists ||
+        HomeRowType.audioAlbums =>
+          prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
               _defaultSortBy,
         _ => _defaultSortBy,
       };
@@ -786,8 +922,7 @@ class MultiServerRepository {
           final id = data['Id']?.toString() ?? '';
           final collectionType = (data['CollectionType'] as String?)
               ?.toLowerCase();
-          if (collectionType == 'music' ||
-              collectionType == 'playlists' ||
+          if (collectionType == 'playlists' ||
               collectionType == 'boxsets' ||
               collectionType == 'livetv') {
             continue;
@@ -834,6 +969,7 @@ class MultiServerRepository {
                   items: items,
                   rowType: HomeRowType.latestMedia,
                   totalCount: totalCount,
+                  isAudio: collectionType == 'music',
                 ),
               );
             }

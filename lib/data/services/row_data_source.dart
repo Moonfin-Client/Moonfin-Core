@@ -176,6 +176,7 @@ class RowDataSource {
       items: items,
       rowType: HomeRowType.latestMedia,
       totalCount: items.length < _defaultLimit ? items.length : _maxItems,
+      isAudio: collectionType == 'music',
     );
   }
 
@@ -247,16 +248,72 @@ class RowDataSource {
     );
   }
 
+  Future<HomeRow> loadAudioArtists(
+    String serverId, {
+    String sortBy = _defaultSortBy,
+    String sortOrder = _defaultSortOrder,
+  }) async {
+    final row = await _loadSortedItemsRow(
+      serverId: serverId,
+      id: 'audioArtists',
+      title: _l10n.artists,
+      rowType: HomeRowType.audioArtists,
+      includeItemTypes: const ['MusicArtist'],
+      sortBy: sortBy,
+      sortOrder: sortOrder,
+    );
+    return row.copyWith(isAudio: true);
+  }
+
+  Future<HomeRow> loadAudioAlbums(
+    String serverId, {
+    String sortBy = _defaultSortBy,
+    String sortOrder = _defaultSortOrder,
+  }) async {
+    final row = await _loadSortedItemsRow(
+      serverId: serverId,
+      id: 'audioAlbums',
+      title: _l10n.albums,
+      rowType: HomeRowType.audioAlbums,
+      includeItemTypes: const ['MusicAlbum'],
+      sortBy: sortBy,
+      sortOrder: sortOrder,
+    );
+    return row.copyWith(isAudio: true);
+  }
+
+  Future<HomeRow> loadAudioPlaylists(
+    String serverId, {
+    String sortBy = _defaultSortBy,
+    String sortOrder = _defaultSortOrder,
+  }) async {
+    final row = await loadPlaylists(
+      serverId,
+      mediaType: 'Audio',
+      sortBy: sortBy,
+      sortOrder: sortOrder,
+    );
+    return row.copyWith(
+      id: 'audioPlaylists',
+      title: _l10n.audioPlaylists,
+      rowType: HomeRowType.audioPlaylists,
+      isAudio: true,
+    );
+  }
+
+
   Future<HomeRow> loadGenres(
     String serverId, {
     String sortBy = _defaultSortBy,
     String sortOrder = _defaultSortOrder,
     List<String>? includeItemTypes,
+    String? parentId,
   }) async {
     final browseItemTypes = normalizeBrowsableGenreItemTypes(includeItemTypes);
     Map<String, dynamic> response;
     try {
       response = await _client.itemsApi.getGenres(
+        parentId: parentId,
         sortBy: sortBy,
         sortOrder: sortOrder,
         recursive: true,
@@ -268,6 +325,7 @@ class RowDataSource {
       final statusCode = e.response?.statusCode ?? 0;
       if (statusCode < 500) rethrow;
       response = await _client.itemsApi.getGenres(
+        parentId: parentId,
         sortBy: sortBy,
         sortOrder: sortOrder,
         recursive: true,
@@ -766,6 +824,45 @@ class RowDataSource {
           startIndex: currentOffset,
           limit: _defaultLimit,
         );
+      case HomeRowType.audioArtists:
+        final sortBy =
+            prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
+            _defaultSortBy;
+        response = await _getItemsWithFallback(
+          includeItemTypes: const ['MusicArtist'],
+          sortBy: sortBy,
+          sortOrder: 'Ascending',
+          recursive: true,
+          startIndex: currentOffset,
+          limit: _defaultLimit,
+        );
+      case HomeRowType.audioAlbums:
+        final sortBy =
+            prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
+            _defaultSortBy;
+        response = await _getItemsWithFallback(
+          includeItemTypes: const ['MusicAlbum'],
+          sortBy: sortBy,
+          sortOrder: 'Ascending',
+          recursive: true,
+          startIndex: currentOffset,
+          limit: _defaultLimit,
+        );
+      case HomeRowType.audioPlaylists:
+        final sortBy =
+            prefs?.get(UserPreferences.audioRowsSortBy).apiValue ??
+            _defaultSortBy;
+        final pageCount = (currentOffset / _defaultLimit).ceil();
+        final startIndex = pageCount * _defaultLimit;
+        response = await _getItemsWithFallback(
+          includeItemTypes: const ['Playlist'],
+          sortBy: sortBy,
+          sortOrder: 'Ascending',
+          recursive: true,
+          startIndex: startIndex,
+          limit: _defaultLimit,
+          fields: '$_fields,ChildCount,RecursiveItemCount',
+        );
       case HomeRowType.genres:
         final sortBy =
             prefs?.get(UserPreferences.genresRowSortBy).apiValue ??
@@ -932,12 +1029,16 @@ class RowDataSource {
         return (row.items, row.totalCount);
     }
 
-    final newItems = row.rowType == HomeRowType.playlists
+    final newItems = (row.rowType == HomeRowType.playlists ||
+            row.rowType == HomeRowType.audioPlaylists)
         ? await filterBrowsablePlaylists(
             _client,
-            _parseItems(response, serverId),
-            mediaType:
-                row.items.isNotEmpty && row.items.every(isAudioPlaylistSummary)
+            _parseItems(response, serverId)
+                .where((item) => item.type == 'Playlist')
+                .toList(),
+            mediaType: row.rowType == HomeRowType.audioPlaylists ||
+                    (row.items.isNotEmpty &&
+                        row.items.every(isAudioPlaylistSummary))
                 ? 'Audio'
                 : null,
           )

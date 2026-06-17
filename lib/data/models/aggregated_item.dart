@@ -123,6 +123,25 @@ class AggregatedItem {
       }
     }
 
+    if (type == 'MusicAlbum' || type == 'Audio') {
+      final artist = (albumArtist ?? '').trim().isNotEmpty
+          ? albumArtist!.trim()
+          : (albumArtists.isNotEmpty
+              ? (albumArtists.first['Name'] as String?)?.trim()
+              : (artists.isNotEmpty ? artists.first.trim() : ''));
+      final year = productionYear;
+      if (artist != null && artist.isNotEmpty) {
+        if (year != null) {
+          return '$artist ($year)';
+        }
+        return artist;
+      }
+      if (year != null) {
+        return '$year';
+      }
+      return null;
+    }
+
     final year = productionYear;
     final resolution = videoResolution;
     if (year == null && resolution == null) return null;
