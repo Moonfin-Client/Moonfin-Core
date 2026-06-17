@@ -42,11 +42,16 @@ class SyncService extends ChangeNotifier {
 
     int synced = 0, failed = 0;
 
+    // Batch-fetch server progress for every unsynced item in one request
+    // instead of a round-trip per item on reconnect.
+    final serverUserData = await _fetchServerUserData(
+      client,
+      unsynced.map((i) => i.itemId).toList(),
+    );
+
     for (final item in unsynced) {
       try {
-        // Fetch server's current progress for conflict check
-        final serverData = await client.itemsApi.getItem(item.itemId);
-        final userData = serverData['UserData'] as Map<String, dynamic>?;
+        final userData = serverUserData[item.itemId];
         if (userData != null) {
           final serverPlayed = userData['Played'] as bool? ?? false;
           final serverTicks = userData['PlaybackPositionTicks'] as int? ?? 0;
@@ -90,6 +95,35 @@ class SyncService extends ChangeNotifier {
     _setState(failed > 0 && synced == 0 ? SyncState.error : SyncState.done);
     _scheduleDoneReset();
     return SyncResult(synced: synced, failed: failed);
+  }
+
+  /// Fetches the server's `UserData` for [itemIds] in a single query, keyed by
+  /// item id. Returns an empty map on failure so callers fall back to pushing
+  /// local progress. Ids are stringified because Emby returns them numerically.
+  Future<Map<String, Map<String, dynamic>>> _fetchServerUserData(
+    MediaServerClient client,
+    List<String> itemIds,
+  ) async {
+    final result = <String, Map<String, dynamic>>{};
+    if (itemIds.isEmpty) return result;
+    try {
+      final response = await client.itemsApi.getItems(
+        ids: itemIds,
+        fields: 'UserData',
+      );
+      final items = response['Items'] as List<dynamic>?;
+      if (items != null) {
+        for (final raw in items) {
+          final map = raw as Map<String, dynamic>;
+          final id = map['Id']?.toString();
+          final userData = map['UserData'] as Map<String, dynamic>?;
+          if (id != null && userData != null) {
+            result[id] = userData;
+          }
+        }
+      }
+    } catch (_) {}
+    return result;
   }
 
   Future<void> refreshMetadata(MediaServerClient client) async {
