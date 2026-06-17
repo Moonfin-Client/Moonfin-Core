@@ -59,7 +59,11 @@ class SyncService extends ChangeNotifier {
 
           if (serverPlayed) {
             // Server already finished it, adopt played state locally.
-            await _offlineRepo.setSyncedPlaybackPosition(item.itemId, 0);
+            await _offlineRepo.setSyncedPlaybackPosition(
+              item.itemId,
+              0,
+              metadataJson: _mergeUserData(item.metadataJson, userData),
+            );
             synced++;
             continue;
           }
@@ -67,7 +71,11 @@ class SyncService extends ChangeNotifier {
           // Otherwise furthest progress wins, but a local completion outranks
           // any partial server position, so leave it to be pushed below.
           if (!localPlayed && serverTicks > item.playbackPositionTicks) {
-            await _offlineRepo.setSyncedPlaybackPosition(item.itemId, serverTicks);
+            await _offlineRepo.setSyncedPlaybackPosition(
+              item.itemId,
+              serverTicks,
+              metadataJson: _mergeUserData(item.metadataJson, userData),
+            );
             synced++;
             continue;
           }
@@ -93,6 +101,19 @@ class SyncService extends ChangeNotifier {
     _setState(failed > 0 && synced == 0 ? SyncState.error : SyncState.done);
     _scheduleDoneReset();
     return SyncResult(synced: synced, failed: failed);
+  }
+
+  /// Returns [metadataJson] with its `UserData` replaced by the server's, so
+  /// the offline UI (which reads played/position from metadata) reflects the
+  /// adopted progress immediately rather than waiting for a metadata refresh.
+  String _mergeUserData(String metadataJson, Map<String, dynamic> userData) {
+    try {
+      final decoded = jsonDecode(metadataJson) as Map<String, dynamic>;
+      decoded['UserData'] = userData;
+      return jsonEncode(decoded);
+    } catch (_) {
+      return metadataJson;
+    }
   }
 
   /// Fetches the server's `UserData` for [itemIds] in a single query, keyed by

@@ -82,13 +82,21 @@ class OfflineRepository {
   }
 
   /// Adopts a server position locally and marks it synced in a single write,
-  /// used when resolving an online/offline progress conflict.
-  Future<void> setSyncedPlaybackPosition(String itemId, int positionTicks) async {
+  /// used when resolving an online/offline progress conflict. When
+  /// [metadataJson] is given it is written too, so the displayed UserData
+  /// (which the UI reads from metadata) stays consistent with the new ticks.
+  Future<void> setSyncedPlaybackPosition(
+    String itemId,
+    int positionTicks, {
+    String? metadataJson,
+  }) async {
     await (_db.update(_db.downloadedItems)
           ..where((t) => t.itemId.equals(itemId)))
         .write(DownloadedItemsCompanion(
       playbackPositionTicks: Value(positionTicks),
       progressSynced: const Value(true),
+      metadataJson:
+          metadataJson == null ? const Value.absent() : Value(metadataJson),
     ));
   }
 
