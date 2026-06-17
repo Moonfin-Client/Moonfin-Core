@@ -649,16 +649,6 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
           : KeyEventResult.handled;
     }
 
-    if (PlatformDetection.isTV && key == LogicalKeyboardKey.arrowDown) {
-      final primaryFocus = FocusManager.instance.primaryFocus;
-      if (primaryFocus != null) {
-        final success = primaryFocus.focusInDirection(TraversalDirection.down);
-        if (success) {
-          return KeyEventResult.handled;
-        }
-      }
-    }
-
     return KeyEventResult.ignored;
   }
 
