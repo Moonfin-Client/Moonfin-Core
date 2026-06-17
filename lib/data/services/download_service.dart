@@ -1291,6 +1291,7 @@ class DownloadService extends ChangeNotifier {
           seasonName: Value(fullItem.rawData['SeasonName'] as String?),
           indexNumber: Value(item.indexNumber),
           parentIndexNumber: Value(item.parentIndexNumber),
+          playbackPositionTicks: Value(fullItem.playbackPositionTicks ?? 0),
         ),
       );
 

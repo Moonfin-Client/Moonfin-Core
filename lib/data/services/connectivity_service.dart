@@ -101,7 +101,9 @@ class ConnectivityService extends ChangeNotifier {
     }
     final syncService = getIt<SyncService>();
     final client = getIt<MediaServerClient>();
-    syncService.syncPlaybackProgress(client);
+    syncService.syncPlaybackProgress(client).then((_) {
+      syncService.refreshMetadata(client);
+    });
   }
 
   Future<void> _checkServerReachability() async {

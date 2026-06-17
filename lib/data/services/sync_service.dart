@@ -44,6 +44,22 @@ class SyncService extends ChangeNotifier {
 
     for (final item in unsynced) {
       try {
+        // Fetch server's current progress for conflict check
+        final serverData = await client.itemsApi.getItem(item.itemId);
+        final userData = serverData['UserData'] as Map<String, dynamic>?;
+        if (userData != null) {
+          final serverPlayed = userData['Played'] as bool? ?? false;
+          final serverTicks = userData['PlaybackPositionTicks'] as int? ?? 0;
+
+          // If the server progress is further ahead, adopt it and mark local as synced
+          if (serverPlayed || serverTicks > item.playbackPositionTicks) {
+            await _offlineRepo.updatePlaybackPosition(item.itemId, serverPlayed ? 0 : serverTicks);
+            await _offlineRepo.markProgressSynced(item.itemId);
+            synced++;
+            continue;
+          }
+        }
+
         if (item.playbackPositionTicks == 0) {
           await client.userLibraryApi.markPlayed(item.itemId);
         } else {
@@ -71,14 +87,43 @@ class SyncService extends ChangeNotifier {
     for (final item in items.where((i) => i.downloadStatus == 2)) {
       try {
         final serverData = await client.itemsApi.getItem(item.itemId);
+        final userData = serverData['UserData'] as Map<String, dynamic>?;
+        int? serverTicks;
+        if (userData != null) {
+          final serverPlayed = userData['Played'] as bool? ?? false;
+          serverTicks = serverPlayed ? 0 : (userData['PlaybackPositionTicks'] as int? ?? 0);
+        }
+
+        final localItem = await _offlineRepo.getItem(item.itemId);
+        if (localItem == null) continue;
+        final shouldUpdateTicks = localItem.progressSynced && serverTicks != null;
+
         await _offlineRepo.upsertItem(
           DownloadedItemsCompanion(
-            itemId: Value(item.itemId),
-            serverId: Value(item.serverId),
-            type: Value(item.type),
-            name: Value(item.name),
+            itemId: Value(localItem.itemId),
+            serverId: Value(localItem.serverId),
+            type: Value(localItem.type),
+            name: Value(localItem.name),
             metadataJson: Value(jsonEncode(serverData)),
-            downloadStatus: Value(item.downloadStatus),
+            downloadStatus: Value(localItem.downloadStatus),
+            localFilePath: Value(localItem.localFilePath),
+            posterPath: Value(localItem.posterPath),
+            backdropPath: Value(localItem.backdropPath),
+            logoPath: Value(localItem.logoPath),
+            thumbPath: Value(localItem.thumbPath),
+            downloadProgress: Value(localItem.downloadProgress),
+            errorMessage: Value(localItem.errorMessage),
+            fileSizeBytes: Value(localItem.fileSizeBytes),
+            downloadedAt: Value(localItem.downloadedAt),
+            qualityPreset: Value(localItem.qualityPreset),
+            seriesId: Value(localItem.seriesId),
+            seasonId: Value(localItem.seasonId),
+            seriesName: Value(localItem.seriesName),
+            seasonName: Value(localItem.seasonName),
+            indexNumber: Value(localItem.indexNumber),
+            parentIndexNumber: Value(localItem.parentIndexNumber),
+            progressSynced: Value(localItem.progressSynced),
+            playbackPositionTicks: shouldUpdateTicks ? Value(serverTicks) : Value(localItem.playbackPositionTicks),
           ),
         );
       } catch (_) {
