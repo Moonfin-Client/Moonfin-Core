@@ -10,10 +10,10 @@ import 'mobile_bottom_nav_bar.dart';
 import 'top_toolbar.dart';
 
 import 'dart:async';
-import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
 import '../../data/models/aggregated_item.dart';
+import '../../util/focus/dpad_keys.dart';
 import '../navigation/app_router.dart';
 import '../navigation/destinations.dart';
 
@@ -68,6 +68,9 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
   final _contentFocusNode = FocusNode(debugLabel: 'NavigationContent');
   final ValueNotifier<double> _toolbarScrollOffset = ValueNotifier<double>(0.0);
   late NavbarPosition _position;
+  final _playbackManager = GetIt.instance<PlaybackManager>();
+  StreamSubscription? _playSub;
+  StreamSubscription? _queueSub;
 
   @override
   void initState() {
@@ -79,12 +82,22 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
     }
     WidgetsBinding.instance.addObserver(this);
     NavigationLayout.positionNotifier.addListener(_onPositionNotified);
+    // The top toolbar grows to host the embedded music bar; rebuild so the
+    // content inset tracks that height when playback starts or stops.
+    _playSub = _playbackManager.state.playingStream.listen((_) {
+      if (mounted) setState(() {});
+    });
+    _queueSub = _playbackManager.queueService.queueChangedStream.listen((_) {
+      if (mounted) setState(() {});
+    });
   }
 
   @override
   void dispose() {
     NavigationLayout.positionNotifier.removeListener(_onPositionNotified);
     WidgetsBinding.instance.removeObserver(this);
+    _playSub?.cancel();
+    _queueSub?.cancel();
     _contentFocusNode.dispose();
     _toolbarScrollOffset.dispose();
     super.dispose();
@@ -176,12 +189,20 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
             child: content,
           )
         : content;
+    // The top toolbar is a fixed overlay off-TV, so content must reserve the
+    // embedded music bar's extra height or it gets occluded. On TV the toolbar
+    // translates with scroll, so its reserve belongs in the scrolling list
+    // inset instead and is handled there.
+    final musicExtra = TopToolbar.musicBarExtraHeight();
+    final insetBody = (!translateWithScroll && musicExtra > 0)
+        ? Padding(padding: EdgeInsets.only(top: musicExtra), child: body)
+        : body;
     return Column(
       children: [
         Expanded(
           child: Stack(
             children: [
-              Positioned.fill(child: body),
+              Positioned.fill(child: insetBody),
               if (translateWithScroll)
                 ValueListenableBuilder<double>(
                   valueListenable: _toolbarScrollOffset,
@@ -307,9 +328,7 @@ class _BottomMusicBarState extends State<BottomMusicBar> {
   }) {
     return Focus(
       onKeyEvent: (node, event) {
-        if (event is KeyDownEvent &&
-            (event.logicalKey == LogicalKeyboardKey.select ||
-                event.logicalKey == LogicalKeyboardKey.enter)) {
+        if (isActivateKey(event)) {
           onPressed();
           return KeyEventResult.handled;
         }

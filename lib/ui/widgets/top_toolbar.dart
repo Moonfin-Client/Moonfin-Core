@@ -37,6 +37,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:playback_core/playback_core.dart';
 import '../../data/models/aggregated_item.dart';
 import '../../data/services/media_server_client_factory.dart';
+import '../../util/focus/dpad_keys.dart';
 import '../navigation/app_router.dart';
 
 const _kToolbarHeightTV = 95.0;
@@ -63,22 +64,26 @@ class TopToolbar extends StatefulWidget {
     this.contentFocusNode,
   });
 
-  /// Total laid-out height of the toolbar for the current platform.
-  static double heightFor(BuildContext context) {
+  /// Extra height the embedded music bar adds to the toolbar when audio is
+  /// playing, or 0 when it is not. Single source of truth so the toolbar's own
+  /// layout and the content inset stay in sync.
+  static double musicBarExtraHeight() {
     final manager = GetIt.instance<PlaybackManager>();
     final item = manager.queueService.currentItem;
     final isMusic = item is AggregatedItem && item.isAudioLike;
+    if (!isMusic) return 0.0;
+    return PlatformDetection.useLeanbackUi ? 64.0 : 54.0;
+  }
 
+  /// Total laid-out height of the toolbar for the current platform.
+  static double heightFor(BuildContext context) {
     final baseHeight = PlatformDetection.useLeanbackUi
         ? _kToolbarHeightTV
         : PlatformDetection.useMobileUi
         ? _kToolbarHeightMobile
         : _kToolbarHeightDesktop;
 
-    if (isMusic) {
-      return baseHeight + (PlatformDetection.useLeanbackUi ? 64.0 : 54.0);
-    }
-    return baseHeight;
+    return baseHeight + musicBarExtraHeight();
   }
 
   @override
@@ -463,9 +468,7 @@ class _TopToolbarState extends State<TopToolbar> {
     final manager = GetIt.instance<PlaybackManager>();
     final currentItem = manager.queueService.currentItem;
     final isMusicActive = currentItem is AggregatedItem && currentItem.isAudioLike;
-    final totalHeight = isMusicActive
-        ? toolbarHeight + (isTV ? 64.0 : 54.0)
-        : toolbarHeight;
+    final totalHeight = toolbarHeight + TopToolbar.musicBarExtraHeight();
 
     return SafeArea(
       bottom: false,
@@ -1881,9 +1884,7 @@ class _TopMusicBarState extends State<TopMusicBar> {
   }) {
     return Focus(
       onKeyEvent: (node, event) {
-        if (event is KeyDownEvent &&
-            (event.logicalKey == LogicalKeyboardKey.select ||
-                event.logicalKey == LogicalKeyboardKey.enter)) {
+        if (isActivateKey(event)) {
           onPressed();
           return KeyEventResult.handled;
         }

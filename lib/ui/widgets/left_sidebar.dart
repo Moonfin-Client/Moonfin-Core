@@ -19,6 +19,7 @@ import '../../preference/seerr_preferences.dart';
 import '../../preference/user_preferences.dart';
 import '../../l10n/app_localizations.dart';
 import '../../util/clock_format.dart';
+import '../../util/focus/dpad_keys.dart';
 import '../../util/overlay_color_palette.dart';
 import '../../util/platform_detection.dart';
 import '../navigation/destinations.dart';
@@ -1547,9 +1548,7 @@ class _SidebarMusicCardState extends State<SidebarMusicCard> {
   }) {
     return Focus(
       onKeyEvent: (node, event) {
-        if (event is KeyDownEvent &&
-            (event.logicalKey == LogicalKeyboardKey.select ||
-                event.logicalKey == LogicalKeyboardKey.enter)) {
+        if (isActivateKey(event)) {
           onPressed();
           return KeyEventResult.handled;
         }
@@ -1597,9 +1596,7 @@ class _SidebarMusicCardState extends State<SidebarMusicCard> {
       // Collapsed layout: show a single focusable circular avatar with the album art
       return Focus(
         onKeyEvent: (node, event) {
-          if (event is KeyDownEvent &&
-              (event.logicalKey == LogicalKeyboardKey.select ||
-                  event.logicalKey == LogicalKeyboardKey.enter)) {
+          if (isActivateKey(event)) {
             appRouter.push(Destinations.audioPlayer);
             return KeyEventResult.handled;
           }
