@@ -5912,10 +5912,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         options: options,
         selectedIndex: selectedIndex,
         useRootNavigator: false,
-        // Delay controls are only wired for the Media3 backend (Android).
-        // On other platforms the backend no-ops setAudioDelay/setSubtitleDelay,
-        // so the footer is hidden to avoid a confusing unresponsive control.
-        footer: _activeMedia3Backend != null
+        // Delay controls are only wired for the MPV/MediaKit backend.
+        // ExoPlayer (Media3) backend does not play/sync nicely with offsets,
+        // so the footer is hidden on other backends to avoid a confusing unresponsive control.
+        footer: _activeMediaKitBackend != null
             ? _DelayFooter(
                 initialDelay: audio ? _audioDelay : _subtitleDelay,
                 label: audio ? l10n.audioDelay : l10n.subtitleDelay,
