@@ -781,6 +781,7 @@ class _ContentRowsState extends State<_ContentRows>
   @override
   void initState() {
     super.initState();
+    HardwareKeyboard.instance.addHandler(_handleGlobalHardwareKey);
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addObserver(this);
     if (PlatformDetection.isDesktop) {
@@ -820,6 +821,7 @@ class _ContentRowsState extends State<_ContentRows>
 
   @override
   void dispose() {
+    HardwareKeyboard.instance.removeHandler(_handleGlobalHardwareKey);
     _audioArbiter.unregister(this);
     appRouter.routerDelegate.removeListener(_onRouteChanged);
     WidgetsBinding.instance.removeObserver(this);
@@ -2063,6 +2065,11 @@ class _ContentRowsState extends State<_ContentRows>
       _initialFocusResolved = true;
       return;
     }
+    final isDesktop = !PlatformDetection.isTV && !PlatformDetection.useMobileUi;
+    if (isDesktop) {
+      _initialFocusResolved = true;
+      return;
+    }
     if (_shouldRepairInitialFocusAfterMediaBarSync()) {
       _initialFocusResolved = false;
     }
@@ -2357,13 +2364,71 @@ class _ContentRowsState extends State<_ContentRows>
       widget.onScrolledToTopChanged?.call(atTop);
     }
 
+    final isDesktop = !PlatformDetection.isTV && !PlatformDetection.useMobileUi;
+    final fullScreenRows =
+        !PlatformDetection.useMobileUi &&
+        widget.prefs.get(UserPreferences.fullScreenRows);
+
+    if (isDesktop && _rowTopOffsets.isNotEmpty && _scrollController.hasClients) {
+      double minDiff = double.infinity;
+      int? closestRowIndex;
+
+      final List<double> targets = [];
+      if (_isMediaBarIncluded()) {
+        targets.add(0.0);
+      }
+      for (var i = 0; i < _rowTopOffsets.length; i++) {
+        final double target;
+        if (fullScreenRows) {
+          final targetTop = _tvTargetTopForRow(i);
+          target = (_rowTopOffsets[i] - targetTop).clamp(
+            0.0,
+            _scrollController.position.maxScrollExtent,
+          );
+        } else {
+          target = _rowTopOffsets[i].clamp(
+            0.0,
+            _scrollController.position.maxScrollExtent,
+          );
+        }
+        targets.add(target);
+      }
+
+      for (var i = 0; i < targets.length; i++) {
+        final target = targets[i];
+        final diff = (target - offset).abs();
+        if (diff < minDiff) {
+          minDiff = diff;
+          if (_isMediaBarIncluded()) {
+            closestRowIndex = i == 0 ? null : i - 1;
+          } else {
+            closestRowIndex = i;
+          }
+        }
+      }
+
+      if (closestRowIndex != _activeFocusedRowIndex) {
+        setState(() {
+          _activeFocusedRowIndex = closestRowIndex;
+        });
+      }
+    }
+
+    final isMouseScroll =
+        _lastMouseWheelTime != null &&
+        DateTime.now().difference(_lastMouseWheelTime!).inMilliseconds < 100;
+
+    if (isMouseScroll && isDesktop) {
+      final primary = FocusManager.instance.primaryFocus;
+      if (primary != null && primary != globalShortcutFocusNode) {
+        globalShortcutFocusNode?.requestFocus();
+      }
+    }
+
     if (!_isActivelyScrolling) {
       _isActivelyScrolling = true;
       if (mounted) setState(() {});
     }
-    final isMouseScroll =
-        _lastMouseWheelTime != null &&
-        DateTime.now().difference(_lastMouseWheelTime!).inMilliseconds < 100;
 
     _scrollIdleTimer?.cancel();
     _scrollIdleTimer = Timer(
@@ -2411,6 +2476,12 @@ class _ContentRowsState extends State<_ContentRows>
 
     if (_mediaBarFocusNode.hasFocus) return;
 
+    final homeRowsHaveFocus = _rowKeys.values.any((key) {
+      final state = key.currentState;
+      return state is LockedFocusRowState && state.hasFocusedItem;
+    });
+    final homeContentHadFocus = homeRowsHaveFocus || _mediaBarFocusNode.hasFocus;
+
     if (_activeFocusedRowIndex == null) {
       if (_scrollController.hasClients && _scrollController.offset > 0.0) {
         _scrollController.animateTo(
@@ -2419,12 +2490,16 @@ class _ContentRowsState extends State<_ContentRows>
           curve: Curves.easeOutCubic,
         );
       }
+      if (homeContentHadFocus && !_mediaBarFocusNode.hasFocus) {
+        _mediaBarFocusNode.requestFocus();
+      }
       return;
     }
 
     final currentOffset = _scrollController.offset;
     double minDiff = double.infinity;
     double bestOffset = currentOffset;
+    int bestTargetIndex = 0;
 
     final List<double> targets = [];
     if (_isMediaBarIncluded()) {
@@ -2440,11 +2515,13 @@ class _ContentRowsState extends State<_ContentRows>
       );
     }
 
-    for (final target in targets) {
+    for (var i = 0; i < targets.length; i++) {
+      final target = targets[i];
       final diff = (target - currentOffset).abs();
       if (diff < minDiff) {
         minDiff = diff;
         bestOffset = target;
+        bestTargetIndex = i;
       }
     }
 
@@ -2455,6 +2532,68 @@ class _ContentRowsState extends State<_ContentRows>
         curve: Curves.easeOutCubic,
       );
     }
+
+    if (homeContentHadFocus) {
+      final int? bestRowIndex;
+      if (_isMediaBarIncluded()) {
+        if (bestTargetIndex == 0) {
+          bestRowIndex = null;
+        } else {
+          bestRowIndex = bestTargetIndex - 1;
+        }
+      } else {
+        bestRowIndex = bestTargetIndex;
+      }
+
+      if (bestRowIndex == null) {
+        if (!_mediaBarFocusNode.hasFocus) {
+          _mediaBarFocusNode.requestFocus();
+        }
+      } else {
+        final rowState = _rowKeys[bestRowIndex]?.currentState;
+        if (rowState is LockedFocusRowState<dynamic>) {
+          rowState.requestFocusFromMemory();
+        }
+      }
+    }
+  }
+
+  bool _handleGlobalHardwareKey(KeyEvent event) {
+    if (event is! KeyDownEvent) return false;
+    if (!_isHomeRouteActive()) return false;
+    if (!_windowHasFocus) return false;
+    if (SettingsPanel.isOpenNotifier.value || OverlaySheetController.hasOpenSheet) return false;
+    if (LeftSidebar.isFocusedNotifier.value) return false;
+
+    final homeRowsHaveFocus = _rowKeys.values.any((key) {
+      final state = key.currentState;
+      return state is LockedFocusRowState && state.hasFocusedItem;
+    });
+    final homeContentHadFocus = homeRowsHaveFocus || _mediaBarFocusNode.hasFocus;
+
+    if (homeContentHadFocus) return false;
+    if (event.logicalKey.isBackKey) return false;
+
+    final activeRow = _activeFocusedRowIndex;
+    if (activeRow != null) {
+      final rowState = _rowKeys[activeRow]?.currentState;
+      if (rowState is LockedFocusRowState<dynamic>) {
+        rowState.requestFocusFromMemory();
+        return true;
+      }
+    } else {
+      if (_isMediaBarIncluded()) {
+        _mediaBarFocusNode.requestFocus();
+      } else {
+        final rowState = _rowKeys[0]?.currentState;
+        if (rowState is LockedFocusRowState<dynamic>) {
+          rowState.requestFocusFromMemory();
+        }
+      }
+      return true;
+    }
+
+    return false;
   }
 
   double _libraryRowExtent(double rowHeight, {double metadataScale = 1.0}) =>
