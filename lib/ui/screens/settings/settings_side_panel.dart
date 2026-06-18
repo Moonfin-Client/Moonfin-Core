@@ -1193,13 +1193,20 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
             children: [
               _TvSettingsListTile(
                 autofocus: true,
-                leading: const Icon(Icons.extension),
+                leading: Image.asset(
+                  'assets/icons/moonfin.png',
+                  width: 24,
+                  height: 24,
+                ),
                 title: Text(l10n.pluginLabel),
                 subtitle: Text(l10n.serverSyncAndPluginStatus),
                 onTap: () => context.pushSettingsScreen(const _PluginScreen()),
               ),
               _TvSettingsListTile(
-                leading: const Icon(Icons.star),
+                leading: const Icon(
+                  Icons.star,
+                  color: Color(0xFFFFC107),
+                ),
                 title: Text(l10n.settingsMetadataAndRatings),
                 subtitle: Text(l10n.mdbListTmdbRatingSources),
                 onTap: () =>
