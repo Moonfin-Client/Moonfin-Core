@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../auth/repositories/user_repository.dart';
@@ -533,9 +534,12 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
         Icon(action.icon, size: _kIconSize, color: color);
   }
 
-  Widget _buildTab(BuildContext context, _BottomNavAction action) {
+  Widget _buildTab(BuildContext context, _BottomNavAction action,
+      {required int slot}) {
     final accent = Theme.of(context).colorScheme.primary;
-    final color = action.isActive ? accent : Colors.white.withValues(alpha: 0.6);
+    final slotColor = AppColorScheme.navColorForSlot(slot);
+    final color = slotColor ??
+        (action.isActive ? accent : Colors.white.withValues(alpha: 0.6));
     return Semantics(
       button: true,
       selected: action.isActive,
@@ -630,10 +634,10 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
                       : MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    for (final tab in tabs)
+                    for (var i = 0; i < tabs.length; i++)
                       fill
-                          ? Expanded(child: _buildTab(context, tab))
-                          : _buildTab(context, tab),
+                          ? Expanded(child: _buildTab(context, tabs[i], slot: i))
+                          : _buildTab(context, tabs[i], slot: i),
                   ],
                 ),
               ),

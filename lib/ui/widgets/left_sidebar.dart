@@ -751,7 +751,6 @@ class _LeftSidebarState extends State<LeftSidebar> {
   }
 
   Widget _buildContent() {
-    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final l10n = AppLocalizations.of(context);
     final showShuffle = _prefs.get(UserPreferences.showShuffleButton);
     final showGenres = _prefs.get(UserPreferences.showGenresButton);
@@ -782,23 +781,17 @@ class _LeftSidebarState extends State<LeftSidebar> {
         Expanded(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              var mainNeonSlot = 0;
+              var mainSlot = 0;
               Color? nextMainSidebarColor() {
-                if (!isNeon) return null;
-                final c = mainNeonSlot.isEven
-                    ? AppColorScheme.accent
-                    : AppColorScheme.onSurface;
-                mainNeonSlot += 1;
+                final c = AppColorScheme.navColorForSlot(mainSlot);
+                if (c != null) mainSlot += 1;
                 return c;
               }
 
-              var libraryNeonSlot = 0;
+              var librarySlot = 0;
               Color? nextLibrarySidebarColor() {
-                if (!isNeon) return null;
-                final c = libraryNeonSlot.isEven
-                    ? AppColorScheme.accent
-                    : AppColorScheme.onSurface;
-                libraryNeonSlot += 1;
+                final c = AppColorScheme.navColorForSlot(librarySlot);
+                if (c != null) librarySlot += 1;
                 return c;
               }
 
@@ -1285,7 +1278,7 @@ class _SidebarItemState extends State<_SidebarItem> {
   Widget build(BuildContext context) {
     final desktopSidebar =
         (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi)) && !PlatformDetection.isTV;
-    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+    final useBaseForFocus = widget.baseColor != null;
     final highlighted =
         (desktopSidebar && _isHovered) ||
         (PlatformDetection.isTV && _isFocused);
@@ -1295,7 +1288,7 @@ class _SidebarItemState extends State<_SidebarItem> {
     final fgColor = tvFocused
         ? Colors.black
         : highlighted
-        ? (isNeon ? baseColor : focusColor)
+        ? (useBaseForFocus ? baseColor : focusColor)
         : baseColor;
     final iconSize = desktopSidebar ? 28.0 : 24.0;
     final iconSlotWidth = desktopSidebar ? 36.0 : 32.0;
@@ -1330,7 +1323,7 @@ class _SidebarItemState extends State<_SidebarItem> {
                 color: tvFocused
                     ? Colors.white
                     : highlighted
-                    ? (isNeon
+                    ? (useBaseForFocus
                           ? baseColor.withValues(alpha: 0.12)
                           : focusColor.withValues(alpha: 0.12))
                     : Colors.transparent,
@@ -1413,9 +1406,9 @@ class _SidebarLibraryItemState extends State<_SidebarLibraryItem> {
   Widget build(BuildContext context) {
     final desktopSidebar =
         (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi)) && !PlatformDetection.isTV;
-    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final focusColor = Color(_prefs.get(UserPreferences.focusColor).colorValue);
     final baseColor = widget.baseColor ?? Colors.white.withValues(alpha: 0.5);
+    final useBaseForFocus = widget.baseColor != null;
     final highlighted =
         (desktopSidebar && _isHovered) ||
         (PlatformDetection.isTV && _isFocused);
@@ -1449,7 +1442,7 @@ class _SidebarLibraryItemState extends State<_SidebarLibraryItem> {
                 color: tvFocused
                     ? Colors.white
                     : highlighted
-                    ? (isNeon
+                    ? (useBaseForFocus
                           ? baseColor.withValues(alpha: 0.12)
                           : focusColor.withValues(alpha: 0.1))
                     : Colors.transparent,
@@ -1465,7 +1458,7 @@ class _SidebarLibraryItemState extends State<_SidebarLibraryItem> {
                         color: tvFocused
                             ? Colors.black
                             : highlighted
-                            ? (isNeon ? baseColor : focusColor)
+                            ? (useBaseForFocus ? baseColor : focusColor)
                             : baseColor,
                         fontSize: desktopSidebar ? 15 : 13,
                         fontWeight: FontWeight.w500,

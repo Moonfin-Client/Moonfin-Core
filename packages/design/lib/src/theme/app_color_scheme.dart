@@ -26,6 +26,13 @@ class AppColorScheme {
   /// (icons keep their inherited colour). See [ThemeSpec.navColorCycle].
   static List<Color> get navColorCycle => ThemeRegistry.active.navColorCycle;
 
+  /// Cycled navbar colour for [slot] (wrapping), or null when no cycle is set.
+  static Color? navColorForSlot(int slot) {
+    final cycle = navColorCycle;
+    if (cycle.isEmpty) return null;
+    return cycle[slot % cycle.length];
+  }
+
   // Buttons
   static Color get buttonNormal => ThemeRegistry.active.colors.buttonNormal;
   static Color get buttonFocused => ThemeRegistry.active.colors.buttonFocused;
