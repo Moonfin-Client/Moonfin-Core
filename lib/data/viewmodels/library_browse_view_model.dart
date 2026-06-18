@@ -36,6 +36,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   int _totalCount = 0;
   int get totalCount => _totalCount;
 
+  int _filteredOutCount = 0;
+
   bool _totalCountKnown = true;
   bool _hasMoreFromPageSize = false;
 
@@ -191,6 +193,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _state = LibraryBrowseState.loading;
     _items = const [];
     _totalCount = 0;
+    _filteredOutCount = 0;
     _totalCountKnown = true;
     _hasMoreFromPageSize = false;
     _tmdbIdByItemId.clear();
@@ -410,17 +413,6 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     }
 
     final rawItems = (response['Items'] as List?) ?? [];
-    final totalFromServer = response['TotalRecordCount'] as int?;
-    _totalCountKnown = totalFromServer != null;
-    if (_totalCountKnown) {
-      _totalCount = totalFromServer!;
-      _hasMoreFromPageSize = _items.length + rawItems.length < _totalCount;
-    } else {
-      _hasMoreFromPageSize = rawItems.length == pageSize;
-      final loadedCount = startIndex + rawItems.length;
-      _totalCount = loadedCount + (_hasMoreFromPageSize ? 1 : 0);
-    }
-
     final mapped = rawItems
         .whereType<Map>()
         .map((raw) => raw.cast<String, dynamic>())
@@ -437,6 +429,22 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         .toList();
 
     final filtered = await _filterLibraryItems(mapped);
+
+    if (isPlaylistBrowse) {
+      final filteredOutInBatch = mapped.length - filtered.length;
+      _filteredOutCount += filteredOutInBatch;
+    }
+
+    final totalFromServer = response['TotalRecordCount'] as int?;
+    _totalCountKnown = totalFromServer != null;
+    if (_totalCountKnown) {
+      _totalCount = totalFromServer! - _filteredOutCount;
+      _hasMoreFromPageSize = _items.length + filtered.length < _totalCount;
+    } else {
+      _hasMoreFromPageSize = rawItems.length == pageSize;
+      final loadedCount = startIndex + filtered.length;
+      _totalCount = loadedCount + (_hasMoreFromPageSize ? 1 : 0);
+    }
 
     if (startIndex == 0) {
       _items = filtered;

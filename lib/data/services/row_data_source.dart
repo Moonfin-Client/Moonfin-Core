@@ -208,6 +208,7 @@ class RowDataSource {
         playlistsOnly,
         mediaType: mediaType,
       ),
+      isAudio: mediaType == 'Audio',
     );
     return row;
   }
@@ -1036,9 +1037,7 @@ class RowDataSource {
             _parseItems(response, serverId)
                 .where((item) => item.type == 'Playlist')
                 .toList(),
-            mediaType: row.rowType == HomeRowType.audioPlaylists ||
-                    (row.items.isNotEmpty &&
-                        row.items.every(isAudioPlaylistSummary))
+            mediaType: row.rowType == HomeRowType.audioPlaylists || row.isAudio
                 ? 'Audio'
                 : null,
           )

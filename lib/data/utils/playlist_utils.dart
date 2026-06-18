@@ -94,8 +94,10 @@ Future<bool> playlistHasBrowsableItems(
   }
 
   final summaryMediaType = item.rawData['MediaType'] as String?;
-  if (summaryMediaType != null) {
-    return summaryMediaType != 'Audio' && summaryMediaType != 'Unknown';
+  if (summaryMediaType != null &&
+      summaryMediaType != 'Audio' &&
+      summaryMediaType != 'Unknown') {
+    return true;
   }
 
   try {
@@ -107,6 +109,9 @@ Future<bool> playlistHasBrowsableItems(
     }
     return rawItems.any((raw) => !playlistItemMatchesMediaType(raw, 'Audio'));
   } catch (_) {
+    if (summaryMediaType != null) {
+      return summaryMediaType != 'Audio' && summaryMediaType != 'Unknown';
+    }
     return isPlaylistNonEmpty(
       item,
       assumeNonEmptyWhenUnknown: assumeNonEmptyWhenUnknown,
