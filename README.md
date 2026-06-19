@@ -1,5 +1,5 @@
 <h1 align="center">Moonfin</h1>
-<h3 align="center">Enhanced Jellyfin & Emby client for mobile, tablet, and desktop</h3>
+<h3 align="center">Premium Jellyfin & Emby client for mobile, tablet, desktop, TV, and web</h3>
 
 ---
 <p align="center">
@@ -15,7 +15,7 @@
 
 > **[← Back to main Moonfin project](https://github.com/Moonfin-Client)**
 
-Moonfin is a cross-platform media client built with Flutter, designed for Jellyfin and Emby users who want a modern, customizable experience across mobile, tablet, and desktop platforms.
+Moonfin is a cross-platform media client built with Flutter, designed for Jellyfin and Emby users who want a modern, customizable experience across mobile, tablet, desktop, TV, and web. A single shared codebase powers phones and tablets, Windows, macOS, and Linux, Android TV and Apple TV, the browser, and experimental Samsung TV (Tizen).
 
 ## Supported Servers
 
@@ -29,13 +29,25 @@ Moonfin is a cross-platform media client built with Flutter, designed for Jellyf
 | Platform | Minimum Version | Status |
 |----------|------------------|--------|
 | **Android** | 6.0 (API 23) | Full support |
+| **Android TV / Google TV** | Android 6.0 (API 23) | Full support |
 | **iOS** | 13.0 | Full support |
+| **Apple TV (tvOS)** | 16.0 | Full support |
 | **macOS** | 10.15 (Catalina) | Full support |
-| **Windows** | 10 | Full support |
+| **Windows** | 10 (x64 and ARM64) | Full support |
 | **Linux** | GTK 3+, CMake 3.13+ | Full support (Wayland only) |
-| **Tizen (Samsung TV)** | Tizen 6.0+ | Experimental — see notes below |
+| **Web** | Modern browsers (installable PWA) | Full support |
+| **Tizen (Samsung TV)** | Tizen 6.0+ | Experimental, see notes below |
 
-> **Tizen (Samsung TV) — experimental.** Built with the
+> **Android TV and Apple TV.** Both ship from this same codebase with a TV-tuned
+> interface and D-pad and remote navigation. Android TV plays through a native
+> Media3 and ExoPlayer backend with hardware codec probing, audio passthrough, and
+> HDR detection. Apple TV plays through a native MPVKit backend with Dolby Vision
+> Profile 7 decode.
+
+> **Web.** Moonfin runs in the browser as an installable PWA through the Moonbase
+> server plugin, with an in-browser theme editor.
+
+> **Tizen (Samsung TV), experimental.** Built with the
 > [`flutter-tizen`](https://github.com/flutter-tizen/flutter-tizen) wrapper and the
 > .NET app runner (the only runner Samsung TVs support). Playback uses the native
 > Tizen AVPlay player (via `video_player` / `video_player_tizen`) instead of
@@ -46,13 +58,13 @@ Moonfin is a cross-platform media client built with Flutter, designed for Jellyf
 
 ## Features & Enhancements
 
-### Mobile + Desktop Experience
-- Optimized for phones, tablets, and desktop environments from one Flutter codebase
-- Responsive navigation patterns tuned for touch on mobile and larger layouts on desktop
-- Platform-specific build/release scripts for Android, iOS, Linux, macOS, Windows, and Tizen (Samsung TV)
+### Cross-Platform Experience
+- One Flutter codebase spanning phones, tablets, desktop, Android TV, Apple TV, web, and Samsung TV
+- Responsive navigation tuned for touch on mobile, pointer and keyboard on desktop and web, and D-pad and remote on TV
+- Platform-specific build and release scripts for Android, Android TV, iOS, Apple TV, Linux, macOS, Windows (x64 and ARM64), web, and Tizen (Samsung TV)
 
-### Playback Engine - libmpv via media_kit
-All video and audio playback is powered by [media_kit](https://github.com/media-kit/media-kit) (libmpv) across every platform. This gives Moonfin broad codec coverage without relying on platform-specific media frameworks:
+### Playback Engine
+Moonfin selects the best playback backend for each platform. Mobile, desktop, and web use [media_kit](https://github.com/media-kit/media-kit) (libmpv), Android TV uses a native Media3 and ExoPlayer backend with hardware codec probing and audio passthrough, Apple TV uses a native MPVKit backend, and Samsung TV (Tizen) uses the native AVPlay player. The libmpv path gives broad codec coverage without relying on platform-specific frameworks:
 
 | Category | Supported Formats |
 |----------|-------------------|
@@ -62,6 +74,8 @@ All video and audio playback is powered by [media_kit](https://github.com/media-
 | **Subtitles** | SRT, ASS / SSA, VTT / WebVTT, TTML, SUB; bitmap (PGS, DVB, VobSub) on desktop |
 | **HDR** | Dolby Vision, HDR10+, HDR10, HLG - automatic detection and signaling |
 | **HW Accel** | VA-API, QSV, NVENC, VideoToolbox, V4L2, RKMPP |
+
+On the TV backends (Android TV via Media3 and Apple TV via MPVKit), Moonfin also supports bitstream audio passthrough for AC3, EAC3, DTS, DTS-HD, TrueHD, and Atmos to AV receivers, with per-format toggles, alongside Dolby Vision Profile 7 direct play.
 
 ### Downloads - Original or Transcoded
 Media can be downloaded in its **original format** (bit-for-bit copy) or **server-transcoded** to a smaller file before saving. Transcoded downloads use **HEVC (H.265) video + AAC audio in an MP4 container**, which delivers roughly 50% smaller files compared to H.264 at equivalent perceived quality.
@@ -116,8 +130,24 @@ Books and audiobooks download in their **original format** - no transcoding.
 
 ### Featured Media Bar
 - Rotating featured hero content on the home screen with rich backdrop presentation
+- Multiple layouts to choose from, including Classic, Bookshelf, Gallery, and Banner
+- Can feature your Collections or trending and library content, with optional in-bar trailer previews
 - Includes quick-glance metadata like ratings, genres, runtime, and overview
-- Designed to highlight trending and library content without leaving the home flow
+
+### Themes and Theme Store
+- A full theming system with a built-in Theme Store to register, browse, and manage themes
+- An in-browser theme editor for building and previewing themes, with sync back to the server plugin
+- Navbar icon color cycling and a range of bundled themes, including Neon Pulse
+
+### Cinema Mode and Segment Skipping
+- Cinema Mode pre-rolls and intros play before content and are excluded from progress reporting
+- Media segment handling for intros and credits, with skip intro and skip credits controls
+- SponsorBlock integration to skip sponsor and promo segments during trailer playback
+
+### Discovery with Seerr
+- Optional Seerr discovery rows on the home screen, including Trending, Popular, Upcoming, Recently Added, and Requests
+- Browse by Genres, Studios, and Networks, with request status overlays and media type badges
+- Seerr navigation and settings hide automatically when a Seerr instance is not configured
 
 ### SyncPlay
 - Group watch support with synchronized playback across participants
@@ -171,20 +201,20 @@ Books and audiobooks download in their **original format** - no transcoding.
 ## Keyboard Shortcuts (Desktop)
 
 ### App-Wide Shortcuts
-- **Escape** — Navigate back to the previous screen, or return to home if no history remains
-- **Enter/Return** — Activate the currently focused item
-- **F11** — Toggle fullscreen mode
-- **Ctrl+Q** — Quit the application
+- **Escape**: Navigate back to the previous screen, or return to home if no history remains
+- **Enter/Return**: Activate the currently focused item
+- **F11**: Toggle fullscreen mode
+- **Ctrl+Q**: Quit the application
 
 ### Player Shortcuts
-- **Space** — Play or pause playback
-- **Left Arrow** — Seek backward (default 10 seconds)
-- **Right Arrow** — Seek forward (default 30 seconds)
-- **Up Arrow** — Increase volume
-- **Down Arrow** — Decrease volume
-- **I** — Display stream information overlay (codec, bitrate, resolution, etc.)
-- **Escape** — Exit fullscreen (if in fullscreen); otherwise exit playback
-- **Enter/Space** — Show player controls if hidden; play/pause if controls are visible
+- **Space**: Play or pause playback
+- **Left Arrow**: Seek backward (default 10 seconds)
+- **Right Arrow**: Seek forward (default 30 seconds)
+- **Up Arrow**: Increase volume
+- **Down Arrow**: Decrease volume
+- **I**: Display stream information overlay (codec, bitrate, resolution, etc.)
+- **Escape**: Exit fullscreen (if in fullscreen); otherwise exit playback
+- **Enter/Space**: Show player controls if hidden; play/pause if controls are visible
 
 ## Custom mpv.conf Configuration (Desktop + Android)
 
@@ -192,9 +222,9 @@ Moonfin allows power users to fine-tune playback behavior using a custom `mpv.co
 
 ### Setup
 
-1. **Enable Custom mpv.conf** — Go to **Settings → Playback → Advanced mpv** and toggle **Enable Custom mpv.conf** to on.
+1. **Enable Custom mpv.conf**: Go to **Settings → Playback → Advanced mpv** and toggle **Enable Custom mpv.conf** to on.
 
-2. **Specify File Location** — Provide a path to your `mpv.conf` file:
+2. **Specify File Location**: Provide a path to your `mpv.conf` file:
    - Click **Custom mpv.conf Path** to browse or enter the path manually.
    - On **Android**, the easiest flow is to create/store `mpv.conf` in a user-accessible folder (for example `Downloads`) and select it with the picker.
    - Moonfin will automatically check for `mpv.conf` in standard locations if not specified:
@@ -213,13 +243,13 @@ Configuration files must not exceed **256 KB**. Larger files are rejected.
 
 ### Allowed and Blocked Options
 
-**Protected Options** — These affect core playback and are not configurable:
+**Protected Options**: These affect core playback and are not configurable:
 - `aid`, `sid`, `vid` (audio/subtitle/video selection)
 - `sub-visibility`, `sub-ass`, `sub-ass-override` (subtitle rendering)
 - `sub-delay`, `audio-delay` (sync controls)
 - `network-timeout`, `sub-fonts-dir`, `sub-font` (core behavior)
 
-**Blocked Options** — These are blocked for security:
+**Blocked Options**: These are blocked for security:
 - `script`, `scripts`, `script-opts`, `load-scripts` (script execution)
 - `include`, `profile`, `input-conf` (config file manipulation)
 
@@ -302,11 +332,11 @@ Control other Jellyfin devices on your network directly from Moonfin.
    - Device type icon
 
 5. Select a device to send playback commands:
-   - **Play on Device** — Start playback on the remote device
-   - **Pause** — Pause playback on the remote device
-   - **Stop** — Stop playback on the remote device
-   - **Volume Control** — Adjust device volume if supported
-   - **Seek** — Control playback position
+   - **Play on Device**: Start playback on the remote device
+   - **Pause**: Pause playback on the remote device
+   - **Stop**: Stop playback on the remote device
+   - **Volume Control**: Adjust device volume if supported
+   - **Seek**: Control playback position
 
 ### Supported Device Types
 
@@ -371,37 +401,43 @@ pamac build moonfin
 
 If you use another AUR helper, substitute the command accordingly.
 
-### Android
+### Android and Android TV
 - Primary output: APK (`Moonfin_Android_v<version>.apk`)
 - Optional output: App Bundle (`Moonfin_Android_v<version>.aab`)
-- Recommended for Android phones and tablets
+- The same APK installs on Android phones, tablets, and Android TV / Google TV (leanback)
 
 ### iOS
 - Signed IPA output: `Moonfin_iOS_v<version>.ipa`
 - Unsigned IPA output (default workflow): `Moonfin_iOS_v<version>_unsigned.ipa`
 
+### Apple TV (tvOS)
+- tvOS app build produced by the tvOS workflow (`moonfin-tvos`) for distribution or sideloading
+
 ### Desktop
-- Windows installer output: `Moonfin_Windows_v<version>.exe`
+- Windows installer output: `Moonfin_Windows_v<version>.exe` (x64), plus a native ARM64 installer
 - macOS DMG output: `Moonfin_macOS_v<version>.dmg`
 - Linux packaging via tarball/AppImage/deb/rpm/snap/flatpak (depending on tools)
 - Linux package outputs: `Moonfin_Linux_v<version>.<ext>`
 - macOS app bundle build support
 
-### Tizen (Samsung TV) — experimental
+### Web
+- Built as an installable PWA and served through the Moonbase server plugin
+
+### Tizen (Samsung TV): experimental
 Tizen is a separate build target driven by the
 [`flutter-tizen`](https://github.com/flutter-tizen/flutter-tizen) wrapper (Samsung
 TVs require the .NET app runner; the platform project lives in `tizen/`). It builds
 a signed `.tpk`.
 
 **Toolchain prerequisites:**
-1. **flutter-tizen** — clone it and add `flutter-tizen/bin` to PATH (or set
+1. **flutter-tizen**: clone it and add `flutter-tizen/bin` to PATH (or set
    `FLUTTER_TIZEN_BIN`). First run downloads its bundled Flutter engine:
    ```bash
    git clone https://github.com/flutter-tizen/flutter-tizen.git ~/flutter-tizen
    export PATH="$HOME/flutter-tizen/bin:$PATH"
    flutter-tizen doctor -v
    ```
-2. **Tizen Studio + TV extension** (requires a Java runtime) — provides the SDK
+2. **Tizen Studio + TV extension** (requires a Java runtime): provides the SDK
    that compiles and signs the `.tpk`, plus the TV emulator. Set `TIZEN_SDK` if
    installed to a non-default location.
 3. **A Tizen certificate / security profile** (author + distributor certs) to sign
