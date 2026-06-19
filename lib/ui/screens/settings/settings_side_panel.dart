@@ -1195,8 +1195,8 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
                 autofocus: true,
                 leading: Image.asset(
                   'assets/icons/moonfin.png',
-                  width: 24,
-                  height: 24,
+                  width: 30,
+                  height: 30,
                 ),
                 title: Text(l10n.pluginLabel),
                 subtitle: Text(l10n.serverSyncAndPluginStatus),
