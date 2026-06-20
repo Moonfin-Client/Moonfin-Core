@@ -6459,14 +6459,6 @@ class AppLocalizationsUk extends AppLocalizations {
       'Жоден сервер Jellyfin не повідомляє про плагін.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Виявляти рядки, налаштовані за допомогою плагіна \"KefinTweaks\" ranaldsgift. Користувальницькі розділи, нещодавно випущені, переглянути ще раз, сезонні та нещодавно додані в бібліотеку відображаються з конфігурації KefinTweaks на кожному сервері Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Поки немає серверів Jellyfin, які повідомляють про KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Відкрийте головні розділи';
 
   @override
@@ -6502,7 +6494,7 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
-  String get jellyseerr => 'Jellyseerr';
+  String get jellyseerr => 'Seerr';
 
   @override
   String get seeAll => 'Переглянути всі';
@@ -7476,6 +7468,40 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
+  String get themeStore => 'Theme Store';
+
+  @override
+  String get themeStoreSubtitle => 'Browse and save community themes';
+
+  @override
+  String get themeStoreDescription =>
+      'Save a theme to use it like your other saved themes.';
+
+  @override
+  String get themeStoreEmpty => 'No themes are available right now.';
+
+  @override
+  String get themeStoreLoadFailed =>
+      'Couldn\'t load the Theme Store. Check your connection and try again.';
+
+  @override
+  String get themeStoreSave => 'Save';
+
+  @override
+  String get themeStoreSaveAndApply => 'Save & apply';
+
+  @override
+  String get themeStoreSaved => 'Saved';
+
+  @override
+  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
+
+  @override
+  String themeStoreSavedMessage(String themeName) {
+    return 'Saved \"$themeName\".';
+  }
+
+  @override
   String savedThemesDeletedMessage(String themeName) {
     return 'Видалено \"$themeName\" з цього пристрою.';
   }
@@ -7507,9 +7533,6 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Керуйте завантаженими темами плагінів на цьому пристрої';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Розділи головного екрана';
@@ -7622,6 +7645,22 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displayAudioRows => 'Display Audio Rows';
+
+  @override
+  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
+
+  @override
+  String get audioRowsSorting => 'Audio Rows sorting';
+
+  @override
+  String get audioRowsSortingDescription =>
+      'Sort Audio rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get audioPlaylists => 'Audio Playlists';
 
   @override
   String get displaySeerrRows => 'Display Seerr Discovery Rows';

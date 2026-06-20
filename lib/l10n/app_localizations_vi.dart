@@ -1709,7 +1709,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get seerr => 'Seer';
+  String get seerr => 'Seerr';
 
   @override
   String get seerrAccountType => 'Loại tài khoản Seerr';
@@ -6437,14 +6437,6 @@ class AppLocalizationsVi extends AppLocalizations {
       'Chưa có máy chủ Jellyfin nào báo cáo plugin.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Phát hiện các hàng được định cấu hình thông qua plugin \"KefinTweaks\" của ranaldsgift. Các phần tùy chỉnh, được phát hành gần đây, xem lại, theo mùa và được thêm gần đây vào thư viện, được phản ánh từ cấu hình KefinTweaks trên mỗi máy chủ Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Chưa có máy chủ Jellyfin nào báo cáo KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Mở phần trang chủ';
 
   @override
@@ -6480,7 +6472,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get jellyseerr => 'Jellyseerr';
+  String get jellyseerr => 'Seerr';
 
   @override
   String get seeAll => 'Xem Tất Cả';
@@ -7438,6 +7430,40 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get themeStore => 'Theme Store';
+
+  @override
+  String get themeStoreSubtitle => 'Browse and save community themes';
+
+  @override
+  String get themeStoreDescription =>
+      'Save a theme to use it like your other saved themes.';
+
+  @override
+  String get themeStoreEmpty => 'No themes are available right now.';
+
+  @override
+  String get themeStoreLoadFailed =>
+      'Couldn\'t load the Theme Store. Check your connection and try again.';
+
+  @override
+  String get themeStoreSave => 'Save';
+
+  @override
+  String get themeStoreSaveAndApply => 'Save & apply';
+
+  @override
+  String get themeStoreSaved => 'Saved';
+
+  @override
+  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
+
+  @override
+  String themeStoreSavedMessage(String themeName) {
+    return 'Saved \"$themeName\".';
+  }
+
+  @override
   String savedThemesDeletedMessage(String themeName) {
     return 'Đã xóa \"$themeName\" khỏi thiết bị này.';
   }
@@ -7469,9 +7495,6 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Quản lý các chủ đề plugin đã tải xuống trên thiết bị này';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTinh chỉnh';
 
   @override
   String get homeScreenSectionsTitle => 'Phần màn hình chính';
@@ -7584,6 +7607,22 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displayAudioRows => 'Display Audio Rows';
+
+  @override
+  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
+
+  @override
+  String get audioRowsSorting => 'Audio Rows sorting';
+
+  @override
+  String get audioRowsSortingDescription =>
+      'Sort Audio rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get audioPlaylists => 'Audio Playlists';
 
   @override
   String get displaySeerrRows => 'Display Seerr Discovery Rows';

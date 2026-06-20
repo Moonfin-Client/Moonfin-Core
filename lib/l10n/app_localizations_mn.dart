@@ -1704,7 +1704,7 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String get seerr => 'Үзмэрч';
+  String get seerr => 'Seerr';
 
   @override
   String get seerrAccountType => 'Үзмэрч дансны төрөл';
@@ -6449,14 +6449,6 @@ class AppLocalizationsMn extends AppLocalizations {
       'Одоогоор залгаасын талаар мэдээлсэн Jellyfin сервер алга.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Ranaldsgift-ийн \"KefinTweaks\" залгаасаар тохируулсан мөрүүдийг илрүүлэх. Саяхан гарсан, дахин үзэх, улирлын чанартай, номын санд саяхан нэмсэн захиалгат хэсгүүдийг Jellyfin сервер бүр дээрх KefinTweaks тохиргооноос тусгадаг.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'KefinTweaks-г мэдээлсэн Jellyfin сервер одоогоор алга.';
-
-  @override
   String get integrationOpenHomeSections => 'Нүүр хуудасны хэсгийг нээнэ үү';
 
   @override
@@ -6493,7 +6485,7 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String get jellyseerr => 'Jellyseerr';
+  String get jellyseerr => 'Seerr';
 
   @override
   String get seeAll => 'Бүгдийг харах';
@@ -7459,6 +7451,40 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
+  String get themeStore => 'Theme Store';
+
+  @override
+  String get themeStoreSubtitle => 'Browse and save community themes';
+
+  @override
+  String get themeStoreDescription =>
+      'Save a theme to use it like your other saved themes.';
+
+  @override
+  String get themeStoreEmpty => 'No themes are available right now.';
+
+  @override
+  String get themeStoreLoadFailed =>
+      'Couldn\'t load the Theme Store. Check your connection and try again.';
+
+  @override
+  String get themeStoreSave => 'Save';
+
+  @override
+  String get themeStoreSaveAndApply => 'Save & apply';
+
+  @override
+  String get themeStoreSaved => 'Saved';
+
+  @override
+  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
+
+  @override
+  String themeStoreSavedMessage(String themeName) {
+    return 'Saved \"$themeName\".';
+  }
+
+  @override
   String savedThemesDeletedMessage(String themeName) {
     return 'Энэ төхөөрөмжөөс \"$themeName\"-г устгасан.';
   }
@@ -7489,9 +7515,6 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Татаж авсан залгаасын загваруудыг энэ төхөөрөмж дээр удирдаарай';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Үндсэн дэлгэцийн хэсгүүд';
@@ -7604,6 +7627,22 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displayAudioRows => 'Display Audio Rows';
+
+  @override
+  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
+
+  @override
+  String get audioRowsSorting => 'Audio Rows sorting';
+
+  @override
+  String get audioRowsSortingDescription =>
+      'Sort Audio rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get audioPlaylists => 'Audio Playlists';
 
   @override
   String get displaySeerrRows => 'Display Seerr Discovery Rows';

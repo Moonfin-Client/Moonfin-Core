@@ -1706,7 +1706,7 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get seerr => 'Serr';
+  String get seerr => 'Seerr';
 
   @override
   String get seerrAccountType => 'Typ účtu Seerr';
@@ -6433,14 +6433,6 @@ class AppLocalizationsCs extends AppLocalizations {
       'Plugin zatím nehlásí žádné servery Jellyfin.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Zjistěte řádky nakonfigurované prostřednictvím pluginu „KefinTweaks“ ranaldsgift. Vlastní sekce, nedávno vydané, znovu shlédnuté, sezónní a nedávno přidané do knihovny, jsou zrcadleny z konfigurace KefinTweaks na každém serveru Jellyfin.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'KefinTweaks zatím žádné servery Jellyfin nehlásí.';
-
-  @override
   String get integrationOpenHomeSections => 'Otevřete domovské sekce';
 
   @override
@@ -6476,7 +6468,7 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get jellyseerr => 'Jellyseerr';
+  String get jellyseerr => 'Seerr';
 
   @override
   String get seeAll => 'Zobrazit vše';
@@ -7439,6 +7431,40 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
+  String get themeStore => 'Theme Store';
+
+  @override
+  String get themeStoreSubtitle => 'Browse and save community themes';
+
+  @override
+  String get themeStoreDescription =>
+      'Save a theme to use it like your other saved themes.';
+
+  @override
+  String get themeStoreEmpty => 'No themes are available right now.';
+
+  @override
+  String get themeStoreLoadFailed =>
+      'Couldn\'t load the Theme Store. Check your connection and try again.';
+
+  @override
+  String get themeStoreSave => 'Save';
+
+  @override
+  String get themeStoreSaveAndApply => 'Save & apply';
+
+  @override
+  String get themeStoreSaved => 'Saved';
+
+  @override
+  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
+
+  @override
+  String themeStoreSavedMessage(String themeName) {
+    return 'Saved \"$themeName\".';
+  }
+
+  @override
   String savedThemesDeletedMessage(String themeName) {
     return 'Z tohoto zařízení bylo smazáno „$themeName“.';
   }
@@ -7470,9 +7496,6 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Spravujte stažená témata pluginů na tomto zařízení';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Sekce domovské obrazovky';
@@ -7585,6 +7608,22 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displayAudioRows => 'Display Audio Rows';
+
+  @override
+  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
+
+  @override
+  String get audioRowsSorting => 'Audio Rows sorting';
+
+  @override
+  String get audioRowsSortingDescription =>
+      'Sort Audio rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get audioPlaylists => 'Audio Playlists';
 
   @override
   String get displaySeerrRows => 'Display Seerr Discovery Rows';

@@ -5475,18 +5475,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       builder: (context, snap) {
         final l10n = AppLocalizations.of(context);
         final isPlaying = _displayPlaying;
+        final hasAnyNavigation = _queue.hasPrevious || _queue.hasNext;
 
         return Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (_queue.hasPrevious)
+            if (hasAnyNavigation)
               _controlButton(
                 Icons.skip_previous_rounded,
-                onPressed: _manager.previous,
+                onPressed: _queue.hasPrevious ? _manager.previous : null,
                 size: 40,
                 extent: 72,
                 tooltip: l10n.playerTooltipPrevious,
+                iconColor: _queue.hasPrevious
+                    ? Colors.white
+                    : Colors.white38,
               ),
             _controlButton(
               seekBackIcon(_prefs.get(UserPreferences.skipBackLength)),
@@ -5521,13 +5525,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 shortcut: 'Right',
               ),
             ),
-            if (_queue.hasNext)
+            if (hasAnyNavigation)
               _controlButton(
                 Icons.skip_next_rounded,
-                onPressed: _manager.next,
+                onPressed: _queue.hasNext ? _manager.next : null,
                 size: 40,
                 extent: 72,
                 tooltip: l10n.next,
+                iconColor: _queue.hasNext
+                    ? Colors.white
+                    : Colors.white38,
               ),
           ],
         );
@@ -5537,7 +5544,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   Widget _controlButton(
     IconData icon, {
-    required VoidCallback onPressed,
+    VoidCallback? onPressed,
     double size = 24,
     double extent = 48,
     String? tooltip,
@@ -5550,7 +5557,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         focusNode: focusNode,
         extent: extent,
         tooltip: tooltip,
-        onPressed: () => _handleControlButtonPress(onPressed),
+        onPressed: onPressed != null
+            ? () => _handleControlButtonPress(onPressed)
+            : null,
         onRightBoundary: onRightBoundary,
         child: Icon(icon, color: iconColor, size: size),
       );
@@ -5560,7 +5569,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       height: extent,
       child: IconButton(
         focusNode: focusNode,
-        onPressed: () => _handleControlButtonPress(onPressed),
+        onPressed: onPressed != null
+            ? () => _handleControlButtonPress(onPressed)
+            : null,
         tooltip: PlatformDetection.useDesktopUi ? tooltip : null,
         icon: Icon(icon, color: iconColor, size: size),
         padding: EdgeInsets.zero,

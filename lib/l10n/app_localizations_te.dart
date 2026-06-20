@@ -1714,7 +1714,7 @@ class AppLocalizationsTe extends AppLocalizations {
   }
 
   @override
-  String get seerr => 'సీర్';
+  String get seerr => 'Seerr';
 
   @override
   String get seerrAccountType => 'సీర్ ఖాతా రకం';
@@ -6463,14 +6463,6 @@ class AppLocalizationsTe extends AppLocalizations {
       'ఇంకా Jellyfin సర్వర్‌లు ప్లగిన్‌ను నివేదించలేదు.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Ranaldsgift యొక్క \"KefinTweaks\" ప్లగ్ఇన్ ద్వారా కాన్ఫిగర్ చేయబడిన అడ్డు వరుసలను గుర్తించండి. ప్రతి Jellyfin సర్వర్‌లోని కెఫిన్‌ట్వీక్స్ కాన్ఫిగరేషన్ నుండి ఇటీవల విడుదల చేసిన అనుకూల విభాగాలు, మళ్లీ చూడండి, కాలానుగుణమైనవి మరియు ఇటీవల లైబ్రరీలో జోడించబడ్డాయి.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'KefinTweaksని ఇంకా Jellyfin సర్వర్‌లు నివేదించలేదు.';
-
-  @override
   String get integrationOpenHomeSections => 'హోమ్ విభాగాలను తెరవండి';
 
   @override
@@ -6507,7 +6499,7 @@ class AppLocalizationsTe extends AppLocalizations {
   }
 
   @override
-  String get jellyseerr => 'Jellyseerr';
+  String get jellyseerr => 'Seerr';
 
   @override
   String get seeAll => 'అన్నీ చూడండి';
@@ -7479,6 +7471,40 @@ class AppLocalizationsTe extends AppLocalizations {
   }
 
   @override
+  String get themeStore => 'Theme Store';
+
+  @override
+  String get themeStoreSubtitle => 'Browse and save community themes';
+
+  @override
+  String get themeStoreDescription =>
+      'Save a theme to use it like your other saved themes.';
+
+  @override
+  String get themeStoreEmpty => 'No themes are available right now.';
+
+  @override
+  String get themeStoreLoadFailed =>
+      'Couldn\'t load the Theme Store. Check your connection and try again.';
+
+  @override
+  String get themeStoreSave => 'Save';
+
+  @override
+  String get themeStoreSaveAndApply => 'Save & apply';
+
+  @override
+  String get themeStoreSaved => 'Saved';
+
+  @override
+  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
+
+  @override
+  String themeStoreSavedMessage(String themeName) {
+    return 'Saved \"$themeName\".';
+  }
+
+  @override
   String savedThemesDeletedMessage(String themeName) {
     return 'ఈ పరికరం నుండి \"$themeName\" తొలగించబడింది.';
   }
@@ -7510,9 +7536,6 @@ class AppLocalizationsTe extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'ఈ పరికరంలో డౌన్‌లోడ్ చేయబడిన ప్లగిన్ థీమ్‌లను నిర్వహించండి';
-
-  @override
-  String get kefinTweaksTitle => 'కెఫిన్‌ట్వీక్స్';
 
   @override
   String get homeScreenSectionsTitle => 'హోమ్ స్క్రీన్ విభాగాలు';
@@ -7625,6 +7648,22 @@ class AppLocalizationsTe extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displayAudioRows => 'Display Audio Rows';
+
+  @override
+  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
+
+  @override
+  String get audioRowsSorting => 'Audio Rows sorting';
+
+  @override
+  String get audioRowsSortingDescription =>
+      'Sort Audio rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get audioPlaylists => 'Audio Playlists';
 
   @override
   String get displaySeerrRows => 'Display Seerr Discovery Rows';

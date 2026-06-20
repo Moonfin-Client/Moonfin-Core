@@ -1714,7 +1714,7 @@ class AppLocalizationsLv extends AppLocalizations {
   }
 
   @override
-  String get seerr => 'Redzējs';
+  String get seerr => 'Seerr';
 
   @override
   String get seerrAccountType => 'Serr konta veids';
@@ -6457,14 +6457,6 @@ class AppLocalizationsLv extends AppLocalizations {
       'Pagaidām neviens Jellyfin serveris neziņo par spraudni.';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      'Noteikt rindas, kas konfigurētas, izmantojot ranaldsgift spraudni \"KefinTweaks\". Pielāgotas sadaļas, kas nesen izlaistas, skatīties vēlreiz, sezonālas un nesen pievienotas bibliotēkā, tiek atspoguļotas no KefinTweaks konfigurācijas katrā Jellyfin serverī.';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      'Pagaidām neviens Jellyfin serveris neziņo par KefinTweaks.';
-
-  @override
   String get integrationOpenHomeSections => 'Atveriet sākuma sadaļas';
 
   @override
@@ -6500,7 +6492,7 @@ class AppLocalizationsLv extends AppLocalizations {
   }
 
   @override
-  String get jellyseerr => 'Jellyseerr';
+  String get jellyseerr => 'Seerr';
 
   @override
   String get seeAll => 'Skatīt visu';
@@ -7467,6 +7459,40 @@ class AppLocalizationsLv extends AppLocalizations {
   }
 
   @override
+  String get themeStore => 'Theme Store';
+
+  @override
+  String get themeStoreSubtitle => 'Browse and save community themes';
+
+  @override
+  String get themeStoreDescription =>
+      'Save a theme to use it like your other saved themes.';
+
+  @override
+  String get themeStoreEmpty => 'No themes are available right now.';
+
+  @override
+  String get themeStoreLoadFailed =>
+      'Couldn\'t load the Theme Store. Check your connection and try again.';
+
+  @override
+  String get themeStoreSave => 'Save';
+
+  @override
+  String get themeStoreSaveAndApply => 'Save & apply';
+
+  @override
+  String get themeStoreSaved => 'Saved';
+
+  @override
+  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
+
+  @override
+  String themeStoreSavedMessage(String themeName) {
+    return 'Saved \"$themeName\".';
+  }
+
+  @override
   String savedThemesDeletedMessage(String themeName) {
     return 'Izdzēsts \"$themeName\" no šīs ierīces.';
   }
@@ -7498,9 +7524,6 @@ class AppLocalizationsLv extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Pārvaldiet šajā ierīcē lejupielādētos spraudņu motīvus';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Sākuma ekrāna sadaļas';
@@ -7612,6 +7635,22 @@ class AppLocalizationsLv extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displayAudioRows => 'Display Audio Rows';
+
+  @override
+  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
+
+  @override
+  String get audioRowsSorting => 'Audio Rows sorting';
+
+  @override
+  String get audioRowsSortingDescription =>
+      'Sort Audio rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get audioPlaylists => 'Audio Playlists';
 
   @override
   String get displaySeerrRows => 'Display Seerr Discovery Rows';

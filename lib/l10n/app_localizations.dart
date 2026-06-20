@@ -11494,18 +11494,6 @@ abstract class AppLocalizations {
   /// **'No Jellyfin servers reporting the plugin yet.'**
   String get homeScreenSectionsIntegrationNoServers;
 
-  /// No description provided for @kefinTweaksIntegrationDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Detect rows configured via ranaldsgift\'s \"KefinTweaks\" plugin. Custom sections, recently released, watch again, seasonal, and recently added in library are mirrored from the KefinTweaks configuration on each Jellyfin server.'**
-  String get kefinTweaksIntegrationDescription;
-
-  /// No description provided for @kefinTweaksIntegrationNoServers.
-  ///
-  /// In en, this message translates to:
-  /// **'No Jellyfin servers reporting KefinTweaks yet.'**
-  String get kefinTweaksIntegrationNoServers;
-
   /// No description provided for @integrationOpenHomeSections.
   ///
   /// In en, this message translates to:
@@ -13228,6 +13216,66 @@ abstract class AppLocalizations {
   /// **'Remove \"{themeName}\" from this device cache?'**
   String savedThemesDeleteDialogMessage(String themeName);
 
+  /// No description provided for @themeStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme Store'**
+  String get themeStore;
+
+  /// No description provided for @themeStoreSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse and save community themes'**
+  String get themeStoreSubtitle;
+
+  /// No description provided for @themeStoreDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a theme to use it like your other saved themes.'**
+  String get themeStoreDescription;
+
+  /// No description provided for @themeStoreEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No themes are available right now.'**
+  String get themeStoreEmpty;
+
+  /// No description provided for @themeStoreLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the Theme Store. Check your connection and try again.'**
+  String get themeStoreLoadFailed;
+
+  /// No description provided for @themeStoreSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get themeStoreSave;
+
+  /// No description provided for @themeStoreSaveAndApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & apply'**
+  String get themeStoreSaveAndApply;
+
+  /// No description provided for @themeStoreSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get themeStoreSaved;
+
+  /// No description provided for @themeStoreInvalidMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This theme couldn\'t be loaded.'**
+  String get themeStoreInvalidMessage;
+
+  /// Status message shown after saving a Theme Store theme
+  ///
+  /// In en, this message translates to:
+  /// **'Saved \"{themeName}\".'**
+  String themeStoreSavedMessage(String themeName);
+
   /// Status message shown after deleting a saved custom theme
   ///
   /// In en, this message translates to:
@@ -13275,12 +13323,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage downloaded plugin themes on this device'**
   String get savedThemesManageSubtitle;
-
-  /// No description provided for @kefinTweaksTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'KefinTweaks'**
-  String get kefinTweaksTitle;
 
   /// No description provided for @homeScreenSectionsTitle.
   ///
@@ -13479,6 +13521,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sort Playlist rows by date added, release date, alphabetically, and more.'**
   String get playlistsRowSortingDescription;
+
+  /// No description provided for @displayAudioRows.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Audio Rows'**
+  String get displayAudioRows;
+
+  /// No description provided for @displayAudioRowsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Audio rows in Home Sections.'**
+  String get displayAudioRowsSubtitle;
+
+  /// No description provided for @audioRowsSorting.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Rows sorting'**
+  String get audioRowsSorting;
+
+  /// No description provided for @audioRowsSortingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort Audio rows by date added, release date, alphabetically, and more.'**
+  String get audioRowsSortingDescription;
+
+  /// No description provided for @audioPlaylists.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Playlists'**
+  String get audioPlaylists;
 
   /// No description provided for @displaySeerrRows.
   ///

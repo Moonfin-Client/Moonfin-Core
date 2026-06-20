@@ -1665,7 +1665,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get seerr => '塞尔';
+  String get seerr => 'Seerr';
 
   @override
   String get seerrAccountType => '西尔账户类型';
@@ -6236,14 +6236,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeScreenSectionsIntegrationNoServers => '尚无 Jellyfin 服务器报告该插件。';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      '检测通过 ranaldsgift 的“KefinTweaks”插件配置的行。自定义部分、最近发布的、再次观看的、季节性的以及最近添加到库中的内容均从每个 Jellyfin 服务器上的 KefinTweaks 配置进行镜像。';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      '尚无 Jellyfin 服务器报告 KefinTweaks。';
-
-  @override
   String get integrationOpenHomeSections => '开放主页部分';
 
   @override
@@ -6278,7 +6270,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get jellyseerr => 'Jellyseerr';
+  String get jellyseerr => 'Seerr';
 
   @override
   String get seeAll => '查看全部';
@@ -7179,6 +7171,40 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get themeStore => 'Theme Store';
+
+  @override
+  String get themeStoreSubtitle => 'Browse and save community themes';
+
+  @override
+  String get themeStoreDescription =>
+      'Save a theme to use it like your other saved themes.';
+
+  @override
+  String get themeStoreEmpty => 'No themes are available right now.';
+
+  @override
+  String get themeStoreLoadFailed =>
+      'Couldn\'t load the Theme Store. Check your connection and try again.';
+
+  @override
+  String get themeStoreSave => 'Save';
+
+  @override
+  String get themeStoreSaveAndApply => 'Save & apply';
+
+  @override
+  String get themeStoreSaved => 'Saved';
+
+  @override
+  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
+
+  @override
+  String themeStoreSavedMessage(String themeName) {
+    return 'Saved \"$themeName\".';
+  }
+
+  @override
   String savedThemesDeletedMessage(String themeName) {
     return '已从此设备中删除“$themeName”。';
   }
@@ -7207,9 +7233,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get savedThemesManageSubtitle => '管理此设备上下载的插件主题';
-
-  @override
-  String get kefinTweaksTitle => '凯芬调整';
 
   @override
   String get homeScreenSectionsTitle => '主屏幕部分';
@@ -7313,6 +7336,22 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get playlistsRowSortingDescription =>
       'Sort Playlist rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get displayAudioRows => 'Display Audio Rows';
+
+  @override
+  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
+
+  @override
+  String get audioRowsSorting => 'Audio Rows sorting';
+
+  @override
+  String get audioRowsSortingDescription =>
+      'Sort Audio rows by date added, release date, alphabetically, and more.';
+
+  @override
+  String get audioPlaylists => 'Audio Playlists';
 
   @override
   String get displaySeerrRows => 'Display Seerr Discovery Rows';
@@ -9605,7 +9644,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get seerr => '塞爾';
+  String get seerr => 'Seerr';
 
   @override
   String get seerrAccountType => '西爾帳戶類型';
@@ -14075,14 +14114,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
       '尚無 Jellyfin 伺服器報告該外掛程式。';
 
   @override
-  String get kefinTweaksIntegrationDescription =>
-      '偵測透過 ranaldsgift 的「KefinTweaks」插件配置的行。自訂部分、最近發布的、再次觀看的、季節性的以及最近添加到庫中的內容均從每個 Jellyfin 伺服器上的 KefinTweaks 配置進行鏡像。';
-
-  @override
-  String get kefinTweaksIntegrationNoServers =>
-      '尚無 Jellyfin 伺服器報告 KefinTweaks。';
-
-  @override
   String get integrationOpenHomeSections => '開放主頁部分';
 
   @override
@@ -14117,7 +14148,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   }
 
   @override
-  String get jellyseerr => 'Jellyseerr';
+  String get jellyseerr => 'Seerr';
 
   @override
   String get seeAll => '看全部';
@@ -15022,9 +15053,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get kefinTweaksTitle => 'KefinTweaks';
 
   @override
   String get homeScreenSectionsTitle => 'Home Screen Sections';
