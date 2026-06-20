@@ -529,6 +529,9 @@ We welcome contributions to Moonfin.
 4. Run static checks (`flutter analyze`).
 5. Open a PR with context, screenshots/logs when useful, and test notes.
 
+### Translations
+If you notice issues with translations in your language, you can contribute fixed tranlations on [weblate](https://hosted.weblate.org/projects/moonfin/). 
+
 ## Support & Community
 
 - **Issues**: [GitHub Issues](https://github.com/Moonfin-Client/Moonfin-Core/issues)
