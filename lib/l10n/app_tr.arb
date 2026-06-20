@@ -1707,15 +1707,15 @@
     "@remotePlayback": {
         "description": "Label for Jellyfin session remote playback"
     },
-    "castingToGoogleCast": "Google Cast'ye yayınlanıyor",
+    "castingToGoogleCast": "Google Cast'e yansıtılıyor",
     "@castingToGoogleCast": {
         "description": "Cast mini bar label for Google Cast"
     },
-    "castingViaAirPlay": "AirPlay aracılığıyla yayınlanıyor",
+    "castingViaAirPlay": "AirPlay ile yansıtılıyor",
     "@castingViaAirPlay": {
         "description": "Cast mini bar label for AirPlay"
     },
-    "castingViaDlna": "DLNA aracılığıyla yayınlanıyor",
+    "castingViaDlna": "DLNA ile yansıtılıyor",
     "@castingViaDlna": {
         "description": "Cast mini bar label for DLNA"
     },
@@ -1813,7 +1813,7 @@
     "@player": {
         "description": "Stream info label for player engine"
     },
-    "container": "Konteyner",
+    "container": "Kapsayıcı",
     "@container": {
         "description": "Stream info label for media container"
     },
@@ -1833,7 +1833,7 @@
     "@hdr": {
         "description": "Stream info label for HDR type"
     },
-    "codec": "Kodlayıcı",
+    "codec": "Kodek",
     "@codec": {
         "description": "Stream info label for codec"
     },
@@ -1841,7 +1841,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "İzlemek",
+    "track": "Parça",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -1857,7 +1857,7 @@
     "@sampleRate": {
         "description": "Stream info label for audio sample rate"
     },
-    "format": "Biçim",
+    "format": "Format",
     "@format": {
         "description": "Stream info label for subtitle format"
     },
@@ -1943,7 +1943,7 @@
     "@noTableOfContentsAvailable": {
         "description": "Empty state for table of contents panel"
     },
-    "pageLabel": "Sayfa {number}",
+    "pageLabel": "{number}. Sayfa",
     "@pageLabel": {
         "description": "Page number label in TOC or position",
         "placeholders": {
@@ -2178,7 +2178,7 @@
     "@watch": {
         "description": "Button label to start watching a channel"
     },
-    "close": "Kapalı",
+    "close": "Kapat",
     "@close": {
         "description": "Button label to close a dialog"
     },
@@ -2203,7 +2203,7 @@
     "@recentRecordings": {
         "description": "Section title for recently completed recordings"
     },
-    "tvSeries": "TV dizisi",
+    "tvSeries": "Dizi",
     "@tvSeries": {
         "description": "Section title for TV series recordings"
     },
@@ -2303,7 +2303,7 @@
     "@savedMedia": {
         "description": "Header title for saved/downloaded media screen"
     },
-    "tvShows": "TV Programları",
+    "tvShows": "Diziler",
     "@tvShows": {
         "description": "Filter label for TV shows"
     },
@@ -2421,7 +2421,7 @@
             }
         }
     },
-    "episodeNumber": "Bölüm {number}",
+    "episodeNumber": "{number}. Bölüm",
     "@episodeNumber": {
         "description": "Episode label with number",
         "placeholders": {
@@ -2442,7 +2442,7 @@
     "@downloadedEpisodes": {
         "description": "Section title for downloaded episodes"
     },
-    "seasonNumber": "Sezon {number}",
+    "seasonNumber": "{number}. Sezon",
     "@seasonNumber": {
         "description": "Season label with number",
         "placeholders": {
@@ -2652,7 +2652,7 @@
             }
         }
     },
-    "themeAndAppearance": "Tema ve Görünüm",
+    "themeAndAppearance": "Tema & Görünüm",
     "@themeAndAppearance": {
         "description": "Appearance settings title"
     },
@@ -2688,7 +2688,7 @@
     "@scaleFocusedCards": {
         "description": "Description for focus expansion animation"
     },
-    "backgroundBackdrops": "Arka Plan Arka Planları",
+    "backgroundBackdrops": "Arka Plan Görselleri",
     "@backgroundBackdrops": {
         "description": "Setting for background backdrops"
     },
@@ -2842,11 +2842,11 @@
     "@showDescriptionOnPause": {
         "description": "Setting for showing description on pause"
     },
-    "dimVideoShowOverview": "Duraklatıldığında videoyu karartın ve genel bakış metnini gösterin",
+    "dimVideoShowOverview": "Duraklatıldığında videoyu karart ve özet metnini göster",
     "@dimVideoShowOverview": {
         "description": "Description for show description on pause"
     },
-    "osdLockButton": "OSD Kilit Düğmesi",
+    "osdLockButton": "Ekran Kilidi Butonu",
     "@osdLockButton": {
         "description": "Setting for OSD lock button"
     },
@@ -2858,7 +2858,7 @@
     "@audioBehavior": {
         "description": "Setting for audio behavior"
     },
-    "downmixToStereo": "Stereo'ya Downmix",
+    "downmixToStereo": "Stereo'ya Dönüştür",
     "@downmixToStereo": {
         "description": "Audio option: downmix to stereo"
     },
@@ -2874,7 +2874,7 @@
     "@english": {
         "description": "Language: English"
     },
-    "spanish": "İspanyol",
+    "spanish": "İspanyolca",
     "@spanish": {
         "description": "Language: Spanish"
     },
@@ -2886,7 +2886,7 @@
     "@german": {
         "description": "Language: German"
     },
-    "italian": "İtalyan",
+    "italian": "İtalyanca",
     "@italian": {
         "description": "Language: Italian"
     },
@@ -2930,7 +2930,7 @@
     "@norwegian": {
         "description": "Language: Norwegian"
     },
-    "danish": "Danimarka",
+    "danish": "Danca",
     "@danish": {
         "description": "Language: Danish"
     },
@@ -2942,7 +2942,7 @@
     "@polish": {
         "description": "Language: Polish"
     },
-    "ac3Passthrough": "AC3 Geçişi",
+    "ac3Passthrough": "AC3 Doğrudan Geçiş (Passthrough)",
     "@ac3Passthrough": {
         "description": "Setting for AC3 passthrough"
     },
@@ -2950,7 +2950,7 @@
     "@trueHdSupport": {
         "description": "Setting for TrueHD support"
     },
-    "enableTrueHdAudio": "TrueHD sesi etkinleştirin (tüm platformlarda çalışmayabilir)",
+    "enableTrueHdAudio": "TrueHD sesi etkinleştir (tüm platformlarda çalışmayabilir)",
     "@enableTrueHdAudio": {
         "description": "Description for TrueHD support"
     },
@@ -2990,11 +2990,11 @@
     "@hardwareDecodingSubtitle": {
         "description": "Description for hardware decoding toggle"
     },
-    "nextUpAndQueuing": "Sonraki İşlem ve Sıraya Alma",
+    "nextUpAndQueuing": "Sıradaki Bölümler ve Sıraya Alma",
     "@nextUpAndQueuing": {
         "description": "Section title for next up and queuing"
     },
-    "nextUpDisplay": "Sonraki Davranış",
+    "nextUpDisplay": "Sıradaki Bölümler Görünümü",
     "@nextUpDisplay": {
         "description": "Setting for next up behavior"
     },
@@ -3002,15 +3002,15 @@
     "@extended": {
         "description": "Option: extended"
     },
-    "minimal": "Asgari",
+    "minimal": "Sade",
     "@minimal": {
         "description": "Option: minimal"
     },
-    "nextUpTimeout": "Sonraki Çalışma Zaman Aşımı",
+    "nextUpTimeout": "Sıradaki Bölümler Zaman Aşımı",
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value}s",
+    "secondsValue": "{value}sn",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3027,7 +3027,7 @@
     "@autoQueueNextEpisodes": {
         "description": "Description for media queuing"
     },
-    "stillWatchingPrompt": "Hala İstemi İzliyorum",
+    "stillWatchingPrompt": "Hâlâ İzliyor musunuz? Uyarısı",
     "@stillWatchingPrompt": {
         "description": "Setting for still watching prompt"
     },
@@ -3067,11 +3067,11 @@
     "@thirtySeconds": {
         "description": "Duration: 30 seconds"
     },
-    "skipBackLength": "Geri Uzunluğu Atla",
+    "skipBackLength": "Geri Sarma Uzunluğu",
     "@skipBackLength": {
         "description": "Setting for skip back length"
     },
-    "skipForwardLength": "İleri Uzunluğu Atla",
+    "skipForwardLength": "İleri Sarma Uzunluğu",
     "@skipForwardLength": {
         "description": "Setting for skip forward length"
     },
@@ -3115,7 +3115,7 @@
     "@backgroundColor": {
         "description": "Setting for background color"
     },
-    "verticalOffset": "Dikey Ofset",
+    "verticalOffset": "Dikey Hizalama",
     "@verticalOffset": {
         "description": "Setting for vertical offset"
     },
@@ -3167,7 +3167,7 @@
     "@semiTransparentBlack": {
         "description": "Color: semi-transparent black"
     },
-    "global": "Küresel",
+    "global": "Evrensel",
     "@global": {
         "description": "Profile: global"
     },
@@ -3179,7 +3179,7 @@
     "@mobile": {
         "description": "Profile: mobile"
     },
-    "tv": "TV",
+    "tv": "Televizyon",
     "@tv": {
         "description": "Profile: TV"
     },
@@ -3230,7 +3230,7 @@
     "@syncToProfile": {
         "description": "Button to sync to a profile"
     },
-    "profileSyncHidden": "Profil Senkronizasyonu Gizli",
+    "profileSyncHidden": "Profil Senkronizasyonunu Gizle",
     "@profileSyncHidden": {
         "description": "Title when profile sync is hidden"
     },
@@ -3258,7 +3258,7 @@
     "@onlyDownloadOnWifi": {
         "description": "Description for wifi-only downloads"
     },
-    "storage": "Depolamak",
+    "storage": "Depolama",
     "@storage": {
         "description": "Section title for storage settings"
     },
@@ -3266,7 +3266,7 @@
     "@storageUsed": {
         "description": "Label for storage used"
     },
-    "manage": "Üstesinden gelmek",
+    "manage": "Yönet",
     "@manage": {
         "description": "Button to manage storage"
     },
@@ -3310,7 +3310,7 @@
     "@changeDownloadLocationDescription": {
         "description": "Description for changing download location"
     },
-    "confirm": "Onaylamak",
+    "confirm": "Onaylama",
     "@confirm": {
         "description": "Button to confirm an action"
     },
@@ -3326,7 +3326,7 @@
     "@saveToDownloadsFolderDescription": {
         "description": "Description for saving to downloads folder"
     },
-    "enable": "Olanak vermek",
+    "enable": "Etkinleştir",
     "@enable": {
         "description": "Button to enable a feature"
     },
@@ -3342,7 +3342,7 @@
     "@navigationStyle": {
         "description": "Setting for navigation style"
     },
-    "topBar": "Üst Çubuk",
+    "topBar": "Üst Bar",
     "@topBar": {
         "description": "Navigation style: top bar"
     },
@@ -3350,15 +3350,15 @@
     "@leftSidebar": {
         "description": "Navigation style: left sidebar"
     },
-    "showShuffleButton": "Karıştır Düğmesini Göster",
+    "showShuffleButton": "Karıştır Butonunu Göster",
     "@showShuffleButton": {
         "description": "Setting for showing shuffle button"
     },
-    "showGenresButton": "Türleri Göster Düğmesi",
+    "showGenresButton": "Türleri Butonunu Göster",
     "@showGenresButton": {
         "description": "Setting for showing genres button"
     },
-    "showFavoritesButton": "Favorileri Göster Düğmesi",
+    "showFavoritesButton": "Favoriler Butonunu Göster",
     "@showFavoritesButton": {
         "description": "Setting for showing favorites button"
     },
@@ -3386,11 +3386,11 @@
     "@purple": {
         "description": "Color: purple"
     },
-    "teal": "turkuaz",
+    "teal": "Ördekbaşı",
     "@teal": {
         "description": "Color: teal"
     },
-    "navy": "Donanma",
+    "navy": "Lacivert",
     "@navy": {
         "description": "Color: navy"
     },
@@ -3414,7 +3414,7 @@
     "@slate": {
         "description": "Color: slate"
     },
-    "indigo": "Çivit mavisi",
+    "indigo": "Çivit Mavisi",
     "@indigo": {
         "description": "Color: indigo"
     },
@@ -3434,7 +3434,7 @@
     "@bannerLabel": {
         "description": "Image type: banner"
     },
-    "overridePerLibrarySettings": "Kitaplık Başına Ayarları Geçersiz Kıl",
+    "overridePerLibrarySettings": "Kütüphane Bazlı Ayarları Geçersiz Kıl",
     "@overridePerLibrarySettings": {
         "description": "Setting for overriding per-library settings"
     },
@@ -3442,7 +3442,7 @@
     "@applyImageTypeToAllLibraries": {
         "description": "Description for override per-library settings"
     },
-    "multiServerLibraries": "Çoklu Sunucu Kitaplıkları",
+    "multiServerLibraries": "Çoklu Sunucu Kütüphaneleri",
     "@multiServerLibraries": {
         "description": "Setting for multi-server libraries"
     },
@@ -3462,19 +3462,19 @@
     "@libraryVisibility": {
         "description": "Section title for library visibility"
     },
-    "showInNavigation": "Gezinmede göster",
+    "showInNavigation": "Menüde Göster",
     "@showInNavigation": {
         "description": "Toggle for showing library in navigation"
     },
-    "showInLatestMedia": "En son medyada göster",
+    "showInLatestMedia": "Son Eklenenlerde Göster",
     "@showInLatestMedia": {
         "description": "Toggle for showing library in latest media"
     },
-    "sourceLibraries": "Kaynak Kitaplıkları",
+    "sourceLibraries": "Kaynak Kütüphaneler",
     "@sourceLibraries": {
         "description": "Setting for source libraries"
     },
-    "sourceCollections": "Kaynak Koleksiyonları",
+    "sourceCollections": "Kaynak Koleksiyonlar",
     "@sourceCollections": {
         "description": "Setting for source collections"
     },
@@ -3515,7 +3515,7 @@
     "@mediaBarModeMakd": {
         "description": "Media bar style option: MakD"
     },
-    "mediaBarModeOff": "Kapali",
+    "mediaBarModeOff": "Kapalı",
     "@mediaBarModeOff": {
         "description": "Media bar style option: Off"
     },
@@ -3523,7 +3523,7 @@
     "@enableMediaBar": {
         "description": "Setting for enabling media bar"
     },
-    "showFeaturedContentSlideshow": "Öne çıkan içerik slayt gösterisini evde göster",
+    "showFeaturedContentSlideshow": "Ana Sayfada Öne Çıkanlar Slaytını Göster",
     "@showFeaturedContentSlideshow": {
         "description": "Description for enable media bar"
     },
@@ -3735,7 +3735,7 @@
     "@removePinProtection": {
         "description": "Description for remove PIN"
     },
-    "screensaver": "Ekran koruyucusu",
+    "screensaver": "Ekran Koruyucu",
     "@screensaver": {
         "description": "Settings title for screensaver"
     },
@@ -3751,7 +3751,7 @@
     "@mode": {
         "description": "Setting for mode"
     },
-    "libraryArt": "Kütüphane Sanatı",
+    "libraryArt": "Kütüphane Görselleri",
     "@libraryArt": {
         "description": "Screensaver mode: library art"
     },
@@ -3767,7 +3767,7 @@
     "@timeout": {
         "description": "Setting for timeout"
     },
-    "minutesShort": "{minutes} min",
+    "minutesShort": "{minutes} dk",
     "@minutesShort": {
         "description": "Minutes duration short format",
         "placeholders": {
@@ -3813,11 +3813,11 @@
     "@displayClockDuringScreensaver": {
         "description": "Description for show clock"
     },
-    "rottenTomatoesCritics": "Çürük Domates (Eleştirmenler)",
+    "rottenTomatoesCritics": "Rotten Tomatoes (Eleştirmenler)",
     "@rottenTomatoesCritics": {
         "description": "Rating source: Rotten Tomatoes Critics"
     },
-    "rottenTomatoesAudience": "Çürük Domates (Seyirci)",
+    "rottenTomatoesAudience": "Rotten Tomatoes (Seyirci)",
     "@rottenTomatoesAudience": {
         "description": "Rating source: Rotten Tomatoes Audience"
     },
@@ -3829,7 +3829,7 @@
     "@tmdb": {
         "description": "Rating source: TMDB"
     },
-    "metacritic": "Metakritik",
+    "metacritic": "Metacritic",
     "@metacritic": {
         "description": "Rating source: Metacritic"
     },
@@ -3841,11 +3841,11 @@
     "@trakt": {
         "description": "Rating source: Trakt"
     },
-    "letterboxd": "Posta kutusu",
+    "letterboxd": "Letterboxd",
     "@letterboxd": {
         "description": "Rating source: Letterboxd"
     },
-    "myAnimeList": "AnimeListem",
+    "myAnimeList": "MyAnimeList",
     "@myAnimeList": {
         "description": "Rating source: MyAnimeList"
     },
@@ -3853,11 +3853,11 @@
     "@aniList": {
         "description": "Rating source: AniList"
     },
-    "communityRating": "Topluluk Derecelendirmesi",
+    "communityRating": "Topluluk Puanı",
     "@communityRating": {
         "description": "Rating source: Community Rating"
     },
-    "ratings": "Derecelendirmeler",
+    "ratings": "Puanlar",
     "@ratings": {
         "description": "Settings title for ratings"
     },
@@ -3865,27 +3865,27 @@
     "@additionalRatings": {
         "description": "Setting for additional ratings"
     },
-    "showMdbListAndTmdbRatings": "MDBList ve TMDB derecelendirmelerini göster",
+    "showMdbListAndTmdbRatings": "MDBList ve TMDB puanlarını göster",
     "@showMdbListAndTmdbRatings": {
         "description": "Description for additional ratings"
     },
-    "ratingLabels": "Derecelendirme Etiketleri",
+    "ratingLabels": "Puan Etiketleri",
     "@ratingLabels": {
         "description": "Setting for rating labels"
     },
-    "showLabelsNextToIcons": "Derecelendirme simgelerinin yanında etiketleri göster",
+    "showLabelsNextToIcons": "Puan simgelerinin yanında etiketleri göster",
     "@showLabelsNextToIcons": {
         "description": "Description for rating labels"
     },
-    "ratingBadges": "Derecelendirme Rozetleri",
+    "ratingBadges": "Puan Rozetleri",
     "@ratingBadges": {
         "description": "Setting for rating badges"
     },
-    "showDecorativeBadges": "Derecelendirmelerin arkasında dekoratif rozetler göster",
+    "showDecorativeBadges": "Puanların arkasında dekoratif rozetler göster",
     "@showDecorativeBadges": {
         "description": "Description for rating badges"
     },
-    "episodeRatings": "Bölüm Derecelendirmeleri",
+    "episodeRatings": "Bölüm Puanları",
     "@episodeRatings": {
         "description": "Setting for episode ratings"
     },
@@ -3897,7 +3897,7 @@
     "@ratingSources": {
         "description": "Section title for rating sources"
     },
-    "ratingSourcesDescription": "Uygulama genelinde gösterilen derecelendirme kaynaklarını etkinleştirin ve yeniden sıralayın",
+    "ratingSourcesDescription": "Uygulama genelinde gösterilen puan kaynaklarını etkinleştirin ve yeniden sıralayın",
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
@@ -3921,7 +3921,7 @@
     "@pluginNotDetectedDescription": {
         "description": "Description when plugin is not detected"
     },
-    "pluginStatusVersion": "{status}\nVersion: {version}",
+    "pluginStatusVersion": "{status}\nSürüm: {version}",
     "@pluginStatusVersion": {
         "description": "Plugin status with version",
         "placeholders": {
@@ -3981,7 +3981,7 @@
     "@studios": {
         "description": "Seerr row: studios"
     },
-    "popularSeries": "Popüler Seriler",
+    "popularSeries": "Popüler Diziler",
     "@popularSeries": {
         "description": "Seerr row: popular series"
     },
@@ -3989,11 +3989,11 @@
     "@seriesGenres": {
         "description": "Seerr row: series genres"
     },
-    "upcomingSeries": "Gelecek Dizi",
+    "upcomingSeries": "Gelecek Diziler",
     "@upcomingSeries": {
         "description": "Seerr row: upcoming series"
     },
-    "networks": "Ağlar",
+    "networks": "Yayıncılar",
     "@networks": {
         "description": "Seerr row: networks"
     },
@@ -4013,7 +4013,7 @@
     "@seerrUnavailable": {
         "description": "Description when Seerr is unavailable"
     },
-    "nsfwFilter": "NSFW Filtresi",
+    "nsfwFilter": "Hassas İçerik Filtresi",
     "@nsfwFilter": {
         "description": "Setting for NSFW filter"
     },
@@ -4030,7 +4030,7 @@
             }
         }
     },
-    "discoverRows": "Satırları Keşfet",
+    "discoverRows": "Keşfet Satırları",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
@@ -4042,11 +4042,11 @@
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
-    "enabled": "Etkinleştirilmiş",
+    "enabled": "Etkinleştirildi",
     "@enabled": {
         "description": "Status: enabled"
     },
-    "hidden": "Gizlenmiş",
+    "hidden": "Gizli",
     "@hidden": {
         "description": "Status: hidden"
     },
@@ -4054,7 +4054,7 @@
     "@aboutTitle": {
         "description": "About screen title"
     },
-    "versionValue": "Version {version}",
+    "versionValue": "Sürüm {version}",
     "@versionValue": {
         "description": "Version display",
         "placeholders": {
@@ -4128,11 +4128,11 @@
     "@showWhenUpdatesAvailable": {
         "description": "Description for update notifications"
     },
-    "navigation": "Navigasyon",
+    "navigation": "Menü",
     "@navigation": {
         "description": "Navigation settings title"
     },
-    "watchedIndicatorsBackdrops": "İzlenen göstergeler, arka planlar",
+    "watchedIndicatorsBackdrops": "İzlendi İşaretleri, Arka Planlar",
     "@watchedIndicatorsBackdrops": {
         "description": "Appearance settings subtitle on mobile"
     },
@@ -4169,7 +4169,7 @@
             }
         }
     },
-    "clear": "Temizlemek",
+    "clear": "Temizle",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4189,7 +4189,7 @@
     "@seerrRequestedStatus": {
         "description": "Seerr media status when item has been requested"
     },
-    "itemsCount": "{count} Items",
+    "itemsCount": "{count} Öğe",
     "@itemsCount": {
         "description": "Status bar item count",
         "placeholders": {
@@ -4206,7 +4206,7 @@
     "@requestMore": {
         "description": "Button to request more seasons"
     },
-    "request": "Rica etmek",
+    "request": "İste",
     "@request": {
         "description": "Button to submit a media request"
     },
@@ -4214,7 +4214,7 @@
     "@cancelRequest": {
         "description": "Button/dialog title to cancel a media request"
     },
-    "playInMoonfin": "Moonfin'da oyna",
+    "playInMoonfin": "Moonfin'da oynat",
     "@playInMoonfin": {
         "description": "Button to play available media in Moonfin"
     },
@@ -4227,11 +4227,11 @@
             }
         }
     },
-    "approve": "Onaylamak",
+    "approve": "Onayla",
     "@approve": {
         "description": "Tooltip/button to approve a request"
     },
-    "declineAction": "Reddetmek",
+    "declineAction": "Reddet",
     "@declineAction": {
         "description": "Tooltip/button to decline a request"
     },
@@ -4264,7 +4264,7 @@
             }
         }
     },
-    "keep": "Kale",
+    "keep": "Sakla",
     "@keep": {
         "description": "Button to keep/dismiss a cancel dialog"
     },
@@ -4319,7 +4319,7 @@
     "@submitRequest": {
         "description": "Button to finalize a media request"
     },
-    "allSeasons": "Tüm Mevsimler",
+    "allSeasons": "Tüm Sezonlar",
     "@allSeasons": {
         "description": "Checkbox label for selecting all seasons"
     },
@@ -4351,7 +4351,7 @@
     "@appearances": {
         "description": "Section title for cast appearances"
     },
-    "crewSection": "Mürettebat",
+    "crewSection": "Ekip",
     "@crewSection": {
         "description": "Section title for crew credits"
     },
@@ -4368,7 +4368,7 @@
     "@noRequests": {
         "description": "Shown when request list is empty"
     },
-    "pendingStatus": "Askıda olması",
+    "pendingStatus": "Bekleniyor",
     "@pendingStatus": {
         "description": "Request status label"
     },
@@ -4389,67 +4389,67 @@
         "description": "Request status label"
     },
     "access": "Erişim",
-    "add": "Eklemek",
+    "add": "Ekle",
     "address": "Adres",
-    "analytics": "Analitik",
+    "analytics": "Analizler",
     "catalog": "Katalog",
     "content": "İçerik",
     "copy": "Kopyala",
-    "create": "Yaratmak",
-    "disable": "Devre dışı bırakmak",
-    "done": "Tamamlamak",
-    "edit": "Düzenlemek",
+    "create": "Oluştur",
+    "disable": "Devre dışı bırak",
+    "done": "Tamamlandı",
+    "edit": "Düzenle",
     "encoding": "Kodlama",
     "error": "Hata",
     "forward": "İleri",
     "general": "Genel",
-    "go": "Gitmek",
-    "install": "Düzenlemek",
+    "go": "Git",
+    "install": "Kur",
     "installed": "Yüklendi",
     "interval": "Aralık",
     "name": "İsim",
-    "networking": "Ağ oluşturma",
+    "networking": "Ağ Ayarları",
     "next": "Sonraki",
     "path": "Yol",
     "paused": "Duraklatıldı",
     "permissions": "İzinler",
     "processing": "İşleme",
     "profile": "Profil",
-    "provider": "sağlayıcı",
+    "provider": "Sağlayıcı",
     "refresh": "Yenile",
     "remote": "Uzak",
-    "rename": "Yeniden isimlendirmek",
-    "revoke": "Geri çekmek",
+    "rename": "Yeniden adlandır",
+    "revoke": "Geri çek",
     "role": "Rol",
     "root": "Kök",
-    "run": "Koşmak",
+    "run": "Çalıştır",
     "search": "Ara",
-    "select": "Seçme",
-    "send": "Göndermek",
+    "select": "Seç",
+    "send": "Gönder",
     "sessions": "Oturumlar",
-    "set": "Ayarlamak",
+    "set": "Ayarla",
     "status": "Durum",
-    "stop": "Durmak",
+    "stop": "Durdur",
     "streaming": "Akış",
     "time": "Zaman",
-    "trickplay": "Hile oyunu",
+    "trickplay": "Önizleme Resimleri",
     "uninstall": "Kaldır",
     "up": "Yukarı",
     "update": "Güncelleme",
-    "upload": "Yüklemek",
-    "unmute": "Sesini açmak",
-    "mute": "Sesini kapatmak",
+    "upload": "Yükle",
+    "unmute": "Sesini aç",
+    "mute": "Sesini kapat",
     "branding": "Markalaşma",
     "adminDrawerDashboard": "Kontrol Paneli",
-    "adminDrawerAnalytics": "Analitik",
+    "adminDrawerAnalytics": "Analizler",
     "adminDrawerSettings": "Ayarlar",
     "adminDrawerBranding": "Markalaşma",
     "adminDrawerUsers": "Kullanıcılar",
     "adminDrawerLibraries": "Kütüphaneler",
-    "adminDrawerTranscoding": "Kod dönüştürme",
-    "adminDrawerResume": "Sürdürmek",
+    "adminDrawerTranscoding": "Kod dönüştür",
+    "adminDrawerResume": "Sürdür",
     "adminDrawerStreaming": "Akış",
-    "adminDrawerTrickplay": "Hile oyunu",
+    "adminDrawerTrickplay": "Önizleme Resimleri",
     "adminDrawerDevices": "Cihazlar",
     "adminDrawerActivity": "Etkinlik",
     "adminDrawerNetworking": "Ağ oluşturma",
@@ -4498,24 +4498,24 @@
         }
     },
     "analyticsMediaDistribution": "Medya Dağıtımı",
-    "analyticsVideoCodecs": "Video Codec'leri",
-    "analyticsAudioCodecs": "Ses Codec'leri",
-    "analyticsContainers": "Konteynerler",
+    "analyticsVideoCodecs": "Video Kodekleri",
+    "analyticsAudioCodecs": "Ses Kodekleri",
+    "analyticsContainers": "Kapsayıcılar",
     "analyticsTopGenres": "En Popüler Türler",
     "analyticsReleaseYears": "Yayın Yılları",
     "analyticsContentRatings": "İçerik Derecelendirmeleri",
-    "analyticsRuntimeBuckets": "Çalışma Zamanı Bölümleri",
+    "analyticsRuntimeBuckets": "Süre Grupları",
     "analyticsFileFormats": "Dosya Formatları",
     "analyticsNoData": "Mevcut Veri Yok.",
     "adminServerInfo": "Sunucu Bilgileri",
-    "adminRestartPending": "Yeniden Başlatma Beklemede",
+    "adminRestartPending": "Yeniden Başlatma Bekleniyor",
     "adminServerPaths": "Sunucu Yolları",
     "adminServerActions": "Sunucu Eylemleri",
     "adminRestartServer": "Sunucuyu Yeniden Başlat",
     "adminShutdownServer": "Sunucuyu Kapat",
     "adminScanLibraries": "Kitaplıkları Tara",
     "adminLibraryScanStarted": "Kitaplık taraması başlatıldı",
-    "errorGeneric": "Error: {error}",
+    "errorGeneric": "Hata: {error}",
     "@errorGeneric": {
         "placeholders": {
             "error": {
@@ -4524,7 +4524,7 @@
         }
     },
     "adminServerRebootInProgress": "Sunucu yeniden başlatma işlemi devam ediyor",
-    "adminServerRebootMessage": "Sunucu yeniden başlatma işlemi devam ediyor, lütfen yeniden başlatın Moonfin",
+    "adminServerRebootMessage": "Sunucu yeniden başlatılıyor, lütfen Moonfin'i yeniden başlatın",
     "adminActiveSessions": "Aktif Oturumlar",
     "adminSessionsLoadFailed": "Oturumlar yüklenemedi",
     "adminNoActiveSessions": "Aktif oturum yok",
@@ -4545,14 +4545,14 @@
     "sessionRewind": "Geri sarma",
     "sessionForward": "İleri",
     "sessionNext": "Sonraki",
-    "sessionVolumeDown": "Cilt –",
-    "sessionVolumeUp": "Cilt +",
-    "nowPlaying": "Şimdi Oynanıyor",
-    "volume": "Hacim",
+    "sessionVolumeDown": "Ses –",
+    "sessionVolumeUp": "Ses +",
+    "nowPlaying": "Şimdi Oynuyor",
+    "volume": "Ses",
     "actions": "Eylemler",
-    "videoCodec": "Video Codec'i",
-    "audioCodec": "Ses Codec'i",
-    "hwAccel": "Donanım Hızı",
+    "videoCodec": "Video Kodeki",
+    "audioCodec": "Ses Kodeki",
+    "hwAccel": "Donanım Hızlandırma",
     "completion": "Tamamlama",
     "direct": "Doğrudan",
     "adminDisconnect": "Bağlantıyı kes",
@@ -4678,9 +4678,9 @@
     "adminBrowseFilesystem": "Sunucu dosya sistemine göz atın:",
     "adminSaveOptions": "Kaydetme Seçenekleri",
     "adminPreferredMetadataLanguage": "Tercih edilen meta veri dili",
-    "adminMetadataLanguageHint": "örneğin tr, de, fr",
+    "adminMetadataLanguageHint": "Örn. en, de, fr",
     "adminMetadataCountryCode": "Meta veri ülke kodu",
-    "adminMetadataCountryHint": "örneğin ABD, Almanya, Fransa",
+    "adminMetadataCountryHint": "Örn. US, DE, FR",
     "adminLibraryNameRequired": "Kitaplık adı gerekli",
     "adminLibraryCreateFailed": "Kitaplık oluşturulamadı: {error}",
     "@adminLibraryCreateFailed": {
@@ -4693,7 +4693,7 @@
     "adminLibraryName": "Kütüphane Adı",
     "adminSelectedPaths": "Seçilen Yollar:",
     "adminNoPathsAdded": "Yol eklenmedi (daha sonra eklenebilir)",
-    "adminCreateLibrary": "Kitaplık Oluştur",
+    "adminCreateLibrary": "Kütüphane Oluştur",
     "paths": "Yollar:",
     "adminDisableUser": "Kullanıcıyı Devre Dışı Bırak",
     "adminEnableUser": "Kullanıcıyı Etkinleştir",
@@ -4907,7 +4907,7 @@
     "adminCreateBackup": "Yedekleme Oluştur",
     "adminNoBackups": "Yedek bulunamadı",
     "adminViewDetails": "Ayrıntıları Görüntüle",
-    "restore": "Eski haline getirmek",
+    "restore": "Geri Yükle",
     "adminLogsLoadFailed": "Sunucu günlükleri yüklenemedi",
     "adminNoLogFiles": "Günlük dosyası bulunamadı",
     "adminLogCopied": "Günlük panoya kopyalandı",
@@ -5057,7 +5057,7 @@
     },
     "adminNoPluginsMatchSearch": "Aramanızla eşleşen eklenti yok",
     "adminNoPluginsInstalled": "Hiçbir eklenti yüklü değil",
-    "adminInstallUpdate": "Install update (v{version})",
+    "adminInstallUpdate": "Güncellemeyi yükle (v{version})",
     "@adminInstallUpdate": {
         "placeholders": {
             "version": {
@@ -5077,7 +5077,7 @@
     "adminNoPackagesAvailable": "Mevcut paket yok",
     "adminExperimentalIntegration": "Deneysel Entegrasyon",
     "adminExperimentalWarning": "Eklenti ayarları entegrasyonu hala deneyseldir. Bazı ayar sayfaları doğru şekilde oluşturulmayabilir.",
-    "continueAction": "Devam etmek",
+    "continueAction": "Devam et",
     "adminPluginRemoveAfterRestart": "\"{name}\" sunucu yeniden başlatıldıktan sonra kaldırılacak",
     "@adminPluginRemoveAfterRestart": {
         "placeholders": {
@@ -5115,7 +5115,7 @@
         }
     },
     "adminPluginNotFound": "Eklenti bulunamadı",
-    "adminPluginVersion": "Version {version}",
+    "adminPluginVersion": "Sürüm {version}",
     "@adminPluginVersion": {
         "placeholders": {
             "version": {
@@ -5152,7 +5152,7 @@
             }
         }
     },
-    "adminRepositoryNameHint": "örneğin Jellyfin Kararlı",
+    "adminRepositoryNameHint": "Örn. Jellyfin Kararlı",
     "adminRepositoryUrl": "Depo URL'si",
     "adminAddEntry": "Giriş ekle",
     "adminInvalidUrl": "Geçersiz URL",
@@ -5184,7 +5184,7 @@
     "adminSlowResponseThreshold": "Yavaş yanıt eşiği (ms)",
     "adminBrandingSaved": "Markalama ayarları kaydedildi",
     "adminBrandingLoadFailed": "Markalama ayarları yüklenemedi",
-    "adminLoginDisclaimer": "Giriş sorumluluk reddi beyanı",
+    "adminLoginDisclaimer": "Giriş Uyarı Metni",
     "adminLoginDisclaimerHint": "Giriş formunun altında görüntülenen HTML",
     "adminCustomCss": "Özel CSS",
     "adminCustomCssHint": "Web arayüzüne uygulanan özel CSS",
@@ -5199,18 +5199,18 @@
     "adminPlaybackTranscoding": "Oynatma / Kod Dönüştürme",
     "adminHardwareAcceleration": "Donanım hızlandırma",
     "adminVaapiDevice": "VA-API cihazı",
-    "adminEnableHardwareEncoding": "Donanım kodlamasını etkinleştir",
+    "adminEnableHardwareEncoding": "Donanım kodlamayı etkinleştir",
     "adminEnableHardwareDecoding": "Aşağıdakiler için donanım kod çözmeyi etkinleştirin:",
-    "adminEncodingThreads": "Kodlama konuları",
+    "adminEncodingThreads": "Kod Dönüştürme İş Parçacıkları",
     "adminAutomatic": "0 = otomatik",
     "adminTranscodingTempPath": "Geçici yolu kod dönüştürme",
     "adminEnableFallbackFont": "Yedek yazı tipini etkinleştir",
-    "adminFallbackFontPath": "Geri dönüş yazı tipi yolu",
-    "adminAllowSegmentDeletion": "Segmentin silinmesine izin ver",
-    "adminSegmentKeepSeconds": "Segment tutma (saniye)",
-    "adminThrottleBuffering": "Kısma arabelleğe alma",
-    "adminTrickplaySaved": "Trickplay ayarları kaydedildi",
-    "adminTrickplayLoadFailed": "Trickplay ayarları yüklenemedi",
+    "adminFallbackFontPath": "Yedek yazı tipi yolu",
+    "adminAllowSegmentDeletion": "Parça silmeye izin ver",
+    "adminSegmentKeepSeconds": "Parça saklama süresi (saniye)",
+    "adminThrottleBuffering": "Arabelleğe almayı sınırla",
+    "adminTrickplaySaved": "Önizleme ayarları kaydedildi",
+    "adminTrickplayLoadFailed": "Önizleme ayarları yüklenemedi",
     "adminEnableHardwareAcceleration": "Donanım hızlandırmayı etkinleştir",
     "adminEnableKeyFrameExtraction": "Yalnızca anahtar kare çıkartmayı etkinleştir",
     "adminKeyFrameSubtitle": "Daha hızlı ancak daha düşük doğruluk",
@@ -5225,7 +5225,7 @@
     "adminQualitySubtitle": "Daha düşük değerler = daha iyi kalite, daha büyük dosyalar",
     "adminProcessThreads": "İş parçacıkları",
     "adminResumeSaved": "Kaydedilen ayarları devam ettir",
-    "adminResumeLoadFailed": "Özgeçmiş ayarları yüklenemedi",
+    "adminResumeLoadFailed": "Devam etme ayarları yüklenemedi",
     "adminResumeDescription": "İçeriğin ne zaman kısmen oynatıldı veya tamamen oynatıldı olarak işaretlenmesi gerektiğini yapılandırın.",
     "adminMinResumePercentage": "Minimum devam etme yüzdesi",
     "adminMinResumeSubtitle": "İlerlemenin kaydedilmesi için içeriğin bu yüzdeyi aşacak şekilde oynatılması gerekir",
@@ -5239,12 +5239,12 @@
     "adminNetworkingLoadFailed": "Ağ ayarları yüklenemedi",
     "adminNetworkingWarning": "Ağ ayarlarında yapılan değişiklikler sunucunun yeniden başlatılmasını gerektirebilir.",
     "adminEnableRemoteAccess": "Uzaktan erişimi etkinleştir",
-    "ports": "Limanlar",
+    "ports": "Portlar",
     "adminHttpPort": "HTTP bağlantı noktası",
     "adminHttpsPort": "HTTPS bağlantı noktası",
     "adminPublicHttpsPort": "Genel HTTPS bağlantı noktası",
     "adminBaseUrl": "Temel URL",
-    "adminBaseUrlHint": "örneğin /jölefin",
+    "adminBaseUrlHint": "Örn. /jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "HTTPS'yi etkinleştir",
     "adminLocalNetwork": "Yerel Ağ",
@@ -5274,7 +5274,7 @@
         }
     },
     "adminRefreshMetadata": "Meta Verileri Yenile",
-    "recursive": "Özyinelemeli",
+    "recursive": "Alt klasörlerle birlikte",
     "adminReplaceAllMetadata": "Tüm meta verileri değiştir",
     "adminReplaceAllImages": "Tüm resimleri değiştir",
     "adminMetadataRefreshRequested": "Meta veri yenileme istendi",
@@ -5346,7 +5346,7 @@
             }
         }
     },
-    "adminDeleteImage": "Delete {imageType} image",
+    "adminDeleteImage": "{imageType} görselini sil",
     "@adminDeleteImage": {
         "placeholders": {
             "imageType": {
@@ -5437,7 +5437,7 @@
     "adminPrePadding": "Ön doldurma (dakika)",
     "adminPostPadding": "Sonradan doldurma (dakika)",
     "adminRecordingPath": "Kayıt yolu",
-    "adminSeriesRecordingPath": "Seri kayıt yolu",
+    "adminSeriesRecordingPath": "Dizi kayıt yolu",
     "adminRecordingSettingsSaved": "Kayıt ayarları kaydedildi",
     "adminSettingsSaveFailed": "Ayarlar kaydedilemedi: {error}",
     "@adminSettingsSaveFailed": {
@@ -5448,7 +5448,7 @@
         }
     },
     "adminSetChannelMappings": "Kanal Eşlemelerini Ayarlama",
-    "adminMappingJson": "JSON'u Eşleme",
+    "adminMappingJson": "JSON Eşleme",
     "adminChannelMappingsUpdated": "Kanal eşlemeleri güncellendi",
     "adminMappingsUpdateFailed": "Eşleştirmeler güncellenemedi: {error}",
     "@adminMappingsUpdateFailed": {
@@ -5496,7 +5496,7 @@
             }
         }
     },
-    "adminTunerDiscovery": "Ayarlayıcı Keşfi",
+    "adminTunerDiscovery": "Tuner Keşfeti",
     "adminChannelMappings": "Kanal Eşlemeleri",
     "adminNoDiscoveredTuners": "Henüz keşfedilen tuner yok",
     "adminSettingsSaved": "Ayarlar kaydedildi",
@@ -5522,8 +5522,8 @@
     "adminNotSet": "Ayarlanmadı",
     "adminReset": "Sıfırla",
     "adminLogsTitle": "Sunucu Günlükleri",
-    "adminLogsNewestFirst": "En Yeni İlk",
-    "adminLogsOldestFirst": "En Eski İlk",
+    "adminLogsNewestFirst": "Önce en yeniler",
+    "adminLogsOldestFirst": "Önce en eskiler",
     "adminLogsJustNow": "Şu anda",
     "adminLogsMinutesAgo": "{minutes} dk önce",
     "@adminLogsMinutesAgo": {
@@ -5568,7 +5568,7 @@
     "adminLogViewerNoMatches": "Eşleşen çizgi yok",
     "adminMetadataEditorTitle": "Meta Veri Düzenleyici",
     "adminMetadataRemote": "Uzak",
-    "adminMetadataType": "Tip",
+    "adminMetadataType": "Tür",
     "adminMetadataDetails": "Detaylar",
     "adminMetadataExternalIds": "Harici Kimlikler",
     "adminMetadataImages": "Görseller",
@@ -5578,8 +5578,8 @@
     "adminMetadataFieldPremiereDate": "İlk gösterim tarihi (YYYY-AA-GG)",
     "adminMetadataFieldEndDate": "Bitiş tarihi (YYYY-AA-GG)",
     "adminMetadataFieldProductionYear": "Üretim yılı",
-    "adminMetadataFieldOfficialRating": "Resmi derecelendirme",
-    "adminMetadataFieldCommunityRating": "Topluluk derecelendirmesi",
+    "adminMetadataFieldOfficialRating": "Resmi Puanı",
+    "adminMetadataFieldCommunityRating": "Topluluk Puanı",
     "adminMetadataFieldCriticRating": "Eleştirmen puanı",
     "adminMetadataFieldTagline": "Slogan",
     "adminMetadataFieldOverview": "Genel Bakış",
@@ -5597,9 +5597,9 @@
     "adminMetadataImageBackdrop": "Arka plan",
     "adminMetadataImageLogo": "Logo",
     "adminMetadataImageBanner": "Afiş",
-    "adminMetadataImageThumb": "Baş parmak",
-    "adminMetadataRecursive": "Özyinelemeli",
-    "adminMetadataProvider": "sağlayıcı",
+    "adminMetadataImageThumb": "Küçük Resim",
+    "adminMetadataRecursive": "Alt klasörlerle birlikte",
+    "adminMetadataProvider": "Sağlayıcı",
     "adminMetadataImageUpdated": "{imageType} görseli güncellendi",
     "@adminMetadataImageUpdated": {
         "placeholders": {
@@ -5641,7 +5641,7 @@
             }
         }
     },
-    "adminMetadataDeleteImageTitle": "Delete {imageType} image",
+    "adminMetadataDeleteImageTitle": "{imageType} görselini sil",
     "@adminMetadataDeleteImageTitle": {
         "placeholders": {
             "imageType": {
@@ -5666,8 +5666,8 @@
             }
         }
     },
-    "adminMetadataUpload": "Yüklemek",
-    "adminMetadataUpdate": "Güncelleme",
+    "adminMetadataUpload": "Yükle",
+    "adminMetadataUpdate": "Güncelle",
     "adminMetadataRemoteImage": "Uzak görüntü",
     "adminPluginsInstalled": "Yüklendi",
     "adminPluginsCatalog": "Katalog",
@@ -5686,10 +5686,10 @@
     "adminPluginsUpdateAvailableGeneric": "Güncelleme mevcut",
     "adminPluginsPendingRemoval": "Yeniden başlatmanın ardından kaldırılma bekleniyor",
     "adminPluginsChangesPending": "Yeniden başlatmayı bekleyen değişiklikler",
-    "adminPluginsEnable": "Olanak vermek",
+    "adminPluginsEnable": "Etkinleştir",
     "adminPluginsDisable": "Devre dışı bırakmak",
     "adminPluginsInstallUpdate": "Güncellemeyi yükle",
-    "adminPluginsInstallUpdateVersioned": "Install update (v{version})",
+    "adminPluginsInstallUpdateVersioned": "Güncellemeyi yükle (v{version})",
     "@adminPluginsInstallUpdateVersioned": {
         "placeholders": {
             "version": {
@@ -5765,31 +5765,31 @@
     "adminPluginSettingsInvalidUrl": "Geçersiz URL",
     "adminGeneralSettingsTitle": "Genel Ayarlar",
     "adminGeneralMetadataLanguage": "Tercih edilen meta veri dili",
-    "adminGeneralMetadataLanguageHint": "örneğin tr, de, fr",
+    "adminGeneralMetadataLanguageHint": "Örn. en, de, fr",
     "adminGeneralMetadataCountry": "Tercih edilen meta veri ülkesi",
-    "adminGeneralMetadataCountryHint": "örneğin ABD, Almanya, Fransa",
+    "adminGeneralMetadataCountryHint": "Örn. US, DE, FR",
     "adminGeneralLibraryScanConcurrency": "Kitaplık taraması eşzamanlılığı",
-    "adminGeneralImageEncodingLimit": "Paralel görüntü kodlama sınırı",
+    "adminGeneralImageEncodingLimit": "Eşzamanlı görsel işleme sınırı",
     "adminUnknownError": "Bilinmeyen hata",
     "adminBrowse": "Göz at",
     "adminCloseBrowser": "Tarayıcıyı kapat",
-    "adminNetworkingTitle": "Ağ oluşturma",
+    "adminNetworkingTitle": "Ağ",
     "adminNetworkingRestartWarning": "Ağ ayarlarında yapılan değişiklikler sunucunun yeniden başlatılmasını gerektirebilir.",
     "adminNetworkingRemoteAccess": "Uzaktan erişimi etkinleştir",
-    "adminNetworkingPorts": "Limanlar",
+    "adminNetworkingPorts": "Portlar",
     "adminNetworkingHttpPort": "HTTP bağlantı noktası",
     "adminNetworkingHttpsPort": "HTTPS bağlantı noktası",
     "adminNetworkingEnableHttps": "HTTPS'yi etkinleştir",
     "adminNetworkingLocalNetwork": "Yerel Ağ",
     "adminNetworkingLocalAddresses": "Yerel ağ adresleri",
-    "adminNetworkingAddressHint": "örneğin 192.168.1.0/24",
+    "adminNetworkingAddressHint": "Örn. 192.168.1.0/24",
     "adminNetworkingKnownProxies": "Bilinen proxy'ler",
-    "adminNetworkingProxyHint": "örneğin 10.0.0.1",
+    "adminNetworkingProxyHint": "Örn. 10.0.0.1",
     "adminNetworkingWhitelist": "Beyaz liste",
     "adminNetworkingBlacklist": "Kara liste",
     "adminNetworkingAddEntry": "Giriş ekle",
     "adminBrandingTitle": "Markalaşma",
-    "adminBrandingLoginDisclaimer": "Giriş sorumluluk reddi beyanı",
+    "adminBrandingLoginDisclaimer": "Giriş uyarısı",
     "adminBrandingLoginDisclaimerHint": "Giriş formunun altında görüntülenen HTML",
     "adminBrandingCustomCss": "Özel CSS",
     "adminBrandingCustomCssHint": "Web arayüzüne uygulanan özel CSS",
@@ -5801,7 +5801,7 @@
     "adminPlaybackEncoding": "Kodlama",
     "adminPlaybackEncodingThreads": "Kodlama konuları",
     "adminPlaybackFallbackFont": "Yedek yazı tipini etkinleştir",
-    "adminPlaybackFallbackFontPath": "Geri dönüş yazı tipi yolu",
+    "adminPlaybackFallbackFontPath": "Yedek yazı tipi yolu",
     "adminPlaybackStreaming": "Akış",
     "adminResumeVideo": "Video",
     "adminResumeAudiobooks": "Sesli kitaplar",
@@ -5832,10 +5832,10 @@
     "adminTasksEmpty": "Zamanlanmış görev bulunamadı",
     "adminTasksNoFilterMatch": "Geçerli filtreyle eşleşen görev yok",
     "adminTaskCancelling": "İptal...",
-    "adminTaskRunning": "Koşma...",
-    "adminTaskNeverRun": "Asla koşma",
-    "adminTaskStop": "Durmak",
-    "adminTaskRun": "Koşmak",
+    "adminTaskRunning": "Çalışıyor...",
+    "adminTaskNeverRun": "Asla çalışma",
+    "adminTaskStop": "Dur",
+    "adminTaskRun": "Çalıştır",
     "adminTaskDetailLastExecution": "Son Yürütme",
     "adminTaskDetailStarted": "Başlatıldı",
     "adminTaskDetailEnded": "Sona erdi",
@@ -5892,7 +5892,7 @@
     "adminActivityLastHour": "Son saat",
     "adminActivityToday": "Bugün",
     "adminActivityYesterday": "Dün",
-    "adminActivityOlder": "daha yaşlı",
+    "adminActivityOlder": "Daha Eski",
     "adminActivityDaysAgo": "{days} g önce",
     "@adminActivityDaysAgo": {
         "placeholders": {
@@ -5918,7 +5918,7 @@
         }
     },
     "adminActivityNow": "Şimdi",
-    "adminActivityMinutesShort": "{minutes}m",
+    "adminActivityMinutesShort": "{minutes} dk",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -5926,7 +5926,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}h",
+    "adminActivityHoursShort": "{hours} sa",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -5934,7 +5934,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}d",
+    "adminActivityDaysShort": "{days} g",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -5956,7 +5956,7 @@
     "adminTrickplayDescription": "Önizleme küçük resimlerini aramak için hileli görüntü oluşturmayı yapılandırın.",
     "adminNetworkingPublicHttpsPort": "Genel HTTPS bağlantı noktası",
     "adminNetworkingBaseUrl": "Temel URL",
-    "adminNetworkingBaseUrlHint": "örneğin /jölefin",
+    "adminNetworkingBaseUrlHint": "Örn. /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Sertifika yolu",
     "adminNetworkingRemoteIpFilter": "Uzak IP Filtresi",
@@ -5964,9 +5964,9 @@
     "adminPlaybackVaapiDevice": "VA-API cihazı",
     "adminPlaybackAutomatic": "0 = otomatik",
     "adminPlaybackTranscodeTempPath": "Geçici yolu kod dönüştürme",
-    "adminPlaybackSegmentDeletion": "Segmentin silinmesine izin ver",
-    "adminPlaybackSegmentKeep": "Segment tutma (saniye)",
-    "adminPlaybackThrottleBuffering": "Kısma arabelleğe alma",
+    "adminPlaybackSegmentDeletion": "Parça silinmesine izin ver",
+    "adminPlaybackSegmentKeep": "Parça tutma süresi (saniye)",
+    "adminPlaybackThrottleBuffering": "Önbelleğe almayı sınırla",
     "adminResumeMinPct": "Minimum devam etme yüzdesi",
     "adminResumeMinPctSubtitle": "İlerlemenin kaydedilmesi için içeriğin bu yüzdeyi aşacak şekilde oynatılması gerekir",
     "adminResumeMaxPct": "Maksimum devam etme yüzdesi",
@@ -5994,7 +5994,7 @@
     "adminGeneralMetadataPath": "Meta veri yolu",
     "adminGeneralServerName": "Sunucu adı",
     "adminSettingsLoadFailed": "Ayarlar yüklenemedi",
-    "adminDiscover": "Keşfetmek",
+    "adminDiscover": "Keşfet",
     "adminChannelMappingsUpdateFailed": "Eşleştirmeler güncellenemedi: {error}",
     "@adminChannelMappingsUpdateFailed": {
         "placeholders": {
@@ -6047,7 +6047,7 @@
     },
     "castDeviceVolume": "Cihaz Sesi",
     "castVolumeUnavailable": "Kullanılamıyor",
-    "castStopKind": "Stop {kind}",
+    "castStopKind": "{kind} işlemini durdur",
     "@castStopKind": {
         "placeholders": {
             "kind": {
@@ -6153,7 +6153,7 @@
     "shuffleGenre": "Tür",
     "shuffleNoLibraries": "Uyumlu kitaplık yok.",
     "shuffleNoGenres": "Bu karışık mod için tür bulunamadı.",
-    "posterDisplayTitle": "Görüntülemek",
+    "posterDisplayTitle": "Göster",
     "posterImageType": "Resim Türü",
     "imageTypePoster": "Poster",
     "imageTypeThumbnail": "Küçük resim",
@@ -6161,7 +6161,7 @@
     "playlistAddFailed": "Çalma listesine eklenemedi",
     "playlistCreateFailed": "Oynatma listesi oluşturulamadı",
     "playlistNew": "Yeni Oynatma Listesi",
-    "playlistCreate": "Yaratmak",
+    "playlistCreate": "Oluştur",
     "playlistCreateNew": "Yeni Çalma Listesi Oluştur",
     "playlistNoneFound": "Oynatma listesi bulunamadı",
     "addToPlaylist": "Oynatma Listesine Ekle",
@@ -6169,8 +6169,8 @@
     "upNext": "Sonraki",
     "playNext": "Sonrakini Oynat",
     "stillWatchingContent": "Oynatma duraklatıldı. Hala izliyor musun?",
-    "stillWatchingStop": "Durmak",
-    "stillWatchingContinue": "Devam etmek",
+    "stillWatchingStop": "Dur",
+    "stillWatchingContinue": "Devam et",
     "skipSegment": "{segment} geç",
     "@skipSegment": {
         "placeholders": {
@@ -6180,7 +6180,7 @@
         }
     },
     "liveTv": "Canlı TV",
-    "continueWatchingAndNextUp": "İzlemeye Devam Et ve Sıradaki",
+    "continueWatchingAndNextUp": "İzlemeye Devam Et & Sıradaki Bölümler",
     "downloadingBatchProgress": "İndiriliyor: {current}/{total} — {fileName}",
     "@downloadingBatchProgress": {
         "placeholders": {
@@ -6292,11 +6292,11 @@
             }
         }
     },
-    "dtsPassthrough": "DTS Geçişi",
+    "dtsPassthrough": "DTS Doğrudan Geçiş (Passthrough)",
     "@dtsPassthrough": {
         "description": "Setting for DTS passthrough"
     },
-    "enableDtsPassthrough": "Bit akışı DTS sesi yalnızca AVR'ye; alıcı desteği ve DTS kaynak izi gerektirir",
+    "enableDtsPassthrough": "DTS sesi yalnızca AVR'ye bitstream olarak aktar; alıcı desteği ve DTS kaynak izi gerektirir",
     "@enableDtsPassthrough": {
         "description": "Description for DTS passthrough"
     },
@@ -6361,7 +6361,7 @@
     "@notRequestedStatus": {
         "description": "Request status label when no request exists"
     },
-    "blocklistedStatus": "Engellenenler listesine eklendi",
+    "blocklistedStatus": "Engellenenler listesinde",
     "@blocklistedStatus": {
         "description": "Request status label for blocklisted media"
     },
@@ -6385,7 +6385,7 @@
     "@revenueLabel": {
         "description": "Stat label for revenue"
     },
-    "runtimeLabel": "Çalışma zamanı",
+    "runtimeLabel": "Süre",
     "@runtimeLabel": {
         "description": "Stat label for runtime"
     },
@@ -6397,7 +6397,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "Mevsimler",
+    "seasonsLabel": "Sezonlar",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -6454,15 +6454,15 @@
     "syncPlayIgnoreWait": "Beklemeyi yoksay",
     "syncPlayIgnoreWaitSubtitle": "Bu cihaz arabelleğe alınırken grubu bekletmeyin",
     "syncPlayContinueLocallyNoWait": "Yavaş üyeleri beklemeden yerel olarak devam edin",
-    "syncPlayRepeat": "Tekrarlamak",
-    "syncPlayRepeatOne": "Bir",
-    "syncPlayShuffleModeShuffled": "Karıştırıldı",
+    "syncPlayRepeat": "Tekrarla",
+    "syncPlayRepeatOne": "Tek Sefer",
+    "syncPlayShuffleModeShuffled": "Karıştır",
     "syncPlayShuffleModeSorted": "Sıralanmış",
     "syncPlaySyncCurrentQueue": "Geçerli oynatma sırasını senkronize et",
     "syncPlaySyncCurrentQueueSubtitle": "Grup kuyruğunu yerel olarak oynatılanlarla değiştirin",
     "syncPlayLeaveGroup": "Gruptan ayrıl",
     "syncPlayGroupQueue": "Grup kuyruğu",
-    "syncPlayQueueItemFallback": "Item {index}",
+    "syncPlayQueueItemFallback": "{index}. Öge",
     "@syncPlayQueueItemFallback": {
         "description": "Fallback title for SyncPlay queue item when media title is unavailable",
         "placeholders": {
@@ -6480,9 +6480,9 @@
     "syncPlayNoGroupsAvailable": "Grup mevcut değil",
     "syncPlayJoinGroupQuestion": "SyncPlay grubuna katılmak ister misiniz?",
     "syncPlayJoinGroupWarning": "Bir SyncPlay grubuna katılmak mevcut oynatma sıranızın yerini alabilir. Devam etmek?",
-    "syncPlayJoin": "Katılmak",
+    "syncPlayJoin": "Katıl",
     "syncPlayStateIdle": "Boşta",
-    "syncPlayStateWaiting": "Beklemek",
+    "syncPlayStateWaiting": "Bekliyor",
     "syncPlayStatePaused": "Duraklatıldı",
     "syncPlayStatePlaying": "Oynanıyor",
     "syncPlayUserJoinedGroup": "{userName} SyncPlay grubuna katıldı",
@@ -6523,8 +6523,8 @@
     "rememberMyChoice": "Seçimimi hatırla",
     "playHdr10Fallback": "HDR10 yedeğini oynat",
     "requestTranscode": "Kod dönüştürme isteği",
-    "homeScreenSectionsIntegrationDescription": "IAmParadox27'nin \"Ana Ekran Bölümleri\" eklentisinin açığa çıkardığı satırları tespit edin. Satırlar aşağıda etkinleştirilebilir ve yeniden sıralanabilir.",
-    "homeScreenSectionsIntegrationNoServers": "Henüz eklentiyi bildiren Jellyfin sunucusu yok.",
+    "homeScreenSectionsIntegrationDescription": "IAmParadox27 tarafından geliştirilen \"Home Screen Sections\" eklentisinin sunduğu satırları algıla. Satırlar aşağıdan etkinleştirilebilir ve yeniden sıralanabilir.",
+    "homeScreenSectionsIntegrationNoServers": "Henüz bu eklentiyi bildiren bir Jellyfin sunucusu olmadı.",
     "integrationOpenHomeSections": "Ana Sayfa Bölümlerini Aç",
     "integrationOpenHomeSectionsSubtitle": "Satırları etkinleştirme, devre dışı bırakma ve yeniden sıralama",
     "integrationInstalledButDisabled": "Yüklendi ancak devre dışı bırakıldı",
@@ -6548,11 +6548,11 @@
         }
     },
     "offlineFileNotAvailable": "Dosya mevcut değil",
-    "playerTooltipLockLandscape": "Manzarayı kilitle",
+    "playerTooltipLockLandscape": "Yatay moda kilitle",
     "@playerTooltipLockLandscape": {
         "description": "Tooltip label for locking landscape orientation in player"
     },
-    "playerTooltipUnlockOrientation": "Rotasyona izin ver",
+    "playerTooltipUnlockOrientation": "Ekran döndürmeye izin ver",
     "@playerTooltipUnlockOrientation": {
         "description": "Tooltip label for unlocking orientation lock in player"
     },
@@ -6563,7 +6563,7 @@
     "settingsPersonalizationSubtitle": "Tema, gezinme, ana sayfa satırları ve kitaplık görünürlüğü",
     "settingsDynamicContent": "Dinamik İçerik",
     "settingsDynamicContentSubtitle": "Medya Çubuğu ve görsel katmanlar",
-    "settingsPlaybackSyncplay": "Oynatma ve SyncPlay",
+    "settingsPlaybackSyncplay": "Oynatma & SyncPlay",
     "settingsPlaybackSyncplaySubtitle": "Ses/video ayarları, altyazılar, indirmeler ve SyncPlay kontrolleri",
     "settingsIntegrationsSubtitle": "Eklenti senkronizasyonu, Seerr, derecelendirmeler ve daha fazlası",
     "settingsAboutSubtitle": "Uygulama sürümü, yasal bilgiler ve krediler",
@@ -6571,25 +6571,25 @@
     "settingsSortServersBy": "Sunucuları Şuna Göre Sırala",
     "settingsLastUsed": "Son Kullanılan",
     "settingsAlphabetical": "Alfabetik",
-    "settingsPrivacyAndSafetySection": "GİZLİLİK VE GÜVENLİK",
+    "settingsPrivacyAndSafetySection": "GİZLİLİK & GÜVENLİK",
     "settingsBlockedRatings": "Engellenen Derecelendirmeler",
     "settingsGeneralStyle": "Genel Stil",
     "settingsGeneralStyleSubtitle": "Tema vurguları, arka planlar, izlenen göstergeler ve tema müziği",
     "settingsHomePage": "Ana Sayfa",
     "settingsHomePageSubtitle": "Bölümler, görüntü türleri, kaplamalar ve medya önizlemeleri",
-    "settingsLibrariesSubtitle": "Kitaplık görünürlüğü, klasör görünümü ve çoklu sunucu davranışı",
-    "settingsTwentyFourHourClock": "24 Saatlik Saat",
-    "settingsTwentyFourHourClockSubtitle": "Saatin gösterildiği her yerde 24 saatlik zaman formatını kullanın",
-    "settingsShowShuffleButtonInNavigation": "Gezinme çubuğunda karıştır düğmesini göster",
-    "settingsShowGenresButtonInNavigation": "Gezinme çubuğunda türler düğmesini göster",
-    "settingsShowFavoritesButtonInNavigation": "Gezinme çubuğunda favoriler düğmesini göster",
-    "settingsShowLibrariesButtonInNavigation": "Gezinti çubuğunda kitaplıklar düğmesini göster",
+    "settingsLibrariesSubtitle": "Kütüphane görünürlüğü, klasör görünümü ve çoklu sunucu davranışı",
+    "settingsTwentyFourHourClock": "24 Saat Biçimi",
+    "settingsTwentyFourHourClockSubtitle": "Saatin gösterildiği her yerde 24 saat biçimini kullan",
+    "settingsShowShuffleButtonInNavigation": "Gezinme çubuğunda karıştır butonun göster",
+    "settingsShowGenresButtonInNavigation": "Gezinme çubuğunda türler butonunu göster",
+    "settingsShowFavoritesButtonInNavigation": "Gezinme çubuğunda favoriler butonunu göster",
+    "settingsShowLibrariesButtonInNavigation": "Gezinti çubuğunda kütüphaneler butonunu göster",
     "settingsLibraryVisibilitySubtitle": "Kitaplık başına ana sayfa görünürlüğünü değiştirin. Değişikliklerin etkili olması için Moonfin yeniden başlatın.",
     "settingsMediaBarAndLocalPreviews": "Medya Çubuğu ve Yerel Önizlemeler",
     "settingsVisualOverlays": "Görsel Kaplamalar",
-    "settingsSeasonalSurprise": "Sezon Sürprizi",
+    "settingsSeasonalSurprise": "Sezonluk Sürpriz",
     "settingsMetadataAndRatings": "Meta Veriler ve Derecelendirmeler",
-    "settingsPluginScreenDescription": "Moonbase, ek derecelendirme kaynakları, Seerr istekleri ve senkronize edilmiş tercihler dahil olmak üzere sunucu tarafı entegrasyonlarını destekler.",
+    "settingsPluginScreenDescription": "Moonbase, ek puan kaynakları, Seerr istekleri ve senkronize edilmiş tercihler dahil olmak üzere sunucu tarafı entegrasyonlarını destekler.",
     "settingsOfflineDownloads": "Çevrimdışı İndirmeler",
     "settingsHigh": "Yüksek",
     "settingsLow": "Düşük",
@@ -6599,11 +6599,11 @@
     "settingsConcurrentDownloadsDescription": "Tek seferde indirilebilecek maksimum öğe sayısı.",
     "settingsAppInfo": "UYGULAMA BİLGİSİ",
     "settingsReportAnIssue": "Sorun Bildir",
-    "settingsReportAnIssueSubtitle": "GitHub adresindeki sorun izleyiciyi açın",
-    "settingsJoinDiscord": "Discord'ye katılın",
+    "settingsReportAnIssueSubtitle": "GitHub Hata Takibini Aç",
+    "settingsJoinDiscord": "Discord'a Katıl",
     "settingsJoinDiscordSubtitle": "Toplulukla sohbet et",
-    "settingsJoinTheDiscord": "Discord'ye katılın",
-    "settingsSupportMoonfin": "Destek Moonfin",
+    "settingsJoinTheDiscord": "Discord'a Katıl",
+    "settingsSupportMoonfin": "Moonfin'e Destek Ol",
     "settingsLegal": "YASAL",
     "settingsLicenses": "Lisanslar",
     "settingsOpenSourceLicenseNotices": "Açık kaynak lisans bildirimleri",
@@ -6632,9 +6632,9 @@
     "settingsOfflineDownloadsSubtitle": "İndirme kalitesi, depolama sınırları ve kuyruk boyutu",
     "settingsSyncplaySubtitle": "Grup oturumları için senkronizasyon mantığı",
     "settingsAdvancedOptionsSubtitle": "Özel oynatıcı özellikleri. Bazı seçenekler oynatma sorunlarına neden olabileceğinden dikkatli kullanın",
-    "settingsSkipIntrosAndOutros": "Giriş ve Çıkışlar atlansın mı?",
+    "settingsSkipIntrosAndOutros": "Giriş ve Jenerikleri atlansın mı?",
     "settingsPromptUser": "Kullanıcıya Sor",
-    "settingsSkip": "Atlamak",
+    "settingsSkip": "Atla",
     "settingsDoNothing": "Hiçbir şey yapma",
     "settingsMaxBitrateDescription": "Akış bit hızını sınırlayın. Bu eşiğin üzerindeki içeriğin kodu sığacak şekilde dönüştürülecektir.",
     "settingsMaxResolutionDescription": "Oyuncunun isteyeceği maksimum çözünürlüğü sınırlayın. Daha yüksek çözünürlüklü içeriğin kodu dönüştürülecektir.",
@@ -6643,7 +6643,7 @@
     "settingsPlaybackEngineAndroidTvDescription": "Android TV cihazlarında varsayılan oynatma motorunu seçin. Değişiklikler bir sonraki oynatma oturumuna uygulanır.",
     "settingsPlaybackEngineMedia3Recommended": "Media3 (önerilir)",
     "settingsPlaybackEngineMpvLegacy": "mpv (eski)",
-    "settingsDolbyVisionFallback": "Dolby Vision Geri dönüş",
+    "settingsDolbyVisionFallback": "Dolby Vision Yedek Modu",
     "settingsDolbyVisionFallbackDescription": "Dolby Vision kod çözme özelliği olmayan cihazlarda Dolby Vision başlıkların davranışı.",
     "settingsAskEachTime": "Her seferinde sor",
     "settingsPreferHdr10Fallback": "HDR10 geri dönüşünü tercih et",
@@ -6661,7 +6661,7 @@
     "settingsFortyFiveSeconds": "45 saniye",
     "settingsSixtySeconds": "60 saniye",
     "settingsSkipForwardLengthDescription": "Hızlı ileri sarma tuşuna bastıktan sonra kaç saniye ileri atlanır.",
-    "settingsBitstreamAc3ToExternalDecoder": "Bitstream AC3'ten harici kod çözücüye",
+    "settingsBitstreamAc3ToExternalDecoder": "Bitstream AC3'ü harici dekodere aktar",
     "settingsCinemaMode": "Sinema Modu",
     "settingsCinemaModeSubtitle": "Ana özellikten önce fragmanları/ön gösterimleri oynatın",
     "settingsNextUpDisplayDescription": "Genişletilmiş, bölümün resmini ve açıklamasını içeren tam bir kart gösterir. Minimal, kompakt bir geri sayım katmanını gösterir. Devre Dışı istemi tamamen gizler.",
@@ -6698,7 +6698,7 @@
     "settingsSyncplayMaximumSpeedDelay": "Maksimum Hız Gecikmesi",
     "settingsSyncplaySpeedDuration": "Hız Süresi",
     "settingsSyncplayMinimumSkipDelay": "Minimum Atlama Gecikmesi",
-    "settingsSyncplayExtraOffset": "SyncPlay Ekstra Uzaklık",
+    "settingsSyncplayExtraOffset": "SyncPlay Ek Gecikme Süresi",
     "onNow": "Şimdi",
     "collections": "Koleksiyonlar",
     "lastPlayed": "Son Oynanan",
@@ -6727,11 +6727,11 @@
     "@desktopUiScale": {
         "description": "Setting for desktop UI scale"
     },
-    "playerTooltipFloatOnTop": "Üstte yüzer",
+    "playerTooltipFloatOnTop": "Her zaman üstte tut",
     "@playerTooltipFloatOnTop": {
         "description": "Tooltip label for enabling always-on-top in desktop player"
     },
-    "playerTooltipExitFloatOnTop": "Üstte şamandırayı devre dışı bırak",
+    "playerTooltipExitFloatOnTop": "Her zaman üstte tutmayı devre dışı bırak",
     "@playerTooltipExitFloatOnTop": {
         "description": "Tooltip label for disabling always-on-top in desktop player"
     },
@@ -6815,7 +6815,7 @@
     "@unableToCreateRecording": {
         "description": "Error when creating a live TV recording fails"
     },
-    "settingsAudioOutputMode": "Audio Output Mode",
+    "settingsAudioOutputMode": "Ses Çıkış Modu",
     "@settingsAudioOutputMode": {
         "description": "Setting for audio output mode"
     },
@@ -7158,7 +7158,7 @@
             }
         }
     },
-    "webDiagnosticsDetail": "Detail: {detail}",
+    "webDiagnosticsDetail": "Detay: {detail}",
     "@webDiagnosticsDetail": {
         "description": "Error detail shown in diagnostics summary",
         "placeholders": {
@@ -7567,7 +7567,7 @@
     },
     "homeRowDisplay": "Ana Sayfa Satır Gösterimi",
     "homeRowSections": "Ana Sayfa Satır Bölümleri",
-    "homeRowToggles": "Ana Sayfa Satır Aç/Kapat Ayarları",
+    "homeRowToggles": "Ana Sayfa Satır Ayarları",
     "homeRowTogglesSubtitle": "Farklı ana sayfa satır kategorilerini etkinleştirin veya devre dışı bırakın",
     "homeRowTogglesDescription": "Satırları Ana Sayfa Bölümleri'nde göstermek için aşağıdaki anahtarları etkinleştirin.",
     "displayPlaylistsRows": "Oynatma Listesi Satırlarını Göster",
@@ -7658,5 +7658,28 @@
     "sources": "Kaynaklar",
     "@sources": {
         "description": "Title of the artwork source-provider filter dialog"
-    }
+    },
+    "themeStore": "Tema Mağazası",
+    "themeStoreSubtitle": "Topluluk temalarına göz at ve kaydet",
+    "themeStoreDescription": "Bir temayı kaydederek diğer kayıtlı temalarınız gibi kullanabilirsiniz.",
+    "themeStoreEmpty": "Şu anda hiç tema bulunmuyor.",
+    "themeStoreLoadFailed": "Tema Mağazası yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+    "themeStoreSave": "Kaydet",
+    "themeStoreSaveAndApply": "Kaydet & Uygula",
+    "themeStoreSaved": "Kayıtlı",
+    "themeStoreInvalidMessage": "Bu tema yüklenemedi.",
+    "themeStoreSavedMessage": "\"{themeName}\" kaydedildi.",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "displayAudioRows": "Ses Satırlarını Göster",
+    "displayAudioRowsSubtitle": "Ana Sayfa Bölümlerinde Ses Satırlarını Göster.",
+    "audioRowsSorting": "Ses Satırları Sıralaması",
+    "audioRowsSortingDescription": "Ses satırlarını eklenme tarihine, çıkış tarihine, alfabetik sıraya ve daha fazlasına göre sıralayın.",
+    "audioPlaylists": "Ses Oynatma Listeleri"
 }

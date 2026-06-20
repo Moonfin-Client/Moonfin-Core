@@ -3607,7 +3607,7 @@
     "@myMediaSmall": {
         "description": "Home section: my media small"
     },
-    "continueWatching": "Continuer à regarder",
+    "continueWatching": "Continuer de regarder",
     "@continueWatching": {
         "description": "Home section: continue watching"
     },
@@ -3651,7 +3651,7 @@
     "@configureImageTypeForEachRow": {
         "description": "Description for per-row image type selection"
     },
-    "mergeContinueWatchingAndNextUp": "Fusionner Continuer à regarder et À suivre",
+    "mergeContinueWatchingAndNextUp": "Fusionner Continuer de regarder et À suivre",
     "@mergeContinueWatchingAndNextUp": {
         "description": "Setting for merging continue watching and next up"
     },
@@ -3977,7 +3977,7 @@
     "@upcomingMovies": {
         "description": "Seerr row: upcoming movies"
     },
-    "studios": "Ateliers",
+    "studios": "Studios",
     "@studios": {
         "description": "Seerr row: studios"
     },
@@ -3993,7 +3993,7 @@
     "@upcomingSeries": {
         "description": "Seerr row: upcoming series"
     },
-    "networks": "Chaînes",
+    "networks": "Diffuseurs",
     "@networks": {
         "description": "Seerr row: networks"
     },
@@ -5585,7 +5585,7 @@
     "adminMetadataFieldOverview": "Synopsis",
     "adminMetadataGenres": "Genres",
     "adminMetadataTags": "Balises",
-    "adminMetadataStudios": "Ateliers",
+    "adminMetadataStudios": "Studios",
     "adminMetadataPeople": "Personnes",
     "adminMetadataAddGenre": "Ajouter un genre",
     "adminMetadataAddTag": "Ajouter un tag",
@@ -6180,7 +6180,7 @@
         }
     },
     "liveTv": "TV en direct",
-    "continueWatchingAndNextUp": "Reprendre la lecture et À suivre",
+    "continueWatchingAndNextUp": "Continuer de regarder et à suivre",
     "downloadingBatchProgress": "Téléchargement de {current}/{total} — {fileName}",
     "@downloadingBatchProgress": {
         "placeholders": {
@@ -6653,7 +6653,7 @@
     "settingsAutoAftkrtEnabled": "Auto (AFTKRT activé)",
     "settingsEnabledOnThisDevice": "Activé sur cet appareil",
     "settingsDisabledPreferTranscode": "Désactivé (préférer le transcodage)",
-    "settingsResumeRewindDescription": "Lors de la reprise de la lecture (à partir de Continuer à regarder ou d'une page d'élément multimédia), combien de secondes doivent être rembobinées ?",
+    "settingsResumeRewindDescription": "Lors de la reprise de la lecture (à partir de Continuer de regarder ou d'une page d'élément multimédia), combien de secondes doivent être rembobinées ?",
     "settingsUnpauseRewindDescription": "Lors de la reprise de la lecture après avoir appuyé sur le bouton pause, combien de secondes doivent être rembobinées ?",
     "settingsSkipBackLengthDescription": "Combien de secondes faut-il revenir en arrière après avoir appuyé sur le bouton de rembobinage.",
     "settingsOneSecond": "1 seconde",
@@ -7347,9 +7347,9 @@
     "cb7ExtractionPluginUnavailable": "Le plugin d'extraction CB7 n'est pas disponible sur cette plateforme.",
     "closeGenrePanel": "Fermer le panneau des genres",
     "loadingShuffle": "Chargement aléatoire...",
-    "libraryShuffleLabel": "LIBRARY SHUFFLE",
-    "randomShuffleLabel": "RANDOM SHUFFLE",
-    "genresShuffleLabel": "GENRES SHUFFLE",
+    "libraryShuffleLabel": "BIBLIOTHÈQUE ALÉATOIRE",
+    "randomShuffleLabel": "TRI ALÉATOIRE",
+    "genresShuffleLabel": "GENRES ALÉATOIRE",
     "autoHdrSwitching": "Commutation HDR automatique",
     "autoHdrSwitchingDescription": "Activez automatiquement le HDR pour la lecture vidéo HDR et restaurez le mode d'affichage à la sortie.",
     "whenFullscreen": "En plein écran",
@@ -7658,5 +7658,15 @@
     "clockModeBouncing": "Rebondissant",
     "@clockModeBouncing": {
         "description": "Screensaver clock mode: bounces around the screen"
-    }
+    },
+    "themeStoreSavedMessage": "{themeName} sauvegardé.",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "themeStoreInvalidMessage": "Le thème n'a pas pu être chargé."
 }

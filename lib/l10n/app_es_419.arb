@@ -2722,11 +2722,11 @@
     "@showBackdropImages": {
         "description": "Description for background backdrops"
     },
-    "seriesThumbnails": "Miniaturas de series",
+    "seriesThumbnails": "Mostrar miniaturas de series",
     "@seriesThumbnails": {
         "description": "Setting for series thumbnails"
     },
-    "seriesThumbnailsDescription": "Solo episodios: use ilustraciones de la serie que coincidan con el tipo de imagen de cada fila",
+    "seriesThumbnailsDescription": "Para las series de TV, utiliza la imagen principal de la serie en lugar de la miniatura del episodio",
     "@seriesThumbnailsDescription": {
         "description": "Description for series thumbnails setting"
     },
@@ -3284,7 +3284,7 @@
     "@syncing": {
         "description": "Label while syncing"
     },
-    "syncToProfile": "Sincronizar con el perfil",
+    "syncToProfile": "Sincronizar perfil",
     "@syncToProfile": {
         "description": "Button to sync to a profile"
     },
@@ -3991,7 +3991,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Complemento",
+    "pluginLabel": "Complemento Moonbase",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -6750,7 +6750,7 @@
             }
         }
     },
-    "desktopUiScale": "Escala de interfaz de usuario de escritorio",
+    "desktopUiScale": "Escala de la interfaz",
     "@desktopUiScale": {
         "description": "Setting for desktop UI scale"
     },
@@ -6839,55 +6839,55 @@
     "@settingsAudioFallbackEac35_1": {
         "description": "Fallback codec option for EAC3 5.1"
     },
-    "settingsAudioPassthroughAdvanced": "Paso a través (avanzado)",
+    "settingsAudioPassthroughAdvanced": "Passthrough (Avanzado)",
     "@settingsAudioPassthroughAdvanced": {
         "description": "Section title for advanced passthrough controls"
     },
-    "settingsAudioCodecPassthrough": "Paso de códec",
+    "settingsAudioCodecPassthrough": "Passthrough de códecs",
     "@settingsAudioCodecPassthrough": {
         "description": "Title for codec passthrough settings group"
     },
-    "settingsAudioCodecPassthroughDescription": "Habilite solo los formatos que admite su disipador AVR o HDMI.",
+    "settingsAudioCodecPassthroughDescription": "Activa únicamente los formatos compatibles con tu receptor AV (AVR) o dispositivo HDMI de destino.",
     "@settingsAudioCodecPassthroughDescription": {
         "description": "Description for codec passthrough settings group"
     },
-    "settingsAudioEac3Passthrough": "Paso EAC3",
+    "settingsAudioEac3Passthrough": "Passthrough de EAC3",
     "@settingsAudioEac3Passthrough": {
         "description": "Setting for EAC3 passthrough"
     },
-    "settingsAudioEac3JocPassthrough": "Paso EAC3 JOC (Atmos)",
+    "settingsAudioEac3JocPassthrough": "Passthrough de EAC3 JOC (Atmos)",
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "Paso a través del núcleo DTS",
+    "settingsAudioDtsCorePassthrough": "Passthrough de DTS Core",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
-    "settingsAudioDtsHdPassthrough": "Paso a través de DTS-HD MA",
+    "settingsAudioDtsHdPassthrough": "Passthrough de DTS-HD MA",
     "@settingsAudioDtsHdPassthrough": {
         "description": "Setting for DTS-HD MA passthrough"
     },
-    "settingsAudioTrueHdPassthrough": "Paso TrueHD",
+    "settingsAudioTrueHdPassthrough": "Passthrough de TrueHD",
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "Paso TrueHD Atmos",
+    "settingsAudioTrueHdAtmosPassthrough": "Passthrough de TrueHD Atmos",
     "@settingsAudioTrueHdAtmosPassthrough": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
-    "settingsAudioBitstreamEac3ToExternalDecoder": "Bitstream Dolby Digital Plus (EAC3) a decodificador externo.",
+    "settingsAudioBitstreamEac3ToExternalDecoder": "Envía Dolby Digital Plus (EAC3) en formato bitstream a un decodificador externo.",
     "@settingsAudioBitstreamEac3ToExternalDecoder": {
         "description": "Description for EAC3 passthrough"
     },
-    "settingsAudioBitstreamEac3JocToExternalDecoder": "Bitstream Dolby Atmos sobre EAC3 (JOC) a decodificador externo.",
+    "settingsAudioBitstreamEac3JocToExternalDecoder": "Envía Dolby Atmos sobre EAC3 (JOC) en formato bitstream a un decodificador externo.",
     "@settingsAudioBitstreamEac3JocToExternalDecoder": {
         "description": "Description for EAC3 JOC passthrough"
     },
-    "settingsAudioBitstreamDtsHdToExternalDecoder": "Bitstream DTS-HD MA (incluye núcleo DTS) a decodificador externo.",
+    "settingsAudioBitstreamDtsHdToExternalDecoder": "Envía DTS-HD MA (incluye el núcleo DTS) en formato bitstream a un decodificador externo.",
     "@settingsAudioBitstreamDtsHdToExternalDecoder": {
         "description": "Description for DTS-HD MA passthrough"
     },
-    "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Bitstream Dolby TrueHD con metadatos Atmos a decodificador externo.",
+    "settingsAudioBitstreamTrueHdAtmosToExternalDecoder": "Envía Dolby TrueHD con metadatos Atmos en formato bitstream a un decodificador externo.",
     "@settingsAudioBitstreamTrueHdAtmosToExternalDecoder": {
         "description": "Description for TrueHD Atmos passthrough"
     },
@@ -7354,5 +7354,178 @@
     "autoHdrSwitchingDescription": "Habilite HDR automáticamente para la reproducción de video HDR y restaure el modo de visualización al salir.",
     "whenFullscreen": "Cuando pantalla completa",
     "transcodingLimits": "Límites de transcodificación",
-    "settingsSupportMoonfinSubtitle": "Dona un café al desarrollador"
+    "settingsSupportMoonfinSubtitle": "Dona un café al desarrollador",
+    "accountPreferences": "PREFERENCIAS DE CUENTA",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "Idioma de la interfaz",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "Predeterminado",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "Vacío",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "themeGlass": "Glass",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "Diseño tipo cristal líquido, con un degradado dinámico de fondo, paneles translúcidos con efecto vidrio esmerilado y detalles en azul característico de Apple",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "endsIn": "Finaliza en {time}",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "DIRECTORES",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "ESCRITOR",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "settingsScrollWheelAction": "Rueda del mouse",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "Elige qué acción realiza la rueda del mouse al desplazarse sobre el video durante la reproducción",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "Desactivado",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "Avanzar o retroceder",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "Volumen",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "Volumen",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "settingsAudioOutputModeDescription": "Elige cómo se decodifica el audio. Passthrough AVR envía las transmisiones Dolby/DTS sin procesar a tu receptor; Automático o Mezcla estéreo las decodifican localmente.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "Selecciona el formato de destino al que se convertirá el audio multicanal cuando la transmisión original no pueda reproducirse directamente ni enviarse mediante passthrough.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "Detección automática\n(Recomendado)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(Predeterminado)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Sin pérdida)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(Sólo Stereo)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(Eficiente)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(Sin pérdida)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "Máximo de canales de audio",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "Configura la cantidad máxima de canales de tu sistema de audio. Las transmisiones multicanal que superen este límite se mezclarán a menos canales o se convertirán a otro formato.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "Detección automática\n(Predeterminado del hardware)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 Mono",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 Stéreo",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 Surround",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Cuadrafónico",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Envolvente",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 Envolvente",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 Envolvente",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 Envolvente",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "showSeerrButton": "Mostrar botón de Seerr",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "fullScreenRows": "Filas de inicio ampliadas",
+    "@fullScreenRows": {
+        "description": "Setting for full screen home rows"
+    },
+    "fullScreenRowsDescription": "Limita las filas de inicio a una sola fila por pantalla",
+    "@fullScreenRowsDescription": {
+        "description": "Description for full screen home rows"
+    },
+    "currentUser": "Usuario actual",
+    "@currentUser": {
+        "description": "Option: current user"
+    },
+    "clockModeStatic": "Estático",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "Rebotando",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    }
 }

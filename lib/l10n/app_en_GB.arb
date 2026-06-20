@@ -3967,7 +3967,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Plugin",
+    "pluginLabel": "Moonbase Plugin",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -6729,7 +6729,7 @@
             }
         }
     },
-    "desktopUiScale": "Desktop UI Scale",
+    "desktopUiScale": "UI Scaling",
     "@desktopUiScale": {
         "description": "Setting for UI scaling"
     },
@@ -7146,7 +7146,7 @@
     "playerRouting": "Player Routing",
     "preferSoftwareDecoders": "Prefer software decoders",
     "preferSoftwareDecodersSubtitle": "Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.",
-    "useExternalPlayer": "Use external player",
+    "useExternalPlayer": "Always use external player",
     "useExternalPlayerSubtitle": "Open video playback in your selected external app on Android TV.",
     "automaticQueuing": "Automatic Queuing",
     "preferSdhSubtitles": "Prefer SDH subtitles",
@@ -7362,5 +7362,324 @@
     "autoHdrSwitching": "Auto HDR Switching",
     "autoHdrSwitchingDescription": "Automatically enable HDR for HDR video playback and restore display mode on exit.",
     "whenFullscreen": "When fullscreen",
-    "transcodingLimits": "Transcoding Limits"
+    "transcodingLimits": "Transcoding Limits",
+    "accountPreferences": "ACCOUNT PREFERENCES",
+    "@accountPreferences": {
+        "description": "Section header for account preferences settings"
+    },
+    "interfaceLanguage": "Interface Language",
+    "@interfaceLanguage": {
+        "description": "Label for the app interface language setting"
+    },
+    "systemLanguageDefault": "System Default",
+    "@systemLanguageDefault": {
+        "description": "Label for using the system default language in settings"
+    },
+    "empty": "Empty",
+    "@empty": {
+        "description": "Label indicating a section or category is empty"
+    },
+    "themeGlass": "Glass",
+    "@themeGlass": {
+        "description": "Display name for the Glass theme"
+    },
+    "themeGlassSubtitle": "Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent",
+    "@themeGlassSubtitle": {
+        "description": "Preview description for the Glass theme"
+    },
+    "endsIn": "Ends in {time}",
+    "@endsIn": {
+        "description": "Label showing remaining time for segment or timeout",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "directors": "DIRECTORS",
+    "@directors": {
+        "description": "Metadata label for directors"
+    },
+    "writer": "WRITER",
+    "@writer": {
+        "description": "Metadata label for writer"
+    },
+    "settingsScrollWheelAction": "Mouse scroll wheel",
+    "@settingsScrollWheelAction": {
+        "description": "Setting title for the mouse scroll wheel action during playback"
+    },
+    "settingsScrollWheelActionDescription": "Choose what scrolling the mouse wheel over the video does during playback.",
+    "@settingsScrollWheelActionDescription": {
+        "description": "Description for the mouse scroll wheel action setting"
+    },
+    "scrollWheelActionOff": "Off",
+    "@scrollWheelActionOff": {
+        "description": "Scroll wheel action option: do nothing"
+    },
+    "scrollWheelActionSeek": "Seek (forward / back)",
+    "@scrollWheelActionSeek": {
+        "description": "Scroll wheel action option: seek forward and back"
+    },
+    "scrollWheelActionVolume": "Volume",
+    "@scrollWheelActionVolume": {
+        "description": "Scroll wheel action option: adjust volume"
+    },
+    "playerTooltipVolume": "Volume",
+    "@playerTooltipVolume": {
+        "description": "Tooltip for the volume control button in the player OSD"
+    },
+    "settingsAudioOutputModeDescription": "Choose how audio is decoded. AVR Passthrough sends raw Dolby/DTS streams to your receiver; Auto or Downmix decodes locally.",
+    "@settingsAudioOutputModeDescription": {
+        "description": "Description for audio output mode setting"
+    },
+    "settingsAudioFallbackCodecDescription": "Select the target format to transcode multi-channel audio when the source stream cannot be direct-played or passed through.",
+    "@settingsAudioFallbackCodecDescription": {
+        "description": "Description for audio fallback codec setting"
+    },
+    "settingsAudioFallbackCodecAuto": "Auto Detect\n(Recommended)",
+    "@settingsAudioFallbackCodecAuto": {
+        "description": "Fallback codec option: Auto"
+    },
+    "settingsAudioFallbackCodecAac": "AAC\n(Default)",
+    "@settingsAudioFallbackCodecAac": {
+        "description": "Fallback codec option: AAC"
+    },
+    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "@settingsAudioFallbackCodecAc3": {
+        "description": "Fallback codec option: AC3"
+    },
+    "clockModeStatic": "Static",
+    "@clockModeStatic": {
+        "description": "Screensaver clock mode: fixed in a corner"
+    },
+    "clockModeBouncing": "Bouncing",
+    "@clockModeBouncing": {
+        "description": "Screensaver clock mode: bounces around the screen"
+    },
+    "seerrDiscoveryRows": "Seerr Discovery Rows",
+    "@seerrDiscoveryRows": {
+        "description": "Subtitle shown under Seerr discovery home rows"
+    },
+    "settingsShowSeerrButtonInNavigation": "Show the Seerr button in the navigation bar",
+    "settingsMediaSegmentCountdown": "Media Segment Countdown",
+    "@settingsMediaSegmentCountdown": {
+        "description": "Setting label for media segment countdown customizations"
+    },
+    "settingsProgressBar": "Progress Bar",
+    "@settingsProgressBar": {
+        "description": "Option label to show only progress bar on media segment countdown overlay"
+    },
+    "settingsTimer": "Timer",
+    "@settingsTimer": {
+        "description": "Option label to show only countdown timer on media segment countdown overlay"
+    },
+    "settingsNone": "None",
+    "@settingsNone": {
+        "description": "Option label to hide all decorations on media segment countdown overlay"
+    },
+    "enableTunnelingTitle": "Enable tunneling",
+    "@enableTunnelingTitle": {
+        "description": "Setting title: enable tunneled video playback (advanced)"
+    },
+    "enableTunnelingSubtitle": "Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.",
+    "@enableTunnelingSubtitle": {
+        "description": "Setting subtitle for enable tunneling"
+    },
+    "showMediaDetailsOnLibraryPage": "Show Media Details",
+    "@showMediaDetailsOnLibraryPage": {
+        "description": "Setting title to show/hide focused media details at the top of the library page"
+    },
+    "showMediaDetailsOnLibraryPageDescription": "Show details of the selected item at the top of Library pages.",
+    "@showMediaDetailsOnLibraryPageDescription": {
+        "description": "Setting description to show/hide focused media details at the top of the library page"
+    },
+    "themeStore": "Theme Store",
+    "themeStoreSubtitle": "Browse and save community themes",
+    "themeStoreDescription": "Save a theme to use it like your other saved themes.",
+    "themeStoreEmpty": "No themes are available right now.",
+    "themeStoreLoadFailed": "Couldn't load the Theme Store. Check your connection and try again.",
+    "themeStoreSave": "Save",
+    "themeStoreSaveAndApply": "Save & apply",
+    "themeStoreSaved": "Saved",
+    "themeStoreInvalidMessage": "This theme couldn't be loaded.",
+    "themeStoreSavedMessage": "Saved \"{themeName}\".",
+    "@themeStoreSavedMessage": {
+        "description": "Status message shown after saving a Theme Store theme",
+        "placeholders": {
+            "themeName": {
+                "type": "String"
+            }
+        }
+    },
+    "homeRowDisplay": "Home Row Display",
+    "homeRowSections": "Home Row Sections",
+    "homeRowToggles": "Home Row Toggles",
+    "homeRowTogglesSubtitle": "Enable or disable different home row categories",
+    "homeRowTogglesDescription": "Enable the following toggles to display the rows in Home Sections.",
+    "displayPlaylistsRows": "Display Playlist Rows",
+    "displayPlaylistsRowsSubtitle": "Show Playlist rows in Home Sections.",
+    "playlistsRowSorting": "Playlist Row Sorting",
+    "playlistsRowSortingDescription": "Sort Playlist rows by date added, release date, alphabetically, and more.",
+    "displayAudioRows": "Display Audio Rows",
+    "displayAudioRowsSubtitle": "Show Audio rows in Home Sections.",
+    "audioRowsSorting": "Audio Rows sorting",
+    "audioRowsSortingDescription": "Sort Audio rows by date added, release date, alphabetically, and more.",
+    "audioPlaylists": "Audio Playlists",
+    "displaySeerrRows": "Display Seerr Discovery Rows",
+    "displaySeerrRowsSubtitle": "Show Seerr discovery rows in Home Sections.",
+    "externalPlayerAppDescription": "Set external player to enable long-press play option",
+    "changeArtwork": "Change Artwork",
+    "missing": "Missing",
+    "clearAllArtworkButton": "Clear all artwork?",
+    "clearAllArtworkWarning": "Are you sure you want to clear all downloaded artwork?",
+    "confirmClear": "Confirm Clear",
+    "confirmClearMessage": "Are you sure you would like to clear this {itemType}?",
+    "@confirmClearMessage": {
+        "description": "Confirmation message when clearing a specific artwork",
+        "placeholders": {
+            "itemType": {
+                "type": "String"
+            }
+        }
+    },
+    "uploadButton": "Upload?",
+    "resolutionLabel": "Resolution: ",
+    "onlyShowInterfaceLanguage": "Only show artwork in interface language",
+    "confirmClearAll": "Confirm Clear All",
+    "imageUploadSuccess": "Image uploaded successfully!",
+    "imageUploadFailed": "Failed to upload image: {error}",
+    "@imageUploadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDownloadFailed": "Failed to set image: {error}",
+    "@imageDownloadFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "imageDeleteFailed": "Failed to delete image: {error}",
+    "@imageDeleteFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "clearAllArtworkFailed": "Failed to clear all artwork: {error}",
+    "@clearAllArtworkFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "yes": "Yes",
+    "posterCategory": "Poster",
+    "backdropsCategory": "Backdrops",
+    "bannerCategory": "Banner",
+    "logoCategory": "Logo",
+    "thumbnailCategory": "Thumbnail",
+    "artCategory": "Art",
+    "discArtCategory": "Disc Art",
+    "screenshotCategory": "Screenshot",
+    "boxCoverCategory": "Box Cover",
+    "boxRearCoverCategory": "Box Rear Cover",
+    "menuArtCategory": "Menu Art",
+    "confirmItemPoster": "poster",
+    "confirmItemBackdrop": "backdrop",
+    "confirmItemBanner": "banner",
+    "confirmItemLogo": "logo",
+    "confirmItemThumbnail": "thumbnail",
+    "confirmItemArt": "art",
+    "confirmItemDiscArt": "disc art",
+    "confirmItemScreenshot": "screenshot",
+    "confirmItemBoxCover": "box cover",
+    "confirmItemBoxRearCover": "box rear cover",
+    "confirmItemMenuArt": "menu art",
+    "resolutionAll": "All",
+    "resolutionHigh": "High (1080p+)",
+    "resolutionMedium": "Medium (720p)",
+    "resolutionLow": "Low (<720p)",
+    "sources": "Sources",
+    "@sources": {
+        "description": "Title of the artwork source-provider filter dialog"
+    },
+    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "@settingsAudioFallbackCodecEac3": {
+        "description": "Fallback codec option: EAC3"
+    },
+    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Lossless)",
+    "@settingsAudioFallbackCodecTrueHd": {
+        "description": "Fallback codec option: TrueHD"
+    },
+    "settingsAudioFallbackCodecMp3": "MP3\n(Stereo Only)",
+    "@settingsAudioFallbackCodecMp3": {
+        "description": "Fallback codec option: MP3"
+    },
+    "settingsAudioFallbackCodecOpus": "Opus\n(Efficient)",
+    "@settingsAudioFallbackCodecOpus": {
+        "description": "Fallback codec option: Opus"
+    },
+    "settingsAudioFallbackCodecFlac": "FLAC\n(Lossless)",
+    "@settingsAudioFallbackCodecFlac": {
+        "description": "Fallback codec option: FLAC"
+    },
+    "settingsMaxAudioChannels": "Max Audio Channels",
+    "@settingsMaxAudioChannels": {
+        "description": "Setting for maximum audio channels capability"
+    },
+    "settingsMaxAudioChannelsDescription": "Configure the maximum channels of your audio setup. Multichannel streams exceeding this limit will downmix or transcode.",
+    "@settingsMaxAudioChannelsDescription": {
+        "description": "Description for maximum audio channels setting"
+    },
+    "settingsMaxAudioChannelsAuto": "Auto Detect\n(Hardware Default)",
+    "@settingsMaxAudioChannelsAuto": {
+        "description": "Option: Auto detect channels"
+    },
+    "settingsMaxAudioChannelsMono": "1.0 Mono",
+    "@settingsMaxAudioChannelsMono": {
+        "description": "Option: Mono (1 channel)"
+    },
+    "settingsMaxAudioChannelsStereo": "2.0 Stereo",
+    "@settingsMaxAudioChannelsStereo": {
+        "description": "Option: Stereo (2 channels)"
+    },
+    "settingsMaxAudioChannels3_0": "3.0 / 2.1 Surround",
+    "@settingsMaxAudioChannels3_0": {
+        "description": "Option: 3 channels"
+    },
+    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Quadraphonic",
+    "@settingsMaxAudioChannels4_0": {
+        "description": "Option: 4 channels"
+    },
+    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Surround",
+    "@settingsMaxAudioChannels5_0": {
+        "description": "Option: 5 channels"
+    },
+    "settingsMaxAudioChannels5_1": "5.1 Surround",
+    "@settingsMaxAudioChannels5_1": {
+        "description": "Option: 5.1 Surround channels"
+    },
+    "settingsMaxAudioChannels6_1": "6.1 Surround",
+    "@settingsMaxAudioChannels6_1": {
+        "description": "Option: 6.1 Surround channels"
+    },
+    "settingsMaxAudioChannels7_1": "7.1 Surround",
+    "@settingsMaxAudioChannels7_1": {
+        "description": "Option: 7.1 Surround channels"
+    },
+    "showSeerrButton": "Show Seerr Button",
+    "@showSeerrButton": {
+        "description": "Setting for showing Seerr button"
+    },
+    "currentUser": "Current User",
+    "@currentUser": {
+        "description": "Option: current user"
+    }
 }

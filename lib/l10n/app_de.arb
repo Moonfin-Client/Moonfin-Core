@@ -1050,7 +1050,7 @@
             }
         }
     },
-    "endsAt": "Endet bei {time}",
+    "endsAt": "Endet um {time}",
     "@endsAt": {
         "description": "Label showing when media will end",
         "placeholders": {
@@ -6723,7 +6723,7 @@
             }
         }
     },
-    "desktopUiScale": "Desktop-UI-Skalierung",
+    "desktopUiScale": "UI-Skalierung",
     "@desktopUiScale": {
         "description": "Setting for desktop UI scale"
     },
