@@ -171,8 +171,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   MediaSegment? _skipSegment;
   Duration? _skipTo;
+  Timer? _skipSegmentHideTimer;
+  bool _skipSegmentAutoHidden = false;
   bool _showNextUp = false;
   AggregatedItem? _nextUpItem;
+  Timer? _nextUpHideTimer;
+  bool _nextUpAutoHidden = false;
   bool _nextUpDismissed = false;
   bool _isNextUpAdvancing = false;
   int _consecutiveEpisodes = 0;
@@ -940,6 +944,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _removeZoomModeToastOverlay();
     _skipForwardTimer?.cancel();
     _skipBackwardTimer?.cancel();
+    _skipSegmentHideTimer?.cancel();
+    _skipSegmentHideTimer = null;
+    _nextUpHideTimer?.cancel();
+    _nextUpHideTimer = null;
     if (_useSystemVolume) {
       _volumeListenerSub?.cancel();
       VolumeController.instance.removeListener();
@@ -2157,8 +2165,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         _skipSegment = result.segment;
         _skipTo = result.skipTo;
         _controlsVisible = false;
+        _skipSegmentAutoHidden = false;
       });
       _hideTimer?.cancel();
+      _startSkipSegmentAutoHide();
       _focusTvSkipSegment();
     } else if (result.isNone && _skipSegment != null) {
       _clearSkipSegment();
@@ -2268,8 +2278,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _controlsVisible = false;
       _skipSegment = null;
       _skipTo = null;
+      _skipSegmentAutoHidden = false;
     });
+    _skipSegmentHideTimer?.cancel();
+    _skipSegmentHideTimer = null;
     _hideTimer?.cancel();
+    _startNextUpAutoHide();
     _focusTvNextUpPlay();
   }
 
@@ -2280,6 +2294,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       return;
     }
     _suppressBackNavigation(duration: const Duration(milliseconds: 500));
+    _nextUpHideTimer?.cancel();
+    _nextUpHideTimer = null;
     _isNextUpAdvancing = true;
     setState(() => _showNextUp = false);
     try {
@@ -2292,18 +2308,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
 
   void _handleNextUpDismiss() {
     _suppressBackNavigation(duration: const Duration(milliseconds: 500));
+    _nextUpHideTimer?.cancel();
+    _nextUpHideTimer = null;
     _manager.suppressAutoNext = false;
     setState(() {
       _showNextUp = false;
       _nextUpDismissed = true;
+      _nextUpAutoHidden = false;
     });
   }
 
   void _handleNextUpCancel() {
     _suppressBackNavigation(duration: const Duration(milliseconds: 500));
+    _nextUpHideTimer?.cancel();
+    _nextUpHideTimer = null;
     setState(() {
       _showNextUp = false;
       _nextUpDismissed = true;
+      _nextUpAutoHidden = false;
     });
     unawaited(_exitPlayback());
   }
@@ -2397,9 +2419,12 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _clearSkipSegment() {
+    _skipSegmentHideTimer?.cancel();
+    _skipSegmentHideTimer = null;
     setState(() {
       _skipSegment = null;
       _skipTo = null;
+      _skipSegmentAutoHidden = false;
     });
   }
 
@@ -2538,11 +2563,35 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _syncPrerollOsdState();
       return;
     }
-    setState(() => _controlsVisible = true);
+    setState(() {
+      _controlsVisible = true;
+    });
     _scheduleHide();
     if (focusSeekbar) {
       _focusPreferredTvOverlayTarget();
     }
+  }
+
+  /// Lance le timer auto-hide (10s) pour SkipSegment.
+  void _startSkipSegmentAutoHide() {
+    _skipSegmentHideTimer?.cancel();
+    if (_skipSegment == null) return;
+    _skipSegmentHideTimer = Timer(const Duration(seconds: 10), () {
+      if (mounted) {
+        setState(() => _skipSegmentAutoHidden = true);
+      }
+    });
+  }
+
+  /// Lance le timer auto-hide (10s) pour NextUp.
+  void _startNextUpAutoHide() {
+    _nextUpHideTimer?.cancel();
+    if (_showNextUp == false || _nextUpItem == null) return;
+    _nextUpHideTimer = Timer(const Duration(seconds: 10), () {
+      if (mounted) {
+        setState(() => _nextUpAutoHidden = true);
+      }
+    });
   }
 
   void _toggleControls() {
@@ -3372,6 +3421,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     if (_skipSegment != null)
                       SkipSegmentOverlay(
                         segment: _skipSegment!,
+                        isHidden: _skipSegmentAutoHidden && !_controlsVisible,
                         onSkip: _skipCurrentSegment,
                         focusNode: PlatformDetection.isTV
                             ? _tvSkipSegmentFocus
@@ -3382,6 +3432,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     if (_showNextUp && _nextUpItem != null)
                       NextUpOverlay(
                         nextItem: _nextUpItem!,
+                        isHidden: _nextUpAutoHidden && !_controlsVisible,
                         imageUrl: _nextUpItem!.primaryImageTag != null
                             ? _clientForItem(
                                 _nextUpItem!,
@@ -4439,6 +4490,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final buttonIconSize = isLandscape ? 28.0 : 24.0;
     final hasPrevious = _queue.hasPrevious;
     final hasNext = _queue.hasNext;
+    final hasAnyNavigation = hasPrevious || hasNext;
 
     return FocusTraversalGroup(
       policy: ReadingOrderTraversalPolicy(),
@@ -4448,14 +4500,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            if (_queue.hasPrevious)
+            if (hasAnyNavigation)
               _controlButton(
                 Icons.skip_previous_rounded,
-                onPressed: _manager.previous,
+                onPressed: hasPrevious ? _manager.previous : null,
                 size: buttonIconSize,
                 extent: buttonExtent,
                 focusNode: _tvTransportFirstFocus,
                 tooltip: l10n.playerTooltipPrevious,
+                iconColor: hasPrevious
+                    ? Colors.white
+                    : Colors.white38,
               ),
             const SizedBox(width: 4),
             _controlButton(
@@ -4464,7 +4519,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                   _seekRelative(-_prefs.get(UserPreferences.skipBackLength)),
               size: buttonIconSize,
               extent: buttonExtent,
-              focusNode: hasPrevious ? null : _tvTransportFirstFocus,
+              focusNode: hasAnyNavigation ? null : _tvTransportFirstFocus,
               tooltip: _tooltipMessage(
                 l10n.playerTooltipSeekBack,
                 shortcut: 'Left',
@@ -4498,21 +4553,24 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                   _seekRelative(_prefs.get(UserPreferences.skipForwardLength)),
               size: buttonIconSize,
               extent: buttonExtent,
-              focusNode: hasNext ? null : _tvTransportLastFocus,
+              focusNode: hasAnyNavigation ? null : _tvTransportLastFocus,
               tooltip: _tooltipMessage(
                 l10n.playerTooltipSeekForward,
                 shortcut: 'Right',
               ),
             ),
             const SizedBox(width: 4),
-            if (_queue.hasNext)
+            if (hasAnyNavigation)
               _controlButton(
                 Icons.skip_next_rounded,
-                onPressed: _manager.next,
+                onPressed: hasNext ? _manager.next : null,
                 size: buttonIconSize,
                 extent: buttonExtent,
                 focusNode: _tvTransportLastFocus,
                 tooltip: l10n.next,
+                iconColor: hasNext
+                    ? Colors.white
+                    : Colors.white38,
               ),
           ],
         ),

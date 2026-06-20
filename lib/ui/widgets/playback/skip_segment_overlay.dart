@@ -18,6 +18,7 @@ class SkipSegmentOverlay extends StatefulWidget {
   final VoidCallback onDismiss;
   final FocusNode? focusNode;
   final Stream<Duration>? positionStream;
+  final bool isHidden;
 
   const SkipSegmentOverlay({
     super.key,
@@ -26,6 +27,7 @@ class SkipSegmentOverlay extends StatefulWidget {
     required this.onDismiss,
     this.focusNode,
     this.positionStream,
+    this.isHidden = false,
   });
 
   @override
@@ -82,7 +84,9 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final isTV = PlatformDetection.isTV;
     final isDesktop = PlatformDetection.useDesktopUi;
+    final bottomOffset = isTV ? 190.0 : (isDesktop ? 140.0 : 100.0);
 
     final prefs = GetIt.instance<UserPreferences>();
     final mediaSegmentCountdown = prefs.get(UserPreferences.mediaSegmentCountdown);
@@ -114,97 +118,100 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
 
     return Positioned(
       right: 24,
-      bottom: 120,
-      child: Material(
-        color: Colors.transparent,
-        child: Focus(
-          focusNode: widget.focusNode,
-          onKeyEvent: (_, event) {
-            if (widget.focusNode == null) {
+      bottom: bottomOffset,
+      child: Offstage(
+        offstage: widget.isHidden,
+        child: Material(
+          color: Colors.transparent,
+          child: Focus(
+            focusNode: widget.focusNode,
+            onKeyEvent: (_, event) {
+              if (widget.focusNode == null) {
+                return KeyEventResult.ignored;
+              }
+              if (event is KeyDownEvent &&
+                  (event.logicalKey == LogicalKeyboardKey.select ||
+                      event.logicalKey == LogicalKeyboardKey.enter)) {
+                widget.onSkip();
+                return KeyEventResult.handled;
+              }
               return KeyEventResult.ignored;
-            }
-            if (event is KeyDownEvent &&
-                (event.logicalKey == LogicalKeyboardKey.select ||
-                    event.logicalKey == LogicalKeyboardKey.enter)) {
-              widget.onSkip();
-              return KeyEventResult.handled;
-            }
-            return KeyEventResult.ignored;
-          },
-          child: Stack(
-            children: [
-              InkWell(
-                onTap: widget.onSkip,
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  width: isDesktop ? 320.0 : 280.0,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: FocusTheme.focusDecoration(
-                    isFocused: true,
-                    radius: 8,
-                    color: AppColorScheme.accent,
-                    backgroundColor: AppColorScheme.surface.withValues(
-                      alpha: 0.9,
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(20, 12, isDesktop ? 44 : 20, 12),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '${l10n.skipSegment(widget.segment.type.displayName)}$timerSuffix',
-                              style: TextStyle(
-                                color: AppColorScheme.onSurface,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Icon(
-                              Icons.skip_next_rounded,
-                              color: AppColorScheme.accent,
-                              size: 22,
-                            ),
-                          ],
-                        ),
+            },
+            child: Stack(
+              children: [
+                InkWell(
+                  onTap: widget.onSkip,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    width: isDesktop ? 320.0 : 280.0,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: FocusTheme.focusDecoration(
+                      isFocused: true,
+                      radius: 8,
+                      color: AppColorScheme.accent,
+                      backgroundColor: AppColorScheme.surface.withValues(
+                        alpha: 0.9,
                       ),
-                      if (showProgressBar)
-                        LinearProgressIndicator(
-                          value: progress,
-                          backgroundColor: Colors.transparent,
-                          color: AppColorScheme.accent,
-                          minHeight: 6,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(20, 12, isDesktop ? 44 : 20, 12),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '${l10n.skipSegment(widget.segment.type.displayName)}$timerSuffix',
+                                style: TextStyle(
+                                  color: AppColorScheme.onSurface,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Icon(
+                                Icons.skip_next_rounded,
+                                color: AppColorScheme.accent,
+                                size: 22,
+                              ),
+                            ],
+                          ),
                         ),
-                    ],
-                  ),
-                ),
-              ),
-              if (isDesktop)
-                Positioned(
-                  top: 4,
-                  right: 4,
-                  child: IconButton(
-                    onPressed: widget.onDismiss,
-                    tooltip: l10n.close,
-                    padding: EdgeInsets.zero,
-                    visualDensity: VisualDensity.compact,
-                    constraints: const BoxConstraints.tightFor(
-                      width: 24,
-                      height: 24,
-                    ),
-                    icon: Icon(
-                      Icons.close_rounded,
-                      size: 16,
-                      color: AppColorScheme.onSurface,
+                        if (showProgressBar)
+                          LinearProgressIndicator(
+                            value: progress,
+                            backgroundColor: Colors.transparent,
+                            color: AppColorScheme.accent,
+                            minHeight: 6,
+                          ),
+                      ],
                     ),
                   ),
                 ),
-            ],
+                if (isDesktop)
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: IconButton(
+                      onPressed: widget.onDismiss,
+                      tooltip: l10n.close,
+                      padding: EdgeInsets.zero,
+                      visualDensity: VisualDensity.compact,
+                      constraints: const BoxConstraints.tightFor(
+                        width: 24,
+                        height: 24,
+                      ),
+                      icon: Icon(
+                        Icons.close_rounded,
+                        size: 16,
+                        color: AppColorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

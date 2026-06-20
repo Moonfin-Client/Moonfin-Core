@@ -10,6 +10,7 @@ import '../../../data/models/aggregated_item.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/platform_detection.dart';
 
 class NextUpOverlay extends StatefulWidget {
   final AggregatedItem nextItem;
@@ -20,6 +21,7 @@ class NextUpOverlay extends StatefulWidget {
   final VoidCallback? onTimeout;
   final FocusNode? focusNode;
   final FocusNode? dismissFocusNode;
+  final bool isHidden;
 
   const NextUpOverlay({
     super.key,
@@ -31,6 +33,7 @@ class NextUpOverlay extends StatefulWidget {
     this.onTimeout,
     this.focusNode,
     this.dismissFocusNode,
+    this.isHidden = false,
   });
 
   @override
@@ -83,174 +86,181 @@ class _NextUpOverlayState extends State<NextUpOverlay>
     final showTimer = mediaSegmentCountdown == MediaSegmentCountdown.timer ||
         mediaSegmentCountdown == MediaSegmentCountdown.both;
 
+    final isTV = PlatformDetection.isTV;
+    final isDesktop = PlatformDetection.useDesktopUi;
+    final bottomOffset = isTV ? 190.0 : (isDesktop ? 140.0 : 100.0);
+
     return Positioned(
       right: 24,
-      bottom: 120,
-      child: Container(
-        width: 340,
-        decoration: BoxDecoration(
-          color: AppColorScheme.surface.withValues(alpha: 0.95),
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black54,
-              blurRadius: 20,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (widget.imageUrl != null)
-              SizedBox(
-                height: 120,
-                child: CachedNetworkImage(
-                  imageUrl: widget.imageUrl!,
-                  fit: BoxFit.cover,
-                  errorWidget: (_, _, _) =>
-                      Container(color: AppColorScheme.surfaceVariant),
-                ),
+      bottom: bottomOffset,
+      child: Offstage(
+        offstage: widget.isHidden,
+        child: Container(
+          width: 340,
+          decoration: BoxDecoration(
+            color: AppColorScheme.surface.withValues(alpha: 0.95),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black54,
+                blurRadius: 20,
+                offset: Offset(0, 4),
               ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        l10n.upNext,
-                        style: const TextStyle(
-                          color: Colors.white54,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      if (showTimer && widget.timeoutMs > 0)
-                        AnimatedBuilder(
-                          animation: _countdownController,
-                          builder: (context, _) {
-                            final remainingMs = widget.timeoutMs * (1.0 - _countdownController.value);
-                            final remainingSeconds = (remainingMs / 1000).ceil();
-                            final int minutes = remainingSeconds ~/ 60;
-                            final int secs = remainingSeconds % 60;
-                            final timerText = remainingSeconds >= 60
-                                ? '$minutes:${secs.toString().padLeft(2, '0')}'
-                                : ':${secs.toString().padLeft(2, '0')}';
-                            return Text(
-                              l10n.endsIn(timerText),
-                              style: const TextStyle(
-                                color: Colors.white54,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            );
-                          },
-                        ),
-                    ],
+            ],
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (widget.imageUrl != null)
+                SizedBox(
+                  height: 120,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.imageUrl!,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, _, _) =>
+                        Container(color: AppColorScheme.surfaceVariant),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    [epInfo, item.name]
-                        .where((s) => s != null && s.isNotEmpty)
-                        .join(' — '),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
+                ),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          l10n.upNext,
+                          style: const TextStyle(
+                            color: Colors.white54,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        if (showTimer && widget.timeoutMs > 0)
+                          AnimatedBuilder(
+                            animation: _countdownController,
+                            builder: (context, _) {
+                              final remainingMs = widget.timeoutMs * (1.0 - _countdownController.value);
+                              final remainingSeconds = (remainingMs / 1000).ceil();
+                              final int minutes = remainingSeconds ~/ 60;
+                              final int secs = remainingSeconds % 60;
+                              final timerText = remainingSeconds >= 60
+                                  ? '$minutes:${secs.toString().padLeft(2, '0')}'
+                                  : ':${secs.toString().padLeft(2, '0')}';
+                              return Text(
+                                l10n.endsIn(timerText),
+                                style: const TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              );
+                            },
+                          ),
+                      ],
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Focus(
-                          focusNode: widget.focusNode,
+                    const SizedBox(height: 4),
+                    Text(
+                      [epInfo, item.name]
+                          .where((s) => s != null && s.isNotEmpty)
+                          .join(' — '),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Focus(
+                            focusNode: widget.focusNode,
+                            onFocusChange: (focused) {
+                              if (_playFocused != focused) {
+                                setState(() => _playFocused = focused);
+                              }
+                            },
+                            onKeyEvent: (_, event) {
+                              if (event is KeyDownEvent &&
+                                  (event.logicalKey == LogicalKeyboardKey.select ||
+                                      event.logicalKey == LogicalKeyboardKey.enter)) {
+                                widget.onPlayNext();
+                                return KeyEventResult.handled;
+                              }
+                              return KeyEventResult.ignored;
+                            },
+                            child: ElevatedButton(
+                              autofocus: widget.focusNode == null,
+                              onPressed: widget.onPlayNext,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: tvFocusMode
+                                    ? (_playFocused
+                                        ? AppColorScheme.accent
+                                        : AppColorScheme.surfaceVariant.withValues(alpha: 0.9))
+                                    : AppColorScheme.accent,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                              ),
+                              child: Text(l10n.playNext),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Focus(
+                          focusNode: widget.dismissFocusNode,
                           onFocusChange: (focused) {
-                            if (_playFocused != focused) {
-                              setState(() => _playFocused = focused);
+                            if (_dismissFocused != focused) {
+                              setState(() => _dismissFocused = focused);
                             }
                           },
                           onKeyEvent: (_, event) {
                             if (event is KeyDownEvent &&
                                 (event.logicalKey == LogicalKeyboardKey.select ||
                                     event.logicalKey == LogicalKeyboardKey.enter)) {
-                              widget.onPlayNext();
+                              widget.onDismiss();
                               return KeyEventResult.handled;
                             }
                             return KeyEventResult.ignored;
                           },
-                          child: ElevatedButton(
-                            autofocus: widget.focusNode == null,
-                            onPressed: widget.onPlayNext,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: tvFocusMode
-                                  ? (_playFocused
-                                      ? AppColorScheme.accent
-                                      : AppColorScheme.surfaceVariant.withValues(alpha: 0.9))
-                                  : AppColorScheme.accent,
+                          child: OutlinedButton(
+                            onPressed: widget.onDismiss,
+                            style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.white,
+                              backgroundColor: _dismissFocused
+                                  ? AppColorScheme.accent.withValues(alpha: 0.24)
+                                  : Colors.transparent,
+                              side: _dismissFocused
+                                  ? ThemeRegistry.active.borders.focusBorder
+                                  : ThemeRegistry.active.borders.chipBorder,
                               padding: const EdgeInsets.symmetric(vertical: 10),
                             ),
-                            child: Text(l10n.playNext),
+                            child: Text(l10n.close),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Focus(
-                        focusNode: widget.dismissFocusNode,
-                        onFocusChange: (focused) {
-                          if (_dismissFocused != focused) {
-                            setState(() => _dismissFocused = focused);
-                          }
-                        },
-                        onKeyEvent: (_, event) {
-                          if (event is KeyDownEvent &&
-                              (event.logicalKey == LogicalKeyboardKey.select ||
-                                  event.logicalKey == LogicalKeyboardKey.enter)) {
-                            widget.onDismiss();
-                            return KeyEventResult.handled;
-                          }
-                          return KeyEventResult.ignored;
-                        },
-                        child: OutlinedButton(
-                          onPressed: widget.onDismiss,
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: _dismissFocused
-                                ? AppColorScheme.accent.withValues(alpha: 0.24)
-                                : Colors.transparent,
-                            side: _dismissFocused
-                                ? ThemeRegistry.active.borders.focusBorder
-                                : ThemeRegistry.active.borders.chipBorder,
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                          ),
-                          child: Text(l10n.close),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            if (showProgressBar && widget.timeoutMs > 0)
-              AnimatedBuilder(
-                animation: _countdownController,
-                builder: (context, _) => LinearProgressIndicator(
-                  value: 1.0 - _countdownController.value,
-                  backgroundColor: Colors.transparent,
-                  color: AppColorScheme.accent,
-                  minHeight: 6,
+                      ],
+                    ),
+                  ],
                 ),
               ),
-          ],
+              if (showProgressBar && widget.timeoutMs > 0)
+                AnimatedBuilder(
+                  animation: _countdownController,
+                  builder: (context, _) => LinearProgressIndicator(
+                    value: 1.0 - _countdownController.value,
+                    backgroundColor: Colors.transparent,
+                    color: AppColorScheme.accent,
+                    minHeight: 6,
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
