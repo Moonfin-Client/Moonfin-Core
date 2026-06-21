@@ -50,6 +50,7 @@ class _NextUpOverlayState extends State<NextUpOverlay>
     _countdownController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: widget.timeoutMs),
+      animationBehavior: AnimationBehavior.preserve,
     )..forward();
 
     if (widget.timeoutMs > 0) {
