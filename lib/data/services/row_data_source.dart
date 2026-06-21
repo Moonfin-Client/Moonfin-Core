@@ -180,6 +180,36 @@ class RowDataSource {
     );
   }
 
+  Future<HomeRow> loadRecentlyReleased(
+    String parentId,
+    String libraryName,
+    String serverId, [
+      String? collectionType,
+    ]) async {
+      final fetchLimit = latestMediaFetchLimitForCollection(
+        collectionType,
+        defaultLimit: _defaultLimit,
+          maxLimit: _maxItems,
+      );
+      final response = await _getRecentlyReleasedItemsWithFallback(
+        parentId: parentId,
+        limit: fetchLimit,
+      );
+      final items = normalizeLatestMediaItems(
+        _parseItems(response, serverId),
+        collectionType: collectionType,
+        limit: _defaultLimit,
+      );
+      return HomeRow(
+        id: 'recently_released_$parentId',
+        title: _l10n.recentlyReleasedLibraryName(libraryName),
+        items: items,
+        rowType: HomeRowType.recentlyReleased,
+        totalCount: items.length < _defaultLimit ? items.length : _maxItems,
+        isAudio: collectionType == 'music',
+      );
+    }
+
   Future<HomeRow> loadPlaylists(
     String serverId, {
     String? mediaType,
@@ -1017,6 +1047,7 @@ class RowDataSource {
             return (row.items, row.totalCount);
           }
         }
+      case HomeRowType.recentlyReleased:
       case HomeRowType.resume:
       case HomeRowType.resumeAudio:
       case HomeRowType.nextUp:
@@ -1316,6 +1347,33 @@ class RowDataSource {
       rowType: rowType,
       totalCount: totalCount,
     );
+  }
+
+  Future<Map<String, dynamic>> _getRecentlyReleasedItemsWithFallback({
+    required String parentId,
+    required int limit,
+  }) async {
+    try {
+      final response = await _client.itemsApi.getRecentlyReleasedItems(
+        parentId: parentId,
+        limit: limit,
+        fields: _fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
+      );
+      return response;
+    } on DioException catch (e) {
+      final statusCode = e.response?.statusCode ?? 0;
+      if (statusCode < 500) rethrow;
+      final response = await _client.itemsApi.getRecentlyReleasedItems(
+        parentId: parentId,
+        limit: limit,
+        fields: _fallbackFields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
+      );
+      return response;
+    }
   }
 
   /// Loads items for a dynamic section provided by a third-party plugin or dynamic source.

@@ -12,36 +12,36 @@ class AppLocalizationsId extends AppLocalizations {
   String get appTitle => 'sirip bulan';
 
   @override
-  String get accountPreferences => 'ACCOUNT PREFERENCES';
+  String get accountPreferences => 'PREFERENSI AKUN';
 
   @override
-  String get interfaceLanguage => 'Interface Language';
+  String get interfaceLanguage => 'Bahasa Antarmuka';
 
   @override
-  String get systemLanguageDefault => 'System Default';
+  String get systemLanguageDefault => 'Default Sistem';
 
   @override
   String get signIn => 'Masuk';
 
   @override
-  String get empty => 'Empty';
+  String get empty => 'Kosong';
 
   @override
   String connectingToServer(String serverName) {
-    return 'Connecting to $serverName';
+    return 'Menghubungkan ke $serverName';
   }
 
   @override
   String get quickConnect => 'Koneksi Cepat';
 
   @override
-  String get password => 'Kata sandi';
+  String get password => 'Kata Sandi';
 
   @override
-  String get username => 'Nama belakang';
+  String get username => 'Nama Pengguna';
 
   @override
-  String get email => 'E-mail';
+  String get email => 'Email';
 
   @override
   String get quickConnectInstruction =>
@@ -61,26 +61,26 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String quickConnectUnavailable(String detail) {
-    return 'QuickConnect unavailable: $detail';
+    return 'QuickConnect tidak tersedia: $detail';
   }
 
   @override
   String quickConnectUnavailableWithStatus(String status, String detail) {
-    return 'QuickConnect unavailable ($status): $detail';
+    return 'QuickConnect tidak tersedia ($status): $detail';
   }
 
   @override
   String get whosWatching => 'Siapa yang menonton?';
 
   @override
-  String get addUser => 'Tambahkan Pengguna';
+  String get addUser => 'Tambah Pengguna';
 
   @override
   String get selectServer => 'Pilih Server';
 
   @override
   String appVersionFooter(String version) {
-    return 'Moonfin version $version';
+    return 'Moonfin versi $version';
   }
 
   @override
@@ -96,24 +96,24 @@ class AppLocalizationsId extends AppLocalizations {
   String get unableToConnectToServer => 'Tidak dapat terhubung ke server';
 
   @override
-  String get addServer => 'Tambahkan Server';
+  String get addServer => 'Tambah Server';
 
   @override
-  String get embyConnect => 'Emby Hubungkan';
+  String get embyConnect => 'Emby Connect';
 
   @override
   String get removeServer => 'Hapus Server';
 
   @override
   String removeServerConfirmation(String serverName) {
-    return 'Remove \"$serverName\" from your servers?';
+    return 'Hapus \"$serverName\" dari daftar server Anda?';
   }
 
   @override
-  String get cancel => 'Membatalkan';
+  String get cancel => 'Batal';
 
   @override
-  String get remove => 'Menghapus';
+  String get remove => 'Hapus';
 
   @override
   String get connectToServer => 'Hubungkan ke Server';
@@ -122,20 +122,21 @@ class AppLocalizationsId extends AppLocalizations {
   String get serverAddress => 'Alamat Server';
 
   @override
-  String get serverAddressHint => 'https://server-anda.example.com';
+  String get serverAddressHint =>
+      '[https://your-server.example.com](https://your-server.example.com)';
 
   @override
-  String get connect => 'Menghubungkan';
+  String get connect => 'Hubungkan';
 
   @override
   String get secureStorageUnavailable => 'Penyimpanan Aman Tidak Tersedia';
 
   @override
   String get secureStorageUnavailableMessage =>
-      'Moonfin tidak dapat mengakses keyring sistem Anda. Proses masuk dapat dilanjutkan, namun penyimpanan token yang aman mungkin tidak tersedia hingga gantungan kunci dibuka kuncinya.';
+      'Moonfin tidak dapat mengakses keyring sistem Anda. Login tetap dapat dilanjutkan, tetapi penyimpanan token aman mungkin tidak tersedia sampai keyring dibuka.';
 
   @override
-  String get ok => 'OKE';
+  String get ok => 'OK';
 
   @override
   String get settingsAppearanceTheme => 'Tema Aplikasi';
@@ -145,32 +146,32 @@ class AppLocalizationsId extends AppLocalizations {
       'Beralih antara Moonfin dan Neon Pulse tanpa memulai ulang aplikasi';
 
   @override
-  String get keyboardPreferSystemIme => 'Prefer system keyboard';
+  String get keyboardPreferSystemIme => 'Utamakan keyboard sistem';
 
   @override
   String get keyboardPreferSystemImeDescription =>
-      'Use your device input method by default for text entry';
+      'Gunakan metode input perangkat Anda secara default untuk entri teks';
 
   @override
-  String get themeMoonfin => 'sirip bulan';
+  String get themeMoonfin => 'Moonfin';
 
   @override
   String get themeMoonfinSubtitle =>
-      'Tampilan Moonfin saat ini yang Anda semua sukai';
+      'Tampilan Moonfin saat ini yang sudah Anda sukai';
 
   @override
-  String get themeNeonPulse => 'Pulsa Neon';
+  String get themeNeonPulse => 'Neon Pulse';
 
   @override
   String get themeNeonPulseSubtitle =>
-      'Gaya synthwave dengan cahaya magenta, teks cyan, dan kontras krom yang lebih kuat';
+      'Gaya synthwave dengan cahaya magenta, teks sian, dan kontras chrome yang lebih kuat';
 
   @override
   String get themeGlass => 'Glass';
 
   @override
   String get themeGlassSubtitle =>
-      'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent';
+      'Gaya liquid-glass dengan latar gradien mengalun, permukaan frosted, dan aksen biru Apple';
 
   @override
   String get embyConnectSignInSubtitle => 'Masuk dengan akun Emby Connect Anda';
@@ -186,7 +187,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get noLinkedServers =>
-      'Tidak ada server yang tertaut ke akun Emby Connect ini';
+      'Tidak ada server yang terhubung ke akun Emby Connect ini';
 
   @override
   String get invalidEmbyConnectCredentials =>
@@ -202,24 +203,24 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get embyConnectNetworkError =>
-      'Kesalahan jaringan saat menghubungi Emby Connect atau server yang dipilih';
+      'Terjadi kesalahan jaringan saat menghubungi Emby Connect atau server yang dipilih';
 
   @override
-  String get loadingLinkedServers => 'Memuat server tertaut...';
+  String get loadingLinkedServers => 'Memuat server yang terhubung...';
 
   @override
   String get connectingToServerEllipsis => 'Menghubungkan ke server...';
 
   @override
-  String get noReachableAddress => 'Tidak ada alamat yang dapat dihubungi';
+  String get noReachableAddress => 'Tidak ada alamat yang dapat dijangkau';
 
   @override
   String get invalidServerExchangeResponse =>
-      'Respons tidak valid dari titik akhir pertukaran server';
+      'Respons tidak valid dari endpoint pertukaran server';
 
   @override
   String unableToConnectTo(String target) {
-    return 'Unable to connect to $target';
+    return 'Tidak dapat terhubung ke $target';
   }
 
   @override
@@ -229,20 +230,20 @@ class AppLocalizationsId extends AppLocalizations {
   String get exitAppConfirmation => 'Apakah Anda yakin ingin keluar?';
 
   @override
-  String get exit => 'KELUAR';
+  String get exit => 'Keluar';
 
   @override
   String get noHomeRowsLoaded => 'Tidak ada baris beranda yang dapat dimuat';
 
   @override
   String get noHomeRowsHint =>
-      'Coba segarkan atau kurangi bagian rumah yang aktif.';
+      'Coba segarkan atau kurangi bagian beranda yang aktif.';
 
   @override
-  String get retryHomeRows => 'Coba lagi Baris Beranda';
+  String get retryHomeRows => 'Coba Lagi Muat Baris Beranda';
 
   @override
-  String get guide => 'Memandu';
+  String get guide => 'Panduan';
 
   @override
   String get recordings => 'Rekaman';
@@ -251,16 +252,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get schedule => 'Jadwal';
 
   @override
-  String get series => 'Seri';
+  String get series => 'Serial';
 
   @override
   String get noItemsFound => 'Tidak ada item yang ditemukan';
 
   @override
-  String get home => 'Rumah';
+  String get home => 'Beranda';
 
   @override
-  String get browseAll => 'Telusuri Semua';
+  String get browseAll => 'Lihat Semua';
 
   @override
   String get genres => 'Genre';
@@ -269,11 +270,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get collectionPlaceholder => 'Item koleksi akan muncul di sini';
 
   @override
-  String get browseByLetter => 'Telusuri berdasarkan Surat';
+  String get browseByLetter => 'Telusuri berdasarkan Huruf';
 
   @override
   String get alphabeticalBrowsePlaceholder =>
-      'Penelusuran menurut abjad akan muncul di sini';
+      'Daftar alfabetis akan muncul di sini';
 
   @override
   String get suggestions => 'Saran';
@@ -283,13 +284,13 @@ class AppLocalizationsId extends AppLocalizations {
       'Item yang disarankan akan muncul di sini';
 
   @override
-  String get failedToLoadLibraries => 'Gagal memuat perpustakaan';
+  String get failedToLoadLibraries => 'Gagal memuat pustaka';
 
   @override
-  String get noLibrariesFound => 'Tidak ada perpustakaan yang ditemukan';
+  String get noLibrariesFound => 'Tidak ada pustaka yang ditemukan';
 
   @override
-  String get library => 'Perpustakaan';
+  String get library => 'Pustaka';
 
   @override
   String get displaySettings => 'Pengaturan Tampilan';
@@ -302,7 +303,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String failedToLoadFolderError(String error) {
-    return 'Failed to load folder: $error';
+    return 'Gagal memuat folder: $error';
   }
 
   @override
@@ -310,14 +311,14 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String itemCountLabel(int count) {
-    return '$count items';
+    return '$count item';
   }
 
   @override
   String get failedToLoadFavorites => 'Gagal memuat favorit';
 
   @override
-  String get retry => 'Mencoba kembali';
+  String get retry => 'Coba Lagi';
 
   @override
   String get noFavoritesYet => 'Belum ada favorit';
@@ -327,29 +328,29 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String totalCountItems(int count) {
-    return '$count Items';
+    return '$count Item';
   }
 
   @override
-  String get continuing => 'Melanjutkan';
+  String get continuing => 'Sedang Berlangsung';
 
   @override
   String get ended => 'Berakhir';
 
   @override
-  String get sortAndFilter => 'Sortir & Filter';
+  String get sortAndFilter => 'Urutkan & Filter';
 
   @override
-  String get type => 'Jenis';
+  String get type => 'Tipe';
 
   @override
   String get sortBy => 'Urutkan Berdasarkan';
 
   @override
-  String get display => 'Menampilkan';
+  String get display => 'Tampilan';
 
   @override
-  String get imageType => 'Jenis Gambar';
+  String get imageType => 'Tipe Gambar';
 
   @override
   String get posterSize => 'Ukuran Poster';
@@ -364,11 +365,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get large => 'Besar';
 
   @override
-  String get extraLarge => 'Ekstra besar';
+  String get extraLarge => 'Sangat Besar';
 
   @override
   String libraryGenresTitle(String name) {
-    return '$name — Genres';
+    return '$name — Genre';
   }
 
   @override
@@ -384,11 +385,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get artists => 'Artis';
 
   @override
-  String get bookmarks => 'Bookmark';
+  String get bookmarks => 'Penanda';
 
   @override
   String get noSavedBookmarks =>
-      'Belum ada bookmark tersimpan untuk judul ini.';
+      'Belum ada penanda yang disimpan untuk judul ini.';
 
   @override
   String get openBook => 'Buka Buku';
@@ -400,35 +401,35 @@ class AppLocalizationsId extends AppLocalizations {
   String get page => 'Halaman';
 
   @override
-  String get bookmark => 'Penanda buku';
+  String get bookmark => 'Penanda';
 
   @override
   String get justNow => 'Baru saja';
 
   @override
   String minutesAgo(int count) {
-    return '${count}m ago';
+    return '${count}m lalu';
   }
 
   @override
   String hoursAgo(int count) {
-    return '${count}h ago';
+    return '${count}j lalu';
   }
 
   @override
   String daysAgo(int count) {
-    return '${count}d ago';
+    return '${count}h lalu';
   }
 
   @override
-  String get discoverySubjects => 'Subyek Penemuan';
+  String get discoverySubjects => 'Subjek Discovery';
 
   @override
   String get pickDiscoverySubjects =>
-      'Pilih feed subjek mana yang akan ditampilkan di Discover.';
+      'Pilih feed subjek yang ingin ditampilkan di Discover.';
 
   @override
-  String get apply => 'Menerapkan';
+  String get apply => 'Terapkan';
 
   @override
   String get openLink => 'Buka Tautan';
@@ -437,14 +438,14 @@ class AppLocalizationsId extends AppLocalizations {
   String get scanWithYourPhone => 'Pindai dengan ponsel Anda';
 
   @override
-  String get audiobookGenres => 'Genre Buku Audio';
+  String get audiobookGenres => 'Genre Audiobook';
 
   @override
   String get pickAudiobookGenres =>
-      'Pilih genre mana yang akan ditampilkan di Audiobook Discover.';
+      'Pilih genre yang ingin ditampilkan di Discover Audiobook.';
 
   @override
-  String get discoverAudiobooks => 'Temukan Buku Audio';
+  String get discoverAudiobooks => 'Temukan Audiobook';
 
   @override
   String get librivoxDescription =>
@@ -452,7 +453,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String titlesCount(int count) {
-    return '$count titles';
+    return '$count judul';
   }
 
   @override
@@ -462,113 +463,112 @@ class AppLocalizationsId extends AppLocalizations {
   String get scrollRight => 'Gulir ke kanan';
 
   @override
-  String get couldNotLoadGenre => 'Tidak dapat memuat genre ini sekarang.';
+  String get couldNotLoadGenre => 'Genre ini tidak dapat dimuat saat ini.';
 
   @override
-  String get continueReading => 'Lanjutkan Membaca';
+  String get continueReading => 'Lanjut Membaca';
 
   @override
   String get savedHighlights => 'Sorotan Tersimpan';
 
   @override
-  String get continueListening => 'Lanjutkan Mendengarkan';
+  String get continueListening => 'Lanjut Mendengarkan';
 
   @override
-  String get listen => 'Mendengarkan';
+  String get listen => 'Dengarkan';
 
   @override
-  String get resume => 'Melanjutkan';
+  String get resume => 'Lanjutkan';
 
   @override
-  String get failedToLoadLibrary => 'Gagal memuat perpustakaan';
+  String get failedToLoadLibrary => 'Gagal memuat pustaka';
 
   @override
-  String get popularNow => 'Populer Sekarang';
+  String get popularNow => 'Sedang Populer';
 
   @override
-  String get savedForLater => 'Disimpan Untuk Nanti';
+  String get savedForLater => 'Disimpan untuk Nanti';
 
   @override
-  String get topListens => 'Dengarkan Teratas';
+  String get topListens => 'Paling Banyak Didengarkan';
 
   @override
-  String get unreadDiscoveries => 'Penemuan yang Belum Dibaca';
+  String get unreadDiscoveries => 'Temuan Belum Dibaca';
 
   @override
-  String get pickUpAgain => 'Ambil Lagi';
+  String get pickUpAgain => 'Lanjutkan Lagi';
 
   @override
   String get bookHighlightsDescription =>
-      'Buku Anda dengan sorotan, favorit, atau kemajuan membaca.';
+      'Buku Anda dengan sorotan, favorit, atau progres membaca.';
 
   @override
-  String get handPickedFromLibrary =>
-      'Dipilih langsung dari perpustakaan Anda.';
+  String get handPickedFromLibrary => 'Dipilih khusus dari pustaka Anda.';
 
   @override
   String get handPickedFromListeningQueue =>
-      'Dipilih langsung dari antrean mendengarkan Anda.';
+      'Dipilih khusus dari antrean dengar Anda.';
 
   @override
   String get booksWithHighlights =>
-      'Buku dengan sorotan, favorit, atau kemajuan membaca.';
+      'Buku dengan sorotan, favorit, atau progres membaca.';
 
   @override
   String get jumpBackNarration =>
-      'Lompat kembali ke narasi tanpa mencari tempat Anda.';
+      'Kembali ke narasi tanpa harus mencari posisi Anda.';
 
   @override
   String get unreadBooksReady =>
-      'Buku yang belum dibaca siap untuk jam tenang berikutnya.';
+      'Buku yang belum dibaca dan siap untuk jam tenang berikutnya.';
 
   @override
   String get quickAccessFavorites =>
-      'Akses cepat ke buku-buku yang selalu Anda baca kembali.';
+      'Akses cepat ke buku yang terus Anda kunjungi kembali.';
 
   @override
-  String get searchAudiobooks => 'Cari buku audio';
+  String get searchAudiobooks => 'Cari audiobook';
 
   @override
-  String get searchYourLibrary => 'Telusuri perpustakaan Anda';
+  String get searchYourLibrary => 'Cari di pustaka Anda';
 
   @override
   String get pickUpStory =>
-      'Lanjutkan cerita dari bagian terakhir yang Anda tinggalkan';
+      'Lanjutkan cerita dari tempat terakhir Anda berhenti';
 
   @override
   String get savedPlacesChapters =>
-      'Tempat yang Anda simpan dan bab yang belum selesai';
+      'Tempat tersimpan dan bab yang belum selesai';
 
   @override
   String authorsCount(int count) {
-    return '$count authors';
+    return '$count penulis';
   }
 
   @override
   String genresCount(int count) {
-    return '$count genres';
+    return '$count genre';
   }
 
   @override
   String percentCompleted(int percent) {
-    return '$percent% completed';
+    return '$percent% selesai';
   }
 
   @override
-  String get readyWhenYouAre => 'Siap ketika Anda siap';
+  String get readyWhenYouAre => 'Siap saat Anda siap';
 
   @override
   String get details => 'Detail';
 
   @override
-  String get listeningRoom => 'Ruang Mendengar';
+  String get listeningRoom => 'Ruang Dengarkan';
 
   @override
-  String get bookmarksAndProgress => 'Bookmark & ​​Kemajuan';
+  String get bookmarksAndProgress => 'Penanda & Progres';
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count titles arranged for reading-first browsing.';
+    return '$count judul disusun untuk penelusuran yang mengutamakan membaca.';
   }
 
   @override
@@ -581,13 +581,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get authors => 'Penulis';
 
   @override
-  String get browseByAuthor => 'Telusuri Berdasarkan Penulis';
+  String get browseByAuthor => 'Telusuri berdasarkan Penulis';
 
   @override
-  String get browseByGenre => 'Telusuri Berdasarkan Genre';
+  String get browseByGenre => 'Telusuri berdasarkan Genre';
 
   @override
-  String get discover => 'Menemukan';
+  String get discover => 'Discover';
 
   @override
   String get trendingTitlesOpenLibrary =>
@@ -598,64 +598,64 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get nothingMatchesSection =>
-      'Belum ada yang cocok dengan bagian ini. Coba tab lain atau kembali setelah sinkronisasi perpustakaan selesai.';
+      'Belum ada yang cocok dengan bagian ini. Coba tab lain atau kembali setelah sinkronisasi pustaka selesai.';
 
   @override
-  String get audiobooks => 'Buku audio';
+  String get audiobooks => 'Audiobook';
 
   @override
   String noLabelFound(String label) {
-    return 'No $label found';
+    return 'Tidak ada $label yang ditemukan';
   }
 
   @override
-  String get folder => 'Map';
+  String get folder => 'Folder';
 
   @override
   String get filters => 'Filter';
 
   @override
-  String get readingStatus => 'Status Membaca';
+  String get readingStatus => 'Status Baca';
 
   @override
-  String get playedStatus => 'Status Dimainkan';
+  String get playedStatus => 'Status Putar';
 
   @override
-  String get readStatus => 'Membaca';
+  String get readStatus => 'Sudah Dibaca';
 
   @override
-  String get watched => 'Menonton';
+  String get watched => 'Sudah Ditonton';
 
   @override
-  String get unread => 'Belum dibaca';
+  String get unread => 'Belum Dibaca';
 
   @override
-  String get unwatched => 'Belum ditonton';
+  String get unwatched => 'Belum Ditonton';
 
   @override
   String get seriesStatus => 'Status Seri';
 
   @override
-  String get allLibraries => 'Semua Perpustakaan';
+  String get allLibraries => 'Semua Pustaka';
 
   @override
   String get books => 'Buku';
 
   @override
-  String get author => 'Pengarang';
+  String get author => 'Penulis';
 
   @override
-  String get unknownAuthor => 'Penulis Tidak Dikenal';
+  String get unknownAuthor => 'Penulis Tidak Diketahui';
 
   @override
-  String get uncategorized => 'Tidak dikategorikan';
+  String get uncategorized => 'Tanpa Kategori';
 
   @override
-  String get overview => 'Ringkasan';
+  String get overview => 'Ikhtisar';
 
   @override
   String get noLibrivoxDescription =>
-      'Belum ada deskripsi yang diberikan oleh LibriVox untuk judul ini.';
+      'Belum ada deskripsi yang disediakan oleh LibriVox untuk judul ini.';
 
   @override
   String get readers => 'Pembaca';
@@ -664,51 +664,51 @@ class AppLocalizationsId extends AppLocalizations {
   String get openLinks => 'Buka Tautan';
 
   @override
-  String get librivoxPage => 'LibriVox Halaman';
+  String get librivoxPage => 'Halaman LibriVox';
 
   @override
-  String get internetArchive => 'Arsip Internet';
+  String get internetArchive => 'Internet Archive';
 
   @override
-  String get rssFeed => 'Umpan RSS';
+  String get rssFeed => 'Feed RSS';
 
   @override
   String get downloadZip => 'Unduh Zip';
 
   @override
   String sectionCountLabel(int count) {
-    return '$count sections';
+    return '$count bagian';
   }
 
   @override
   String firstPublished(int year) {
-    return 'First published $year';
+    return 'Pertama kali diterbitkan $year';
   }
 
   @override
   String get noOpenLibraryOverview =>
-      'Belum ada ikhtisar dari Open Library untuk judul ini.';
+      'Belum ada ikhtisar yang tersedia dari Open Library untuk judul ini.';
 
   @override
-  String get subjects => 'Subyek';
+  String get subjects => 'Subjek';
 
   @override
   String get all => 'Semua';
 
   @override
   String booksCount(int count) {
-    return '$count books';
+    return '$count buku';
   }
 
   @override
-  String get couldNotLoadSubject => 'Tidak dapat memuat subjek ini sekarang.';
+  String get couldNotLoadSubject => 'Subjek ini tidak dapat dimuat saat ini.';
 
   @override
-  String get audiobookDetails => 'Detail Buku Audio';
+  String get audiobookDetails => 'Detail Audiobook';
 
   @override
   String authorsCountTitle(int count) {
-    return '$count Authors';
+    return '$count Penulis';
   }
 
   @override
@@ -716,32 +716,32 @@ class AppLocalizationsId extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count audiobooks',
+      other: '$count audiobook',
       one: '1 audiobook',
     );
     return '$_temp0';
   }
 
   @override
-  String get trackList => 'Daftar Lagu';
+  String get trackList => 'Daftar Trek';
 
   @override
   String get itemListPlaceholder => 'Daftar item akan muncul di sini';
 
   @override
-  String get favoriteTracksPlaceholder => 'Lagu favorit akan muncul di sini';
+  String get favoriteTracksPlaceholder => 'Trek favorit akan muncul di sini';
 
   @override
   String get failedToLoad => 'Gagal memuat';
 
   @override
-  String get delete => 'Menghapus';
+  String get delete => 'Hapus';
 
   @override
-  String get save => 'Menyimpan';
+  String get save => 'Simpan';
 
   @override
-  String get moreLikeThis => 'Lebih Banyak Seperti Ini';
+  String get moreLikeThis => 'Lainnya Seperti Ini';
 
   @override
   String get castAndCrew => 'Pemeran & Kru';
@@ -753,13 +753,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get episodes => 'Episode';
 
   @override
-  String get nextUp => 'Selanjutnya';
+  String get nextUp => 'Berikutnya';
 
   @override
   String get seasons => 'Musim';
 
   @override
-  String get chapters => 'bab';
+  String get chapters => 'Bab';
 
   @override
   String get features => 'Fitur';
@@ -768,7 +768,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get movies => 'Film';
 
   @override
-  String get musicVideos => 'Music Videos';
+  String get musicVideos => 'Video Musik';
 
   @override
   String get other => 'Lainnya';
@@ -780,14 +780,14 @@ class AppLocalizationsId extends AppLocalizations {
   String get similarArtists => 'Artis Serupa';
 
   @override
-  String get tableOfContents => 'Daftar isi';
+  String get tableOfContents => 'Daftar Isi';
 
   @override
-  String get tracklist => 'Daftar lagu';
+  String get tracklist => 'Daftar Trek';
 
   @override
   String discNumber(int number) {
-    return 'Disc $number';
+    return 'Disk $number';
   }
 
   @override
@@ -802,72 +802,72 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get noBiographyAvailable =>
-      'Tidak ada biografi tersedia untuk penulis ini.';
+      'Belum ada biografi yang tersedia untuk penulis ini.';
 
   @override
   String get noBooksFound => 'Tidak ada buku yang ditemukan untuk penulis ini.';
 
   @override
   String get unableToLoadAuthorDetails =>
-      'Tidak dapat memuat detail penulis saat ini.';
+      'Detail penulis tidak dapat dimuat saat ini.';
 
   @override
   String published(int year) {
-    return 'Published $year';
+    return 'Diterbitkan $year';
   }
 
   @override
-  String get publicationDateUnknown => 'Tanggal penerbitan tidak diketahui';
+  String get publicationDateUnknown => 'Tanggal terbit tidak diketahui';
 
   @override
   String seasonCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Seasons',
-      one: '1 Season',
+      other: '$count Musim',
+      one: '1 Musim',
     );
     return '$_temp0';
   }
 
   @override
   String endsAt(String time) {
-    return 'Ends at $time';
+    return 'Berakhir pada $time';
   }
 
   @override
   String endsIn(String time) {
-    return 'Ends in $time';
+    return 'Berakhir dalam $time';
   }
 
   @override
-  String get view => 'Melihat';
+  String get view => 'Lihat';
 
   @override
   String get resumeReading => 'Lanjutkan Membaca';
 
   @override
-  String get read => 'Membaca';
+  String get read => 'Baca';
 
   @override
   String resumeFrom(String position) {
-    return 'Resume from $position';
+    return 'Lanjutkan dari $position';
   }
 
   @override
-  String get play => 'Bermain';
+  String get play => 'Putar';
 
   @override
-  String get startOver => 'Mulai dari awal';
+  String get startOver => 'Mulai Ulang';
 
   @override
-  String get restart => 'Mulai ulang';
+  String get restart => 'Mulai Lagi';
 
   @override
   String get readOffline => 'Baca Offline';
 
   @override
-  String get playOffline => 'Mainkan Offline';
+  String get playOffline => 'Putar Offline';
 
   @override
   String get audio => 'Audio';
@@ -882,22 +882,22 @@ class AppLocalizationsId extends AppLocalizations {
   String get cast => 'Pemeran';
 
   @override
-  String get trailer => 'Cuplikan';
+  String get trailer => 'Trailer';
 
   @override
   String get finished => 'Selesai';
 
   @override
-  String get favorited => 'Favorit';
+  String get favorited => 'Difavoritkan';
 
   @override
   String get favorite => 'Favorit';
 
   @override
-  String get playlist => 'Daftar putar';
+  String get playlist => 'Playlist';
 
   @override
-  String get downloaded => 'Diunduh';
+  String get downloaded => 'Terunduh';
 
   @override
   String get downloadAll => 'Unduh Semua';
@@ -906,54 +906,54 @@ class AppLocalizationsId extends AppLocalizations {
   String get download => 'Unduh';
 
   @override
-  String get deleteDownloaded => 'Hapus yang Diunduh';
+  String get deleteDownloaded => 'Hapus Hasil Unduhan';
 
   @override
-  String get goToSeries => 'Pergi ke Seri';
+  String get goToSeries => 'Buka ke Seri';
 
   @override
-  String get editMetadata => 'Sunting Metadata';
+  String get editMetadata => 'Edit Metadata';
 
   @override
-  String get less => 'Lebih sedikit';
+  String get less => 'Lebih Sedikit';
 
   @override
-  String get more => 'Lagi';
+  String get more => 'Lebih Banyak';
 
   @override
-  String get deleteItem => 'Hapus Barang';
+  String get deleteItem => 'Hapus Item';
 
   @override
-  String get deletePlaylist => 'Hapus Daftar Putar';
+  String get deletePlaylist => 'Hapus Playlist';
 
   @override
-  String get deletePlaylistMessage => 'Hapus daftar putar ini dari server?';
+  String get deletePlaylistMessage => 'Hapus playlist ini dari server?';
 
   @override
   String get deleteItemMessage => 'Hapus item ini dari server?';
 
   @override
-  String get failedToDeletePlaylist => 'Gagal menghapus daftar putar';
+  String get failedToDeletePlaylist => 'Gagal menghapus playlist';
 
   @override
   String get failedToDeleteItem => 'Gagal menghapus item';
 
   @override
-  String get renamePlaylist => 'Ganti nama Daftar Putar';
+  String get renamePlaylist => 'Ubah Nama Playlist';
 
   @override
-  String get playlistName => 'Nama daftar putar';
+  String get playlistName => 'Nama playlist';
 
   @override
   String get deleteDownloadedAlbum => 'Hapus Album yang Diunduh';
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return 'Delete downloaded tracks for \"$title\"?';
+    return 'Hapus trek yang diunduh untuk \"$title\"?';
   }
 
   @override
-  String get downloadedTracksDeleted => 'Lagu yang diunduh dihapus';
+  String get downloadedTracksDeleted => 'Trek yang diunduh telah dihapus';
 
   @override
   String get downloadedTracksDeleteFailed =>
@@ -964,46 +964,46 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return 'No $itemLabel loaded';
+    return 'Tidak ada $itemLabel yang dimuat';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return 'Downloading $title ($count items)...';
+    return 'Mengunduh $title ($count item)...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'Are you sure you want to delete \"$name\" from the server? This action cannot be undone.';
+    return 'Apakah Anda yakin ingin menghapus \"$name\" dari server? Tindakan ini tidak dapat dibatalkan.';
   }
 
   @override
-  String get itemDeleted => 'Barang dihapus';
+  String get itemDeleted => 'Item dihapus';
 
   @override
   String get noPlayableTrailerFound =>
-      'Tidak ditemukan cuplikan yang dapat diputar.';
+      'Trailer yang dapat diputar tidak ditemukan.';
 
   @override
   String unsupportedBookFormat(String extension) {
-    return 'Unsupported book format: .$extension';
+    return 'Format buku tidak didukung: .$extension';
   }
 
   @override
   String get audioTrack => 'Trek Audio';
 
   @override
-  String get subtitleTrack => 'Lagu Subjudul';
+  String get subtitleTrack => 'Trek Subtitle';
 
   @override
-  String get none => 'Tidak ada';
+  String get none => 'Tidak Ada';
 
   @override
   String get downloadSubtitlesLabel => 'Unduh subtitle...';
 
   @override
   String get searchOpenSubtitlesPlugin =>
-      'Telusuri menggunakan plugin OpenSubtitles';
+      'Cari menggunakan plugin OpenSubtitles';
 
   @override
   String get downloadSubtitles => 'Unduh Subtitle';
@@ -1013,16 +1013,16 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String subtitleDownloadedSelected(String name) {
-    return 'Subtitle downloaded and selected: $name';
+    return 'Subtitle berhasil diunduh dan dipilih: $name';
   }
 
   @override
   String get subtitleDownloadedPending =>
-      'Subtitle diunduh. Mungkin perlu waktu beberapa saat untuk muncul saat Jellyfin menyegarkan item.';
+      'Subtitle berhasil diunduh. Mungkin perlu beberapa saat sampai muncul saat Jellyfin menyegarkan item ini.';
 
   @override
   String noRemoteSubtitlesFound(String language) {
-    return 'No remote subtitles found for $language.';
+    return 'Tidak ada subtitle jarak jauh yang ditemukan untuk $language.';
   }
 
   @override
@@ -1030,7 +1030,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String versionNumber(int number) {
-    return 'Version $number';
+    return 'Versi $number';
   }
 
   @override
@@ -1040,19 +1040,17 @@ class AppLocalizationsId extends AppLocalizations {
   String get downloadQuality => 'Kualitas Unduhan';
 
   @override
-  String get originalFileNoReencoding =>
-      'File asli, tidak ada pengkodean ulang';
+  String get originalFileNoReencoding => 'File asli, tanpa re-encoding';
 
   @override
-  String get originalFilesNoReencoding =>
-      'File asli, tidak ada pengkodean ulang';
+  String get originalFilesNoReencoding => 'File asli, tanpa re-encoding';
 
   @override
   String get noEpisodesLoaded => 'Tidak ada episode yang dimuat';
 
   @override
   String downloadingItem(String name, String quality) {
-    return 'Downloading $name ($quality)...';
+    return 'Mengunduh $name ($quality)...';
   }
 
   @override
@@ -1060,11 +1058,11 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String deleteLocalFilesMessage(String typeLabel) {
-    return 'Delete local files for $typeLabel?\n\nThis will free up storage space. You can re-download later.';
+    return 'Hapus file lokal untuk $typeLabel?\n\nIni akan mengosongkan ruang penyimpanan. Anda dapat mengunduhnya lagi nanti.';
   }
 
   @override
-  String get downloadedFilesDeleted => 'File yang diunduh dihapus';
+  String get downloadedFilesDeleted => 'File yang diunduh telah dihapus';
 
   @override
   String get failedToDeleteFiles => 'Gagal menghapus file';
@@ -1073,28 +1071,28 @@ class AppLocalizationsId extends AppLocalizations {
   String get deleteFiles => 'Hapus File';
 
   @override
-  String get director => 'DIREKTUR';
+  String get director => 'SUTRADARA';
 
   @override
-  String get directors => 'DIRECTORS';
+  String get directors => 'PARA SUTRADARA';
 
   @override
-  String get writer => 'WRITER';
+  String get writer => 'PENULIS';
 
   @override
-  String get writers => 'PENULIS';
+  String get writers => 'PARA PENULIS';
 
   @override
   String get studio => 'STUDIO';
 
   @override
   String studioMoreCount(int count) {
-    return '+$count more';
+    return '+$count lagi';
   }
 
   @override
   String totalEpisodes(int count) {
-    return '$count Episodes';
+    return '$count Episode';
   }
 
   @override
@@ -1109,7 +1107,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String chapterNumber(int number) {
-    return 'Chapter $number';
+    return 'Bab $number';
   }
 
   @override
@@ -1117,8 +1115,8 @@ class AppLocalizationsId extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count tracks',
-      one: '1 track',
+      other: '$count trek',
+      one: '1 trek',
     );
     return '$_temp0';
   }
@@ -1128,43 +1126,43 @@ class AppLocalizationsId extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count chapters',
-      one: '1 chapter',
+      other: '$count bab',
+      one: '1 bab',
     );
     return '$_temp0';
   }
 
   @override
   String born(String date) {
-    return 'Born $date';
+    return 'Lahir $date';
   }
 
   @override
   String died(String date) {
-    return 'Died $date';
+    return 'Meninggal $date';
   }
 
   @override
   String age(int age) {
-    return 'Age $age';
+    return 'Usia $age';
   }
 
   @override
   String get showLess => 'Tampilkan Lebih Sedikit';
 
   @override
-  String get readMore => 'Baca selengkapnya';
+  String get readMore => 'Baca Selengkapnya';
 
   @override
   String get shuffle => 'Acak';
 
   @override
   String downloadsCount(int count) {
-    return '$count downloads';
+    return '$count unduhan';
   }
 
   @override
-  String get perfectMatch => 'Pasangan yang sempurna';
+  String get perfectMatch => 'Cocok sempurna';
 
   @override
   String channelsCount(int count) {
@@ -1179,32 +1177,32 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String remoteSubtitlePermissionError(String action) {
-    return 'Remote subtitle $action requires the Jellyfin subtitle management permission for this user.';
+    return 'Tindakan $action subtitle jarak jauh memerlukan izin pengelolaan subtitle Jellyfin untuk pengguna ini.';
   }
 
   @override
   String remoteSubtitleNotFoundError(String action) {
-    return 'This item could not be found on the server for remote subtitle $action.';
+    return 'Item ini tidak dapat ditemukan di server untuk tindakan $action subtitle jarak jauh.';
   }
 
   @override
   String remoteSubtitleDetailError(String action, String detail) {
-    return 'Remote subtitle $action failed: $detail';
+    return 'Tindakan $action subtitle jarak jauh gagal: $detail';
   }
 
   @override
   String remoteSubtitleHttpError(String action, int status) {
-    return 'Remote subtitle $action failed (HTTP $status).';
+    return 'Tindakan $action subtitle jarak jauh gagal (HTTP $status).';
   }
 
   @override
   String remoteSubtitleGenericError(String action) {
-    return 'Failed to $action remote subtitles.';
+    return 'Gagal melakukan $action subtitle jarak jauh.';
   }
 
   @override
   String deleteSeriesFiles(String name) {
-    return 'all downloaded episodes for \"$name\"';
+    return 'semua episode yang diunduh untuk \"$name\"';
   }
 
   @override
@@ -1214,14 +1212,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get stillWatching => 'Masih Menonton?';
 
   @override
-  String get unableToLoadTrailerStream =>
-      'Tidak dapat memuat streaming cuplikan.';
+  String get unableToLoadTrailerStream => 'Tidak dapat memuat stream trailer.';
 
   @override
-  String get trailerTimedOut => 'Waktu cuplikan habis saat memuat.';
+  String get trailerTimedOut => 'Waktu tunggu habis saat memuat trailer.';
 
   @override
-  String get playbackFailedForTrailer => 'Pemutaran gagal untuk cuplikan ini.';
+  String get playbackFailedForTrailer => 'Pemutaran trailer ini gagal.';
 
   @override
   String photoCountOf(int current, int total) {
@@ -1230,70 +1227,70 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get castingUnavailableOffline =>
-      'Transmisi tidak tersedia selama pemutaran offline.';
+      'Casting tidak tersedia selama pemutaran offline.';
 
   @override
   String castActionFailed(String label, String error) {
-    return '$label action failed: $error';
+    return 'Tindakan $label gagal: $error';
   }
 
   @override
   String failedToSetCastVolume(String error) {
-    return 'Failed to set cast volume: $error';
+    return 'Gagal mengatur volume cast: $error';
   }
 
   @override
   String castControlsTitle(String label) {
-    return '$label Controls';
+    return 'Kontrol $label';
   }
 
   @override
   String get deviceVolume => 'Volume Perangkat';
 
   @override
-  String get unavailable => 'Tidak tersedia';
+  String get unavailable => 'Tidak Tersedia';
 
   @override
-  String get pause => 'Berhenti sebentar';
+  String get pause => 'Jeda';
 
   @override
-  String get syncPosition => 'Posisi Sinkronisasi';
+  String get syncPosition => 'Sinkronkan Posisi';
 
   @override
   String stopCast(String label) {
-    return 'Stop $label';
+    return 'Hentikan $label';
   }
 
   @override
-  String get queueIsEmpty => 'Antrian kosong';
+  String get queueIsEmpty => 'Antrean kosong';
 
   @override
   String trackNumber(int number) {
-    return 'Track $number';
+    return 'Trek $number';
   }
 
   @override
   String get remotePlayback => 'Pemutaran Jarak Jauh';
 
   @override
-  String get castingToGoogleCast => 'Mentransmisi ke Google Cast';
+  String get castingToGoogleCast => 'Casting ke Google Cast';
 
   @override
-  String get castingViaAirPlay => 'Mentransmisikan melalui AirPlay';
+  String get castingViaAirPlay => 'Casting melalui AirPlay';
 
   @override
-  String get castingViaDlna => 'Mentransmisikan melalui DLNA';
+  String get castingViaDlna => 'Casting melalui DLNA';
 
   @override
   String secondsCount(int seconds) {
-    return '$seconds seconds';
+    return '$seconds detik';
   }
 
   @override
   String get longPressToUnlock => 'Tekan lama untuk membuka kunci';
 
   @override
-  String get off => 'Mati';
+  String get off => 'Nonaktif';
 
   @override
   String streamTypeFallback(String streamType, int number) {
@@ -1301,7 +1298,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get auto => 'Mobil';
+  String get auto => 'Otomatis';
 
   @override
   String bitrateValueMbps(int mbps) {
@@ -1309,7 +1306,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get bitrateOverride => 'Penggantian Kecepatan Bit';
+  String get bitrateOverride => 'Penggantian Bitrate';
 
   @override
   String get audioDelay => 'Penundaan Audio';
@@ -1325,13 +1322,13 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get subtitleDelay => 'Penundaan Subjudul';
+  String get subtitleDelay => 'Penundaan Subtitle';
 
   @override
-  String get reset => 'Mengatur ulang';
+  String get reset => 'Reset';
 
   @override
-  String get unknown => 'Tidak dikenal';
+  String get unknown => 'Tidak Diketahui';
 
   @override
   String get playbackInformation => 'Informasi Pemutaran';
@@ -1340,28 +1337,28 @@ class AppLocalizationsId extends AppLocalizations {
   String get playback => 'Pemutaran';
 
   @override
-  String get playMethod => 'Metode Bermain';
+  String get playMethod => 'Metode Putar';
 
   @override
-  String get directPlay => 'Putar Langsung';
+  String get directPlay => 'Direct Play';
 
   @override
-  String get directStream => 'Aliran Langsung';
+  String get directStream => 'Direct Stream';
 
   @override
-  String get transcoding => 'Transkode';
+  String get transcoding => 'Transcoding';
 
   @override
-  String get transcodeReasons => 'Alasan Transkode';
+  String get transcodeReasons => 'Alasan Transcode';
 
   @override
-  String get player => 'Pemain';
+  String get player => 'Player';
 
   @override
-  String get container => 'Wadah';
+  String get container => 'Kontainer';
 
   @override
-  String get bitrate => 'Kecepatan bit';
+  String get bitrate => 'Bitrate';
 
   @override
   String get video => 'Video';
@@ -1373,49 +1370,49 @@ class AppLocalizationsId extends AppLocalizations {
   String get hdr => 'HDR';
 
   @override
-  String get codec => 'Kodek';
+  String get codec => 'Codec';
 
   @override
-  String get videoBitrate => 'Kecepatan Bit Video';
+  String get videoBitrate => 'Bitrate Video';
 
   @override
-  String get track => 'Melacak';
+  String get track => 'Trek';
 
   @override
-  String get channels => 'Saluran';
+  String get channels => 'Kanal';
 
   @override
-  String get audioBitrate => 'Kecepatan Bit Audio';
+  String get audioBitrate => 'Bitrate Audio';
 
   @override
-  String get sampleRate => 'Tingkat Sampel';
+  String get sampleRate => 'Sample Rate';
 
   @override
   String get format => 'Format';
 
   @override
-  String get external => 'Luar';
+  String get external => 'Eksternal';
 
   @override
-  String get embedded => 'Tertanam';
+  String get embedded => 'Tersemat';
 
   @override
   String castSessionError(String protocol) {
-    return '$protocol session error';
+    return 'Kesalahan sesi $protocol';
   }
 
   @override
   String failedToLoadBookDetails(String error) {
-    return 'Failed to load book details: $error';
+    return 'Gagal memuat detail buku: $error';
   }
 
   @override
   String get epubUnavailableOnPlatform =>
-      'Render EPUB dalam aplikasi belum tersedia pada platform ini.';
+      'Rendering EPUB di dalam aplikasi belum tersedia di platform ini.';
 
   @override
   String formatCannotRenderInApp(String extension) {
-    return 'This format (.$extension) cannot be rendered in-app yet.';
+    return 'Format ini (.$extension) belum dapat dirender di dalam aplikasi.';
   }
 
   @override
@@ -1428,29 +1425,29 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String failedToOpenInAppReader(String error) {
-    return 'Failed to open in-app reader: $error';
+    return 'Gagal membuka pembaca di dalam aplikasi: $error';
   }
 
   @override
   String bookmarkAlreadySaved(String label) {
-    return 'Bookmark already saved at $label.';
+    return 'Penanda sudah disimpan di $label.';
   }
 
   @override
   String bookmarkAdded(String label) {
-    return 'Bookmark added: $label';
+    return 'Penanda ditambahkan: $label';
   }
 
   @override
   String get noBookmarksYet =>
-      'Belum ada bookmark.\nKetuk ikon bookmark saat membaca untuk menyimpan posisi Anda.';
+      'Belum ada penanda.\nKetuk ikon penanda saat membaca untuk menyimpan posisi Anda.';
 
   @override
   String get noTableOfContentsAvailable => 'Tidak ada daftar isi yang tersedia';
 
   @override
   String pageLabel(int number) {
-    return 'Page $number';
+    return 'Halaman $number';
   }
 
   @override
@@ -1466,7 +1463,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String percentRead(String percent) {
-    return '$percent% read';
+    return '$percent% telah dibaca';
   }
 
   @override
@@ -1476,16 +1473,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get markUnread => 'Tandai Belum Dibaca';
 
   @override
-  String get markAsRead => 'Tandai sebagai Telah Dibaca';
+  String get markAsRead => 'Tandai sebagai Sudah Dibaca';
 
   @override
-  String get reloadReader => 'Muat ulang Pembaca';
+  String get reloadReader => 'Muat Ulang Pembaca';
 
   @override
   String get noPagesFound => 'Tidak ada halaman yang ditemukan.';
 
   @override
-  String get failedToDecodePageImage => 'Gagal memecahkan kode gambar laman.';
+  String get failedToDecodePageImage => 'Gagal mendekode gambar halaman.';
 
   @override
   String resetZoom(String zoom) {
@@ -1496,30 +1493,30 @@ class AppLocalizationsId extends AppLocalizations {
   String get singlePage => 'Halaman Tunggal';
 
   @override
-  String get twoPageSpread => 'Penyebaran Dua Halaman';
+  String get twoPageSpread => 'Tampilan Dua Halaman';
 
   @override
-  String get addBookmark => 'Tambahkan Penanda';
+  String get addBookmark => 'Tambah Penanda';
 
   @override
-  String get bookmarksEllipsis => 'Bookmark...';
+  String get bookmarksEllipsis => 'Penanda...';
 
   @override
-  String get markedAsRead => 'Ditandai sebagai telah dibaca';
+  String get markedAsRead => 'Ditandai sebagai sudah dibaca';
 
   @override
   String get markedAsUnread => 'Ditandai sebagai belum dibaca';
 
   @override
   String failedToUpdateReadState(String error) {
-    return 'Failed to update read state: $error';
+    return 'Gagal memperbarui status baca: $error';
   }
 
   @override
   String get themeSystem => 'Tema: Sistem';
 
   @override
-  String get themeLight => 'Tema: Cahaya';
+  String get themeLight => 'Tema: Terang';
 
   @override
   String get themeDark => 'Tema: Gelap';
@@ -1528,13 +1525,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get themeSepia => 'Tema: Sepia';
 
   @override
-  String get invertColorsFixedLayout => 'Balikkan Warna (tata letak tetap)';
+  String get invertColorsFixedLayout => 'Balikkan Warna (layout tetap)';
 
   @override
   String get invertColorsPdf => 'Balikkan Warna (PDF)';
 
   @override
-  String get preparingInAppReader => 'Mempersiapkan pembaca dalam aplikasi...';
+  String get preparingInAppReader => 'Menyiapkan pembaca di dalam aplikasi...';
 
   @override
   String get pdfDataNotAvailable => 'Data PDF tidak tersedia.';
@@ -1544,12 +1541,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String platformCannotHostDocumentEngine(String extension) {
-    return 'This platform cannot host the embedded document engine for $extension files.';
+    return 'Platform ini tidak dapat menjalankan engine dokumen tersemat untuk file $extension.';
   }
 
   @override
   String get reloadReaderPlatformHint =>
-      'Gunakan Reload Reader setelah beralih ke target platform yang didukung (Android, iOS, macOS).';
+      'Gunakan Muat Ulang Pembaca setelah beralih ke target platform yang didukung (Android, iOS, macOS).';
 
   @override
   String get openExternally => 'Buka Secara Eksternal';
@@ -1561,7 +1558,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get readerNotReady => 'Pembaca belum siap.';
 
   @override
-  String get seriesRecordings => 'Rekaman Seri';
+  String get seriesRecordings => 'Rekaman Serial';
 
   @override
   String get now => 'Sekarang';
@@ -1576,21 +1573,21 @@ class AppLocalizationsId extends AppLocalizations {
   String get kids => 'Anak-anak';
 
   @override
-  String get premiere => 'Premier';
+  String get premiere => 'Premiere';
 
   @override
-  String get guideTimeline => 'Garis Waktu Panduan';
+  String get guideTimeline => 'Linimasa Panduan';
 
   @override
   String failedToLoadGuide(String error) {
-    return 'Failed to load guide: $error';
+    return 'Gagal memuat panduan: $error';
   }
 
   @override
   String get noChannelsFound => 'Tidak ada saluran yang ditemukan';
 
   @override
-  String get liveBadge => 'HIDUP';
+  String get liveBadge => 'LANGSUNG';
 
   @override
   String get movie => 'Film';
@@ -1606,42 +1603,42 @@ class AppLocalizationsId extends AppLocalizations {
       'Gagal memperbarui saluran favorit';
 
   @override
-  String get unfavoriteChannel => 'Saluran Tidak Favorit';
+  String get unfavoriteChannel => 'Batalkan Favorit Saluran';
 
   @override
-  String get favoriteChannel => 'Saluran Favorit';
+  String get favoriteChannel => 'Favoritkan Saluran';
 
   @override
-  String get record => 'Record';
+  String get record => 'Rekam';
 
   @override
-  String get cancelRecordingAction => 'Cancel Recording';
+  String get cancelRecordingAction => 'Batalkan Rekaman';
 
   @override
-  String get programSetToRecord => 'Program set to record';
+  String get programSetToRecord => 'Program dijadwalkan untuk direkam';
 
   @override
-  String get recordingCancelled => 'Recording cancelled';
+  String get recordingCancelled => 'Rekaman dibatalkan';
 
   @override
-  String get unableToCreateRecording => 'Unable to create recording';
+  String get unableToCreateRecording => 'Tidak dapat membuat rekaman';
 
   @override
-  String get watch => 'Jam tangan';
+  String get watch => 'Tonton';
 
   @override
-  String get close => 'Menutup';
+  String get close => 'Tutup';
 
   @override
   String failedToPlayChannel(String name) {
-    return 'Failed to play $name';
+    return 'Gagal memutar $name';
   }
 
   @override
   String get failedToLoadRecordings => 'Gagal memuat rekaman';
 
   @override
-  String get scheduledInNext24Hours => 'Dijadwalkan dalam 24 Jam Berikutnya';
+  String get scheduledInNext24Hours => 'Dijadwalkan dalam 24 Jam ke Depan';
 
   @override
   String get recentRecordings => 'Rekaman Terbaru';
@@ -1656,64 +1653,64 @@ class AppLocalizationsId extends AppLocalizations {
   String get noScheduledRecordings => 'Tidak ada rekaman terjadwal';
 
   @override
-  String get cancelRecording => 'Batalkan Perekaman?';
+  String get cancelRecording => 'Batalkan Rekaman?';
 
   @override
   String cancelScheduledRecordingOf(String name) {
-    return 'Cancel scheduled recording of \"$name\"?';
+    return 'Batalkan rekaman terjadwal untuk \"$name\"?';
   }
 
   @override
-  String get no => 'TIDAK';
+  String get no => 'Tidak';
 
   @override
   String get yesCancel => 'Ya, Batalkan';
 
   @override
-  String get failedToCancelRecording => 'Gagal membatalkan perekaman';
+  String get failedToCancelRecording => 'Gagal membatalkan rekaman';
 
   @override
-  String get failedToLoadSeriesRecordings => 'Gagal memuat rekaman seri';
+  String get failedToLoadSeriesRecordings => 'Gagal memuat rekaman serial';
 
   @override
-  String get noSeriesRecordings => 'Tidak ada rekaman seri';
+  String get noSeriesRecordings => 'Tidak ada rekaman serial';
 
   @override
-  String get cancelSeriesRecording => 'Batalkan Perekaman Seri';
+  String get cancelSeriesRecording => 'Batalkan Rekaman Serial';
 
   @override
-  String get cancelSeriesRecordingQuestion => 'Batalkan Perekaman Seri?';
+  String get cancelSeriesRecordingQuestion => 'Batalkan Rekaman Serial?';
 
   @override
   String stopRecordingName(String name) {
-    return 'Stop recording \"$name\"?';
+    return 'Hentikan rekaman \"$name\"?';
   }
 
   @override
   String get failedToCancelSeriesRecording =>
-      'Gagal membatalkan perekaman rangkaian';
+      'Gagal membatalkan rekaman serial';
 
   @override
-  String get searchThisLibrary => 'Telusuri perpustakaan ini...';
+  String get searchThisLibrary => 'Cari di pustaka ini...';
 
   @override
-  String get searchEllipsis => 'Mencari...';
+  String get searchEllipsis => 'Cari...';
 
   @override
   String noResultsForQuery(String query) {
-    return 'No results for \"$query\"';
+    return 'Tidak ada hasil untuk \"$query\"';
   }
 
   @override
   String searchFailedError(String error) {
-    return 'Search failed: $error';
+    return 'Pencarian gagal: $error';
   }
 
   @override
   String get seerr => 'Seerr';
 
   @override
-  String get seerrAccountType => 'Jenis Akun Seerr';
+  String get seerrAccountType => 'Tipe Akun Seerr';
 
   @override
   String get jellyfinAccount => 'Jellyfin';
@@ -1734,25 +1731,25 @@ class AppLocalizationsId extends AppLocalizations {
   String get musicAlbums => 'Album Musik';
 
   @override
-  String get noMediaInFilter => 'Tidak ada media di filter ini';
+  String get noMediaInFilter => 'Tidak ada media dalam filter ini';
 
   @override
   String get noDownloadedMediaYet => 'Belum ada media yang diunduh';
 
   @override
-  String get browseLibrary => 'Jelajahi Perpustakaan';
+  String get browseLibrary => 'Telusuri Pustaka';
 
   @override
-  String get deleteDownload => 'Hapus Unduh';
+  String get deleteDownload => 'Hapus Unduhan';
 
   @override
   String removeItemAndFiles(String name) {
-    return 'Remove \"$name\" and its files?';
+    return 'Hapus \"$name\" beserta file-filenya?';
   }
 
   @override
   String tracksCount(int count) {
-    return '$count tracks';
+    return '$count trek';
   }
 
   @override
@@ -1763,19 +1760,19 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String failedToLoadAlbum(String error) {
-    return 'Failed to load album: $error';
+    return 'Gagal memuat album: $error';
   }
 
   @override
   String noDownloadedTracksForAlbum(String name) {
-    return 'No downloaded tracks found for $name.';
+    return 'Tidak ada trek yang diunduh untuk $name.';
   }
 
   @override
   String get season => 'Musim';
 
   @override
-  String get errorLoadingEpisodes => 'Terjadi kesalahan saat memuat episode';
+  String get errorLoadingEpisodes => 'Kesalahan saat memuat episode';
 
   @override
   String get noDownloadedEpisodes => 'Tidak ada episode yang diunduh';
@@ -1785,17 +1782,17 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String removeName(String name) {
-    return 'Remove \"$name\"?';
+    return 'Hapus \"$name\"?';
   }
 
   @override
   String durationMinutes(int minutes) {
-    return '$minutes min';
+    return '$minutes menit';
   }
 
   @override
   String seasonEpisodeLabel(int season, int episode) {
-    return 'S$season E$episode';
+    return 'M$season E$episode';
   }
 
   @override
@@ -1804,22 +1801,22 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get seriesNotFound => 'Seri tidak ditemukan';
+  String get seriesNotFound => 'Serial tidak ditemukan';
 
   @override
-  String get errorLoadingSeries => 'Terjadi kesalahan saat memuat seri';
+  String get errorLoadingSeries => 'Kesalahan saat memuat serial';
 
   @override
   String get downloadedEpisodes => 'Episode yang Diunduh';
 
   @override
   String seasonNumber(int number) {
-    return 'Season $number';
+    return 'Musim $number';
   }
 
   @override
   String seasonChip(int number) {
-    return 'S$number';
+    return 'M$number';
   }
 
   @override
@@ -1830,7 +1827,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String deleteAllEpisodesInSeason(String season) {
-    return 'Delete all downloaded episodes in $season?';
+    return 'Hapus semua episode yang diunduh di $season?';
   }
 
   @override
@@ -1838,7 +1835,7 @@ class AppLocalizationsId extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count episodes',
+      other: '$count episode',
       one: '1 episode',
     );
     return '$_temp0';
@@ -1848,7 +1845,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get storageManagement => 'Manajemen Penyimpanan';
 
   @override
-  String get storageBreakdown => 'Kerusakan Penyimpanan';
+  String get storageBreakdown => 'Rincian Penyimpanan';
 
   @override
   String get downloadedItems => 'Item yang Diunduh';
@@ -1857,14 +1854,14 @@ class AppLocalizationsId extends AppLocalizations {
   String get storageLimit => 'Batas Penyimpanan';
 
   @override
-  String get noLimit => 'Tidak ada batasan';
+  String get noLimit => 'Tanpa batas';
 
   @override
   String get deleteAllDownloads => 'Hapus Semua Unduhan';
 
   @override
   String get deleteAllDownloadsWarning =>
-      'Tindakan ini akan menghapus semua file media yang diunduh dan tidak dapat dibatalkan.';
+      'Ini akan menghapus semua file media yang diunduh dan tidak dapat dibatalkan.';
 
   @override
   String get deleteAll => 'Hapus Semua';
@@ -1874,28 +1871,28 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String deleteSelectedCount(int count) {
-    return 'Delete $count downloaded items?';
+    return 'Hapus $count item yang diunduh?';
   }
 
   @override
-  String get musicAndAudiobooks => 'Musik & Buku Audio';
+  String get musicAndAudiobooks => 'Musik & Audiobook';
 
   @override
   String get images => 'Gambar';
 
   @override
-  String get database => 'Basis data';
+  String get database => 'Database';
 
   @override
   String ofStorageLimit(String limit) {
-    return 'of $limit limit';
+    return 'dari batas $limit';
   }
 
   @override
   String get settings => 'Pengaturan';
 
   @override
-  String get authentication => 'Otentikasi';
+  String get authentication => 'Autentikasi';
 
   @override
   String get autoLoginServerManagement => 'Login otomatis, manajemen server';
@@ -1904,19 +1901,19 @@ class AppLocalizationsId extends AppLocalizations {
   String get pinCode => 'Kode PIN';
 
   @override
-  String get setUpPinCodeProtection => 'Siapkan perlindungan kode PIN';
+  String get setUpPinCodeProtection => 'Atur perlindungan kode PIN';
 
   @override
   String get parentalControls => 'Kontrol Orang Tua';
 
   @override
-  String get contentRatingRestrictions => 'Pembatasan peringkat konten';
+  String get contentRatingRestrictions => 'Pembatasan rating konten';
 
   @override
   String get bitRateResolutionBehavior => 'Bitrate, resolusi, perilaku';
 
   @override
-  String get languageSizeAppearance => 'Bahasa, ukuran, penampilan';
+  String get languageSizeAppearance => 'Bahasa, ukuran, tampilan';
 
   @override
   String get qualityStorage => 'Kualitas, penyimpanan';
@@ -1929,7 +1926,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get mediaRequestIntegration => 'Integrasi permintaan media';
 
   @override
-  String get switchServer => 'Beralih Server';
+  String get switchServer => 'Ganti Server';
 
   @override
   String get signOut => 'Keluar';
@@ -1948,7 +1945,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get serverSettingsUsersLibraries =>
-      'Pengaturan server, pengguna, perpustakaan';
+      'Pengaturan server, pengguna, pustaka';
 
   @override
   String get customization => 'Kustomisasi';
@@ -1971,56 +1968,56 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String optionsCount(int count) {
-    return '$count options';
+    return '$count opsi';
   }
 
   @override
-  String get themeAndAppearance => 'Tema & Penampilan';
+  String get themeAndAppearance => 'Tema & Tampilan';
 
   @override
-  String get focusBorderColor => 'Warna Batas Fokus';
+  String get focusBorderColor => 'Warna Border Fokus';
 
   @override
-  String get watchedIndicators => 'Indikator yang Diperhatikan';
+  String get watchedIndicators => 'Indikator Tontonan';
 
   @override
   String get always => 'Selalu';
 
   @override
-  String get hideUnwatched => 'Sembunyikan Belum Ditonton';
+  String get hideUnwatched => 'Sembunyikan yang Belum Ditonton';
 
   @override
   String get episodesOnly => 'Hanya Episode';
 
   @override
-  String get never => 'Tidak pernah';
+  String get never => 'Tidak Pernah';
 
   @override
   String get focusExpansionAnimation => 'Animasi Ekspansi Fokus';
 
   @override
-  String get desktopUiScale => 'Skala UI Desktop';
+  String get desktopUiScale => 'Skala UI';
 
   @override
   String get scaleFocusedCards =>
-      'Skalakan kartu dan ubin yang terfokus atau melayang';
+      'Perbesar kartu dan ubin yang difokuskan atau diarahkan kursor';
 
   @override
-  String get backgroundBackdrops => 'Latar Belakang Latar Belakang';
+  String get backgroundBackdrops => 'Backdrop Latar Belakang';
 
   @override
   String get showBackdropImages =>
-      'Tampilkan gambar latar belakang di balik konten';
+      'Tampilkan gambar backdrop di belakang konten';
 
   @override
-  String get seriesThumbnails => 'Gambar Mini Seri';
+  String get seriesThumbnails => 'Tampilkan Thumbnail Serial';
 
   @override
   String get seriesThumbnailsDescription =>
-      'Hanya episode: gunakan karya seni seri yang cocok dengan setiap jenis gambar baris';
+      'Untuk serial TV, gunakan artwork serial utama alih-alih thumbnail episode.';
 
   @override
-  String get homeRowInfoOverlay => 'Hamparan Info Baris Beranda';
+  String get homeRowInfoOverlay => 'Overlay Info Baris Beranda';
 
   @override
   String get showTitleMetadataOnHomeRows =>
@@ -2033,7 +2030,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get inMenus => 'Di Menu';
 
   @override
-  String get inVideo => 'Dalam Video';
+  String get inVideo => 'Di Video';
 
   @override
   String get seasonalEffects => 'Efek Musiman';
@@ -2045,13 +2042,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get snow => 'Salju';
 
   @override
-  String get fireworks => 'Kembang api';
+  String get fireworks => 'Kembang Api';
 
   @override
   String get confetti => 'Konfeti';
 
   @override
-  String get fallingLeaves => 'Daun Jatuh';
+  String get fallingLeaves => 'Daun Berguguran';
 
   @override
   String get themeMusic => 'Musik Tema';
@@ -2073,10 +2070,10 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get playWhenBrowsingHomeScreen =>
-      'Mainkan saat menjelajahi layar beranda';
+      'Putar saat menelusuri layar beranda';
 
   @override
-  String get detailsBackgroundBlur => 'Detail Latar Belakang Buram';
+  String get detailsBackgroundBlur => 'Blur Latar Belakang Detail';
 
   @override
   String pixelValue(int value) {
@@ -2084,29 +2081,29 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get browsingBackgroundBlur => 'Latar Belakang Penjelajahan Buram';
+  String get browsingBackgroundBlur => 'Blur Latar Belakang Penelusuran';
 
   @override
-  String get maxStreamingBitrate => 'Kecepatan Streaming Maks';
+  String get maxStreamingBitrate => 'Bitrate Streaming Maksimum';
 
   @override
-  String get maxResolution => 'Resolusi Maks';
+  String get maxResolution => 'Resolusi Maksimum';
 
   @override
-  String get playerZoomMode => 'Mode Zoom Pemain';
+  String get playerZoomMode => 'Mode Zoom Player';
 
   @override
-  String get settingsScrollWheelAction => 'Mouse scroll wheel';
+  String get settingsScrollWheelAction => 'Roda gulir mouse';
 
   @override
   String get settingsScrollWheelActionDescription =>
-      'Choose what scrolling the mouse wheel over the video does during playback.';
+      'Pilih fungsi guliran roda mouse di atas video selama pemutaran.';
 
   @override
-  String get scrollWheelActionOff => 'Off';
+  String get scrollWheelActionOff => 'Nonaktif';
 
   @override
-  String get scrollWheelActionSeek => 'Seek (forward / back)';
+  String get scrollWheelActionSeek => 'Seek (maju / mundur)';
 
   @override
   String get scrollWheelActionVolume => 'Volume';
@@ -2115,32 +2112,32 @@ class AppLocalizationsId extends AppLocalizations {
   String get playerTooltipVolume => 'Volume';
 
   @override
-  String get fit => 'Bugar';
+  String get fit => 'Sesuai';
 
   @override
-  String get autoCrop => 'Pangkas Otomatis';
+  String get autoCrop => 'Crop Otomatis';
 
   @override
-  String get stretch => 'Menggeliat';
+  String get stretch => 'Rentangkan';
 
   @override
-  String get refreshRateSwitching => 'Peralihan Kecepatan Penyegaran';
+  String get refreshRateSwitching => 'Peralihan Refresh Rate';
 
   @override
-  String get disabled => 'Dengan disabilitas';
+  String get disabled => 'Dinonaktifkan';
 
   @override
-  String get scaleOnTv => 'Skala di TV';
+  String get scaleOnTv => 'Skalakan di TV';
 
   @override
-  String get scaleOnDevice => 'Skala di Perangkat';
+  String get scaleOnDevice => 'Skalakan di Perangkat';
 
   @override
-  String get trickPlay => 'Permainan Trik';
+  String get trickPlay => 'Trick Play';
 
   @override
   String get showPreviewThumbnailsWhenSeeking =>
-      'Tampilkan thumbnail pratinjau saat mencari';
+      'Tampilkan thumbnail pratinjau saat seek';
 
   @override
   String get showDescriptionOnPause => 'Tampilkan Deskripsi saat Jeda';
@@ -2160,22 +2157,22 @@ class AppLocalizationsId extends AppLocalizations {
   String get audioBehavior => 'Perilaku Audio';
 
   @override
-  String get downmixToStereo => 'Turunkan campuran ke Stereo';
+  String get downmixToStereo => 'Downmix ke Stereo';
 
   @override
-  String get defaultAudioLanguage => 'Bahasa Audio Bawaan';
+  String get defaultAudioLanguage => 'Bahasa Audio Default';
 
   @override
   String get autoServerDefault => 'Otomatis (Default Server)';
 
   @override
-  String get english => 'Bahasa inggris';
+  String get english => 'Inggris';
 
   @override
   String get spanish => 'Spanyol';
 
   @override
-  String get french => 'Perancis';
+  String get french => 'Prancis';
 
   @override
   String get german => 'Jerman';
@@ -2193,7 +2190,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get korean => 'Korea';
 
   @override
-  String get chinese => 'Cina';
+  String get chinese => 'Tionghoa';
 
   @override
   String get russian => 'Rusia';
@@ -2223,41 +2220,41 @@ class AppLocalizationsId extends AppLocalizations {
   String get polish => 'Polandia';
 
   @override
-  String get ac3Passthrough => 'Jalur AC3';
+  String get ac3Passthrough => 'Passthrough AC3';
 
   @override
-  String get dtsPassthrough => 'Lintasan DTS';
+  String get dtsPassthrough => 'Passthrough DTS';
 
   @override
   String get trueHdSupport => 'Dukungan TrueHD';
 
   @override
   String get enableDtsPassthrough =>
-      'Audio Bitstream DTS ke AVR saja; memerlukan dukungan penerima dan jalur sumber DTS';
+      'Bitstream audio DTS ke AVR saja; memerlukan dukungan receiver dan trek sumber DTS';
 
   @override
   String get enableTrueHdAudio =>
       'Aktifkan audio TrueHD (mungkin tidak berfungsi di semua platform)';
 
   @override
-  String get settingsAudioOutputMode => 'Audio Output Mode';
+  String get settingsAudioOutputMode => 'Mode Output Audio';
 
   @override
   String get settingsAudioOutputModeDescription =>
-      'Choose how audio is decoded. AVR Passthrough sends raw Dolby/DTS streams to your receiver; Auto or Downmix decodes locally.';
+      'Pilih cara audio didekode. AVR Passthrough mengirim stream Dolby/DTS mentah ke receiver Anda; Auto atau Downmix mendekode secara lokal.';
 
   @override
   String get settingsAudioOutputModeAvrPassthrough => 'AVR Passthrough';
 
   @override
-  String get settingsAudioFallbackCodec => 'Audio Fallback Codec';
+  String get settingsAudioFallbackCodec => 'Codec Fallback Audio';
 
   @override
   String get settingsAudioFallbackCodecDescription =>
-      'Select the target format to transcode multi-channel audio when the source stream cannot be direct-played or passed through.';
+      'Pilih format target untuk transcode audio multi-kanal saat stream sumber tidak dapat di-direct play atau di-passthrough.';
 
   @override
-  String get settingsAudioFallbackCodecAuto => 'Auto Detect\n(Recommended)';
+  String get settingsAudioFallbackCodecAuto => 'Deteksi Otomatis\n(Disarankan)';
 
   @override
   String get settingsAudioFallbackCodecAac => 'AAC\n(Default)';
@@ -2272,23 +2269,24 @@ class AppLocalizationsId extends AppLocalizations {
   String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Lossless)';
 
   @override
-  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Stereo Only)';
+  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Hanya Stereo)';
 
   @override
-  String get settingsAudioFallbackCodecOpus => 'Opus\n(Efficient)';
+  String get settingsAudioFallbackCodecOpus => 'Opus\n(Efisien)';
 
   @override
   String get settingsAudioFallbackCodecFlac => 'FLAC\n(Lossless)';
 
   @override
-  String get settingsMaxAudioChannels => 'Max Audio Channels';
+  String get settingsMaxAudioChannels => 'Kanal Audio Maksimum';
 
   @override
   String get settingsMaxAudioChannelsDescription =>
-      'Configure the maximum channels of your audio setup. Multichannel streams exceeding this limit will downmix or transcode.';
+      'Konfigurasikan jumlah kanal maksimum pada pengaturan audio Anda. Stream multi-kanal yang melebihi batas ini akan di-downmix atau di-transcode.';
 
   @override
-  String get settingsMaxAudioChannelsAuto => 'Auto Detect\n(Hardware Default)';
+  String get settingsMaxAudioChannelsAuto =>
+      'Deteksi Otomatis\n(Default Perangkat Keras)';
 
   @override
   String get settingsMaxAudioChannelsMono => '1.0 Mono';
@@ -2315,67 +2313,68 @@ class AppLocalizationsId extends AppLocalizations {
   String get settingsMaxAudioChannels7_1 => '7.1 Surround';
 
   @override
-  String get settingsAudioPassthroughAdvanced => 'Passthrough (Advanced)';
+  String get settingsAudioPassthroughAdvanced => 'Passthrough (Lanjutan)';
 
   @override
-  String get settingsAudioCodecPassthrough => 'Codec Passthrough';
+  String get settingsAudioCodecPassthrough => 'Passthrough Codec';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'Enable only formats your AVR or HDMI sink supports.';
+      'Aktifkan hanya format yang didukung oleh AVR atau sink HDMI Anda.';
 
   @override
-  String get settingsAudioEac3Passthrough => 'EAC3 Passthrough';
+  String get settingsAudioEac3Passthrough => 'Passthrough EAC3';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'EAC3 JOC (Atmos) Passthrough';
+  String get settingsAudioEac3JocPassthrough => 'Passthrough EAC3 JOC (Atmos)';
 
   @override
-  String get settingsAudioDtsCorePassthrough => 'DTS Core Passthrough';
+  String get settingsAudioDtsCorePassthrough => 'Passthrough DTS Core';
 
   @override
-  String get settingsAudioDtsHdPassthrough => 'DTS-HD MA Passthrough';
+  String get settingsAudioDtsHdPassthrough => 'Passthrough DTS-HD MA';
 
   @override
-  String get settingsAudioTrueHdPassthrough => 'TrueHD Passthrough';
+  String get settingsAudioTrueHdPassthrough => 'Passthrough TrueHD';
 
   @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'TrueHD Atmos Passthrough';
+  String get settingsAudioTrueHdAtmosPassthrough => 'Passthrough TrueHD Atmos';
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Bitstream Dolby Digital Plus (EAC3) to external decoder.';
+      'Bitstream Dolby Digital Plus (EAC3) ke decoder eksternal.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Bitstream Dolby Atmos over EAC3 (JOC) to external decoder.';
+      'Bitstream Dolby Atmos melalui EAC3 (JOC) ke decoder eksternal.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Bitstream DTS-HD MA (includes DTS core) to external decoder.';
+      'Bitstream DTS-HD MA (termasuk DTS core) ke decoder eksternal.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Bitstream Dolby TrueHD with Atmos metadata to external decoder.';
+      'Bitstream Dolby TrueHD dengan metadata Atmos ke decoder eksternal.';
 
   @override
-  String get settingsDetectedAudioCapabilities => 'Detected Audio Capabilities';
+  String get settingsDetectedAudioCapabilities =>
+      'Kemampuan Audio yang Terdeteksi';
 
   @override
   String get settingsDetectedAudioCapabilitiesUnavailable =>
-      'No runtime capability snapshot available yet.';
+      'Belum ada snapshot kemampuan runtime yang tersedia.';
 
   @override
-  String get settingsAudioRouteLabel => 'Route';
+  String get settingsAudioRouteLabel => 'Rute';
 
   @override
-  String get settingsAudioDecodeLabel => 'Decode';
+  String get settingsAudioDecodeLabel => 'Dekode';
 
   @override
   String get settingsAudioPassthroughLabel => 'Passthrough';
 
   @override
-  String get settingsAudioHdRoute => 'HD audio route';
+  String get settingsAudioHdRoute => 'Rute audio HD';
 
   @override
   String get settingsAudioRouteHdmi => 'HDMI';
@@ -2394,55 +2393,55 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String settingsAudioPcmChannels(int count) {
-    return '${count}ch PCM';
+    return 'PCM ${count}ch';
   }
 
   @override
-  String get settingsAudioDiagnostics => 'Diagnostics';
+  String get settingsAudioDiagnostics => 'Diagnostik';
 
   @override
-  String get settingsAudioDiagnosticsVideoLevel => 'Video Level';
+  String get settingsAudioDiagnosticsVideoLevel => 'Level Video';
 
   @override
-  String get settingsAudioDiagnosticsVideoRange => 'Video Range';
+  String get settingsAudioDiagnosticsVideoRange => 'Rentang Video';
 
   @override
-  String get settingsAudioDiagnosticsSubtitleCodec => 'Subtitle Codec';
+  String get settingsAudioDiagnosticsSubtitleCodec => 'Codec Subtitle';
 
   @override
   String get settingsAudioDiagnosticsAllowedAudioCodecs =>
-      'Allowed Audio Codecs';
+      'Codec Audio yang Diizinkan';
 
   @override
   String get settingsAudioDiagnosticsHlsMpegTsAudioCodecs =>
-      'HLS MPEG-TS Audio Codecs';
+      'Codec Audio HLS MPEG-TS';
 
   @override
   String get settingsAudioDiagnosticsHlsFmp4AudioCodecs =>
-      'HLS fMP4 Audio Codecs';
+      'Codec Audio HLS fMP4';
 
   @override
   String get settingsAudioDiagnosticsAudioSpdifPassthrough =>
-      'audio-spdif passthrough';
+      'passthrough audio-spdif';
 
   @override
-  String get settingsAudioDiagnosticsActiveAudioRoute => 'Active Audio Route';
+  String get settingsAudioDiagnosticsActiveAudioRoute => 'Rute Audio Aktif';
 
   @override
   String get settingsAudioDiagnosticsRouteHdAudioSupport =>
-      'Route HD Audio Support';
+      'Dukungan Audio HD Rute';
 
   @override
-  String get nightMode => 'Modus Malam';
+  String get nightMode => 'Mode Malam';
 
   @override
   String get compressDynamicRange => 'Kompres rentang dinamis';
 
   @override
-  String get advancedMpv => 'Lanjutan mpv';
+  String get advancedMpv => 'mpv lanjutan';
 
   @override
-  String get enableCustomMpvConf => 'Aktifkan Kustom mpv.conf';
+  String get enableCustomMpvConf => 'Aktifkan mpv.conf Kustom';
 
   @override
   String get applyMpvConfBeforePlayback =>
@@ -2453,57 +2452,58 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get unsafeMpvOptionsDescription =>
-      'Izinkan rangkaian opsi mpv yang lebih luas. Dapat merusak perilaku pemutaran.';
+      'Izinkan kumpulan opsi mpv yang lebih luas. Dapat merusak perilaku pemutaran.';
 
   @override
-  String get hardwareDecoding => 'Penguraian kode perangkat keras';
+  String get hardwareDecoding => 'Dekode perangkat keras';
 
   @override
   String get hardwareDecodingSubtitle =>
-      'Dapat meningkatkan kinerja namun dapat menyebabkan masalah pemutaran pada beberapa perangkat.';
+      'Dapat meningkatkan performa tetapi bisa menyebabkan masalah pemutaran pada beberapa perangkat.';
 
   @override
-  String get nextUpAndQueuing => 'Selanjutnya & Antrian';
+  String get nextUpAndQueuing => 'Berikutnya & Antrean';
 
   @override
-  String get nextUpDisplay => 'Tampilan Selanjutnya';
+  String get nextUpDisplay => 'Tampilan Berikutnya';
 
   @override
-  String get extended => 'Diperpanjang';
+  String get extended => 'Diperluas';
 
   @override
   String get minimal => 'Minimal';
 
   @override
-  String get nextUpTimeout => 'Batas Waktu Selanjutnya';
+  String get nextUpTimeout => 'Batas Waktu Berikutnya';
 
   @override
   String secondsValue(int value) {
-    return '${value}s';
+    return '${value}d';
   }
 
   @override
-  String get mediaQueuing => 'Antrian Media';
+  String get mediaQueuing => 'Antrean Media';
 
   @override
-  String get autoQueueNextEpisodes => 'Antrean otomatis episode berikutnya';
+  String get autoQueueNextEpisodes =>
+      'Masukkan episode berikutnya ke antrean secara otomatis';
 
   @override
-  String get stillWatchingPrompt => 'Masih Menonton Prompt';
+  String get stillWatchingPrompt => 'Prompt Masih Menonton';
 
   @override
   String afterEpisodesAndHours(int episodes, double hours) {
-    return 'After $episodes episodes / ${hours}h';
+    return 'Setelah $episodes episode / ${hours}j';
   }
 
   @override
   String get resumeAndSkip => 'Lanjutkan & Lewati';
 
   @override
-  String get resumeRewind => 'Lanjutkan Putar Ulang';
+  String get resumeRewind => 'Mundur saat Melanjutkan';
 
   @override
-  String get unpauseRewind => 'Batalkan jeda Putar Ulang';
+  String get unpauseRewind => 'Mundur saat Lepas Jeda';
 
   @override
   String get fiveSeconds => '5 detik';
@@ -2518,39 +2518,39 @@ class AppLocalizationsId extends AppLocalizations {
   String get thirtySeconds => '30 detik';
 
   @override
-  String get skipBackLength => 'Lewati Panjang Kembali';
+  String get skipBackLength => 'Durasi Lewat Mundur';
 
   @override
-  String get skipForwardLength => 'Lewati Panjang Maju';
+  String get skipForwardLength => 'Durasi Lewat Maju';
 
   @override
-  String get customMpvConfPath => 'Jalur mpv.conf khusus';
+  String get customMpvConfPath => 'Path mpv.conf Kustom';
 
   @override
   String get notSetMpvConf =>
-      'Tidak disetel. Moonfin akan mencoba mpv.conf default di folder aplikasi/data.';
+      'Belum diatur. Moonfin akan mencoba mpv.conf default di folder app/data.';
 
   @override
   String get selectMpvConf => 'Pilih mpv.conf';
 
   @override
-  String get pathToMpvConf => '/path/ke/mpv.conf';
+  String get pathToMpvConf => '/path/to/mpv.conf';
 
   @override
   String get subtitleStyleDescription =>
-      'Pengaturan gaya (ukuran, warna, offset) berlaku untuk subtitle berbasis teks (SRT, VTT, TTML). Subtitle ASS/SSA menggunakan gaya tersematnya sendiri kecuali \"ASS/SSA Direct Play\" dimatikan. Subtitle bitmap (PGS, DVB, VobSub) tidak dapat diubah gayanya.';
+      'Pengaturan gaya (ukuran, warna, offset) berlaku untuk subtitle berbasis teks (SRT, VTT, TTML). Subtitle ASS/SSA menggunakan gaya tersematnya sendiri kecuali \"ASS/SSA Direct Play\" dinonaktifkan. Subtitle bitmap (PGS, DVB, VobSub) tidak dapat diubah gayanya.';
 
   @override
   String get defaultSubtitleLanguage => 'Bahasa Subtitle Default';
 
   @override
-  String get defaultToNoSubtitles => 'Defaultnya adalah Tanpa Subtitle';
+  String get defaultToNoSubtitles => 'Default tanpa Subtitle';
 
   @override
-  String get turnOffSubtitlesByDefault => 'Matikan subtitle secara default';
+  String get turnOffSubtitlesByDefault => 'Nonaktifkan subtitle secara default';
 
   @override
-  String get subtitleSize => 'Ukuran Subjudul';
+  String get subtitleSize => 'Ukuran Subtitle';
 
   @override
   String get textFillColor => 'Warna Isi Teks';
@@ -2559,32 +2559,32 @@ class AppLocalizationsId extends AppLocalizations {
   String get backgroundColor => 'Warna Latar Belakang';
 
   @override
-  String get textStrokeColor => 'Warna Goresan Teks';
+  String get textStrokeColor => 'Warna Stroke Teks';
 
   @override
-  String get subtitleCustomization => 'Kustomisasi Subjudul';
+  String get subtitleCustomization => 'Kustomisasi Subtitle';
 
   @override
   String get subtitleCustomizationDescription => 'Sesuaikan tampilan subtitle';
 
   @override
   String get subtitlePreviewText =>
-      'Rubah coklat yang gesit melompati anjing pemalas';
+      'The quick brown fox jumps over the lazy dog';
 
   @override
-  String get verticalOffset => 'Perimbangan Vertikal';
+  String get verticalOffset => 'Offset Vertikal';
 
   @override
-  String get pgsDirectPlay => 'Putar Langsung PGS';
+  String get pgsDirectPlay => 'PGS Direct Play';
 
   @override
-  String get directPlayPgsSubtitles => 'Putar langsung subtitle PGS';
+  String get directPlayPgsSubtitles => 'Direct play subtitle PGS';
 
   @override
-  String get assSsaDirectPlay => 'Putar Langsung ASS/SSA';
+  String get assSsaDirectPlay => 'ASS/SSA Direct Play';
 
   @override
-  String get directPlayAssSsaSubtitles => 'Putar langsung subtitle ASS/SSA';
+  String get directPlayAssSsaSubtitles => 'Direct play subtitle ASS/SSA';
 
   @override
   String get white => 'Putih';
@@ -2608,7 +2608,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get transparent => 'Transparan';
 
   @override
-  String get semiTransparentBlack => 'Hitam semi transparan';
+  String get semiTransparentBlack => 'Hitam semi-transparan';
 
   @override
   String get global => 'Global';
@@ -2620,21 +2620,21 @@ class AppLocalizationsId extends AppLocalizations {
   String get mobile => 'Seluler';
 
   @override
-  String get tv => 'televisi';
+  String get tv => 'TV';
 
   @override
   String loadedProfileSettings(String profile) {
-    return 'Loaded $profile profile settings.';
+    return 'Pengaturan profil $profile berhasil dimuat.';
   }
 
   @override
   String failedToLoadProfileSettings(String profile) {
-    return 'Failed to load $profile profile settings.';
+    return 'Gagal memuat pengaturan profil $profile.';
   }
 
   @override
   String syncedSettingsToProfile(String profile) {
-    return 'Synced local settings to $profile profile.';
+    return 'Pengaturan lokal berhasil disinkronkan ke profil $profile.';
   }
 
   @override
@@ -2642,7 +2642,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get customizationProfileDescription =>
-      'Pilih profil yang akan dimuat, diedit, dan disinkronkan. Global berlaku di mana saja kecuali profil perangkat menggantikannya. Titik hijau menandai profil perangkat Anda saat ini.';
+      'Pilih profil untuk dimuat, diedit, dan disinkronkan. Global berlaku di semua tempat kecuali ditimpa oleh profil perangkat. Titik hijau menandai profil perangkat Anda saat ini.';
 
   @override
   String get loadProfile => 'Muat Profil';
@@ -2651,10 +2651,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get syncing => 'Menyinkronkan...';
 
   @override
-  String get syncToProfile => 'Sinkronkan Ke Profil';
+  String get syncToProfile => 'Sinkronkan Profil';
 
   @override
-  String get profileSyncHidden => 'Sinkronisasi Profil Tersembunyi';
+  String get profileSyncHidden => 'Sinkronisasi Profil Disembunyikan';
 
   @override
   String get enablePluginSyncDescription =>
@@ -2670,39 +2670,38 @@ class AppLocalizationsId extends AppLocalizations {
   String get network => 'Jaringan';
 
   @override
-  String get wifiOnlyDownloads => 'Unduhan Khusus WiFi';
+  String get wifiOnlyDownloads => 'Unduhan Hanya WiFi';
 
   @override
-  String get onlyDownloadOnWifi => 'Hanya unduh saat terhubung ke WiFi';
+  String get onlyDownloadOnWifi => 'Unduh hanya saat terhubung ke WiFi';
 
   @override
   String get storage => 'Penyimpanan';
 
   @override
-  String get storageUsed => 'Penyimpanan Digunakan';
+  String get storageUsed => 'Penyimpanan Terpakai';
 
   @override
-  String get manage => 'Mengelola';
+  String get manage => 'Kelola';
 
   @override
   String get calculating => 'Menghitung...';
 
   @override
-  String get downloadLocation => 'Unduh Lokasi';
+  String get downloadLocation => 'Lokasi Unduhan';
 
   @override
-  String get defaultLabel => 'Bawaan';
+  String get defaultLabel => 'Default';
 
   @override
   String get saveToDownloadsFolder => 'Simpan ke folder Unduhan';
 
   @override
   String get downloadsVisibleToOtherApps =>
-      'Unduhan/Moonfin — terlihat oleh aplikasi lain';
+      'Downloads/Moonfin — terlihat oleh aplikasi lain';
 
   @override
-  String get dangerZone =>
-      'Unduhan/__ARB_TERM_0__ — terlihat oleh aplikasi lain';
+  String get dangerZone => 'Zona Berbahaya';
 
   @override
   String get clearAllDownloads => 'Hapus Semua Unduhan';
@@ -2715,10 +2714,10 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get changeDownloadLocationDescription =>
-      'Unduhan baru akan disimpan ke folder yang dipilih. Unduhan yang ada akan tetap berada di lokasinya saat ini dan dapat dikelola dari pengaturan Penyimpanan.';
+      'Unduhan baru akan disimpan ke folder yang dipilih. Unduhan yang sudah ada akan tetap berada di lokasi saat ini dan dapat dikelola dari pengaturan Penyimpanan.';
 
   @override
-  String get confirm => 'Mengonfirmasi';
+  String get confirm => 'Konfirmasi';
 
   @override
   String get cannotWriteToFolder =>
@@ -2729,14 +2728,14 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get saveToDownloadsFolderDescription =>
-      'Media yang diunduh akan disimpan ke Unduhan/Moonfin di perangkat Anda. File-file ini akan terlihat oleh aplikasi lain seperti galeri atau pemutar musik Anda.\n\nUnduhan yang ada akan tetap berada di lokasinya saat ini.';
+      'Media yang diunduh akan disimpan ke Downloads/Moonfin di perangkat Anda. File-file ini akan terlihat oleh aplikasi lain seperti galeri atau pemutar musik Anda.\n\nUnduhan yang sudah ada akan tetap berada di lokasi saat ini.';
 
   @override
-  String get enable => 'Memungkinkan';
+  String get enable => 'Aktifkan';
 
   @override
   String get clearAllDownloadsWarning =>
-      'Tindakan ini akan menghapus semua media yang diunduh dan tidak dapat dibatalkan.';
+      'Ini akan menghapus semua media yang diunduh dan tidak dapat dibatalkan.';
 
   @override
   String get clearAll => 'Hapus Semua';
@@ -2745,10 +2744,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get navigationStyle => 'Gaya Navigasi';
 
   @override
-  String get topBar => 'Bilah Atas';
+  String get topBar => 'Bar Atas';
 
   @override
-  String get leftSidebar => 'Bilah Sisi Kiri';
+  String get leftSidebar => 'Sidebar Kiri';
 
   @override
   String get showShuffleButton => 'Tampilkan Tombol Acak';
@@ -2760,31 +2759,31 @@ class AppLocalizationsId extends AppLocalizations {
   String get showFavoritesButton => 'Tampilkan Tombol Favorit';
 
   @override
-  String get showLibrariesInToolbar => 'Tampilkan Perpustakaan di Toolbar';
+  String get showLibrariesInToolbar => 'Tampilkan Pustaka di Toolbar';
 
   @override
-  String get showSeerrButton => 'Show Seerr Button';
+  String get showSeerrButton => 'Tampilkan Tombol Seerr';
 
   @override
   String get navbarOpacity => 'Opasitas Navbar';
 
   @override
-  String get navbarColor => 'Warna Bilah Nav';
+  String get navbarColor => 'Warna Navbar';
 
   @override
   String get gray => 'Abu-abu';
 
   @override
-  String get darkBlue => 'Biru tua';
+  String get darkBlue => 'Biru Tua';
 
   @override
   String get purple => 'Ungu';
 
   @override
-  String get teal => 'teal';
+  String get teal => 'Teal';
 
   @override
-  String get navy => 'Angkatan laut';
+  String get navy => 'Navy';
 
   @override
   String get charcoal => 'Arang';
@@ -2799,58 +2798,58 @@ class AppLocalizationsId extends AppLocalizations {
   String get darkGreen => 'Hijau Tua';
 
   @override
-  String get slate => 'Batu tulis';
+  String get slate => 'Slate';
 
   @override
-  String get indigo => 'Nila';
+  String get indigo => 'Indigo';
 
   @override
-  String get libraryDisplay => 'Tampilan Perpustakaan';
+  String get libraryDisplay => 'Tampilan Pustaka';
 
   @override
   String get posterLabel => 'Poster';
 
   @override
-  String get thumbnailLabel => 'gambar kecil';
+  String get thumbnailLabel => 'Thumbnail';
 
   @override
-  String get bannerLabel => 'Spanduk';
+  String get bannerLabel => 'Banner';
 
   @override
-  String get overridePerLibrarySettings => 'Ganti Pengaturan Per Perpustakaan';
+  String get overridePerLibrarySettings => 'Timpa Pengaturan per Pustaka';
 
   @override
   String get applyImageTypeToAllLibraries =>
-      'Terapkan jenis gambar ke semua perpustakaan';
+      'Terapkan tipe gambar ke semua pustaka';
 
   @override
-  String get multiServerLibraries => 'Perpustakaan Multi-Server';
+  String get multiServerLibraries => 'Pustaka Multi-Server';
 
   @override
   String get showLibrariesFromAllServers =>
-      'Tampilkan perpustakaan dari semua server yang terhubung';
+      'Tampilkan pustaka dari semua server yang terhubung';
 
   @override
   String get enableFolderView => 'Aktifkan Tampilan Folder';
 
   @override
-  String get showFolderBrowsingOption => 'Tampilkan opsi penjelajahan folder';
+  String get showFolderBrowsingOption => 'Tampilkan opsi penelusuran folder';
 
   @override
-  String get libraryVisibility => 'Visibilitas Perpustakaan';
+  String get libraryVisibility => 'Visibilitas Pustaka';
 
   @override
   String get libraryVisibilityDescription =>
-      'Alihkan visibilitas halaman beranda per perpustakaan. Mulai ulang Moonfin agar perubahan diterapkan.';
+      'Atur visibilitas halaman beranda untuk tiap pustaka. Mulai ulang Moonfin agar perubahan berlaku.';
 
   @override
   String get showInNavigation => 'Tampilkan di navigasi';
 
   @override
-  String get showInLatestMedia => 'Tampilkan di media terkini';
+  String get showInLatestMedia => 'Tampilkan di media terbaru';
 
   @override
-  String get sourceLibraries => 'Perpustakaan Sumber';
+  String get sourceLibraries => 'Pustaka Sumber';
 
   @override
   String get sourceCollections => 'Koleksi Sumber';
@@ -2863,11 +2862,11 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String itemsSelected(int count) {
-    return '$count selected';
+    return '$count dipilih';
   }
 
   @override
-  String get mediaBar => 'Bilah Media';
+  String get mediaBar => 'Bar Media';
 
   @override
   String get mediaSources => 'Sumber Media';
@@ -2883,14 +2882,14 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get localPreviewsDescription =>
-      'Konfigurasikan pratinjau cuplikan, media, dan audio.';
+      'Konfigurasikan pratinjau trailer, media, dan audio.';
 
   @override
-  String get mediaBarMode => 'Gaya Bilah Media';
+  String get mediaBarMode => 'Gaya Bar Media';
 
   @override
   String get mediaBarModeDescription =>
-      'Pilih di antara berbagai gaya bilah media, atau nonaktifkan bilah media';
+      'Pilih di antara berbagai gaya bar media, atau nonaktifkan bar media';
 
   @override
   String get mediaBarModeMoonfin => 'Moonfin';
@@ -2899,14 +2898,14 @@ class AppLocalizationsId extends AppLocalizations {
   String get mediaBarModeMakd => 'MakD';
 
   @override
-  String get mediaBarModeOff => 'Mati';
+  String get mediaBarModeOff => 'Nonaktif';
 
   @override
-  String get enableMediaBar => 'Aktifkan Bilah Media';
+  String get enableMediaBar => 'Aktifkan Bar Media';
 
   @override
   String get showFeaturedContentSlideshow =>
-      'Tampilkan tayangan slide konten unggulan di beranda';
+      'Tampilkan slideshow konten unggulan di beranda';
 
   @override
   String get contentType => 'Tipe Konten';
@@ -2921,7 +2920,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get tvShowsOnly => 'Hanya Acara TV';
 
   @override
-  String get itemCount => 'Jumlah Barang';
+  String get itemCount => 'Jumlah Item';
 
   @override
   String get noneSelected => 'Tidak ada yang dipilih';
@@ -2933,17 +2932,17 @@ class AppLocalizationsId extends AppLocalizations {
   String get autoAdvance => 'Maju Otomatis';
 
   @override
-  String get autoAdvanceSlides => 'Secara otomatis maju ke slide berikutnya';
+  String get autoAdvanceSlides => 'Maju otomatis ke slide berikutnya';
 
   @override
   String get autoAdvanceInterval => 'Interval Maju Otomatis';
 
   @override
-  String get trailerPreview => 'Pratinjau Cuplikan';
+  String get trailerPreview => 'Pratinjau Trailer';
 
   @override
   String get autoPlayTrailers =>
-      'Putar otomatis cuplikan di bilah media setelah 3 detik';
+      'Putar trailer secara otomatis di bar media setelah 3 detik';
 
   @override
   String get episodePreview => 'Pratinjau Episode';
@@ -2953,24 +2952,24 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get episodePreviewDescription =>
-      'Mainkan pratinjau sebaris 30 detik pada kartu yang terfokus, melayang, atau ditekan lama';
+      'Putar pratinjau inline 30 detik pada kartu yang difokuskan, diarahkan kursor, atau ditekan lama';
 
   @override
   String get mediaPreviewDescription =>
-      'Mainkan pratinjau sebaris 30 detik pada kartu yang terfokus, melayang, atau ditekan lama';
+      'Putar pratinjau inline 30 detik pada kartu yang difokuskan, diarahkan kursor, atau ditekan lama';
 
   @override
   String get previewAudio => 'Pratinjau Audio';
 
   @override
   String get enablePreviewAudio =>
-      'Aktifkan audio untuk pratinjau cuplikan dan episode';
+      'Aktifkan audio untuk pratinjau trailer dan episode';
 
   @override
-  String get latestMedia => 'Media Terkini';
+  String get latestMedia => 'Media Terbaru';
 
   @override
-  String get recentlyReleased => 'Baru-baru ini Dirilis';
+  String get recentlyReleased => 'Baru Dirilis';
 
   @override
   String get myMedia => 'Media Saya';
@@ -2979,7 +2978,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get myMediaSmall => 'Media Saya (Kecil)';
 
   @override
-  String get continueWatching => 'Lanjutkan Menonton';
+  String get continueWatching => 'Lanjut Menonton';
 
   @override
   String get resumeAudio => 'Lanjutkan Audio';
@@ -2991,61 +2990,63 @@ class AppLocalizationsId extends AppLocalizations {
   String get activeRecordings => 'Rekaman Aktif';
 
   @override
-  String get playlists => 'Daftar Putar';
+  String get playlists => 'Playlist';
 
   @override
-  String get liveTV => 'siaran langsung';
+  String get liveTV => 'TV Langsung';
 
   @override
-  String get homeSections => 'Bagian Rumah';
+  String get homeSections => 'Bagian Beranda';
 
   @override
-  String get resetToDefaults => 'Atur ulang ke default';
+  String get resetToDefaults => 'Reset ke default';
 
   @override
   String get homeRowPosterSize => 'Ukuran Poster Baris Beranda';
 
   @override
-  String get perRowImageTypeSelection => 'Pemilihan Jenis Gambar Per Baris';
+  String get perRowImageTypeSelection => 'Pemilihan Tipe Gambar per Baris';
 
   @override
   String get configureImageTypeForEachRow =>
-      'Konfigurasikan jenis gambar untuk setiap baris beranda yang diaktifkan';
+      'Konfigurasikan tipe gambar untuk setiap baris beranda yang diaktifkan';
 
   @override
   String get mergeContinueWatchingAndNextUp =>
-      'Gabungkan Lanjutkan Menonton dan Selanjutnya';
+      'Gabungkan Lanjut Menonton dan Berikutnya';
 
   @override
-  String get combineBothRows => 'Jenis Gambar Per Baris';
+  String get combineBothRows =>
+      'Gabungkan kedua baris menjadi satu bagian beranda';
 
   @override
-  String get fullScreenRows => 'Expanded Home Rows';
+  String get fullScreenRows => 'Baris Beranda Diperluas';
 
   @override
-  String get fullScreenRowsDescription => 'Limit home rows to 1 row per screen';
+  String get fullScreenRowsDescription =>
+      'Batasi baris beranda ke 1 baris per layar';
 
   @override
-  String get perRowImageType => 'Jenis Gambar Per Baris';
+  String get perRowImageType => 'Tipe Gambar per Baris';
 
   @override
-  String get perRowSettings => 'Pengaturan Per Baris';
+  String get perRowSettings => 'Pengaturan per Baris';
 
   @override
-  String get autoLogin => 'Masuk Otomatis';
+  String get autoLogin => 'Login Otomatis';
 
   @override
   String get lastUser => 'Pengguna Terakhir';
 
   @override
-  String get currentUser => 'Current User';
+  String get currentUser => 'Pengguna Saat Ini';
 
   @override
-  String get alwaysAuthenticate => 'Selalu Otentikasi';
+  String get alwaysAuthenticate => 'Selalu Autentikasi';
 
   @override
   String get requirePasswordWithToken =>
-      'Memerlukan kata sandi bahkan dengan token yang disimpan';
+      'Wajibkan kata sandi meskipun token tersimpan';
 
   @override
   String get confirmExit => 'Konfirmasi Keluar';
@@ -3055,29 +3056,28 @@ class AppLocalizationsId extends AppLocalizations {
       'Tampilkan konfirmasi sebelum keluar';
 
   @override
-  String get blockContentWithRatings =>
-      'Blokir konten dengan peringkat berikut:';
+  String get blockContentWithRatings => 'Blokir konten dengan rating berikut:';
 
   @override
   String get noContentRatingsFound =>
-      'Belum ada peringkat konten yang ditemukan di server ini.';
+      'Belum ada rating konten yang ditemukan di server ini.';
 
   @override
   String get couldNotLoadServerRatings =>
-      'Tidak dapat memuat peringkat server. Hanya menampilkan peringkat yang disimpan.';
+      'Tidak dapat memuat rating server. Hanya menampilkan rating yang tersimpan.';
 
   @override
   String get couldNotRefreshRatings =>
-      'Tidak dapat menyegarkan peringkat dari server. Menampilkan peringkat yang disimpan.';
+      'Tidak dapat menyegarkan rating dari server. Menampilkan rating yang tersimpan.';
 
   @override
   String get enablePinCode => 'Aktifkan Kode PIN';
 
   @override
-  String get requirePinToAccess => 'Memerlukan PIN untuk mengakses akun Anda';
+  String get requirePinToAccess => 'Wajibkan PIN untuk mengakses akun Anda';
 
   @override
-  String get changePin => 'Ganti PIN';
+  String get changePin => 'Ubah PIN';
 
   @override
   String get setNewPinCode => 'Tetapkan kode PIN baru';
@@ -3089,42 +3089,42 @@ class AppLocalizationsId extends AppLocalizations {
   String get removePinProtection => 'Hapus perlindungan kode PIN';
 
   @override
-  String get screensaver => 'Penghemat layar';
+  String get screensaver => 'Screen saver';
 
   @override
-  String get inAppScreensaver => 'Penghemat Layar Dalam Aplikasi';
+  String get inAppScreensaver => 'Screen saver Dalam Aplikasi';
 
   @override
-  String get enableBuiltInScreensaver => 'Aktifkan screensaver bawaan';
+  String get enableBuiltInScreensaver => 'Aktifkan screen saver bawaan';
 
   @override
   String get mode => 'Mode';
 
   @override
-  String get libraryArt => 'Seni Perpustakaan';
+  String get libraryArt => 'Art Pustaka';
 
   @override
-  String get logo => 'logo';
+  String get logo => 'Logo';
 
   @override
   String get clock => 'Jam';
 
   @override
-  String get timeout => 'Batas waktu';
+  String get timeout => 'Batas Waktu';
 
   @override
   String minutesShort(int minutes) {
-    return '$minutes min';
+    return '$minutes menit';
   }
 
   @override
   String get dimmingLevel => 'Tingkat Peredupan';
 
   @override
-  String get maxAgeRating => 'Peringkat Usia Maks';
+  String get maxAgeRating => 'Rating Usia Maksimum';
 
   @override
-  String get any => 'Setiap';
+  String get any => 'Apa pun';
 
   @override
   String agePlusValue(int age) {
@@ -3132,30 +3132,30 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get requireAgeRating => 'Memerlukan Peringkat Usia';
+  String get requireAgeRating => 'Wajibkan Rating Usia';
 
   @override
   String get onlyShowRatedContent =>
-      'Hanya tampilkan konten yang diberi rating';
+      'Tampilkan hanya konten yang memiliki rating';
 
   @override
   String get showClock => 'Tampilkan Jam';
 
   @override
   String get displayClockDuringScreensaver =>
-      'Tampilkan jam selama screensaver';
+      'Tampilkan jam selama screen saver';
 
   @override
-  String get clockModeStatic => 'Static';
+  String get clockModeStatic => 'Statis';
 
   @override
-  String get clockModeBouncing => 'Bouncing';
+  String get clockModeBouncing => 'Memantul';
 
   @override
-  String get rottenTomatoesCritics => 'Tomat Busuk (Kritikus)';
+  String get rottenTomatoesCritics => 'Rotten Tomatoes (Kritikus)';
 
   @override
-  String get rottenTomatoesAudience => 'Tomat Busuk (Penonton)';
+  String get rottenTomatoesAudience => 'Rotten Tomatoes (Penonton)';
 
   @override
   String get imdb => 'IMDb';
@@ -3164,65 +3164,64 @@ class AppLocalizationsId extends AppLocalizations {
   String get tmdb => 'TMDB';
 
   @override
-  String get metacritic => 'Metakritik';
+  String get metacritic => 'Metacritic';
 
   @override
-  String get metacriticUser => 'Metakritik (Pengguna)';
+  String get metacriticUser => 'Metacritic (Pengguna)';
 
   @override
-  String get trakt => 'saluran';
+  String get trakt => 'Trakt';
 
   @override
-  String get letterboxd => 'Kotak suratd';
+  String get letterboxd => 'Letterboxd';
 
   @override
-  String get myAnimeList => 'Daftar Anime Saya';
+  String get myAnimeList => 'MyAnimeList';
 
   @override
-  String get aniList => 'Daftar Ani';
+  String get aniList => 'AniList';
 
   @override
-  String get communityRating => 'Peringkat Komunitas';
+  String get communityRating => 'Rating Komunitas';
 
   @override
-  String get ratings => 'Peringkat';
+  String get ratings => 'Rating';
 
   @override
-  String get additionalRatings => 'Peringkat Tambahan';
+  String get additionalRatings => 'Rating Tambahan';
 
   @override
-  String get showMdbListAndTmdbRatings =>
-      'Tampilkan peringkat MDBList dan TMDB';
+  String get showMdbListAndTmdbRatings => 'Tampilkan rating MDBList dan TMDB';
 
   @override
-  String get ratingLabels => 'Label Peringkat';
+  String get ratingLabels => 'Label Rating';
 
   @override
-  String get showLabelsNextToIcons => 'Tampilkan label di sebelah ikon rating';
+  String get showLabelsNextToIcons => 'Tampilkan label di samping ikon rating';
 
   @override
-  String get ratingBadges => 'Lencana Peringkat';
+  String get ratingBadges => 'Lencana Rating';
 
   @override
   String get showDecorativeBadges =>
-      'Tampilkan lencana dekoratif di belakang peringkat';
+      'Tampilkan lencana dekoratif di belakang rating';
 
   @override
-  String get episodeRatings => 'Peringkat Episode';
+  String get episodeRatings => 'Rating Episode';
 
   @override
   String get showRatingsOnEpisodes =>
-      'Tampilkan peringkat pada masing-masing episode';
+      'Tampilkan rating pada episode individual';
 
   @override
-  String get ratingSources => 'Sumber Peringkat';
+  String get ratingSources => 'Sumber Rating';
 
   @override
   String get ratingSourcesDescription =>
-      'Aktifkan dan susun ulang sumber peringkat yang ditampilkan di seluruh aplikasi';
+      'Aktifkan dan atur ulang urutan sumber rating yang ditampilkan di seluruh aplikasi';
 
   @override
-  String get pluginLabel => 'Pengaya';
+  String get pluginLabel => 'Plugin Moonbase';
 
   @override
   String get pluginDetected => 'Plugin Terdeteksi';
@@ -3236,15 +3235,15 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get pluginNotDetectedDescription =>
-      'Plugin server saat ini tidak terdeteksi. Pengaturan lokal masih menggunakan nilai tersimpan atau default bawaannya.';
+      'Plugin server saat ini tidak terdeteksi. Pengaturan lokal tetap menggunakan nilai tersimpan atau default bawaan.';
 
   @override
   String pluginStatusVersion(String status, String version) {
-    return '$status\nVersion: $version';
+    return '$status\nVersi: $version';
   }
 
   @override
-  String get availableServices => 'Layanan yang Tersedia';
+  String get availableServices => 'Layanan Tersedia';
 
   @override
   String get serverPluginSync => 'Sinkronisasi Plugin Server';
@@ -3254,11 +3253,11 @@ class AppLocalizationsId extends AppLocalizations {
       'Sinkronkan pengaturan dengan plugin server';
 
   @override
-  String get whatSyncControls => 'Kontrol sinkronisasi apa';
+  String get whatSyncControls => 'Apa yang dikendalikan sinkronisasi';
 
   @override
   String get syncControlsDescription =>
-      'Sinkronisasi hanya mengontrol apakah pengaturan yang didukung plugin didorong ke dan ditarik dari server. Pemilihan profil dan tindakan sinkronisasi profil berada dalam pengaturan Kustomisasi ketika sinkronisasi plugin diaktifkan.';
+      'Sinkronisasi hanya mengendalikan apakah pengaturan berbasis plugin didorong ke dan ditarik dari server. Pemilihan profil dan tindakan sinkronisasi profil ada di pengaturan Kustomisasi saat sinkronisasi plugin diaktifkan.';
 
   @override
   String get recentRequests => 'Permintaan Terbaru';
@@ -3267,7 +3266,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get recentlyAdded => 'Baru Ditambahkan';
 
   @override
-  String get trending => 'Sedang tren';
+  String get trending => 'Sedang Tren';
 
   @override
   String get popularMovies => 'Film Populer';
@@ -3282,19 +3281,19 @@ class AppLocalizationsId extends AppLocalizations {
   String get studios => 'Studio';
 
   @override
-  String get popularSeries => 'Seri Populer';
+  String get popularSeries => 'Serial Populer';
 
   @override
-  String get seriesGenres => 'Genre Seri';
+  String get seriesGenres => 'Genre Serial';
 
   @override
-  String get upcomingSeries => 'Seri Mendatang';
+  String get upcomingSeries => 'Serial Mendatang';
 
   @override
   String get networks => 'Jaringan';
 
   @override
-  String get seerrDiscoveryRows => 'Seerr Discovery Rows';
+  String get seerrDiscoveryRows => 'Baris Discovery Seerr';
 
   @override
   String get resetRowsToDefaults => 'Reset baris ke default';
@@ -3308,63 +3307,63 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get seerrUnavailable =>
-      'Tidak tersedia karena dukungan plugin server Seerr dinonaktifkan.';
+      'Tidak tersedia karena dukungan Seerr pada plugin server dinonaktifkan.';
 
   @override
-  String get nsfwFilter => 'Penyaring NSFW';
+  String get nsfwFilter => 'Filter NSFW';
 
   @override
-  String get hideAdultContent => 'Sembunyikan konten dewasa di hasil';
+  String get hideAdultContent => 'Sembunyikan konten dewasa dari hasil';
 
   @override
   String loggedInAs(String username) {
-    return 'Logged in as: $username';
+    return 'Masuk sebagai: $username';
   }
 
   @override
-  String get discoverRows => 'Temukan Baris';
+  String get discoverRows => 'Baris Discover';
 
   @override
   String get discoverRowsDescriptionPlugin =>
-      'Tarik untuk menyusun ulang. Mengaktifkan atau menonaktifkan baris. Sinkronisasi urutan baris diaktifkan dengan plugin Moonfin.';
+      'Seret untuk mengatur ulang urutan. Aktifkan atau nonaktifkan baris. Urutan baris yang diaktifkan akan disinkronkan dengan plugin Moonfin.';
 
   @override
   String get discoverRowsDescription =>
-      'Tarik untuk menyusun ulang. Mengaktifkan atau menonaktifkan baris.';
+      'Seret untuk mengatur ulang urutan. Aktifkan atau nonaktifkan baris.';
 
   @override
   String get enabled => 'Diaktifkan';
 
   @override
-  String get hidden => 'Tersembunyi';
+  String get hidden => 'Disembunyikan';
 
   @override
   String get aboutTitle => 'Tentang';
 
   @override
   String versionValue(String version) {
-    return 'Version $version';
+    return 'Versi $version';
   }
 
   @override
-  String get openSourceLicenses => 'Lisensi Sumber Terbuka';
+  String get openSourceLicenses => 'Lisensi Open Source';
 
   @override
   String get sourceCode => 'Kode Sumber';
 
   @override
   String get sourceCodeUrl =>
-      'https://github.com/Moonfin-Client/Mobile-Desktop';
+      '[https://github.com/Moonfin-Client/Mobile-Desktop](https://github.com/Moonfin-Client/Mobile-Desktop)';
 
   @override
   String get checkForUpdatesNow => 'Periksa Pembaruan Sekarang';
 
   @override
   String get checksLatestDesktopRelease =>
-      'Periksa rilis desktop terbaru untuk platform ini';
+      'Memeriksa rilis desktop terbaru untuk platform ini';
 
   @override
-  String get youAreUpToDate => 'Anda terkini.';
+  String get youAreUpToDate => 'Anda sudah menggunakan versi terbaru.';
 
   @override
   String get couldNotCheckForUpdates =>
@@ -3376,7 +3375,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get updateChecksNotSupported =>
-      'Pemeriksaan pembaruan tidak didukung pada platform ini.';
+      'Pemeriksaan pembaruan tidak didukung di platform ini.';
 
   @override
   String get updateNotificationsDisabled =>
@@ -3386,25 +3385,25 @@ class AppLocalizationsId extends AppLocalizations {
   String get pleaseWaitBeforeChecking => 'Harap tunggu sebelum memeriksa lagi.';
 
   @override
-  String get latestUpdateAlreadyShown => 'Pembaruan terkini sudah ditampilkan.';
+  String get latestUpdateAlreadyShown => 'Pembaruan terbaru sudah ditampilkan.';
 
   @override
   String get updateAvailable => 'Pembaruan tersedia.';
 
   @override
   String updateAvailableVersion(String version) {
-    return 'Update available: v$version';
+    return 'Pembaruan tersedia: v$version';
   }
 
   @override
-  String get updateNotifications => 'Perbarui Pemberitahuan';
+  String get updateNotifications => 'Notifikasi Pembaruan';
 
   @override
   String get showWhenUpdatesAvailable => 'Tampilkan saat pembaruan tersedia';
 
   @override
   String updateAvailableTitle(String version) {
-    return 'v$version Available';
+    return 'v$version Tersedia';
   }
 
   @override
@@ -3415,7 +3414,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get updateDownloadFailed =>
-      'Unduhan pembaruan gagal. Silakan coba lagi.';
+      'Pengunduhan pembaruan gagal. Silakan coba lagi.';
 
   @override
   String get openReleasesPage => 'Buka Halaman Rilis';
@@ -3424,30 +3423,29 @@ class AppLocalizationsId extends AppLocalizations {
   String get navigation => 'Navigasi';
 
   @override
-  String get watchedIndicatorsBackdrops =>
-      'Indikator yang diamati, latar belakang';
+  String get watchedIndicatorsBackdrops => 'Indikator tontonan, backdrop';
 
   @override
   String get focusColorWatchedIndicatorsBackdrops =>
-      'Warna fokus, indikator yang diamati, latar belakang';
+      'Warna fokus, indikator tontonan, backdrop';
 
   @override
   String get navbarStyleToolbarAppearance =>
-      'Gaya Navbar, tombol toolbar, tampilan';
+      'Gaya navbar, tombol toolbar, tampilan';
 
   @override
-  String get reorderToggleHomeRows => 'Susun ulang dan alihkan baris beranda';
+  String get reorderToggleHomeRows =>
+      'Atur ulang urutan dan aktif/nonaktifkan baris beranda';
 
   @override
-  String get featuredContentAppearance => 'Konten unggulan, penampilan';
+  String get featuredContentAppearance => 'Konten unggulan, tampilan';
 
   @override
   String get posterSizeImageTypeFolderView =>
-      'Ukuran poster, jenis gambar, tampilan folder';
+      'Ukuran poster, tipe gambar, tampilan folder';
 
   @override
-  String get mdbListTmdbRatingSources =>
-      'MDBList, TMDB, dan sumber pemeringkatan';
+  String get mdbListTmdbRatingSources => 'MDBList, TMDB, dan sumber rating';
 
   @override
   String gbValue(String value) {
@@ -3455,10 +3453,10 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get clear => 'Jernih';
+  String get clear => 'Hapus';
 
   @override
-  String get browse => 'Jelajahi';
+  String get browse => 'Telusuri';
 
   @override
   String get noResults => 'Tidak ada hasil';
@@ -3471,34 +3469,34 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String itemsCount(int count) {
-    return '$count Items';
+    return '$count Item';
   }
 
   @override
-  String get seerrSettings => 'Pengaturan Pelihat';
+  String get seerrSettings => 'Pengaturan Seerr';
 
   @override
-  String get requestMore => 'Minta Lebih Banyak';
+  String get requestMore => 'Minta Lagi';
 
   @override
-  String get request => 'Meminta';
+  String get request => 'Minta';
 
   @override
   String get cancelRequest => 'Batalkan Permintaan';
 
   @override
-  String get playInMoonfin => 'Mainkan di Moonfin';
+  String get playInMoonfin => 'Putar di Moonfin';
 
   @override
   String requestedByName(String name) {
-    return 'Requested by $name';
+    return 'Diminta oleh $name';
   }
 
   @override
-  String get approve => 'Menyetujui';
+  String get approve => 'Setujui';
 
   @override
-  String get declineAction => 'Menolak';
+  String get declineAction => 'Tolak';
 
   @override
   String get similar => 'Serupa';
@@ -3508,32 +3506,32 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String cancelRequestForTitle(String title) {
-    return 'Cancel request for \"$title\"?';
+    return 'Batalkan permintaan untuk \"$title\"?';
   }
 
   @override
   String cancelCountRequestsForTitle(int count, String title) {
-    return 'Cancel $count requests for \"$title\"?';
+    return 'Batalkan $count permintaan untuk \"$title\"?';
   }
 
   @override
-  String get keep => 'Menyimpan';
+  String get keep => 'Simpan';
 
   @override
   String get itemNotFoundInLibrary =>
-      'Item tidak ditemukan di perpustakaan Moonfin Anda';
+      'Item tidak ditemukan di pustaka Moonfin Anda';
 
   @override
-  String get errorSearchingLibrary => 'Kesalahan saat mencari perpustakaan';
+  String get errorSearchingLibrary => 'Kesalahan saat mencari pustaka';
 
   @override
   String budgetAmount(String amount) {
-    return 'Budget: \$$amount';
+    return 'Anggaran: \$$amount';
   }
 
   @override
   String revenueAmount(String amount) {
-    return 'Revenue: \$$amount';
+    return 'Pendapatan: \$$amount';
   }
 
   @override
@@ -3543,7 +3541,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String requestSeriesOrMovie(String type) {
-    return 'Request $type';
+    return 'Minta $type';
   }
 
   @override
@@ -3560,13 +3558,13 @@ class AppLocalizationsId extends AppLocalizations {
       'Tidak ada server layanan yang dikonfigurasi';
 
   @override
-  String get server => 'pelayan';
+  String get server => 'Server';
 
   @override
   String get qualityProfile => 'Profil Kualitas';
 
   @override
-  String get rootFolder => 'Folder Akar';
+  String get rootFolder => 'Folder Root';
 
   @override
   String get showMore => 'Tampilkan Lebih Banyak';
@@ -3575,11 +3573,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get appearances => 'Penampilan';
 
   @override
-  String get crewSection => 'Awak kapal';
+  String get crewSection => 'Kru';
 
   @override
   String ageValue(int age) {
-    return 'age $age';
+    return 'usia $age';
   }
 
   @override
@@ -3601,7 +3599,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get approvedStatus => 'Disetujui';
 
   @override
-  String get notRequestedStatus => 'Tidak Diminta';
+  String get notRequestedStatus => 'Belum Diminta';
 
   @override
   String get blocklistedStatus => 'Masuk daftar blokir';
@@ -3616,13 +3614,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get releaseDateLabel => 'Tanggal Rilis';
 
   @override
-  String get firstAirDateLabel => 'Tanggal Tayang Pertama';
+  String get firstAirDateLabel => 'Tanggal Tayang Perdana';
 
   @override
   String get revenueLabel => 'Pendapatan';
 
   @override
-  String get runtimeLabel => 'Waktu proses';
+  String get runtimeLabel => 'Durasi';
 
   @override
   String get budgetLabel => 'Anggaran';
@@ -3637,40 +3635,40 @@ class AppLocalizationsId extends AppLocalizations {
   String get episodesLabel => 'Episode';
 
   @override
-  String get access => 'Mengakses';
+  String get access => 'Akses';
 
   @override
-  String get add => 'Menambahkan';
+  String get add => 'Tambah';
 
   @override
   String get address => 'Alamat';
 
   @override
-  String get analytics => 'Analisis';
+  String get analytics => 'Analitik';
 
   @override
   String get catalog => 'Katalog';
 
   @override
-  String get content => 'Isi';
+  String get content => 'Konten';
 
   @override
-  String get copy => 'Menyalin';
+  String get copy => 'Salin';
 
   @override
-  String get create => 'Membuat';
+  String get create => 'Buat';
 
   @override
-  String get disable => 'Cacat';
+  String get disable => 'Nonaktifkan';
 
   @override
   String get done => 'Selesai';
 
   @override
-  String get edit => 'Sunting';
+  String get edit => 'Edit';
 
   @override
-  String get encoding => 'Pengkodean';
+  String get encoding => 'Encoding';
 
   @override
   String get error => 'Kesalahan';
@@ -3682,16 +3680,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get general => 'Umum';
 
   @override
-  String get go => 'Pergi';
+  String get go => 'Buka';
 
   @override
-  String get install => 'Memasang';
+  String get install => 'Instal';
 
   @override
-  String get installed => 'Dipasang';
+  String get installed => 'Terinstal';
 
   @override
-  String get interval => 'Selang';
+  String get interval => 'Interval';
 
   @override
   String get name => 'Nama';
@@ -3703,7 +3701,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get next => 'Berikutnya';
 
   @override
-  String get path => 'Jalur';
+  String get path => 'Path';
 
   @override
   String get paused => 'Dijeda';
@@ -3712,7 +3710,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get permissions => 'Izin';
 
   @override
-  String get processing => 'Pengolahan';
+  String get processing => 'Memproses';
 
   @override
   String get profile => 'Profil';
@@ -3721,106 +3719,106 @@ class AppLocalizationsId extends AppLocalizations {
   String get provider => 'Penyedia';
 
   @override
-  String get refresh => 'Menyegarkan';
+  String get refresh => 'Segarkan';
 
   @override
-  String get remote => 'Terpencil';
+  String get remote => 'Jarak Jauh';
 
   @override
-  String get rename => 'Ganti nama';
+  String get rename => 'Ubah Nama';
 
   @override
-  String get revoke => 'Menarik kembali';
+  String get revoke => 'Cabut';
 
   @override
   String get role => 'Peran';
 
   @override
-  String get root => 'Akar';
+  String get root => 'Root';
 
   @override
-  String get run => 'Berlari';
+  String get run => 'Jalankan';
 
   @override
-  String get search => 'Mencari';
+  String get search => 'Cari';
 
   @override
-  String get select => 'Memilih';
+  String get select => 'Pilih';
 
   @override
-  String get send => 'Mengirim';
+  String get send => 'Kirim';
 
   @override
   String get sessions => 'Sesi';
 
   @override
-  String get set => 'Mengatur';
+  String get set => 'Atur';
 
   @override
   String get status => 'Status';
 
   @override
-  String get stop => 'Berhenti';
+  String get stop => 'Hentikan';
 
   @override
-  String get streaming => 'Mengalir';
+  String get streaming => 'Streaming';
 
   @override
   String get time => 'Waktu';
 
   @override
-  String get trickplay => 'Permainan tipuan';
+  String get trickplay => 'Trickplay';
 
   @override
-  String get uninstall => 'Copot pemasangan';
+  String get uninstall => 'Copot Instalasi';
 
   @override
-  String get up => 'Ke atas';
+  String get up => 'Naik';
 
   @override
-  String get update => 'Memperbarui';
+  String get update => 'Perbarui';
 
   @override
-  String get upload => 'Mengunggah';
+  String get upload => 'Unggah';
 
   @override
-  String get unmute => 'Membunyikan';
+  String get unmute => 'Bunyikan';
 
   @override
-  String get mute => 'Bisu';
+  String get mute => 'Bisukan';
 
   @override
-  String get branding => 'merek';
+  String get branding => 'Branding';
 
   @override
-  String get adminDrawerDashboard => 'Dasbor';
+  String get adminDrawerDashboard => 'Dashboard';
 
   @override
-  String get adminDrawerAnalytics => 'Analisis';
+  String get adminDrawerAnalytics => 'Analitik';
 
   @override
   String get adminDrawerSettings => 'Pengaturan';
 
   @override
-  String get adminDrawerBranding => 'merek';
+  String get adminDrawerBranding => 'Branding';
 
   @override
   String get adminDrawerUsers => 'Pengguna';
 
   @override
-  String get adminDrawerLibraries => 'Perpustakaan';
+  String get adminDrawerLibraries => 'Pustaka';
 
   @override
-  String get adminDrawerTranscoding => 'Transkode';
+  String get adminDrawerTranscoding => 'Transcoding';
 
   @override
-  String get adminDrawerResume => 'Melanjutkan';
+  String get adminDrawerResume => 'Lanjutkan';
 
   @override
-  String get adminDrawerStreaming => 'Mengalir';
+  String get adminDrawerStreaming => 'Streaming';
 
   @override
-  String get adminDrawerTrickplay => 'Permainan tipuan';
+  String get adminDrawerTrickplay => 'Trickplay';
 
   @override
   String get adminDrawerDevices => 'Perangkat';
@@ -3850,13 +3848,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminDrawerRepositories => 'Repositori';
 
   @override
-  String get adminDrawerLiveTv => 'siaran langsung';
+  String get adminDrawerLiveTv => 'TV Langsung';
 
   @override
-  String get adminExitTooltip => 'Keluar dari Admin';
+  String get adminExitTooltip => 'Keluar Admin';
 
   @override
-  String get adminDashboardLoadFailed => 'Gagal memuat dasbor';
+  String get adminDashboardLoadFailed => 'Gagal memuat dashboard';
 
   @override
   String get adminMediaOverview => 'Ikhtisar Media';
@@ -3866,26 +3864,26 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get adminMediaOverviewSubtitle =>
-      'Bacaan singkat tentang berapa banyak konten yang ada di server ini.';
+      'Gambaran singkat tentang jumlah konten di server ini.';
 
   @override
   String adminPluginUpdatesAvailable(int count) {
-    return 'Plugin updates available: $count';
+    return 'Pembaruan plugin tersedia: $count';
   }
 
   @override
   String adminPluginsRequiringRestart(int count) {
-    return 'Plugins requiring restart: $count';
+    return 'Plugin yang memerlukan restart: $count';
   }
 
   @override
   String adminFailedScheduledTasks(int count) {
-    return 'Failed scheduled tasks: $count';
+    return 'Tugas terjadwal gagal: $count';
   }
 
   @override
   String adminRecentAlertEntries(int count) {
-    return 'Recent warning/error entries: $count';
+    return 'Entri peringatan/kesalahan terbaru: $count';
   }
 
   @override
@@ -3907,52 +3905,52 @@ class AppLocalizationsId extends AppLocalizations {
   String get analyticsReleaseYears => 'Tahun Rilis';
 
   @override
-  String get analyticsContentRatings => 'Peringkat Konten';
+  String get analyticsContentRatings => 'Rating Konten';
 
   @override
-  String get analyticsRuntimeBuckets => 'Bucket Waktu Proses';
+  String get analyticsRuntimeBuckets => 'Kelompok Durasi';
 
   @override
   String get analyticsFileFormats => 'Format File';
 
   @override
-  String get analyticsNoData => 'Tidak Ada Data yang Tersedia.';
+  String get analyticsNoData => 'Tidak Ada Data Tersedia.';
 
   @override
-  String get adminServerInfo => 'Informasi Server';
+  String get adminServerInfo => 'Info Server';
 
   @override
-  String get adminRestartPending => 'Mulai Ulang Tertunda';
+  String get adminRestartPending => 'Menunggu Restart';
 
   @override
-  String get adminServerPaths => 'Jalur Server';
+  String get adminServerPaths => 'Path Server';
 
   @override
   String get adminServerActions => 'Tindakan Server';
 
   @override
-  String get adminRestartServer => 'Mulai ulang Server';
+  String get adminRestartServer => 'Restart Server';
 
   @override
   String get adminShutdownServer => 'Matikan Server';
 
   @override
-  String get adminScanLibraries => 'Pindai Perpustakaan';
+  String get adminScanLibraries => 'Pindai Pustaka';
 
   @override
-  String get adminLibraryScanStarted => 'Pemindaian perpustakaan dimulai';
+  String get adminLibraryScanStarted => 'Pemindaian pustaka dimulai';
 
   @override
   String errorGeneric(String error) {
-    return 'Error: $error';
+    return 'Kesalahan: $error';
   }
 
   @override
-  String get adminServerRebootInProgress => 'Reboot server sedang berlangsung';
+  String get adminServerRebootInProgress => 'Restart server sedang berlangsung';
 
   @override
   String get adminServerRebootMessage =>
-      'Server sedang reboot, silakan restart Moonfin';
+      'Restart server sedang berlangsung, silakan mulai ulang Moonfin';
 
   @override
   String get adminActiveSessions => 'Sesi Aktif';
@@ -3964,14 +3962,14 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminNoActiveSessions => 'Tidak ada sesi aktif';
 
   @override
-  String get adminRecentActivity => 'Aktivitas Terkini';
+  String get adminRecentActivity => 'Aktivitas Terbaru';
 
   @override
-  String get adminNoRecentActivity => 'Tidak ada aktivitas terkini';
+  String get adminNoRecentActivity => 'Tidak ada aktivitas terbaru';
 
   @override
   String adminCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Perintah gagal: $error';
   }
 
   @override
@@ -3987,7 +3985,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get sessionPrev => 'Sebelumnya';
 
   @override
-  String get sessionRewind => 'Memutar ulang';
+  String get sessionRewind => 'Mundur';
 
   @override
   String get sessionForward => 'Maju';
@@ -3996,16 +3994,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get sessionNext => 'Berikutnya';
 
   @override
-  String get sessionVolumeDown => 'jilid –';
+  String get sessionVolumeDown => 'Vol –';
 
   @override
-  String get sessionVolumeUp => 'Jil +';
+  String get sessionVolumeUp => 'Vol +';
 
   @override
   String get uhd4k => '4K';
 
   @override
-  String get nowPlaying => 'Sedang Dimainkan';
+  String get nowPlaying => 'Sedang Diputar';
 
   @override
   String get volume => 'Volume';
@@ -4014,13 +4012,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get actions => 'Tindakan';
 
   @override
-  String get videoCodec => 'Kodek Video';
+  String get videoCodec => 'Codec Video';
 
   @override
-  String get audioCodec => 'Kodek Audio';
+  String get audioCodec => 'Codec Audio';
 
   @override
-  String get hwAccel => 'HW Aksel';
+  String get hwAccel => 'Akselerasi HW';
 
   @override
   String get completion => 'Penyelesaian';
@@ -4029,14 +4027,14 @@ class AppLocalizationsId extends AppLocalizations {
   String get direct => 'Langsung';
 
   @override
-  String get adminDisconnect => 'Memutuskan';
+  String get adminDisconnect => 'Putuskan';
 
   @override
-  String get adminClearDates => 'Tanggal yang jelas';
+  String get adminClearDates => 'Hapus tanggal';
 
   @override
   String adminActivityLoadFailed(String error) {
-    return 'Failed to load activity log: $error';
+    return 'Gagal memuat log aktivitas: $error';
   }
 
   @override
@@ -4053,7 +4051,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminDeviceUpdateFailed(String error) {
-    return 'Failed to update device: $error';
+    return 'Gagal memperbarui perangkat: $error';
   }
 
   @override
@@ -4064,143 +4062,143 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminDeviceDeleteFailed(String error) {
-    return 'Failed to delete device: $error';
+    return 'Gagal menghapus perangkat: $error';
   }
 
   @override
   String get adminDevicesLoadFailed => 'Gagal memuat perangkat';
 
   @override
-  String get adminSearchDevices => 'Perangkat pencarian';
+  String get adminSearchDevices => 'Cari perangkat';
 
   @override
-  String get adminThisDevice => 'Perangkat ini';
+  String get adminThisDevice => 'Perangkat Ini';
 
   @override
-  String get adminEditName => 'Sunting Nama';
+  String get adminEditName => 'Edit Nama';
 
   @override
-  String get adminLibrariesLoadFailed => 'Gagal memuat perpustakaan';
+  String get adminLibrariesLoadFailed => 'Gagal memuat pustaka';
 
   @override
-  String get adminNoLibraries => 'Tidak ada perpustakaan yang dikonfigurasi';
+  String get adminNoLibraries => 'Tidak ada pustaka yang dikonfigurasi';
 
   @override
-  String get adminScanAllLibraries => 'Pindai Semua Perpustakaan';
+  String get adminScanAllLibraries => 'Pindai Semua Pustaka';
 
   @override
-  String get adminAddLibrary => 'Tambahkan Perpustakaan';
+  String get adminAddLibrary => 'Tambah Pustaka';
 
   @override
   String adminScanFailed(String error) {
-    return 'Failed to start scan: $error';
+    return 'Gagal memulai pemindaian: $error';
   }
 
   @override
-  String get adminRenameLibrary => 'Ganti nama Perpustakaan';
+  String get adminRenameLibrary => 'Ubah Nama Pustaka';
 
   @override
   String get adminNewName => 'Nama baru';
 
   @override
   String adminLibraryRenamed(String name) {
-    return 'Library renamed to \"$name\"';
+    return 'Pustaka diubah namanya menjadi \"$name\"';
   }
 
   @override
   String adminRenameFailed(String error) {
-    return 'Failed to rename: $error';
+    return 'Gagal mengubah nama: $error';
   }
 
   @override
-  String get adminDeleteLibrary => 'Hapus Perpustakaan';
+  String get adminDeleteLibrary => 'Hapus Pustaka';
 
   @override
   String adminLibraryDeleted(String name) {
-    return 'Library \"$name\" deleted';
+    return 'Pustaka \"$name\" dihapus';
   }
 
   @override
   String adminLibraryDeleteFailed(String error) {
-    return 'Failed to delete library: $error';
+    return 'Gagal menghapus pustaka: $error';
   }
 
   @override
   String adminAddPathFailed(String error) {
-    return 'Failed to add path: $error';
+    return 'Gagal menambahkan path: $error';
   }
 
   @override
-  String get adminRemovePath => 'Hapus Jalur';
+  String get adminRemovePath => 'Hapus Path';
 
   @override
   String adminRemovePathConfirm(String path) {
-    return 'Remove \"$path\" from this library?';
+    return 'Hapus \"$path\" dari pustaka ini?';
   }
 
   @override
   String adminRemovePathFailed(String error) {
-    return 'Failed to remove path: $error';
+    return 'Gagal menghapus path: $error';
   }
 
   @override
-  String get adminLibraryOptionsSaved => 'Opsi perpustakaan disimpan';
+  String get adminLibraryOptionsSaved => 'Opsi pustaka disimpan';
 
   @override
   String adminLibraryOptionsSaveFailed(String error) {
-    return 'Failed to save options: $error';
+    return 'Gagal menyimpan opsi: $error';
   }
 
   @override
-  String get adminLibraryLoadFailed => 'Gagal memuat perpustakaan';
+  String get adminLibraryLoadFailed => 'Gagal memuat pustaka';
 
   @override
-  String get adminNoMediaPaths => 'Tidak ada jalur media yang dikonfigurasi';
+  String get adminNoMediaPaths => 'Tidak ada path media yang dikonfigurasi';
 
   @override
-  String get adminAddPath => 'Tambahkan Jalur';
+  String get adminAddPath => 'Tambah Path';
 
   @override
-  String get adminBrowseFilesystem => 'Jelajahi sistem file server:';
+  String get adminBrowseFilesystem => 'Telusuri sistem file server:';
 
   @override
   String get adminSaveOptions => 'Simpan Opsi';
 
   @override
-  String get adminPreferredMetadataLanguage => 'Bahasa metadata pilihan';
+  String get adminPreferredMetadataLanguage => 'Bahasa metadata yang dipilih';
 
   @override
-  String get adminMetadataLanguageHint => 'misalnya id, de, fr';
+  String get adminMetadataLanguageHint => 'mis. en, de, fr';
 
   @override
   String get adminMetadataCountryCode => 'Kode negara metadata';
 
   @override
-  String get adminMetadataCountryHint => 'misalnya AS, DE, FR';
+  String get adminMetadataCountryHint => 'mis. US, DE, FR';
 
   @override
-  String get adminLibraryNameRequired => 'Nama perpustakaan wajib diisi';
+  String get adminLibraryNameRequired => 'Nama pustaka wajib diisi';
 
   @override
   String adminLibraryCreateFailed(String error) {
-    return 'Failed to create library: $error';
+    return 'Gagal membuat pustaka: $error';
   }
 
   @override
-  String get adminLibraryName => 'Nama Perpustakaan';
+  String get adminLibraryName => 'Nama Pustaka';
 
   @override
-  String get adminSelectedPaths => 'Jalur yang Dipilih:';
+  String get adminSelectedPaths => 'Path yang Dipilih:';
 
   @override
   String get adminNoPathsAdded =>
-      'Tidak ada jalur yang ditambahkan (dapat ditambahkan nanti)';
+      'Belum ada path yang ditambahkan (dapat ditambahkan nanti)';
 
   @override
-  String get adminCreateLibrary => 'Buat Perpustakaan';
+  String get adminCreateLibrary => 'Buat Pustaka';
 
   @override
-  String get paths => 'Jalur:';
+  String get paths => 'Path:';
 
   @override
   String get adminDisableUser => 'Nonaktifkan Pengguna';
@@ -4210,27 +4208,27 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminDisableUserConfirm(String name) {
-    return 'Disable $name? They will not be able to sign in.';
+    return 'Nonaktifkan $name? Mereka tidak akan dapat masuk.';
   }
 
   @override
   String adminEnableUserConfirm(String name) {
-    return 'Enable $name? They will be able to sign in again.';
+    return 'Aktifkan $name? Mereka akan dapat masuk lagi.';
   }
 
   @override
   String adminUserDisabled(String name) {
-    return 'User \"$name\" disabled';
+    return 'Pengguna \"$name\" dinonaktifkan';
   }
 
   @override
   String adminUserEnabled(String name) {
-    return 'User \"$name\" enabled';
+    return 'Pengguna \"$name\" diaktifkan';
   }
 
   @override
   String adminUserPolicyUpdateFailed(String error) {
-    return 'Failed to update user policy: $error';
+    return 'Gagal memperbarui kebijakan pengguna: $error';
   }
 
   @override
@@ -4240,14 +4238,14 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminSearchUsers => 'Cari pengguna';
 
   @override
-  String get adminEditUser => 'Sunting Pengguna';
+  String get adminEditUser => 'Edit Pengguna';
 
   @override
-  String get adminAddUser => 'Tambahkan Pengguna';
+  String get adminAddUser => 'Tambah Pengguna';
 
   @override
   String adminUserCreateFailed(String error) {
-    return 'Failed to create user: $error';
+    return 'Gagal membuat pengguna: $error';
   }
 
   @override
@@ -4268,7 +4266,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminSaveFailed(String error) {
-    return 'Failed to save: $error';
+    return 'Gagal menyimpan: $error';
   }
 
   @override
@@ -4279,7 +4277,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminFailed(String error) {
-    return 'Failed: $error';
+    return 'Gagal: $error';
   }
 
   @override
@@ -4330,11 +4328,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminAllowContentDownloading => 'Izinkan pengunduhan konten';
 
   @override
-  String get adminAllowPublicSharing => 'Izinkan berbagi secara publik';
+  String get adminAllowPublicSharing => 'Izinkan berbagi publik';
 
   @override
   String get adminAllowRemoteControl =>
-      'Izinkan kendali jarak jauh dari pengguna lain';
+      'Izinkan kendali jarak jauh atas pengguna lain';
 
   @override
   String get adminAllowSharedDeviceControl =>
@@ -4344,14 +4342,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminAllowRemoteAccess => 'Izinkan akses jarak jauh';
 
   @override
-  String get adminRemoteBitrateLimit =>
-      'Batas kecepatan bit klien jarak jauh (bps)';
+  String get adminRemoteBitrateLimit => 'Batas bitrate klien jarak jauh (bps)';
 
   @override
-  String get adminLeaveEmptyNoLimit => 'Biarkan kosong tanpa batas';
+  String get adminLeaveEmptyNoLimit => 'Biarkan kosong untuk tanpa batas';
 
   @override
-  String get adminMaxActiveSessions => 'Sesi aktif maksimal';
+  String get adminMaxActiveSessions => 'Maksimum sesi aktif';
 
   @override
   String get adminAllowLiveTvAccess => 'Izinkan akses TV Langsung';
@@ -4366,14 +4363,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminAllowSubtitleManagement => 'Izinkan pengelolaan subtitle';
 
   @override
-  String get adminAllowLyricManagement => 'Izinkan manajemen lirik';
+  String get adminAllowLyricManagement => 'Izinkan pengelolaan lirik';
 
   @override
   String get adminSavePermissions => 'Simpan Izin';
 
   @override
-  String get adminEnableAllLibraryAccess =>
-      'Aktifkan akses ke semua perpustakaan';
+  String get adminEnableAllLibraryAccess => 'Aktifkan akses ke semua pustaka';
 
   @override
   String get adminSaveAccess => 'Simpan Akses';
@@ -4391,10 +4387,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminSetPassword => 'Tetapkan Kata Sandi';
 
   @override
-  String get adminResetPassword => 'Atur Ulang Kata Sandi';
+  String get adminResetPassword => 'Reset Kata Sandi';
 
   @override
-  String get adminPasswordReset => 'Penyetelan ulang kata sandi';
+  String get adminPasswordReset => 'Kata sandi direset';
 
   @override
   String get adminPasswordUpdated => 'Kata sandi diperbarui';
@@ -4403,16 +4399,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminUserSettings => 'Pengaturan Pengguna';
 
   @override
-  String get adminLibraryAccess => 'Akses Perpustakaan';
+  String get adminLibraryAccess => 'Akses Pustaka';
 
   @override
-  String get adminDeviceAndChannelAccess => 'Akses Perangkat & Saluran';
+  String get adminDeviceAndChannelAccess => 'Akses Perangkat & Kanal';
 
   @override
   String get adminEnableAllDevices => 'Aktifkan akses ke semua perangkat';
 
   @override
-  String get adminEnableAllChannels => 'Aktifkan akses ke semua saluran';
+  String get adminEnableAllChannels => 'Aktifkan akses ke semua kanal';
 
   @override
   String get adminResetPasswordWarning =>
@@ -4420,22 +4416,22 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminServerReturnedHttp(int status) {
-    return 'Server returned HTTP $status';
+    return 'Server mengembalikan HTTP $status';
   }
 
   @override
   String adminDeleteUserConfirm(String name) {
-    return 'Are you sure you want to delete $name?';
+    return 'Apakah Anda yakin ingin menghapus $name?';
   }
 
   @override
   String adminUserDeleted(String name) {
-    return 'User \"$name\" deleted';
+    return 'Pengguna \"$name\" dihapus';
   }
 
   @override
   String adminUserDeleteFailed(String error) {
-    return 'Failed to delete user: $error';
+    return 'Gagal menghapus pengguna: $error';
   }
 
   @override
@@ -4456,18 +4452,19 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminApiKeyCreateFailed(String error) {
-    return 'Failed to create key: $error';
+    return 'Gagal membuat kunci: $error';
   }
 
   @override
-  String get adminKeyTokenMissing => 'Token kunci hilang dari respons server';
+  String get adminKeyTokenMissing =>
+      'Token kunci tidak ada dalam respons server';
 
   @override
   String get adminRevokeApiKey => 'Cabut Kunci API';
 
   @override
   String adminRevokeKeyConfirm(String name) {
-    return 'Revoke key for $name?';
+    return 'Cabut kunci untuk $name?';
   }
 
   @override
@@ -4475,7 +4472,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminApiKeyRevokeFailed(String error) {
-    return 'Failed to revoke key: $error';
+    return 'Gagal mencabut kunci: $error';
   }
 
   @override
@@ -4491,11 +4488,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminNoApiKeys => 'Tidak ada kunci API yang ditemukan';
 
   @override
-  String get adminUnknownApp => 'Aplikasi Tidak Dikenal';
+  String get adminUnknownApp => 'Aplikasi Tidak Diketahui';
 
   @override
   String adminApiKeyTokenCreated(String token, String created) {
-    return 'Token: $token\\nCreated: $created';
+    return 'Token: $token\nDibuat: $created';
   }
 
   @override
@@ -4506,12 +4503,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminBackupCreateFailed(String error) {
-    return 'Failed to create backup: $error';
+    return 'Gagal membuat cadangan: $error';
   }
 
   @override
   String get adminBackupPathMissing =>
-      'Jalur cadangan tidak ada dalam respons server';
+      'Path cadangan tidak ada dalam respons server';
 
   @override
   String adminBackupManifest(String name) {
@@ -4520,7 +4517,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminManifestLoadFailed(String error) {
-    return 'Failed to load manifest: $error';
+    return 'Gagal memuat manifest: $error';
   }
 
   @override
@@ -4531,7 +4528,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminRestoreFailed(String error) {
-    return 'Failed to restore backup: $error';
+    return 'Gagal memulihkan cadangan: $error';
   }
 
   @override
@@ -4547,7 +4544,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminViewDetails => 'Lihat Detail';
 
   @override
-  String get restore => 'Memulihkan';
+  String get restore => 'Pulihkan';
 
   @override
   String get adminLogsLoadFailed => 'Gagal memuat log server';
@@ -4559,32 +4556,32 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminLogCopied => 'Log disalin ke clipboard';
 
   @override
-  String get adminSaveLogFile => 'Simpan berkas log';
+  String get adminSaveLogFile => 'Simpan file log';
 
   @override
   String adminSavedTo(String path) {
-    return 'Saved to $path';
+    return 'Disimpan ke $path';
   }
 
   @override
   String adminFileSaveFailed(String error) {
-    return 'Failed to save file: $error';
+    return 'Gagal menyimpan file: $error';
   }
 
   @override
   String adminLogFileLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'Gagal memuat $fileName';
   }
 
   @override
   String get adminSearchInLog => 'Cari di log';
 
   @override
-  String get adminNoMatchingLines => 'Tidak ada garis yang cocok';
+  String get adminNoMatchingLines => 'Tidak ada baris yang cocok';
 
   @override
   String adminTasksLoadFailed(String error) {
-    return 'Failed to load tasks: $error';
+    return 'Gagal memuat tugas: $error';
   }
 
   @override
@@ -4597,17 +4594,17 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminTaskStartFailed(String error) {
-    return 'Failed to start task: $error';
+    return 'Gagal memulai tugas: $error';
   }
 
   @override
   String adminTaskStopFailed(String error) {
-    return 'Failed to stop task: $error';
+    return 'Gagal menghentikan tugas: $error';
   }
 
   @override
   String adminTaskLoadFailed(String error) {
-    return 'Failed to load task: $error';
+    return 'Gagal memuat tugas: $error';
   }
 
   @override
@@ -4615,12 +4612,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminTriggerRemoveFailed(String error) {
-    return 'Failed to remove trigger: $error';
+    return 'Gagal menghapus pemicu: $error';
   }
 
   @override
   String adminTriggerAddFailed(String error) {
-    return 'Failed to add trigger: $error';
+    return 'Gagal menambahkan pemicu: $error';
   }
 
   @override
@@ -4630,23 +4627,23 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminTriggers => 'Pemicu';
 
   @override
-  String get adminAddTrigger => 'Tambahkan Pemicu';
+  String get adminAddTrigger => 'Tambah Pemicu';
 
   @override
   String get adminNoTriggers => 'Tidak ada pemicu yang dikonfigurasi';
 
   @override
-  String get adminTriggerType => 'Jenis Pemicu';
+  String get adminTriggerType => 'Tipe Pemicu';
 
   @override
   String get adminTimeLimit => 'Batas waktu (opsional)';
 
   @override
-  String get adminNoLimit => 'Tidak ada batasan';
+  String get adminNoLimit => 'Tanpa batas';
 
   @override
   String adminHours(String hours) {
-    return '$hours hour(s)';
+    return '$hours jam';
   }
 
   @override
@@ -4657,35 +4654,35 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminPluginToggleFailed(String error) {
-    return 'Failed to toggle plugin: $error';
+    return 'Gagal mengaktifkan/nonaktifkan plugin: $error';
   }
 
   @override
-  String get adminUninstallPlugin => 'Copot pemasangan Plugin';
+  String get adminUninstallPlugin => 'Copot Plugin';
 
   @override
   String adminUninstallPluginConfirm(String name) {
-    return 'Are you sure you want to uninstall \"$name\"?';
+    return 'Apakah Anda yakin ingin mencopot \"$name\"?';
   }
 
   @override
   String adminPluginUninstallFailed(String error) {
-    return 'Failed to uninstall plugin: $error';
+    return 'Gagal mencopot plugin: $error';
   }
 
   @override
   String adminPackageInstallFailed(String error) {
-    return 'Failed to install package: $error';
+    return 'Gagal menginstal paket: $error';
   }
 
   @override
   String adminPluginUpdateFailed(String error) {
-    return 'Failed to install update: $error';
+    return 'Gagal menginstal pembaruan: $error';
   }
 
   @override
   String adminPluginsLoadFailed(String error) {
-    return 'Failed to load plugins: $error';
+    return 'Gagal memuat plugin: $error';
   }
 
   @override
@@ -4693,16 +4690,16 @@ class AppLocalizationsId extends AppLocalizations {
       'Tidak ada plugin yang cocok dengan pencarian Anda';
 
   @override
-  String get adminNoPluginsInstalled => 'Tidak ada plugin yang terpasang';
+  String get adminNoPluginsInstalled => 'Tidak ada plugin yang terinstal';
 
   @override
   String adminInstallUpdate(String version) {
-    return 'Install update (v$version)';
+    return 'Instal pembaruan (v$version)';
   }
 
   @override
   String adminCatalogLoadFailed(String error) {
-    return 'Failed to load catalog: $error';
+    return 'Gagal memuat katalog: $error';
   }
 
   @override
@@ -4717,24 +4714,24 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get adminExperimentalWarning =>
-      'Integrasi pengaturan plugin masih bersifat eksperimental. Beberapa halaman pengaturan mungkin tidak ditampilkan dengan benar.';
+      'Integrasi pengaturan plugin masih bersifat eksperimental. Beberapa halaman pengaturan mungkin tidak dirender dengan benar.';
 
   @override
-  String get continueAction => 'Melanjutkan';
+  String get continueAction => 'Lanjutkan';
 
   @override
   String adminPluginRemoveAfterRestart(String name) {
-    return '\"$name\" will be removed after server restart';
+    return '\"$name\" akan dihapus setelah server dimulai ulang';
   }
 
   @override
   String adminUninstallFailed(String error) {
-    return 'Failed to uninstall: $error';
+    return 'Gagal mencopot: $error';
   }
 
   @override
   String adminPluginUpdating(String name, String version) {
-    return 'Updating \"$name\" to v$version...';
+    return 'Memperbarui \"$name\" ke v$version...';
   }
 
   @override
@@ -4743,15 +4740,15 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminPluginLoadFailed(String error) {
-    return 'Failed to load plugin: $error';
+    return 'Gagal memuat plugin: $error';
   }
 
   @override
-  String get adminPluginNotFound => 'Pengaya tidak ditemukan';
+  String get adminPluginNotFound => 'Plugin tidak ditemukan';
 
   @override
   String adminPluginVersion(String version) {
-    return 'Version $version';
+    return 'Versi $version';
   }
 
   @override
@@ -4761,53 +4758,53 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminPluginSettingsPage => 'Halaman pengaturan plugin';
 
   @override
-  String get adminRevisionHistory => 'Sejarah Revisi';
+  String get adminRevisionHistory => 'Riwayat Revisi';
 
   @override
-  String get adminNoChangelog => 'Tidak ada log perubahan yang tersedia.';
+  String get adminNoChangelog => 'Tidak ada changelog yang tersedia.';
 
   @override
   String get adminRemoveRepository => 'Hapus Repositori';
 
   @override
   String adminRemoveRepositoryConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Apakah Anda yakin ingin menghapus \"$name\"?';
   }
 
   @override
   String adminRepositoriesSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Gagal menyimpan repositori: $error';
   }
 
   @override
   String adminRepositoriesLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Gagal memuat repositori: $error';
   }
 
   @override
-  String get adminRepositoryNameHint => 'misalnya Jellyfin Stabil';
+  String get adminRepositoryNameHint => 'mis. Jellyfin Stable';
 
   @override
-  String get adminRepositoryUrl => 'URL repositori';
+  String get adminRepositoryUrl => 'URL Repositori';
 
   @override
-  String get adminAddEntry => 'Tambahkan entri';
+  String get adminAddEntry => 'Tambah entri';
 
   @override
   String get adminInvalidUrl => 'URL tidak valid';
 
   @override
   String adminPluginSettingsLoadFailed(String error) {
-    return 'Unable to load plugin settings: $error';
+    return 'Tidak dapat memuat pengaturan plugin: $error';
   }
 
   @override
   String adminCouldNotOpenUrl(String uri) {
-    return 'Could not open $uri';
+    return 'Tidak dapat membuka $uri';
   }
 
   @override
-  String get adminOpenInBrowser => 'Buka di Peramban';
+  String get adminOpenInBrowser => 'Buka di Browser';
 
   @override
   String get adminOpenExternally => 'Buka secara eksternal';
@@ -4819,46 +4816,44 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminServerName => 'Nama server';
 
   @override
-  String get adminPreferredMetadataCountry => 'Negara metadata pilihan';
+  String get adminPreferredMetadataCountry => 'Negara metadata yang dipilih';
 
   @override
-  String get adminCachePath => 'Jalur cache';
+  String get adminCachePath => 'Path cache';
 
   @override
-  String get adminMetadataPath => 'Jalur metadata';
+  String get adminMetadataPath => 'Path metadata';
 
   @override
-  String get adminLibraryScanConcurrency =>
-      'Konkurensi pemindaian perpustakaan';
+  String get adminLibraryScanConcurrency => 'Konkruensi pemindaian pustaka';
 
   @override
-  String get adminParallelImageEncodingLimit =>
-      'Batas pengkodean gambar paralel';
+  String get adminParallelImageEncodingLimit => 'Batas encoding gambar paralel';
 
   @override
   String get adminSlowResponseThreshold => 'Ambang respons lambat (ms)';
 
   @override
-  String get adminBrandingSaved => 'Setelan pencitraan merek disimpan';
+  String get adminBrandingSaved => 'Pengaturan branding disimpan';
 
   @override
-  String get adminBrandingLoadFailed => 'Gagal memuat setelan pencitraan merek';
+  String get adminBrandingLoadFailed => 'Gagal memuat pengaturan branding';
 
   @override
-  String get adminLoginDisclaimer => 'Penafian masuk';
+  String get adminLoginDisclaimer => 'Disclaimer login';
 
   @override
   String get adminLoginDisclaimerHint =>
       'HTML ditampilkan di bawah formulir login';
 
   @override
-  String get adminCustomCss => 'CSS khusus';
+  String get adminCustomCss => 'CSS Kustom';
 
   @override
-  String get adminCustomCssHint => 'CSS khusus diterapkan ke antarmuka web';
+  String get adminCustomCssHint => 'CSS kustom diterapkan ke antarmuka web';
 
   @override
-  String get adminEnableSplashScreen => 'Aktifkan layar pembuka';
+  String get adminEnableSplashScreen => 'Aktifkan splash screen';
 
   @override
   String get adminStreamingSaved => 'Pengaturan streaming disimpan';
@@ -4876,7 +4871,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get adminLeaveEmptyForUnlimited =>
-      'Biarkan kosong atau 0 untuk tidak terbatas';
+      'Biarkan kosong atau 0 untuk tanpa batas';
 
   @override
   String get adminPlaybackSaved => 'Pengaturan pemutaran disimpan';
@@ -4894,39 +4889,38 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminVaapiDevice => 'Perangkat VA-API';
 
   @override
-  String get adminEnableHardwareEncoding =>
-      'Aktifkan pengkodean perangkat keras';
+  String get adminEnableHardwareEncoding => 'Aktifkan encoding perangkat keras';
 
   @override
   String get adminEnableHardwareDecoding =>
       'Aktifkan decoding perangkat keras untuk:';
 
   @override
-  String get adminEncodingThreads => 'Pengkodean utas';
+  String get adminEncodingThreads => 'Thread encoding';
 
   @override
   String get adminAutomatic => '0 = otomatis';
 
   @override
-  String get adminTranscodingTempPath => 'Transkode jalur sementara';
+  String get adminTranscodingTempPath => 'Path sementara transcoding';
 
   @override
-  String get adminEnableFallbackFont => 'Aktifkan font cadangan';
+  String get adminEnableFallbackFont => 'Aktifkan font fallback';
 
   @override
-  String get adminFallbackFontPath => 'Jalur font cadangan';
+  String get adminFallbackFontPath => 'Path font fallback';
 
   @override
   String get adminAllowSegmentDeletion => 'Izinkan penghapusan segmen';
 
   @override
-  String get adminSegmentKeepSeconds => 'Penyimpanan segmen (detik)';
+  String get adminSegmentKeepSeconds => 'Durasi simpan segmen (detik)';
 
   @override
-  String get adminThrottleBuffering => 'Penyangga throttle';
+  String get adminThrottleBuffering => 'Batasi buffering';
 
   @override
-  String get adminTrickplaySaved => 'Pengaturan permainan trik disimpan';
+  String get adminTrickplaySaved => 'Pengaturan trickplay disimpan';
 
   @override
   String get adminTrickplayLoadFailed => 'Gagal memuat pengaturan trickplay';
@@ -4937,7 +4931,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get adminEnableKeyFrameExtraction =>
-      'Aktifkan ekstraksi bingkai kunci saja';
+      'Aktifkan ekstraksi key frame saja';
 
   @override
   String get adminKeyFrameSubtitle =>
@@ -4953,7 +4947,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminImageSettings => 'Pengaturan Gambar';
 
   @override
-  String get adminIntervalMs => 'Interval (ms)';
+  String get adminIntervalMs => 'Interval (md)';
 
   @override
   String get adminCaptureFrameSubtitle => 'Seberapa sering mengambil frame';
@@ -4962,58 +4956,58 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminWidthResolutions => 'Resolusi lebar';
 
   @override
-  String get adminTileWidth => 'Lebar ubin';
+  String get adminTileWidth => 'Lebar tile';
 
   @override
-  String get adminTileHeight => 'Tinggi ubin';
+  String get adminTileHeight => 'Tinggi tile';
 
   @override
   String get adminQualitySubtitle =>
       'Nilai lebih rendah = kualitas lebih baik, file lebih besar';
 
   @override
-  String get adminProcessThreads => 'Proses benang';
+  String get adminProcessThreads => 'Thread proses';
 
   @override
-  String get adminResumeSaved => 'Lanjutkan pengaturan disimpan';
+  String get adminResumeSaved => 'Pengaturan resume disimpan';
 
   @override
   String get adminResumeLoadFailed => 'Gagal memuat pengaturan resume';
 
   @override
   String get adminResumeDescription =>
-      'Konfigurasikan kapan konten harus ditandai sebagai diputar sebagian atau diputar penuh.';
+      'Atur kapan konten harus ditandai sebagai diputar sebagian atau diputar penuh.';
 
   @override
-  String get adminMinResumePercentage => 'Persentase resume minimum';
+  String get adminMinResumePercentage => 'Persentase minimum resume';
 
   @override
   String get adminMinResumeSubtitle =>
-      'Konten harus diputar melewati persentase ini untuk menyimpan kemajuan';
+      'Konten harus diputar melewati persentase ini untuk menyimpan progres';
 
   @override
-  String get adminMaxResumePercentage => 'Persentase resume maksimum';
+  String get adminMaxResumePercentage => 'Persentase maksimum resume';
 
   @override
   String get adminMaxResumeSubtitle =>
-      'Konten dianggap diputar sepenuhnya setelah persentase ini';
+      'Konten dianggap selesai diputar setelah persentase ini';
 
   @override
-  String get adminMinResumeDuration => 'Durasi melanjutkan minimum (detik)';
+  String get adminMinResumeDuration => 'Durasi minimum resume (detik)';
 
   @override
   String get adminMinResumeDurationSubtitle =>
       'Item yang lebih pendek dari ini tidak dapat dilanjutkan';
 
   @override
-  String get adminMinAudiobookResume => 'Persentase resume buku audio minimum';
+  String get adminMinAudiobookResume => 'Persentase minimum resume audiobook';
 
   @override
-  String get adminMaxAudiobookResume => 'Persentase resume buku audio maksimum';
+  String get adminMaxAudiobookResume => 'Persentase maksimum resume audiobook';
 
   @override
   String get adminNetworkingSaved =>
-      'Pengaturan jaringan disimpan. Restart server mungkin diperlukan.';
+      'Pengaturan jaringan disimpan. Mungkin diperlukan restart server.';
 
   @override
   String get adminNetworkingLoadFailed => 'Gagal memuat pengaturan jaringan';
@@ -5026,13 +5020,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminEnableRemoteAccess => 'Aktifkan akses jarak jauh';
 
   @override
-  String get ports => 'Pelabuhan';
+  String get ports => 'Port';
 
   @override
-  String get adminHttpPort => 'Pelabuhan HTTP';
+  String get adminHttpPort => 'Port HTTP';
 
   @override
-  String get adminHttpsPort => 'Pelabuhan HTTPS';
+  String get adminHttpsPort => 'Port HTTPS';
 
   @override
   String get adminPublicHttpsPort => 'Port HTTPS publik';
@@ -5041,7 +5035,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminBaseUrl => 'URL dasar';
 
   @override
-  String get adminBaseUrlHint => 'misalnya /jelifin';
+  String get adminBaseUrlHint => 'mis. /jellyfin';
 
   @override
   String get https => 'HTTPS';
@@ -5056,7 +5050,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminLocalNetworkAddresses => 'Alamat jaringan lokal';
 
   @override
-  String get adminKnownProxies => 'Proksi yang diketahui';
+  String get adminKnownProxies => 'Proxy yang dikenal';
 
   @override
   String get adminRemoteIpFilter => 'Filter IP Jarak Jauh';
@@ -5065,28 +5059,28 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminRemoteIpFilterEntries => 'Filter IP jarak jauh';
 
   @override
-  String get adminCertificatePath => 'Jalur sertifikat';
+  String get adminCertificatePath => 'Path sertifikat';
 
   @override
   String get whitelist => 'Daftar putih';
 
   @override
-  String get blacklist => 'Daftar Hitam';
+  String get blacklist => 'Daftar hitam';
 
   @override
-  String get notSet => 'Tidak disetel';
+  String get notSet => 'Tidak diatur';
 
   @override
   String get adminMetadataSaved => 'Metadata disimpan';
 
   @override
   String adminMetadataLoadFailed(String error) {
-    return 'Failed to load metadata: $error';
+    return 'Gagal memuat metadata: $error';
   }
 
   @override
   String adminMetadataSaveFailed(String error) {
-    return 'Failed to save metadata: $error';
+    return 'Gagal menyimpan metadata: $error';
   }
 
   @override
@@ -5106,7 +5100,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminMetadataRefreshFailed(String error) {
-    return 'Failed to refresh metadata: $error';
+    return 'Gagal menyegarkan metadata: $error';
   }
 
   @override
@@ -5123,21 +5117,21 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminRemoteSearchFailed(String error) {
-    return 'Remote search failed: $error';
+    return 'Pencarian jarak jauh gagal: $error';
   }
 
   @override
-  String get adminUpdateContentType => 'Perbarui Jenis Konten';
+  String get adminUpdateContentType => 'Perbarui Tipe Konten';
 
   @override
-  String get adminContentType => 'Jenis konten';
+  String get adminContentType => 'Tipe konten';
 
   @override
-  String get adminContentTypeUpdated => 'Jenis konten diperbarui';
+  String get adminContentTypeUpdated => 'Tipe konten diperbarui';
 
   @override
   String adminContentTypeUpdateFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Gagal memperbarui tipe konten: $error';
   }
 
   @override
@@ -5151,12 +5145,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return 'Gambar $imageType diperbarui';
   }
 
   @override
   String adminImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Gagal mengunduh gambar: $error';
   }
 
   @override
@@ -5167,27 +5161,27 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return 'Gambar $imageType diunggah';
   }
 
   @override
   String adminImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Gagal mengunggah gambar: $error';
   }
 
   @override
   String adminDeleteImage(String imageType) {
-    return 'Delete $imageType image';
+    return 'Hapus gambar $imageType';
   }
 
   @override
   String adminImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return 'Gambar $imageType dihapus';
   }
 
   @override
   String adminImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Gagal menghapus gambar: $error';
   }
 
   @override
@@ -5199,40 +5193,40 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminTunerDiscoveryFailed(String error) {
-    return 'Tuner discovery failed: $error';
+    return 'Penemuan tuner gagal: $error';
   }
 
   @override
-  String get adminAddTuner => 'Tambahkan Penyetel';
+  String get adminAddTuner => 'Tambah Tuner';
 
   @override
-  String get adminTunerType => 'Tipe Penyetel';
+  String get adminTunerType => 'Tipe Tuner';
 
   @override
   String get adminTunerTypeHint => 'HDHomeRun, M3U, Lainnya';
 
   @override
-  String get adminUrlPath => 'URL / Jalur';
+  String get adminUrlPath => 'URL / Path';
 
   @override
   String get adminNameOptional => 'Nama (opsional)';
 
   @override
-  String get adminTunerAdded => 'Tuner menambahkan';
+  String get adminTunerAdded => 'Tuner ditambahkan';
 
   @override
   String adminTunerAddFailed(String error) {
-    return 'Failed to add tuner: $error';
+    return 'Gagal menambahkan tuner: $error';
   }
 
   @override
-  String get adminAddGuideProvider => 'Tambahkan Penyedia Panduan';
+  String get adminAddGuideProvider => 'Tambah Penyedia Panduan';
 
   @override
-  String get adminProviderType => 'Jenis Penyedia';
+  String get adminProviderType => 'Tipe Penyedia';
 
   @override
-  String get adminProviderTypeHint => 'JadwalDirect atau XMLTV';
+  String get adminProviderTypeHint => 'SchedulesDirect atau XMLTV';
 
   @override
   String get adminUsernameOptional => 'Nama pengguna (opsional)';
@@ -5245,72 +5239,72 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminProviderAddFailed(String error) {
-    return 'Failed to add provider: $error';
+    return 'Gagal menambahkan penyedia: $error';
   }
 
   @override
   String adminTunerRemoveFailed(String error) {
-    return 'Failed to remove tuner: $error';
+    return 'Gagal menghapus tuner: $error';
   }
 
   @override
-  String get adminTunerResetRequested => 'Penyetelan ulang tuner diminta';
+  String get adminTunerResetRequested => 'Reset tuner diminta';
 
   @override
   String adminTunerResetFailed(String error) {
-    return 'Failed to reset tuner: $error';
+    return 'Gagal mereset tuner: $error';
   }
 
   @override
   String adminProviderRemoveFailed(String error) {
-    return 'Failed to remove provider: $error';
+    return 'Gagal menghapus penyedia: $error';
   }
 
   @override
-  String get adminRecordingSettings => 'Pengaturan Perekaman';
+  String get adminRecordingSettings => 'Pengaturan Rekaman';
 
   @override
   String get adminPrePadding => 'Pra-padding (menit)';
 
   @override
-  String get adminPostPadding => 'Pasca-padding (menit)';
+  String get adminPostPadding => 'Pascapadding (menit)';
 
   @override
-  String get adminRecordingPath => 'Jalur perekaman';
+  String get adminRecordingPath => 'Path rekaman';
 
   @override
-  String get adminSeriesRecordingPath => 'Jalur perekaman seri';
+  String get adminSeriesRecordingPath => 'Path rekaman serial';
 
   @override
-  String get adminRecordingSettingsSaved => 'Pengaturan perekaman disimpan';
+  String get adminRecordingSettingsSaved => 'Pengaturan rekaman disimpan';
 
   @override
   String adminSettingsSaveFailed(String error) {
-    return 'Failed to save settings: $error';
+    return 'Gagal menyimpan pengaturan: $error';
   }
 
   @override
-  String get adminSetChannelMappings => 'Atur Pemetaan Saluran';
+  String get adminSetChannelMappings => 'Atur Pemetaan Kanal';
 
   @override
-  String get adminMappingJson => 'Memetakan JSON';
+  String get adminMappingJson => 'JSON Pemetaan';
 
   @override
-  String get adminMappingJsonHint => 'Contoh: memetakan payload JSON';
+  String get adminMappingJsonHint => 'Contoh: payload JSON pemetaan';
 
   @override
-  String get adminChannelMappingsUpdated => 'Pemetaan saluran diperbarui';
+  String get adminChannelMappingsUpdated => 'Pemetaan kanal diperbarui';
 
   @override
   String adminMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Gagal memperbarui pemetaan: $error';
   }
 
   @override
   String get adminLiveTvLoadFailed => 'Gagal memuat administrasi TV Langsung';
 
   @override
-  String get adminTunerDevices => 'Perangkat Penyetel';
+  String get adminTunerDevices => 'Perangkat Tuner';
 
   @override
   String get adminNoTunerHosts => 'Tidak ada host tuner yang dikonfigurasi';
@@ -5319,37 +5313,37 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminGuideProviders => 'Penyedia Panduan';
 
   @override
-  String get adminAddProvider => 'Tambahkan Penyedia';
+  String get adminAddProvider => 'Tambah Penyedia';
 
   @override
   String get adminNoListingProviders =>
-      'Tidak ada penyedia listingan yang dikonfigurasi';
+      'Tidak ada penyedia listing yang dikonfigurasi';
 
   @override
   String adminRecordingPathDisplay(String path) {
-    return 'Recording path: $path';
+    return 'Path rekaman: $path';
   }
 
   @override
   String adminSeriesPathDisplay(String path) {
-    return 'Series path: $path';
+    return 'Path serial: $path';
   }
 
   @override
   String adminPrePaddingDisplay(int minutes) {
-    return 'Pre-padding: $minutes min';
+    return 'Pra-padding: $minutes menit';
   }
 
   @override
   String adminPostPaddingDisplay(int minutes) {
-    return 'Post-padding: $minutes min';
+    return 'Pascapadding: $minutes menit';
   }
 
   @override
-  String get adminTunerDiscovery => 'Penemuan Penyetel';
+  String get adminTunerDiscovery => 'Penemuan Tuner';
 
   @override
-  String get adminChannelMappings => 'Pemetaan Saluran';
+  String get adminChannelMappings => 'Pemetaan Kanal';
 
   @override
   String get adminNoDiscoveredTuners => 'Belum ada tuner yang ditemukan';
@@ -5363,23 +5357,24 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get adminRestoreWarning1 =>
-      'Pemulihan akan menggantikan SEMUA data server saat ini dengan data cadangan.';
+      'Pemulihan akan mengganti SEMUA data server saat ini dengan data cadangan.';
 
   @override
   String get adminRestoreWarning2 =>
-      'Pengaturan server saat ini, pengguna, dan data perpustakaan akan ditimpa.';
+      'Pengaturan server, pengguna, dan data pustaka saat ini akan ditimpa.';
 
   @override
-  String get adminRestoreWarning3 => 'Server akan restart setelah restorasi.';
+  String get adminRestoreWarning3 =>
+      'Server akan dimulai ulang setelah pemulihan.';
 
   @override
   String adminRestoreConfirmMessage(String name) {
-    return 'Restore backup $name now?';
+    return 'Pulihkan cadangan $name sekarang?';
   }
 
   @override
   String get adminRestoreRequested =>
-      'Pemulihan diminta. Restart server mungkin memutuskan sesi ini.';
+      'Permintaan pemulihan dikirim. Restart server dapat memutus sesi ini.';
 
   @override
   String get adminBackupsTitle => 'Cadangan';
@@ -5392,68 +5387,68 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get adminLiveTvNotAvailable =>
-      'Administrasi TV langsung tidak tersedia di server build ini.';
+      'Administrasi TV Langsung tidak tersedia pada build server ini.';
 
   @override
   String get adminLiveTvTitle => 'Administrasi TV Langsung';
 
   @override
-  String get adminApply => 'Menerapkan';
+  String get adminApply => 'Terapkan';
 
   @override
-  String get adminNotSet => 'Tidak disetel';
+  String get adminNotSet => 'Tidak diatur';
 
   @override
-  String get adminReset => 'Mengatur ulang';
+  String get adminReset => 'Reset';
 
   @override
   String get adminLogsTitle => 'Log Server';
 
   @override
-  String get adminLogsNewestFirst => 'Terbaru Pertama';
+  String get adminLogsNewestFirst => 'Terbaru Dulu';
 
   @override
-  String get adminLogsOldestFirst => 'Tertua Pertama';
+  String get adminLogsOldestFirst => 'Terlama Dulu';
 
   @override
   String get adminLogsJustNow => 'Baru saja';
 
   @override
   String adminLogsMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '$minutes m lalu';
   }
 
   @override
   String adminLogsHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '$hours jam lalu';
   }
 
   @override
   String adminLogsDaysAgo(int days) {
-    return '${days}d ago';
+    return '$days h lalu';
   }
 
   @override
   String adminLogViewerLoadFailed(String fileName) {
-    return 'Failed to load $fileName';
+    return 'Gagal memuat $fileName';
   }
 
   @override
   String adminLogViewerMatches(int count) {
-    return '$count matches';
+    return '$count kecocokan';
   }
 
   @override
-  String get adminLogViewerNoMatches => 'Tidak ada garis yang cocok';
+  String get adminLogViewerNoMatches => 'Tidak ada baris yang cocok';
 
   @override
-  String get adminMetadataEditorTitle => 'Penyunting Metadata';
+  String get adminMetadataEditorTitle => 'Editor Metadata';
 
   @override
-  String get adminMetadataRemote => 'Terpencil';
+  String get adminMetadataRemote => 'Jarak Jauh';
 
   @override
-  String get adminMetadataType => 'Jenis';
+  String get adminMetadataType => 'Tipe';
 
   @override
   String get adminMetadataDetails => 'Detail';
@@ -5468,7 +5463,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminMetadataFieldTitle => 'Judul';
 
   @override
-  String get adminMetadataFieldSortTitle => 'Urutkan judul';
+  String get adminMetadataFieldSortTitle => 'Judul urut';
 
   @override
   String get adminMetadataFieldOriginalTitle => 'Judul asli';
@@ -5478,25 +5473,25 @@ class AppLocalizationsId extends AppLocalizations {
       'Tanggal tayang perdana (YYYY-MM-DD)';
 
   @override
-  String get adminMetadataFieldEndDate => 'Tanggal akhir (YYYY-MM-DD)';
+  String get adminMetadataFieldEndDate => 'Tanggal berakhir (YYYY-MM-DD)';
 
   @override
-  String get adminMetadataFieldProductionYear => 'Tahun pembuatan';
+  String get adminMetadataFieldProductionYear => 'Tahun produksi';
 
   @override
-  String get adminMetadataFieldOfficialRating => 'Peringkat resmi';
+  String get adminMetadataFieldOfficialRating => 'Rating resmi';
 
   @override
-  String get adminMetadataFieldCommunityRating => 'Peringkat komunitas';
+  String get adminMetadataFieldCommunityRating => 'Rating komunitas';
 
   @override
-  String get adminMetadataFieldCriticRating => 'Peringkat kritikus';
+  String get adminMetadataFieldCriticRating => 'Rating kritikus';
 
   @override
-  String get adminMetadataFieldTagline => 'Slogan';
+  String get adminMetadataFieldTagline => 'Tagline';
 
   @override
-  String get adminMetadataFieldOverview => 'Ringkasan';
+  String get adminMetadataFieldOverview => 'Ikhtisar';
 
   @override
   String get adminMetadataGenres => 'Genre';
@@ -5508,22 +5503,22 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminMetadataStudios => 'Studio';
 
   @override
-  String get adminMetadataPeople => 'Rakyat';
+  String get adminMetadataPeople => 'Orang';
 
   @override
-  String get adminMetadataAddGenre => 'Tambahkan genre';
+  String get adminMetadataAddGenre => 'Tambah genre';
 
   @override
-  String get adminMetadataAddTag => 'Tambahkan tanda';
+  String get adminMetadataAddTag => 'Tambah tag';
 
   @override
-  String get adminMetadataAddStudio => 'Tambahkan studio';
+  String get adminMetadataAddStudio => 'Tambah studio';
 
   @override
-  String get adminMetadataAddPerson => 'Tambahkan Orang';
+  String get adminMetadataAddPerson => 'Tambah Orang';
 
   @override
-  String get adminMetadataEditPerson => 'Sunting Orang';
+  String get adminMetadataEditPerson => 'Edit Orang';
 
   @override
   String get adminMetadataRole => 'Peran';
@@ -5532,16 +5527,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminMetadataImagePrimary => 'Utama';
 
   @override
-  String get adminMetadataImageBackdrop => 'Latar belakang';
+  String get adminMetadataImageBackdrop => 'Backdrop';
 
   @override
-  String get adminMetadataImageLogo => 'logo';
+  String get adminMetadataImageLogo => 'Logo';
 
   @override
-  String get adminMetadataImageBanner => 'Spanduk';
+  String get adminMetadataImageBanner => 'Banner';
 
   @override
-  String get adminMetadataImageThumb => 'Ibu jari';
+  String get adminMetadataImageThumb => 'Thumb';
 
   @override
   String get adminMetadataRecursive => 'Rekursif';
@@ -5551,22 +5546,22 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminMetadataImageUpdated(String imageType) {
-    return '$imageType image updated';
+    return 'Gambar $imageType diperbarui';
   }
 
   @override
   String adminMetadataImageUploaded(String imageType) {
-    return '$imageType image uploaded';
+    return 'Gambar $imageType diunggah';
   }
 
   @override
   String adminMetadataImageDeleted(String imageType) {
-    return '$imageType image deleted';
+    return 'Gambar $imageType dihapus';
   }
 
   @override
   String adminMetadataImageDownloadFailed(String error) {
-    return 'Failed to download image: $error';
+    return 'Gagal mengunduh gambar: $error';
   }
 
   @override
@@ -5575,39 +5570,39 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminMetadataImageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Gagal mengunggah gambar: $error';
   }
 
   @override
   String adminMetadataDeleteImageTitle(String imageType) {
-    return 'Delete $imageType image';
+    return 'Hapus gambar $imageType';
   }
 
   @override
   String get adminMetadataDeleteImageContent =>
-      'Ini akan menghapus gambar saat ini dari item tersebut.';
+      'Ini akan menghapus gambar saat ini dari item.';
 
   @override
   String adminMetadataImageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Gagal menghapus gambar: $error';
   }
 
   @override
   String adminMetadataChooseImage(String imageType) {
-    return 'Choose $imageType image';
+    return 'Pilih gambar $imageType';
   }
 
   @override
-  String get adminMetadataUpload => 'Mengunggah';
+  String get adminMetadataUpload => 'Unggah';
 
   @override
-  String get adminMetadataUpdate => 'Memperbarui';
+  String get adminMetadataUpdate => 'Perbarui';
 
   @override
   String get adminMetadataRemoteImage => 'Gambar jarak jauh';
 
   @override
-  String get adminPluginsInstalled => 'Dipasang';
+  String get adminPluginsInstalled => 'Terinstal';
 
   @override
   String get adminPluginsCatalog => 'Katalog';
@@ -5616,18 +5611,18 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminPluginsActive => 'Aktif';
 
   @override
-  String get adminPluginsRestart => 'Mulai ulang';
+  String get adminPluginsRestart => 'Mulai Ulang';
 
   @override
   String get adminPluginsNoSearchResults =>
       'Tidak ada plugin yang cocok dengan pencarian Anda';
 
   @override
-  String get adminPluginsNoneInstalled => 'Tidak ada plugin yang terpasang';
+  String get adminPluginsNoneInstalled => 'Tidak ada plugin yang terinstal';
 
   @override
   String adminPluginsUpdateAvailable(String version) {
-    return 'Update available: v$version';
+    return 'Pembaruan tersedia: v$version';
   }
 
   @override
@@ -5635,23 +5630,23 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get adminPluginsPendingRemoval =>
-      'Penghapusan tertunda setelah restart';
+      'Menunggu penghapusan setelah restart';
 
   @override
-  String get adminPluginsChangesPending => 'Perubahan menunggu dimulai ulang';
+  String get adminPluginsChangesPending => 'Perubahan menunggu restart';
 
   @override
-  String get adminPluginsEnable => 'Memungkinkan';
+  String get adminPluginsEnable => 'Aktifkan';
 
   @override
-  String get adminPluginsDisable => 'Cacat';
+  String get adminPluginsDisable => 'Nonaktifkan';
 
   @override
   String get adminPluginsInstallUpdate => 'Instal pembaruan';
 
   @override
   String adminPluginsInstallUpdateVersioned(String version) {
-    return 'Install update (v$version)';
+    return 'Instal pembaruan (v$version)';
   }
 
   @override
@@ -5663,7 +5658,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminPluginsInstalling(String name) {
-    return '\"$name\" is being installed...';
+    return '\"$name\" sedang diinstal...';
   }
 
   @override
@@ -5671,19 +5666,19 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get adminPluginDetailExperimentalContent =>
-      'Integrasi pengaturan plugin masih bersifat eksperimental. Beberapa bidang atau tata letak mungkin belum ditampilkan dengan benar.';
+      'Integrasi pengaturan plugin masih bersifat eksperimental. Beberapa field atau tata letak mungkin belum dirender dengan benar.';
 
   @override
   String get adminPluginDetailToggle404 =>
-      'Gagal mengganti plugin. Server tidak dapat menemukan versi plugin ini. Coba segarkan plugin, lalu coba lagi.';
+      'Gagal mengaktifkan/nonaktifkan plugin. Server tidak dapat menemukan versi plugin ini. Coba segarkan plugin, lalu coba lagi.';
 
   @override
   String get adminPluginDetailToggleDioError =>
-      'Gagal mengganti plugin. Silakan periksa log server untuk detailnya.';
+      'Gagal mengaktifkan/nonaktifkan plugin. Silakan periksa log server untuk detailnya.';
 
   @override
   String adminPluginDetailSettingsTitle(String name) {
-    return '$name Settings';
+    return 'Pengaturan $name';
   }
 
   @override
@@ -5693,25 +5688,25 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminPluginDetailDeveloper => 'Pengembang';
 
   @override
-  String get adminPluginDetailRepository => 'Gudang';
+  String get adminPluginDetailRepository => 'Repositori';
 
   @override
-  String get adminPluginDetailBundled => 'Dibundel';
+  String get adminPluginDetailBundled => 'Bundel';
 
   @override
   String get adminPluginDetailEnablePlugin => 'Aktifkan Plugin';
 
   @override
   String get adminPluginDetailRestartRequired =>
-      'Restart server diperlukan agar perubahan diterapkan.';
+      'Restart server diperlukan agar perubahan berlaku.';
 
   @override
   String get adminPluginDetailRemovalPending =>
-      'Plugin ini akan dihapus setelah server restart.';
+      'Plugin ini akan dihapus setelah restart server.';
 
   @override
   String get adminPluginDetailMalfunctioned =>
-      'Plugin ini tidak berfungsi dan mungkin tidak berfungsi dengan benar.';
+      'Plugin ini mengalami malfungsi dan mungkin tidak berfungsi dengan benar.';
 
   @override
   String get adminPluginDetailNotSupported =>
@@ -5723,7 +5718,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminReposLoadFailed(String error) {
-    return 'Failed to load repositories: $error';
+    return 'Gagal memuat repositori: $error';
   }
 
   @override
@@ -5731,15 +5726,15 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String adminReposRemoveConfirm(String name) {
-    return 'Are you sure you want to remove \"$name\"?';
+    return 'Apakah Anda yakin ingin menghapus \"$name\"?';
   }
 
   @override
-  String get adminReposRemove => 'Menghapus';
+  String get adminReposRemove => 'Hapus';
 
   @override
   String adminReposSaveFailed(String error) {
-    return 'Failed to save repositories: $error';
+    return 'Gagal menyimpan repositori: $error';
   }
 
   @override
@@ -5750,19 +5745,19 @@ class AppLocalizationsId extends AppLocalizations {
       'Tambahkan repositori untuk menelusuri plugin yang tersedia';
 
   @override
-  String get adminReposUnnamed => '(tidak disebutkan namanya)';
+  String get adminReposUnnamed => '(tanpa nama)';
 
   @override
-  String get adminReposEditTitle => 'Sunting Repositori';
+  String get adminReposEditTitle => 'Edit Repositori';
 
   @override
-  String get adminReposAddTitle => 'Tambahkan Repositori';
+  String get adminReposAddTitle => 'Tambah Repositori';
 
   @override
-  String get adminReposUrl => 'URL repositori';
+  String get adminReposUrl => 'URL Repositori';
 
   @override
-  String get adminReposNameHint => 'misalnya Jellyfin Stabil';
+  String get adminReposNameHint => 'mis. Jellyfin Stable';
 
   @override
   String get adminPluginSettingsInvalidUrl => 'URL tidak valid';
@@ -5771,33 +5766,32 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminGeneralSettingsTitle => 'Pengaturan Umum';
 
   @override
-  String get adminGeneralMetadataLanguage => 'Bahasa metadata pilihan';
+  String get adminGeneralMetadataLanguage => 'Bahasa metadata yang dipilih';
 
   @override
-  String get adminGeneralMetadataLanguageHint => 'misalnya id, de, fr';
+  String get adminGeneralMetadataLanguageHint => 'mis. en, de, fr';
 
   @override
-  String get adminGeneralMetadataCountry => 'Negara metadata pilihan';
+  String get adminGeneralMetadataCountry => 'Negara metadata yang dipilih';
 
   @override
-  String get adminGeneralMetadataCountryHint => 'misalnya AS, DE, FR';
+  String get adminGeneralMetadataCountryHint => 'mis. US, DE, FR';
 
   @override
   String get adminGeneralLibraryScanConcurrency =>
-      'Konkurensi pemindaian perpustakaan';
+      'Konkruensi pemindaian pustaka';
 
   @override
-  String get adminGeneralImageEncodingLimit =>
-      'Batas pengkodean gambar paralel';
+  String get adminGeneralImageEncodingLimit => 'Batas encoding gambar paralel';
 
   @override
   String get adminUnknownError => 'Kesalahan tidak diketahui';
 
   @override
-  String get adminBrowse => 'Jelajahi';
+  String get adminBrowse => 'Telusuri';
 
   @override
-  String get adminCloseBrowser => 'Tutup peramban';
+  String get adminCloseBrowser => 'Tutup browser';
 
   @override
   String get adminNetworkingTitle => 'Jaringan';
@@ -5810,13 +5804,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminNetworkingRemoteAccess => 'Aktifkan akses jarak jauh';
 
   @override
-  String get adminNetworkingPorts => 'Pelabuhan';
+  String get adminNetworkingPorts => 'Port';
 
   @override
-  String get adminNetworkingHttpPort => 'Pelabuhan HTTP';
+  String get adminNetworkingHttpPort => 'Port HTTP';
 
   @override
-  String get adminNetworkingHttpsPort => 'Pelabuhan HTTPS';
+  String get adminNetworkingHttpsPort => 'Port HTTPS';
 
   @override
   String get adminNetworkingEnableHttps => 'Aktifkan HTTPS';
@@ -5828,42 +5822,42 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminNetworkingLocalAddresses => 'Alamat jaringan lokal';
 
   @override
-  String get adminNetworkingAddressHint => 'misalnya 192.168.1.0/24';
+  String get adminNetworkingAddressHint => 'mis. 192.168.1.0/24';
 
   @override
-  String get adminNetworkingKnownProxies => 'Proksi yang diketahui';
+  String get adminNetworkingKnownProxies => 'Proxy yang dikenal';
 
   @override
-  String get adminNetworkingProxyHint => 'misalnya 10.0.0.1';
+  String get adminNetworkingProxyHint => 'mis. 10.0.0.1';
 
   @override
   String get adminNetworkingWhitelist => 'Daftar putih';
 
   @override
-  String get adminNetworkingBlacklist => 'Daftar Hitam';
+  String get adminNetworkingBlacklist => 'Daftar hitam';
 
   @override
-  String get adminNetworkingAddEntry => 'Tambahkan entri';
+  String get adminNetworkingAddEntry => 'Tambah entri';
 
   @override
-  String get adminBrandingTitle => 'merek';
+  String get adminBrandingTitle => 'Branding';
 
   @override
-  String get adminBrandingLoginDisclaimer => 'Penafian masuk';
+  String get adminBrandingLoginDisclaimer => 'Disclaimer login';
 
   @override
   String get adminBrandingLoginDisclaimerHint =>
       'HTML ditampilkan di bawah formulir login';
 
   @override
-  String get adminBrandingCustomCss => 'CSS khusus';
+  String get adminBrandingCustomCss => 'CSS Kustom';
 
   @override
   String get adminBrandingCustomCssHint =>
-      'CSS khusus diterapkan ke antarmuka web';
+      'CSS kustom diterapkan ke antarmuka web';
 
   @override
-  String get adminBrandingEnableSplash => 'Aktifkan layar pembuka';
+  String get adminBrandingEnableSplash => 'Aktifkan splash screen';
 
   @override
   String get adminPlaybackHwAccel => 'Akselerasi Perangkat Keras';
@@ -5873,40 +5867,40 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get adminPlaybackEnableHwEncoding =>
-      'Aktifkan pengkodean perangkat keras';
+      'Aktifkan encoding perangkat keras';
 
   @override
   String get adminPlaybackEnableHwDecoding =>
       'Aktifkan decoding perangkat keras untuk:';
 
   @override
-  String get adminPlaybackEncoding => 'Pengkodean';
+  String get adminPlaybackEncoding => 'Encoding';
 
   @override
-  String get adminPlaybackEncodingThreads => 'Pengkodean utas';
+  String get adminPlaybackEncodingThreads => 'Thread encoding';
 
   @override
-  String get adminPlaybackFallbackFont => 'Aktifkan font cadangan';
+  String get adminPlaybackFallbackFont => 'Aktifkan font fallback';
 
   @override
-  String get adminPlaybackFallbackFontPath => 'Jalur font cadangan';
+  String get adminPlaybackFallbackFontPath => 'Path font fallback';
 
   @override
-  String get adminPlaybackStreaming => 'Mengalir';
+  String get adminPlaybackStreaming => 'Streaming';
 
   @override
   String get adminResumeVideo => 'Video';
 
   @override
-  String get adminResumeAudiobooks => 'Buku audio';
+  String get adminResumeAudiobooks => 'Audiobook';
 
   @override
   String get adminResumeMinAudiobookPct =>
-      'Persentase resume buku audio minimum';
+      'Persentase minimum resume audiobook';
 
   @override
   String get adminResumeMaxAudiobookPct =>
-      'Persentase resume buku audio maksimum';
+      'Persentase maksimum resume audiobook';
 
   @override
   String get adminStreamingBitrateLimit =>
@@ -5914,48 +5908,47 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get adminStreamingBitrateLimitHint =>
-      'Biarkan kosong atau 0 untuk tidak terbatas';
+      'Biarkan kosong atau 0 untuk tanpa batas';
 
   @override
   String get adminTrickplayHwAccel => 'Aktifkan akselerasi perangkat keras';
 
   @override
-  String get adminTrickplayHwEncoding => 'Aktifkan pengkodean perangkat keras';
+  String get adminTrickplayHwEncoding => 'Aktifkan encoding perangkat keras';
 
   @override
-  String get adminTrickplayKeyFrameOnly =>
-      'Aktifkan ekstraksi bingkai kunci saja';
+  String get adminTrickplayKeyFrameOnly => 'Aktifkan ekstraksi key frame saja';
 
   @override
   String get adminTrickplayKeyFrameOnlySubtitle =>
       'Lebih cepat tetapi akurasinya lebih rendah';
 
   @override
-  String get adminTrickplayNonBlocking => 'Non-Pemblokiran';
+  String get adminTrickplayNonBlocking => 'Non-Blokir';
 
   @override
-  String get adminTrickplayBlocking => 'Pemblokiran';
+  String get adminTrickplayBlocking => 'Blokir';
 
   @override
   String get adminTrickplayPriorityHigh => 'Tinggi';
 
   @override
-  String get adminTrickplayPriorityAboveNormal => 'Di atas Normal';
+  String get adminTrickplayPriorityAboveNormal => 'Di Atas Normal';
 
   @override
   String get adminTrickplayPriorityNormal => 'Normal';
 
   @override
-  String get adminTrickplayPriorityBelowNormal => 'Di bawah Normal';
+  String get adminTrickplayPriorityBelowNormal => 'Di Bawah Normal';
 
   @override
-  String get adminTrickplayPriorityIdle => 'Menganggur';
+  String get adminTrickplayPriorityIdle => 'Idle';
 
   @override
   String get adminTrickplayImageSettings => 'Pengaturan Gambar';
 
   @override
-  String get adminTrickplayInterval => 'Interval (ms)';
+  String get adminTrickplayInterval => 'Interval (md)';
 
   @override
   String get adminTrickplayIntervalSubtitle =>
@@ -5963,7 +5956,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get adminTrickplayWidthResolutionsHint =>
-      'Lebar piksel yang dipisahkan koma (misalnya 320)';
+      'Lebar piksel dipisahkan koma (mis. 320)';
 
   @override
   String get adminTrickplayQuality => 'Kualitas';
@@ -5976,10 +5969,10 @@ class AppLocalizationsId extends AppLocalizations {
       'Nilai lebih rendah = kualitas lebih baik, file lebih besar';
 
   @override
-  String get adminTrickplayJpegQuality => 'kualitas JPEG';
+  String get adminTrickplayJpegQuality => 'Kualitas JPEG';
 
   @override
-  String get adminTrickplayProcessing => 'Pengolahan';
+  String get adminTrickplayProcessing => 'Pemrosesan';
 
   @override
   String get adminTasksEmpty => 'Tidak ada tugas terjadwal yang ditemukan';
@@ -5992,16 +5985,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminTaskCancelling => 'Membatalkan...';
 
   @override
-  String get adminTaskRunning => 'Berlari...';
+  String get adminTaskRunning => 'Sedang berjalan...';
 
   @override
-  String get adminTaskNeverRun => 'Jangan pernah lari';
+  String get adminTaskNeverRun => 'Tidak pernah dijalankan';
 
   @override
-  String get adminTaskStop => 'Berhenti';
+  String get adminTaskStop => 'Hentikan';
 
   @override
-  String get adminTaskRun => 'Berlari';
+  String get adminTaskRun => 'Jalankan';
 
   @override
   String get adminTaskDetailLastExecution => 'Eksekusi Terakhir';
@@ -6013,40 +6006,40 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminTaskDetailEnded => 'Berakhir';
 
   @override
-  String get adminTaskDetailDuration => 'Lamanya';
+  String get adminTaskDetailDuration => 'Durasi';
 
   @override
   String get adminTaskDetailErrorLabel => 'Kesalahan:';
 
   @override
   String adminTaskTriggerDaily(String time) {
-    return 'Daily at $time';
+    return 'Setiap hari pada $time';
   }
 
   @override
   String adminTaskTriggerWeekly(String day, String time) {
-    return 'Every $day at $time';
+    return 'Setiap $day pada $time';
   }
 
   @override
   String adminTaskTriggerInterval(String duration) {
-    return 'Every $duration';
+    return 'Setiap $duration';
   }
 
   @override
-  String get adminTaskTriggerStartup => 'Saat memulai aplikasi';
+  String get adminTaskTriggerStartup => 'Saat aplikasi dimulai';
 
   @override
-  String get adminTaskTriggerTypeDaily => 'Sehari-hari';
+  String get adminTaskTriggerTypeDaily => 'Harian';
 
   @override
   String get adminTaskTriggerTypeWeekly => 'Mingguan';
 
   @override
-  String get adminTaskTriggerTypeInterval => 'Pada suatu interval';
+  String get adminTaskTriggerTypeInterval => 'Pada interval tertentu';
 
   @override
-  String get adminTaskTriggerIntervalLabel => 'Selang';
+  String get adminTaskTriggerIntervalLabel => 'Interval';
 
   @override
   String get adminTaskTriggerEveryHour => 'Setiap jam';
@@ -6068,8 +6061,8 @@ class AppLocalizationsId extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count hours',
-      one: '1 hour',
+      other: '$count jam',
+      one: '1 jam',
     );
     return '$_temp0';
   }
@@ -6078,13 +6071,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminTaskTriggerTime => 'Waktu';
 
   @override
-  String get adminTaskTriggerNoLimit => 'Tidak ada batasan';
+  String get adminTaskTriggerNoLimit => 'Tanpa batas';
 
   @override
   String get adminActivityJustNow => 'Baru saja';
 
   @override
-  String get adminActivityLastHour => 'Jam terakhir';
+  String get adminActivityLastHour => 'Satu jam terakhir';
 
   @override
   String get adminActivityToday => 'Hari ini';
@@ -6093,39 +6086,39 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminActivityYesterday => 'Kemarin';
 
   @override
-  String get adminActivityOlder => 'Lebih tua';
+  String get adminActivityOlder => 'Lebih lama';
 
   @override
   String adminActivityDaysAgo(int days) {
-    return '${days}d ago';
+    return '$days h lalu';
   }
 
   @override
   String adminActivityHoursAgo(int hours) {
-    return '${hours}h ago';
+    return '$hours jam lalu';
   }
 
   @override
   String adminActivityMinutesAgo(int minutes) {
-    return '${minutes}m ago';
+    return '$minutes m lalu';
   }
 
   @override
-  String get adminActivityNow => 'Sekarang';
+  String get adminActivityNow => 'sekarang';
 
   @override
   String adminActivityMinutesShort(int minutes) {
-    return '${minutes}m';
+    return '$minutes m';
   }
 
   @override
   String adminActivityHoursShort(int hours) {
-    return '${hours}h';
+    return '$hours jam';
   }
 
   @override
   String adminActivityDaysShort(int days) {
-    return '${days}d';
+    return '$days h';
   }
 
   @override
@@ -6135,7 +6128,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get adminTrickplayDescription =>
-      'Konfigurasikan pembuatan gambar trickplay untuk mencari thumbnail pratinjau.';
+      'Konfigurasikan pembuatan gambar trickplay untuk thumbnail pratinjau saat seek.';
 
   @override
   String get adminNetworkingPublicHttpsPort => 'Port HTTPS publik';
@@ -6144,13 +6137,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminNetworkingBaseUrl => 'URL dasar';
 
   @override
-  String get adminNetworkingBaseUrlHint => 'misalnya /jelifin';
+  String get adminNetworkingBaseUrlHint => 'mis. /jellyfin';
 
   @override
   String get adminNetworkingHttps => 'HTTPS';
 
   @override
-  String get adminNetworkingCertPath => 'Jalur sertifikat';
+  String get adminNetworkingCertPath => 'Path sertifikat';
 
   @override
   String get adminNetworkingRemoteIpFilter => 'Filter IP Jarak Jauh';
@@ -6165,33 +6158,33 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminPlaybackAutomatic => '0 = otomatis';
 
   @override
-  String get adminPlaybackTranscodeTempPath => 'Transkode jalur sementara';
+  String get adminPlaybackTranscodeTempPath => 'Path sementara transcoding';
 
   @override
   String get adminPlaybackSegmentDeletion => 'Izinkan penghapusan segmen';
 
   @override
-  String get adminPlaybackSegmentKeep => 'Penyimpanan segmen (detik)';
+  String get adminPlaybackSegmentKeep => 'Durasi simpan segmen (detik)';
 
   @override
-  String get adminPlaybackThrottleBuffering => 'Penyangga throttle';
+  String get adminPlaybackThrottleBuffering => 'Batasi buffering';
 
   @override
-  String get adminResumeMinPct => 'Persentase resume minimum';
+  String get adminResumeMinPct => 'Persentase minimum resume';
 
   @override
   String get adminResumeMinPctSubtitle =>
-      'Konten harus diputar melewati persentase ini untuk menyimpan kemajuan';
+      'Konten harus diputar melewati persentase ini untuk menyimpan progres';
 
   @override
-  String get adminResumeMaxPct => 'Persentase resume maksimum';
+  String get adminResumeMaxPct => 'Persentase maksimum resume';
 
   @override
   String get adminResumeMaxPctSubtitle =>
-      'Konten dianggap diputar sepenuhnya setelah persentase ini';
+      'Konten dianggap selesai diputar setelah persentase ini';
 
   @override
-  String get adminResumeMinDuration => 'Durasi melanjutkan minimum (detik)';
+  String get adminResumeMinDuration => 'Durasi minimum resume (detik)';
 
   @override
   String get adminResumeMinDurationSubtitle =>
@@ -6204,36 +6197,36 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminTrickplayProcessPriority => 'Prioritas proses';
 
   @override
-  String get adminTrickplayTileWidth => 'Lebar ubin';
+  String get adminTrickplayTileWidth => 'Lebar tile';
 
   @override
-  String get adminTrickplayTileHeight => 'Tinggi ubin';
+  String get adminTrickplayTileHeight => 'Tinggi tile';
 
   @override
-  String get adminTrickplayProcessThreads => 'Proses benang';
+  String get adminTrickplayProcessThreads => 'Thread proses';
 
   @override
   String get adminTrickplayWidthResolutions => 'Resolusi lebar';
 
   @override
-  String get adminMetadataDefault => 'Bawaan';
+  String get adminMetadataDefault => 'Default';
 
   @override
-  String get adminMetadataContentTypeUpdated => 'Jenis konten diperbarui';
+  String get adminMetadataContentTypeUpdated => 'Tipe konten diperbarui';
 
   @override
   String adminMetadataContentTypeFailed(String error) {
-    return 'Failed to update content type: $error';
+    return 'Gagal memperbarui tipe konten: $error';
   }
 
   @override
-  String get adminGeneralSlowResponseThreshold => 'Ambang respons lambat (ms)';
+  String get adminGeneralSlowResponseThreshold => 'Ambang respons lambat (md)';
 
   @override
-  String get adminGeneralCachePath => 'Jalur cache';
+  String get adminGeneralCachePath => 'Path cache';
 
   @override
-  String get adminGeneralMetadataPath => 'Jalur metadata';
+  String get adminGeneralMetadataPath => 'Path metadata';
 
   @override
   String get adminGeneralServerName => 'Nama server';
@@ -6242,23 +6235,23 @@ class AppLocalizationsId extends AppLocalizations {
   String get adminSettingsLoadFailed => 'Gagal memuat pengaturan';
 
   @override
-  String get adminDiscover => 'Menemukan';
+  String get adminDiscover => 'Temukan';
 
   @override
   String adminChannelMappingsUpdateFailed(String error) {
-    return 'Failed to update mappings: $error';
+    return 'Gagal memperbarui pemetaan: $error';
   }
 
   @override
   String adminTimeLimitDuration(String duration) {
-    return 'Time limit: $duration';
+    return 'Batas waktu: $duration';
   }
 
   @override
   String get folders => 'Folder';
 
   @override
-  String get libraries => 'Perpustakaan';
+  String get libraries => 'Pustaka';
 
   @override
   String get syncPlay => 'SyncPlay';
@@ -6278,7 +6271,7 @@ class AppLocalizationsId extends AppLocalizations {
       'SyncPlay memerlukan server Jellyfin. Server saat ini tidak mendukungnya.';
 
   @override
-  String get syncPlayGroupFallbackName => 'SyncPlay Grup';
+  String get syncPlayGroupFallbackName => 'Grup SyncPlay';
 
   @override
   String get syncPlayGroupTooltip => 'grup SyncPlay';
@@ -6288,8 +6281,8 @@ class AppLocalizationsId extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# participants',
-      one: '# participant',
+      other: '# peserta',
+      one: '# peserta',
     );
     return '$_temp0';
   }
@@ -6299,14 +6292,14 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get syncPlayIgnoreWaitSubtitle =>
-      'Jangan tahan grup saat perangkat ini melakukan buffering';
+      'Jangan menahan grup saat perangkat ini melakukan buffering';
 
   @override
   String get syncPlayContinueLocallyNoWait =>
-      'Lanjutkan secara lokal tanpa menunggu anggota lambat';
+      'Lanjutkan secara lokal tanpa menunggu anggota yang lambat';
 
   @override
-  String get syncPlayRepeat => 'Mengulang';
+  String get syncPlayRepeat => 'Ulangi';
 
   @override
   String get syncPlayRepeatOne => 'Satu';
@@ -6323,13 +6316,13 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get syncPlaySyncCurrentQueueSubtitle =>
-      'Ganti antrian grup dengan apa yang diputar secara lokal';
+      'Ganti antrean grup dengan yang sedang diputar secara lokal';
 
   @override
   String get syncPlayLeaveGroup => 'Keluar dari grup';
 
   @override
-  String get syncPlayGroupQueue => 'Antrian grup';
+  String get syncPlayGroupQueue => 'Antrean grup';
 
   @override
   String syncPlayQueueItemFallback(int index) {
@@ -6337,7 +6330,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get syncPlayPlayNow => 'Mainkan sekarang';
+  String get syncPlayPlayNow => 'Putar sekarang';
 
   @override
   String get syncPlayCreateNewGroup => 'Buat grup baru';
@@ -6346,7 +6339,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get syncPlayGroupName => 'Nama grup';
 
   @override
-  String get syncPlayDefaultGroupName => 'Grup SyncPlay saya';
+  String get syncPlayDefaultGroupName => 'Grup SyncPlay Saya';
 
   @override
   String get syncPlayCreateGroup => 'Buat grup';
@@ -6358,17 +6351,17 @@ class AppLocalizationsId extends AppLocalizations {
   String get syncPlayNoGroupsAvailable => 'Tidak ada grup yang tersedia';
 
   @override
-  String get syncPlayJoinGroupQuestion => 'Bergabunglah dengan grup SyncPlay?';
+  String get syncPlayJoinGroupQuestion => 'Gabung ke grup SyncPlay?';
 
   @override
   String get syncPlayJoinGroupWarning =>
-      'Bergabung dengan grup SyncPlay dapat menggantikan antrean pemutaran Anda saat ini. Melanjutkan?';
+      'Bergabung ke grup SyncPlay dapat mengganti antrean pemutaran Anda saat ini. Lanjutkan?';
 
   @override
-  String get syncPlayJoin => 'Bergabung';
+  String get syncPlayJoin => 'Gabung';
 
   @override
-  String get syncPlayStateIdle => 'Menganggur';
+  String get syncPlayStateIdle => 'Diam';
 
   @override
   String get syncPlayStateWaiting => 'Menunggu';
@@ -6377,28 +6370,28 @@ class AppLocalizationsId extends AppLocalizations {
   String get syncPlayStatePaused => 'Dijeda';
 
   @override
-  String get syncPlayStatePlaying => 'Bermain';
+  String get syncPlayStatePlaying => 'Memutar';
 
   @override
   String syncPlayUserJoinedGroup(String userName) {
-    return '$userName joined SyncPlay group';
+    return '$userName bergabung ke grup SyncPlay';
   }
 
   @override
   String syncPlayUserLeftGroup(String userName) {
-    return '$userName left SyncPlay group';
+    return '$userName keluar dari grup SyncPlay';
   }
 
   @override
-  String get syncPlayAccessDeniedTitle => 'SyncPlay akses ditolak';
+  String get syncPlayAccessDeniedTitle => 'Akses SyncPlay ditolak';
 
   @override
   String get syncPlayAccessDeniedMessage =>
-      'Anda tidak memiliki akses ke satu atau lebih item di grup SyncPlay ini. Minta pemilik grup untuk memverifikasi izin perpustakaan atau pilih antrean lain.';
+      'Anda tidak memiliki akses ke satu atau beberapa item di grup SyncPlay ini. Minta pemilik grup memeriksa izin pustaka atau pilih antrean lain.';
 
   @override
   String syncPlaySyncingPlaybackToGroup(String groupName) {
-    return 'Syncing playback to $groupName';
+    return 'Menyinkronkan pemutaran ke $groupName';
   }
 
   @override
@@ -6406,59 +6399,60 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get dolbyVisionDirectPlayFailedTitle =>
-      'Dolby Vision Pemutaran Langsung Gagal';
+      'Direct Play Dolby Vision Gagal';
 
   @override
   String get dolbyVisionDirectPlayFailedMessage =>
-      'Pemutaran langsung gagal dimulai untuk streaming Dolby Vision ini. Coba lagi menggunakan transkode server?';
+      'Direct play gagal dimulai untuk stream Dolby Vision ini. Coba lagi menggunakan transcode server?';
 
   @override
-  String get retryWithTranscode => 'Coba lagi dengan transkode';
+  String get retryWithTranscode => 'Coba lagi dengan transcode';
 
   @override
   String get dolbyVisionNotSupportedTitle => 'Dolby Vision Tidak Didukung';
 
   @override
   String get dolbyVisionNotSupportedMessage =>
-      'Perangkat ini tidak dapat memecahkan kode konten Dolby Vision secara langsung. Gunakan HDR10 cadangan atau minta transcoding server.';
+      'Perangkat ini tidak dapat mendekode konten Dolby Vision secara langsung. Gunakan fallback HDR10 atau minta transcoding server.';
 
   @override
-  String get rememberMyChoice => 'Ingat pilihanku';
+  String get rememberMyChoice => 'Ingat pilihan saya';
 
   @override
-  String get playHdr10Fallback => 'Mainkan HDR10 mundur';
+  String get playHdr10Fallback => 'Putar fallback HDR10';
 
   @override
-  String get requestTranscode => 'Minta transkode';
+  String get requestTranscode => 'Minta transcode';
 
   @override
   String get homeScreenSectionsIntegrationDescription =>
-      'Deteksi baris yang diekspos oleh plugin \"Bagian Layar Beranda\" IAmParadox27. Baris dapat diaktifkan dan disusun ulang di bawah.';
+      'Deteksi baris yang diekspos oleh plugin \"Home Screen Sections\" milik IAmParadox27. Baris dapat diaktifkan dan diatur ulang urutannya di bawah.';
 
   @override
   String get homeScreenSectionsIntegrationNoServers =>
       'Belum ada server Jellyfin yang melaporkan plugin tersebut.';
 
   @override
-  String get integrationOpenHomeSections => 'Buka Bagian Rumah';
+  String get integrationOpenHomeSections => 'Buka Home Sections';
 
   @override
   String get integrationOpenHomeSectionsSubtitle =>
-      'Mengaktifkan, menonaktifkan, dan menyusun ulang baris';
+      'Aktifkan, nonaktifkan, dan atur ulang urutan baris';
 
   @override
-  String get integrationInstalledButDisabled => 'Dipasang tetapi dinonaktifkan';
+  String get integrationInstalledButDisabled =>
+      'Terinstal tetapi dinonaktifkan';
 
   @override
-  String get integrationNotInstalled => 'Tidak dipasang';
+  String get integrationNotInstalled => 'Tidak terinstal';
 
   @override
   String integrationSectionsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# sections',
-      one: '# section',
+      other: '# bagian',
+      one: '# bagian',
     );
     return '$_temp0';
   }
@@ -6468,14 +6462,14 @@ class AppLocalizationsId extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# rows discovered',
-      one: '# row discovered',
+      other: '# baris ditemukan',
+      one: '# baris ditemukan',
     );
     return '$_temp0';
   }
 
   @override
-  String get jellyseerr => 'Seerr';
+  String get jellyseerr => 'Jellyseerr';
 
   @override
   String get seeAll => 'Lihat Semua';
@@ -6487,13 +6481,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get switchUser => 'Ganti Pengguna';
 
   @override
-  String get remoteControl => 'Kendali Jarak Jauh';
+  String get remoteControl => 'Kontrol Jarak Jauh';
 
   @override
   String get mediaBarLoading => 'Memuat bilah media...';
 
   @override
-  String get mediaBarError => 'Bilah media gagal dimuat';
+  String get mediaBarError => 'Gagal memuat bilah media';
 
   @override
   String get offlineServerUnavailable =>
@@ -6501,13 +6495,13 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get offlineNoInternet =>
-      'Anda sedang luring. Hanya konten yang diunduh yang tersedia.';
+      'Anda sedang offline. Hanya konten yang diunduh yang tersedia.';
 
   @override
-  String get offlineFileNotAvailable => 'Berkas tidak tersedia';
+  String get offlineFileNotAvailable => 'File tidak tersedia';
 
   @override
-  String get offlineSwitchServer => 'Beralih Server';
+  String get offlineSwitchServer => 'Ganti Server';
 
   @override
   String get offlineSavedMedia => 'Media Tersimpan';
@@ -6526,12 +6520,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String castControlFailed(String error) {
-    return 'Cast control failed: $error';
+    return 'Kontrol cast gagal: $error';
   }
 
   @override
   String castKindControls(String kind) {
-    return '$kind Controls';
+    return 'Kontrol $kind';
   }
 
   @override
@@ -6542,7 +6536,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String castStopKind(String kind) {
-    return 'Stop $kind';
+    return 'Hentikan $kind';
   }
 
   @override
@@ -6555,23 +6549,22 @@ class AppLocalizationsId extends AppLocalizations {
   String get pinConfirmTitle => 'Konfirmasi PIN';
 
   @override
-  String get pinSetTitle => 'Setel PIN';
+  String get pinSetTitle => 'Tetapkan PIN';
 
   @override
   String get pinEnterTitle => 'Masukkan PIN';
 
   @override
-  String get pinReenterToConfirm =>
-      'Masukkan kembali PIN Anda untuk mengonfirmasi';
+  String get pinReenterToConfirm => 'Masukkan ulang PIN Anda untuk konfirmasi';
 
   @override
   String pinEnterNDigit(int length) {
-    return 'Enter a $length-digit PIN';
+    return 'Masukkan PIN $length digit';
   }
 
   @override
   String pinEnterYourNDigit(int length) {
-    return 'Enter your $length-digit PIN';
+    return 'Masukkan PIN $length digit Anda';
   }
 
   @override
@@ -6581,16 +6574,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get pinMismatch => 'PIN tidak cocok';
 
   @override
-  String get pinForgot => 'Lupa PINnya?';
+  String get pinForgot => 'Lupa PIN?';
 
   @override
-  String get pinClear => 'Jernih';
+  String get pinClear => 'Hapus';
 
   @override
-  String get pinBackspace => 'Ruang belakang';
+  String get pinBackspace => 'Backspace';
 
   @override
-  String get quickConnectAuthorized => 'Permintaan Koneksi Cepat diotorisasi.';
+  String get quickConnectAuthorized => 'Permintaan Quick Connect diotorisasi.';
 
   @override
   String get quickConnectInvalidOrExpired =>
@@ -6598,7 +6591,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get quickConnectNotSupported =>
-      'Koneksi Cepat tidak didukung di server ini.';
+      'Quick Connect tidak didukung di server ini.';
 
   @override
   String get quickConnectAuthorizeFailed =>
@@ -6606,7 +6599,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get quickConnectDisabled =>
-      'Koneksi Cepat dinonaktifkan di server ini.';
+      'Quick Connect dinonaktifkan di server ini.';
 
   @override
   String get quickConnectForbidden =>
@@ -6614,26 +6607,26 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get quickConnectNotFound =>
-      'Kode Koneksi Cepat tidak ditemukan. Coba kode baru.';
+      'Kode Quick Connect tidak ditemukan. Coba kode baru.';
 
   @override
   String quickConnectFailedWithMessage(String message) {
-    return 'Quick Connect failed: $message';
+    return 'Quick Connect gagal: $message';
   }
 
   @override
   String get quickConnectEnterCode => 'Masukkan kode';
 
   @override
-  String get quickConnectAuthorize => 'Mengizinkan';
+  String get quickConnectAuthorize => 'Otorisasi';
 
   @override
   String remoteCommandFailed(String error) {
-    return 'Command failed: $error';
+    return 'Perintah gagal: $error';
   }
 
   @override
-  String get remoteControlTitle => 'Kendali Jarak Jauh';
+  String get remoteControlTitle => 'Kontrol Jarak Jauh';
 
   @override
   String get remoteFailedToLoadSessions => 'Gagal memuat sesi';
@@ -6645,20 +6638,20 @@ class AppLocalizationsId extends AppLocalizations {
   String get remoteStartPlayback => 'Mulai pemutaran di perangkat lain';
 
   @override
-  String get unknownUser => 'Tidak dikenal';
+  String get unknownUser => 'Tidak diketahui';
 
   @override
-  String get unknownItem => 'Tidak dikenal';
+  String get unknownItem => 'Tidak diketahui';
 
   @override
   String get remoteNothingPlaying => 'Tidak ada yang diputar pada sesi ini';
 
   @override
-  String get castingStarted => 'Transmisi dimulai pada perangkat yang dipilih';
+  String get castingStarted => 'Casting dimulai pada perangkat yang dipilih';
 
   @override
   String castingFailed(String error) {
-    return 'Failed to start casting: $error';
+    return 'Gagal memulai casting: $error';
   }
 
   @override
@@ -6667,28 +6660,28 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get noRemoteDevicesIos =>
-      'Tidak ada perangkat pemutaran jarak jauh yang tersedia.\n\nDi iOS, target AirPlay mungkin tidak tersedia di simulator.';
+      'Tidak ada perangkat pemutaran jarak jauh yang tersedia.\n\nPada iOS, target AirPlay mungkin tidak tersedia di simulator.';
 
   @override
-  String get trackActionPlayNext => 'Mainkan Berikutnya';
+  String get trackActionPlayNext => 'Putar Berikutnya';
 
   @override
   String get trackActionAddToQueue => 'Tambahkan ke Antrean';
 
   @override
-  String get trackActionAddToPlaylist => 'Tambahkan ke Daftar Putar';
+  String get trackActionAddToPlaylist => 'Tambahkan ke Playlist';
 
   @override
   String get trackActionCancelDownload => 'Batalkan Unduhan';
 
   @override
-  String get trackActionDeleteFromPlaylist => 'Hapus dari Daftar Putar';
+  String get trackActionDeleteFromPlaylist => 'Hapus dari Playlist';
 
   @override
-  String get trackActionMoveUp => 'Pindah ke Atas';
+  String get trackActionMoveUp => 'Naikkan';
 
   @override
-  String get trackActionMoveDown => 'Pindah ke Bawah';
+  String get trackActionMoveDown => 'Turunkan';
 
   @override
   String get trackActionRemoveFromFavorites => 'Hapus dari Favorit';
@@ -6700,11 +6693,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get trackActionGoToAlbum => 'Buka Album';
 
   @override
-  String get trackActionGoToArtist => 'Pergi ke Artis';
+  String get trackActionGoToArtist => 'Buka Artis';
 
   @override
   String trackActionDownloading(String name) {
-    return 'Downloading $name...';
+    return 'Mengunduh $name...';
   }
 
   @override
@@ -6712,133 +6705,132 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get trackActionDeleteFileFailed =>
-      'Tidak dapat menghapus file yang diunduh';
+      'Tidak dapat menghapus file unduhan';
 
   @override
-  String get shuffleBy => 'Acak Oleh';
+  String get shuffleBy => 'Acak Berdasarkan';
 
   @override
-  String get shuffleSelectLibrary => 'Pilih Perpustakaan';
+  String get shuffleSelectLibrary => 'Pilih Pustaka';
 
   @override
   String get shuffleSelectGenre => 'Pilih Genre';
 
   @override
-  String get shuffleLibrary => 'Perpustakaan';
+  String get shuffleLibrary => 'Pustaka';
 
   @override
   String get shuffleGenre => 'Genre';
 
   @override
-  String get shuffleNoLibraries =>
-      'Tidak ada perpustakaan yang kompatibel tersedia.';
+  String get shuffleNoLibraries => 'Tidak ada pustaka yang kompatibel.';
 
   @override
   String get shuffleNoGenres =>
       'Tidak ada genre yang ditemukan untuk mode acak ini.';
 
   @override
-  String get posterDisplayTitle => 'Menampilkan';
+  String get posterDisplayTitle => 'Tampilan';
 
   @override
-  String get posterImageType => 'Jenis Gambar';
+  String get posterImageType => 'Tipe Gambar';
 
   @override
   String get imageTypePoster => 'Poster';
 
   @override
-  String get imageTypeThumbnail => 'gambar kecil';
+  String get imageTypeThumbnail => 'Thumbnail';
 
   @override
-  String get imageTypeBanner => 'Spanduk';
+  String get imageTypeBanner => 'Banner';
 
   @override
-  String get playlistAddFailed => 'Gagal menambahkan ke daftar putar';
+  String get playlistAddFailed => 'Gagal menambahkan ke playlist';
 
   @override
-  String get playlistCreateFailed => 'Gagal membuat daftar putar';
+  String get playlistCreateFailed => 'Gagal membuat playlist';
 
   @override
-  String get playlistNew => 'Daftar Putar Baru';
+  String get playlistNew => 'Playlist Baru';
 
   @override
-  String get playlistCreate => 'Membuat';
+  String get playlistCreate => 'Buat';
 
   @override
-  String get playlistCreateNew => 'Buat Daftar Putar Baru';
+  String get playlistCreateNew => 'Buat Playlist Baru';
 
   @override
-  String get playlistNoneFound => 'Tidak ada daftar putar yang ditemukan';
+  String get playlistNoneFound => 'Tidak ada playlist yang ditemukan';
 
   @override
-  String get addToPlaylist => 'Tambahkan ke Daftar Putar';
+  String get addToPlaylist => 'Tambahkan ke Playlist';
 
   @override
-  String get lyricsNotAvailable => 'Lirik tidak tersedia';
+  String get lyricsNotAvailable => 'Tidak ada lirik yang tersedia';
 
   @override
-  String get upNext => 'Selanjutnya';
+  String get upNext => 'Berikutnya';
 
   @override
-  String get playNext => 'Mainkan Berikutnya';
+  String get playNext => 'Putar Berikutnya';
 
   @override
   String get stillWatchingContent =>
-      'Pemutaran telah dijeda. Apakah kamu masih menonton?';
+      'Pemutaran telah dijeda. Apakah Anda masih menonton?';
 
   @override
-  String get stillWatchingStop => 'Berhenti';
+  String get stillWatchingStop => 'Hentikan';
 
   @override
-  String get stillWatchingContinue => 'Melanjutkan';
+  String get stillWatchingContinue => 'Lanjutkan';
 
   @override
   String skipSegment(String segment) {
-    return 'Skip $segment';
+    return 'Lewati $segment';
   }
 
   @override
-  String get liveTv => 'siaran langsung';
+  String get liveTv => 'TV Langsung';
 
   @override
-  String get continueWatchingAndNextUp => 'Lanjutkan Menonton & Selanjutnya';
+  String get continueWatchingAndNextUp => 'Lanjut Menonton & Berikutnya';
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
-    return 'Downloading $current/$total — $fileName';
+    return 'Mengunduh $current/$total — $fileName';
   }
 
   @override
   String downloadingFile(String fileName) {
-    return 'Downloading $fileName';
+    return 'Mengunduh $fileName';
   }
 
   @override
   String get nextEpisode => 'Episode Berikutnya';
 
   @override
-  String get moreFromThisSeason => 'Lebih Banyak Dari Musim Ini';
+  String get moreFromThisSeason => 'Lebih Banyak dari Musim Ini';
 
   @override
   String get playerTooltipPlaybackSpeed => 'Kecepatan pemutaran';
 
   @override
-  String get playerTooltipCastControls => 'Kontrol transmisi';
+  String get playerTooltipCastControls => 'Kontrol cast';
 
   @override
-  String get playerTooltipPlaybackQuality => 'Kecepatan bit';
+  String get playerTooltipPlaybackQuality => 'Bitrate';
 
   @override
-  String get playerTooltipEnterFullscreen => 'Masuk ke layar penuh';
+  String get playerTooltipEnterFullscreen => 'Masuk layar penuh';
 
   @override
   String get playerTooltipExitFullscreen => 'Keluar dari layar penuh';
 
   @override
-  String get playerTooltipFloatOnTop => 'Mengambang di atas';
+  String get playerTooltipFloatOnTop => 'Tetap di atas';
 
   @override
-  String get playerTooltipExitFloatOnTop => 'Nonaktifkan float di atas';
+  String get playerTooltipExitFloatOnTop => 'Nonaktifkan tetap di atas';
 
   @override
   String get playerTooltipLockLandscape => 'Kunci lanskap';
@@ -6850,10 +6842,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get playerTooltipPrevious => 'Sebelumnya';
 
   @override
-  String get playerTooltipSeekBack => 'Carilah kembali';
+  String get playerTooltipSeekBack => 'Mundur';
 
   @override
-  String get playerTooltipSeekForward => 'Carilah ke depan';
+  String get playerTooltipSeekForward => 'Maju';
 
   @override
   String get contextMenuMarkWatched => 'Tandai sebagai Ditonton';
@@ -6868,7 +6860,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get contextMenuRemoveFromFavorites => 'Hapus dari Favorit';
 
   @override
-  String get contextMenuGoToSeries => 'Pergi ke Seri';
+  String get contextMenuGoToSeries => 'Buka Serial';
 
   @override
   String get settingsAdministrationSubtitle =>
@@ -6879,21 +6871,20 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get settingsAccountSecuritySubtitle =>
-      'Otentikasi, kode PIN, dan kontrol orang tua';
+      'Autentikasi, kode PIN, dan kontrol orang tua';
 
   @override
   String get settingsPersonalization => 'Personalisasi';
 
   @override
   String get settingsPersonalizationSubtitle =>
-      'Tema, navigasi, baris beranda, dan visibilitas perpustakaan';
+      'Tema, navigasi, baris beranda, dan visibilitas pustaka';
 
   @override
   String get settingsDynamicContent => 'Konten Dinamis';
 
   @override
-  String get settingsDynamicContentSubtitle =>
-      'Bilah Media dan hamparan visual';
+  String get settingsDynamicContentSubtitle => 'Media Bar dan overlay visual';
 
   @override
   String get settingsPlaybackSyncplay => 'Pemutaran & SyncPlay';
@@ -6904,13 +6895,14 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get settingsIntegrationsSubtitle =>
-      'Sinkronisasi plugin, Seerr, peringkat, dan banyak lagi';
+      'Sinkronisasi plugin, Seerr, rating, dan lainnya';
 
   @override
-  String get settingsAboutSubtitle => 'Urutkan Server Berdasarkan';
+  String get settingsAboutSubtitle =>
+      'Versi aplikasi, informasi hukum, dan kredit';
 
   @override
-  String get settingsAuthenticationSection => 'Terakhir Digunakan';
+  String get settingsAuthenticationSection => 'AUTENTIKASI';
 
   @override
   String get settingsSortServersBy => 'Urutkan Server Berdasarkan';
@@ -6922,31 +6914,31 @@ class AppLocalizationsId extends AppLocalizations {
   String get settingsAlphabetical => 'Alfabetis';
 
   @override
-  String get settingsPrivacyAndSafetySection => 'PRIVASI & KESELAMATAN';
+  String get settingsPrivacyAndSafetySection => 'PRIVASI & KEAMANAN';
 
   @override
-  String get settingsBlockedRatings => 'Peringkat yang Diblokir';
+  String get settingsBlockedRatings => 'Rating Diblokir';
 
   @override
   String get settingsGeneralStyle => 'Gaya Umum';
 
   @override
   String get settingsGeneralStyleSubtitle =>
-      'Aksen tema, latar belakang, indikator yang ditonton, dan musik tema';
+      'Aksen tema, backdrop, indikator tontonan, dan musik tema';
 
   @override
   String get settingsHomePage => 'Halaman Beranda';
 
   @override
   String get settingsHomePageSubtitle =>
-      'Bagian, jenis gambar, overlay, dan pratinjau media';
+      'Bagian, tipe gambar, overlay, dan pratinjau media';
 
   @override
   String get settingsLibrariesSubtitle =>
-      'Visibilitas perpustakaan, tampilan folder, dan perilaku multi-server';
+      'Visibilitas pustaka, tampilan folder, dan perilaku multi-server';
 
   @override
-  String get settingsTwentyFourHourClock => 'Jam 24 Jam';
+  String get settingsTwentyFourHourClock => 'Jam 24';
 
   @override
   String get settingsTwentyFourHourClockSubtitle =>
@@ -6966,32 +6958,31 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get settingsShowLibrariesButtonInNavigation =>
-      'Tampilkan tombol perpustakaan di bilah navigasi';
+      'Tampilkan tombol pustaka di bilah navigasi';
 
   @override
   String get settingsShowSeerrButtonInNavigation =>
-      'Show the Seerr button in the navigation bar';
+      'Tampilkan tombol Seerr di bilah navigasi';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
-      'Alihkan visibilitas halaman beranda per perpustakaan. Mulai ulang Moonfin agar perubahan diterapkan.';
+      'Atur visibilitas halaman beranda per pustaka. Mulai ulang Moonfin agar perubahan berlaku.';
 
   @override
-  String get settingsMediaBarAndLocalPreviews =>
-      'Bilah Media & Pratinjau Lokal';
+  String get settingsMediaBarAndLocalPreviews => 'Media Bar & Pratinjau Lokal';
 
   @override
-  String get settingsVisualOverlays => 'Hamparan Visual';
+  String get settingsVisualOverlays => 'Overlay Visual';
 
   @override
   String get settingsSeasonalSurprise => 'Kejutan Musiman';
 
   @override
-  String get settingsMetadataAndRatings => 'Metadata & Peringkat';
+  String get settingsMetadataAndRatings => 'Metadata & Rating';
 
   @override
   String get settingsPluginScreenDescription =>
-      'Moonbase mendukung integrasi sisi server termasuk sumber peringkat tambahan, permintaan Seerr, dan preferensi yang disinkronkan.';
+      'Moonbase mendukung integrasi sisi server termasuk sumber rating tambahan, permintaan Seerr, dan preferensi tersinkronisasi.';
 
   @override
   String get settingsOfflineDownloads => 'Unduhan Offline';
@@ -7003,17 +6994,17 @@ class AppLocalizationsId extends AppLocalizations {
   String get settingsLow => 'Rendah';
 
   @override
-  String get settingsCustomPath => 'Jalur Kustom';
+  String get settingsCustomPath => 'Path Kustom';
 
   @override
-  String get settingsEnterDownloadFolderPath => 'Masukkan jalur folder unduhan';
+  String get settingsEnterDownloadFolderPath => 'Masukkan path folder unduhan';
 
   @override
   String get settingsConcurrentDownloads => 'Unduhan Bersamaan';
 
   @override
   String get settingsConcurrentDownloadsDescription =>
-      'Jumlah maksimum item yang akan diunduh sekaligus.';
+      'Jumlah maksimum item yang diunduh sekaligus.';
 
   @override
   String get settingsAppInfo => 'INFO APLIKASI';
@@ -7022,40 +7013,39 @@ class AppLocalizationsId extends AppLocalizations {
   String get settingsReportAnIssue => 'Laporkan Masalah';
 
   @override
-  String get settingsReportAnIssueSubtitle => 'Buka pelacak masalah di GitHub';
+  String get settingsReportAnIssueSubtitle => 'Buka issue tracker di GitHub';
 
   @override
-  String get settingsJoinDiscord => 'Bergabunglah dengan Discord';
+  String get settingsJoinDiscord => 'Gabung Discord';
 
   @override
-  String get settingsJoinDiscordSubtitle => 'Ngobrol dengan komunitas';
+  String get settingsJoinDiscordSubtitle => 'Mengobrol dengan komunitas';
 
   @override
-  String get settingsJoinTheDiscord => 'Bergabunglah dengan Discord';
+  String get settingsJoinTheDiscord => 'Gabung ke Discord';
 
   @override
-  String get settingsSupportMoonfin => 'Mendukung Moonfin';
+  String get settingsSupportMoonfin => 'Dukung Moonfin';
 
   @override
-  String get settingsSupportMoonfinSubtitle =>
-      'Donate a coffee to the developer';
+  String get settingsSupportMoonfinSubtitle => 'Belikan kopi untuk pengembang';
 
   @override
-  String get settingsLegal => 'LEGAL';
+  String get settingsLegal => 'HUKUM';
 
   @override
   String get settingsLicenses => 'Lisensi';
 
   @override
   String get settingsOpenSourceLicenseNotices =>
-      'Pemberitahuan lisensi sumber terbuka';
+      'Pemberitahuan lisensi open source';
 
   @override
   String get settingsPrivacyPolicy => 'Kebijakan Privasi';
 
   @override
   String get settingsPrivacyPolicySubtitle =>
-      'Bagaimana Moonfin menangani data Anda';
+      'Cara Moonfin menangani data Anda';
 
   @override
   String get settingsCheckForUpdates => 'Periksa Pembaruan';
@@ -7071,8 +7061,8 @@ class AppLocalizationsId extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# license notices',
-      one: '# license notice',
+      other: '# pemberitahuan lisensi',
+      one: '# pemberitahuan lisensi',
     );
     return '$_temp0';
   }
@@ -7081,7 +7071,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get settingsBoth => 'Keduanya';
 
   @override
-  String get settingsShuffleContentTypeFilter => 'Filter Jenis Konten Acak';
+  String get settingsShuffleContentTypeFilter => 'Filter Tipe Konten Acak';
 
   @override
   String get settingsVideoPlaybackPreferences => 'Preferensi Pemutaran Video';
@@ -7095,14 +7085,14 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get settingsAudioPreferencesSubtitle =>
-      'Trek audio, pemrosesan, dan opsi passthrough';
+      'Track audio, pemrosesan, dan opsi passthrough';
 
   @override
-  String get settingsAutomationAndQueue => 'Otomatisasi & Antrian';
+  String get settingsAutomationAndQueue => 'Otomatisasi & Antrean';
 
   @override
   String get settingsAutomationAndQueueSubtitle =>
-      'Pemutaran dan pengurutan otomatis';
+      'Pemutaran otomatis dan pengurutan';
 
   @override
   String get settingsOfflineDownloadsSubtitle =>
@@ -7113,108 +7103,109 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get settingsAdvancedOptionsSubtitle =>
-      'Fitur pemain khusus. Gunakan dengan hati-hati, karena beberapa opsi dapat menyebabkan masalah pemutaran';
+      'Fitur pemutar khusus. Gunakan dengan hati-hati, karena beberapa opsi dapat menyebabkan masalah pemutaran';
 
   @override
   String get settingsSkipIntrosAndOutros => 'Lewati Intro dan Outro?';
 
   @override
-  String get settingsMediaSegmentCountdown => 'Media Segment Countdown';
+  String get settingsMediaSegmentCountdown => 'Hitung Mundur Segmen Media';
 
   @override
-  String get settingsProgressBar => 'Progress Bar';
+  String get settingsProgressBar => 'Bilah Progres';
 
   @override
   String get settingsTimer => 'Timer';
 
   @override
-  String get settingsNone => 'None';
+  String get settingsNone => 'Tidak Ada';
 
   @override
-  String get settingsPromptUser => 'Pengguna yang Cepat';
+  String get settingsPromptUser => 'Minta Pengguna';
 
   @override
-  String get settingsSkip => 'Melewati';
+  String get settingsSkip => 'Lewati';
 
   @override
-  String get settingsDoNothing => 'Jangan lakukan apa pun';
+  String get settingsDoNothing => 'Jangan Lakukan Apa-apa';
 
   @override
   String get settingsMaxBitrateDescription =>
-      'Batasi bitrate streaming. Konten di atas ambang batas ini akan ditranskode agar sesuai.';
+      'Batasi bitrate streaming. Konten di atas ambang ini akan ditranskode agar sesuai.';
 
   @override
   String get settingsMaxResolutionDescription =>
-      'Batasi resolusi maksimum yang akan diminta pemain. Konten dengan resolusi lebih tinggi akan ditranskode ke bawah.';
+      'Batasi resolusi maksimum yang akan diminta pemutar. Konten beresolusi lebih tinggi akan ditranskode turun.';
 
   @override
   String get settingsPlayerZoomDescription =>
-      'Bagaimana video harus diskalakan agar sesuai dengan layar.';
+      'Cara video diskalakan agar sesuai dengan layar.';
 
   @override
   String get settingsPlaybackEngineAndroidTv => 'Mesin Pemutaran (Android TV)';
 
   @override
   String get settingsPlaybackEngineAndroidTvDescription =>
-      'Pilih mesin pemutaran default di perangkat Android TV. Perubahan berlaku untuk sesi pemutaran berikutnya.';
+      'Pilih mesin pemutaran default pada perangkat Android TV. Perubahan berlaku pada sesi pemutaran berikutnya.';
 
   @override
-  String get settingsPlaybackEngineMedia3Recommended => 'Media3 (disarankan)';
+  String get settingsPlaybackEngineMedia3Recommended =>
+      'Media3 (direkomendasikan)';
 
   @override
   String get settingsPlaybackEngineMedia3Legacy => 'Media3 (legacy)';
 
   @override
-  String get settingsPlaybackEngineMpvLegacy => 'mpv (warisan)';
+  String get settingsPlaybackEngineMpvLegacy => 'mpv (legacy)';
 
   @override
-  String get settingsPlaybackEngineMpvRecommended => 'mpv (recommended)';
+  String get settingsPlaybackEngineMpvRecommended => 'mpv (direkomendasikan)';
 
   @override
-  String get settingsDolbyVisionFallback => 'Dolby Vision Penggantian';
+  String get settingsDolbyVisionFallback => 'Fallback Dolby Vision';
 
   @override
   String get settingsDolbyVisionFallbackDescription =>
-      'Perilaku untuk judul Dolby Vision pada perangkat tanpa decoding Dolby Vision.';
+      'Perilaku untuk judul Dolby Vision pada perangkat tanpa dekode Dolby Vision.';
 
   @override
-  String get settingsAskEachTime => 'Tanyakan setiap saat';
+  String get settingsAskEachTime => 'Tanya setiap kali';
 
   @override
-  String get settingsPreferHdr10Fallback => 'Lebih suka penggantian HDR10';
+  String get settingsPreferHdr10Fallback => 'Utamakan fallback HDR10';
 
   @override
-  String get settingsPreferServerTranscode => 'Lebih suka transkode server';
+  String get settingsPreferServerTranscode => 'Utamakan transcode server';
 
   @override
   String get settingsDolbyVisionProfile7DirectPlay =>
-      'Dolby Vision Profil 7 Putar Langsung';
+      'Direct Play Dolby Vision Profile 7';
 
   @override
   String get settingsDolbyVisionProfile7DirectPlayDescription =>
-      'Mengontrol apakah aliran lapisan penyempurnaan Dolby Vision profil 7 harus diputar secara langsung.';
+      'Mengontrol apakah stream enhancement-layer Dolby Vision profile 7 harus diputar dengan direct play.';
 
   @override
   String get settingsAutoAftkrtEnabled => 'Otomatis (AFTKRT diaktifkan)';
 
   @override
-  String get settingsEnabledOnThisDevice => 'Diaktifkan di perangkat ini';
+  String get settingsEnabledOnThisDevice => 'Diaktifkan pada perangkat ini';
 
   @override
   String get settingsDisabledPreferTranscode =>
-      'Dinonaktifkan (lebih memilih transcode)';
+      'Dinonaktifkan (utamakan transcode)';
 
   @override
   String get settingsResumeRewindDescription =>
-      'Saat melanjutkan pemutaran (dari Lanjutkan Menonton atau halaman item media), berapa detik yang harus diputar ulang?';
+      'Saat melanjutkan pemutaran (dari Lanjut Menonton atau halaman item media), berapa detik yang harus dimundurkan?';
 
   @override
   String get settingsUnpauseRewindDescription =>
-      'Saat melanjutkan pemutaran setelah menekan tombol jeda, berapa detik yang harus diputar ulang?';
+      'Saat melanjutkan pemutaran setelah menekan tombol jeda, berapa detik yang harus dimundurkan?';
 
   @override
   String get settingsSkipBackLengthDescription =>
-      'Berapa detik untuk melompat mundur setelah menekan tombol mundur.';
+      'Berapa detik untuk melompat mundur setelah menekan tombol rewind.';
 
   @override
   String get settingsOneSecond => '1 detik';
@@ -7230,22 +7221,22 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get settingsSkipForwardLengthDescription =>
-      'Berapa detik untuk melompat ke depan setelah menekan tombol maju cepat.';
+      'Berapa detik untuk melompat maju setelah menekan tombol fast forward.';
 
   @override
   String get settingsBitstreamAc3ToExternalDecoder =>
       'Bitstream AC3 ke dekoder eksternal';
 
   @override
-  String get settingsCinemaMode => 'Mode Bioskop';
+  String get settingsCinemaMode => 'Mode Sinema';
 
   @override
   String get settingsCinemaModeSubtitle =>
-      'Putar cuplikan/pra-putar sebelum fitur utama';
+      'Putar trailer/preroll sebelum fitur utama';
 
   @override
   String get settingsNextUpDisplayDescription =>
-      'Extended menampilkan kartu lengkap dengan karya seni episode dan deskripsi. Minimal menunjukkan hamparan hitung mundur yang ringkas. Disabled menyembunyikan prompt sepenuhnya.';
+      'Extended menampilkan kartu penuh dengan artwork episode dan deskripsi. Minimal menampilkan overlay hitung mundur yang ringkas. Disabled menyembunyikan prompt sepenuhnya.';
 
   @override
   String get settingsShort => 'Pendek';
@@ -7254,29 +7245,29 @@ class AppLocalizationsId extends AppLocalizations {
   String get settingsLong => 'Panjang';
 
   @override
-  String get settingsVeryLong => 'Sangat lama';
+  String get settingsVeryLong => 'Sangat Panjang';
 
   @override
   String get settingsVideoStartDelay => 'Penundaan Mulai Video';
 
   @override
   String settingsMillisecondsValue(int value) {
-    return '$value ms';
+    return '$value md';
   }
 
   @override
-  String get settingsLiveTvDirect => 'TV Langsung Langsung';
+  String get settingsLiveTvDirect => 'Live TV Direct';
 
   @override
   String get settingsLiveTvDirectSubtitle =>
-      'Aktifkan pemutaran langsung untuk TV Langsung';
+      'Aktifkan direct play untuk Live TV';
 
   @override
   String get settingsOpenGroups => 'Buka Grup';
 
   @override
   String get settingsOpenGroupsSubtitle =>
-      'Membuat, bergabung, atau mengelola grup SyncPlay';
+      'Buat, gabung, atau kelola grup SyncPlay';
 
   @override
   String get settingsSyncplayEnabled => 'SyncPlay Diaktifkan';
@@ -7289,14 +7280,14 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get settingsSyncplayButtonSubtitle =>
-      'Tampilkan tombol SyncPlay di bilah navigasi';
+      'Tampilkan tombol SyncPlay pada bilah navigasi';
 
   @override
   String get settingsSyncplayAdvancedCorrection => 'Koreksi Lanjutan';
 
   @override
   String get settingsSyncplayAdvancedCorrectionSubtitle =>
-      'Aktifkan logika sinkronisasi yang terperinci';
+      'Aktifkan logika sinkronisasi yang lebih terperinci';
 
   @override
   String get settingsSyncplaySyncCorrection => 'Koreksi Sinkronisasi';
@@ -7306,18 +7297,18 @@ class AppLocalizationsId extends AppLocalizations {
       'Sesuaikan pemutaran secara otomatis agar tetap sinkron';
 
   @override
-  String get settingsSyncplaySpeedToSync => 'Kecepatan untuk Menyinkronkan';
+  String get settingsSyncplaySpeedToSync => 'Kecepatan untuk Sinkronisasi';
 
   @override
   String get settingsSyncplaySpeedToSyncSubtitle =>
-      'Gunakan penyesuaian kecepatan pemutaran untuk menyinkronkan';
+      'Gunakan penyesuaian kecepatan pemutaran untuk sinkronisasi';
 
   @override
-  String get settingsSyncplaySkipToSync => 'Lewati ke Sinkronisasi';
+  String get settingsSyncplaySkipToSync => 'Lewati untuk Sinkronisasi';
 
   @override
   String get settingsSyncplaySkipToSyncSubtitle =>
-      'Gunakan upaya untuk menyinkronkan';
+      'Gunakan seek untuk sinkronisasi';
 
   @override
   String get settingsSyncplayMinimumSpeedDelay => 'Penundaan Kecepatan Minimum';
@@ -7333,16 +7324,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get settingsSyncplayMinimumSkipDelay => 'Penundaan Lewati Minimum';
 
   @override
-  String get settingsSyncplayExtraOffset => 'SyncPlay Perimbangan Ekstra';
+  String get settingsSyncplayExtraOffset => 'Offset Ekstra SyncPlay';
 
   @override
-  String get onNow => 'Aktif Sekarang';
+  String get onNow => 'Sedang Tayang';
 
   @override
   String get collections => 'Koleksi';
 
   @override
-  String get lastPlayed => 'Terakhir Dimainkan';
+  String get lastPlayed => 'Terakhir Diputar';
 
   @override
   String libraryNameWithServer(String libraryName, String serverName) {
@@ -7351,407 +7342,414 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String latestLibraryName(String libraryName) {
-    return 'Latest $libraryName';
+    return 'Terbaru $libraryName';
   }
 
   @override
-  String get autoplayNextEpisode => 'Autoplay Next Episode';
+  String recentlyReleasedLibraryName(String libraryName) {
+    return 'Recently Released $libraryName';
+  }
+
+  @override
+  String get autoplayNextEpisode => 'Putar Otomatis Episode Berikutnya';
 
   @override
   String get autoplayNextEpisodeSubtitle =>
-      'Automatically play the next episode when available.';
+      'Putar otomatis episode berikutnya jika tersedia.';
 
   @override
-  String get skipSilenceTitle => 'Skip silence';
+  String get skipSilenceTitle => 'Lewati keheningan';
 
   @override
   String get skipSilenceSubtitle =>
-      'Automatically skip silent audio segments when supported by the stream.';
+      'Lewati segmen audio hening secara otomatis saat didukung oleh stream.';
 
   @override
-  String get allowExternalAudioEffectsTitle => 'Allow external audio effects';
+  String get allowExternalAudioEffectsTitle => 'Izinkan efek audio eksternal';
 
   @override
   String get allowExternalAudioEffectsSubtitle =>
-      'Allow equalizer and effects apps (e.g. Wavelet) to attach to Media3 playback sessions.';
+      'Izinkan equalizer dan aplikasi efek (mis. Wavelet) terhubung ke sesi pemutaran Media3.';
 
   @override
-  String get disableTunnelingTitle => 'Disable tunneling';
+  String get disableTunnelingTitle => 'Nonaktifkan tunneling';
 
   @override
   String get disableTunnelingSubtitle =>
-      'Force non-tunneled playback. Useful on devices with tunneling audio/video discontinuities.';
+      'Paksa pemutaran non-tunneled. Berguna pada perangkat dengan diskontinuitas audio/video tunneling.';
 
   @override
-  String get enableTunnelingTitle => 'Enable tunneling';
+  String get enableTunnelingTitle => 'Aktifkan tunneling';
 
   @override
   String get enableTunnelingSubtitle =>
-      'Advanced. Routes audio and video through a coupled hardware path. Off by default because it causes audio/video dropouts on some devices.';
+      'Lanjutan. Merutekan audio dan video melalui jalur perangkat keras yang terhubung. Nonaktif secara default karena menyebabkan dropout audio/video pada beberapa perangkat.';
 
   @override
-  String get mapDolbyVisionP7Title => 'Map Dolby Vision profile 7 to HEVC';
+  String get mapDolbyVisionP7Title => 'Petakan Dolby Vision profile 7 ke HEVC';
 
   @override
   String get mapDolbyVisionP7Subtitle =>
-      'Play Dolby Vision profile 7 streams as HDR10-compatible HEVC on non-DV devices.';
+      'Putar stream Dolby Vision profile 7 sebagai HEVC yang kompatibel dengan HDR10 pada perangkat non-DV.';
 
   @override
-  String get subtitlesUseEmbeddedStyles => 'Use embedded subtitle styles';
+  String get subtitlesUseEmbeddedStyles => 'Gunakan gaya subtitle tertanam';
 
   @override
   String get subtitlesUseEmbeddedStylesSubtitle =>
-      'Apply colours, fonts, and positioning embedded in the subtitle track. Disable to use your caption style preferences instead.';
+      'Terapkan warna, font, dan posisi yang tertanam di track subtitle. Nonaktifkan untuk menggunakan preferensi gaya caption Anda.';
 
   @override
   String get subtitlesUseEmbeddedFontSizes =>
-      'Use embedded subtitle font sizes';
+      'Gunakan ukuran font subtitle tertanam';
 
   @override
   String get subtitlesUseEmbeddedFontSizesSubtitle =>
-      'Apply font-size hints embedded in the subtitle track. Disable to use the subtitle size from your style preferences.';
+      'Terapkan petunjuk ukuran font yang tertanam di track subtitle. Nonaktifkan untuk menggunakan ukuran subtitle dari preferensi gaya Anda.';
 
   @override
-  String get showMediaDetailsOnLibraryPage => 'Show Media Details';
+  String get showMediaDetailsOnLibraryPage => 'Tampilkan Detail Media';
 
   @override
   String get showMediaDetailsOnLibraryPageDescription =>
-      'Show details of the selected item at the top of Library pages.';
+      'Tampilkan detail item yang dipilih di bagian atas halaman Pustaka.';
 
   @override
-  String get useDetailedSubHeadings => 'Use Detailed Sub-Headings';
+  String get useDetailedSubHeadings => 'Gunakan Subjudul Terperinci';
 
   @override
   String get useDetailedSubHeadingsDescription =>
-      'Show detailed or minimal subrow on Library pages.';
+      'Tampilkan subbaris terperinci atau minimal pada halaman Pustaka.';
 
   @override
-  String get savedThemesDeleteDialogTitle => 'Delete saved theme?';
+  String get savedThemesDeleteDialogTitle => 'Hapus tema tersimpan?';
 
   @override
   String savedThemesDeleteDialogMessage(String themeName) {
-    return 'Remove \"$themeName\" from this device cache?';
+    return 'Hapus \"$themeName\" dari cache perangkat ini?';
   }
 
   @override
-  String get themeStore => 'Theme Store';
+  String get themeStore => 'Toko Tema';
 
   @override
-  String get themeStoreSubtitle => 'Browse and save community themes';
+  String get themeStoreSubtitle => 'Telusuri dan simpan tema komunitas';
 
   @override
   String get themeStoreDescription =>
-      'Save a theme to use it like your other saved themes.';
+      'Simpan tema untuk menggunakannya seperti tema tersimpan lainnya.';
 
   @override
-  String get themeStoreEmpty => 'No themes are available right now.';
+  String get themeStoreEmpty => 'Tidak ada tema yang tersedia saat ini.';
 
   @override
   String get themeStoreLoadFailed =>
-      'Couldn\'t load the Theme Store. Check your connection and try again.';
+      'Tidak dapat memuat Toko Tema. Periksa koneksi Anda dan coba lagi.';
 
   @override
-  String get themeStoreSave => 'Save';
+  String get themeStoreSave => 'Simpan';
 
   @override
-  String get themeStoreSaveAndApply => 'Save & apply';
+  String get themeStoreSaveAndApply => 'Simpan & terapkan';
 
   @override
-  String get themeStoreSaved => 'Saved';
+  String get themeStoreSaved => 'Tersimpan';
 
   @override
-  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
+  String get themeStoreInvalidMessage => 'Tema ini tidak dapat dimuat.';
 
   @override
   String themeStoreSavedMessage(String themeName) {
-    return 'Saved \"$themeName\".';
+    return '\"$themeName\" disimpan.';
   }
 
   @override
   String savedThemesDeletedMessage(String themeName) {
-    return 'Deleted \"$themeName\" from this device.';
+    return '\"$themeName\" dihapus dari perangkat ini.';
   }
 
   @override
   String savedThemesDeleteFailedMessage(String themeName) {
-    return 'Could not delete \"$themeName\".';
+    return 'Tidak dapat menghapus \"$themeName\".';
   }
 
   @override
-  String get savedThemesTitle => 'Saved themes';
+  String get savedThemesTitle => 'Tema tersimpan';
 
   @override
   String get savedThemesDescription =>
-      'These are themes downloaded from the Moonfin plugin for the current server. Deleting removes only this local copy.';
+      'Ini adalah tema yang diunduh dari plugin Moonfin untuk server saat ini. Menghapusnya hanya menghapus salinan lokal ini.';
 
   @override
-  String get savedThemesEmpty => 'No saved themes were found for this server.';
+  String get savedThemesEmpty =>
+      'Tidak ada tema tersimpan yang ditemukan untuk server ini.';
 
   @override
   String savedThemesCurrentThemeId(String themeId) {
-    return '$themeId • Currently active';
+    return '$themeId -  Saat ini aktif';
   }
 
   @override
-  String get savedThemesDeleteTooltip => 'Delete saved theme';
+  String get savedThemesDeleteTooltip => 'Hapus tema tersimpan';
 
   @override
   String get savedThemesManageSubtitle =>
-      'Manage downloaded plugin themes on this device';
+      'Kelola tema plugin yang diunduh pada perangkat ini';
 
   @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
+  String get homeScreenSectionsTitle => 'Bagian Layar Beranda';
 
   @override
-  String get themeEditor => 'Theme Editor';
+  String get themeEditor => 'Editor Tema';
 
   @override
-  String get themeEditorSubtitle =>
-      'Open the Moonfin Theme Editor in your browser';
+  String get themeEditorSubtitle => 'Buka Editor Tema Moonfin di browser Anda';
 
   @override
-  String get homeScreen => 'Home Screen';
+  String get homeScreen => 'Layar Beranda';
 
   @override
-  String get bottomBar => 'Bottom Bar';
+  String get bottomBar => 'Bilah Bawah';
 
   @override
-  String get homeRowsStyleClassic => 'Classic';
+  String get homeRowsStyleClassic => 'Klasik';
 
   @override
   String get homeRowsStyleModern => 'Modern';
 
   @override
-  String get homeRowsSection => 'Home Rows';
+  String get homeRowsSection => 'Baris Beranda';
 
   @override
-  String get homeRowDisplay => 'Home Row Display';
+  String get homeRowDisplay => 'Tampilan Baris Beranda';
 
   @override
-  String get homeRowSections => 'Home Row Sections';
+  String get homeRowSections => 'Bagian Baris Beranda';
 
   @override
-  String get homeRowToggles => 'Home Row Toggles';
+  String get homeRowToggles => 'Toggle Baris Beranda';
 
   @override
   String get homeRowTogglesSubtitle =>
-      'Enable or disable different home row categories';
+      'Aktifkan atau nonaktifkan berbagai kategori baris beranda';
 
   @override
   String get homeRowTogglesDescription =>
-      'Enable the following toggles to display the rows in Home Sections.';
+      'Aktifkan toggle berikut untuk menampilkan baris di Bagian Beranda.';
 
   @override
-  String get rowsType => 'Rows Type';
+  String get rowsType => 'Tipe Baris';
 
   @override
   String get rowsTypeDescription =>
-      'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
+      'Klasik mempertahankan tipe gambar per baris dan overlay info. Modern menggunakan baris potret-ke-backdrop.';
 
   @override
-  String get displayFavoritesRows => 'Display Favorites Rows';
+  String get displayFavoritesRows => 'Tampilkan Baris Favorit';
 
   @override
   String get displayFavoritesRowsSubtitle =>
-      'Show Favorite Movies, Series, and other favorite rows in Home Sections.';
+      'Tampilkan baris Film Favorit, Serial Favorit, dan baris favorit lainnya di Bagian Beranda.';
 
   @override
-  String get favoritesRowSorting => 'Favorites Row Sorting';
+  String get favoritesRowSorting => 'Pengurutan Baris Favorit';
 
   @override
   String get favoritesRowSortingDescription =>
-      'Sort Favorites rows by date added, release date, alphabetically, and more.';
+      'Urutkan baris Favorit berdasarkan tanggal ditambahkan, tanggal rilis, alfabetis, dan lainnya.';
 
   @override
-  String get displayCollectionsRows => 'Display Collections Rows';
+  String get displayCollectionsRows => 'Tampilkan Baris Koleksi';
 
   @override
   String get displayCollectionsRowsSubtitle =>
-      'Show Collections rows in Home Sections.';
+      'Tampilkan baris Koleksi di Bagian Beranda.';
 
   @override
-  String get collectionsRowSorting => 'Collections Row Sorting';
+  String get collectionsRowSorting => 'Pengurutan Baris Koleksi';
 
   @override
   String get collectionsRowSortingDescription =>
-      'Sort Collections rows by date added, release date, alphabetically, and more.';
+      'Urutkan baris Koleksi berdasarkan tanggal ditambahkan, tanggal rilis, alfabetis, dan lainnya.';
 
   @override
-  String get displayGenresRows => 'Display Genres Rows';
+  String get displayGenresRows => 'Tampilkan Baris Genre';
 
   @override
-  String get displayGenresRowsSubtitle => 'Show Genres rows in Home Sections.';
+  String get displayGenresRowsSubtitle =>
+      'Tampilkan baris Genre di Bagian Beranda.';
 
   @override
-  String get genresRowSorting => 'Genres Row Sorting';
+  String get genresRowSorting => 'Pengurutan Baris Genre';
 
   @override
   String get genresRowSortingDescription =>
-      'Sort Genres rows by date added, release date, alphabetically, and more.';
+      'Urutkan baris Genre berdasarkan tanggal ditambahkan, tanggal rilis, alfabetis, dan lainnya.';
 
   @override
-  String get genresRowItems => 'Genres Row Items';
+  String get genresRowItems => 'Item Baris Genre';
 
   @override
   String get genresRowItemsDescription =>
-      'Show Movies, Series, or both in Genres rows.';
+      'Tampilkan Film, Serial, atau keduanya di baris Genre.';
 
   @override
-  String get displayPlaylistsRows => 'Display Playlist Rows';
+  String get displayPlaylistsRows => 'Tampilkan Baris Playlist';
 
   @override
   String get displayPlaylistsRowsSubtitle =>
-      'Show Playlist rows in Home Sections.';
+      'Tampilkan baris Playlist di Bagian Beranda.';
 
   @override
-  String get playlistsRowSorting => 'Playlist Row Sorting';
+  String get playlistsRowSorting => 'Pengurutan Baris Playlist';
 
   @override
   String get playlistsRowSortingDescription =>
-      'Sort Playlist rows by date added, release date, alphabetically, and more.';
+      'Urutkan baris Playlist berdasarkan tanggal ditambahkan, tanggal rilis, alfabetis, dan lainnya.';
 
   @override
-  String get displayAudioRows => 'Display Audio Rows';
+  String get displayAudioRows => 'Tampilkan Baris Audio';
 
   @override
-  String get displayAudioRowsSubtitle => 'Show Audio rows in Home Sections.';
+  String get displayAudioRowsSubtitle =>
+      'Tampilkan baris Audio di Bagian Beranda.';
 
   @override
-  String get audioRowsSorting => 'Audio Rows sorting';
+  String get audioRowsSorting => 'Pengurutan Baris Audio';
 
   @override
   String get audioRowsSortingDescription =>
-      'Sort Audio rows by date added, release date, alphabetically, and more.';
+      'Urutkan baris Audio berdasarkan tanggal ditambahkan, tanggal rilis, alfabetis, dan lainnya.';
 
   @override
-  String get audioPlaylists => 'Audio Playlists';
+  String get audioPlaylists => 'Playlist Audio';
 
   @override
-  String get displaySeerrRows => 'Display Seerr Discovery Rows';
+  String get displaySeerrRows => 'Tampilkan Baris Discovery Seerr';
 
   @override
   String get displaySeerrRowsSubtitle =>
-      'Show Seerr discovery rows in Home Sections.';
+      'Tampilkan baris discovery Seerr di Bagian Beranda.';
 
   @override
-  String get appearance => 'Appearance';
+  String get appearance => 'Tampilan';
 
   @override
-  String get cardSize => 'Card Size';
+  String get cardSize => 'Ukuran Tampilan Kartu Baris Beranda';
 
   @override
-  String get externalPlayerApp => 'External player app';
+  String get externalPlayerApp => 'Aplikasi pemutar eksternal';
 
   @override
   String get externalPlayerAppDescription =>
-      'Set external player to enable long-press play option';
+      'Atur pemutar eksternal untuk mengaktifkan opsi putar dengan tekan lama';
 
   @override
   String get externalPlayerAskEachTimeSubtitle =>
-      'Show app chooser when playback starts.';
+      'Tampilkan pemilih aplikasi saat pemutaran dimulai.';
 
   @override
-  String get loadingInstalledPlayers => 'Loading installed players...';
+  String get loadingInstalledPlayers => 'Memuat pemutar yang terinstal...';
 
   @override
-  String get connection => 'Connection';
+  String get connection => 'Koneksi';
 
   @override
-  String get audioTranscodeTarget => 'Audio Transcode Target';
+  String get audioTranscodeTarget => 'Target Transcode Audio';
 
   @override
   String get passthrough => 'Passthrough';
 
   @override
-  String get supportedOnThisDevice => 'Supported on this device';
+  String get supportedOnThisDevice => 'Didukung pada perangkat ini';
 
   @override
-  String get notSupportedOnThisDevice => 'Not Supported on this device';
+  String get notSupportedOnThisDevice => 'Tidak Didukung pada perangkat ini';
 
   @override
-  String get settingsAudioDtsXPassthrough => 'DTS:X (DTS UHD) Passthrough';
+  String get settingsAudioDtsXPassthrough => 'Passthrough DTS:X (DTS UHD)';
 
   @override
   String get settingsAudioBitstreamDtsXToExternalDecoder =>
-      'Bitstream DTS:X (DTS UHD) to external decoder.';
+      'Bitstream DTS:X (DTS UHD) ke dekoder eksternal.';
 
   @override
   String get settingsAudioTrueHdJocPassthrough =>
-      'TrueHD with Atmos (JOC) Passthrough';
+      'Passthrough TrueHD dengan Atmos (JOC)';
 
   @override
-  String get mediaPlayerBehavior => 'Media Player Behavior';
+  String get mediaPlayerBehavior => 'Perilaku Pemutar Media';
 
   @override
-  String get playbackEnhancements => 'Playback Enhancements';
+  String get playbackEnhancements => 'Peningkatan Pemutaran';
 
   @override
-  String get alwaysOn => 'Always on.';
+  String get alwaysOn => 'Selalu aktif.';
 
   @override
   String get replaceSkipOutroWithNextUpDisplay =>
-      'Replace Skip Outro with Next Up Display';
+      'Ganti Skip Outro dengan Tampilan Next Up';
 
   @override
   String get replaceSkipOutroWithNextUpDisplaySubtitle =>
-      'Show the Next Up overlay instead of the Skip Outro button.';
+      'Tampilkan overlay Next Up alih-alih tombol Skip Outro.';
 
   @override
-  String get playerRouting => 'Player Routing';
+  String get playerRouting => 'Perutean Pemutar';
 
   @override
-  String get preferSoftwareDecoders => 'Prefer software decoders';
+  String get preferSoftwareDecoders => 'Utamakan dekoder perangkat lunak';
 
   @override
   String get preferSoftwareDecodersSubtitle =>
-      'Use FFmpeg (audio) and libgav1 (AV1) before hardware decoders. Disable if HDMI audio passthrough breaks.';
+      'Gunakan FFmpeg (audio) dan libgav1 (AV1) sebelum dekoder perangkat keras. Nonaktifkan jika passthrough audio HDMI bermasalah.';
 
   @override
-  String get useExternalPlayer => 'Use external player';
+  String get useExternalPlayer => 'Selalu gunakan pemutar eksternal';
 
   @override
   String get useExternalPlayerSubtitle =>
-      'Open video playback in your selected external app on Android TV.';
+      'Buka pemutaran video di aplikasi eksternal yang Anda pilih pada Android TV.';
 
   @override
-  String get automaticQueuing => 'Automatic Queuing';
+  String get automaticQueuing => 'Pengantrean Otomatis';
 
   @override
-  String get preferSdhSubtitles => 'Prefer SDH subtitles';
+  String get preferSdhSubtitles => 'Utamakan subtitle SDH';
 
   @override
   String get preferSdhSubtitlesSubtitle =>
-      'Prioritize SDH/CC subtitle tracks when auto-selecting.';
+      'Prioritaskan track subtitle SDH/CC saat memilih otomatis.';
 
   @override
-  String get webDiagnostics => 'Web diagnostics';
+  String get webDiagnostics => 'Diagnostik web';
 
   @override
-  String get webDiagnosticsTitle => 'Moonfin Web Diagnostics';
+  String get webDiagnosticsTitle => 'Diagnostik Web Moonfin';
 
   @override
   String get webDiagnosticsIntro =>
-      'Use this page to diagnose browser connectivity issues (CORS, mixed content, and discovery settings).';
+      'Gunakan halaman ini untuk mendiagnosis masalah konektivitas browser (CORS, mixed content, dan pengaturan discovery).';
 
   @override
   String get webDiagnosticsDetectedMixedContentFailure =>
-      'Detected Mixed-Content Failure';
+      'Kegagalan Mixed Content Terdeteksi';
 
   @override
   String get webDiagnosticsDetectedCorsPreflightFailure =>
-      'Detected CORS/Preflight Failure';
+      'Kegagalan CORS/Preflight Terdeteksi';
 
   @override
   String get webDiagnosticsMixedContentFailureBody =>
-      'Moonfin detected an HTTPS page trying to call an HTTP server URL. Browsers block this request before it reaches your server.';
+      'Moonfin mendeteksi halaman HTTPS yang mencoba memanggil URL server HTTP. Browser memblokir permintaan ini sebelum mencapai server Anda.';
 
   @override
   String get webDiagnosticsCorsFailureBody =>
-      'Moonfin detected a browser-level request failure that is commonly caused by missing CORS or preflight headers on the media server.';
+      'Moonfin mendeteksi kegagalan permintaan pada tingkat browser yang umumnya disebabkan oleh header CORS atau preflight yang tidak ada pada server media.';
 
   @override
   String webDiagnosticsTargetUrl(String url) {
-    return 'Target URL: $url';
+    return 'URL Target: $url';
   }
 
   @override
@@ -7760,272 +7758,274 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get webDiagnosticsCurrentRuntimeContext => 'Current Runtime Context';
+  String get webDiagnosticsCurrentRuntimeContext => 'Konteks Runtime Saat Ini';
 
   @override
   String get webDiagnosticsOrigin => 'Origin';
 
   @override
-  String get webDiagnosticsScheme => 'Scheme';
+  String get webDiagnosticsScheme => 'Skema';
 
   @override
-  String get webDiagnosticsPluginMode => 'Plugin Mode';
+  String get webDiagnosticsPluginMode => 'Mode Plugin';
 
   @override
-  String get webDiagnosticsWebRtcScan => 'WebRTC Scan';
+  String get webDiagnosticsWebRtcScan => 'Pemindaian WebRTC';
 
   @override
-  String get webDiagnosticsForcedServerUrl => 'Forced Server URL';
+  String get webDiagnosticsForcedServerUrl => 'URL Server Paksa';
 
   @override
-  String get webDiagnosticsDefaultServerUrl => 'Default Server URL';
+  String get webDiagnosticsDefaultServerUrl => 'URL Server Default';
 
   @override
-  String get webDiagnosticsDiscoveryProxyUrl => 'Discovery Proxy URL';
+  String get webDiagnosticsDiscoveryProxyUrl => 'URL Proxy Discovery';
 
   @override
-  String get notConfigured => 'not configured';
+  String get notConfigured => 'tidak dikonfigurasi';
 
   @override
   String get webDiagnosticsMixedContent => 'Mixed Content';
 
   @override
   String get webDiagnosticsMixedContentDetected =>
-      'This page is loaded over HTTPS, but one or more configured URLs are HTTP. Browsers block HTTPS pages from calling HTTP APIs.';
+      'Halaman ini dimuat melalui HTTPS, tetapi satu atau lebih URL yang dikonfigurasi menggunakan HTTP. Browser memblokir halaman HTTPS untuk memanggil API HTTP.';
 
   @override
   String get webDiagnosticsMixedContentFix =>
-      'Fix: serve your media server or proxy endpoint via HTTPS, or load Moonfin over HTTP on trusted local networks only.';
+      'Perbaikan: sajikan server media atau endpoint proxy Anda melalui HTTPS, atau muat Moonfin melalui HTTP hanya pada jaringan lokal tepercaya.';
 
   @override
   String get webDiagnosticsNoMixedContentDetected =>
-      'No obvious mixed-content configuration detected from current runtime settings.';
+      'Tidak ada konfigurasi mixed content yang jelas terdeteksi dari pengaturan runtime saat ini.';
 
   @override
-  String get webDiagnosticsCorsChecklist => 'CORS Checklist';
+  String get webDiagnosticsCorsChecklist => 'Daftar Periksa CORS';
 
   @override
   String get webDiagnosticsCorsChecklistItem1 =>
-      '• Allow the browser origin in Access-Control-Allow-Origin.';
+      '-  Izinkan origin browser di Access-Control-Allow-Origin.';
 
   @override
   String get webDiagnosticsCorsChecklistItem2 =>
-      '• Include Authorization, X-Emby-Authorization, and X-Emby-Token in Access-Control-Allow-Headers.';
+      '-  Sertakan Authorization, X-Emby-Authorization, dan X-Emby-Token di Access-Control-Allow-Headers.';
 
   @override
   String get webDiagnosticsCorsChecklistItem3 =>
-      '• Expose Content-Range and Accept-Ranges for streaming and seek behavior.';
+      '-  Ekspos Content-Range dan Accept-Ranges untuk perilaku streaming dan seek.';
 
   @override
   String get webDiagnosticsCorsChecklistItem4 =>
-      '• Return 204 to OPTIONS preflight requests.';
+      '-  Kembalikan 204 untuk permintaan preflight OPTIONS.';
 
   @override
   String get webDiagnosticsHeaderSnippetTitle =>
-      'Example Header Snippet (nginx-style)';
+      'Contoh Potongan Header (gaya nginx)';
 
   @override
-  String get note => 'Note';
+  String get note => 'Catatan';
 
   @override
   String get webDiagnosticsNonWebNote =>
-      'This diagnostics route is intended for web builds. If you are seeing this on another platform, these checks may not apply.';
+      'Rute diagnostik ini ditujukan untuk build web. Jika Anda melihat ini di platform lain, pemeriksaan ini mungkin tidak berlaku.';
 
   @override
-  String get backToServerSelect => 'Back To Server Select';
+  String get backToServerSelect => 'Kembali ke Pilih Server';
 
   @override
-  String get signOutAllUsers => 'Sign Out All Users';
+  String get signOutAllUsers => 'Keluar dari Semua Pengguna';
 
   @override
   String get voiceSearchPermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied. Enable it in system settings.';
+      'Izin mikrofon ditolak secara permanen. Aktifkan di pengaturan sistem.';
 
   @override
   String get voiceSearchPermissionRequired =>
-      'Microphone permission is required for voice search.';
+      'Izin mikrofon diperlukan untuk pencarian suara.';
 
   @override
-  String get voiceSearchNoMatch => 'Did not catch that. Try again.';
+  String get voiceSearchNoMatch => 'Tidak tertangkap. Coba lagi.';
 
   @override
-  String get voiceSearchNoSpeechDetected => 'No speech detected.';
+  String get voiceSearchNoSpeechDetected => 'Tidak ada ucapan yang terdeteksi.';
 
   @override
-  String get voiceSearchMicrophoneError => 'Microphone error.';
+  String get voiceSearchMicrophoneError => 'Kesalahan mikrofon.';
 
   @override
-  String get voiceSearchNeedsInternet => 'Voice search needs internet.';
+  String get voiceSearchNeedsInternet => 'Pencarian suara memerlukan internet.';
 
   @override
-  String get voiceSearchServiceBusy => 'Voice service is busy. Try again.';
+  String get voiceSearchServiceBusy => 'Layanan suara sedang sibuk. Coba lagi.';
 
   @override
   String get microphonePermissionPermanentlyDenied =>
-      'Microphone permission is permanently denied.';
+      'Izin mikrofon ditolak secara permanen.';
 
   @override
-  String get microphonePermissionDenied => 'Microphone permission is denied.';
+  String get microphonePermissionDenied => 'Izin mikrofon ditolak.';
 
   @override
   String get speechRecognitionUnavailable =>
-      'Speech recognition is unavailable on this device.';
+      'Pengenalan suara tidak tersedia di perangkat ini.';
 
   @override
-  String get openIosRoutePicker => 'Open iOS route picker';
+  String get openIosRoutePicker => 'Buka pemilih rute iOS';
 
   @override
   String get airPlayRoutePickerUnavailable =>
-      'AirPlay route picker is unavailable on this device.';
+      'Pemilih rute AirPlay tidak tersedia di perangkat ini.';
 
   @override
-  String get videos => 'Videos';
+  String get videos => 'Video';
 
   @override
-  String get trailers => 'Trailers';
+  String get trailers => 'Trailer';
 
   @override
-  String get programs => 'Programs';
+  String get programs => 'Program';
 
   @override
-  String get songs => 'Songs';
+  String get songs => 'Lagu';
 
   @override
-  String get photoAlbums => 'Photo Albums';
+  String get photoAlbums => 'Album Foto';
 
   @override
-  String get photos => 'Photos';
+  String get photos => 'Foto';
 
   @override
-  String get people => 'People';
+  String get people => 'Orang';
 
   @override
-  String get recentlyReleasedEpisodes => 'Recently Released Episodes';
+  String get recentlyReleasedEpisodes => 'Episode yang Baru Dirilis';
 
   @override
-  String get watchAgain => 'Watch Again';
+  String get watchAgain => 'Tonton Lagi';
 
   @override
-  String get guestAppearances => 'Guest Appearances';
+  String get guestAppearances => 'Penampilan Tamu';
 
   @override
-  String get appearancesSeerr => 'Appearances (Seerr)';
+  String get appearancesSeerr => 'Penampilan (Seerr)';
 
   @override
-  String get watchWithGroup => 'Watch with group';
+  String get watchWithGroup => 'Tonton bersama grup';
 
   @override
-  String get errors => 'Errors';
+  String get errors => 'Kesalahan';
 
   @override
-  String get warnings => 'Warnings';
+  String get warnings => 'Peringatan';
 
   @override
   String get disk => 'Disk';
 
   @override
-  String get openInBrowser => 'Open in Browser';
+  String get openInBrowser => 'Buka di Browser';
 
   @override
   String get embeddedBrowserNotAvailable =>
-      'Embedded browser is not available on this platform.';
+      'Browser tertanam tidak tersedia di platform ini.';
 
   @override
   String get adminRestartServerConfirmation =>
-      'Are you sure you want to restart the server?';
+      'Apakah Anda yakin ingin memulai ulang server?';
 
   @override
   String get adminShutdownServerConfirmation =>
-      'Are you sure you want to shut down the server? You will need to restart it manually.';
+      'Apakah Anda yakin ingin mematikan server? Anda harus menyalakannya kembali secara manual.';
 
   @override
   String get internal => 'Internal';
 
   @override
-  String get idle => 'Idle';
+  String get idle => 'Diam';
 
   @override
   String get os => 'OS';
 
   @override
-  String get adminNoUsersFound => 'No users found';
+  String get adminNoUsersFound => 'Tidak ada pengguna yang ditemukan';
 
   @override
-  String get adminNoUsersMatchSearch => 'No users match your search';
+  String get adminNoUsersMatchSearch =>
+      'Tidak ada pengguna yang cocok dengan pencarian Anda';
 
   @override
-  String get adminNoDevicesFound => 'No devices found';
+  String get adminNoDevicesFound => 'Tidak ada perangkat yang ditemukan';
 
   @override
   String get adminNoDevicesMatchCurrentFilters =>
-      'No devices match the current filters';
+      'Tidak ada perangkat yang cocok dengan filter saat ini';
 
   @override
-  String get passwordSet => 'Password set';
+  String get passwordSet => 'Kata sandi ditetapkan';
 
   @override
-  String get noPasswordConfigured => 'No password configured';
+  String get noPasswordConfigured => 'Tidak ada kata sandi yang dikonfigurasi';
 
   @override
-  String get remoteAccess => 'Remote Access';
+  String get remoteAccess => 'Akses Jarak Jauh';
 
   @override
-  String get localOnly => 'Local Only';
+  String get localOnly => 'Hanya Lokal';
 
   @override
-  String get adminMediaAnalyticsLoadFailed => 'Failed to load media analytics';
+  String get adminMediaAnalyticsLoadFailed => 'Gagal memuat analitik media';
 
   @override
   String get analyticsCombinedAcrossLibraries =>
-      'Combined analytics across all media libraries.';
+      'Analitik gabungan di seluruh pustaka media.';
 
   @override
-  String get analyticsTopArtists => 'Top Artists';
+  String get analyticsTopArtists => 'Artis Teratas';
 
   @override
-  String get analyticsTopAuthors => 'Top Authors';
+  String get analyticsTopAuthors => 'Penulis Teratas';
 
   @override
-  String get analyticsTopContributors => 'Top Contributors';
+  String get analyticsTopContributors => 'Kontributor Teratas';
 
   @override
   String analyticsLibrariesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Libraries',
-      one: '1 Library',
+      other: '$count Pustaka',
+      one: '1 Pustaka',
     );
     return '$_temp0';
   }
 
   @override
   String get analyticsNoIndexedMediaTotals =>
-      'No indexed media totals are available for this selection yet.';
+      'Belum ada total media terindeks yang tersedia untuk pilihan ini.';
 
   @override
-  String get analyticsLibraryDetails => 'Library Details';
+  String get analyticsLibraryDetails => 'Detail Pustaka';
 
   @override
-  String get analyticsLibraryBreakdown => 'Library Breakdown';
+  String get analyticsLibraryBreakdown => 'Rincian Pustaka';
 
   @override
-  String get analyticsNoLibrariesAvailable => 'No libraries are available.';
+  String get analyticsNoLibrariesAvailable =>
+      'Tidak ada pustaka yang tersedia.';
 
   @override
-  String get adminServerAdministrationTitle => 'Server Administration';
+  String get adminServerAdministrationTitle => 'Administrasi Server';
 
   @override
   String get adminServerPathData => 'Data';
 
   @override
-  String get adminServerPathImageCache => 'Image Cache';
+  String get adminServerPathImageCache => 'Cache Gambar';
 
   @override
   String get adminServerPathCache => 'Cache';
 
   @override
-  String get adminServerPathLogs => 'Logs';
+  String get adminServerPathLogs => 'Log';
 
   @override
   String get adminServerPathMetadata => 'Metadata';
@@ -8038,51 +8038,51 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get adminNoServerPathsReturned =>
-      'No server paths returned by this server.';
+      'Server ini tidak mengembalikan path server.';
 
   @override
   String adminPercentUsed(int percent) {
-    return '$percent% used';
+    return '$percent% terpakai';
   }
 
   @override
-  String get userActivity => 'User Activity';
+  String get userActivity => 'Aktivitas Pengguna';
 
   @override
-  String get systemEvents => 'System Events';
+  String get systemEvents => 'Peristiwa Sistem';
 
   @override
-  String get needsAttention => 'Needs Attention';
+  String get needsAttention => 'Perlu Perhatian';
 
   @override
   String get adminDrawerSectionServer => 'Server';
 
   @override
-  String get adminDrawerSectionPlayback => 'Playback';
+  String get adminDrawerSectionPlayback => 'Pemutaran';
 
   @override
-  String get adminDrawerSectionDevices => 'Devices';
+  String get adminDrawerSectionDevices => 'Perangkat';
 
   @override
-  String get adminDrawerSectionAdvanced => 'Advanced';
+  String get adminDrawerSectionAdvanced => 'Lanjutan';
 
   @override
-  String get adminDrawerSectionPlugins => 'Plugins';
+  String get adminDrawerSectionPlugins => 'Plugin';
 
   @override
-  String get adminDrawerSectionLiveTv => 'Live TV';
+  String get adminDrawerSectionLiveTv => 'TV Langsung';
 
   @override
-  String get homeVideos => 'Home Videos';
+  String get homeVideos => 'Video Rumahan';
 
   @override
-  String get mixedContent => 'Mixed Content';
+  String get mixedContent => 'Konten Campuran';
 
   @override
-  String get homeVideosAndPhotos => 'Home Videos & Photos';
+  String get homeVideosAndPhotos => 'Video Rumahan & Foto';
 
   @override
-  String get mixedMoviesAndShows => 'Mixed Movies & Shows';
+  String get mixedMoviesAndShows => 'Film & Acara Campuran';
 
   @override
   String get intelQuickSync => 'Intel Quick Sync';
@@ -8094,150 +8094,150 @@ class AppLocalizationsId extends AppLocalizations {
   String get dolbyVision => 'Dolby Vision';
 
   @override
-  String get noRecordingsFound => 'No recordings found';
+  String get noRecordingsFound => 'Tidak ada rekaman yang ditemukan';
 
   @override
   String noImagePagesFoundInArchive(String extension) {
-    return 'No image pages found inside .$extension archive.';
+    return 'Tidak ada halaman gambar yang ditemukan di dalam arsip .$extension.';
   }
 
   @override
   String embeddedRendererFailed(int code, String description) {
-    return 'Embedded renderer failed ($code): $description';
+    return 'Renderer tertanam gagal ($code): $description';
   }
 
   @override
   String epubRendererFailed(int code, String description) {
-    return 'EPUB renderer failed ($code): $description';
+    return 'Renderer EPUB gagal ($code): $description';
   }
 
   @override
   String missingLocalFileForReader(String uri) {
-    return 'Missing local file for reader: $uri';
+    return 'File lokal untuk pembaca tidak ditemukan: $uri';
   }
 
   @override
   String httpStatusWhileOpeningBookData(int status, String uri) {
-    return 'HTTP $status while opening book data from $uri';
+    return 'HTTP $status saat membuka data buku dari $uri';
   }
 
   @override
   String get noReadableBookEndpointAvailable =>
-      'No readable book endpoint available';
+      'Tidak ada endpoint buku yang dapat dibaca';
 
   @override
   String unsupportedComicArchiveFormat(String extension) {
-    return 'Unsupported comic archive format: .$extension';
+    return 'Format arsip komik tidak didukung: .$extension';
   }
 
   @override
   String get cbrExtractionPluginUnavailable =>
-      'CBR extraction plugin is not available on this platform.';
+      'Plugin ekstraksi CBR tidak tersedia di platform ini.';
 
   @override
-  String get failedToExtractCbrArchive => 'Failed to extract .cbr archive.';
+  String get failedToExtractCbrArchive => 'Gagal mengekstrak arsip .cbr.';
 
   @override
   String get cb7ExtractionUnavailable =>
-      'CB7 extraction is not available on this platform.';
+      'Ekstraksi CB7 tidak tersedia di platform ini.';
 
   @override
   String get cb7ExtractionPluginUnavailable =>
-      'CB7 extraction plugin is not available on this platform.';
+      'Plugin ekstraksi CB7 tidak tersedia di platform ini.';
 
   @override
-  String get closeGenrePanel => 'Close genre panel';
+  String get closeGenrePanel => 'Tutup panel genre';
 
   @override
-  String get loadingShuffle => 'Loading shuffle...';
+  String get loadingShuffle => 'Memuat acak...';
 
   @override
-  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
+  String get libraryShuffleLabel => 'ACAK PUSTAKA';
 
   @override
-  String get randomShuffleLabel => 'RANDOM SHUFFLE';
+  String get randomShuffleLabel => 'ACAK RANDUM';
 
   @override
-  String get genresShuffleLabel => 'GENRES SHUFFLE';
+  String get genresShuffleLabel => 'ACAK BERDASARKAN GENRE';
 
   @override
-  String get autoHdrSwitching => 'Auto HDR Switching';
+  String get autoHdrSwitching => 'Peralihan HDR Otomatis';
 
   @override
   String get autoHdrSwitchingDescription =>
-      'Automatically enable HDR for HDR video playback and restore display mode on exit.';
+      'Aktifkan HDR secara otomatis untuk pemutaran video HDR dan pulihkan mode tampilan saat keluar.';
 
   @override
-  String get whenFullscreen => 'When fullscreen';
+  String get whenFullscreen => 'Saat layar penuh';
 
   @override
-  String get changeArtwork => 'Change Artwork';
+  String get changeArtwork => 'Ubah Artwork';
 
   @override
-  String get missing => 'Missing';
+  String get missing => 'Tidak ada';
 
   @override
-  String get transcodingLimits => 'Transcoding Limits';
+  String get transcodingLimits => 'Batas Transcoding';
 
   @override
-  String get clearAllArtworkButton => 'Clear all artwork?';
+  String get clearAllArtworkButton => 'Hapus semua artwork?';
 
   @override
   String get clearAllArtworkWarning =>
-      'Are you sure you want to clear all downloaded artwork?';
+      'Apakah Anda yakin ingin menghapus semua artwork yang diunduh?';
 
   @override
-  String get confirmClear => 'Confirm Clear';
+  String get confirmClear => 'Konfirmasi Hapus';
 
   @override
   String confirmClearMessage(String itemType) {
-    return 'Are you sure you would like to clear this $itemType?';
+    return 'Apakah Anda yakin ingin menghapus $itemType ini?';
   }
 
   @override
-  String get uploadButton => 'Upload?';
+  String get uploadButton => 'Unggah?';
 
   @override
-  String get resolutionLabel => 'Resolution: ';
+  String get resolutionLabel => 'Resolusi: ';
 
   @override
   String get onlyShowInterfaceLanguage =>
-      'Only show artwork in interface language';
+      'Tampilkan artwork hanya dalam bahasa antarmuka';
 
   @override
-  String get confirmClearAll => 'Confirm Clear All';
+  String get confirmClearAll => 'Konfirmasi Hapus Semua';
 
   @override
-  String get imageUploadSuccess => 'Image uploaded successfully!';
+  String get imageUploadSuccess => 'Gambar berhasil diunggah!';
 
   @override
   String imageUploadFailed(String error) {
-    return 'Failed to upload image: $error';
+    return 'Gagal mengunggah gambar: $error';
   }
 
   @override
   String imageDownloadFailed(String error) {
-    return 'Failed to set image: $error';
+    return 'Gagal menetapkan gambar: $error';
   }
 
   @override
   String imageDeleteFailed(String error) {
-    return 'Failed to delete image: $error';
+    return 'Gagal menghapus gambar: $error';
   }
 
   @override
   String clearAllArtworkFailed(String error) {
-    return 'Failed to clear all artwork: $error';
+    return 'Gagal menghapus semua artwork: $error';
   }
 
   @override
-  String get yes => 'Yes';
+  String get yes => 'Ya';
 
   @override
   String get posterCategory => 'Poster';
 
   @override
-  String get backdropsCategory => 'Backdrops';
+  String get backdropsCategory => 'Backdrop';
 
   @override
   String get bannerCategory => 'Banner';
@@ -8255,13 +8255,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get discArtCategory => 'Disc Art';
 
   @override
-  String get screenshotCategory => 'Screenshot';
+  String get screenshotCategory => 'Tangkapan Layar';
 
   @override
-  String get boxCoverCategory => 'Box Cover';
+  String get boxCoverCategory => 'Sampul Kotak';
 
   @override
-  String get boxRearCoverCategory => 'Box Rear Cover';
+  String get boxRearCoverCategory => 'Sampul Belakang Kotak';
 
   @override
   String get menuArtCategory => 'Menu Art';
@@ -8288,29 +8288,29 @@ class AppLocalizationsId extends AppLocalizations {
   String get confirmItemDiscArt => 'disc art';
 
   @override
-  String get confirmItemScreenshot => 'screenshot';
+  String get confirmItemScreenshot => 'tangkapan layar';
 
   @override
-  String get confirmItemBoxCover => 'box cover';
+  String get confirmItemBoxCover => 'sampul kotak';
 
   @override
-  String get confirmItemBoxRearCover => 'box rear cover';
+  String get confirmItemBoxRearCover => 'sampul belakang kotak';
 
   @override
   String get confirmItemMenuArt => 'menu art';
 
   @override
-  String get resolutionAll => 'All';
+  String get resolutionAll => 'Semua';
 
   @override
-  String get resolutionHigh => 'High (1080p+)';
+  String get resolutionHigh => 'Tinggi (1080p+)';
 
   @override
-  String get resolutionMedium => 'Medium (720p)';
+  String get resolutionMedium => 'Sedang (720p)';
 
   @override
-  String get resolutionLow => 'Low (<720p)';
+  String get resolutionLow => 'Rendah (<720p)';
 
   @override
-  String get sources => 'Sources';
+  String get sources => 'Sumber';
 }

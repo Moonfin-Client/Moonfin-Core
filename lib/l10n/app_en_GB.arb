@@ -6720,6 +6720,15 @@
             }
         }
     },
+    "recentlyReleasedLibraryName": "Recently Released {libraryName}",
+    "@recentlyReleasedLibraryName": {
+      "description": "Row title for recently released media in a specific library",
+      "placeholders": {
+        "libraryName": {
+          "type": "String"
+        }
+      }
+    },
     "discNumber": "Disc {number}",
     "@discNumber": {
         "description": "Label for an album disc section in a multi-disc track list",

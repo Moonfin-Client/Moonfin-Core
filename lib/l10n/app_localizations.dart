@@ -13084,6 +13084,12 @@ abstract class AppLocalizations {
   /// **'Latest {libraryName}'**
   String latestLibraryName(String libraryName);
 
+  /// Row title for recently released media in a specific library
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Released {libraryName}'**
+  String recentlyReleasedLibraryName(String libraryName);
+
   /// Setting title: automatically start the next episode
   ///
   /// In en, this message translates to:

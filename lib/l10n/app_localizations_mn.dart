@@ -7369,6 +7369,11 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
+  String recentlyReleasedLibraryName(String libraryName) {
+    return 'Recently Released $libraryName';
+  }
+
+  @override
   String get autoplayNextEpisode => 'Дараагийн ангийг автоматаар тоглуулах';
 
   @override

@@ -7371,6 +7371,11 @@ class AppLocalizationsLt extends AppLocalizations {
   }
 
   @override
+  String recentlyReleasedLibraryName(String libraryName) {
+    return 'Recently Released $libraryName';
+  }
+
+  @override
   String get autoplayNextEpisode => 'Automatiškai paleisti kitą seriją';
 
   @override

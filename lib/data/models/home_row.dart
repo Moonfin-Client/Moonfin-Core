@@ -5,6 +5,7 @@ enum HomeRowType {
   resumeAudio,
   nextUp,
   latestMedia,
+  recentlyReleased,
   favorites,
   collections,
   genres,

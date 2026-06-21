@@ -7334,6 +7334,11 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
+  String recentlyReleasedLibraryName(String libraryName) {
+    return 'Recently Released $libraryName';
+  }
+
+  @override
   String get autoplayNextEpisode => 'অটোপ্লে পরবর্তী পর্ব';
 
   @override

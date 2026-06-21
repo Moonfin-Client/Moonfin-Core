@@ -489,6 +489,7 @@ class HomeViewModel extends ChangeNotifier {
         return row.id == 'seerr_networks';
       case HomeSectionType.mediaBar:
       case HomeSectionType.recentlyReleased:
+        return row.rowType == HomeRowType.recentlyReleased;
       case HomeSectionType.resumeBook:
       case HomeSectionType.none:
         return false;
@@ -993,6 +994,7 @@ class HomeViewModel extends ChangeNotifier {
           'seerr_networks',
         );
       case HomeSectionType.recentlyReleased:
+        return _loadRecentlyReleasedRow();
       case HomeSectionType.resumeBook:
       case HomeSectionType.none:
         return [];
@@ -1036,6 +1038,50 @@ class HomeViewModel extends ChangeNotifier {
       } catch (_) {
         return null;
       }
+    }).toList();
+
+    final resolved = await Future.wait(tasks);
+    final rows = resolved.whereType<HomeRow>().toList();
+    return rows;
+  }
+
+  Future<List<HomeRow>> _loadRecentlyReleasedRow() async {
+    final viewsFuture = _client.userViewsApi.getUserViews();
+    final configFuture = _client.usersApi
+    .getUserConfiguration()
+    .then<Set<String>>((config) => config.latestItemsExcludes.toSet())
+    .catchError((_) => const <String>{});
+
+    final viewsResponse = await viewsFuture;
+    final views = viewsResponse['Items'] as List? ?? [];
+    final Set<String> latestExcludes = await configFuture;
+
+    final filteredViews = views.cast<Map<String, dynamic>>().where((data) {
+      final id = data['Id']?.toString() ?? '';
+    final collectionType = (data['CollectionType'] as String?)?.toLowerCase();
+    if (collectionType == 'playlists' ||
+      collectionType == 'boxsets' ||
+      collectionType == 'livetv') {
+      return false;
+      }
+      return !latestExcludes.contains(id);
+    }).toList();
+
+    final tasks = filteredViews.map((data) async {
+      final id = data['Id']?.toString() ?? '';
+    final name = data['Name'] as String? ?? '';
+    final collectionType = (data['CollectionType'] as String?)?.toLowerCase();
+    try {
+      final row = await _dataSource.loadRecentlyReleased(
+        id,
+        name,
+        _serverId,
+        collectionType,
+      );
+      return row.items.isNotEmpty ? row : null;
+    } catch (_) {
+      return null;
+    }
     }).toList();
 
     final resolved = await Future.wait(tasks);
@@ -1228,6 +1274,12 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionType.activeRecordings:
       case HomeSectionType.mediaBar:
       case HomeSectionType.recentlyReleased:
+        return HomeRow(
+          id: 'recentlyReleased',
+          title: l10n.recentlyReleased,
+          rowType: HomeRowType.recentlyReleased,
+          isLoading: true,
+        );
       case HomeSectionType.resumeBook:
       case HomeSectionType.none:
         return null;

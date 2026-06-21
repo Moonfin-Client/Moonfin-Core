@@ -7024,6 +7024,15 @@
       }
     }
   },
+  "recentlyReleasedLibraryName": "Recently Released {libraryName}",
+  "@recentlyReleasedLibraryName": {
+    "description": "Row title for recently released media in a specific library",
+    "placeholders": {
+      "libraryName": {
+        "type": "String"
+      }
+    }
+  },
   "autoplayNextEpisode": "Autoplay Next Episode",
   "@autoplayNextEpisode": {
     "description": "Setting title: automatically start the next episode"

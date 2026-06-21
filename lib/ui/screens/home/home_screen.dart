@@ -4381,6 +4381,7 @@ class _ContentRowsState extends State<_ContentRows>
       HomeRowType.liveTv => HomeSectionType.liveTv,
       HomeRowType.activeRecordings => HomeSectionType.activeRecordings,
       _ => null,
+      HomeRowType.recentlyReleased => HomeSectionType.recentlyReleased,
     };
   }
 

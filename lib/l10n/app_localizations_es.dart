@@ -7414,6 +7414,11 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String recentlyReleasedLibraryName(String libraryName) {
+    return 'Recently Released $libraryName';
+  }
+
+  @override
   String get autoplayNextEpisode =>
       'Reproducción automática del siguiente episodio';
 
@@ -8395,7 +8400,19 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   String get appTitle => 'aleta lunar';
 
   @override
+  String get accountPreferences => 'PREFERENCIAS DE CUENTA';
+
+  @override
+  String get interfaceLanguage => 'Idioma de la interfaz';
+
+  @override
+  String get systemLanguageDefault => 'Predeterminado';
+
+  @override
   String get signIn => 'Iniciar sesión';
+
+  @override
+  String get empty => 'Vacío';
 
   @override
   String connectingToServer(String serverName) {
@@ -8535,6 +8552,13 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   @override
   String get themeNeonPulseSubtitle =>
       'Estilo Synthwave con brillo magenta, texto cian y contraste cromado más fuerte';
+
+  @override
+  String get themeGlass => 'Glass';
+
+  @override
+  String get themeGlassSubtitle =>
+      'Diseño tipo cristal líquido, con un degradado dinámico de fondo, paneles translúcidos con efecto vidrio esmerilado y detalles en azul característico de Apple';
 
   @override
   String get embyConnectSignInSubtitle =>
@@ -9205,6 +9229,11 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   }
 
   @override
+  String endsIn(String time) {
+    return 'Finaliza en $time';
+  }
+
+  @override
   String get view => 'Vista';
 
   @override
@@ -9440,6 +9469,12 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
 
   @override
   String get director => 'DIRECTOR';
+
+  @override
+  String get directors => 'DIRECTORES';
+
+  @override
+  String get writer => 'ESCRITOR';
 
   @override
   String get writers => 'ESCRITORES';
@@ -10369,7 +10404,7 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   String get focusExpansionAnimation => 'Animación de expansión de enfoque';
 
   @override
-  String get desktopUiScale => 'Escala de interfaz de usuario de escritorio';
+  String get desktopUiScale => 'Escala de la interfaz';
 
   @override
   String get scaleFocusedCards =>
@@ -10383,11 +10418,11 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
       'Mostrar imágenes de fondo detrás del contenido';
 
   @override
-  String get seriesThumbnails => 'Miniaturas de series';
+  String get seriesThumbnails => 'Mostrar miniaturas de series';
 
   @override
   String get seriesThumbnailsDescription =>
-      'Solo episodios: use ilustraciones de la serie que coincidan con el tipo de imagen de cada fila';
+      'Para las series de TV, utiliza la imagen principal de la serie en lugar de la miniatura del episodio';
 
   @override
   String get homeRowInfoOverlay =>
@@ -10466,6 +10501,25 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
 
   @override
   String get playerZoomMode => 'Modo de zoom del jugador';
+
+  @override
+  String get settingsScrollWheelAction => 'Rueda del mouse';
+
+  @override
+  String get settingsScrollWheelActionDescription =>
+      'Elige qué acción realiza la rueda del mouse al desplazarse sobre el video durante la reproducción';
+
+  @override
+  String get scrollWheelActionOff => 'Desactivado';
+
+  @override
+  String get scrollWheelActionSeek => 'Avanzar o retroceder';
+
+  @override
+  String get scrollWheelActionVolume => 'Volumen';
+
+  @override
+  String get playerTooltipVolume => 'Volumen';
 
   @override
   String get fit => 'Adaptar';
@@ -10596,54 +10650,124 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   String get settingsAudioOutputMode => 'Modo de salida de audio';
 
   @override
+  String get settingsAudioOutputModeDescription =>
+      'Elige cómo se decodifica el audio. Passthrough AVR envía las transmisiones Dolby/DTS sin procesar a tu receptor; Automático o Mezcla estéreo las decodifican localmente.';
+
+  @override
   String get settingsAudioOutputModeAvrPassthrough => 'Paso AVR';
 
   @override
   String get settingsAudioFallbackCodec => 'Códec de reserva de audio';
 
   @override
-  String get settingsAudioPassthroughAdvanced => 'Paso a través (avanzado)';
+  String get settingsAudioFallbackCodecDescription =>
+      'Selecciona el formato de destino al que se convertirá el audio multicanal cuando la transmisión original no pueda reproducirse directamente ni enviarse mediante passthrough.';
 
   @override
-  String get settingsAudioCodecPassthrough => 'Paso de códec';
+  String get settingsAudioFallbackCodecAuto =>
+      'Detección automática\n(Recomendado)';
+
+  @override
+  String get settingsAudioFallbackCodecAac => 'AAC\n(Predeterminado)';
+
+  @override
+  String get settingsAudioFallbackCodecAc3 => 'AC3\n(Dolby Digital)';
+
+  @override
+  String get settingsAudioFallbackCodecEac3 => 'EAC3\n(Dolby Digital Plus)';
+
+  @override
+  String get settingsAudioFallbackCodecTrueHd => 'TrueHD\n(Sin pérdida)';
+
+  @override
+  String get settingsAudioFallbackCodecMp3 => 'MP3\n(Sólo Stereo)';
+
+  @override
+  String get settingsAudioFallbackCodecOpus => 'Opus\n(Eficiente)';
+
+  @override
+  String get settingsAudioFallbackCodecFlac => 'FLAC\n(Sin pérdida)';
+
+  @override
+  String get settingsMaxAudioChannels => 'Máximo de canales de audio';
+
+  @override
+  String get settingsMaxAudioChannelsDescription =>
+      'Configura la cantidad máxima de canales de tu sistema de audio. Las transmisiones multicanal que superen este límite se mezclarán a menos canales o se convertirán a otro formato.';
+
+  @override
+  String get settingsMaxAudioChannelsAuto =>
+      'Detección automática\n(Predeterminado del hardware)';
+
+  @override
+  String get settingsMaxAudioChannelsMono => '1.0 Mono';
+
+  @override
+  String get settingsMaxAudioChannelsStereo => '2.0 Stéreo';
+
+  @override
+  String get settingsMaxAudioChannels3_0 => '3.0 / 2.1 Surround';
+
+  @override
+  String get settingsMaxAudioChannels4_0 => '4.0 / 3.1 Cuadrafónico';
+
+  @override
+  String get settingsMaxAudioChannels5_0 => '5.0 / 4.1 Envolvente';
+
+  @override
+  String get settingsMaxAudioChannels5_1 => '5.1 Envolvente';
+
+  @override
+  String get settingsMaxAudioChannels6_1 => '6.1 Envolvente';
+
+  @override
+  String get settingsMaxAudioChannels7_1 => '7.1 Envolvente';
+
+  @override
+  String get settingsAudioPassthroughAdvanced => 'Passthrough (Avanzado)';
+
+  @override
+  String get settingsAudioCodecPassthrough => 'Passthrough de códecs';
 
   @override
   String get settingsAudioCodecPassthroughDescription =>
-      'Habilite solo los formatos que admite su disipador AVR o HDMI.';
+      'Activa únicamente los formatos compatibles con tu receptor AV (AVR) o dispositivo HDMI de destino.';
 
   @override
-  String get settingsAudioEac3Passthrough => 'Paso EAC3';
+  String get settingsAudioEac3Passthrough => 'Passthrough de EAC3';
 
   @override
-  String get settingsAudioEac3JocPassthrough => 'Paso EAC3 JOC (Atmos)';
+  String get settingsAudioEac3JocPassthrough =>
+      'Passthrough de EAC3 JOC (Atmos)';
 
   @override
-  String get settingsAudioDtsCorePassthrough => 'Paso a través del núcleo DTS';
+  String get settingsAudioDtsCorePassthrough => 'Passthrough de DTS Core';
 
   @override
-  String get settingsAudioDtsHdPassthrough => 'Paso a través de DTS-HD MA';
+  String get settingsAudioDtsHdPassthrough => 'Passthrough de DTS-HD MA';
 
   @override
-  String get settingsAudioTrueHdPassthrough => 'Paso TrueHD';
+  String get settingsAudioTrueHdPassthrough => 'Passthrough de TrueHD';
 
   @override
-  String get settingsAudioTrueHdAtmosPassthrough => 'Paso TrueHD Atmos';
+  String get settingsAudioTrueHdAtmosPassthrough =>
+      'Passthrough de TrueHD Atmos';
 
   @override
   String get settingsAudioBitstreamEac3ToExternalDecoder =>
-      'Bitstream Dolby Digital Plus (EAC3) a decodificador externo.';
+      'Envía Dolby Digital Plus (EAC3) en formato bitstream a un decodificador externo.';
 
   @override
   String get settingsAudioBitstreamEac3JocToExternalDecoder =>
-      'Bitstream Dolby Atmos sobre EAC3 (JOC) a decodificador externo.';
+      'Envía Dolby Atmos sobre EAC3 (JOC) en formato bitstream a un decodificador externo.';
 
   @override
   String get settingsAudioBitstreamDtsHdToExternalDecoder =>
-      'Bitstream DTS-HD MA (incluye núcleo DTS) a decodificador externo.';
+      'Envía DTS-HD MA (incluye el núcleo DTS) en formato bitstream a un decodificador externo.';
 
   @override
   String get settingsAudioBitstreamTrueHdAtmosToExternalDecoder =>
-      'Bitstream Dolby TrueHD con metadatos Atmos a decodificador externo.';
+      'Envía Dolby TrueHD con metadatos Atmos en formato bitstream a un decodificador externo.';
 
   @override
   String get settingsDetectedAudioCapabilities =>
@@ -10942,7 +11066,7 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   String get syncing => 'Sincronizando...';
 
   @override
-  String get syncToProfile => 'Sincronizar con el perfil';
+  String get syncToProfile => 'Sincronizar perfil';
 
   @override
   String get profileSyncHidden => 'Sincronización de perfil oculta';
@@ -11054,6 +11178,9 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   @override
   String get showLibrariesInToolbar =>
       'Mostrar bibliotecas en la barra de herramientas';
+
+  @override
+  String get showSeerrButton => 'Mostrar botón de Seerr';
 
   @override
   String get navbarOpacity => 'Opacidad de la barra de navegación';
@@ -11314,6 +11441,13 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
       'Combine ambas filas en una sola sección de inicio';
 
   @override
+  String get fullScreenRows => 'Filas de inicio ampliadas';
+
+  @override
+  String get fullScreenRowsDescription =>
+      'Limita las filas de inicio a una sola fila por pantalla';
+
+  @override
   String get perRowImageType => 'Tipo de imagen por fila';
 
   @override
@@ -11324,6 +11458,9 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
 
   @override
   String get lastUser => 'Último usuario';
+
+  @override
+  String get currentUser => 'Usuario actual';
 
   @override
   String get alwaysAuthenticate => 'Autenticar siempre';
@@ -11431,6 +11568,12 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
       'Mostrar el reloj durante el salvapantallas';
 
   @override
+  String get clockModeStatic => 'Estático';
+
+  @override
+  String get clockModeBouncing => 'Rebotando';
+
+  @override
   String get rottenTomatoesCritics => 'Tomates podridos (críticos)';
 
   @override
@@ -11502,7 +11645,7 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
       'Habilite y reordene las fuentes de calificación que se muestran en toda la aplicación';
 
   @override
-  String get pluginLabel => 'Complemento';
+  String get pluginLabel => 'Complemento Moonbase';
 
   @override
   String get pluginDetected => 'Complemento detectado';
