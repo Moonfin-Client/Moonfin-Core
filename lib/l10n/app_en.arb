@@ -7230,7 +7230,7 @@
   "alwaysOn": "Always on.",
   "replaceSkipOutroWithNextUpDisplay": "Replace Skip Outro with Next Up Display",
   "replaceSkipOutroWithNextUpDisplaySubtitle": "Show the Next Up overlay instead of the Skip Outro button.",
-  "nextUpIgnoreRemainingContentDisplay": "Play Next (Ignore Remaining Content After Outro)",
+  "nextUpIgnoreRemainingContentDisplay": "Next Up Forced (Ignore Remaining Content After Outro)",
   "nextUpIgnoreRemainingContentDisplaySubtitle": "Trigger Next Up pop-up even if there's remaining content after outro.",
   "playerRouting": "Player Routing",
   "preferSoftwareDecoders": "Prefer software decoders",

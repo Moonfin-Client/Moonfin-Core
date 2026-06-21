@@ -13681,7 +13681,7 @@ abstract class AppLocalizations {
   /// No description provided for @nextUpIgnoreRemainingContentDisplay.
   ///
   /// In en, this message translates to:
-  /// **'Play Next (Ignore Remaining Content After Outro)'**
+  /// **'Next Up Forced (Ignore Remaining Content After Outro)'**
   String get nextUpIgnoreRemainingContentDisplay;
 
   /// No description provided for @nextUpIgnoreRemainingContentDisplaySubtitle.

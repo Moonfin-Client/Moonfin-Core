@@ -7731,7 +7731,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get nextUpIgnoreRemainingContentDisplay =>
-      'Play Next (Ignore Remaining Content After Outro)';
+      'Next Up Forced (Ignore Remaining Content After Outro)';
 
   @override
   String get nextUpIgnoreRemainingContentDisplaySubtitle =>
