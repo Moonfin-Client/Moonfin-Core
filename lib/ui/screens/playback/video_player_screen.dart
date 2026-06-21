@@ -2634,7 +2634,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
-  /// Lance le timer auto-hide (10s) pour SkipSegment.
+  // Launch auto-hide timer (10s) for SkipSegment.
   void _startSkipSegmentAutoHide() {
     _skipSegmentHideTimer?.cancel();
     if (_skipSegment == null) return;
@@ -2645,10 +2645,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     });
   }
 
-  /// Lance le timer auto-hide (10s) pour NextUp.
+  // Launch auto-hide timer (10s) for NextUp.
   void _startNextUpAutoHide() {
     _nextUpHideTimer?.cancel();
     if (_showNextUp == false || _nextUpItem == null) return;
+
+    final duration = _state.duration;
+    final position = _state.position;
+
+    if (duration > Duration.zero) {
+      final remaining = duration - position;
+      if (remaining <= const Duration(seconds: 2)) {
+        return; 
+      }
+    }
     _nextUpHideTimer = Timer(const Duration(seconds: 10), () {
       if (mounted) {
         setState(() => _nextUpAutoHidden = true);
