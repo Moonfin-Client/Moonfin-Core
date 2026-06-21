@@ -3018,7 +3018,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myMediaSmall => 'Mes médias (petit)';
 
   @override
-  String get continueWatching => 'Continuer à regarder';
+  String get continueWatching => 'Continuer de regarder';
 
   @override
   String get resumeAudio => 'Reprendre l’audio';
@@ -3053,7 +3053,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get mergeContinueWatchingAndNextUp =>
-      'Fusionner Continuer à regarder et À suivre';
+      'Fusionner Continuer de regarder et À suivre';
 
   @override
   String get combineBothRows =>
@@ -3320,7 +3320,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get upcomingMovies => 'Films à venir';
 
   @override
-  String get studios => 'Ateliers';
+  String get studios => 'Studios';
 
   @override
   String get popularSeries => 'Séries populaires';
@@ -3332,7 +3332,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get upcomingSeries => 'Séries à venir';
 
   @override
-  String get networks => 'Chaînes';
+  String get networks => 'Diffuseurs';
 
   @override
   String get seerrDiscoveryRows => 'Rangées de découverte Seerr';
@@ -5574,7 +5574,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get adminMetadataTags => 'Balises';
 
   @override
-  String get adminMetadataStudios => 'Ateliers';
+  String get adminMetadataStudios => 'Studios';
 
   @override
   String get adminMetadataPeople => 'Personnes';
@@ -6874,7 +6874,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get liveTv => 'TV en direct';
 
   @override
-  String get continueWatchingAndNextUp => 'Reprendre la lecture et À suivre';
+  String get continueWatchingAndNextUp => 'Continuer de regarder et à suivre';
 
   @override
   String downloadingBatchProgress(int current, int total, String fileName) {
@@ -7286,7 +7286,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsResumeRewindDescription =>
-      'Lors de la reprise de la lecture (à partir de Continuer à regarder ou d\'une page d\'élément multimédia), combien de secondes doivent être rembobinées ?';
+      'Lors de la reprise de la lecture (à partir de Continuer de regarder ou d\'une page d\'élément multimédia), combien de secondes doivent être rembobinées ?';
 
   @override
   String get settingsUnpauseRewindDescription =>
@@ -7543,11 +7543,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get themeStoreSaved => 'Saved';
 
   @override
-  String get themeStoreInvalidMessage => 'This theme couldn\'t be loaded.';
+  String get themeStoreInvalidMessage => 'Le thème n\'a pas pu être chargé.';
 
   @override
   String themeStoreSavedMessage(String themeName) {
-    return 'Saved \"$themeName\".';
+    return '$themeName sauvegardé.';
   }
 
   @override
@@ -8247,13 +8247,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get loadingShuffle => 'Chargement aléatoire...';
 
   @override
-  String get libraryShuffleLabel => 'LIBRARY SHUFFLE';
+  String get libraryShuffleLabel => 'BIBLIOTHÈQUE ALÉATOIRE';
 
   @override
-  String get randomShuffleLabel => 'RANDOM SHUFFLE';
+  String get randomShuffleLabel => 'TRI ALÉATOIRE';
 
   @override
-  String get genresShuffleLabel => 'GENRES SHUFFLE';
+  String get genresShuffleLabel => 'GENRES ALÉATOIRE';
 
   @override
   String get autoHdrSwitching => 'Commutation HDR automatique';

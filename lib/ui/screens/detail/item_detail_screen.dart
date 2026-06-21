@@ -5939,6 +5939,20 @@ class _ActionButtonsState extends State<_ActionButtons> {
     await routeFuture;
     _syncAudioSelectionFromActivePlayback();
     _syncSubtitleSelectionFromActivePlayback();
+
+    final lastPlayed = manager.lastPlayedItem;
+    if (lastPlayed is AggregatedItem &&
+        viewModel.item?.type?.toLowerCase() == 'episode' &&
+        lastPlayed.type?.toLowerCase() == 'episode' &&
+        lastPlayed.id != widget.itemId) {
+      if (context.mounted) {
+        context.pushReplacement(
+          Destinations.item(lastPlayed.id, serverId: lastPlayed.serverId),
+        );
+      }
+      return true;
+    }
+
     if (reloadOnReturn) {
       viewModel.load();
     }
