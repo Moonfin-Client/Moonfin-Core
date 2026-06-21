@@ -5941,16 +5941,43 @@ class _ActionButtonsState extends State<_ActionButtons> {
     _syncSubtitleSelectionFromActivePlayback();
 
     final lastPlayed = manager.lastPlayedItem;
-    if (lastPlayed is AggregatedItem &&
-        viewModel.item?.type?.toLowerCase() == 'episode' &&
-        lastPlayed.type?.toLowerCase() == 'episode' &&
-        lastPlayed.id != widget.itemId) {
-      if (context.mounted) {
-        context.pushReplacement(
-          Destinations.item(lastPlayed.id, serverId: lastPlayed.serverId),
-        );
+    if (lastPlayed is AggregatedItem) {
+      final lastPlayedType = lastPlayed.type?.toLowerCase();
+      final currentType = viewModel.item?.type?.toLowerCase();
+
+      if (currentType == 'episode' &&
+          lastPlayedType == 'episode' &&
+          lastPlayed.id != widget.itemId) {
+        if (context.mounted) {
+          final currentSeasonId = viewModel.item?.seasonId;
+          if (lastPlayed.seasonId != null &&
+              lastPlayed.seasonId!.isNotEmpty &&
+              lastPlayed.seasonId != currentSeasonId) {
+            context.pushReplacement(
+              Destinations.item(lastPlayed.seasonId!, serverId: lastPlayed.serverId),
+            );
+            context.push(
+              Destinations.item(lastPlayed.id, serverId: lastPlayed.serverId),
+            );
+          } else {
+            context.pushReplacement(
+              Destinations.item(lastPlayed.id, serverId: lastPlayed.serverId),
+            );
+          }
+        }
+        return true;
+      } else if (currentType == 'season' &&
+          lastPlayedType == 'episode' &&
+          lastPlayed.seasonId != null &&
+          lastPlayed.seasonId!.isNotEmpty &&
+          lastPlayed.seasonId != widget.itemId) {
+        if (context.mounted) {
+          context.pushReplacement(
+            Destinations.item(lastPlayed.seasonId!, serverId: lastPlayed.serverId),
+          );
+        }
+        return true;
       }
-      return true;
     }
 
     if (reloadOnReturn) {
