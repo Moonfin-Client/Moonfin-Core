@@ -530,7 +530,7 @@ We welcome contributions to Moonfin.
 5. Open a PR with context, screenshots/logs when useful, and test notes.
 
 ### Translations
-If you notice issues with translations in your language, you can contribute fixed tranlations on [weblate](https://hosted.weblate.org/projects/moonfin/). 
+If you notice issues with translations in your language, you can contribute fixed tranlations on [weblate](https://translate.moonfin.io/). 
 
 ## Support & Community
 
