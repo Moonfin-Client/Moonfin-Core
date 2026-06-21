@@ -2831,7 +2831,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showInNavigation => 'Show in navigation';
 
   @override
-  String get showInLatestMedia => 'Show in latest media';
+  String get showInLatestMedia => 'Show in recently added/released media';
 
   @override
   String get sourceLibraries => 'Source Libraries';
@@ -2951,7 +2951,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enable audio for trailer and episode previews';
 
   @override
-  String get latestMedia => 'Latest Media';
+  String get latestMedia => 'Recently Added Media';
 
   @override
   String get recentlyReleased => 'Recently Released';
@@ -7283,7 +7283,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String latestLibraryName(String libraryName) {
-    return 'Latest $libraryName';
+    return 'Recently Added $libraryName';
   }
 
   @override
@@ -11079,7 +11079,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get showInNavigation => 'Show in navigation';
 
   @override
-  String get showInLatestMedia => 'Show in latest media';
+  String get showInLatestMedia => 'Show in recently added/released media';
 
   @override
   String get sourceLibraries => 'Source Libraries';
@@ -11199,7 +11199,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
       'Enable audio for trailer and episode previews';
 
   @override
-  String get latestMedia => 'Latest Media';
+  String get latestMedia => 'Recently Added Media';
 
   @override
   String get recentlyReleased => 'Recently Released';
@@ -15531,7 +15531,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String latestLibraryName(String libraryName) {
-    return 'Latest $libraryName';
+    return 'Recently Added $libraryName';
   }
 
   @override

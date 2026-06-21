@@ -3944,9 +3944,9 @@
   "@showInNavigation": {
     "description": "Toggle for showing library in navigation"
   },
-  "showInLatestMedia": "Show in latest media",
+  "showInLatestMedia": "Show in recently added/released media",
   "@showInLatestMedia": {
-    "description": "Toggle for showing library in latest media"
+    "description": "Toggle for showing library in recently added/released media"
   },
   "sourceLibraries": "Source Libraries",
   "@sourceLibraries": {
@@ -4105,9 +4105,9 @@
   "@enablePreviewAudio": {
     "description": "Description for preview audio"
   },
-  "latestMedia": "Latest Media",
+  "latestMedia": "Recently Added Media",
   "@latestMedia": {
-    "description": "Home section: latest media"
+    "description": "Home section: recently added media"
   },
   "recentlyReleased": "Recently Released",
   "@recentlyReleased": {
@@ -7015,9 +7015,9 @@
       }
     }
   },
-  "latestLibraryName": "Latest {libraryName}",
+  "latestLibraryName": "Recently Added {libraryName}",
   "@latestLibraryName": {
-    "description": "Row title for latest media in a specific library",
+    "description": "Row title for recently added media in a specific library",
     "placeholders": {
       "libraryName": {
         "type": "String"

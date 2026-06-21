@@ -5200,10 +5200,10 @@ abstract class AppLocalizations {
   /// **'Show in navigation'**
   String get showInNavigation;
 
-  /// Toggle for showing library in latest media
+  /// Toggle for showing library in recently added/released media
   ///
   /// In en, this message translates to:
-  /// **'Show in latest media'**
+  /// **'Show in recently added/released media'**
   String get showInLatestMedia;
 
   /// Setting for source libraries
@@ -5422,10 +5422,10 @@ abstract class AppLocalizations {
   /// **'Enable audio for trailer and episode previews'**
   String get enablePreviewAudio;
 
-  /// Home section: latest media
+  /// Home section: recently added media
   ///
   /// In en, this message translates to:
-  /// **'Latest Media'**
+  /// **'Recently Added Media'**
   String get latestMedia;
 
   /// Home section: recently released
@@ -13078,10 +13078,10 @@ abstract class AppLocalizations {
   /// **'{libraryName} ({serverName})'**
   String libraryNameWithServer(String libraryName, String serverName);
 
-  /// Row title for latest media in a specific library
+  /// Row title for recently added media in a specific library
   ///
   /// In en, this message translates to:
-  /// **'Latest {libraryName}'**
+  /// **'Recently Added {libraryName}'**
   String latestLibraryName(String libraryName);
 
   /// Row title for recently released media in a specific library
