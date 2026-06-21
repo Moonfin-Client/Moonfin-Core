@@ -881,7 +881,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get version => 'Versión';
 
   @override
-  String get cast => 'Reparto';
+  String get cast => 'Transmitir';
 
   @override
   String get trailer => 'Tráiler';
