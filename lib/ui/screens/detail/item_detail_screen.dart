@@ -5953,12 +5953,15 @@ class _ActionButtonsState extends State<_ActionButtons> {
           if (lastPlayed.seasonId != null &&
               lastPlayed.seasonId!.isNotEmpty &&
               lastPlayed.seasonId != currentSeasonId) {
-            context.pushReplacement(
+            final router = GoRouter.of(context);
+            router.pushReplacement(
               Destinations.item(lastPlayed.seasonId!, serverId: lastPlayed.serverId),
             );
-            context.push(
-              Destinations.item(lastPlayed.id, serverId: lastPlayed.serverId),
-            );
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              router.push(
+                Destinations.item(lastPlayed.id, serverId: lastPlayed.serverId),
+              );
+            });
           } else {
             context.pushReplacement(
               Destinations.item(lastPlayed.id, serverId: lastPlayed.serverId),
