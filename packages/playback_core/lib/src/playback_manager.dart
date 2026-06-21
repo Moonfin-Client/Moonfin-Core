@@ -549,7 +549,7 @@ class PlaybackManager implements AudioOwnable {
         suppressAutoNext) {
       return;
     }
-    if (!autoAdvanceEnabled) {
+    if (!autoAdvanceEnabled && !_isPreroll(queueService.currentItem)) {
       _isAutoNexting = true;
       _mediaSourceId = null;
       _stopAndReportCurrent(skipQueueChange: true).whenComplete(() {
