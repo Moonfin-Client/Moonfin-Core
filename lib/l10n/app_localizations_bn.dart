@@ -7679,6 +7679,14 @@ class AppLocalizationsBn extends AppLocalizations {
       'Skip Outro বোতামের পরিবর্তে Next Up ওভারলে দেখান।';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Play Next (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'প্লেয়ার রাউটিং';
 
   @override

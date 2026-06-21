@@ -7782,6 +7782,14 @@ class AppLocalizationsMl extends AppLocalizations {
       'സ്കിപ്പ് ഔട്ട്‌റോ ബട്ടണിന് പകരം അടുത്ത അപ്പ് ഓവർലേ കാണിക്കുക.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Play Next (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'പ്ലെയർ റൂട്ടിംഗ്';
 
   @override

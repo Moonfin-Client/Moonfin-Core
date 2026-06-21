@@ -2126,22 +2126,43 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
+  /// Return true if there is content after the outro segment
+  /// (segment.end significantly before the end of the video).
+  bool _hasContentAfterOutro(MediaSegment? outroSegment) {
+    if (outroSegment == null) return false;
+    final duration = _state.duration;
+    if (duration <= Duration.zero) return false;
+    
+    // Less than 10 seconds of content after the outro is considered "not enough" to block a Next Up prompt.
+    final remaining = duration - outroSegment.end;
+    return remaining > const Duration(seconds: 10);
+  }
+
   void _checkSegments(Duration position) {
     final result = _segmentService.checkPosition(position);
     final replaceSkipOutroWithNextUp = _prefs.get(
       UserPreferences.replaceSkipOutroWithNextUp,
     );
+    final nextUpIgnoreRemainingContent = _prefs.get(
+      UserPreferences.nextUpIgnoreRemainingContent,
+    );
+
+    final effectiveIgnoreContentAfterOutro = replaceSkipOutroWithNextUp && nextUpIgnoreRemainingContent;
+
     if (result.shouldSkip && result.skipTo != null) {
       final isOutro = result.segment?.type == MediaSegmentType.outro;
-      if (replaceSkipOutroWithNextUp && isOutro && _showNextUp) {
+      final hasContentAfterOutro = isOutro && _hasContentAfterOutro(result.segment);
+      final protectContentAfterOutro = hasContentAfterOutro && !effectiveIgnoreContentAfterOutro;
+
+      if (replaceSkipOutroWithNextUp && isOutro && _showNextUp && !protectContentAfterOutro) {
         return;
       }
-      if (replaceSkipOutroWithNextUp && isOutro && _shouldShowNextUpOverlay()) {
+      if (replaceSkipOutroWithNextUp && isOutro && _shouldShowNextUpOverlay() && !protectContentAfterOutro) {
         unawaited(_manager.seekTo(result.skipTo!));
         _presentNextUpOverlay();
         return;
       }
-      if (isOutro && !_hasDistinctQueueNextItem()) {
+      if (isOutro && !_hasDistinctQueueNextItem() && !protectContentAfterOutro) {
         unawaited(_exitPlayback());
         return;
       }
@@ -2157,7 +2178,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     if (result.shouldAsk && result.isNew && result.segment != null) {
       final isOutro = result.segment!.type == MediaSegmentType.outro;
-      if (replaceSkipOutroWithNextUp && isOutro && _shouldShowNextUpOverlay()) {
+      final effectiveIgnoreContentAfterOutro = replaceSkipOutroWithNextUp && nextUpIgnoreRemainingContent;
+      final hasContentAfterOutro = isOutro && _hasContentAfterOutro(result.segment);
+      final protectContentAfterOutro = hasContentAfterOutro && !effectiveIgnoreContentAfterOutro;
+      if (replaceSkipOutroWithNextUp && isOutro && _shouldShowNextUpOverlay() && !protectContentAfterOutro) {
         _presentNextUpOverlay();
         return;
       }
@@ -2297,10 +2321,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _nextUpHideTimer?.cancel();
     _nextUpHideTimer = null;
     _isNextUpAdvancing = true;
+    
+    final previousItem = _queue.currentItem;
+
     setState(() => _showNextUp = false);
     try {
       await _checkStillWatching();
       await _manager.next();
+      unawaited(_markItemAsPlayed(previousItem));
     } finally {
       _isNextUpAdvancing = false;
     }
@@ -2360,37 +2388,65 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
   }
 
+  // Mark item as "played", used when skipping an outro segment with replaceSkipOutroWithNextUp enabled to ensure the item is marked as played in the server's library.
+  Future<void> _markItemAsPlayed(dynamic item) async {
+    if (item == null) return;
+    final itemId = _itemIdForQueueItem(item);
+    if (itemId != null && itemId.isNotEmpty) {
+      try {
+        final raw = _rawDataForQueueItem(item);
+        if (raw != null) {
+          final existingUserData = raw['UserData'];
+          final userData = existingUserData is Map<String, dynamic>
+              ? existingUserData
+              : (existingUserData is Map
+                  ? existingUserData.cast<String, dynamic>()
+                  : <String, dynamic>{});
+          userData['Played'] = true;
+          userData.remove('PlaybackPositionTicks');
+          raw['UserData'] = userData;
+        }
+        
+        final mutations = ItemMutationRepository(_clientForQueueItem(item));
+        await mutations.setPlayed(itemId, isPlayed: true);
+      } catch (_) {}
+    }
+  }
+
   void _skipCurrentSegment() {
     final replaceSkipOutroWithNextUp = _prefs.get(
       UserPreferences.replaceSkipOutroWithNextUp,
     );
-    final isOutro =
-        _skipSegment?.type == MediaSegmentType.outro ||
-        _segmentService.activeSegment?.type == MediaSegmentType.outro;
+    final nextUpIgnoreRemainingContent = _prefs.get(
+      UserPreferences.nextUpIgnoreRemainingContent,
+    );
+
+    final activeOutroSegment = _skipSegment?.type == MediaSegmentType.outro
+        ? _skipSegment
+        : (_segmentService.activeSegment?.type == MediaSegmentType.outro
+            ? _segmentService.activeSegment
+            : null);
+    final isOutro = activeOutroSegment != null;
+
+    final effectiveIgnoreContentAfterOutro = replaceSkipOutroWithNextUp && nextUpIgnoreRemainingContent;
+    final hasContentAfterOutro = _hasContentAfterOutro(activeOutroSegment);
+    final protectContentAfterOutro = hasContentAfterOutro && !effectiveIgnoreContentAfterOutro;
+    bool shouldMarkPlayed = false;
     if (isOutro) {
-      final item = _queue.currentItem;
-      final itemId = _itemIdForQueueItem(item);
-      if (itemId != null && itemId.isNotEmpty) {
-        try {
-          final mutations = ItemMutationRepository(_clientForQueueItem(item));
-          unawaited(
-            mutations.setPlayed(itemId, isPlayed: true).catchError((_) {}),
-          );
-          final raw = _rawDataForQueueItem(item);
-          if (raw != null) {
-            final existingUserData = raw['UserData'];
-            final userData = existingUserData is Map<String, dynamic>
-                ? existingUserData
-                : (existingUserData is Map
-                      ? existingUserData.cast<String, dynamic>()
-                      : <String, dynamic>{});
-            userData['Played'] = true;
-            raw['UserData'] = userData;
-          }
-        } catch (_) {}
+
+      if (_skipTo != null && _state.duration > Duration.zero) {
+        final percentage = _skipTo!.inMilliseconds / _state.duration.inMilliseconds;
+        if (percentage >= 0.90) {
+          shouldMarkPlayed = true;
+        }
+      } else if (_skipTo == null) {
+        shouldMarkPlayed = true;
       }
     }
-    if (replaceSkipOutroWithNextUp && isOutro && _shouldShowNextUpOverlay()) {
+
+    final currentItem = _queue.currentItem;
+
+    if (replaceSkipOutroWithNextUp && isOutro && _shouldShowNextUpOverlay() && !protectContentAfterOutro) {
       final skipTo = _skipTo;
       if (skipTo != null) {
         unawaited(_manager.seekTo(skipTo));
@@ -2398,13 +2454,19 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _presentNextUpOverlay();
       return;
     }
-    if (isOutro && !_hasDistinctQueueNextItem()) {
+    if (isOutro && !_hasDistinctQueueNextItem() && !protectContentAfterOutro) {
+      if (shouldMarkPlayed) {
+        unawaited(_manager.stop().then((_) => _markItemAsPlayed(currentItem)));
+      }
       unawaited(_exitPlayback());
       return;
     }
 
     if (_skipTo != null) {
       _manager.seekTo(_skipTo!);
+    }
+    if (shouldMarkPlayed) {
+      unawaited(_markItemAsPlayed(currentItem));
     }
     setState(() {
       _skipSegment = null;

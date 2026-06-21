@@ -7742,6 +7742,14 @@ class AppLocalizationsPt extends AppLocalizations {
       'Mostre a sobreposição Next Up em vez do botão Pular Outro.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Play Next (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Roteamento de Jogador';
 
   @override

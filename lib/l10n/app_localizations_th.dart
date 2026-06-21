@@ -7634,6 +7634,14 @@ class AppLocalizationsTh extends AppLocalizations {
       'แสดงโอเวอร์เลย์ถัดไปแทนปุ่มข้าม';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Play Next (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'เส้นทางผู้เล่น';
 
   @override

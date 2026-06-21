@@ -7716,6 +7716,14 @@ class AppLocalizationsMn extends AppLocalizations {
       'Skip Outro товчлуурын оронд Next Up давхаргыг харуул.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Play Next (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Тоглогчийн чиглүүлэлт';
 
   @override

@@ -7703,6 +7703,14 @@ class AppLocalizationsTr extends AppLocalizations {
       '\"Jeneriği Atla\" butonu yerine \"Sıradaki Bölüm\" ekranını göster.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Play Next (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Oynatıcı Yönlendirme';
 
   @override

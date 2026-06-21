@@ -7675,6 +7675,14 @@ class AppLocalizationsEo extends AppLocalizations {
       'Montru la kovraĵon Sekva Supre anstataŭ la butonon Saltu Outro.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Play Next (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Ludanta Vokado';
 
   @override

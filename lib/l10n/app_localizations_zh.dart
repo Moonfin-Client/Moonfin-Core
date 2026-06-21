@@ -7421,6 +7421,14 @@ class AppLocalizationsZh extends AppLocalizations {
       '显示“下一个”叠加层而不是“跳过尾奏”按钮。';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Play Next (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => '玩家路线';
 
   @override

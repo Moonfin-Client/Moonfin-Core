@@ -7802,6 +7802,14 @@ class AppLocalizationsEl extends AppLocalizations {
       'Εμφάνιση της επικάλυψης Next Up αντί για το κουμπί Skip Outro.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Play Next (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Δρομολόγηση παίκτη';
 
   @override

@@ -7695,6 +7695,14 @@ class AppLocalizationsVi extends AppLocalizations {
       'Hiển thị lớp phủ Tiếp theo thay vì nút Bỏ qua.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Play Next (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Định tuyến người chơi';
 
   @override

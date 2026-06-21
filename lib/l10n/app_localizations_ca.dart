@@ -7799,6 +7799,14 @@ class AppLocalizationsCa extends AppLocalizations {
       'Mostra la superposició Next Up en lloc del botó Salta Outro.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Play Next (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Encaminament del jugador';
 
   @override

@@ -1130,6 +1130,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final nextUpIgnoreRemainingContent = Preference(
+    key: 'next_up_ignore_remaining_content',
+    defaultValue: false,
+  );
+
   static final skipBackLength = Preference(
     key: 'skipBackLength',
     defaultValue: 10000,

@@ -7676,6 +7676,14 @@ class AppLocalizationsSi extends AppLocalizations {
       'Show the Next Up overlay instead of the Skip Outro button.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Play Next (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Player Routing';
 
   @override

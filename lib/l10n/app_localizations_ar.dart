@@ -7641,6 +7641,14 @@ class AppLocalizationsAr extends AppLocalizations {
       'قم بإظهار تراكب Next Up بدلاً من زر Skip Outro.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Play Next (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'توجيه اللاعب';
 
   @override

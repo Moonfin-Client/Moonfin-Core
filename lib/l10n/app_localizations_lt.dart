@@ -7715,6 +7715,14 @@ class AppLocalizationsLt extends AppLocalizations {
       'Vietoj mygtuko Skip Outro rodyti perdangą Next Up.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Play Next (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Žaidėjų maršrutas';
 
   @override
