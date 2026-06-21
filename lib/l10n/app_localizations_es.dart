@@ -8698,7 +8698,7 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   }
 
   @override
-  String get continuing => 'Continuo';
+  String get continuing => 'En emisión';
 
   @override
   String get ended => 'Terminado';
@@ -16709,7 +16709,7 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   }
 
   @override
-  String get continuing => 'Continuo';
+  String get continuing => 'En emisión';
 
   @override
   String get ended => 'Terminado';
@@ -24720,7 +24720,7 @@ class AppLocalizationsEsDo extends AppLocalizationsEs {
   }
 
   @override
-  String get continuing => 'Continuo';
+  String get continuing => 'En emisión';
 
   @override
   String get ended => 'Terminado';
@@ -32731,7 +32731,7 @@ class AppLocalizationsEsMx extends AppLocalizationsEs {
   }
 
   @override
-  String get continuing => 'Continuo';
+  String get continuing => 'En emisión';
 
   @override
   String get ended => 'Terminado';
