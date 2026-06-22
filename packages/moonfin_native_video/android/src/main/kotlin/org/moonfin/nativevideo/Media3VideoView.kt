@@ -973,7 +973,9 @@ class Media3VideoView(
                 }
                 it.addListener(listener)
                 it.addAnalyticsListener(analyticsListener)
-                Media3SessionController.attachPlayer(context, it)
+                if (currentMediaType != "audio") {
+                    Media3SessionController.attachPlayer(context, it)
+                }
             }
     }
 

@@ -11,6 +11,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'data/models/aggregated_item.dart';
 import 'data/services/app_update_service.dart';
 import 'data/services/cast/cast_service.dart';
 import 'data/services/download_service.dart';
@@ -566,6 +567,26 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
         state == AppLifecycleState.hidden ||
         state == AppLifecycleState.detached;
     if (!isBackground) return;
+
+    if (GetIt.instance.isRegistered<PlaybackManager>()) {
+      final manager = GetIt.instance<PlaybackManager>();
+      final item = manager.queueService.currentItem;
+      bool isAudio = false;
+      if (item is AggregatedItem) {
+        isAudio = item.isAudioLike;
+      } else if (item is String) {
+        try {
+          final meta = manager.currentOfflineMetadata;
+          if (meta != null) {
+            final type = meta['Type']?.toString();
+            final mediaType = meta['MediaType']?.toString();
+            isAudio = type == 'Audio' || type == 'AudioBook' || mediaType == 'Audio';
+          }
+        } catch (_) {}
+      }
+      if (isAudio) return;
+    }
+
     if (!GetIt.instance.isRegistered<PlaybackArbiter>()) return;
     final arbiter = GetIt.instance<PlaybackArbiter>();
     if (arbiter.pipActive) return;
