@@ -7697,6 +7697,14 @@ class AppLocalizationsCs extends AppLocalizations {
       'Zobrazte překryvnou vrstvu Next Up namísto tlačítka Skip Outro.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Next Up Forced (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Směrování hráčů';
 
   @override

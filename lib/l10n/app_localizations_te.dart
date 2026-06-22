@@ -7737,6 +7737,14 @@ class AppLocalizationsTe extends AppLocalizations {
       'స్కిప్ అవుట్‌రో బటన్‌కు బదులుగా తదుపరి పైకి అతివ్యాప్తిని చూపండి.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Next Up Forced (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'ప్లేయర్ రూటింగ్';
 
   @override

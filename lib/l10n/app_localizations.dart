@@ -13678,6 +13678,18 @@ abstract class AppLocalizations {
   /// **'Show the Next Up overlay instead of the Skip Outro button.'**
   String get replaceSkipOutroWithNextUpDisplaySubtitle;
 
+  /// No description provided for @nextUpIgnoreRemainingContentDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Up Forced (Ignore Remaining Content After Outro)'**
+  String get nextUpIgnoreRemainingContentDisplay;
+
+  /// No description provided for @nextUpIgnoreRemainingContentDisplaySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trigger Next Up pop-up even if there\'s remaining content after outro.'**
+  String get nextUpIgnoreRemainingContentDisplaySubtitle;
+
   /// No description provided for @playerRouting.
   ///
   /// In en, this message translates to:

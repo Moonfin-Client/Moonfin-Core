@@ -7752,6 +7752,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Zeigen Sie das Next Up-Overlay anstelle der Schaltfläche „Outro überspringen“ an.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Next Up Forced (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Spielerrouting';
 
   @override

@@ -2880,6 +2880,7 @@ class _AutomationQueueScreenState extends State<_AutomationQueueScreen> {
     final showNextUpOptions = nextUpBehavior != NextUpBehavior.disabled;
     final showReplaceSkipOutroWithNextUp =
         showNextUpOptions && mediaSegmentActions == _promptSkipSegments;
+    final isReplaceSkipOutroEnabled = _prefs.get(UserPreferences.replaceSkipOutroWithNextUp);
 
     return Scaffold(
       appBar: buildSettingsAppBar(
@@ -2957,6 +2958,13 @@ class _AutomationQueueScreenState extends State<_AutomationQueueScreen> {
               title: l10n.replaceSkipOutroWithNextUpDisplay,
               subtitle: l10n.replaceSkipOutroWithNextUpDisplaySubtitle,
               icon: Icons.skip_next,
+            ),
+          if (showReplaceSkipOutroWithNextUp && isReplaceSkipOutroEnabled)
+            SwitchPreferenceTile(
+              preference: UserPreferences.nextUpIgnoreRemainingContent,
+              title: l10n.nextUpIgnoreRemainingContentDisplay,
+              subtitle: l10n.nextUpIgnoreRemainingContentDisplaySubtitle,
+              icon: Icons.play_arrow,
             ),
           EnumPreferenceTile<StillWatchingBehavior>(
             preference: UserPreferences.stillWatchingBehavior,

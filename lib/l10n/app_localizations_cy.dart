@@ -7711,6 +7711,14 @@ class AppLocalizationsCy extends AppLocalizations {
       'Dangoswch y troshaen Next Up yn lle\'r botwm Skip Outro.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Next Up Forced (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Llwybro Chwaraewr';
 
   @override

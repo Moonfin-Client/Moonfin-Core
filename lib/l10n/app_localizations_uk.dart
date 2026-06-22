@@ -7733,6 +7733,14 @@ class AppLocalizationsUk extends AppLocalizations {
       'Показати накладення Next Up замість кнопки Skip Outro.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Next Up Forced (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Маршрутизація гравців';
 
   @override

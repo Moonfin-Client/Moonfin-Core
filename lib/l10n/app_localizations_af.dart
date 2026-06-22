@@ -7693,6 +7693,14 @@ class AppLocalizationsAf extends AppLocalizations {
       'Wys die Next Up-oorleg in plaas van die Skip Outro-knoppie.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Next Up Forced (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Spelerroetering';
 
   @override

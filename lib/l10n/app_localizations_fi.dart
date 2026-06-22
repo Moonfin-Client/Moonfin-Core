@@ -7711,6 +7711,14 @@ class AppLocalizationsFi extends AppLocalizations {
       'Näytä Next Up -peittokuva Ohita Outro -painikkeen sijaan.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Next Up Forced (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Pelaajien reititys';
 
   @override

@@ -7783,6 +7783,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Afficher la superposition Next Up au lieu du bouton Ignorer Outro.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Next Up Forced (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Routage des joueurs';
 
   @override

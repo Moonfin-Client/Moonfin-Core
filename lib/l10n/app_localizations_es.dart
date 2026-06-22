@@ -7761,6 +7761,14 @@ class AppLocalizationsEs extends AppLocalizations {
       'Muestra la superposición Siguiente en lugar del botón Omitir salida.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Next Up Forced (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Enrutamiento del jugador';
 
   @override

@@ -7683,6 +7683,14 @@ class AppLocalizationsDa extends AppLocalizations {
       'Vis Next Up-overlejringen i stedet for knappen Spring Outro over.';
 
   @override
+  String get nextUpIgnoreRemainingContentDisplay =>
+      'Next Up Forced (Ignore Remaining Content After Outro)';
+
+  @override
+  String get nextUpIgnoreRemainingContentDisplaySubtitle =>
+      'Trigger Next Up pop-up even if there\'s remaining content after outro.';
+
+  @override
   String get playerRouting => 'Spillerruting';
 
   @override
