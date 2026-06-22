@@ -3378,7 +3378,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     if (_showNextUp && _nextUpItem != null)
                       NextUpOverlay(
                         nextItem: _nextUpItem!,
-                        imageUrl: _nextUpItem!.primaryImageTag != null
+                        isMinimal: _prefs.get(UserPreferences.nextUpBehavior) == NextUpBehavior.minimal,
+                        imageUrl: _nextUpItem!.primaryImageTag != null &&
+                                _prefs.get(UserPreferences.nextUpBehavior) != NextUpBehavior.minimal
                             ? _clientForItem(
                                 _nextUpItem!,
                               ).imageApi.getPrimaryImageUrl(

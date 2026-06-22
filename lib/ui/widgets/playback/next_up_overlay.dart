@@ -20,6 +20,7 @@ class NextUpOverlay extends StatefulWidget {
   final VoidCallback? onTimeout;
   final FocusNode? focusNode;
   final FocusNode? dismissFocusNode;
+  final bool isMinimal;
 
   const NextUpOverlay({
     super.key,
@@ -31,6 +32,7 @@ class NextUpOverlay extends StatefulWidget {
     this.onTimeout,
     this.focusNode,
     this.dismissFocusNode,
+    this.isMinimal = false,
   });
 
   @override
@@ -87,7 +89,7 @@ class _NextUpOverlayState extends State<NextUpOverlay>
       right: 24,
       bottom: 120,
       child: Container(
-        width: 340,
+        width: widget.isMinimal ? 300 : 340,
         decoration: BoxDecoration(
           color: AppColorScheme.surface.withValues(alpha: 0.95),
           borderRadius: BorderRadius.circular(12),
@@ -104,18 +106,27 @@ class _NextUpOverlayState extends State<NextUpOverlay>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (widget.imageUrl != null)
-              SizedBox(
-                height: 120,
-                child: CachedNetworkImage(
-                  imageUrl: widget.imageUrl!,
-                  fit: BoxFit.cover,
-                  errorWidget: (_, _, _) =>
-                      Container(color: AppColorScheme.surfaceVariant),
+            if (widget.imageUrl != null && !widget.isMinimal)
+              CachedNetworkImage(
+                imageUrl: widget.imageUrl!,
+                fit: BoxFit.fitWidth,
+                placeholder: (context, url) => const AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Center(
+                    child: SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                ),
+                errorWidget: (_, _, _) => AspectRatio(
+                  aspectRatio: 16 / 9,
+                  child: Container(color: AppColorScheme.surfaceVariant),
                 ),
               ),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(widget.isMinimal ? 8 : 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -125,9 +136,9 @@ class _NextUpOverlayState extends State<NextUpOverlay>
                     children: [
                       Text(
                         l10n.upNext,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white54,
-                          fontSize: 12,
+                          fontSize: widget.isMinimal ? 11 : 12,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -144,9 +155,9 @@ class _NextUpOverlayState extends State<NextUpOverlay>
                                 : ':${secs.toString().padLeft(2, '0')}';
                             return Text(
                               l10n.endsIn(timerText),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white54,
-                                fontSize: 12,
+                                fontSize: widget.isMinimal ? 11 : 12,
                                 fontWeight: FontWeight.w600,
                               ),
                             );
@@ -154,20 +165,20 @@ class _NextUpOverlayState extends State<NextUpOverlay>
                         ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: widget.isMinimal ? 2 : 4),
                   Text(
                     [epInfo, item.name]
                         .where((s) => s != null && s.isNotEmpty)
                         .join(' — '),
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
-                      fontSize: 15,
+                      fontSize: widget.isMinimal ? 13 : 15,
                       fontWeight: FontWeight.w600,
                     ),
-                    maxLines: 2,
+                    maxLines: widget.isMinimal ? 1 : 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: widget.isMinimal ? 8 : 12),
                   Row(
                     children: [
                       Expanded(
@@ -197,7 +208,10 @@ class _NextUpOverlayState extends State<NextUpOverlay>
                                       : AppColorScheme.surfaceVariant.withValues(alpha: 0.9))
                                   : AppColorScheme.accent,
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              padding: EdgeInsets.symmetric(
+                                vertical: widget.isMinimal ? 6 : 10,
+                                horizontal: widget.isMinimal ? 8 : 16,
+                              ),
                             ),
                             child: Text(l10n.playNext),
                           ),
@@ -230,7 +244,10 @@ class _NextUpOverlayState extends State<NextUpOverlay>
                             side: _dismissFocused
                                 ? ThemeRegistry.active.borders.focusBorder
                                 : ThemeRegistry.active.borders.chipBorder,
-                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            padding: EdgeInsets.symmetric(
+                              vertical: widget.isMinimal ? 6 : 10,
+                              horizontal: widget.isMinimal ? 8 : 16,
+                            ),
                           ),
                           child: Text(l10n.close),
                         ),
