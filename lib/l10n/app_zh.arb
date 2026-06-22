@@ -261,15 +261,15 @@
     "@exit": {
         "description": "Exit button label"
     },
-    "noHomeRowsLoaded": "无法加载主页栏目",
+    "noHomeRowsLoaded": "无法加载主页行",
     "@noHomeRowsLoaded": {
         "description": "Heading when home screen has no rows to display"
     },
-    "noHomeRowsHint": "尝试刷新或减少活跃的主页部分。",
+    "noHomeRowsHint": "尝试刷新或减少活跃的主页行。",
     "@noHomeRowsHint": {
         "description": "Hint text below the no-home-rows heading"
     },
-    "retryHomeRows": "重试主页栏目",
+    "retryHomeRows": "重试主页行",
     "@retryHomeRows": {
         "description": "Button to retry loading home rows after failure"
     },
@@ -2730,11 +2730,11 @@
     "@seriesThumbnailsDescription": {
         "description": "Description for series thumbnails setting"
     },
-    "homeRowInfoOverlay": "主页栏目信息遮罩",
+    "homeRowInfoOverlay": "主页行信息遮罩",
     "@homeRowInfoOverlay": {
         "description": "Setting for home row info overlay"
     },
-    "showTitleMetadataOnHomeRows": "浏览主页栏目时显示标题和元数据",
+    "showTitleMetadataOnHomeRows": "浏览主页行时显示标题和元数据",
     "@showTitleMetadataOnHomeRows": {
         "description": "Description for home row info overlay"
     },
@@ -2791,7 +2791,7 @@
             }
         }
     },
-    "themeMusicOnHomeRows": "主页栏目主题音乐",
+    "themeMusicOnHomeRows": "主页行主题音乐",
     "@themeMusicOnHomeRows": {
         "description": "Setting for theme music on home rows"
     },
@@ -3697,7 +3697,7 @@
     "@resetToDefaults": {
         "description": "Tooltip for reset to defaults button"
     },
-    "homeRowPosterSize": "主页栏目海报尺寸",
+    "homeRowPosterSize": "主页行海报尺寸",
     "@homeRowPosterSize": {
         "description": "Setting for home row poster size"
     },
@@ -4231,7 +4231,7 @@
     "@navbarStyleToolbarAppearance": {
         "description": "Navigation settings subtitle"
     },
-    "reorderToggleHomeRows": "重新排序和切换主页栏目",
+    "reorderToggleHomeRows": "重新排序和切换主页行",
     "@reorderToggleHomeRows": {
         "description": "Home sections settings subtitle"
     },
@@ -4314,15 +4314,15 @@
             }
         }
     },
-    "approve": "批准",
+    "approve": "同意",
     "@approve": {
         "description": "Tooltip/button to approve a request"
     },
-    "declineAction": "衰退",
+    "declineAction": "拒绝",
     "@declineAction": {
         "description": "Tooltip/button to decline a request"
     },
-    "similar": "相似的",
+    "similar": "相似",
     "@similar": {
         "description": "Section title for similar media"
     },
@@ -4363,7 +4363,7 @@
     "@errorSearchingLibrary": {
         "description": "Snackbar when library search fails"
     },
-    "budgetAmount": "预算：${amount}",
+    "budgetAmount": "制作预算：${amount}",
     "@budgetAmount": {
         "description": "Movie budget display",
         "placeholders": {
@@ -4372,7 +4372,7 @@
             }
         }
     },
-    "revenueAmount": "收入：${amount}",
+    "revenueAmount": "票房收入：${amount}",
     "@revenueAmount": {
         "description": "Movie revenue display",
         "placeholders": {
@@ -4471,7 +4471,7 @@
     "@downloadingStatus": {
         "description": "Request status label"
     },
-    "approvedStatus": "得到正式认可的",
+    "approvedStatus": "已通过",
     "@approvedStatus": {
         "description": "Request status label"
     },
@@ -4487,7 +4487,7 @@
     "@deletedStatus": {
         "description": "Request status label for deleted media"
     },
-    "tmdbScore": "TMDB分数",
+    "tmdbScore": "TMDB 评分",
     "@tmdbScore": {
         "description": "Stat label for TMDB user score"
     },
@@ -4499,15 +4499,15 @@
     "@firstAirDateLabel": {
         "description": "Stat label for first air date"
     },
-    "revenueLabel": "收入",
+    "revenueLabel": "票房",
     "@revenueLabel": {
         "description": "Stat label for revenue"
     },
-    "runtimeLabel": "运行时",
+    "runtimeLabel": "片长",
     "@runtimeLabel": {
         "description": "Stat label for runtime"
     },
-    "budgetLabel": "预算",
+    "budgetLabel": "制作预算",
     "@budgetLabel": {
         "description": "Stat label for budget"
     },
@@ -4523,62 +4523,62 @@
     "@episodesLabel": {
         "description": "Stat label for number of episodes"
     },
-    "access": "使用权",
+    "access": "访问权限",
     "add": "添加",
     "address": "地址",
     "analytics": "分析",
     "catalog": "目录",
     "content": "内容",
     "copy": "复制",
-    "create": "创造",
+    "create": "创建",
     "disable": "禁用",
-    "done": "完毕",
+    "done": "完成",
     "edit": "编辑",
     "encoding": "编码",
     "error": "错误",
-    "forward": "向前",
-    "general": "一般的",
-    "go": "去",
+    "forward": "快进",
+    "general": "常规",
+    "go": "前往",
     "install": "安装",
     "installed": "已安装",
     "interval": "间隔",
     "name": "姓名",
-    "networking": "联网",
+    "networking": "网络设置",
     "next": "下一个",
-    "path": "小路",
+    "path": "路径",
     "paused": "已暂停",
     "permissions": "权限",
-    "processing": "加工",
-    "profile": "轮廓",
-    "provider": "提供者",
+    "processing": "正在处理",
+    "profile": "配置文件",
+    "provider": "数据源",
     "refresh": "刷新",
-    "remote": "偏僻的",
+    "remote": "远程",
     "rename": "重命名",
     "revoke": "撤销",
     "role": "角色",
-    "root": "根",
-    "run": "跑步",
+    "root": "根目录",
+    "run": "运行",
     "search": "搜索",
     "select": "选择",
     "send": "发送",
-    "sessions": "会议",
-    "set": "放",
-    "status": "地位",
+    "sessions": "会话",
+    "set": "设置",
+    "status": "状态",
     "stop": "停止",
     "streaming": "流媒体",
     "time": "时间",
-    "trickplay": "特技游戏",
+    "trickplay": "缩略预加载",
     "uninstall": "卸载",
-    "up": "向上",
+    "up": "上移",
     "update": "更新",
     "upload": "上传",
     "unmute": "取消静音",
-    "mute": "沉默的",
+    "mute": "静音",
     "branding": "品牌推广",
     "adminDrawerDashboard": "仪表板",
     "adminDrawerAnalytics": "分析",
     "adminDrawerSettings": "设置",
-    "adminDrawerBranding": "品牌推广",
+    "adminDrawerBranding": "界面品牌定制",
     "adminDrawerUsers": "用户",
     "adminDrawerLibraries": "媒体库",
     "adminDrawerTranscoding": "转码",
@@ -4677,14 +4677,14 @@
     "adminMessageTextHint": "留言内容",
     "adminSetVolume": "设置音量",
     "sessionPrev": "上一篇",
-    "sessionRewind": "倒带",
-    "sessionForward": "向前",
+    "sessionRewind": "快退",
+    "sessionForward": "快进",
     "sessionNext": "下一个",
     "sessionVolumeDown": "卷 –",
     "sessionVolumeUp": "卷+",
     "uhd4k": "4K",
     "nowPlaying": "正在播放",
-    "volume": "体积",
+    "volume": "卷",
     "actions": "行动",
     "videoCodec": "视频编解码器",
     "audioCodec": "音频编解码器",
@@ -4692,7 +4692,7 @@
     "completion": "完成",
     "direct": "直接的",
     "adminDisconnect": "断开",
-    "adminClearDates": "明确日期",
+    "adminClearDates": "清理日期",
     "adminActivityLoadFailed": "无法加载活动日志：{error}",
     "@adminActivityLoadFailed": {
         "placeholders": {
@@ -4726,7 +4726,7 @@
     "adminDevicesLoadFailed": "加载设备失败",
     "adminSearchDevices": "搜索设备",
     "adminThisDevice": "本设备",
-    "adminEditName": "编辑姓名",
+    "adminEditName": "编辑名字",
     "adminLibrariesLoadFailed": "加载媒体库失败",
     "adminNoLibraries": "未配置媒体库",
     "adminScanAllLibraries": "扫描所有媒体库",
@@ -7097,9 +7097,9 @@
     "themeEditorSubtitle": "在浏览器中打开Moonfin主题编辑器",
     "homeScreen": "主屏幕",
     "bottomBar": "底栏",
-    "homeRowsStyleClassic": "经典的",
-    "homeRowsStyleModern": "现代的",
-    "homeRowsSection": "首页行",
+    "homeRowsStyleClassic": "经典",
+    "homeRowsStyleModern": "现代",
+    "homeRowsSection": "主页行",
     "rowsType": "行类型",
     "rowsTypeDescription": "经典模式保留每行的图像类型和信息叠加层。现代模式使用从竖版图到背景图的行布局。",
     "displayFavoritesRows": "显示收藏夹行",
@@ -7392,8 +7392,8 @@
     "settingsMaxAudioChannels6_1": "6.1 环绕声",
     "settingsMaxAudioChannels7_1": "7.1 环绕声",
     "showSeerrButton": "显示 Seerr 按钮",
-    "fullScreenRows": "展开首页行",
-    "fullScreenRowsDescription": "将首页行限制为每屏 1 行",
+    "fullScreenRows": "展开主页行",
+    "fullScreenRowsDescription": "将主页行限制为每屏 1 行",
     "currentUser": "当前用户",
     "clockModeStatic": "固定",
     "clockModeBouncing": "弹跳",
@@ -7417,10 +7417,10 @@
     "themeStoreSaved": "已保存",
     "themeStoreInvalidMessage": "无法加载此主题。",
     "themeStoreSavedMessage": "已保存“{themeName}”。",
-    "homeRowDisplay": "首页行显示",
-    "homeRowSections": "首页行栏目",
-    "homeRowToggles": "首页行开关",
-    "homeRowTogglesSubtitle": "启用或禁用不同的首页行类别",
+    "homeRowDisplay": "主页行显示",
+    "homeRowSections": "主页行栏目",
+    "homeRowToggles": "主页行开关",
+    "homeRowTogglesSubtitle": "启用或禁用不同的主页行类别",
     "homeRowTogglesDescription": "启用以下开关以在首页栏目中显示对应行。",
     "displayPlaylistsRows": "显示播放列表行",
     "displayPlaylistsRowsSubtitle": "在首页栏目中显示播放列表行。",
