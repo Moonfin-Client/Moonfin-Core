@@ -249,7 +249,7 @@
             }
         }
     },
-    "exitApp": "退出Moonfin？",
+    "exitApp": "退出 Moonfin？",
     "@exitApp": {
         "description": "Title of exit confirmation dialog"
     },
