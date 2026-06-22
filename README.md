@@ -529,6 +529,15 @@ We welcome contributions to Moonfin.
 4. Run static checks (`flutter analyze`).
 5. Open a PR with context, screenshots/logs when useful, and test notes.
 
+## Help translate Moonfin [here](https://translate.moonfin.io/engage/moonfin-core/)
+
+<a href="https://translate.moonfin.io/engage/moonfin-core/">
+  <img
+    src="https://translate.moonfin.io/widgets/moonfin-core/-/multi-auto.svg"
+    alt="Moonfin Core translation status by language"
+  />
+</a>
+
 ## Support & Community
 
 - **Issues**: [GitHub Issues](https://github.com/Moonfin-Client/Moonfin-Core/issues)
