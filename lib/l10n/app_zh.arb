@@ -261,7 +261,7 @@
     "@exit": {
         "description": "Exit button label"
     },
-    "noHomeRowsLoaded": "无法加载主行",
+    "noHomeRowsLoaded": "无法加载主页栏目",
     "@noHomeRowsLoaded": {
         "description": "Heading when home screen has no rows to display"
     },
@@ -269,7 +269,7 @@
     "@noHomeRowsHint": {
         "description": "Hint text below the no-home-rows heading"
     },
-    "retryHomeRows": "重试主行",
+    "retryHomeRows": "重试主页栏目",
     "@retryHomeRows": {
         "description": "Button to retry loading home rows after failure"
     },
@@ -293,7 +293,7 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "家",
+    "home": "主页",
     "@home": {
         "description": "Home navigation tooltip"
     },
@@ -416,7 +416,7 @@
     "@sortBy": {
         "description": "Section header for sort options"
     },
-    "display": "展示",
+    "display": "显示",
     "@display": {
         "description": "Dialog title for display settings"
     },
@@ -428,19 +428,19 @@
     "@posterSize": {
         "description": "Setting for poster size"
     },
-    "small": "小的",
+    "small": "小",
     "@small": {
         "description": "Poster size option"
     },
-    "medium": "中等的",
+    "medium": "中",
     "@medium": {
         "description": "Poster size option"
     },
-    "large": "大的",
+    "large": "大",
     "@large": {
         "description": "Poster size option"
     },
-    "extraLarge": "特大号",
+    "extraLarge": "特大",
     "@extraLarge": {
         "description": "Size option: extra large"
     },
@@ -696,7 +696,7 @@
             }
         }
     },
-    "readyWhenYouAre": "随时可以开始",
+    "readyWhenYouAre": "当你准备好时",
     "@readyWhenYouAre": {
         "description": "Label shown when no reading progress exists"
     },
@@ -1111,7 +1111,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "投屏",
+    "cast": "投射",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1119,7 +1119,7 @@
     "@trailer": {
         "description": "Action button label for trailer playback"
     },
-    "finished": "完成的",
+    "finished": "已完成",
     "@finished": {
         "description": "Status label for a finished book"
     },
@@ -1478,7 +1478,7 @@
             }
         }
     },
-    "died": "死于{date}",
+    "died": "逝世于{date}",
     "@died": {
         "description": "Person death date label",
         "placeholders": {
@@ -1842,7 +1842,7 @@
     "@video": {
         "description": "Section header for video stream info"
     },
-    "resolution": "解决",
+    "resolution": "分辨率",
     "@resolution": {
         "description": "Stream info label for video resolution"
     },
@@ -1862,7 +1862,7 @@
     "@track": {
         "description": "Stream info label for track name"
     },
-    "channels": "渠道",
+    "channels": "频道",
     "@channels": {
         "description": "Stream info label for audio channels"
     },
@@ -1878,11 +1878,11 @@
     "@format": {
         "description": "Stream info label for subtitle format"
     },
-    "external": "外部的",
+    "external": "外挂",
     "@external": {
         "description": "Subtitle type label for external subtitles"
     },
-    "embedded": "嵌入式",
+    "embedded": "内嵌",
     "@embedded": {
         "description": "Subtitle type label for embedded subtitles"
     },
@@ -2065,15 +2065,15 @@
     "@themeSystem": {
         "description": "Reader theme option for system default"
     },
-    "themeLight": "主题：光",
+    "themeLight": "主题：亮色",
     "@themeLight": {
         "description": "Reader theme option for light mode"
     },
-    "themeDark": "主题：黑暗",
+    "themeDark": "主题：暗色",
     "@themeDark": {
         "description": "Reader theme option for dark mode"
     },
-    "themeSepia": "主题： 棕褐色",
+    "themeSepia": "主题：棕褐色",
     "@themeSepia": {
         "description": "Reader theme option for sepia mode"
     },
@@ -2093,7 +2093,7 @@
     "@pdfDataNotAvailable": {
         "description": "Error when PDF data cannot be loaded"
     },
-    "readerFallbackModeActive": "读卡器回退模式已激活",
+    "readerFallbackModeActive": "阅读器回退模式已激活",
     "@readerFallbackModeActive": {
         "description": "Title for fallback reader mode"
     },
@@ -2110,7 +2110,7 @@
     "@reloadReaderPlatformHint": {
         "description": "Hint text in fallback reader mode"
     },
-    "openExternally": "对外开放",
+    "openExternally": "在外部打开",
     "@openExternally": {
         "description": "Button to open document in external viewer"
     },
@@ -2118,7 +2118,7 @@
     "@noEpubChaptersFound": {
         "description": "Error when no EPUB chapters are found"
     },
-    "readerNotReady": "读者还没准备好。",
+    "readerNotReady": ""阅读器尚未准备好。",
     "@readerNotReady": {
         "description": "Error when reader has not finished initializing"
     },
@@ -2130,15 +2130,15 @@
     "@now": {
         "description": "Button label to jump to current time in guide"
     },
-    "sports": "运动的",
+    "sports": "体育",
     "@sports": {
         "description": "Sports category filter label"
     },
-    "news": "消息",
+    "news": "新闻",
     "@news": {
         "description": "News category filter label"
     },
-    "kids": "孩子们",
+    "kids": "儿童",
     "@kids": {
         "description": "Kids category filter label"
     },
@@ -2146,11 +2146,11 @@
     "@premiere": {
         "description": "Premiere category filter label"
     },
-    "guideTimeline": "指南时间表",
+    "guideTimeline": "节目指南时间轴",
     "@guideTimeline": {
         "description": "Section title for the TV guide timeline"
     },
-    "failedToLoadGuide": "无法加载指南：{error}",
+    "failedToLoadGuide": "无法加载节目指南：{error}",
     "@failedToLoadGuide": {
         "description": "Error when guide data fails to load",
         "placeholders": {
@@ -2163,7 +2163,7 @@
     "@noChannelsFound": {
         "description": "Empty state when no TV channels match the filter"
     },
-    "liveBadge": "居住",
+    "liveBadge": "直播",
     "@liveBadge": {
         "description": "Badge label shown on currently airing programs"
     },
@@ -2183,15 +2183,15 @@
     "@failedToUpdateFavoriteChannel": {
         "description": "Error when toggling channel favorite fails"
     },
-    "unfavoriteChannel": "不喜欢的频道",
+    "unfavoriteChannel": "取消收藏频道",
     "@unfavoriteChannel": {
         "description": "Button label to remove a channel from favorites"
     },
-    "favoriteChannel": "最喜欢的频道",
+    "favoriteChannel": "收藏频道",
     "@favoriteChannel": {
         "description": "Button label to add a channel to favorites"
     },
-    "watch": "手表",
+    "watch": "观看",
     "@watch": {
         "description": "Button label to start watching a channel"
     },
@@ -2374,7 +2374,7 @@
     "@playAlbum": {
         "description": "Button to play an album"
     },
-    "failedToLoadAlbum": "加载相册失败：{error}",
+    "failedToLoadAlbum": "加载专辑失败：{error}",
     "@failedToLoadAlbum": {
         "description": "Error when loading an album fails",
         "placeholders": {
@@ -2459,7 +2459,7 @@
     "@downloadedEpisodes": {
         "description": "Section title for downloaded episodes"
     },
-    "seasonNumber": "季{number}",
+    "seasonNumber": "第{number}季",
     "@seasonNumber": {
         "description": "Season label with number",
         "placeholders": {
@@ -2468,7 +2468,7 @@
             }
         }
     },
-    "seasonChip": "S{number}",
+    "seasonChip": "第{number}季",
     "@seasonChip": {
         "description": "Compact season chip label",
         "placeholders": {
@@ -2477,7 +2477,7 @@
             }
         }
     },
-    "specials": "特价商品",
+    "specials": "特别季",
     "@specials": {
         "description": "Label for special episodes"
     },
@@ -2573,7 +2573,7 @@
     "@settings": {
         "description": "Settings screen title"
     },
-    "authentication": "验证",
+    "authentication": "认证",
     "@authentication": {
         "description": "Auth settings section title"
     },
@@ -2581,7 +2581,7 @@
     "@autoLoginServerManagement": {
         "description": "Auth settings description"
     },
-    "pinCode": "密码",
+    "pinCode": "pin 码",
     "@pinCode": {
         "description": "PIN code settings title"
     },
@@ -2605,7 +2605,7 @@
     "@languageSizeAppearance": {
         "description": "Subtitle settings description"
     },
-    "qualityStorage": "质量、储存",
+    "qualityStorage": "画质、储存",
     "@qualityStorage": {
         "description": "Download settings description"
     },
@@ -2637,7 +2637,7 @@
     "@signInAndSecurity": {
         "description": "Account section description"
     },
-    "administration": "行政",
+    "administration": "管理",
     "@administration": {
         "description": "Administration section title"
     },
@@ -2645,7 +2645,7 @@
     "@serverSettingsUsersLibraries": {
         "description": "Administration section description"
     },
-    "customization": "定制化",
+    "customization": "自定义",
     "@customization": {
         "description": "Customization section title"
     },
@@ -2686,7 +2686,7 @@
     "@focusBorderColor": {
         "description": "Setting for focus border color"
     },
-    "watchedIndicators": "观察指标",
+    "watchedIndicators": "观看指示器",
     "@watchedIndicators": {
         "description": "Setting for watched indicator display"
     },
@@ -2694,7 +2694,7 @@
     "@always": {
         "description": "Option: always"
     },
-    "hideUnwatched": "隐藏无人监视",
+    "hideUnwatched": "隐藏未观看指示器",
     "@hideUnwatched": {
         "description": "Option: hide unwatched indicators"
     },
@@ -2714,7 +2714,7 @@
     "@scaleFocusedCards": {
         "description": "Description for focus expansion animation"
     },
-    "backgroundBackdrops": "背景背景",
+    "backgroundBackdrops": "全屏背景图",
     "@backgroundBackdrops": {
         "description": "Setting for background backdrops"
     },
@@ -2730,11 +2730,11 @@
     "@seriesThumbnailsDescription": {
         "description": "Description for series thumbnails setting"
     },
-    "homeRowInfoOverlay": "主行信息叠加",
+    "homeRowInfoOverlay": "主页栏目信息遮罩",
     "@homeRowInfoOverlay": {
         "description": "Setting for home row info overlay"
     },
-    "showTitleMetadataOnHomeRows": "浏览主行时显示标题和元数据",
+    "showTitleMetadataOnHomeRows": "浏览主页栏目时显示标题和元数据",
     "@showTitleMetadataOnHomeRows": {
         "description": "Description for home row info overlay"
     },
@@ -2791,7 +2791,7 @@
             }
         }
     },
-    "themeMusicOnHomeRows": "主行主题音乐",
+    "themeMusicOnHomeRows": "主页栏目主题音乐",
     "@themeMusicOnHomeRows": {
         "description": "Setting for theme music on home rows"
     },
@@ -2828,7 +2828,7 @@
     "@playerZoomMode": {
         "description": "Setting for player zoom mode"
     },
-    "fit": "合身",
+    "fit": "适应",
     "@fit": {
         "description": "Zoom mode: fit"
     },
@@ -2836,7 +2836,7 @@
     "@autoCrop": {
         "description": "Zoom mode: auto crop"
     },
-    "stretch": "拉紧",
+    "stretch": "拉伸",
     "@stretch": {
         "description": "Zoom mode: stretch"
     },
@@ -2844,7 +2844,7 @@
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
-    "disabled": "残疾人",
+    "disabled": "禁用",
     "@disabled": {
         "description": "Option: disabled"
     },
@@ -2852,11 +2852,11 @@
     "@scaleOnTv": {
         "description": "Refresh rate option: scale on TV"
     },
-    "scaleOnDevice": "在设备上扩展",
+    "scaleOnDevice": "在设备上缩放",
     "@scaleOnDevice": {
         "description": "Refresh rate option: scale on device"
     },
-    "trickPlay": "特技游戏",
+    "trickPlay": "预览缩略图",
     "@trickPlay": {
         "description": "Setting for trick play thumbnails"
     },
@@ -2920,15 +2920,15 @@
     "@portuguese": {
         "description": "Language: Portuguese"
     },
-    "japanese": "日本人",
+    "japanese": "日语",
     "@japanese": {
         "description": "Language: Japanese"
     },
-    "korean": "韩国人",
+    "korean": "韩语",
     "@korean": {
         "description": "Language: Korean"
     },
-    "chinese": "中国人",
+    "chinese": "汉语",
     "@chinese": {
         "description": "Language: Chinese"
     },
@@ -3229,7 +3229,7 @@
     "@desktop": {
         "description": "Profile: desktop"
     },
-    "mobile": "移动的",
+    "mobile": "移动",
     "@mobile": {
         "description": "Profile: mobile"
     },
@@ -3264,7 +3264,7 @@
             }
         }
     },
-    "customizationProfile": "定制简介",
+    "customizationProfile": "自定义简介",
     "@customizationProfile": {
         "description": "Setting for customization profile"
     },
@@ -3272,7 +3272,7 @@
     "@customizationProfileDescription": {
         "description": "Description for customization profile"
     },
-    "loadProfile": "负载曲线",
+    "loadProfile": "加载配置文件",
     "@loadProfile": {
         "description": "Button to load a profile"
     },
@@ -3312,7 +3312,7 @@
     "@onlyDownloadOnWifi": {
         "description": "Description for wifi-only downloads"
     },
-    "storage": "贮存",
+    "storage": "存储空间",
     "@storage": {
         "description": "Section title for storage settings"
     },
@@ -3344,7 +3344,7 @@
     "@downloadsVisibleToOtherApps": {
         "description": "Description for downloads folder visibility"
     },
-    "dangerZone": "危险区",
+    "dangerZone": "风险操作区",
     "@dangerZone": {
         "description": "Section title for dangerous actions"
     },
@@ -3352,7 +3352,7 @@
     "@clearAllDownloads": {
         "description": "Button to clear all downloads"
     },
-    "original": "原来的",
+    "original": "原始",
     "@original": {
         "description": "Quality option: original"
     },
@@ -3380,7 +3380,7 @@
     "@saveToDownloadsFolderDescription": {
         "description": "Description for saving to downloads folder"
     },
-    "enable": "使能够",
+    "enable": "启用",
     "@enable": {
         "description": "Button to enable a feature"
     },
@@ -3428,7 +3428,7 @@
     "@navbarColor": {
         "description": "Setting for navbar color"
     },
-    "gray": "灰色的",
+    "gray": "灰色",
     "@gray": {
         "description": "Color: gray"
     },
@@ -3436,23 +3436,23 @@
     "@darkBlue": {
         "description": "Color: dark blue"
     },
-    "purple": "紫色的",
+    "purple": "紫色",
     "@purple": {
         "description": "Color: purple"
     },
-    "teal": "青色",
+    "teal": "青绿色",
     "@teal": {
         "description": "Color: teal"
     },
-    "navy": "海军",
+    "navy": "海军蓝",
     "@navy": {
         "description": "Color: navy"
     },
-    "charcoal": "木炭",
+    "charcoal": "炭灰色",
     "@charcoal": {
         "description": "Color: charcoal"
     },
-    "brown": "棕色的",
+    "brown": "棕色",
     "@brown": {
         "description": "Color: brown"
     },
@@ -3464,7 +3464,7 @@
     "@darkGreen": {
         "description": "Color: dark green"
     },
-    "slate": "石板",
+    "slate": "石板灰",
     "@slate": {
         "description": "Color: slate"
     },
@@ -3569,7 +3569,7 @@
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
-    "mediaBarModeMakd": "马克D",
+    "mediaBarModeMakd": "MakD 样式",
     "@mediaBarModeMakd": {
         "description": "Media bar style option: MakD"
     },
@@ -3673,7 +3673,7 @@
     "@resumeAudio": {
         "description": "Home section: resume audio"
     },
-    "resumeBooks": "简历书籍",
+    "resumeBooks": "继续阅读",
     "@resumeBooks": {
         "description": "Home section: resume books"
     },
@@ -3689,7 +3689,7 @@
     "@liveTV": {
         "description": "Home section: live TV"
     },
-    "homeSections": "首页 栏目",
+    "homeSections": "首页栏目",
     "@homeSections": {
         "description": "Settings title for home sections"
     },
@@ -3697,7 +3697,7 @@
     "@resetToDefaults": {
         "description": "Tooltip for reset to defaults button"
     },
-    "homeRowPosterSize": "主排海报尺寸",
+    "homeRowPosterSize": "主页栏目海报尺寸",
     "@homeRowPosterSize": {
         "description": "Setting for home row poster size"
     },
@@ -3705,11 +3705,11 @@
     "@perRowImageTypeSelection": {
         "description": "Setting for per-row image type selection"
     },
-    "configureImageTypeForEachRow": "为每个启用的主行配置图像类型",
+    "configureImageTypeForEachRow": "为每个启用的主页栏目配置图像类型",
     "@configureImageTypeForEachRow": {
         "description": "Description for per-row image type selection"
     },
-    "mergeContinueWatchingAndNextUp": "合并继续观看和下一步",
+    "mergeContinueWatchingAndNextUp": "合并继续观看和下一集",
     "@mergeContinueWatchingAndNextUp": {
         "description": "Setting for merging continue watching and next up"
     },
@@ -3813,15 +3813,15 @@
     "@libraryArt": {
         "description": "Screensaver mode: library art"
     },
-    "logo": "标识",
+    "logo": "徽标",
     "@logo": {
         "description": "Screensaver mode: logo"
     },
-    "clock": "钟",
+    "clock": "时钟",
     "@clock": {
         "description": "Screensaver mode: clock"
     },
-    "timeout": "暂停",
+    "timeout": "超时",
     "@timeout": {
         "description": "Setting for timeout"
     },
@@ -3879,27 +3879,27 @@
     "@rottenTomatoesAudience": {
         "description": "Rating source: Rotten Tomatoes Audience"
     },
-    "imdb": "互联网医学数据库",
+    "imdb": "IMDb",
     "@imdb": {
         "description": "Rating source: IMDb"
     },
-    "tmdb": "TM数据库",
+    "tmdb": "TMDB",
     "@tmdb": {
         "description": "Rating source: TMDB"
     },
-    "metacritic": "元评论家",
+    "metacritic": "Metacritic",
     "@metacritic": {
         "description": "Rating source: Metacritic"
     },
-    "metacriticUser": "元评论家（用户）",
+    "metacriticUser": "Metacritic（用户）",
     "@metacriticUser": {
         "description": "Rating source: Metacritic User"
     },
-    "trakt": "特拉克特",
+    "trakt": "Trakt",
     "@trakt": {
         "description": "Rating source: Trakt"
     },
-    "letterboxd": "信箱",
+    "letterboxd": "Letterboxd",
     "@letterboxd": {
         "description": "Rating source: Letterboxd"
     },
@@ -3943,11 +3943,11 @@
     "@showDecorativeBadges": {
         "description": "Description for rating badges"
     },
-    "episodeRatings": "剧集收视率",
+    "episodeRatings": "剧集评分",
     "@episodeRatings": {
         "description": "Setting for episode ratings"
     },
-    "showRatingsOnEpisodes": "显示个别剧集的收视率",
+    "showRatingsOnEpisodes": "显示个别剧集评分",
     "@showRatingsOnEpisodes": {
         "description": "Description for episode ratings"
     },
@@ -4231,7 +4231,7 @@
     "@navbarStyleToolbarAppearance": {
         "description": "Navigation settings subtitle"
     },
-    "reorderToggleHomeRows": "重新排序和切换主行",
+    "reorderToggleHomeRows": "重新排序和切换主页栏目",
     "@reorderToggleHomeRows": {
         "description": "Home sections settings subtitle"
     },
@@ -6412,7 +6412,7 @@
     "trackActionMoveDown": "下移",
     "trackActionRemoveFromFavorites": "从收藏夹中删除",
     "trackActionAddToFavorites": "添加到收藏夹",
-    "trackActionGoToAlbum": "前往相册",
+    "trackActionGoToAlbum": "前往专辑",
     "trackActionGoToArtist": "前往艺术家",
     "trackActionDownloading": "正在下载{name}...",
     "@trackActionDownloading": {
@@ -6431,15 +6431,15 @@
     "shuffleGenre": "类型",
     "shuffleNoLibraries": "没有可用的兼容媒体库。",
     "shuffleNoGenres": "没有找到适合此随机播放模式的类型。",
-    "posterDisplayTitle": "展示",
+    "posterDisplayTitle": "海报标题显示",
     "posterImageType": "图片类型",
     "imageTypePoster": "海报",
     "imageTypeThumbnail": "缩略图",
     "imageTypeBanner": "横幅",
     "playlistAddFailed": "无法添加到播放列表",
     "playlistCreateFailed": "创建播放列表失败",
-    "playlistNew": "新播放列表",
-    "playlistCreate": "创造",
+    "playlistNew": "新的播放列表",
+    "playlistCreate": "创建",
     "playlistCreateNew": "创建新的播放列表",
     "playlistNoneFound": "未找到播放列表",
     "addToPlaylist": "添加到播放列表",
@@ -6503,23 +6503,23 @@
     "@playerTooltipExitFullscreen": {
         "description": "Tooltip label for exiting fullscreen in player"
     },
-    "playerTooltipLockLandscape": "锁风景",
+    "playerTooltipLockLandscape": "锁定横屏",
     "@playerTooltipLockLandscape": {
         "description": "Tooltip label for locking landscape orientation in player"
     },
-    "playerTooltipUnlockOrientation": "允许旋转",
+    "playerTooltipUnlockOrientation": "解除屏幕锁定",
     "@playerTooltipUnlockOrientation": {
         "description": "Tooltip label for unlocking orientation lock in player"
     },
-    "playerTooltipPrevious": "以前的",
+    "playerTooltipPrevious": "上一个",
     "@playerTooltipPrevious": {
         "description": "Tooltip label for previous item control in player"
     },
-    "playerTooltipSeekBack": "回头寻找",
+    "playerTooltipSeekBack": "后退",
     "@playerTooltipSeekBack": {
         "description": "Tooltip label for seek back control in player"
     },
-    "playerTooltipSeekForward": "向前寻求",
+    "playerTooltipSeekForward": "快进",
     "@playerTooltipSeekForward": {
         "description": "Tooltip label for seek forward control in player"
     },
@@ -6547,7 +6547,7 @@
     "settingsAccountSecurity": "账户与安全",
     "settingsAccountSecuritySubtitle": "身份验证、PIN 码和家长控制",
     "settingsPersonalization": "个性化",
-    "settingsPersonalizationSubtitle": "主题、导航、主行和库可见性",
+    "settingsPersonalizationSubtitle": "主题、导航、主页栏目和库可见性",
     "settingsDynamicContent": "动态内容",
     "settingsDynamicContentSubtitle": "媒体栏和视觉覆盖",
     "settingsPlaybackSyncplay": "播放 & SyncPlay",
@@ -6643,12 +6643,12 @@
     "settingsResumeRewindDescription": "恢复播放时（从“继续观看”或媒体项目页面），应倒回多少秒？",
     "settingsUnpauseRewindDescription": "按下暂停按钮后恢复播放时，应该倒回多少秒？",
     "settingsSkipBackLengthDescription": "按快退按钮后跳回多少秒。",
-    "settingsOneSecond": "1秒",
-    "settingsThreeSeconds": "3秒",
-    "settingsFortyFiveSeconds": "45秒",
-    "settingsSixtySeconds": "60秒",
-    "settingsSkipForwardLengthDescription": "按快进按钮后快进多少秒。",
-    "settingsBitstreamAc3ToExternalDecoder": "比特流 AC3 到外部解码器",
+    "settingsOneSecond": "1 秒",
+    "settingsThreeSeconds": "3 秒",
+    "settingsFortyFiveSeconds": "45 秒",
+    "settingsSixtySeconds": "60 秒",
+    "settingsSkipForwardLengthDescription": "按下快进按钮后的跳转秒数",
+    "settingsBitstreamAc3ToExternalDecoder": "AC3 音频源码输出至外部解码器",
     "settingsCinemaMode": "影院模式",
     "settingsCinemaModeSubtitle": "在主要功能之前播放预告片/预卷",
     "settingsShort": "短",
@@ -6687,7 +6687,7 @@
     "settingsSyncplayExtraOffset": "SyncPlay 额外偏移",
     "onNow": "现在播出",
     "collections": "收藏",
-    "lastPlayed": "上次玩过",
+    "lastPlayed": "上次播放",
     "libraryNameWithServer": "{libraryName} ({serverName})",
     "@libraryNameWithServer": {
         "description": "Library name display with server suffix for multi-server views",
@@ -7434,10 +7434,10 @@
     "displaySeerrRows": "显示 Seerr 发现行",
     "displaySeerrRowsSubtitle": "在首页栏目中显示 Seerr 发现行。",
     "externalPlayerAppDescription": "设置外部播放器以启用长按播放选项",
-    "changeArtwork": "更换图片",
+    "changeArtwork": "更换艺术图",
     "missing": "缺失",
-    "clearAllArtworkButton": "清除所有图片？",
-    "clearAllArtworkWarning": "确定要清除所有已下载图片吗？",
+    "clearAllArtworkButton": "清除所有艺术图？",
+    "clearAllArtworkWarning": "确定要清除所有已下载艺术图吗？",
     "confirmClear": "确认清除",
     "confirmClearMessage": "确定要清除此{itemType}吗？",
     "uploadButton": "上传",
@@ -7448,7 +7448,7 @@
     "imageUploadFailed": "图片上传失败：{error}",
     "imageDownloadFailed": "设置图片失败：{error}",
     "imageDeleteFailed": "删除图片失败：{error}",
-    "clearAllArtworkFailed": "清除所有图片失败：{error}",
+    "clearAllArtworkFailed": "清除所有艺术图失败：{error}",
     "yes": "是",
     "posterCategory": "海报",
     "backdropsCategory": "背景图",
