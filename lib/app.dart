@@ -39,6 +39,7 @@ import 'ui/widgets/overlay_sheet.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'util/focus/key_event_utils.dart';
 import 'ui/widgets/focus/request_initial_focus.dart';
+import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 
 class MoonfinApp extends StatefulWidget {
   const MoonfinApp({super.key});
@@ -462,7 +463,13 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
   bool _isEditingText() {
     final focusContext = FocusManager.instance.primaryFocus?.context;
     if (focusContext == null) return false;
-    return focusContext.findAncestorWidgetOfExactType<EditableText>() != null;
+    if (focusContext.findAncestorWidgetOfExactType<EditableText>() != null) {
+      return true;
+    }
+    if (CustomTVTextField.isKeyboardVisibleNotifier.value) {
+      return true;
+    }
+    return false;
   }
 
   bool _onHardwareKeyEvent(KeyEvent event) {
