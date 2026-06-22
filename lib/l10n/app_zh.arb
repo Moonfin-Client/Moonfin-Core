@@ -257,7 +257,7 @@
     "@exitAppConfirmation": {
         "description": "Body text of exit confirmation dialog"
     },
-    "exit": "出口",
+    "exit": "退出",
     "@exit": {
         "description": "Exit button label"
     },
@@ -273,7 +273,7 @@
     "@retryHomeRows": {
         "description": "Button to retry loading home rows after failure"
     },
-    "guide": "指导",
+    "guide": "节目指南",
     "@guide": {
         "description": "Live TV guide button label"
     },
@@ -281,7 +281,7 @@
     "@recordings": {
         "description": "Live TV recordings button label"
     },
-    "schedule": "日程",
+    "schedule": "节目表",
     "@schedule": {
         "description": "Live TV schedule button label"
     },
@@ -453,7 +453,7 @@
             }
         }
     },
-    "views": "意见",
+    "views": "视图",
     "@views": {
         "description": "Section header for music browse view buttons"
     },
@@ -532,7 +532,7 @@
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "申请",
+    "apply": "应用",
     "@apply": {
         "description": "Button label to apply selected options"
     },
@@ -696,15 +696,15 @@
             }
         }
     },
-    "readyWhenYouAre": "当你准备好时",
+    "readyWhenYouAre": "随时可以开始",
     "@readyWhenYouAre": {
         "description": "Label shown when no reading progress exists"
     },
-    "details": "细节",
+    "details": "详情",
     "@details": {
         "description": "Button and title label for detail views"
     },
-    "listeningRoom": "听音室",
+    "listeningRoom": "听书专区",
     "@listeningRoom": {
         "description": "Panel header for audiobook section"
     },
@@ -786,11 +786,11 @@
     "@playedStatus": {
         "description": "Section header for played status filter"
     },
-    "readStatus": "读",
+    "readStatus": "阅读状态",
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "看过",
+    "watched": "已观看",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "无人看管",
+    "unwatched": "未观看",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -854,7 +854,7 @@
     "@rssFeed": {
         "description": "Button label for RSS feed external link"
     },
-    "downloadZip": "下载邮编",
+    "downloadZip": "下载 zip",
     "@downloadZip": {
         "description": "Button label for zip download external link"
     },
@@ -943,7 +943,7 @@
     "@delete": {
         "description": "Delete action button label"
     },
-    "save": "节省",
+    "save": "保存",
     "@save": {
         "description": "Save action button label"
     },
@@ -959,15 +959,15 @@
     "@collection": {
         "description": "Section header for collection items"
     },
-    "episodes": "剧集数",
+    "episodes": "剧集",
     "@episodes": {
         "description": "Section header for episodes"
     },
-    "nextUp": "下一步",
+    "nextUp": "下一集",
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "季节",
+    "seasons": "季",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -975,7 +975,7 @@
     "@chapters": {
         "description": "Section header for chapters"
     },
-    "features": "特征",
+    "features": "特别收录",
     "@features": {
         "description": "Section header for special features"
     },
@@ -1003,7 +1003,7 @@
     "@tracklist": {
         "description": "Section header for album track listing"
     },
-    "biography": "传",
+    "biography": "传记",
     "@biography": {
         "description": "Section header for person biography"
     },
@@ -1058,7 +1058,7 @@
             }
         }
     },
-    "view": "看法",
+    "view": "查看",
     "@view": {
         "description": "Action button label for viewing a photo"
     },
@@ -1079,7 +1079,7 @@
             }
         }
     },
-    "play": "玩",
+    "play": "播放",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1095,11 +1095,11 @@
     "@readOffline": {
         "description": "Action button label to read offline"
     },
-    "playOffline": "离线玩",
+    "playOffline": "离线播放",
     "@playOffline": {
         "description": "Action button label to play offline"
     },
-    "audio": "声音的",
+    "audio": "音轨",
     "@audio": {
         "description": "Action button label for audio track selection"
     },
@@ -1111,11 +1111,11 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "投掷",
+    "cast": "投屏",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
-    "trailer": "拖车",
+    "trailer": "预告片",
     "@trailer": {
         "description": "Action button label for trailer playback"
     },
@@ -1395,7 +1395,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "作家",
+    "writers": "编剧",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1469,7 +1469,7 @@
             }
         }
     },
-    "born": "出生{date}",
+    "born": "出生于{date}",
     "@born": {
         "description": "Person birth date label",
         "placeholders": {
@@ -1478,7 +1478,7 @@
             }
         }
     },
-    "died": "死了{date}",
+    "died": "死于{date}",
     "@died": {
         "description": "Person death date label",
         "placeholders": {
@@ -1517,11 +1517,11 @@
             }
         }
     },
-    "perfectMatch": "完美搭配",
+    "perfectMatch": "精准匹配",
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count}ch",
+    "channelsCount": "{count}声道",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1530,7 +1530,7 @@
             }
         }
     },
-    "mono": "单核细胞增多症",
+    "mono": "单声道",
     "@mono": {
         "description": "Audio channel layout label for mono"
     },
@@ -1610,7 +1610,7 @@
     "@unableToLoadTrailerStream": {
         "description": "Error when trailer stream cannot be loaded"
     },
-    "trailerTimedOut": "拖车加载时超时。",
+    "trailerTimedOut": "预告片加载时超时。",
     "@trailerTimedOut": {
         "description": "Error when trailer loading times out"
     },
@@ -2392,7 +2392,7 @@
             }
         }
     },
-    "season": "季节",
+    "season": "季",
     "@season": {
         "description": "Fallback name for a season"
     },
@@ -2459,7 +2459,7 @@
     "@downloadedEpisodes": {
         "description": "Section title for downloaded episodes"
     },
-    "seasonNumber": "季节{number}",
+    "seasonNumber": "季{number}",
     "@seasonNumber": {
         "description": "Season label with number",
         "placeholders": {
@@ -2750,7 +2750,7 @@
     "@inVideo": {
         "description": "Option: show in video"
     },
-    "seasonalEffects": "季节性影响",
+    "seasonalEffects": "节日特效",
     "@seasonalEffects": {
         "description": "Setting for seasonal visual effects"
     },
@@ -3753,7 +3753,7 @@
     "@showConfirmationBeforeExiting": {
         "description": "Description for confirm exit"
     },
-    "blockContentWithRatings": "阻止具有以下评级的内容：",
+    "blockContentWithRatings": "阻止具有以下评分的内容：",
     "@blockContentWithRatings": {
         "description": "Label for parental controls rating selection"
     },
@@ -3761,11 +3761,11 @@
     "@noContentRatingsFound": {
         "description": "Shown when no ratings exist on server"
     },
-    "couldNotLoadServerRatings": "无法加载服务器评级。仅显示已保存的评分。",
+    "couldNotLoadServerRatings": "无法加载服务器评分。仅显示已保存的评分。",
     "@couldNotLoadServerRatings": {
         "description": "Shown when ratings fail to load"
     },
-    "couldNotRefreshRatings": "无法刷新服务器的评级。显示已保存的评分。",
+    "couldNotRefreshRatings": "无法刷新服务器的评分。显示已保存的评分。",
     "@couldNotRefreshRatings": {
         "description": "Shown when ratings fail to refresh"
     },
@@ -3911,35 +3911,35 @@
     "@aniList": {
         "description": "Rating source: AniList"
     },
-    "communityRating": "社区评级",
+    "communityRating": "社区评分",
     "@communityRating": {
         "description": "Rating source: Community Rating"
     },
-    "ratings": "评级",
+    "ratings": "评分",
     "@ratings": {
         "description": "Settings title for ratings"
     },
-    "additionalRatings": "附加评级",
+    "additionalRatings": "附加评分",
     "@additionalRatings": {
         "description": "Setting for additional ratings"
     },
-    "showMdbListAndTmdbRatings": "显示 MDBList 和 TMDB 评级",
+    "showMdbListAndTmdbRatings": "显示 MDBList 和 TMDB 评分",
     "@showMdbListAndTmdbRatings": {
         "description": "Description for additional ratings"
     },
-    "ratingLabels": "评级标签",
+    "ratingLabels": "评分标签",
     "@ratingLabels": {
         "description": "Setting for rating labels"
     },
-    "showLabelsNextToIcons": "在评级图标旁边显示标签",
+    "showLabelsNextToIcons": "在评分图标旁边显示标签",
     "@showLabelsNextToIcons": {
         "description": "Description for rating labels"
     },
-    "ratingBadges": "评级徽章",
+    "ratingBadges": "评分徽章",
     "@ratingBadges": {
         "description": "Setting for rating badges"
     },
-    "showDecorativeBadges": "显示评级背后的装饰徽章",
+    "showDecorativeBadges": "显示评分背后的装饰徽章",
     "@showDecorativeBadges": {
         "description": "Description for rating badges"
     },
@@ -3951,11 +3951,11 @@
     "@showRatingsOnEpisodes": {
         "description": "Description for episode ratings"
     },
-    "ratingSources": "评级来源",
+    "ratingSources": "评分来源",
     "@ratingSources": {
         "description": "Section title for rating sources"
     },
-    "ratingSourcesDescription": "启用并重新排序整个应用程序中显示的评级来源",
+    "ratingSourcesDescription": "启用并重新排序整个应用程序中显示的评分来源",
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
@@ -4243,7 +4243,7 @@
     "@posterSizeImageTypeFolderView": {
         "description": "Library display settings subtitle"
     },
-    "mdbListTmdbRatingSources": "MDBList、TMDB 和评级源",
+    "mdbListTmdbRatingSources": "MDBList、TMDB 和评分源",
     "@mdbListTmdbRatingSources": {
         "description": "Ratings settings subtitle"
     },
@@ -4301,7 +4301,7 @@
     "@cancelRequest": {
         "description": "Button/dialog title to cancel a media request"
     },
-    "playInMoonfin": "玩 Moonfin",
+    "playInMoonfin": "用 Moonfin 播放",
     "@playInMoonfin": {
         "description": "Button to play available media in Moonfin"
     },
@@ -4515,11 +4515,11 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "季节",
+    "seasonsLabel": "季",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
-    "episodesLabel": "剧集数",
+    "episodesLabel": "剧集",
     "@episodesLabel": {
         "description": "Stat label for number of episodes"
     },
@@ -4635,11 +4635,11 @@
     "analyticsMediaDistribution": "媒体发行",
     "analyticsVideoCodecs": "视频编解码器",
     "analyticsAudioCodecs": "音频编解码器",
-    "analyticsContainers": "集装箱",
+    "analyticsContainers": "统计分组容器",
     "analyticsTopGenres": "热门类型",
     "analyticsReleaseYears": "发布年份",
-    "analyticsContentRatings": "内容评级",
-    "analyticsRuntimeBuckets": "运行时桶",
+    "analyticsContentRatings": "内容评分",
+    "analyticsRuntimeBuckets": "运行时长分段统计",
     "analyticsFileFormats": "文件格式",
     "analyticsNoData": "无可用数据。",
     "adminServerInfo": "服务器信息",
@@ -5684,11 +5684,11 @@
     "adminUnnamedBackup": "未命名备份",
     "adminLiveTvNotAvailable": "直播电视管理在此服务器版本上不可用。",
     "adminLiveTvTitle": "直播电视管理",
-    "adminApply": "申请",
+    "adminApply": "应用",
     "adminNotSet": "未设置",
     "adminReset": "重置",
     "adminLogsTitle": "服务器日志",
-    "adminLogsNewestFirst": "最新第一",
+    "adminLogsNewestFirst": "最新的在前",
     "adminLogsOldestFirst": "最旧的在前",
     "adminLogsJustNow": "现在",
     "adminLogsMinutesAgo": "{minutes}分钟前",
@@ -5731,11 +5731,11 @@
             }
         }
     },
-    "adminLogViewerNoMatches": "没有匹配的线",
+    "adminLogViewerNoMatches": "未找到匹配日志",
     "adminMetadataEditorTitle": "元数据编辑器",
-    "adminMetadataRemote": "偏僻的",
+    "adminMetadataRemote": "远程元数据",
     "adminMetadataType": "类型",
-    "adminMetadataDetails": "细节",
+    "adminMetadataDetails": "详情",
     "adminMetadataExternalIds": "外部 ID",
     "adminMetadataImages": "图片",
     "adminMetadataFieldTitle": "标题",
@@ -5744,9 +5744,9 @@
     "adminMetadataFieldPremiereDate": "首播日期（年-月-日）",
     "adminMetadataFieldEndDate": "结束日期（年-月-日）",
     "adminMetadataFieldProductionYear": "生产年份",
-    "adminMetadataFieldOfficialRating": "官方评级",
-    "adminMetadataFieldCommunityRating": "社区评级",
-    "adminMetadataFieldCriticRating": "评论家评级",
+    "adminMetadataFieldOfficialRating": "官方评分",
+    "adminMetadataFieldCommunityRating": "社区评分",
+    "adminMetadataFieldCriticRating": "评论家评分",
     "adminMetadataFieldTagline": "标语",
     "adminMetadataFieldOverview": "概述",
     "adminMetadataGenres": "类型",
@@ -6333,7 +6333,7 @@
             }
         }
     },
-    "audioLabel": "声音的",
+    "audioLabel": "音轨",
     "subtitlesLabel": "字幕",
     "pinConfirmTitle": "确认密码",
     "pinSetTitle": "设置密码",
@@ -6552,14 +6552,14 @@
     "settingsDynamicContentSubtitle": "媒体栏和视觉覆盖",
     "settingsPlaybackSyncplay": "播放 & SyncPlay",
     "settingsPlaybackSyncplaySubtitle": "音频/视频设置、字幕、下载和 SyncPlay 控件",
-    "settingsIntegrationsSubtitle": "插件同步、Seerr、评级等",
+    "settingsIntegrationsSubtitle": "插件同步、Seerr、评分等",
     "settingsAboutSubtitle": "应用程序版本、法律信息和制作人员",
     "settingsAuthenticationSection": "验证",
     "settingsSortServersBy": "服务器排序依据",
     "settingsLastUsed": "最后使用",
     "settingsAlphabetical": "按字母顺序",
     "settingsPrivacyAndSafetySection": "隐私与安全",
-    "settingsBlockedRatings": "屏蔽评级",
+    "settingsBlockedRatings": "屏蔽评分",
     "settingsGeneralStyle": "通用风格",
     "settingsGeneralStyleSubtitle": "主题口音、背景、观看指示器和主题音乐",
     "settingsHomePage": "主页",
@@ -6574,9 +6574,9 @@
     "settingsLibraryVisibilitySubtitle": "切换每个库的主页可见性。重新启动 Moonfin 以使更改生效。",
     "settingsMediaBarAndLocalPreviews": "媒体栏和本地预览",
     "settingsVisualOverlays": "视觉叠加",
-    "settingsSeasonalSurprise": "季节性惊喜",
-    "settingsMetadataAndRatings": "元数据和评级",
-    "settingsPluginScreenDescription": "Moonbase 支持服务器端集成，包括附加评级源、Seerr 请求和同步首选项。",
+    "settingsSeasonalSurprise": "节日主题特效",
+    "settingsMetadataAndRatings": "元数据和评分",
+    "settingsPluginScreenDescription": "Moonbase 支持服务器端集成，包括附加评分源、Seerr 请求和同步首选项。",
     "settingsOfflineDownloads": "离线下载",
     "settingsHigh": "高的",
     "settingsLow": "低的",
@@ -6751,7 +6751,7 @@
     "@localAccount": {
         "description": "Auth option label for Seerr sign in using local Seerr credentials"
     },
-    "seasonalEffectsDescription": "视觉效果和季节性装饰",
+    "seasonalEffectsDescription": "节日视觉特效与节日装饰",
     "@seasonalEffectsDescription": {
         "description": "Description for seasonal effects settings"
     },
