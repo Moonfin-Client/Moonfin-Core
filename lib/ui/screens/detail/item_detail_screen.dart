@@ -310,8 +310,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     final isAlbumOrPlaylist = type == 'MusicAlbum' || type == 'Playlist';
     final showNavigationChrome =
         _viewModel.state == ItemDetailState.ready && !isAlbumOrPlaylist;
+    final showBackButton = type != 'Person';
     Widget body = NavigationLayout(
-      showBackButton: true,
+      showBackButton: showBackButton,
       showNavigationChrome: showNavigationChrome,
       child: _buildBody(context),
     );
@@ -536,7 +537,10 @@ class _DetailContentState extends State<_DetailContent> {
     final favoriteFocusNode =
         widget.initialFocusNode ?? _sectionFocusNodes['detailPersonFavorite'];
     final seerrFocusNode = _sectionFocusNodes['detailPersonSeerrButton'];
-    if (target == favoriteFocusNode || target == seerrFocusNode) {
+    final backFocusNode = _sectionFocusNodes['detailPersonBack'];
+    if (target == favoriteFocusNode ||
+        target == seerrFocusNode ||
+        target == backFocusNode) {
       return true;
     }
     return target.context
@@ -733,7 +737,8 @@ class _DetailContentState extends State<_DetailContent> {
       if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         _resetSectionHorizontalOffset(sourceFocusNode);
         if (upTarget != null) {
-          if (upTarget == favoriteFocusNode) {
+          if (upTarget == favoriteFocusNode ||
+              upTarget == _sectionFocusNodes['detailPersonBack']) {
             _scrollMainToTop();
           }
           _requestSectionFocus(upTarget);
@@ -2115,6 +2120,7 @@ class _DetailContentState extends State<_DetailContent> {
     final musicVideos = viewModel.filmographyMusicVideos;
     final useSplit = _useDesktopDetailLayout(context);
 
+    final backFocusNode = _sectionFocusNode('detailPersonBack');
     final favoriteFocusNode =
         initialFocusNode ?? _sectionFocusNode('detailPersonFavorite');
     final bioFocusNode = _sectionFocusNode('detailPersonBio');
@@ -2168,7 +2174,7 @@ class _DetailContentState extends State<_DetailContent> {
           upTarget: null,
           onArrowUp: _tryFocusNavbar,
           onArrowDown: () {
-            _requestSectionFocus(favoriteFocusNode);
+            _requestSectionFocus(backFocusNode);
           },
           onArrowLeft: () {
             _tryFocusSidebar();
@@ -2184,15 +2190,16 @@ class _DetailContentState extends State<_DetailContent> {
               : MainAxisAlignment.center,
           children: [
             _DetailActionButton(
-              label: item.isFavorite ? l10n.favorited : l10n.favorite,
-              icon: Icons.favorite,
-              onPressed: viewModel.toggleFavorite,
-              isActive: item.isFavorite,
-              activeColor: const Color(0xFFFF4757),
-              focusNode: favoriteFocusNode,
+              label: l10n.back,
+              icon: Icons.arrow_back,
+              onPressed: () => context.popOrHome(),
+              isActive: false,
+              focusNode: backFocusNode,
               suppressAutoScrollToTop: true,
               onArrowUp: () {
-                if (hasBio && firstFocus.canRequestFocus) {
+                if (hasBio &&
+                    firstFocus.context != null &&
+                    firstFocus.canRequestFocus) {
                   _requestSectionFocus(firstFocus);
                 } else {
                   _tryFocusNavbar();
@@ -2202,6 +2209,41 @@ class _DetailContentState extends State<_DetailContent> {
                 _requestSectionFocus(
                   moviesFocusNode ??
                       seriesFocusNode ??
+                      guestAppearancesFocusNode ??
+                      musicVideosFocusNode ??
+                      seerrAppearancesFocusNode,
+                );
+              },
+              onArrowRight: () {
+                _requestSectionFocus(favoriteFocusNode);
+              },
+              onArrowLeft: () {
+                _tryFocusSidebar();
+              },
+            ),
+            const SizedBox(width: 16),
+            _DetailActionButton(
+              label: item.isFavorite ? l10n.favorited : l10n.favorite,
+              icon: Icons.favorite,
+              onPressed: viewModel.toggleFavorite,
+              isActive: item.isFavorite,
+              activeColor: const Color(0xFFFF4757),
+              focusNode: favoriteFocusNode,
+              suppressAutoScrollToTop: true,
+              onArrowUp: () {
+                if (hasBio &&
+                    firstFocus.context != null &&
+                    firstFocus.canRequestFocus) {
+                  _requestSectionFocus(firstFocus);
+                } else {
+                  _tryFocusNavbar();
+                }
+              },
+              onArrowDown: () {
+                _requestSectionFocus(
+                  moviesFocusNode ??
+                      seriesFocusNode ??
+                      guestAppearancesFocusNode ??
                       musicVideosFocusNode ??
                       seerrAppearancesFocusNode,
                 );
@@ -2212,7 +2254,7 @@ class _DetailContentState extends State<_DetailContent> {
                     }
                   : () {},
               onArrowLeft: () {
-                _tryFocusSidebar();
+                _requestSectionFocus(backFocusNode);
               },
             ),
             if (hasSeerrButton) ...[
@@ -2227,7 +2269,9 @@ class _DetailContentState extends State<_DetailContent> {
                 focusNode: seerrFocusNode,
                 suppressAutoScrollToTop: true,
                 onArrowUp: () {
-                  if (hasBio && firstFocus.canRequestFocus) {
+                  if (hasBio &&
+                      firstFocus.context != null &&
+                      firstFocus.canRequestFocus) {
                     _requestSectionFocus(firstFocus);
                   } else {
                     _tryFocusNavbar();
@@ -2237,6 +2281,7 @@ class _DetailContentState extends State<_DetailContent> {
                   _requestSectionFocus(
                     moviesFocusNode ??
                         seriesFocusNode ??
+                        guestAppearancesFocusNode ??
                         musicVideosFocusNode ??
                         seerrAppearancesFocusNode,
                   );
