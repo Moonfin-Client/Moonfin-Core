@@ -723,7 +723,6 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-
   Future<List<HomeRow>> _loadSection(HomeSectionType section) async {
     final l10n = currentAppLocalizations();
     final favoritesSortBy = _prefs
@@ -777,7 +776,9 @@ class HomeViewModel extends ChangeNotifier {
                 ),
         ];
       case HomeSectionType.audioArtists:
-        final audioSortBy = _prefs.get(UserPreferences.audioRowsSortBy).apiValue;
+        final audioSortBy = _prefs
+            .get(UserPreferences.audioRowsSortBy)
+            .apiValue;
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedAudioArtists(
@@ -791,7 +792,9 @@ class HomeViewModel extends ChangeNotifier {
                 ),
         ];
       case HomeSectionType.audioAlbums:
-        final audioSortBy = _prefs.get(UserPreferences.audioRowsSortBy).apiValue;
+        final audioSortBy = _prefs
+            .get(UserPreferences.audioRowsSortBy)
+            .apiValue;
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedAudioAlbums(
@@ -805,7 +808,9 @@ class HomeViewModel extends ChangeNotifier {
                 ),
         ];
       case HomeSectionType.audioPlaylists:
-        final audioSortBy = _prefs.get(UserPreferences.audioRowsSortBy).apiValue;
+        final audioSortBy = _prefs
+            .get(UserPreferences.audioRowsSortBy)
+            .apiValue;
         return [
           _multiServerEnabled
               ? await _multiServerRepo.getAggregatedAudioPlaylists(
@@ -1048,9 +1053,9 @@ class HomeViewModel extends ChangeNotifier {
   Future<List<HomeRow>> _loadRecentlyReleasedRow() async {
     final viewsFuture = _client.userViewsApi.getUserViews();
     final configFuture = _client.usersApi
-    .getUserConfiguration()
-    .then<Set<String>>((config) => config.latestItemsExcludes.toSet())
-    .catchError((_) => const <String>{});
+        .getUserConfiguration()
+        .then<Set<String>>((config) => config.latestItemsExcludes.toSet())
+        .catchError((_) => const <String>{});
 
     final viewsResponse = await viewsFuture;
     final views = viewsResponse['Items'] as List? ?? [];
@@ -1058,30 +1063,30 @@ class HomeViewModel extends ChangeNotifier {
 
     final filteredViews = views.cast<Map<String, dynamic>>().where((data) {
       final id = data['Id']?.toString() ?? '';
-    final collectionType = (data['CollectionType'] as String?)?.toLowerCase();
-    if (collectionType == 'playlists' ||
-      collectionType == 'boxsets' ||
-      collectionType == 'livetv') {
-      return false;
+      final collectionType = (data['CollectionType'] as String?)?.toLowerCase();
+      if (collectionType == 'playlists' ||
+          collectionType == 'boxsets' ||
+          collectionType == 'livetv') {
+        return false;
       }
       return !latestExcludes.contains(id);
     }).toList();
 
     final tasks = filteredViews.map((data) async {
       final id = data['Id']?.toString() ?? '';
-    final name = data['Name'] as String? ?? '';
-    final collectionType = (data['CollectionType'] as String?)?.toLowerCase();
-    try {
-      final row = await _dataSource.loadRecentlyReleased(
-        id,
-        name,
-        _serverId,
-        collectionType,
-      );
-      return row.items.isNotEmpty ? row : null;
-    } catch (_) {
-      return null;
-    }
+      final name = data['Name'] as String? ?? '';
+      final collectionType = (data['CollectionType'] as String?)?.toLowerCase();
+      try {
+        final row = await _dataSource.loadRecentlyReleased(
+          id,
+          name,
+          _serverId,
+          collectionType,
+        );
+        return row.items.isNotEmpty ? row : null;
+      } catch (_) {
+        return null;
+      }
     }).toList();
 
     final resolved = await Future.wait(tasks);

@@ -231,11 +231,11 @@ class EmbyItemsApi implements ItemsApi {
 
     // /Items/Latest returns a bare array, so normalize it into the
     // same shape as /Items so all callers stay unchanged.
-    final list = response.data as List;
-    return {
-      'Items': list,
-      'TotalRecordCount': list.length,
-    };
+    final data = response.data;
+    if (data is List) {
+      return {'Items': data, 'TotalRecordCount': data.length};
+    }
+    return data as Map<String, dynamic>;
   }
 
   @override
