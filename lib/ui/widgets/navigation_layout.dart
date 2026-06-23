@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
+import '../../util/overlay_color_palette.dart';
 import 'download_progress_bar.dart';
 import 'left_sidebar.dart';
 import 'mobile_bottom_nav_bar.dart';
@@ -154,12 +155,24 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
       skipTraversal: true,
       child: widget.child,
     );
-    return Column(
+    return Stack(
       children: [
-        Expanded(child: content),
-        const DownloadProgressBar(),
-        const BottomMusicBar(),
-        MobileBottomNavBar(activeRoute: widget.activeRoute),
+        Column(
+          children: [
+            Expanded(child: content),
+            const DownloadProgressBar(),
+            const BottomMusicBar(),
+            MobileBottomNavBar(activeRoute: widget.activeRoute),
+          ],
+        ),
+        if (widget.showBackButton)
+          Positioned(
+            top: 16,
+            left: 16,
+            child: SafeArea(
+              child: _buildFloatingBackButton(),
+            ),
+          ),
       ],
     );
   }
@@ -262,6 +275,12 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
                   bottom: 0,
                   child: sidebar,
                 ),
+                if (widget.showBackButton && !PlatformDetection.isTV)
+                  Positioned(
+                    top: 16,
+                    left: 88,
+                    child: _buildFloatingBackButton(),
+                  ),
               ],
             ),
           ),
@@ -284,6 +303,44 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
         ),
         const DownloadProgressBar(),
       ],
+    );
+  }
+
+  Widget _buildFloatingBackButton() {
+    final overlayColor = OverlayColorPalette.resolveColor(
+      _prefs.get(UserPreferences.navbarColor),
+    );
+    final opacity = _prefs.get(UserPreferences.navbarOpacity) / 100.0;
+    final backgroundColor = ThemeRegistry.active.transparentNavbarSurface
+        ? Colors.transparent
+        : overlayColor.withValues(alpha: opacity);
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => context.popOrHome(),
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.25),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: const Icon(
+            Icons.arrow_back,
+            size: 20,
+            color: Colors.white,
+          ),
+        ),
+      ),
     );
   }
 }
