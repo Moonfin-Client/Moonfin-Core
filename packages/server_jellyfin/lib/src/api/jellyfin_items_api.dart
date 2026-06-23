@@ -218,6 +218,7 @@ class JellyfinItemsApi implements ItemsApi {
         'ImageTypeLimit': ?imageTypeLimit,
         'SortBy': 'PremiereDate',
         'SortOrder': 'Descending',
+         'MaxPremiereDate': DateTime.now().toUtc().toIso8601String(),
       },
     );
     final data = response.data;
