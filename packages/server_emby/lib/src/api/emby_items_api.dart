@@ -225,6 +225,7 @@ class EmbyItemsApi implements ItemsApi {
         if (imageTypeLimit != null) 'ImageTypeLimit': imageTypeLimit,
         'SortBy' : 'PremiereDate',
         'SortOrder' : 'Descending',
+        'MaxPremiereDate': DateTime.now().toUtc().toIso8601String(),
       },
     );
 
