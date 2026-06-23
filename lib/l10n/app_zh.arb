@@ -440,7 +440,7 @@
     "@large": {
         "description": "Poster size option"
     },
-    "extraLarge": "特大",
+    "extraLarge": "超大",
     "@extraLarge": {
         "description": "Size option: extra large"
     },
@@ -617,39 +617,39 @@
     "@topListens": {
         "description": "Book rail title for popular audiobooks"
     },
-    "unreadDiscoveries": "未读的发现",
+    "unreadDiscoveries": "未浏览新内容",
     "@unreadDiscoveries": {
         "description": "Book rail title for unread items"
     },
-    "pickUpAgain": "再次拾起",
+    "pickUpAgain": "继续阅读",
     "@pickUpAgain": {
         "description": "Book rail title for in-progress bookmarked items"
     },
-    "bookHighlightsDescription": "您的书籍包含亮点、收藏夹或阅读进度。",
+    "bookHighlightsDescription": "本书包含笔记、收藏段落与阅读进度记录。",
     "@bookHighlightsDescription": {
         "description": "Subtitle for saved highlights section"
     },
-    "handPickedFromLibrary": "从您的媒体库中精心挑选的。",
+    "handPickedFromLibrary": "从你的媒体库精选推荐。",
     "@handPickedFromLibrary": {
         "description": "Subtitle for primary book rail from library"
     },
-    "handPickedFromListeningQueue": "从您的收听队列中精心挑选。",
+    "handPickedFromListeningQueue": "从您的收听队列精选推荐。",
     "@handPickedFromListeningQueue": {
         "description": "Subtitle for primary book rail from audiobooks"
     },
-    "booksWithHighlights": "包含亮点、最爱或阅读进度的书籍。",
+    "booksWithHighlights": "包含笔记、收藏段落或阅读进度的书籍。",
     "@booksWithHighlights": {
         "description": "Subtitle for bookmarks secondary rail"
     },
-    "jumpBackNarration": "跳回旁白，无需寻找自己的位置。",
+    "jumpBackNarration": "回退旁白，不用手动寻找播放位置",
     "@jumpBackNarration": {
         "description": "Subtitle for audiobook continue listening rail"
     },
-    "unreadBooksReady": "未读的书准备好迎接下一个安静的时刻。",
+    "unreadBooksReady": "待读好书，静待闲暇时刻翻阅。",
     "@unreadBooksReady": {
         "description": "Subtitle for unread discoveries rail"
     },
-    "quickAccessFavorites": "快速访问您经常阅读的书籍。",
+    "quickAccessFavorites": "快速打开你收藏的书籍。",
     "@quickAccessFavorites": {
         "description": "Subtitle for favorites book rail"
     },
@@ -657,15 +657,15 @@
     "@searchAudiobooks": {
         "description": "Placeholder text in audiobook search bar"
     },
-    "searchYourLibrary": "搜索您的媒体库",
+    "searchYourLibrary": "搜索媒体库",
     "@searchYourLibrary": {
         "description": "Placeholder text in library search bar"
     },
-    "pickUpStory": "从上次停下的地方继续讲故事",
+    "pickUpStory": "从上次播放位置继续收听",
     "@pickUpStory": {
         "description": "Hero card subtitle for library and audiobook sections"
     },
-    "savedPlacesChapters": "您保存的地点和未完成的章节",
+    "savedPlacesChapters": "您保存的书签和未完成的章节",
     "@savedPlacesChapters": {
         "description": "Hero card subtitle for bookmarks section"
     },
@@ -3999,19 +3999,19 @@
     "@serverPluginSync": {
         "description": "Setting for server plugin sync"
     },
-    "syncSettingsWithPlugin": "与服务器插件同步设置",
+    "syncSettingsWithPlugin": "服务器插件同步相关设置",
     "@syncSettingsWithPlugin": {
         "description": "Description for server plugin sync"
     },
-    "whatSyncControls": "同步控制什么",
+    "whatSyncControls": "同步管控范围",
     "@whatSyncControls": {
         "description": "Info title for sync explanation"
     },
-    "syncControlsDescription": "同步仅控制插件支持的设置是否推送到服务器或从服务器拉出。启用插件同步后，配置文件选择和配置文件同步操作位于自定义设置中。",
+    "syncControlsDescription": "同步仅管控插件配套设置是否上传至服务器，或从服务器拉取配置。开启插件同步后，配置文件选择与同步操作入口将在自定义设置内展示。",
     "@syncControlsDescription": {
         "description": "Description of what sync controls"
     },
-    "recentRequests": "最近的请求",
+    "recentRequests": "近期检索",
     "@recentRequests": {
         "description": "Seerr row: recent requests"
     },
@@ -4059,19 +4059,19 @@
     "@resetRowsToDefaults": {
         "description": "Tooltip for reset rows to defaults"
     },
-    "enableSeerr": "启用搜索器",
+    "enableSeerr": "启用 Seerr 搜索器",
     "@enableSeerr": {
         "description": "Setting for enabling Seerr"
     },
-    "showSeerrInNavigation": "在导航中显示 Seerr（需要服务器插件）",
+    "showSeerrInNavigation": "导航栏显示 Seerr 入口（需安装配套服务器插件）",
     "@showSeerrInNavigation": {
         "description": "Description for enable Seerr"
     },
-    "seerrUnavailable": "不可用，因为服务器插件 Seerr 支持被禁用。",
+    "seerrUnavailable": "当前无法使用，已关闭服务器端 Seerr 插件支持",
     "@seerrUnavailable": {
         "description": "Description when Seerr is unavailable"
     },
-    "nsfwFilter": "NSFW 过滤器",
+    "nsfwFilter": "成人内容过滤开关",
     "@nsfwFilter": {
         "description": "Setting for NSFW filter"
     },
@@ -4100,11 +4100,11 @@
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
-    "enabled": "启用",
+    "enabled": "已启用",
     "@enabled": {
         "description": "Status: enabled"
     },
-    "hidden": "隐",
+    "hidden": "已隐藏",
     "@hidden": {
         "description": "Status: hidden"
     },
@@ -4137,23 +4137,23 @@
     "@checkForUpdatesNow": {
         "description": "Button to check for updates"
     },
-    "checksLatestDesktopRelease": "检查该平台的最新桌面版本",
+    "checksLatestDesktopRelease": "检查当前平台的最新桌面版本",
     "@checksLatestDesktopRelease": {
         "description": "Description for check for updates"
     },
-    "youAreUpToDate": "你是最新的。",
+    "youAreUpToDate": "当前已是最新版本",
     "@youAreUpToDate": {
         "description": "Message when app is up to date"
     },
-    "couldNotCheckForUpdates": "目前无法检查更新。",
+    "couldNotCheckForUpdates": "检查更新失败。",
     "@couldNotCheckForUpdates": {
         "description": "Error when update check fails"
     },
-    "noCompatibleUpdate": "找不到该平台的兼容更新包。",
+    "noCompatibleUpdate": "未找到适配当前设备的更新安装包。",
     "@noCompatibleUpdate": {
         "description": "Message when no compatible update is found"
     },
-    "updateChecksNotSupported": "此平台不支持更新检查。",
+    "updateChecksNotSupported": "当前设备不支持自动检测更新。",
     "@updateChecksNotSupported": {
         "description": "Message when update checks not supported"
     },
@@ -4161,7 +4161,7 @@
     "@updateNotificationsDisabled": {
         "description": "Message when notifications are disabled"
     },
-    "pleaseWaitBeforeChecking": "请稍候再检查。",
+    "pleaseWaitBeforeChecking": "间隔过短，请稍后再检测更新",
     "@pleaseWaitBeforeChecking": {
         "description": "Message when checking too soon"
     },
@@ -4219,15 +4219,15 @@
     "@navigation": {
         "description": "Navigation settings title"
     },
-    "watchedIndicatorsBackdrops": "观看指标、背景",
+    "watchedIndicatorsBackdrops": "观看标记、背景",
     "@watchedIndicatorsBackdrops": {
         "description": "Appearance settings subtitle on mobile"
     },
-    "focusColorWatchedIndicatorsBackdrops": "焦点颜色、观察指标、背景",
+    "focusColorWatchedIndicatorsBackdrops": "焦点颜色、观察标记、背景",
     "@focusColorWatchedIndicatorsBackdrops": {
         "description": "Appearance settings subtitle on desktop"
     },
-    "navbarStyleToolbarAppearance": "导航栏样式、工具栏按钮、外观",
+    "navbarStyleToolbarAppearance": "导航栏样式、工具栏按钮、界面外观",
     "@navbarStyleToolbarAppearance": {
         "description": "Navigation settings subtitle"
     },
@@ -4235,7 +4235,7 @@
     "@reorderToggleHomeRows": {
         "description": "Home sections settings subtitle"
     },
-    "featuredContentAppearance": "特色内容、外观",
+    "featuredContentAppearance": "精选内容、界面外观",
     "@featuredContentAppearance": {
         "description": "Media bar settings subtitle"
     },
@@ -4243,7 +4243,7 @@
     "@posterSizeImageTypeFolderView": {
         "description": "Library display settings subtitle"
     },
-    "mdbListTmdbRatingSources": "MDBList、TMDB 和评分源",
+    "mdbListTmdbRatingSources": "MDBList、TMDB 及各类评分数据源",
     "@mdbListTmdbRatingSources": {
         "description": "Ratings settings subtitle"
     },
@@ -4264,15 +4264,15 @@
     "@browse": {
         "description": "Button to browse files"
     },
-    "noResults": "没有结果",
+    "noResults": "暂无匹配内容",
     "@noResults": {
         "description": "Shown when a search or browse returns no items"
     },
-    "seerrAvailableStatus": "可用的",
+    "seerrAvailableStatus": "已有资源",
     "@seerrAvailableStatus": {
         "description": "Seerr media status when item is available"
     },
-    "seerrRequestedStatus": "已请求",
+    "seerrRequestedStatus": "已提交请求",
     "@seerrRequestedStatus": {
         "description": "Seerr media status when item has been requested"
     },
@@ -4285,15 +4285,15 @@
             }
         }
     },
-    "seerrSettings": "搜索者设置",
+    "seerrSettings": "Seerr 设置",
     "@seerrSettings": {
         "description": "Dialog title for Seerr browse settings"
     },
-    "requestMore": "请求更多",
+    "requestMore": "请求更多季",
     "@requestMore": {
         "description": "Button to request more seasons"
     },
-    "request": "要求",
+    "request": "请求",
     "@request": {
         "description": "Button to submit a media request"
     },
@@ -4322,11 +4322,11 @@
     "@declineAction": {
         "description": "Tooltip/button to decline a request"
     },
-    "similar": "相似",
+    "similar": "相似影片",
     "@similar": {
         "description": "Section title for similar media"
     },
-    "recommendations": "建议",
+    "recommendations": "推荐影片",
     "@recommendations": {
         "description": "Section title for recommended media"
     },
@@ -4434,11 +4434,11 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "出场次数",
+    "appearances": "出演作品",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
-    "crewSection": "全体人员",
+    "crewSection": "幕后人员",
     "@crewSection": {
         "description": "Section title for crew credits"
     },
@@ -4451,15 +4451,15 @@
             }
         }
     },
-    "noRequests": "没有要求",
+    "noRequests": "没有请求",
     "@noRequests": {
         "description": "Shown when request list is empty"
     },
-    "pendingStatus": "待办的",
+    "pendingStatus": "待处理",
     "@pendingStatus": {
         "description": "Request status label"
     },
-    "declinedStatus": "拒绝",
+    "declinedStatus": "已拒绝",
     "@declinedStatus": {
         "description": "Request status label"
     },
@@ -4475,11 +4475,11 @@
     "@approvedStatus": {
         "description": "Request status label"
     },
-    "notRequestedStatus": "未要求",
+    "notRequestedStatus": "未请求",
     "@notRequestedStatus": {
         "description": "Request status label when no request exists"
     },
-    "blocklistedStatus": "列入黑名单",
+    "blocklistedStatus": "已屏蔽",
     "@blocklistedStatus": {
         "description": "Request status label for blocklisted media"
     },
@@ -4526,8 +4526,8 @@
     "access": "访问权限",
     "add": "添加",
     "address": "地址",
-    "analytics": "分析",
-    "catalog": "目录",
+    "analytics": "数据分析",
+    "catalog": "资源目录",
     "content": "内容",
     "copy": "复制",
     "create": "创建",
@@ -4544,7 +4544,7 @@
     "interval": "间隔",
     "name": "姓名",
     "networking": "网络设置",
-    "next": "下一个",
+    "next": "下一项",
     "path": "路径",
     "paused": "已暂停",
     "permissions": "权限",
@@ -4567,39 +4567,39 @@
     "stop": "停止",
     "streaming": "流媒体",
     "time": "时间",
-    "trickplay": "缩略预加载",
+    "trickplay": "缩略预览",
     "uninstall": "卸载",
     "up": "上移",
     "update": "更新",
     "upload": "上传",
     "unmute": "取消静音",
     "mute": "静音",
-    "branding": "品牌推广",
-    "adminDrawerDashboard": "仪表板",
-    "adminDrawerAnalytics": "分析",
-    "adminDrawerSettings": "设置",
+    "branding": "界面定制",
+    "adminDrawerDashboard": "控制面板",
+    "adminDrawerAnalytics": "数据分析",
+    "adminDrawerSettings": "系统设置",
     "adminDrawerBranding": "界面品牌定制",
-    "adminDrawerUsers": "用户",
+    "adminDrawerUsers": "用户管理",
     "adminDrawerLibraries": "媒体库",
-    "adminDrawerTranscoding": "转码",
-    "adminDrawerResume": "恢复",
-    "adminDrawerStreaming": "流媒体",
-    "adminDrawerTrickplay": "特技游戏",
-    "adminDrawerDevices": "设备",
-    "adminDrawerActivity": "活动",
-    "adminDrawerNetworking": "联网",
+    "adminDrawerTranscoding": "转码设置",
+    "adminDrawerResume": "播放续播",
+    "adminDrawerStreaming": "流媒体设置",
+    "adminDrawerTrickplay": "缩略预览设置",
+    "adminDrawerDevices": "设备管理",
+    "adminDrawerActivity": "操作日志",
+    "adminDrawerNetworking": "网络配置",
     "adminDrawerApiKeys": "API 密钥",
-    "adminDrawerBackups": "备份",
-    "adminDrawerLogs": "日志",
+    "adminDrawerBackups": "备份管理",
+    "adminDrawerLogs": "运行日志",
     "adminDrawerScheduledTasks": "计划任务",
-    "adminDrawerPlugins": "插件",
-    "adminDrawerRepositories": "存储库",
-    "adminDrawerLiveTv": "电视直播",
-    "adminExitTooltip": "退出管理",
-    "adminDashboardLoadFailed": "无法加载仪表板",
+    "adminDrawerPlugins": "插件管理",
+    "adminDrawerRepositories": "插件库",
+    "adminDrawerLiveTv": "直播电视",
+    "adminExitTooltip": "退出管理后台",
+    "adminDashboardLoadFailed": "控制面板加载失败",
     "adminMediaOverview": "媒体概览",
     "adminMediaTotalsError": "无法加载服务器媒体总数。",
-    "adminMediaOverviewSubtitle": "快速了解该服务器上有多少内容。",
+    "adminMediaOverviewSubtitle": "快速查看服务器全部媒体资源统计。",
     "adminPluginUpdatesAvailable": "可用插件更新：{count}",
     "@adminPluginUpdatesAvailable": {
         "placeholders": {
@@ -4639,7 +4639,7 @@
     "analyticsTopGenres": "热门类型",
     "analyticsReleaseYears": "发布年份",
     "analyticsContentRatings": "内容评分",
-    "analyticsRuntimeBuckets": "运行时长分段统计",
+    "analyticsRuntimeBuckets": "播放时长分段统计",
     "analyticsFileFormats": "文件格式",
     "analyticsNoData": "无可用数据。",
     "adminServerInfo": "服务器信息",
@@ -4680,17 +4680,17 @@
     "sessionRewind": "快退",
     "sessionForward": "快进",
     "sessionNext": "下一个",
-    "sessionVolumeDown": "卷 –",
-    "sessionVolumeUp": "卷+",
+    "sessionVolumeDown": "音量 –",
+    "sessionVolumeUp": "音量 +",
     "uhd4k": "4K",
     "nowPlaying": "正在播放",
-    "volume": "卷",
-    "actions": "行动",
+    "volume": "音量",
+    "actions": "操作",
     "videoCodec": "视频编解码器",
     "audioCodec": "音频编解码器",
     "hwAccel": "硬件加速",
     "completion": "完成",
-    "direct": "直接的",
+    "direct": "直接播放",
     "adminDisconnect": "断开",
     "adminClearDates": "清理日期",
     "adminActivityLoadFailed": "无法加载活动日志：{error}",
@@ -4912,9 +4912,9 @@
     "adminBackToUsers": "返回用户",
     "adminSaveProfile": "保存个人资料",
     "adminDeleteUser": "删除用户",
-    "admin": "行政",
-    "adminFullAccessWarning": "Administrators have complete access to the server.谨慎授予。",
-    "administrator": "行政人员",
+    "admin": "管理员",
+    "adminFullAccessWarning": "管理员拥有对服务器的完全访问权限。谨慎授予。",
+    "administrator": "管理员",
     "adminHiddenUser": "隐藏用户",
     "adminAllowMediaPlayback": "允许媒体播放",
     "adminAllowAudioTranscoding": "允许音频转码",
@@ -5102,7 +5102,7 @@
         }
     },
     "adminSearchInLog": "在日志中搜索",
-    "adminNoMatchingLines": "没有匹配的线",
+    "adminNoMatchingLines": "没有匹配的行",
     "adminTasksLoadFailed": "加载任务失败：{error}",
     "@adminTasksLoadFailed": {
         "placeholders": {
@@ -5238,10 +5238,10 @@
             }
         }
     },
-    "adminNoPackagesMatchSearch": "没有符合您搜索条件的软件包",
-    "adminNoPackagesAvailable": "没有可用的套餐",
-    "adminExperimentalIntegration": "实验整合",
-    "adminExperimentalWarning": "插件设置集成仍处于实验阶段。某些设置页面可能无法正确呈现。",
+    "adminNoPackagesMatchSearch": "未找到匹配搜索条件的插件包",
+    "adminNoPackagesAvailable": "暂无可用插件包",
+    "adminExperimentalIntegration": "实验性功能集成",
+    "adminExperimentalWarning": "插件设置集成目前为实验功能，部分设置页面可能显示异常。",
     "continueAction": "继续",
     "adminPluginRemoveAfterRestart": "服务器重启后“{name}”将被删除",
     "@adminPluginRemoveAfterRestart": {
@@ -5351,7 +5351,7 @@
     "adminBrandingLoadFailed": "无法加载品牌设置",
     "adminLoginDisclaimer": "登录免责声明",
     "adminLoginDisclaimerHint": "HTML 显示在登录表单下方",
-    "adminCustomCss": "自定义CSS",
+    "adminCustomCss": "自定义 CSS",
     "adminCustomCssHint": "应用于 Web 界面的自定义 CSS",
     "adminEnableSplashScreen": "启用启动画面",
     "adminStreamingSaved": "已保存流媒体设置",
@@ -5363,9 +5363,9 @@
     "adminPlaybackLoadFailed": "无法加载播放设置",
     "adminPlaybackTranscoding": "播放/转码",
     "adminHardwareAcceleration": "硬件加速",
-    "adminVaapiDevice": "VA-API装置",
+    "adminVaapiDevice": "VA-API 装置",
     "adminEnableHardwareEncoding": "启用硬件编码",
-    "adminEnableHardwareDecoding": "启用硬件解码：",
+    "adminEnableHardwareDecoding": "启用硬件解码",
     "adminEncodingThreads": "编码线程",
     "adminAutomatic": "0 = 自动",
     "adminTranscodingTempPath": "转码临时路径",
@@ -5373,9 +5373,9 @@
     "adminFallbackFontPath": "后备字体路径",
     "adminAllowSegmentDeletion": "允许段删除",
     "adminSegmentKeepSeconds": "段保持（秒）",
-    "adminThrottleBuffering": "油门缓冲",
-    "adminTrickplaySaved": "已保存特技播放设置",
-    "adminTrickplayLoadFailed": "无法加载特技播放设置",
+    "adminThrottleBuffering": "缓冲节流",
+    "adminTrickplaySaved": "已保存缩略预加载设置",
+    "adminTrickplayLoadFailed": "无法加载缩略预加载设置",
     "adminEnableHardwareAcceleration": "启用硬件加速",
     "adminEnableKeyFrameExtraction": "启用仅提取关键帧",
     "adminKeyFrameSubtitle": "速度更快但精度较低",
@@ -5392,31 +5392,31 @@
     "adminResumeSaved": "恢复已保存的设置",
     "adminResumeLoadFailed": "无法加载恢复设置",
     "adminResumeDescription": "配置何时应将内容标记为部分播放或完全播放。",
-    "adminMinResumePercentage": "最低简历百分比",
-    "adminMinResumeSubtitle": "播放内容必须超过此百分比才能保存进度",
-    "adminMaxResumePercentage": "最大简历百分比",
-    "adminMaxResumeSubtitle": "在此百分比之后，内容被视为已完全播放",
-    "adminMinResumeDuration": "最短恢复持续时间（秒）",
-    "adminMinResumeDurationSubtitle": "比这短的项目不可恢复",
-    "adminMinAudiobookResume": "有声读物最低简历百分比",
-    "adminMaxAudiobookResume": "最大有声读物恢复百分比",
+    "adminMinResumePercentage": "最低续播进度百分比",
+    "adminMinResumeSubtitle": "播放进度超过该百分比才会保存播放记录",
+    "adminMaxResumePercentage": "最高续播进度百分比",
+    "adminMaxResumeSubtitle": "播放进度达到该百分比后，将标记为已完整观看",
+    "adminMinResumeDuration": "最小续播时长（秒）",
+    "adminMinResumeDurationSubtitle": "播放时长短于此百分比的媒体不会保存播放进度",
+    "adminMinAudiobookResume": "有声读物最低续播进度百分比",
+    "adminMaxAudiobookResume": "有声读物最高续播进度百分比",
     "adminNetworkingSaved": "已保存网络设置。可能需要重新启动服务器。",
     "adminNetworkingLoadFailed": "无法加载网络设置",
     "adminNetworkingWarning": "更改网络设置可能需要重新启动服务器。",
     "adminEnableRemoteAccess": "启用远程访问",
-    "ports": "港口",
-    "adminHttpPort": "HTTP端口",
-    "adminHttpsPort": "HTTPS端口",
+    "ports": "端口",
+    "adminHttpPort": "HTTP 端口",
+    "adminHttpsPort": "HTTPS 端口",
     "adminPublicHttpsPort": "公共 HTTPS 端口",
-    "adminBaseUrl": "基本网址",
-    "adminBaseUrlHint": "例如/果冻",
+    "adminBaseUrl": "站点根路径",
+    "adminBaseUrlHint": "示例：/jellyfin",
     "https": "HTTPS",
     "adminEnableHttps": "启用 HTTPS",
     "adminLocalNetwork": "本地网络",
     "adminLocalNetworkAddresses": "本地网络地址",
     "adminKnownProxies": "已知代理",
-    "adminRemoteIpFilter": "远程IP过滤",
-    "adminRemoteIpFilterEntries": "远程IP过滤器",
+    "adminRemoteIpFilter": "远程 IP 过滤",
+    "adminRemoteIpFilterEntries": "远程 IP 过滤器",
     "adminCertificatePath": "证书路径",
     "whitelist": "白名单",
     "blacklist": "黑名单",
@@ -5627,7 +5627,7 @@
     "adminLiveTvLoadFailed": "无法加载直播电视管理",
     "adminTunerDevices": "调谐器设备",
     "adminNoTunerHosts": "未配置调谐器主机",
-    "adminGuideProviders": "导游提供者",
+    "adminGuideProviders": "节目指南提供商",
     "adminAddProvider": "添加提供商",
     "adminNoListingProviders": "未配置列表提供商",
     "adminRecordingPathDisplay": "记录路径：{path}",
@@ -5646,7 +5646,7 @@
             }
         }
     },
-    "adminPrePaddingDisplay": "预填充：@​​{minutes} 分钟",
+    "adminPrePaddingDisplay": "预填充：​​{minutes} 分钟",
     "@adminPrePaddingDisplay": {
         "placeholders": {
             "minutes": {
@@ -5707,7 +5707,7 @@
             }
         }
     },
-    "adminLogsDaysAgo": "{days}d 前",
+    "adminLogsDaysAgo": "{days}天前",
     "@adminLogsDaysAgo": {
         "placeholders": {
             "days": {
@@ -5763,9 +5763,9 @@
     "adminMetadataImageBackdrop": "背景",
     "adminMetadataImageLogo": "标识",
     "adminMetadataImageBanner": "横幅",
-    "adminMetadataImageThumb": "拇指",
+    "adminMetadataImageThumb": "缩略图",
     "adminMetadataRecursive": "递归",
-    "adminMetadataProvider": "提供者",
+    "adminMetadataProvider": "提供商",
     "adminMetadataImageUpdated": "{imageType} 图像已更新",
     "@adminMetadataImageUpdated": {
         "placeholders": {
@@ -5837,7 +5837,7 @@
     "adminMetadataRemoteImage": "远程图像",
     "adminPluginsInstalled": "已安装",
     "adminPluginsCatalog": "目录",
-    "adminPluginsActive": "积极的",
+    "adminPluginsActive": "已启用",
     "adminPluginsRestart": "重新启动",
     "adminPluginsNoSearchResults": "没有符合您搜索条件的插件",
     "adminPluginsNoneInstalled": "没有安装插件",
@@ -5852,7 +5852,7 @@
     "adminPluginsUpdateAvailableGeneric": "可用更新",
     "adminPluginsPendingRemoval": "重启后等待删除",
     "adminPluginsChangesPending": "更改待重启",
-    "adminPluginsEnable": "使能够",
+    "adminPluginsEnable": "启用",
     "adminPluginsDisable": "禁用",
     "adminPluginsInstallUpdate": "安装更新",
     "adminPluginsInstallUpdateVersioned": "安装更新 (v{version})",
@@ -5885,16 +5885,16 @@
             }
         }
     },
-    "adminPluginDetailDetails": "细节",
+    "adminPluginDetailDetails": "详情",
     "adminPluginDetailDeveloper": "开发者",
     "adminPluginDetailRepository": "存储库",
-    "adminPluginDetailBundled": "捆绑式",
+    "adminPluginDetailBundled": "内置预装",
     "adminPluginDetailEnablePlugin": "启用插件",
-    "adminPluginDetailRestartRequired": "需要重新启动服务器才能使更改生效。",
-    "adminPluginDetailRemovalPending": "服务器重启后该插件将被删除。",
-    "adminPluginDetailMalfunctioned": "该插件出现故障，可能无法正常工作。",
-    "adminPluginDetailNotSupported": "当前服务器版本不支持此插件。",
-    "adminPluginDetailSuperseded": "该插件已被新版本取代。",
+    "adminPluginDetailRestartRequired": "修改生效需重启服务器。",
+    "adminPluginDetailRemovalPending": "服务器重启后将卸载该插件。",
+    "adminPluginDetailMalfunctioned": "插件运行异常，功能可能失效。",
+    "adminPluginDetailNotSupported": "当前服务器版本不兼容该插件。",
+    "adminPluginDetailSuperseded": "此插件已有新版替代。",
     "adminReposLoadFailed": "无法加载存储库：{error}",
     "@adminReposLoadFailed": {
         "placeholders": {
@@ -5927,7 +5927,7 @@
     "adminReposEditTitle": "编辑存储库",
     "adminReposAddTitle": "添加存储库",
     "adminReposUrl": "存储库网址",
-    "adminReposNameHint": "例如Jellyfin 稳定",
+    "adminReposNameHint": "例如 Jellyfin 稳定",
     "adminPluginSettingsInvalidUrl": "无效网址",
     "adminGeneralSettingsTitle": "常规设置",
     "adminGeneralMetadataLanguage": "首选元数据语言",
@@ -5939,25 +5939,25 @@
     "adminUnknownError": "未知错误",
     "adminBrowse": "浏览",
     "adminCloseBrowser": "关闭浏览器",
-    "adminNetworkingTitle": "联网",
+    "adminNetworkingTitle": "网络设置",
     "adminNetworkingRestartWarning": "更改网络设置可能需要重新启动服务器。",
     "adminNetworkingRemoteAccess": "启用远程访问",
-    "adminNetworkingPorts": "港口",
-    "adminNetworkingHttpPort": "HTTP端口",
-    "adminNetworkingHttpsPort": "HTTPS端口",
+    "adminNetworkingPorts": "端口",
+    "adminNetworkingHttpPort": "HTTP 端口",
+    "adminNetworkingHttpsPort": "HTTPS 端口",
     "adminNetworkingEnableHttps": "启用 HTTPS",
     "adminNetworkingLocalNetwork": "本地网络",
     "adminNetworkingLocalAddresses": "本地网络地址",
-    "adminNetworkingAddressHint": "例如192.168.1.0/24",
+    "adminNetworkingAddressHint": "例如 192.168.1.0/24",
     "adminNetworkingKnownProxies": "已知代理",
-    "adminNetworkingProxyHint": "例如10.0.0.1",
+    "adminNetworkingProxyHint": "例如 10.0.0.1",
     "adminNetworkingWhitelist": "白名单",
     "adminNetworkingBlacklist": "黑名单",
     "adminNetworkingAddEntry": "添加条目",
-    "adminBrandingTitle": "品牌推广",
+    "adminBrandingTitle": "界面品牌定制",
     "adminBrandingLoginDisclaimer": "登录免责声明",
     "adminBrandingLoginDisclaimerHint": "HTML 显示在登录表单下方",
-    "adminBrandingCustomCss": "自定义CSS",
+    "adminBrandingCustomCss": "自定义 CSS",
     "adminBrandingCustomCssHint": "应用于 Web 界面的自定义 CSS",
     "adminBrandingEnableSplash": "启用启动画面",
     "adminPlaybackHwAccel": "硬件加速",
@@ -5971,8 +5971,8 @@
     "adminPlaybackStreaming": "流媒体",
     "adminResumeVideo": "视频",
     "adminResumeAudiobooks": "有声读物",
-    "adminResumeMinAudiobookPct": "有声读物最低简历百分比",
-    "adminResumeMaxAudiobookPct": "最大有声读物恢复百分比",
+    "adminResumeMinAudiobookPct": "有声读物最低续播进度百分比",
+    "adminResumeMaxAudiobookPct": "有声读物最高续播进度百分比",
     "adminStreamingBitrateLimit": "远程客户端比特率限制 (Mbps)",
     "adminStreamingBitrateLimitHint": "留空或 0 表示无限制",
     "adminTrickplayHwAccel": "启用硬件加速",
@@ -5981,9 +5981,9 @@
     "adminTrickplayKeyFrameOnlySubtitle": "速度更快但精度较低",
     "adminTrickplayNonBlocking": "非阻塞",
     "adminTrickplayBlocking": "阻塞",
-    "adminTrickplayPriorityHigh": "高的",
+    "adminTrickplayPriorityHigh": "高",
     "adminTrickplayPriorityAboveNormal": "高于正常水平",
-    "adminTrickplayPriorityNormal": "普通的",
+    "adminTrickplayPriorityNormal": "普通",
     "adminTrickplayPriorityBelowNormal": "低于正常水平",
     "adminTrickplayPriorityIdle": "空闲",
     "adminTrickplayImageSettings": "图像设置",
@@ -5994,18 +5994,18 @@
     "adminTrickplayQScale": "质量系数",
     "adminTrickplayQScaleSubtitle": "较低的值=更好的质量，更大的文件",
     "adminTrickplayJpegQuality": "JPEG 质量",
-    "adminTrickplayProcessing": "加工",
+    "adminTrickplayProcessing": "处理",
     "adminTasksEmpty": "没有找到计划任务",
     "adminTasksNoFilterMatch": "没有任务与当前过滤器匹配",
     "adminTaskCancelling": "正在取消...",
-    "adminTaskRunning": "跑步...",
-    "adminTaskNeverRun": "永远不要跑",
+    "adminTaskRunning": "正在运行...",
+    "adminTaskNeverRun": "从未运行",
     "adminTaskStop": "停止",
-    "adminTaskRun": "跑步",
+    "adminTaskRun": "运行",
     "adminTaskDetailLastExecution": "最后执行",
     "adminTaskDetailStarted": "开始",
     "adminTaskDetailEnded": "结束",
-    "adminTaskDetailDuration": "期间",
+    "adminTaskDetailDuration": "持续时间",
     "adminTaskDetailErrorLabel": "错误：",
     "adminTaskTriggerDaily": "每日{time}",
     "@adminTaskTriggerDaily": {
@@ -6035,15 +6035,15 @@
         }
     },
     "adminTaskTriggerStartup": "应用程序启动时",
-    "adminTaskTriggerTypeDaily": "日常的",
+    "adminTaskTriggerTypeDaily": "每日",
     "adminTaskTriggerTypeWeekly": "每周",
-    "adminTaskTriggerTypeInterval": "在一个间隔上",
+    "adminTaskTriggerTypeInterval": "固定间隔",
     "adminTaskTriggerIntervalLabel": "间隔",
     "adminTaskTriggerEveryHour": "每小时",
     "adminTaskTriggerEvery6Hours": "每 6 小时",
-    "adminTaskTriggerEvery12Hours": "每12小时一次",
-    "adminTaskTriggerEvery24Hours": "每24小时一次",
-    "adminTaskTriggerEvery2Days": "每2天一次",
+    "adminTaskTriggerEvery12Hours": "每 12 小时一次",
+    "adminTaskTriggerEvery24Hours": "每 24 小时一次",
+    "adminTaskTriggerEvery2Days": "每 2 天一次",
     "adminTaskTriggerHours": "{count, plural, one{1 小时} other{{count} 小时}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
@@ -6058,7 +6058,7 @@
     "adminActivityLastHour": "最后一小时",
     "adminActivityToday": "今天",
     "adminActivityYesterday": "昨天",
-    "adminActivityOlder": "年长的",
+    "adminActivityOlder": "更早",
     "adminActivityDaysAgo": "{days}d 前",
     "@adminActivityDaysAgo": {
         "placeholders": {
@@ -6119,30 +6119,30 @@
             }
         }
     },
-    "adminTrickplayDescription": "配置搜索预览缩略图的特技播放图像生成。",
+    "adminTrickplayDescription": "配置预览缩略图的缩略预加载图像生成。",
     "adminNetworkingPublicHttpsPort": "公共 HTTPS 端口",
     "adminNetworkingBaseUrl": "基本网址",
-    "adminNetworkingBaseUrlHint": "例如/果冻",
+    "adminNetworkingBaseUrlHint": "例如：/jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "证书路径",
-    "adminNetworkingRemoteIpFilter": "远程IP过滤",
-    "adminNetworkingRemoteIpFilterLabel": "远程IP过滤器",
-    "adminPlaybackVaapiDevice": "VA-API装置",
+    "adminNetworkingRemoteIpFilter": "远程 IP 过滤",
+    "adminNetworkingRemoteIpFilterLabel": "远程 IP 过滤器",
+    "adminPlaybackVaapiDevice": "VA-API 装置",
     "adminPlaybackAutomatic": "0 = 自动",
     "adminPlaybackTranscodeTempPath": "转码临时路径",
     "adminPlaybackSegmentDeletion": "允许段删除",
     "adminPlaybackSegmentKeep": "段保持（秒）",
-    "adminPlaybackThrottleBuffering": "油门缓冲",
-    "adminResumeMinPct": "最低简历百分比",
-    "adminResumeMinPctSubtitle": "播放内容必须超过此百分比才能保存进度",
-    "adminResumeMaxPct": "最大简历百分比",
-    "adminResumeMaxPctSubtitle": "在此百分比之后，内容被视为已完全播放",
-    "adminResumeMinDuration": "最短恢复持续时间（秒）",
-    "adminResumeMinDurationSubtitle": "比这短的项目不可恢复",
-    "adminTrickplayScanBehavior": "扫描行为",
+    "adminPlaybackThrottleBuffering": "播放限速缓冲",
+    "adminResumeMinPct": "最低续播进度百分比",
+    "adminResumeMinPctSubtitle": "播放进度超过该百分比才会记录播放进度",
+    "adminResumeMaxPct": "最高续播进度百分比",
+    "adminResumeMaxPctSubtitle": "播放进度达到该数值后，标记为完整看完",
+    "adminResumeMinDuration": "最小续播时长（秒）",
+    "adminResumeMinDurationSubtitle": "播放时长短于此百分比的媒体不会保存播放进度",
+    "adminTrickplayScanBehavior": "扫描策略",
     "adminTrickplayProcessPriority": "进程优先级",
-    "adminTrickplayTileWidth": "瓷砖宽度",
-    "adminTrickplayTileHeight": "瓷砖高度",
+    "adminTrickplayTileWidth": "缩略图单块宽度",
+    "adminTrickplayTileHeight": "缩略图单块高度",
     "adminTrickplayProcessThreads": "处理线程",
     "adminTrickplayWidthResolutions": "宽度分辨率",
     "adminMetadataDefault": "默认",
@@ -6184,8 +6184,8 @@
     "syncPlayDisabledMessage": "在“设置”中启用 SyncPlay 以使用同步播放。",
     "syncPlayServerUnsupportedTitle": "服务器不受支持",
     "syncPlayServerUnsupportedMessage": "SyncPlay 需要 Jellyfin 服务器。目前的服务器不支持。",
-    "syncPlayGroupFallbackName": "SyncPlay 组",
-    "syncPlayGroupTooltip": "SyncPlay 组",
+    "syncPlayGroupFallbackName": "SyncPlay 群组",
+    "syncPlayGroupTooltip": "SyncPlay 群组",
     "syncPlayParticipantCount": "{count, plural, one {# 位参与者} other {# 位参与者}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
@@ -6196,7 +6196,7 @@
         }
     },
     "syncPlayIgnoreWait": "忽略等待",
-    "syncPlayIgnoreWaitSubtitle": "当该设备缓冲时，请勿阻止该组",
+    "syncPlayIgnoreWaitSubtitle": "当该设备缓冲时，请勿阻止该群组",
     "syncPlayContinueLocallyNoWait": "在本地继续，无需等待慢速成员",
     "syncPlayRepeat": "重复",
     "syncPlayRepeatOne": "一",
@@ -6216,19 +6216,19 @@
         }
     },
     "syncPlayPlayNow": "立即播放",
-    "syncPlayCreateNewGroup": "创建一个新组",
-    "syncPlayGroupName": "团体名称",
+    "syncPlayCreateNewGroup": "创建新群组",
+    "syncPlayGroupName": "群组名称",
     "syncPlayDefaultGroupName": "我的 SyncPlay 群组",
     "syncPlayCreateGroup": "创建群组",
-    "syncPlayAvailableGroups": "可用组",
-    "syncPlayNoGroupsAvailable": "没有可用的组",
+    "syncPlayAvailableGroups": "可用群组",
+    "syncPlayNoGroupsAvailable": "没有可用群组",
     "syncPlayJoinGroupQuestion": "加入 SyncPlay 群组？",
     "syncPlayJoinGroupWarning": "加入 SyncPlay 群组可能会取代您当前的播放队列。继续？",
     "syncPlayJoin": "加入",
     "syncPlayStateIdle": "空闲",
     "syncPlayStateWaiting": "等待",
     "syncPlayStatePaused": "已暂停",
-    "syncPlayStatePlaying": "演奏",
+    "syncPlayStatePlaying": "正在播放",
     "syncPlayUserJoinedGroup": "{userName} 加入SyncPlay 群组",
     "@syncPlayUserJoinedGroup": {
         "description": "Snackbar message when a user joins a SyncPlay group",
@@ -6248,7 +6248,7 @@
         }
     },
     "syncPlayAccessDeniedTitle": "SyncPlay 访问被拒绝",
-    "syncPlayAccessDeniedMessage": "您无权访问此 SyncPlay 组中的一项或多项。请组所有者验证库权限或选择其他队列。",
+    "syncPlayAccessDeniedMessage": "您无权访问此 SyncPlay 群组中的一项或多项。请群组所有者验证库权限或选择其他队列。",
     "syncPlaySyncingPlaybackToGroup": "正在将播放同步到{groupName}",
     "@syncPlaySyncingPlaybackToGroup": {
         "description": "Snackbar message shown when starting playback in a SyncPlay group",
@@ -6408,7 +6408,7 @@
     "trackActionAddToPlaylist": "添加到播放列表",
     "trackActionCancelDownload": "取消下载",
     "trackActionDeleteFromPlaylist": "从播放列表中删除",
-    "trackActionMoveUp": "向上移动",
+    "trackActionMoveUp": "上移",
     "trackActionMoveDown": "下移",
     "trackActionRemoveFromFavorites": "从收藏夹中删除",
     "trackActionAddToFavorites": "添加到收藏夹",
@@ -6458,7 +6458,7 @@
         }
     },
     "liveTv": "电视直播",
-    "continueWatchingAndNextUp": "继续观看并继续观看",
+    "continueWatchingAndNextUp": "继续观看和即将播放",
     "downloadingBatchProgress": "正在下载 {current}/{total} — {fileName}",
     "@downloadingBatchProgress": {
         "placeholders": {
@@ -6560,8 +6560,8 @@
     "settingsAlphabetical": "按字母顺序",
     "settingsPrivacyAndSafetySection": "隐私与安全",
     "settingsBlockedRatings": "屏蔽评分",
-    "settingsGeneralStyle": "通用风格",
-    "settingsGeneralStyleSubtitle": "主题口音、背景、观看指示器和主题音乐",
+    "settingsGeneralStyle": "全局界面风格",
+    "settingsGeneralStyleSubtitle": "设置主题色调、背景、播放进度标识与主题音效",
     "settingsHomePage": "主页",
     "settingsHomePageSubtitle": "部分、图像类型、叠加和媒体预览",
     "settingsLibrariesSubtitle": "媒体库可见性、文件夹视图和多服务器行为",
@@ -6635,14 +6635,14 @@
     "settingsAskEachTime": "每次都询问",
     "settingsPreferHdr10Fallback": "更喜欢 HDR10 后备",
     "settingsPreferServerTranscode": "首选服务器转码",
-    "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision 配置文件 7 直接播放",
-    "settingsDolbyVisionProfile7DirectPlayDescription": "控制 Dolby Vision 配置文件 7 增强层流是否应直接播放。",
-    "settingsAutoAftkrtEnabled": "自动（AFTKRT 已启用）",
-    "settingsEnabledOnThisDevice": "在此设备上启用",
+    "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision P7 直接播放",
+    "settingsDolbyVisionProfile7DirectPlayDescription": "控制 Dolby Vision P7 增强层流是否应直接播放。",
+    "settingsAutoAftkrtEnabled": "自动模式（AFTKRT已开启）",
+    "settingsEnabledOnThisDevice": "当前设备启用",
     "settingsDisabledPreferTranscode": "已禁用（首选转码）",
     "settingsResumeRewindDescription": "恢复播放时（从“继续观看”或媒体项目页面），应倒回多少秒？",
-    "settingsUnpauseRewindDescription": "按下暂停按钮后恢复播放时，应该倒回多少秒？",
-    "settingsSkipBackLengthDescription": "按快退按钮后跳回多少秒。",
+    "settingsUnpauseRewindDescription": "按"暂停"按钮后恢复播放时，应该倒回多少秒？",
+    "settingsSkipBackLengthDescription": "按"快退"按钮后跳回多少秒。",
     "settingsOneSecond": "1 秒",
     "settingsThreeSeconds": "3 秒",
     "settingsFortyFiveSeconds": "45 秒",
@@ -6666,14 +6666,14 @@
     },
     "settingsLiveTvDirect": "直播电视直播",
     "settingsLiveTvDirectSubtitle": "启用直播电视直接播放",
-    "settingsOpenGroups": "公开组",
-    "settingsOpenGroupsSubtitle": "创建、加入或管理 SyncPlay 组",
+    "settingsOpenGroups": "公开群组",
+    "settingsOpenGroupsSubtitle": "创建、加入或管理 SyncPlay 群组",
     "settingsSyncplayEnabled": "SyncPlay 已启用",
     "settingsSyncplayEnabledSubtitle": "启用群组观看功能",
     "settingsSyncplayButton": "SyncPlay 按钮",
     "settingsSyncplayButtonSubtitle": "在导航栏上显示 SyncPlay 按钮",
-    "settingsSyncplayAdvancedCorrection": "高级修正",
-    "settingsSyncplayAdvancedCorrectionSubtitle": "启用细粒度同步逻辑",
+    "settingsSyncplayAdvancedCorrection": "精细同步校正",
+    "settingsSyncplayAdvancedCorrectionSubtitle": "启用高精度音画同步算法",
     "settingsSyncplaySyncCorrection": "同步校正",
     "settingsSyncplaySyncCorrectionSubtitle": "自动调整播放以保持同步",
     "settingsSyncplaySpeedToSync": "同步速度",
@@ -6683,8 +6683,8 @@
     "settingsSyncplayMinimumSpeedDelay": "最小速度延迟",
     "settingsSyncplayMaximumSpeedDelay": "最大速度延迟",
     "settingsSyncplaySpeedDuration": "速度持续时间",
-    "settingsSyncplayMinimumSkipDelay": "最小跳跃延迟",
-    "settingsSyncplayExtraOffset": "SyncPlay 额外偏移",
+    "settingsSyncplayMinimumSkipDelay": "最小跳转延迟",
+    "settingsSyncplayExtraOffset": "SyncPlay 额外同步偏移",
     "onNow": "现在播出",
     "collections": "收藏",
     "lastPlayed": "上次播放",
@@ -6739,7 +6739,7 @@
     "@email": {
         "description": "Email field label"
     },
-    "seerrAccountType": "西尔账户类型",
+    "seerrAccountType": "Seerr 账户类型",
     "@seerrAccountType": {
         "description": "Header for selecting Seerr authentication account type"
     },
@@ -6747,7 +6747,7 @@
     "@jellyfinAccount": {
         "description": "Auth option label for Seerr sign in using Jellyfin credentials"
     },
-    "localAccount": "当地的",
+    "localAccount": "本地",
     "@localAccount": {
         "description": "Auth option label for Seerr sign in using local Seerr credentials"
     },
@@ -6891,15 +6891,15 @@
     "@settingsAudioBitstreamTrueHdAtmosToExternalDecoder": {
         "description": "Description for TrueHD Atmos passthrough"
     },
-    "settingsDetectedAudioCapabilities": "检测到的音频功能",
+    "settingsDetectedAudioCapabilities": "已检测音频解码能力",
     "@settingsDetectedAudioCapabilities": {
         "description": "Section title for detected runtime audio capabilities"
     },
-    "settingsDetectedAudioCapabilitiesUnavailable": "尚无可用的运行时功能快照。",
+    "settingsDetectedAudioCapabilitiesUnavailable": "暂无运行时音频能力检测快照。",
     "@settingsDetectedAudioCapabilitiesUnavailable": {
         "description": "Message shown when runtime audio capability snapshot is missing"
     },
-    "settingsAudioRouteLabel": "路线",
+    "settingsAudioRouteLabel": "音频通道",
     "@settingsAudioRouteLabel": {
         "description": "Label for active audio route row"
     },
@@ -6911,7 +6911,7 @@
     "@settingsAudioPassthroughLabel": {
         "description": "Label for audio passthrough capability row"
     },
-    "settingsAudioHdRoute": "高清音频路由",
+    "settingsAudioHdRoute": "高清音频输出通道",
     "@settingsAudioHdRoute": {
         "description": "Label indicating the active route supports HD audio"
     },
@@ -6923,7 +6923,7 @@
     "@settingsAudioRouteArc": {
         "description": "Audio route type ARC"
     },
-    "settingsAudioRouteEarc": "电弧",
+    "settingsAudioRouteEarc": "eARC",
     "@settingsAudioRouteEarc": {
         "description": "Audio route type eARC"
     },
@@ -6944,15 +6944,15 @@
             }
         }
     },
-    "settingsAudioDiagnostics": "诊断",
+    "settingsAudioDiagnostics": "音视频诊断",
     "@settingsAudioDiagnostics": {
         "description": "Section title for playback diagnostics"
     },
-    "settingsAudioDiagnosticsVideoLevel": "视频电平",
+    "settingsAudioDiagnosticsVideoLevel": "视频电平标准",
     "@settingsAudioDiagnosticsVideoLevel": {
         "description": "Diagnostics label for video level"
     },
-    "settingsAudioDiagnosticsVideoRange": "视频范围",
+    "settingsAudioDiagnosticsVideoRange": "视频色彩范围",
     "@settingsAudioDiagnosticsVideoRange": {
         "description": "Diagnostics label for video range"
     },
@@ -6960,7 +6960,7 @@
     "@settingsAudioDiagnosticsSubtitleCodec": {
         "description": "Diagnostics label for subtitle codec"
     },
-    "settingsAudioDiagnosticsAllowedAudioCodecs": "允许的音频编解码器",
+    "settingsAudioDiagnosticsAllowedAudioCodecs": "支持的音频编码器",
     "@settingsAudioDiagnosticsAllowedAudioCodecs": {
         "description": "Diagnostics label for allowed audio codecs"
     },
@@ -6972,15 +6972,15 @@
     "@settingsAudioDiagnosticsHlsFmp4AudioCodecs": {
         "description": "Diagnostics label for HLS fMP4 audio codecs"
     },
-    "settingsAudioDiagnosticsAudioSpdifPassthrough": "音频-spdif 直通",
+    "settingsAudioDiagnosticsAudioSpdifPassthrough": "SPDIF 音频直通",
     "@settingsAudioDiagnosticsAudioSpdifPassthrough": {
         "description": "Diagnostics label for audio-spdif passthrough codecs"
     },
-    "settingsAudioDiagnosticsActiveAudioRoute": "活动音频路由",
+    "settingsAudioDiagnosticsActiveAudioRoute": "当前音频输出通道",
     "@settingsAudioDiagnosticsActiveAudioRoute": {
         "description": "Diagnostics label for active audio route"
     },
-    "settingsAudioDiagnosticsRouteHdAudioSupport": "路由高清音频支持",
+    "settingsAudioDiagnosticsRouteHdAudioSupport": "通道高清音频支持状态",
     "@settingsAudioDiagnosticsRouteHdAudioSupport": {
         "description": "Diagnostics label for route HD audio support"
     },
@@ -6990,11 +6990,11 @@
     "@autoplayNextEpisode": {
         "description": "Setting title: automatically start the next episode"
     },
-    "autoplayNextEpisodeSubtitle": "下一集可用时自动播放。",
+    "autoplayNextEpisodeSubtitle": "下一集可用时，自动播放。",
     "@autoplayNextEpisodeSubtitle": {
         "description": "Setting subtitle for autoplay next episode"
     },
-    "skipSilenceTitle": "跳过沉默",
+    "skipSilenceTitle": "自动跳过静音片段",
     "@skipSilenceTitle": {
         "description": "Setting title: skip silent audio segments during playback"
     },
@@ -7010,19 +7010,19 @@
     "@allowExternalAudioEffectsSubtitle": {
         "description": "Setting subtitle for external audio effects"
     },
-    "disableTunnelingTitle": "禁用隧道",
+    "disableTunnelingTitle": "关闭直通输出",
     "@disableTunnelingTitle": {
         "description": "Setting title: force non-tunneled video playback"
     },
-    "disableTunnelingSubtitle": "强制非隧道播放。对于具有隧道音频/视频不连续性的设备很有用。",
+    "disableTunnelingSubtitle": "强制关闭直通播放，适用于音视频直通出现卡顿、断流问题的设备。",
     "@disableTunnelingSubtitle": {
         "description": "Setting subtitle for disable tunneling"
     },
-    "mapDolbyVisionP7Title": "将 Dolby Vision 配置文件 7 映射到 HEVC",
+    "mapDolbyVisionP7Title": "将 Dolby Vision P7 映射到 HEVC",
     "@mapDolbyVisionP7Title": {
         "description": "Setting title: play DV P7 as HDR10 HEVC on non-DV devices"
     },
-    "mapDolbyVisionP7Subtitle": "在非 DV 设备上将 Dolby Vision 配置文件 7 流作为 HDR10 兼容的 HEVC 播放。",
+    "mapDolbyVisionP7Subtitle": "在非 DV 设备上将 Dolby Vision P7 流作为 HDR10 兼容的 HEVC 播放。",
     "@mapDolbyVisionP7Subtitle": {
         "description": "Setting subtitle for DV P7 to HEVC mapping"
     },
@@ -7094,7 +7094,7 @@
     "savedThemesManageSubtitle": "管理此设备上下载的插件主题",
     "homeScreenSectionsTitle": "主屏幕部分",
     "themeEditor": "主题编辑器",
-    "themeEditorSubtitle": "在浏览器中打开Moonfin主题编辑器",
+    "themeEditorSubtitle": "在浏览器中打开 Moonfin 主题编辑器",
     "homeScreen": "主屏幕",
     "bottomBar": "底栏",
     "homeRowsStyleClassic": "经典",
@@ -7211,7 +7211,7 @@
     "people": "人物",
     "recentlyReleasedEpisodes": "最近发布的剧集",
     "watchAgain": "再看一次",
-    "guestAppearances": "嘉宾亮相",
+    "guestAppearances": "嘉宾出演",
     "appearancesSeerr": "出场作品（Seerr）",
     "watchWithGroup": "与群组一起观看",
     "errors": "错误",
@@ -7278,7 +7278,7 @@
     "homeVideos": "家庭视频",
     "mixedContent": "混合内容",
     "homeVideosAndPhotos": "家庭视频和照片",
-    "mixedMoviesAndShows": "电影和剧集混合",
+    "mixedMoviesAndShows": "电影和电视节目混合",
     "intelQuickSync": "英特尔快速同步",
     "rockchipMpp": "瑞芯微 MPP",
     "dolbyVision": "Dolby Vision",
