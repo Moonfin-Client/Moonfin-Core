@@ -98,6 +98,9 @@ class PlaybackManager implements AudioOwnable {
   Stream<PlayerBackend> get backendChangedStream =>
       _backendChangedController.stream;
   PlaybackBringupState get bringupState => _bringupState;
+  dynamic _lastPlayedItem;
+  dynamic get lastPlayedItem => _lastPlayedItem;
+
   Stream<PlaybackBringupState> get bringupStateStream =>
       _bringupStateController.stream;
   Stream<void> get sessionEndedStream => _sessionEndedController.stream;
@@ -774,6 +777,37 @@ class PlaybackManager implements AudioOwnable {
     return true;
   }
 
+  void _preFetchNextSeasonIfNeeded() async {
+    final provider = _nextSeasonItemsProvider;
+    if (provider == null) return;
+    if (_isOfflinePlayback) return;
+    if (queueService.repeatMode != RepeatMode.none) return;
+
+    final currentItem = queueService.currentItem;
+    final currentIndex = queueService.currentIndex;
+    final queueSnapshot = queueService.items;
+    if (currentItem == null || currentIndex < 0 || queueSnapshot.isEmpty) {
+      return;
+    }
+    if (currentIndex != queueSnapshot.length - 1) return;
+
+    try {
+      final nextSeasonItems = await provider(
+        currentItem,
+        queueSnapshot,
+        currentIndex,
+      );
+      if (nextSeasonItems.isNotEmpty) {
+        if (queueService.currentItem == currentItem &&
+            queueService.currentIndex == currentIndex &&
+            queueService.items.length == queueSnapshot.length) {
+          queueService.addItems(nextSeasonItems);
+        }
+      }
+    } catch (_) {}
+  }
+
+
   Future<void> playItems(
     List<dynamic> items, {
     int startIndex = 0,
@@ -911,6 +945,9 @@ class PlaybackManager implements AudioOwnable {
       _translateTrackSelectionsForNewItem(item);
     }
     _lastItemId = itemId;
+    _lastPlayedItem = item;
+    _preFetchNextSeasonIfNeeded();
+
     _setBringupState(
       PlaybackBringupState(
         phase: PlaybackBringupPhase.resolving,
