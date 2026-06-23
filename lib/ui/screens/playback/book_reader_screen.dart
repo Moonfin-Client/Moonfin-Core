@@ -76,6 +76,8 @@ class _BookReaderScreenState extends State<BookReaderScreen>
   final ScrollController _comicVerticalController = ScrollController();
   List<ArchiveFile> _comicEntries = const [];
   final Map<int, Uint8List> _comicPageCache = {};
+  final Map<int, double> _comicAspectRatios = {};
+  int _comicDecodeWidth = 1080;
   int _currentComicPage = 0;
   double _comicZoom = 1.0;
   _ComicLayout _comicLayout = _ComicLayout.single;
@@ -103,7 +105,8 @@ class _BookReaderScreenState extends State<BookReaderScreen>
   List<({String title, int chapterIndex, int depth})> _epubTocEntries =
       const [];
   List<({String title, int page, int depth})> _pdfOutline = const [];
-  static const int _comicCacheRadius = 2;
+  static const int _comicCacheRadius = 3;
+  static const double _defaultComicAspect = 0.66;
   static const String _fixedLayoutInvertPrefKey =
       'book_reader_fixed_layout_invert';
   static const String _comicLayoutPrefKey = 'book_reader_comic_layout';
@@ -398,6 +401,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       _fallbackMessage = null;
       _comicEntries = const [];
       _comicPageCache.clear();
+      _comicAspectRatios.clear();
       _currentComicPage = 0;
       _comicZoom = 1.0;
       _webLoadProgress = 0;
@@ -484,6 +488,11 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
         await _restoreComicState();
         _primeComicCacheAround(_currentComicPage);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _precacheComicNeighbors(_currentComicPage);
+          }
+        });
       } else if (ext == 'pdf') {
         final bytes = await BookDocumentService.downloadBytes(uris, headers);
         if (!mounted) return;
@@ -928,6 +937,29 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     );
   }
 
+  ImageProvider _comicImageProvider(Uint8List bytes) =>
+      ResizeImage(MemoryImage(bytes), width: _comicDecodeWidth);
+
+  void _precacheComicNeighbors(int centerIndex) {
+    if (!mounted) {
+      return;
+    }
+    for (final i in [
+      centerIndex + 1,
+      centerIndex + 2,
+      centerIndex - 1,
+    ]) {
+      if (i < 0 || i >= _comicPageCount) {
+        continue;
+      }
+      final bytes = _comicPageBytesAt(i);
+      if (bytes == null) {
+        continue;
+      }
+      precacheImage(_comicImageProvider(bytes), context);
+    }
+  }
+
   int _viewportFromPageIndex(int pageIndex) {
     if (_twoPageSpreadActive) {
       return pageIndex ~/ 2;
@@ -1259,11 +1291,13 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       return;
     }
 
-    await _pageController.animateToPage(
-      _viewportFromPageIndex(clamped),
-      duration: const Duration(milliseconds: 160),
-      curve: Curves.easeOut,
-    );
+    if (_pageController.hasClients) {
+      await _pageController.animateToPage(
+        _viewportFromPageIndex(clamped),
+        duration: const Duration(milliseconds: 160),
+        curve: Curves.easeOut,
+      );
+    }
 
     if (mounted) {
       setState(() {
@@ -1281,6 +1315,24 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
   Future<void> _previousComicPage() =>
       _goToComicPage(_currentComicPage - _comicNavigationStep);
+
+  void _handleComicTap(TapUpDetails details) {
+    if (_comicZoom > 1.01) {
+      _toggleOverlay();
+      return;
+    }
+    final width = MediaQuery.sizeOf(context).width;
+    final edge = width * 0.3;
+    final x = details.localPosition.dx;
+    final rtl = _comicDirection == _ComicDirection.rtl;
+    if (x < edge) {
+      rtl ? _nextComicPage() : _previousComicPage();
+    } else if (x > width - edge) {
+      rtl ? _previousComicPage() : _nextComicPage();
+    } else {
+      _toggleOverlay();
+    }
+  }
 
   void _resetComicZoom() {
     _setComicZoom(1.0);
@@ -1942,6 +1994,10 @@ class _BookReaderScreenState extends State<BookReaderScreen>
   }
 
   Widget _buildComicContent(AppLocalizations l10n) {
+    final mq = MediaQuery.of(context);
+    _comicDecodeWidth = (mq.size.width * mq.devicePixelRatio)
+        .clamp(1, 2048)
+        .round();
     if (_comicVerticalActive) {
       return _buildComicVertical(l10n);
     }
@@ -1962,6 +2018,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
             final pageIndex = _pageIndexFromViewport(viewportIndex);
             _resetComicZoom();
             _primeComicCacheAround(pageIndex);
+            _precacheComicNeighbors(pageIndex);
             setState(() {
               _currentComicPage = pageIndex;
             });
@@ -1986,19 +2043,27 @@ class _BookReaderScreenState extends State<BookReaderScreen>
                 : null;
 
             final pages = <Widget>[
-              Expanded(child: _ComicPageImage(bytes: leftBytes)),
+              Expanded(
+                child: _ComicPageImage(
+                  bytes: leftBytes,
+                  decodeWidth: _comicDecodeWidth,
+                ),
+              ),
               if (_twoPageSpreadActive) ...[
                 const SizedBox(width: 8),
                 Expanded(
                   child: rightBytes != null
-                      ? _ComicPageImage(bytes: rightBytes)
+                      ? _ComicPageImage(
+                          bytes: rightBytes,
+                          decodeWidth: _comicDecodeWidth,
+                        )
                       : const SizedBox.shrink(),
                 ),
               ],
             ];
 
             return GestureDetector(
-              onTap: _toggleOverlay,
+              onTapUp: _handleComicTap,
               onDoubleTap: _toggleComicZoom,
               child: InteractiveViewer(
                 transformationController: _comicTransformController,
@@ -2024,7 +2089,10 @@ class _BookReaderScreenState extends State<BookReaderScreen>
                                 : TextDirection.ltr,
                             children: pages,
                           )
-                        : _ComicPageImage(bytes: leftBytes),
+                        : _ComicPageImage(
+                            bytes: leftBytes,
+                            decodeWidth: _comicDecodeWidth,
+                          ),
                   ),
                 ),
               ),
@@ -2048,6 +2116,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
           if (page != _currentComicPage) {
             setState(() => _currentComicPage = page);
             _primeComicCacheAround(page);
+            _precacheComicNeighbors(page);
             _saveComicState();
           }
         }
@@ -2055,15 +2124,34 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       },
       child: GestureDetector(
         onTap: _toggleOverlay,
-        child: ListView.builder(
-          controller: _comicVerticalController,
-          itemCount: _comicPageCount,
-          itemBuilder: (context, index) {
-            final bytes = _comicPageBytesAt(index);
-            if (bytes == null) {
-              return const SizedBox(height: 200);
-            }
-            return _maybeInvertFixedLayout(_ComicPageImage(bytes: bytes));
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth.isFinite
+                ? constraints.maxWidth
+                : MediaQuery.sizeOf(context).width;
+            return ListView.builder(
+              controller: _comicVerticalController,
+              itemCount: _comicPageCount,
+              itemBuilder: (context, index) {
+                final aspect =
+                    _comicAspectRatios[index] ?? _defaultComicAspect;
+                final estimatedHeight = aspect > 0 ? width / aspect : width;
+                final bytes = _comicPageBytesAt(index);
+                if (bytes == null) {
+                  return SizedBox(height: estimatedHeight);
+                }
+                return _maybeInvertFixedLayout(
+                  _ComicVerticalPage(
+                    key: ValueKey<int>(index),
+                    bytes: bytes,
+                    width: width,
+                    decodeWidth: _comicDecodeWidth,
+                    initialAspect: aspect,
+                    onAspect: (value) => _comicAspectRatios[index] = value,
+                  ),
+                );
+              },
+            );
           },
         ),
       ),
@@ -2802,25 +2890,104 @@ class _PdfRoundButton extends StatelessWidget {
   }
 }
 
+Widget _comicImageError(BuildContext context, Object error, StackTrace? stack) =>
+    const Center(
+      child: Icon(Icons.broken_image_outlined, color: Colors.white38, size: 64),
+    );
+
 class _ComicPageImage extends StatelessWidget {
   final Uint8List bytes;
+  final int decodeWidth;
 
-  const _ComicPageImage({required this.bytes});
+  const _ComicPageImage({required this.bytes, required this.decodeWidth});
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Image.memory(
-        bytes,
+      child: Image(
+        image: ResizeImage(MemoryImage(bytes), width: decodeWidth),
         fit: BoxFit.contain,
         gaplessPlayback: true,
-        errorBuilder: (context, error, stack) => const Center(
-          child: Icon(
-            Icons.broken_image_outlined,
-            color: Colors.white38,
-            size: 64,
-          ),
-        ),
+        filterQuality: FilterQuality.medium,
+        errorBuilder: _comicImageError,
+      ),
+    );
+  }
+}
+
+class _ComicVerticalPage extends StatefulWidget {
+  final Uint8List bytes;
+  final double width;
+  final int decodeWidth;
+  final double initialAspect;
+  final ValueChanged<double> onAspect;
+
+  const _ComicVerticalPage({
+    super.key,
+    required this.bytes,
+    required this.width,
+    required this.decodeWidth,
+    required this.initialAspect,
+    required this.onAspect,
+  });
+
+  @override
+  State<_ComicVerticalPage> createState() => _ComicVerticalPageState();
+}
+
+class _ComicVerticalPageState extends State<_ComicVerticalPage> {
+  late final ImageProvider _provider = ResizeImage(
+    MemoryImage(widget.bytes),
+    width: widget.decodeWidth,
+  );
+  ImageStream? _stream;
+  ImageStreamListener? _listener;
+  double? _aspect;
+
+  @override
+  void initState() {
+    super.initState();
+    final stream = _provider.resolve(ImageConfiguration.empty);
+    final listener = ImageStreamListener(
+      (info, _) {
+        final h = info.image.height;
+        if (h <= 0) {
+          return;
+        }
+        final aspect = info.image.width / h;
+        widget.onAspect(aspect);
+        if (mounted && (_aspect == null || (_aspect! - aspect).abs() > 0.001)) {
+          setState(() => _aspect = aspect);
+        }
+      },
+      onError: (_, _) {},
+    );
+    stream.addListener(listener);
+    _stream = stream;
+    _listener = listener;
+  }
+
+  @override
+  void dispose() {
+    if (_stream != null && _listener != null) {
+      _stream!.removeListener(_listener!);
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final aspect = _aspect ?? widget.initialAspect;
+    final height = aspect > 0 ? widget.width / aspect : widget.width;
+    return SizedBox(
+      width: widget.width,
+      height: height,
+      child: Image(
+        image: _provider,
+        fit: BoxFit.fitWidth,
+        gaplessPlayback: true,
+        filterQuality: FilterQuality.medium,
+        errorBuilder: _comicImageError,
       ),
     );
   }
