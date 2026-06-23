@@ -1538,7 +1538,7 @@
     "@stereo": {
         "description": "Audio channel layout label for stereo"
     },
-    "remoteSubtitlePermissionError": "远程字幕{action} 需要该用户的Jellyfin 字幕管理权限。",
+    "remoteSubtitlePermissionError": "远程字幕{action} 需要该用户的 Jellyfin 字幕管理权限。",
     "@remoteSubtitlePermissionError": {
         "description": "Error message when user lacks subtitle management permission",
         "placeholders": {
@@ -6127,7 +6127,7 @@
     "adminNetworkingCertPath": "证书路径",
     "adminNetworkingRemoteIpFilter": "远程 IP 过滤",
     "adminNetworkingRemoteIpFilterLabel": "远程 IP 过滤器",
-    "adminPlaybackVaapiDevice": "VA-API 装置",
+    "adminPlaybackVaapiDevice": "VA-API 设备",
     "adminPlaybackAutomatic": "0 = 自动",
     "adminPlaybackTranscodeTempPath": "转码临时路径",
     "adminPlaybackSegmentDeletion": "允许段删除",
@@ -6229,7 +6229,7 @@
     "syncPlayStateWaiting": "等待",
     "syncPlayStatePaused": "已暂停",
     "syncPlayStatePlaying": "正在播放",
-    "syncPlayUserJoinedGroup": "{userName} 加入SyncPlay 群组",
+    "syncPlayUserJoinedGroup": "{userName} 加入 SyncPlay 群组",
     "@syncPlayUserJoinedGroup": {
         "description": "Snackbar message when a user joins a SyncPlay group",
         "placeholders": {
@@ -7359,8 +7359,8 @@
     "interfaceLanguage": "界面语言",
     "systemLanguageDefault": "系统默认",
     "empty": "空",
-    "themeGlass": "玻璃",
-    "themeGlassSubtitle": "液态玻璃风格，带流动渐变背景、磨砂表面和 Apple 蓝强调色",
+    "themeGlass": "玻璃质感",
+    "themeGlassSubtitle": "液态玻璃风格，搭配流动渐变背景、磨砂质感界面与苹果蓝主题高亮色",
     "endsIn": "{time} 后结束",
     "directors": "导演",
     "writer": "编剧",
@@ -7403,8 +7403,8 @@
     "settingsProgressBar": "进度条",
     "settingsTimer": "计时器",
     "settingsNone": "无",
-    "enableTunnelingTitle": "启用隧道播放",
-    "enableTunnelingSubtitle": "高级设置。通过耦合的硬件路径传输音频和视频。默认关闭，因为某些设备可能出现音视频中断。",
+    "enableTunnelingTitle": "启用直通播放",
+    "enableTunnelingSubtitle": "高级选项。音视频经由硬件通道同步输出，默认关闭，部分设备开启后可能出现音画卡顿、断流问题。",
     "showMediaDetailsOnLibraryPage": "显示媒体详情",
     "showMediaDetailsOnLibraryPageDescription": "在媒体库页面顶部显示所选项目的详情。",
     "themeStore": "主题商店",
