@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "系列",
+    "series": "剧集",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -802,7 +802,7 @@
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
-    "seriesStatus": "系列状态",
+    "seriesStatus": "剧集状态",
     "@seriesStatus": {
         "description": "Section header for series status filter"
     },
@@ -1151,7 +1151,7 @@
     "@deleteDownloaded": {
         "description": "Action button label to delete downloaded album tracks"
     },
-    "goToSeries": "前往系列",
+    "goToSeries": "前往剧集",
     "@goToSeries": {
         "description": "Action button label to navigate to the parent series"
     },
@@ -2122,7 +2122,7 @@
     "@readerNotReady": {
         "description": "Error when reader has not finished initializing"
     },
-    "seriesRecordings": "系列录制",
+    "seriesRecordings": "剧集录制",
     "@seriesRecordings": {
         "description": "Live TV series recordings label"
     },
@@ -2220,7 +2220,7 @@
     "@recentRecordings": {
         "description": "Section title for recently completed recordings"
     },
-    "tvSeries": "电视剧",
+    "tvSeries": "电视节目",
     "@tvSeries": {
         "description": "Section title for TV series recordings"
     },
@@ -2257,19 +2257,19 @@
     "@failedToCancelRecording": {
         "description": "Error when cancelling a recording fails"
     },
-    "failedToLoadSeriesRecordings": "无法加载系列录制",
+    "failedToLoadSeriesRecordings": "无法加载剧集录制",
     "@failedToLoadSeriesRecordings": {
         "description": "Error when series recordings fail to load"
     },
-    "noSeriesRecordings": "没有系列录制",
+    "noSeriesRecordings": "没有剧集录制",
     "@noSeriesRecordings": {
         "description": "Empty state when no series recordings exist"
     },
-    "cancelSeriesRecording": "取消系列录制",
+    "cancelSeriesRecording": "取消剧集录制",
     "@cancelSeriesRecording": {
         "description": "Button label to cancel a series recording"
     },
-    "cancelSeriesRecordingQuestion": "取消系列录制？",
+    "cancelSeriesRecordingQuestion": "取消剧集录制？",
     "@cancelSeriesRecordingQuestion": {
         "description": "Dialog title for cancelling a series recording"
     },
@@ -2447,11 +2447,11 @@
             }
         }
     },
-    "seriesNotFound": "未找到系列",
+    "seriesNotFound": "未找到剧集",
     "@seriesNotFound": {
         "description": "Shown when a series cannot be found"
     },
-    "errorLoadingSeries": "加载系列时出错",
+    "errorLoadingSeries": "加载剧集时出错",
     "@errorLoadingSeries": {
         "description": "Error when loading a series fails"
     },
@@ -2477,7 +2477,7 @@
             }
         }
     },
-    "specials": "特别季",
+    "specials": "特别篇",
     "@specials": {
         "description": "Label for special episodes"
     },
@@ -2503,7 +2503,7 @@
             }
         }
     },
-    "storageManagement": "存储管理",
+    "storageManagement": "存储空间管理",
     "@storageManagement": {
         "description": "Title for the storage management screen"
     },
@@ -2605,7 +2605,7 @@
     "@languageSizeAppearance": {
         "description": "Subtitle settings description"
     },
-    "qualityStorage": "画质、储存",
+    "qualityStorage": "画质、存储",
     "@qualityStorage": {
         "description": "Download settings description"
     },
@@ -2722,11 +2722,11 @@
     "@showBackdropImages": {
         "description": "Description for background backdrops"
     },
-    "seriesThumbnails": "系列缩略图",
+    "seriesThumbnails": "剧集缩略图",
     "@seriesThumbnails": {
         "description": "Setting for series thumbnails"
     },
-    "seriesThumbnailsDescription": "仅剧集：使用与每行图像类型匹配的系列图稿",
+    "seriesThumbnailsDescription": "仅剧集：使用与每行图像类型匹配的剧集图稿",
     "@seriesThumbnailsDescription": {
         "description": "Description for series thumbnails setting"
     },
@@ -2856,7 +2856,7 @@
     "@scaleOnDevice": {
         "description": "Refresh rate option: scale on device"
     },
-    "trickPlay": "预览缩略图",
+    "trickPlay": "缩略预览",
     "@trickPlay": {
         "description": "Setting for trick play thumbnails"
     },
@@ -3601,7 +3601,7 @@
     "@tvShowsOnly": {
         "description": "Content type: TV shows only"
     },
-    "itemCount": "商品数量",
+    "itemCount": "项目数量",
     "@itemCount": {
         "description": "Setting for item count"
     },
@@ -4039,15 +4039,15 @@
     "@studios": {
         "description": "Seerr row: studios"
     },
-    "popularSeries": "热门系列",
+    "popularSeries": "热门剧集",
     "@popularSeries": {
         "description": "Seerr row: popular series"
     },
-    "seriesGenres": "系列类型",
+    "seriesGenres": "剧集类型",
     "@seriesGenres": {
         "description": "Seerr row: series genres"
     },
-    "upcomingSeries": "即将推出的系列",
+    "upcomingSeries": "即将推出的剧集",
     "@upcomingSeries": {
         "description": "Seerr row: upcoming series"
     },
@@ -4322,11 +4322,11 @@
     "@declineAction": {
         "description": "Tooltip/button to decline a request"
     },
-    "similar": "相似影片",
+    "similar": "类似内容",
     "@similar": {
         "description": "Section title for similar media"
     },
-    "recommendations": "推荐影片",
+    "recommendations": "推荐内容",
     "@recommendations": {
         "description": "Section title for recommended media"
     },
@@ -4422,7 +4422,7 @@
     "@server": {
         "description": "Dropdown label for server selection"
     },
-    "qualityProfile": "质量概况",
+    "qualityProfile": "质量配置文件",
     "@qualityProfile": {
         "description": "Dropdown label for quality profile selection"
     },
@@ -4526,8 +4526,8 @@
     "access": "访问权限",
     "add": "添加",
     "address": "地址",
-    "analytics": "数据分析",
-    "catalog": "资源目录",
+    "analytics": "分析",
+    "catalog": "目录",
     "content": "内容",
     "copy": "复制",
     "create": "创建",
@@ -4575,28 +4575,28 @@
     "unmute": "取消静音",
     "mute": "静音",
     "branding": "界面定制",
-    "adminDrawerDashboard": "控制面板",
+    "adminDrawerDashboard": "仪表板",
     "adminDrawerAnalytics": "数据分析",
-    "adminDrawerSettings": "系统设置",
+    "adminDrawerSettings": "设置",
     "adminDrawerBranding": "界面品牌定制",
-    "adminDrawerUsers": "用户管理",
+    "adminDrawerUsers": "用户",
     "adminDrawerLibraries": "媒体库",
-    "adminDrawerTranscoding": "转码设置",
-    "adminDrawerResume": "播放续播",
-    "adminDrawerStreaming": "流媒体设置",
-    "adminDrawerTrickplay": "缩略预览设置",
-    "adminDrawerDevices": "设备管理",
-    "adminDrawerActivity": "操作日志",
-    "adminDrawerNetworking": "网络配置",
+    "adminDrawerTranscoding": "转码",
+    "adminDrawerResume": "播放恢复",
+    "adminDrawerStreaming": "流媒体",
+    "adminDrawerTrickplay": "缩略预览",
+    "adminDrawerDevices": "设备",
+    "adminDrawerActivity": "活动",
+    "adminDrawerNetworking": "网络",
     "adminDrawerApiKeys": "API 密钥",
-    "adminDrawerBackups": "备份管理",
-    "adminDrawerLogs": "运行日志",
+    "adminDrawerBackups": "备份",
+    "adminDrawerLogs": "日志",
     "adminDrawerScheduledTasks": "计划任务",
-    "adminDrawerPlugins": "插件管理",
-    "adminDrawerRepositories": "插件库",
+    "adminDrawerPlugins": "插件",
+    "adminDrawerRepositories": "存储库",
     "adminDrawerLiveTv": "直播电视",
     "adminExitTooltip": "退出管理后台",
-    "adminDashboardLoadFailed": "控制面板加载失败",
+    "adminDashboardLoadFailed": "仪表板加载失败",
     "adminMediaOverview": "媒体概览",
     "adminMediaTotalsError": "无法加载服务器媒体总数。",
     "adminMediaOverviewSubtitle": "快速查看服务器全部媒体资源统计。",
@@ -4632,7 +4632,7 @@
             }
         }
     },
-    "analyticsMediaDistribution": "媒体发行",
+    "analyticsMediaDistribution": "媒体分布",
     "analyticsVideoCodecs": "视频编解码器",
     "analyticsAudioCodecs": "音频编解码器",
     "analyticsContainers": "统计分组容器",
@@ -4676,10 +4676,10 @@
     "adminSendMessage": "发送消息",
     "adminMessageTextHint": "留言内容",
     "adminSetVolume": "设置音量",
-    "sessionPrev": "上一篇",
+    "sessionPrev": "上一项",
     "sessionRewind": "快退",
     "sessionForward": "快进",
-    "sessionNext": "下一个",
+    "sessionNext": "下一项",
     "sessionVolumeDown": "音量 –",
     "sessionVolumeUp": "音量 +",
     "uhd4k": "4K",
@@ -4726,7 +4726,7 @@
     "adminDevicesLoadFailed": "加载设备失败",
     "adminSearchDevices": "搜索设备",
     "adminThisDevice": "本设备",
-    "adminEditName": "编辑名字",
+    "adminEditName": "编辑名称",
     "adminLibrariesLoadFailed": "加载媒体库失败",
     "adminNoLibraries": "未配置媒体库",
     "adminScanAllLibraries": "扫描所有媒体库",
@@ -4915,11 +4915,11 @@
     "admin": "管理员",
     "adminFullAccessWarning": "管理员拥有对服务器的完全访问权限。谨慎授予。",
     "administrator": "管理员",
-    "adminHiddenUser": "隐藏用户",
+    "adminHiddenUser": "隐藏的用户",
     "adminAllowMediaPlayback": "允许媒体播放",
     "adminAllowAudioTranscoding": "允许音频转码",
     "adminAllowVideoTranscoding": "允许视频转码",
-    "adminAllowRemuxing": "允许重新复用",
+    "adminAllowRemuxing": "允许重封装",
     "adminForceRemoteTranscoding": "强制远程源转码",
     "adminAllowContentDeletion": "允许内容删除",
     "adminAllowContentDownloading": "允许内容下载",
@@ -4947,7 +4947,7 @@
     "adminPasswordUpdated": "密码已更新",
     "adminUserSettings": "用户设置",
     "adminLibraryAccess": "媒体库访问",
-    "adminDeviceAndChannelAccess": "设备和通道访问",
+    "adminDeviceAndChannelAccess": "设备和频道访问",
     "adminEnableAllDevices": "启用对所有设备的访问",
     "adminEnableAllChannels": "允许访问所有频道",
     "adminResetPasswordWarning": "这将删除密码。用户无需密码即可登录。",
@@ -4998,7 +4998,7 @@
     },
     "adminKeyTokenMissing": "服务器响应中缺少密钥令牌",
     "adminRevokeApiKey": "撤销 API 密钥",
-    "adminRevokeKeyConfirm": "撤销{name} 的密钥？",
+    "adminRevokeKeyConfirm": "撤销 {name} 的密钥？",
     "@adminRevokeKeyConfirm": {
         "placeholders": {
             "name": {
@@ -5363,7 +5363,7 @@
     "adminPlaybackLoadFailed": "无法加载播放设置",
     "adminPlaybackTranscoding": "播放/转码",
     "adminHardwareAcceleration": "硬件加速",
-    "adminVaapiDevice": "VA-API 装置",
+    "adminVaapiDevice": "VA-API 设备",
     "adminEnableHardwareEncoding": "启用硬件编码",
     "adminEnableHardwareDecoding": "启用硬件解码",
     "adminEncodingThreads": "编码线程",
@@ -5545,12 +5545,12 @@
             }
         }
     },
-    "adminAddTuner": "添加调音器",
-    "adminTunerType": "调音器类型",
+    "adminAddTuner": "添加调谐器",
+    "adminTunerType": "调谐器类型",
     "adminTunerTypeHint": "HDHomeRun、M3U、其他",
     "adminUrlPath": "网址/路径",
     "adminNameOptional": "姓名（可选）",
-    "adminTunerAdded": "添加了调音器",
+    "adminTunerAdded": "添加了调谐器",
     "adminTunerAddFailed": "添加调谐器失败：{error}",
     "@adminTunerAddFailed": {
         "placeholders": {
@@ -5602,7 +5602,7 @@
     "adminPrePadding": "预填充（分钟）",
     "adminPostPadding": "后填充（分钟）",
     "adminRecordingPath": "录制路径",
-    "adminSeriesRecordingPath": "系列录制路径",
+    "adminSeriesRecordingPath": "剧集录制路径",
     "adminRecordingSettingsSaved": "已保存录制设置",
     "adminSettingsSaveFailed": "保存设置失败：{error}",
     "@adminSettingsSaveFailed": {
@@ -5612,7 +5612,7 @@
             }
         }
     },
-    "adminSetChannelMappings": "设置通道映射",
+    "adminSetChannelMappings": "设置频道映射",
     "adminMappingJson": "映射 JSON",
     "adminMappingJsonHint": "示例：映射 JSON 负载",
     "adminChannelMappingsUpdated": "频道映射已更新",
@@ -5630,7 +5630,7 @@
     "adminGuideProviders": "节目指南提供商",
     "adminAddProvider": "添加提供商",
     "adminNoListingProviders": "未配置列表提供商",
-    "adminRecordingPathDisplay": "记录路径：{path}",
+    "adminRecordingPathDisplay": "录制路径：{path}",
     "@adminRecordingPathDisplay": {
         "placeholders": {
             "path": {
@@ -5638,7 +5638,7 @@
             }
         }
     },
-    "adminSeriesPathDisplay": "系列路径：{path}",
+    "adminSeriesPathDisplay": "剧集路径：{path}",
     "@adminSeriesPathDisplay": {
         "placeholders": {
             "path": {
@@ -5662,8 +5662,8 @@
             }
         }
     },
-    "adminTunerDiscovery": "调音器发现",
-    "adminChannelMappings": "通道映射",
+    "adminTunerDiscovery": "调谐器发现",
+    "adminChannelMappings": "频道映射",
     "adminNoDiscoveredTuners": "尚未发现调谐器",
     "adminSettingsSaved": "设置已保存",
     "adminBackupsNotAvailable": "备份在此服务器版本上不可用。",
@@ -5752,16 +5752,16 @@
     "adminMetadataGenres": "类型",
     "adminMetadataTags": "标签",
     "adminMetadataStudios": "工作室",
-    "adminMetadataPeople": "人们",
+    "adminMetadataPeople": "人员",
     "adminMetadataAddGenre": "添加类型",
     "adminMetadataAddTag": "添加标签",
     "adminMetadataAddStudio": "添加工作室",
     "adminMetadataAddPerson": "添加人员",
     "adminMetadataEditPerson": "编辑人物",
     "adminMetadataRole": "角色",
-    "adminMetadataImagePrimary": "基本的",
+    "adminMetadataImagePrimary": "主图",
     "adminMetadataImageBackdrop": "背景",
-    "adminMetadataImageLogo": "标识",
+    "adminMetadataImageLogo": "Logo",
     "adminMetadataImageBanner": "横幅",
     "adminMetadataImageThumb": "缩略图",
     "adminMetadataRecursive": "递归",
@@ -5873,7 +5873,7 @@
             }
         }
     },
-    "adminPluginDetailExperimental": "实验整合",
+    "adminPluginDetailExperimental": "实验性集成",
     "adminPluginDetailExperimentalContent": "插件设置集成仍处于实验阶段。某些字段或布局可能尚未正确呈现。",
     "adminPluginDetailToggle404": "无法切换插件。服务器找不到此插件版本。尝试刷新插件，然后重试。",
     "adminPluginDetailToggleDioError": "无法切换插件。请检查服务器日志以了解详细信息。",
@@ -5983,7 +5983,7 @@
     "adminTrickplayBlocking": "阻塞",
     "adminTrickplayPriorityHigh": "高",
     "adminTrickplayPriorityAboveNormal": "高于正常水平",
-    "adminTrickplayPriorityNormal": "普通",
+    "adminTrickplayPriorityNormal": "正常",
     "adminTrickplayPriorityBelowNormal": "低于正常水平",
     "adminTrickplayPriorityIdle": "空闲",
     "adminTrickplayImageSettings": "图像设置",
@@ -6539,7 +6539,7 @@
     "@contextMenuRemoveFromFavorites": {
         "description": "Context menu action to remove an item from favorites"
     },
-    "contextMenuGoToSeries": "前往系列",
+    "contextMenuGoToSeries": "前往剧集",
     "@contextMenuGoToSeries": {
         "description": "Context menu action to navigate to the parent series of an episode"
     },
