@@ -837,7 +837,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String endsAt(String time) {
-    return 'Endet um $time';
+    return 'Endet bei $time';
   }
 
   @override
@@ -2009,7 +2009,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get focusExpansionAnimation => 'Fokus-Vergrößerungsanimation';
 
   @override
-  String get desktopUiScale => 'UI-Skalierung';
+  String get desktopUiScale => 'Desktop-UI-Skalierung';
 
   @override
   String get scaleFocusedCards =>
