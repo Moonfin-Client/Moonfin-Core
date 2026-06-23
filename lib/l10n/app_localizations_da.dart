@@ -6955,6 +6955,19 @@ class AppLocalizationsDa extends AppLocalizations {
       'Show the Seerr button in the navigation bar';
 
   @override
+  String get settingsNavbarDisplayHeader => 'Navbar Display';
+
+  @override
+  String get settingsNavbarContentsHeader => 'Navbar Contents';
+
+  @override
+  String get settingsNavbarContentsDescription =>
+      'Enable the following toggles to display these elements in the navigation bar.';
+
+  @override
+  String get showLiveTvButton => 'Show Live TV Button';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Skift startsidesynlighed pr. bibliotek. Genstart Moonfin for at ændringerne træder i kraft.';
 

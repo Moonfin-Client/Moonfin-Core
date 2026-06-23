@@ -13,6 +13,7 @@ import 'package:server_core/server_core.dart' hide ImageType;
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../data/services/plugin_sync_service.dart';
+import '../../../data/services/row_data_source.dart';
 import '../../../di/providers.dart';
 import '../../../platform/web_runtime_config.dart';
 import '../../../util/focus/dpad_keys.dart';
@@ -790,6 +791,7 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
   late final PreferenceBinding<bool> _showShuffleButtonBinding;
   late final PluginSyncService _syncService;
   bool _navbarNormalizeQueued = false;
+  bool _hasLiveTvChannels = false;
 
   @override
   void initState() {
@@ -800,6 +802,25 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
       GetIt.instance<PreferenceStore>(),
       UserPreferences.showShuffleButton,
     );
+    _checkLiveTv();
+  }
+
+  Future<void> _checkLiveTv() async {
+    try {
+      final hasChannels = await GetIt.instance<RowDataSource>().hasLiveTvChannels();
+      if (mounted) {
+        setState(() {
+          _hasLiveTvChannels = hasChannels;
+        });
+      }
+      if (!hasChannels) {
+        final prefs = GetIt.instance<UserPreferences>();
+        if (prefs.get(UserPreferences.showLiveTvButton)) {
+          prefs.set(UserPreferences.showLiveTvButton, false);
+          _pushPersonalizationSync();
+        }
+      }
+    } catch (_) {}
   }
 
   @override
@@ -838,6 +859,7 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
         appBar: buildSettingsAppBar(context, Text(l10n.navigation)),
         body: ListView(
           children: [
+            _SectionHeader(l10n.settingsNavbarDisplayHeader),
             EnumPreferenceTile<NavbarPosition>(
               preference: UserPreferences.navbarPosition,
               title: l10n.navigationStyle,
@@ -866,10 +888,20 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
               divisions: 20,
               labelOf: (v) => '$v%',
             ),
+            _SectionHeader(l10n.settingsNavbarContentsHeader),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+              child: Text(
+                l10n.settingsNavbarContentsDescription,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
             SwitchPreferenceTile(
               preference: UserPreferences.showShuffleButton,
               title: l10n.showShuffleButton,
-              subtitle: l10n.settingsShowShuffleButtonInNavigation,
               icon: Icons.shuffle,
               onChanged: _pushPersonalizationSync,
             ),
@@ -880,29 +912,32 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
             SwitchPreferenceTile(
               preference: UserPreferences.showGenresButton,
               title: l10n.showGenresButton,
-              subtitle: l10n.settingsShowGenresButtonInNavigation,
               icon: Icons.theater_comedy,
               onChanged: _pushPersonalizationSync,
             ),
             SwitchPreferenceTile(
               preference: UserPreferences.showFavoritesButton,
               title: l10n.showFavoritesButton,
-              subtitle: l10n.settingsShowFavoritesButtonInNavigation,
               icon: Icons.favorite,
               onChanged: _pushPersonalizationSync,
             ),
             SwitchPreferenceTile(
               preference: UserPreferences.showLibrariesInToolbar,
               title: l10n.showLibrariesInToolbar,
-              subtitle: l10n.settingsShowLibrariesButtonInNavigation,
               icon: Icons.video_library,
               onChanged: _pushPersonalizationSync,
             ),
+            if (_hasLiveTvChannels)
+              SwitchPreferenceTile(
+                preference: UserPreferences.showLiveTvButton,
+                title: l10n.showLiveTvButton,
+                icon: Icons.live_tv,
+                onChanged: _pushPersonalizationSync,
+              ),
             if (seerrEnabledOnAccount && _syncService.seerrAvailable)
               SwitchPreferenceTile(
                 preference: UserPreferences.showSeerrButton,
                 title: l10n.showSeerrButton,
-                subtitle: l10n.settingsShowSeerrButtonInNavigation,
                 iconBuilder: (size, color) => Image.asset(
                   'assets/icons/seerr.png',
                   width: size,

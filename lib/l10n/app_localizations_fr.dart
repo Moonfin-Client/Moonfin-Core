@@ -7047,6 +7047,19 @@ class AppLocalizationsFr extends AppLocalizations {
       'Afficher le bouton Seerr dans la barre de navigation';
 
   @override
+  String get settingsNavbarDisplayHeader => 'Navbar Display';
+
+  @override
+  String get settingsNavbarContentsHeader => 'Navbar Contents';
+
+  @override
+  String get settingsNavbarContentsDescription =>
+      'Enable the following toggles to display these elements in the navigation bar.';
+
+  @override
+  String get showLiveTvButton => 'Show Live TV Button';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Basculez la visibilité de la page d\'accueil par bibliothèque. Redémarrez Moonfin pour que les modifications prennent effet.';
 

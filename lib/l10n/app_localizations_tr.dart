@@ -6971,6 +6971,19 @@ class AppLocalizationsTr extends AppLocalizations {
       'Gezinti çubuğunda Seerr butonunu göster';
 
   @override
+  String get settingsNavbarDisplayHeader => 'Navbar Display';
+
+  @override
+  String get settingsNavbarContentsHeader => 'Navbar Contents';
+
+  @override
+  String get settingsNavbarContentsDescription =>
+      'Enable the following toggles to display these elements in the navigation bar.';
+
+  @override
+  String get showLiveTvButton => 'Show Live TV Button';
+
+  @override
   String get settingsLibraryVisibilitySubtitle =>
       'Kitaplık başına ana sayfa görünürlüğünü değiştirin. Değişikliklerin etkili olması için Moonfin yeniden başlatın.';
 
