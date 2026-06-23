@@ -305,7 +305,7 @@
     "@genres": {
         "description": "Genres navigation label"
     },
-    "collectionPlaceholder": "收藏品会出现在这里",
+    "collectionPlaceholder": "收藏内容将展示于此",
     "@collectionPlaceholder": {
         "description": "Placeholder text for empty collection screen"
     },
@@ -6200,7 +6200,7 @@
     "syncPlayContinueLocallyNoWait": "在本地继续，无需等待慢速成员",
     "syncPlayRepeat": "重复",
     "syncPlayRepeatOne": "一",
-    "syncPlayShuffleModeShuffled": "洗牌",
+    "syncPlayShuffleModeShuffled": "已打乱",
     "syncPlayShuffleModeSorted": "已排序",
     "syncPlaySyncCurrentQueue": "同步当前播放队列",
     "syncPlaySyncCurrentQueueSubtitle": "将组队列替换为本地正在播放的内容",
@@ -6249,7 +6249,7 @@
     },
     "syncPlayAccessDeniedTitle": "SyncPlay 访问被拒绝",
     "syncPlayAccessDeniedMessage": "您无权访问此 SyncPlay 群组中的一项或多项。请群组所有者验证库权限或选择其他队列。",
-    "syncPlaySyncingPlaybackToGroup": "正在将播放同步到{groupName}",
+    "syncPlaySyncingPlaybackToGroup": "正在将播放同步到 {groupName}",
     "@syncPlaySyncingPlaybackToGroup": {
         "description": "Snackbar message shown when starting playback in a SyncPlay group",
         "placeholders": {
@@ -6267,9 +6267,9 @@
     "rememberMyChoice": "记住我的选择",
     "playHdr10Fallback": "播放 HDR10 后备",
     "requestTranscode": "请求转码",
-    "homeScreenSectionsIntegrationDescription": "检测 IAmParadox27 的“主屏幕部分”插件暴露的行。可以在下面启用行并重新排序。",
+    "homeScreenSectionsIntegrationDescription": "检测 IAmParadox27 的“主屏幕栏目”插件暴露的行。可以在下面启用行并重新排序。",
     "homeScreenSectionsIntegrationNoServers": "尚无 Jellyfin 服务器报告该插件。",
-    "integrationOpenHomeSections": "开放主页部分",
+    "integrationOpenHomeSections": "开放主页栏目",
     "integrationOpenHomeSectionsSubtitle": "启用、禁用和重新排序行",
     "integrationInstalledButDisabled": "已安装但已禁用",
     "integrationNotInstalled": "未安装",
@@ -6335,9 +6335,9 @@
     },
     "audioLabel": "音轨",
     "subtitlesLabel": "字幕",
-    "pinConfirmTitle": "确认密码",
-    "pinSetTitle": "设置密码",
-    "pinEnterTitle": "输入密码",
+    "pinConfirmTitle": "确认 PIN 码",
+    "pinSetTitle": "设置 PIN 码",
+    "pinEnterTitle": "输入 PIN 码",
     "pinReenterToConfirm": "重新输入您的 PIN 码进行确认",
     "pinEnterNDigit": "输入 {length} 位 PIN",
     "@pinEnterNDigit": {
@@ -6357,7 +6357,7 @@
     },
     "pinIncorrect": "PIN 码不正确",
     "pinMismatch": "PIN 码不匹配",
-    "pinForgot": "忘记密码？",
+    "pinForgot": "忘记 PIN 码？",
     "pinClear": "清除",
     "pinBackspace": "退格键",
     "quickConnectAuthorized": "快速连接请求已获授权。",
@@ -6457,7 +6457,7 @@
             }
         }
     },
-    "liveTv": "电视直播",
+    "liveTv": "直播电视",
     "continueWatchingAndNextUp": "继续观看和即将播放",
     "downloadingBatchProgress": "正在下载 {current}/{total} — {fileName}",
     "@downloadingBatchProgress": {
@@ -6563,7 +6563,7 @@
     "settingsGeneralStyle": "全局界面风格",
     "settingsGeneralStyleSubtitle": "设置主题色调、背景、播放进度标识与主题音效",
     "settingsHomePage": "主页",
-    "settingsHomePageSubtitle": "部分、图像类型、叠加和媒体预览",
+    "settingsHomePageSubtitle": "栏目、图像类型、叠加和媒体预览",
     "settingsLibrariesSubtitle": "媒体库可见性、文件夹视图和多服务器行为",
     "settingsTwentyFourHourClock": "24 小时制",
     "settingsTwentyFourHourClockSubtitle": "无论何时显示时钟，都使用 24 小时时间格式",
@@ -6576,10 +6576,10 @@
     "settingsVisualOverlays": "视觉叠加",
     "settingsSeasonalSurprise": "节日主题特效",
     "settingsMetadataAndRatings": "元数据和评分",
-    "settingsPluginScreenDescription": "Moonbase 支持服务器端集成，包括附加评分源、Seerr 请求和同步首选项。",
+    "settingsPluginScreenDescription": "Moonfin 支持服务器端集成，包括附加评分源、Seerr 请求和同步首选项。",
     "settingsOfflineDownloads": "离线下载",
-    "settingsHigh": "高的",
-    "settingsLow": "低的",
+    "settingsHigh": "高",
+    "settingsLow": "低",
     "settingsCustomPath": "自定义路径",
     "settingsEnterDownloadFolderPath": "输入下载文件夹路径",
     "settingsConcurrentDownloads": "并发下载",
@@ -6637,12 +6637,12 @@
     "settingsPreferServerTranscode": "首选服务器转码",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision P7 直接播放",
     "settingsDolbyVisionProfile7DirectPlayDescription": "控制 Dolby Vision P7 增强层流是否应直接播放。",
-    "settingsAutoAftkrtEnabled": "自动模式（AFTKRT已开启）",
+    "settingsAutoAftkrtEnabled": "自动模式（AFTKRT 已开启）",
     "settingsEnabledOnThisDevice": "当前设备启用",
     "settingsDisabledPreferTranscode": "已禁用（首选转码）",
     "settingsResumeRewindDescription": "恢复播放时（从“继续观看”或媒体项目页面），应倒回多少秒？",
-    "settingsUnpauseRewindDescription": "按"暂停"按钮后恢复播放时，应该倒回多少秒？",
-    "settingsSkipBackLengthDescription": "按"快退"按钮后跳回多少秒。",
+    "settingsUnpauseRewindDescription": "按“暂停”按钮后恢复播放时，应该倒回多少秒？",
+    "settingsSkipBackLengthDescription": "按“快退”按钮后跳回多少秒。",
     "settingsOneSecond": "1 秒",
     "settingsThreeSeconds": "3 秒",
     "settingsFortyFiveSeconds": "45 秒",
@@ -6664,7 +6664,7 @@
             }
         }
     },
-    "settingsLiveTvDirect": "直播电视直播",
+    "settingsLiveTvDirect": "直播电视直接播放",
     "settingsLiveTvDirectSubtitle": "启用直播电视直接播放",
     "settingsOpenGroups": "公开群组",
     "settingsOpenGroupsSubtitle": "创建、加入或管理 SyncPlay 群组",
@@ -6722,11 +6722,11 @@
     "@desktopUiScale": {
         "description": "Setting for desktop UI scale"
     },
-    "nextUpDisplay": "下一个显示",
+    "nextUpDisplay": "即将播放显示",
     "@nextUpDisplay": {
         "description": "Setting for next up behavior"
     },
-    "settingsNextUpDisplayDescription": "扩展显示包含剧集插图和​​描述的完整卡片。最小显示紧凑的倒计时叠加。禁用会完全隐藏提示。",
+    "settingsNextUpDisplayDescription": "扩展显示包含剧集插图和描述的完整卡片。最小显示紧凑的倒计时叠加。禁用会完全隐藏提示。",
     "playerTooltipFloatOnTop": "浮在上面",
     "@playerTooltipFloatOnTop": {
         "description": "Tooltip label for enabling always-on-top in desktop player"
@@ -6827,7 +6827,7 @@
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
     },
-    "settingsAudioFallbackAacStereo": "AAC立体声",
+    "settingsAudioFallbackAacStereo": "AAC 立体声",
     "@settingsAudioFallbackAacStereo": {
         "description": "Fallback codec option for AAC stereo"
     },
@@ -6960,7 +6960,7 @@
     "@settingsAudioDiagnosticsSubtitleCodec": {
         "description": "Diagnostics label for subtitle codec"
     },
-    "settingsAudioDiagnosticsAllowedAudioCodecs": "支持的音频编码器",
+    "settingsAudioDiagnosticsAllowedAudioCodecs": "支持的音频编解码器",
     "@settingsAudioDiagnosticsAllowedAudioCodecs": {
         "description": "Diagnostics label for allowed audio codecs"
     },
@@ -7030,7 +7030,7 @@
     "@subtitlesUseEmbeddedStyles": {
         "description": "Setting title: apply colours/positioning from the subtitle track"
     },
-    "subtitlesUseEmbeddedStylesSubtitle": "应用嵌入字幕轨道的颜色、字体和位置。禁用以使用您的标题样式首选项。",
+    "subtitlesUseEmbeddedStylesSubtitle": "应用嵌入字幕轨道的颜色、字体和位置。禁用以使用您的字幕样式首选项。",
     "@subtitlesUseEmbeddedStylesSubtitle": {
         "description": "Setting subtitle for embedded styles toggle"
     },
@@ -7038,7 +7038,7 @@
     "@subtitlesUseEmbeddedFontSizes": {
         "description": "Setting title: apply font sizes from the subtitle track"
     },
-    "subtitlesUseEmbeddedFontSizesSubtitle": "应用嵌入在字幕轨道中的字体大小提示。禁止使用您的样式首选项中的字幕大小。",
+    "subtitlesUseEmbeddedFontSizesSubtitle": "应用嵌入在字幕轨道中的字体大小提示。禁用以使用您的样式首选项中的字幕大小。",
     "@subtitlesUseEmbeddedFontSizesSubtitle": {
         "description": "Setting subtitle for embedded font sizes toggle"
     },
@@ -7046,7 +7046,7 @@
     "@useDetailedSubHeadings": {
         "description": "Label for setting to toggle detailed or minimal subrow on library pages"
     },
-    "useDetailedSubHeadingsDescription": "在库页面上显示详细或最小子行。",
+    "useDetailedSubHeadingsDescription": "在媒体库页面上显示详细或最小子行。",
     "@useDetailedSubHeadingsDescription": {
         "description": "Subtitle for the use detailed sub headings setting"
     },
@@ -7092,7 +7092,7 @@
     },
     "savedThemesDeleteTooltip": "删除已保存的主题",
     "savedThemesManageSubtitle": "管理此设备上下载的插件主题",
-    "homeScreenSectionsTitle": "主屏幕部分",
+    "homeScreenSectionsTitle": "主屏幕栏目",
     "themeEditor": "主题编辑器",
     "themeEditorSubtitle": "在浏览器中打开 Moonfin 主题编辑器",
     "homeScreen": "主屏幕",
@@ -7115,7 +7115,7 @@
     "genresRowSorting": "类型行排序",
     "genresRowSortingDescription": "按添加日期、发布日期、字母顺序等对类型行进行排序。",
     "genresRowItems": "类型行项目",
-    "genresRowItemsDescription": "在类型行中显示电影、连续剧或两者。",
+    "genresRowItemsDescription": "在类型行中显示电影、剧集或两者。",
     "appearance": "外观",
     "cardSize": "卡片尺寸",
     "externalPlayerApp": "外部播放器应用程序",
@@ -7191,7 +7191,7 @@
     "backToServerSelect": "返回服务器选择",
     "signOutAllUsers": "注销所有用户",
     "voiceSearchPermissionPermanentlyDenied": "麦克风权限被永久拒绝。在系统设置中启用它。",
-    "voiceSearchPermissionRequired": "语音搜索需要麦克风许可。",
+    "voiceSearchPermissionRequired": "语音搜索需要麦克风权限。",
     "voiceSearchNoMatch": "没听清楚。再试一次。",
     "voiceSearchNoSpeechDetected": "未检测到语音。",
     "voiceSearchMicrophoneError": "麦克风错误。",
@@ -7201,7 +7201,7 @@
     "microphonePermissionDenied": "麦克风权限被拒绝。",
     "speechRecognitionUnavailable": "此设备不支持语音识别。",
     "openIosRoutePicker": "打开 iOS 路径选择器",
-    "airPlayRoutePickerUnavailable": "AirPlay 路线选择器在此设备上不可用。",
+    "airPlayRoutePickerUnavailable": "AirPlay 路径选择器在此设备上不可用。",
     "videos": "视频",
     "trailers": "预告片",
     "programs": "节目",
@@ -7274,7 +7274,7 @@
     "adminDrawerSectionDevices": "设备",
     "adminDrawerSectionAdvanced": "高级",
     "adminDrawerSectionPlugins": "插件",
-    "adminDrawerSectionLiveTv": "电视直播",
+    "adminDrawerSectionLiveTv": "直播电视",
     "homeVideos": "家庭视频",
     "mixedContent": "混合内容",
     "homeVideosAndPhotos": "家庭视频和照片",
@@ -7360,7 +7360,7 @@
     "systemLanguageDefault": "系统默认",
     "empty": "空",
     "themeGlass": "玻璃质感",
-    "themeGlassSubtitle": "液态玻璃风格，搭配流动渐变背景、磨砂质感界面与苹果蓝主题高亮色",
+    "themeGlassSubtitle": "液态玻璃风格，搭配流动渐变背景、磨砂质感界面与蓝色主题高亮色",
     "endsIn": "{time} 后结束",
     "directors": "导演",
     "writer": "编剧",
