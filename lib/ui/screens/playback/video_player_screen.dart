@@ -2428,7 +2428,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          Navigator.of(context).pop();
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            Navigator.of(context).pop();
+          }
         }
       });
     }

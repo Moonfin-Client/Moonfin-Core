@@ -95,6 +95,16 @@ class PlaybackManager implements AudioOwnable {
   PlaybackBringupState _bringupState = const PlaybackBringupState.idle();
 
   PlayerBackend? get backend => _backend;
+  Duration get currentPlaybackPosition {
+    final backendPos = _backend?.position ?? Duration.zero;
+    return Duration(
+      microseconds: [
+        backendPos.inMicroseconds,
+        state.position.inMicroseconds,
+        _lastKnownPosition.inMicroseconds,
+      ].reduce((a, b) => a > b ? a : b),
+    );
+  }
   Stream<PlayerBackend> get backendChangedStream =>
       _backendChangedController.stream;
   PlaybackBringupState get bringupState => _bringupState;
@@ -168,6 +178,10 @@ class PlaybackManager implements AudioOwnable {
 
   int? get maxBitrateOverrideMbps => _maxBitrateOverrideMbps;
   bool get isOfflinePlayback => _isOfflinePlayback;
+
+  /// Completes when any in-flight stop operation (including the offline
+  /// tracker's DB write) finishes.  Returns `null` when no stop is pending.
+  Future<void>? get pendingStop => _stopInFlight;
   Duration consumeDeferredStartPosition() {
     final value = _deferredStartPosition;
     _deferredStartPosition = Duration.zero;
@@ -2161,6 +2175,7 @@ class PlaybackManager implements AudioOwnable {
     _onOfflineAutoNext = onAutoNext;
     _itemKnownDuration = itemDuration;
     _currentResolution = null;
+    _lastKnownPosition = startPosition;
 
     if (queueUrls.isNotEmpty) {
       queueService.setQueue(queueUrls, startIndex: startIndex);
@@ -2219,16 +2234,18 @@ class PlaybackManager implements AudioOwnable {
         return;
       }
       if (_isOfflinePlayback) {
+        if (!skipQueueChange) {
+          await _onOfflineStop?.call();
+          _onOfflineStop = null;
+          _onOfflineAutoNext = null;
+        }
         await _backend?.stop();
         _playbackStartTime = null;
         _waitingForMedia = false;
         if (!skipQueueChange) {
-          await _onOfflineStop?.call();
           _isOfflinePlayback = false;
           _forceTranscodeForQueue = false;
           _resetBackendSelectionLock();
-          _onOfflineStop = null;
-          _onOfflineAutoNext = null;
           queueService.clear();
           state.reset();
           _setBringupState(const PlaybackBringupState.idle());
