@@ -1145,6 +1145,26 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 0,
   );
 
+  static final audiobookShowRemaining = Preference(
+    key: 'pref_audiobook_show_remaining',
+    defaultValue: false,
+  );
+
+  static final audiobookDefaultSpeed = Preference(
+    key: 'pref_audiobook_default_speed',
+    defaultValue: 1.0,
+  );
+
+  static final audiobookSleepPresetMin = Preference(
+    key: 'pref_audiobook_sleep_preset_min',
+    defaultValue: 15,
+  );
+
+  static final audiobookDrawerTab = Preference(
+    key: 'pref_audiobook_drawer_tab',
+    defaultValue: 'chapters',
+  );
+
   static final showDescriptionOnPause = Preference(
     key: 'showDescriptionOnPause',
     defaultValue: false,

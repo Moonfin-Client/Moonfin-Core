@@ -124,6 +124,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   Timer? _hideTimer;
   bool _displayPlaying = false;
   Timer? _displayPlayingDebounce;
+  Timer? _endsAtTicker;
   bool _isSeeking = false;
   double _seekValue = 0;
   Timer? _scrubSeekDebounceTimer;
@@ -773,6 +774,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _syncMediaQueuingPreference();
     _applySubtitleStyle();
     _scheduleHide();
+    _startEndsAtTicker();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     if (PlatformDetection.isMobile) {
       _forcedLandscape = true;
@@ -932,6 +934,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _cancelTvTemporarySpeedHold();
     _hideTimer?.cancel();
     _displayPlayingDebounce?.cancel();
+    _endsAtTicker?.cancel();
     _scrubSeekDebounceTimer?.cancel();
     _scrubSeekDebounceTimer = null;
     _volumeOverlayTimer?.cancel();
@@ -2461,6 +2464,20 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     });
   }
 
+  void _startEndsAtTicker() {
+    _endsAtTicker?.cancel();
+    _endsAtTicker = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted ||
+          !_controlsVisible ||
+          _isOsdLocked ||
+          _isCurrentPreroll ||
+          _state.duration <= Duration.zero) {
+        return;
+      }
+      setState(() {});
+    });
+  }
+
   void _scheduleHide() {
     _hideTimer?.cancel();
     final hideDelay = PlatformDetection.useMobileUi
@@ -3914,9 +3931,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     required Duration duration,
   }) {
     if (duration <= Duration.zero) return '';
-    final remaining = duration - position;
-    if (remaining <= Duration.zero) return '';
-    final end = DateTime.now().add(remaining);
+    final remainingMedia = duration - position;
+    if (remainingMedia <= Duration.zero) return '';
+    final speed = _state.playbackSpeed > 0 ? _state.playbackSpeed : 1.0;
+    final remainingWall = Duration(
+      milliseconds: (remainingMedia.inMilliseconds / speed).round(),
+    );
+    if (remainingWall <= Duration.zero) return '';
+    final end = DateTime.now().add(remainingWall);
     final time = formatClockTime(
       end,
       use24Hour: _prefs.get(UserPreferences.use24HourClock),
@@ -5747,11 +5769,14 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       _suppressBackNavigation();
       if (result == null || !mounted) return;
       final speed = speedOptions[result];
-      await _runSinglePlayerMutation(
+      final changed = await _runSinglePlayerMutation(
         'speed_$speed',
         () async => _manager.setPlaybackSpeed(speed),
         suppressBackFor: const Duration(seconds: 3),
       );
+      if (changed && mounted) {
+        setState(() {});
+      }
     }());
     _showControls();
   }

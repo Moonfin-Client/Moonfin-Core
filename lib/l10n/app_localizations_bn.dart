@@ -8299,4 +8299,120 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get sources => 'Sources';
+
+  @override
+  String get audiobookChapters => 'Chapters';
+
+  @override
+  String get audiobookBookmarks => 'Bookmarks';
+
+  @override
+  String get audiobookNotes => 'Notes';
+
+  @override
+  String get audiobookQueue => 'Queue';
+
+  @override
+  String get audiobookLyrics => 'Lyrics';
+
+  @override
+  String get audiobookAddBookmark => 'Add bookmark';
+
+  @override
+  String get audiobookAddNote => 'Add note';
+
+  @override
+  String get audiobookEditNote => 'Edit note';
+
+  @override
+  String get audiobookNoteHint => 'Write a note for this moment';
+
+  @override
+  String get audiobookSleepTimer => 'Sleep timer';
+
+  @override
+  String get audiobookSleepOff => 'Off';
+
+  @override
+  String get audiobookSleepEndOfChapter => 'End of chapter';
+
+  @override
+  String get audiobookSleepCustom => 'Custom';
+
+  @override
+  String audiobookSleepRemaining(String remaining) {
+    return '$remaining left';
+  }
+
+  @override
+  String audiobookSleepMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count min',
+      one: '1 min',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get audiobookPlaybackSpeed => 'Playback speed';
+
+  @override
+  String get audiobookRemainingTime => 'Remaining';
+
+  @override
+  String get audiobookElapsedTime => 'Elapsed';
+
+  @override
+  String audiobookSkipBackSeconds(int seconds) {
+    return 'Back ${seconds}s';
+  }
+
+  @override
+  String audiobookSkipForwardSeconds(int seconds) {
+    return 'Forward ${seconds}s';
+  }
+
+  @override
+  String get audiobookPreviousChapter => 'Previous chapter';
+
+  @override
+  String get audiobookNextChapter => 'Next chapter';
+
+  @override
+  String audiobookChapterIndicator(int current, int total) {
+    return 'Chapter $current of $total';
+  }
+
+  @override
+  String get audiobookNoChapters => 'No chapters';
+
+  @override
+  String get audiobookNoBookmarks => 'No bookmarks yet';
+
+  @override
+  String get audiobookNoNotes => 'No notes yet';
+
+  @override
+  String audiobookBookmarkAdded(String position) {
+    return 'Bookmark added at $position';
+  }
+
+  @override
+  String get audiobookSpeedReset => 'Reset to 1.0x';
+
+  @override
+  String audiobookSpeedCustomLabel(String value) {
+    return '${value}x';
+  }
+
+  @override
+  String get audiobookSave => 'Save';
+
+  @override
+  String get audiobookCancel => 'Cancel';
+
+  @override
+  String get audiobookDelete => 'Delete';
 }

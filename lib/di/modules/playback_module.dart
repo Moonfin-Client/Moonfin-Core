@@ -6,6 +6,8 @@ import 'package:server_core/server_core.dart';
 
 import '../../data/models/aggregated_item.dart';
 import '../../data/repositories/offline_repository.dart';
+import '../../data/services/audiobook_bookmarks_service.dart';
+import '../../data/services/audiobook_notes_service.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/offline_playback_tracker.dart';
 import '../../playback/audio_capability_profile.dart';
@@ -19,6 +21,7 @@ import '../../playback/media3_player_backend.dart';
 import '../../playback/tizen_player_backend.dart';
 import '../../playback/offline_stream_resolver.dart';
 import '../../playback/playback_profile_diagnostics.dart';
+import '../../playback/sleep_timer_controller.dart';
 import '../../platform/pip_service.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
@@ -513,6 +516,19 @@ void registerPlaybackModule() {
 
   _getIt.registerLazySingleton<SyncPlayManager>(
     () => SyncPlayManager(_getIt<PlaybackManager>(), _getIt<UserPreferences>()),
+  );
+
+  _getIt.registerLazySingleton<AudiobookBookmarksService>(
+    () => AudiobookBookmarksService(),
+    dispose: (s) => s.dispose(),
+  );
+  _getIt.registerLazySingleton<AudiobookNotesService>(
+    () => AudiobookNotesService(),
+    dispose: (s) => s.dispose(),
+  );
+  _getIt.registerLazySingleton<SleepTimerController>(
+    () => SleepTimerController(_getIt<PlaybackManager>()),
+    dispose: (s) => s.dispose(),
   );
 }
 

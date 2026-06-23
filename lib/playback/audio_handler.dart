@@ -9,6 +9,7 @@ import 'package:server_core/server_core.dart';
 import '../data/models/aggregated_item.dart';
 import '../data/services/media_server_client_factory.dart';
 import '../util/platform_detection.dart';
+import '../preference/user_preferences.dart';
 
 class MoonfinAudioHandler extends BaseAudioHandler
     with QueueHandler, SeekHandler {
@@ -74,15 +75,25 @@ class MoonfinAudioHandler extends BaseAudioHandler
       return;
     }
 
-    final controls = [
-      MediaControl.skipToPrevious,
-      s.isPlaying ? MediaControl.pause : MediaControl.play,
-      MediaControl.skipToNext,
-    ];
+    final currentItem = q.currentItem;
+    final isAudiobook = currentItem is AggregatedItem && currentItem.isAudiobook;
+
+    final controls = isAudiobook
+        ? [
+            MediaControl.rewind,
+            s.isPlaying ? MediaControl.pause : MediaControl.play,
+            MediaControl.fastForward,
+            MediaControl.skipToNext,
+          ]
+        : [
+            MediaControl.skipToPrevious,
+            s.isPlaying ? MediaControl.pause : MediaControl.play,
+            MediaControl.skipToNext,
+          ];
 
     playbackState.add(PlaybackState(
       controls: controls,
-      systemActions: const {
+      systemActions: {
         MediaAction.seek,
         MediaAction.play,
         MediaAction.pause,
@@ -90,10 +101,11 @@ class MoonfinAudioHandler extends BaseAudioHandler
         MediaAction.stop,
         MediaAction.skipToNext,
         MediaAction.skipToPrevious,
-        MediaAction.fastForward,
-        MediaAction.rewind,
+        MediaAction.setSpeed,
         MediaAction.setRepeatMode,
         MediaAction.setShuffleMode,
+        if (isAudiobook) MediaAction.fastForward,
+        if (isAudiobook) MediaAction.rewind,
       },
       androidCompactActionIndices: const [0, 1, 2],
       processingState: s.isBuffering
@@ -204,6 +216,26 @@ class MoonfinAudioHandler extends BaseAudioHandler
   Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) async {
     final wantShuffle = shuffleMode != AudioServiceShuffleMode.none;
     if (_manager.state.isShuffled != wantShuffle) _manager.toggleShuffle();
+  }
+
+  @override
+  Future<void> fastForward() async {
+    final prefs = GetIt.instance<UserPreferences>();
+    final ms = prefs.get(UserPreferences.skipForwardLength);
+    await _manager.seekTo(_manager.state.position + Duration(milliseconds: ms));
+  }
+
+  @override
+  Future<void> rewind() async {
+    final prefs = GetIt.instance<UserPreferences>();
+    final ms = prefs.get(UserPreferences.skipBackLength);
+    final target = _manager.state.position - Duration(milliseconds: ms);
+    await _manager.seekTo(target < Duration.zero ? Duration.zero : target);
+  }
+
+  @override
+  Future<void> setSpeed(double speed) async {
+    await _manager.setPlaybackSpeed(speed);
   }
 }
 

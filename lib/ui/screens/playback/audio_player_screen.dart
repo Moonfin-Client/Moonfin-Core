@@ -25,6 +25,7 @@ import '../../widgets/overlay_sheet.dart';
 import '../../widgets/remote_play_to_session_dialog.dart';
 import '../../widgets/playback/lyrics_view.dart';
 import '../../../l10n/app_localizations.dart';
+import 'audiobook_player_view.dart';
 
 class AudioPlayerScreen extends StatefulWidget {
   const AudioPlayerScreen({super.key});
@@ -565,13 +566,33 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     final item = _resolveCurrentItem();
+    final attachMedia3View =
+        PlatformDetection.useNativeVideoSurface && _activeMedia3Backend != null;
+    if (item != null && item.isAudiobook) {
+      if (!attachMedia3View) {
+        return const AudiobookPlayerView();
+      }
+      return const Stack(
+        fit: StackFit.expand,
+        children: [
+          Positioned(
+            left: -2,
+            top: -2,
+            width: 1,
+            height: 1,
+            child: IgnorePointer(
+              child: Media3VideoView(fill: Color(0x00000000)),
+            ),
+          ),
+          AudiobookPlayerView(),
+        ],
+      );
+    }
     final localPoster = _offlinePosterPath();
     final artUrl = item != null && !_manager.isOfflinePlayback
         ? _getArtUrl(item)
         : null;
     final useSplitLyricsLayout = _shouldUseSplitLyricsLayout(context);
-    final attachMedia3View =
-        PlatformDetection.useNativeVideoSurface && _activeMedia3Backend != null;
 
     final content = Stack(
       fit: StackFit.expand,

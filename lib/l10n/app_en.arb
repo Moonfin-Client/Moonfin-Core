@@ -7531,5 +7531,61 @@
   "sources": "Sources",
   "@sources": {
     "description": "Title of the artwork source-provider filter dialog"
-  }
+  },
+  "audiobookChapters": "Chapters",
+  "audiobookBookmarks": "Bookmarks",
+  "audiobookNotes": "Notes",
+  "audiobookQueue": "Queue",
+  "audiobookLyrics": "Lyrics",
+  "audiobookAddBookmark": "Add bookmark",
+  "audiobookAddNote": "Add note",
+  "audiobookEditNote": "Edit note",
+  "audiobookNoteHint": "Write a note for this moment",
+  "audiobookSleepTimer": "Sleep timer",
+  "audiobookSleepOff": "Off",
+  "audiobookSleepEndOfChapter": "End of chapter",
+  "audiobookSleepCustom": "Custom",
+  "audiobookSleepRemaining": "{remaining} left",
+  "@audiobookSleepRemaining": {
+    "placeholders": {"remaining": {"type": "String"}}
+  },
+  "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} min}}",
+  "@audiobookSleepMinutes": {
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "audiobookPlaybackSpeed": "Playback speed",
+  "audiobookRemainingTime": "Remaining",
+  "audiobookElapsedTime": "Elapsed",
+  "audiobookSkipBackSeconds": "Back {seconds}s",
+  "@audiobookSkipBackSeconds": {
+    "placeholders": {"seconds": {"type": "int"}}
+  },
+  "audiobookSkipForwardSeconds": "Forward {seconds}s",
+  "@audiobookSkipForwardSeconds": {
+    "placeholders": {"seconds": {"type": "int"}}
+  },
+  "audiobookPreviousChapter": "Previous chapter",
+  "audiobookNextChapter": "Next chapter",
+  "audiobookChapterIndicator": "Chapter {current} of {total}",
+  "@audiobookChapterIndicator": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "audiobookNoChapters": "No chapters",
+  "audiobookNoBookmarks": "No bookmarks yet",
+  "audiobookNoNotes": "No notes yet",
+  "audiobookBookmarkAdded": "Bookmark added at {position}",
+  "@audiobookBookmarkAdded": {
+    "placeholders": {"position": {"type": "String"}}
+  },
+  "audiobookSpeedReset": "Reset to 1.0x",
+  "audiobookSpeedCustomLabel": "{value}x",
+  "@audiobookSpeedCustomLabel": {
+    "placeholders": {"value": {"type": "String"}}
+  },
+  "audiobookSave": "Save",
+  "audiobookCancel": "Cancel",
+  "audiobookDelete": "Delete"
 }

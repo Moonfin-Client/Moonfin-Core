@@ -221,6 +221,37 @@ class AggregatedItem {
   List<Map<String, dynamic>> get chapters =>
       (rawData['Chapters'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
 
+  /// Whether this item should use the audiobook player experience.
+  ///
+  /// Jellyfin marks audiobook collections with Type "AudioBook" and audiobook
+  /// children with MediaType "Audio" inside an AudioBook parent collection.
+  /// We treat anything reporting a top-level AudioBook type, or an audio item
+  /// whose collection type / parent indicates audiobooks, as an audiobook.
+  bool get isAudiobook {
+    final t = (type ?? '').toLowerCase();
+    if (t == 'audiobook') return true;
+    final collectionType =
+        (rawData['CollectionType'] as String? ?? '').toLowerCase();
+    if (collectionType == 'audiobooks' || collectionType == 'books') {
+      return true;
+    }
+    final parentCollectionType =
+        (rawData['ParentCollectionType'] as String? ?? '').toLowerCase();
+    if (parentCollectionType == 'audiobooks' || parentCollectionType == 'books') {
+      return true;
+    }
+    final mediaType = (rawData['MediaType'] as String? ?? '').toLowerCase();
+    if (mediaType == 'audio' && (rawData['Chapters'] as List?)?.isNotEmpty == true) {
+      // Audio items with chapter metadata are very likely audiobooks.
+      final runtimeTicks = runTimeTicks ?? 0;
+      // Treat anything over 30 minutes with chapters as an audiobook.
+      if (runtimeTicks > Duration(minutes: 30).inMicroseconds * 10) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   String? get videoResolution {
     for (final stream in mediaStreams) {
       if (stream['Type'] == 'Video') {
