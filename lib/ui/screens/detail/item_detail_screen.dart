@@ -151,6 +151,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   final _themeMusicService = GetIt.instance<ThemeMusicService>();
   final _prefs = GetIt.instance<UserPreferences>();
   String? _backdropUrl;
+  StreamSubscription<String?>? _backgroundSub;
   bool _themeMusicStarted = false;
   String? _selectedMediaSourceId;
   Timer? _focusedBackdropDebounce;
@@ -187,6 +188,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     _viewModel.load();
 
     _backdropUrl = _backgroundService.currentUrl;
+    _backgroundSub = _backgroundService.backgroundStream.listen((url) {
+      if (mounted) {
+        setState(() => _backdropUrl = url);
+      }
+    });
   }
 
   @override
@@ -210,6 +216,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _themeMusicService.unregisterDetailScreen(this);
+    _backgroundSub?.cancel();
     _focusedBackdropDebounce?.cancel();
     _backgroundService.clearBackgrounds();
     _viewModel.removeListener(_onChanged);
@@ -258,25 +265,31 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     _focusedBackdropDebounce = Timer(const Duration(milliseconds: 80), () {
       if (!mounted || _lastFocusedBackdropItemId != itemId) return;
 
-      final tag = focusedItem.primaryImageTag;
-      if (tag != null) {
-        final cacheKey = '${focusedItem.id}:$tag';
-        final url = _focusedPrimaryBackdropUrlCache.putIfAbsent(
-          cacheKey,
-          () => _viewModel.imageApi.getPrimaryImageUrl(
-            focusedItem.id,
-            maxHeight: 1080,
-            tag: tag,
-          ),
-        );
-        if (url != _backdropUrl) {
-          _backgroundService.setBackgroundUrl(
-            url,
-            context: BlurContext.details,
+      final hasBackdrop = focusedItem.backdropImageTags.isNotEmpty ||
+          (focusedItem.parentBackdropItemId != null &&
+              focusedItem.parentBackdropImageTags.isNotEmpty);
+
+      if (!hasBackdrop) {
+        final tag = focusedItem.primaryImageTag;
+        if (tag != null) {
+          final cacheKey = '${focusedItem.id}:$tag';
+          final url = _focusedPrimaryBackdropUrlCache.putIfAbsent(
+            cacheKey,
+            () => _viewModel.imageApi.getPrimaryImageUrl(
+              focusedItem.id,
+              maxHeight: 1080,
+              tag: tag,
+            ),
           );
-          setState(() => _backdropUrl = url);
+          if (url != _backdropUrl) {
+            _backgroundService.setBackgroundUrl(
+              url,
+              context: BlurContext.details,
+            );
+            setState(() => _backdropUrl = url);
+          }
+          return;
         }
-        return;
       }
 
       _backgroundService.setBackground(
@@ -428,9 +441,14 @@ class _DetailContentState extends State<_DetailContent> {
   final FocusNode _albumPlayFocusNode = FocusNode(
     debugLabel: 'albumPlayButton',
   );
-  final FocusNode _firstTrackFocusNode = FocusNode(
-    debugLabel: 'albumFirstTrack',
-  );
+  final Map<String, FocusNode> _trackFocusNodes = <String, FocusNode>{};
+
+  FocusNode _getTrackFocusNode(String trackId) {
+    return _trackFocusNodes.putIfAbsent(
+      trackId,
+      () => FocusNode(debugLabel: 'track-$trackId'),
+    );
+  }
   final FocusNode _nextEpisodeFocusNode = FocusNode(
     debugLabel: 'detailNextEpisode',
   );
@@ -817,7 +835,10 @@ class _DetailContentState extends State<_DetailContent> {
     _firstChapterFocusNode.dispose();
     _firstFeatureFocusNode.dispose();
     _albumPlayFocusNode.dispose();
-    _firstTrackFocusNode.dispose();
+    for (final node in _trackFocusNodes.values) {
+      node.dispose();
+    }
+    _trackFocusNodes.clear();
     _nextEpisodeFocusNode.dispose();
     _seriesNextUpFocusNode.dispose();
     super.dispose();
@@ -2505,8 +2526,12 @@ class _DetailContentState extends State<_DetailContent> {
         playFocusNode: widget.initialFocusNode ?? _albumPlayFocusNode,
         autofocusPlay: PlatformDetection.isTV,
         onPlayDown: () {
-          if (!_firstTrackFocusNode.canRequestFocus) return;
-          _firstTrackFocusNode.requestFocus();
+          if (viewModel.tracks.isNotEmpty) {
+            final node = _getTrackFocusNode(viewModel.tracks.first.id);
+            if (node.canRequestFocus) {
+              node.requestFocus();
+            }
+          }
         },
         showAddToPlaylist: !isPlaylist,
         onDownloadAll: canDownloadAll
@@ -2527,12 +2552,14 @@ class _DetailContentState extends State<_DetailContent> {
       if (viewModel.tracks.isNotEmpty) ...[
         const SizedBox(height: 24),
         _SectionHeader(
-          title: isAudiobook ? l10n.tableOfContents : l10n.tracklist,
+          title: isPlaylist
+              ? l10n.playlist
+              : (isAudiobook ? l10n.tableOfContents : l10n.tracklist),
         ),
         const SizedBox(height: 12),
         _TrackList(
           tracks: viewModel.tracks,
-          firstTrackFocusNode: _firstTrackFocusNode,
+          getFocusNode: _getTrackFocusNode,
           onFirstTrackUp: () {
             final targetNode = widget.initialFocusNode ?? _albumPlayFocusNode;
             if (!targetNode.canRequestFocus) return;
@@ -2542,6 +2569,8 @@ class _DetailContentState extends State<_DetailContent> {
           isAudiobook: isAudiobook,
           groupByDisc: item.type == 'MusicAlbum',
           reorderable: canManagePlaylistTracks,
+          isPlaylist: isPlaylist,
+          imageApi: viewModel.imageApi,
           onPlayTrack: (index) {
             final selectedTrack = viewModel.tracks[index];
             if (isPlaylist && !_isAudioItem(selectedTrack)) {
@@ -2565,8 +2594,13 @@ class _DetailContentState extends State<_DetailContent> {
             }());
           },
           onReorder: canManagePlaylistTracks
-              ? (oldIndex, newIndex) =>
-                    viewModel.reorderPlaylistTrack(oldIndex, newIndex)
+              ? (oldIndex, newIndex) {
+                  var target = newIndex;
+                  if (target > oldIndex) {
+                    target -= 1;
+                  }
+                  viewModel.reorderPlaylistTrack(oldIndex, target);
+                }
               : null,
           onRemoveFromPlaylist: canManagePlaylistTracks
               ? (track) => viewModel.removeTrackFromPlaylist(track)
@@ -2575,8 +2609,13 @@ class _DetailContentState extends State<_DetailContent> {
               ? (index) => viewModel.reorderPlaylistTrack(index, index - 1)
               : null,
           onMoveDown: canManagePlaylistTracks
-              ? (index) => viewModel.reorderPlaylistTrack(index, index + 2)
+              ? (index) => viewModel.reorderPlaylistTrack(index, index + 1)
               : null,
+        ),
+        SizedBox(
+          height: PlatformDetection.isTV
+              ? MediaQuery.of(context).size.height * 0.2
+              : 0,
         ),
       ],
       const SizedBox(height: 48),
@@ -11248,7 +11287,8 @@ class _AlbumMeta extends StatelessWidget {
       );
     }
     if (item.genres.isNotEmpty) {
-      parts.add(item.genres.take(2).join(', '));
+      final genresList = item.type == 'Playlist' ? item.genres : item.genres.take(2);
+      parts.add(genresList.join(', '));
     }
     if (parts.isEmpty) return const SizedBox.shrink();
     return Text(
@@ -11341,66 +11381,92 @@ class _AlbumActions extends StatelessWidget {
     bool hasDownloadedTracks,
   ) {
     final l10n = AppLocalizations.of(context);
+    final rawButtons = <_DetailActionButton>[
+      _DetailActionButton(
+        label: l10n.play,
+        icon: Icons.play_arrow,
+        focusNode: playFocusNode,
+        autofocus: autofocusPlay,
+        onArrowDown: onPlayDown,
+        onPressed: () {
+          if (tracks.isEmpty) return;
+          _playAndOpen(context, manager, tracks);
+        },
+      ),
+      _DetailActionButton(
+        label: l10n.shuffle,
+        icon: Icons.shuffle,
+        onArrowDown: onPlayDown,
+        onPressed: () {
+          if (tracks.isEmpty) return;
+          final shuffled = List<AggregatedItem>.from(tracks)..shuffle();
+          _playAndOpen(context, manager, shuffled);
+        },
+      ),
+      if (onDownloadAll != null)
+        _DetailActionButton(
+          label: l10n.downloadAll,
+          icon: Icons.download,
+          onArrowDown: onPlayDown,
+          onPressed: onDownloadAll!,
+        ),
+      if (onDeleteDownloaded != null && hasDownloadedTracks)
+        _DetailActionButton(
+          label: l10n.deleteDownloaded,
+          icon: Icons.delete_sweep,
+          onArrowDown: onPlayDown,
+          onPressed: onDeleteDownloaded!,
+        ),
+      if (onDeletePlaylist != null)
+        _DetailActionButton(
+          label: l10n.delete,
+          icon: Icons.delete_outline,
+          onArrowDown: onPlayDown,
+          onPressed: onDeletePlaylist!,
+        ),
+      if (showAddToPlaylist)
+        _DetailActionButton(
+          label: l10n.playlist,
+          icon: Icons.playlist_add,
+          onArrowDown: onPlayDown,
+          onPressed: () => AddToPlaylistDialog.show(
+            context,
+            itemIds: [item.id],
+            serverId: item.serverId,
+          ),
+        ),
+    ];
+
+    final processedButtons = <Widget>[];
+    for (var i = 0; i < rawButtons.length; i++) {
+      final btn = rawButtons[i];
+      processedButtons.add(
+        _DetailActionButton(
+          label: btn.label,
+          icon: btn.icon,
+          onPressed: btn.onPressed,
+          onLongPress: btn.onLongPress,
+          onFocused: btn.onFocused,
+          onArrowUp: () {},
+          onArrowDown: btn.onArrowDown,
+          onArrowLeft: i == 0 ? () {} : btn.onArrowLeft,
+          onArrowRight: i == rawButtons.length - 1 ? () {} : btn.onArrowRight,
+          isActive: btn.isActive,
+          activeColor: btn.activeColor,
+          neonAccentColor: btn.neonAccentColor,
+          focusNode: btn.focusNode,
+          autofocus: btn.autofocus,
+          suppressAutoScrollToTop: btn.suppressAutoScrollToTop,
+        ),
+      );
+    }
+
     return Center(
       child: Wrap(
         spacing: 8,
         runSpacing: 12,
         alignment: WrapAlignment.center,
-        children: [
-          _DetailActionButton(
-            label: l10n.play,
-            icon: Icons.play_arrow,
-            focusNode: playFocusNode,
-            autofocus: autofocusPlay,
-            onArrowDown: onPlayDown,
-            onPressed: () {
-              if (tracks.isEmpty) return;
-              _playAndOpen(context, manager, tracks);
-            },
-          ),
-          _DetailActionButton(
-            label: l10n.shuffle,
-            icon: Icons.shuffle,
-            onArrowDown: onPlayDown,
-            onPressed: () {
-              if (tracks.isEmpty) return;
-              final shuffled = List<AggregatedItem>.from(tracks)..shuffle();
-              _playAndOpen(context, manager, shuffled);
-            },
-          ),
-          if (onDownloadAll != null)
-            _DetailActionButton(
-              label: l10n.downloadAll,
-              icon: Icons.download,
-              onArrowDown: onPlayDown,
-              onPressed: onDownloadAll!,
-            ),
-          if (onDeleteDownloaded != null && hasDownloadedTracks)
-            _DetailActionButton(
-              label: l10n.deleteDownloaded,
-              icon: Icons.delete_sweep,
-              onArrowDown: onPlayDown,
-              onPressed: onDeleteDownloaded!,
-            ),
-          if (onDeletePlaylist != null)
-            _DetailActionButton(
-              label: l10n.delete,
-              icon: Icons.delete_outline,
-              onArrowDown: onPlayDown,
-              onPressed: onDeletePlaylist!,
-            ),
-          if (showAddToPlaylist)
-            _DetailActionButton(
-              label: l10n.playlist,
-              icon: Icons.playlist_add,
-              onArrowDown: onPlayDown,
-              onPressed: () => AddToPlaylistDialog.show(
-                context,
-                itemIds: [item.id],
-                serverId: item.serverId,
-              ),
-            ),
-        ],
+        children: processedButtons,
       ),
     );
   }
@@ -11478,7 +11544,7 @@ class _AlbumsRow extends StatelessWidget {
 
 class _TrackList extends StatelessWidget {
   final List<AggregatedItem> tracks;
-  final FocusNode? firstTrackFocusNode;
+  final FocusNode Function(String) getFocusNode;
   final VoidCallback? onFirstTrackUp;
   final ValueChanged<AggregatedItem>? onTrackFocused;
   final bool isAudiobook;
@@ -11489,10 +11555,12 @@ class _TrackList extends StatelessWidget {
   final ValueChanged<AggregatedItem>? onRemoveFromPlaylist;
   final ValueChanged<int>? onMoveUp;
   final ValueChanged<int>? onMoveDown;
+  final bool isPlaylist;
+  final ImageApi? imageApi;
 
   const _TrackList({
     required this.tracks,
-    this.firstTrackFocusNode,
+    required this.getFocusNode,
     this.onFirstTrackUp,
     this.onTrackFocused,
     this.isAudiobook = false,
@@ -11503,6 +11571,8 @@ class _TrackList extends StatelessWidget {
     this.onRemoveFromPlaylist,
     this.onMoveUp,
     this.onMoveDown,
+    this.isPlaylist = false,
+    this.imageApi,
   });
 
   @override
@@ -11520,7 +11590,7 @@ class _TrackList extends StatelessWidget {
           return _TrackTile(
             key: ValueKey('playlist-track-$keyId'),
             track: track,
-            focusNode: index == 0 ? firstTrackFocusNode : null,
+            focusNode: getFocusNode(track.id),
             onArrowUp: index == 0 ? onFirstTrackUp : null,
             onFocused: onTrackFocused == null
                 ? null
@@ -11535,6 +11605,8 @@ class _TrackList extends StatelessWidget {
             onMoveUp: onMoveUp,
             onMoveDown: onMoveDown,
             isAudiobook: isAudiobook,
+            isPlaylist: isPlaylist,
+            imageApi: imageApi,
           );
         },
       );
@@ -11569,7 +11641,7 @@ class _TrackList extends StatelessWidget {
       children.add(
         _TrackTile(
           track: track,
-          focusNode: index == 0 ? firstTrackFocusNode : null,
+          focusNode: getFocusNode(track.id),
           onArrowUp: index == 0 ? onFirstTrackUp : null,
           onFocused: onTrackFocused == null
               ? null
@@ -11584,6 +11656,8 @@ class _TrackList extends StatelessWidget {
           onMoveUp: onMoveUp,
           onMoveDown: onMoveDown,
           isAudiobook: isAudiobook,
+          isPlaylist: isPlaylist,
+          imageApi: imageApi,
         ),
       );
 
@@ -11600,6 +11674,8 @@ class _TrackTile extends StatefulWidget {
   final VoidCallback? onFocused;
   final VoidCallback? onArrowUp;
   final bool isAudiobook;
+  final bool isPlaylist;
+  final ImageApi? imageApi;
   final int index;
   final int currentIndex;
   final int totalCount;
@@ -11617,6 +11693,8 @@ class _TrackTile extends StatefulWidget {
     this.onFocused,
     this.onArrowUp,
     this.isAudiobook = false,
+    this.isPlaylist = false,
+    this.imageApi,
     required this.index,
     required this.currentIndex,
     required this.totalCount,
@@ -11642,7 +11720,7 @@ class _TrackTileState extends State<_TrackTile> with FocusStateMixin {
       Scrollable.ensureVisible(
         context,
         duration: const Duration(milliseconds: 180),
-        alignment: 0.9,
+        alignment: 0.5,
         curve: Curves.easeOut,
       );
     });
@@ -11728,7 +11806,117 @@ class _TrackTileState extends State<_TrackTile> with FocusStateMixin {
     final runtimeText = runtime != null
         ? '${runtime.inMinutes}:${(runtime.inSeconds % 60).toString().padLeft(2, '0')}'
         : null;
-    final trackNumber = widget.track.indexNumber ?? widget.index;
+
+    final trackNumber = widget.isPlaylist
+        ? widget.index
+        : (widget.track.indexNumber ?? widget.index);
+
+    final isEpisode = widget.track.type == 'Episode';
+    final title = isEpisode
+        ? (widget.track.seriesName ?? widget.track.name)
+        : widget.track.name;
+
+    final subtitle = isEpisode
+        ? () {
+            final s = widget.track.parentIndexNumber;
+            final e = widget.track.indexNumber;
+            final epName = widget.track.name;
+            final episodeInfo = switch ((s, e)) {
+              (final season?, final episode?) => 'S$season:E$episode',
+              _ => null,
+            };
+            if (episodeInfo != null) {
+              return '$episodeInfo - $epName';
+            }
+            return epName;
+          }()
+        : () {
+            if (widget.isAudiobook) {
+              return null;
+            }
+            final artistText = widget.track.artists.isNotEmpty
+                ? widget.track.artists.join(', ')
+                : widget.track.albumArtist ?? '';
+            return artistText.isNotEmpty ? artistText : null;
+          }();
+
+    Widget? thumbnailWidget;
+    if (widget.isPlaylist && widget.imageApi != null) {
+      final imgId = widget.track.primaryImageItemId ?? widget.track.id;
+      final logoTag = widget.track.logoImageTag;
+      final thumbTag = widget.track.thumbImageTag;
+      final backdropTags = widget.track.backdropImageTags;
+      final primaryTag = widget.track.primaryImageTag;
+
+      final String imageUrl;
+      final BoxFit fit;
+      if (thumbTag != null) {
+        imageUrl = widget.imageApi!.getThumbImageUrl(
+          imgId,
+          tag: thumbTag,
+          maxWidth: 120,
+        );
+        fit = BoxFit.cover;
+      } else if (backdropTags.isNotEmpty) {
+        imageUrl = widget.imageApi!.getBackdropImageUrl(
+          imgId,
+          tag: backdropTags.first,
+          maxWidth: 120,
+        );
+        fit = BoxFit.cover;
+      } else if (primaryTag != null) {
+        imageUrl = widget.imageApi!.getPrimaryImageUrl(
+          imgId,
+          tag: primaryTag,
+          maxHeight: 120,
+        );
+        fit = BoxFit.cover;
+      } else if (logoTag != null) {
+        imageUrl = widget.imageApi!.getLogoImageUrl(
+          imgId,
+          tag: logoTag,
+          maxWidth: 120,
+        );
+        fit = BoxFit.contain;
+      } else {
+        imageUrl = '';
+        fit = BoxFit.cover;
+      }
+
+      final alternateAccentColor = AppColorScheme.navColorCycle.length >= 2
+          ? AppColorScheme.navColorCycle[1]
+          : AppColorScheme.accent;
+
+      thumbnailWidget = Container(
+        width: 72,
+        height: 40,
+        margin: const EdgeInsets.only(right: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(
+            color: alternateAccentColor,
+            width: 1.5,
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(2.5),
+          child: CachedNetworkImage(
+            imageUrl: imageUrl,
+            fit: fit,
+            errorWidget: (context, url, error) => Container(
+              color: Colors.white.withValues(alpha: 0.05),
+              child: const Icon(
+                Icons.movie_outlined,
+                color: Colors.white24,
+                size: 16,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     final activeColor = focusColor;
     final baseBackground = widget.index.isOdd
         ? Colors.white.withValues(alpha: 0.04)
@@ -11744,6 +11932,7 @@ class _TrackTileState extends State<_TrackTile> with FocusStateMixin {
         onFocusChange: (hasFocus) {
           setFocused(hasFocus);
           if (hasFocus) {
+            _keepTrackVisible();
             widget.onFocused?.call();
           }
         },
@@ -11784,13 +11973,14 @@ class _TrackTileState extends State<_TrackTile> with FocusStateMixin {
                     ),
                   ),
                 ),
+                if (thumbnailWidget != null) thumbnailWidget,
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        widget.track.name,
+                        title,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: Colors.white,
                           fontWeight: showFocusBorder
@@ -11800,27 +11990,17 @@ class _TrackTileState extends State<_TrackTile> with FocusStateMixin {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      () {
-                        if (widget.isAudiobook) {
-                          return const SizedBox.shrink();
-                        }
-                        final artistText = widget.track.artists.isNotEmpty
-                            ? widget.track.artists.join(', ')
-                            : widget.track.albumArtist ?? '';
-                        if (artistText.isNotEmpty) {
-                          return Text(
-                            artistText,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: showFocusBorder
-                                  ? Colors.white.withValues(alpha: 0.82)
-                                  : Colors.white.withValues(alpha: 0.6),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      }(),
+                      if (subtitle != null)
+                        Text(
+                          subtitle,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: showFocusBorder
+                                ? Colors.white.withValues(alpha: 0.82)
+                                : Colors.white.withValues(alpha: 0.6),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                     ],
                   ),
                 ),
