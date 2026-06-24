@@ -1630,10 +1630,11 @@ class _MediaBarState extends State<MediaBar>
                     ),
                   ),
                   ..._buildVideoOverlays(),
-                  _GradientOverlay(
-                    color: overlayColor,
-                    opacity: overlayOpacity,
-                  ),
+                  if(!_isTrailerPlaying) // no gradient when trailer playing
+                    _GradientOverlay(
+                      color: overlayColor,
+                      opacity: overlayOpacity,
+                    ),
                   if (items.length > 1)
                     Positioned(
                       bottom: 8,
@@ -1842,7 +1843,7 @@ class _MediaBarState extends State<MediaBar>
                       ),
                     ),
                   if (!isMobile) ..._buildVideoOverlays(),
-                  if (!isMobile)
+                  if (!isMobile && !_isTrailerPlaying) // no gradient when trailer playing
                     Positioned.fill(
                       child: DecoratedBox(
                         decoration: BoxDecoration(
@@ -1865,7 +1866,7 @@ class _MediaBarState extends State<MediaBar>
                         ),
                       ),
                     ),
-                  if (!isMobile)
+                  if (!isMobile && !_isTrailerPlaying) // no gradient when trailer playing
                     Positioned.fill(
                       child: DecoratedBox(
                         decoration: BoxDecoration(
