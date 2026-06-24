@@ -269,7 +269,7 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
           _reportEmbeddedUnavailable();
         },
       );
-      await (controller as dynamic).init() as Future<void>;
+      await ((controller as dynamic).init() as Future<void>);
       _autoplayWatchArmed = true;
       _restartAutoplayTimer();
 
@@ -708,12 +708,13 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
           return const SizedBox.shrink();
         }
 
+        final dynamic wv = (controller as dynamic).webViewController;
+        if (wv is! WebViewController) return const SizedBox.shrink();
         return IgnorePointer(
           ignoring: widget.ignorePointer,
           child: _buildWithStartupChromeMask(
             WebViewWidget(
-              controller: (controller as dynamic).webViewController
-                  as WebViewController,
+              controller: wv,
             ),
           ),
         );
