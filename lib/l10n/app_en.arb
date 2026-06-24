@@ -3952,6 +3952,22 @@
   "@showFolderBrowsingOption": {
     "description": "Description for folder view"
   },
+  "groupItemsIntoCollections": "Group Items into Collections",
+  "@groupItemsIntoCollections": {
+    "description": "Setting for grouping items into collections"
+  },
+  "hideCollectionAssociatedItems": "Hide Collection associated library items when browsing libraries",
+  "@hideCollectionAssociatedItems": {
+    "description": "Description for grouping items into collections"
+  },
+  "groupItemsIntoCollectionsDialogTitle": "Library Grouping Notice",
+  "@groupItemsIntoCollectionsDialogTitle": {
+    "description": "Title of the alert dialog explaining server settings requirement"
+  },
+  "groupItemsIntoCollectionsDialogMessage": "To use this setting, please ensure the \"Group movies into collections\" and/or \"Group shows into collections\" Library settings are enabled under your library's Display settings on your Jellyfin or Emby server.",
+  "@groupItemsIntoCollectionsDialogMessage": {
+    "description": "Message of the alert dialog explaining server settings requirement"
+  },
   "libraryVisibility": "Library Visibility",
   "@libraryVisibility": {
     "description": "Section title for library visibility"

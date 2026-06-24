@@ -89,6 +89,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  bool? _lastGroupCollectionsValue;
+
   AggregatedItem? _focusedItem;
   AggregatedItem? get focusedItem => _focusedItem;
 
@@ -170,6 +172,16 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _letterFilter = '';
     _imageType = _prefs.get(UserPreferences.libraryImageType(_imagePrefKey));
     _posterSize = _readScopedPosterSize();
+    _lastGroupCollectionsValue = _prefs.get(UserPreferences.groupItemsIntoCollections);
+    _prefs.addListener(_onPrefsChanged);
+  }
+
+  void _onPrefsChanged() {
+    final newValue = _prefs.get(UserPreferences.groupItemsIntoCollections);
+    if (_lastGroupCollectionsValue != newValue) {
+      _lastGroupCollectionsValue = newValue;
+      load();
+    }
   }
 
   String get _prefKey => genreId ?? libraryId;
@@ -295,18 +307,37 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         includeItemTypes != null &&
         includeItemTypes!.length == 1 &&
         includeItemTypes!.first == 'MusicArtist';
+    final groupCollections = _prefs.get(UserPreferences.groupItemsIntoCollections);
     if (includeItemTypes != null) {
-      includeTypes = includeItemTypes;
+      includeTypes = List<String>.from(includeItemTypes!);
+      if (groupCollections) {
+        if (includeTypes.contains('Movie')) {
+          collapseBoxSets = true;
+        } else if (includeTypes.contains('Series')) {
+          collapseBoxSets = true;
+        }
+      }
     } else {
       switch (_collectionType) {
         case 'movies':
-          includeTypes = ['Movie'];
-          excludeTypes = ['BoxSet'];
-          collapseBoxSets = false;
+          if (groupCollections) {
+            includeTypes = ['Movie'];
+            excludeTypes = null;
+            collapseBoxSets = true;
+          } else {
+            includeTypes = ['Movie'];
+            excludeTypes = ['BoxSet'];
+            collapseBoxSets = false;
+          }
           break;
         case 'tvshows':
-          includeTypes = ['Series'];
-          collapseBoxSets = false;
+          if (groupCollections) {
+            includeTypes = ['Series'];
+            collapseBoxSets = true;
+          } else {
+            includeTypes = ['Series'];
+            collapseBoxSets = false;
+          }
           break;
         case 'playlists':
           includeTypes = ['Playlist'];
@@ -736,4 +767,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   }
 
   String get counterText => '${_items.length} | $_totalCount';
+
+  @override
+  void dispose() {
+    _prefs.removeListener(_onPrefsChanged);
+    super.dispose();
+  }
 }

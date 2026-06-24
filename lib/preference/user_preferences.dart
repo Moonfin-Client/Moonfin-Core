@@ -751,6 +751,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final groupItemsIntoCollections = Preference(
+    key: 'pref_group_items_into_collections',
+    defaultValue: false,
+  );
+
   static final showMediaDetailsOnLibraryPage = Preference(
     key: 'pref_show_media_details_on_library_page',
     defaultValue: true,
