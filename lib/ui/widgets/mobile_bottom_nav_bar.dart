@@ -14,11 +14,13 @@ import '../../data/services/plugin_sync_service.dart';
 import '../../l10n/app_localizations.dart';
 import '../../preference/seerr_preferences.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/idiom/app_ui_idiom.dart';
 import '../../util/overlay_color_palette.dart';
 import '../navigation/destinations.dart';
 import '../navigation/home_refresh_bus.dart';
 import '../screens/settings/settings_side_panel.dart';
 import '../screens/syncplay/syncplay_screen.dart';
+import 'adaptive/adaptive_glass.dart';
 import 'seerr_icons.dart';
 import 'settings/settings_panel.dart';
 import 'shuffle_overlay.dart';
@@ -28,6 +30,8 @@ const double _kBarHeight = 54.0;
 const double _kIconSize = 24.0;
 const double _kBarCornerRadius = 16.0;
 const double _kBarHorizontalInset = 8.0;
+const double _kFloatingInset = 14.0;
+const double _kFloatingRadius = 28.0;
 class MobileBottomNavBar extends StatefulWidget {
   final String? activeRoute;
 
@@ -610,10 +614,29 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
       fill = true;
     }
 
+    final row = Material(
+      type: MaterialType.transparency,
+      child: Row(
+        mainAxisAlignment:
+            fill ? MainAxisAlignment.spaceBetween : MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (var i = 0; i < tabs.length; i++)
+            fill
+                ? Expanded(child: _buildTab(context, tabs[i], slot: i))
+                : _buildTab(context, tabs[i], slot: i),
+        ],
+      ),
+    );
+
+    if (AppUiIdiomResolver.current == AppUiIdiom.iosMobile) {
+      return _buildFloatingGlassBar(context, row);
+    }
+
     final barColor = _resolveBarColor(context);
     final borderAlpha = 0.08 * _overlayOpacity();
 
-    final bar = Padding(
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: _kBarHorizontalInset),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(_kBarCornerRadius),
@@ -629,30 +652,31 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
           ),
           child: SafeArea(
             top: false,
-            child: SizedBox(
-              height: _kBarHeight,
-              child: Material(
-                type: MaterialType.transparency,
-                child: Row(
-                  mainAxisAlignment: fill
-                      ? MainAxisAlignment.spaceBetween
-                      : MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    for (var i = 0; i < tabs.length; i++)
-                      fill
-                          ? Expanded(child: _buildTab(context, tabs[i], slot: i))
-                          : _buildTab(context, tabs[i], slot: i),
-                  ],
-                ),
-              ),
-            ),
+            child: SizedBox(height: _kBarHeight, child: row),
           ),
         ),
       ),
     );
+  }
 
-    return bar;
+  Widget _buildFloatingGlassBar(BuildContext context, Widget row) {
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    final accent = Theme.of(context).colorScheme.primary;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        _kFloatingInset,
+        0,
+        _kFloatingInset,
+        bottomInset > 0 ? bottomInset : _kFloatingInset,
+      ),
+      child: adaptiveGlass(
+        cornerRadius: _kFloatingRadius,
+        blur: 24,
+        tint: accent.withValues(alpha: 0.04),
+        fallbackColor: _resolveBarColor(context, forSheet: true),
+        child: SizedBox(height: _kBarHeight, child: row),
+      ),
+    );
   }
 }
 

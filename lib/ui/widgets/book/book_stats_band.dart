@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
-import 'book_glass.dart';
+import '../adaptive/adaptive_glass.dart';
 
 class BookStat {
   final String label;
@@ -28,7 +28,7 @@ class BookStatsBand extends StatelessWidget {
           for (var i = 0; i < visible.length; i++) ...[
             if (i > 0) const SizedBox(width: 8),
             Expanded(
-              child: bookGlassOrSolid(
+              child: adaptiveGlass(
                 cornerRadius: 12,
                 fallbackColor: onSurface.withValues(alpha: 0.06),
                 child: Padding(
