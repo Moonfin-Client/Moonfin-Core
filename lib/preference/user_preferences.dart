@@ -243,6 +243,8 @@ class UserPreferences extends ChangeNotifier {
     'pref_audio_display_artists',
     'pref_audio_display_albums',
     'pref_audio_sort_option',
+    'pref_person_page_sort_option',
+    'pref_person_page_group_items',
   };
 
   bool _isScopedPreference<T>(Preference<T> pref) {
@@ -1695,6 +1697,16 @@ class UserPreferences extends ChangeNotifier {
   static final audioSortOption = Preference<String>(
     key: 'pref_audio_sort_option',
     defaultValue: 'name',
+  );
+
+  static final personPageSortOption = Preference<String>(
+    key: 'pref_person_page_sort_option',
+    defaultValue: 'alphabetical',
+  );
+
+  static final personPageGroupItems = Preference<bool>(
+    key: 'pref_person_page_group_items',
+    defaultValue: false,
   );
 
   String getSeriesSubtitleLanguage(String seriesId) {

@@ -458,6 +458,7 @@ class _DetailContentState extends State<_DetailContent> {
   );
   String? _tvAlbumPlayFocusAppliedForItemId;
   List<SeerrDiscoverItem>? _seerrAppearances;
+  List<SeerrDiscoverItem>? _seerrCrewCredits;
 
   Future<void> _loadSeerrAppearances() async {
     final item = widget.viewModel.item;
@@ -471,6 +472,7 @@ class _DetailContentState extends State<_DetailContent> {
     if (mounted) {
       setState(() {
         _seerrAppearances = null;
+        _seerrCrewCredits = null;
       });
     }
 
@@ -480,12 +482,22 @@ class _DetailContentState extends State<_DetailContent> {
       final personId = int.tryParse(tmdbId);
       if (personId != null) {
         final credits = await repo.getPersonCombinedCredits(personId);
+        const excludedJobs = {'thanks', 'special thanks'};
         final castWithPosters =
             credits.cast.where((i) => i.posterPath != null).toList()
               ..sort((a, b) => a.displayTitle.compareTo(b.displayTitle));
+        final crewWithPosters = credits.crew
+            .where(
+              (i) =>
+                  i.posterPath != null &&
+                  !excludedJobs.contains(i.job?.toLowerCase()),
+            )
+            .toList()
+          ..sort((a, b) => a.displayTitle.compareTo(b.displayTitle));
         if (mounted) {
           setState(() {
             _seerrAppearances = castWithPosters;
+            _seerrCrewCredits = crewWithPosters;
           });
         }
       }
@@ -554,8 +566,9 @@ class _DetailContentState extends State<_DetailContent> {
     }
     final favoriteFocusNode =
         widget.initialFocusNode ?? _sectionFocusNodes['detailPersonFavorite'];
+    final displayFocusNode = _sectionFocusNodes['detailPersonDisplayButton'];
     final seerrFocusNode = _sectionFocusNodes['detailPersonSeerrButton'];
-    if (target == favoriteFocusNode || target == seerrFocusNode) {
+    if (target == favoriteFocusNode || target == displayFocusNode || target == seerrFocusNode) {
       return true;
     }
     return target.context
@@ -752,7 +765,11 @@ class _DetailContentState extends State<_DetailContent> {
       if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         _resetSectionHorizontalOffset(sourceFocusNode);
         if (upTarget != null) {
-          if (upTarget == favoriteFocusNode) {
+          final displayFocusNode = _sectionFocusNodes['detailPersonDisplayButton'];
+          final seerrFocusNode = _sectionFocusNodes['detailPersonSeerrButton'];
+          if (upTarget == favoriteFocusNode ||
+              upTarget == displayFocusNode ||
+              upTarget == seerrFocusNode) {
             _scrollMainToTop();
           }
           _requestSectionFocus(upTarget);
@@ -780,7 +797,12 @@ class _DetailContentState extends State<_DetailContent> {
     super.initState();
     _scrollController = ScrollController();
     _contentFocusNode = FocusNode(debugLabel: 'detailContent');
+    widget.prefs.addListener(_onPrefsChanged);
     _loadSeerrAppearances();
+  }
+
+  void _onPrefsChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -825,6 +847,7 @@ class _DetailContentState extends State<_DetailContent> {
 
   @override
   void dispose() {
+    widget.prefs.removeListener(_onPrefsChanged);
     _scrollController.dispose();
     _contentFocusNode.dispose();
     for (final node in _sectionFocusNodes.values) {
@@ -2132,13 +2155,146 @@ class _DetailContentState extends State<_DetailContent> {
 
   List<Widget> _buildPersonContent(BuildContext context, AggregatedItem item) {
     final l10n = AppLocalizations.of(context);
-    final movies = viewModel.filmographyMovies;
-    final series = viewModel.filmographySeries;
-    final musicVideos = viewModel.filmographyMusicVideos;
+    final sortOpt = widget.prefs.get(UserPreferences.personPageSortOption);
+    final groupOpt = widget.prefs.get(UserPreferences.personPageGroupItems);
+
+    List<AggregatedItem> sortJellyfinItems(List<AggregatedItem> list) {
+      final sorted = List<AggregatedItem>.from(list);
+      if (sortOpt == 'alphabetical') {
+        sorted.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+      } else {
+        final asc = sortOpt == 'releaseDateAsc';
+        sorted.sort((a, b) {
+          final dateA = a.premiereDate ?? (a.productionYear != null ? DateTime(a.productionYear!) : null);
+          final dateB = b.premiereDate ?? (b.productionYear != null ? DateTime(b.productionYear!) : null);
+          if (dateA == null && dateB == null) {
+            return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+          }
+          if (dateA == null) return 1;
+          if (dateB == null) return -1;
+          final comp = dateA.compareTo(dateB);
+          return asc ? comp : -comp;
+        });
+      }
+      return sorted;
+    }
+
+    List<SeerrDiscoverItem> groupSeerrItems(List<SeerrDiscoverItem> list, bool isCrew) {
+      if (!groupOpt) return list;
+      final grouped = <int, List<SeerrDiscoverItem>>{};
+      for (final item in list) {
+        grouped.putIfAbsent(item.id, () => []).add(item);
+      }
+
+      final result = <SeerrDiscoverItem>[];
+      for (final entries in grouped.values) {
+        final first = entries.first;
+        if (entries.length == 1) {
+          result.add(first);
+          continue;
+        }
+
+        if (isCrew) {
+          final jobs = entries
+              .map((e) => e.job ?? e.department)
+              .where((j) => j != null && j.isNotEmpty)
+              .map((j) => j!)
+              .toSet();
+          final combinedJobs = jobs.join(', ');
+          result.add(SeerrDiscoverItem(
+            id: first.id,
+            mediaType: first.mediaType,
+            title: first.title,
+            name: first.name,
+            originalTitle: first.originalTitle,
+            originalName: first.originalName,
+            posterPath: first.posterPath,
+            backdropPath: first.backdropPath,
+            overview: first.overview,
+            releaseDate: first.releaseDate,
+            firstAirDate: first.firstAirDate,
+            originalLanguage: first.originalLanguage,
+            genreIds: first.genreIds,
+            voteAverage: first.voteAverage,
+            voteCount: first.voteCount,
+            popularity: first.popularity,
+            adult: first.adult,
+            mediaInfo: first.mediaInfo,
+            character: first.character,
+            job: combinedJobs.isNotEmpty ? combinedJobs : null,
+            department: first.department,
+          ));
+        } else {
+          final characters = entries
+              .map((e) => e.character)
+              .where((c) => c != null && c.isNotEmpty)
+              .map((c) => c!)
+              .toSet();
+          final combinedCharacters = characters.join(', ');
+          result.add(SeerrDiscoverItem(
+            id: first.id,
+            mediaType: first.mediaType,
+            title: first.title,
+            name: first.name,
+            originalTitle: first.originalTitle,
+            originalName: first.originalName,
+            posterPath: first.posterPath,
+            backdropPath: first.backdropPath,
+            overview: first.overview,
+            releaseDate: first.releaseDate,
+            firstAirDate: first.firstAirDate,
+            originalLanguage: first.originalLanguage,
+            genreIds: first.genreIds,
+            voteAverage: first.voteAverage,
+            voteCount: first.voteCount,
+            popularity: first.popularity,
+            adult: first.adult,
+            mediaInfo: first.mediaInfo,
+            character: combinedCharacters.isNotEmpty ? combinedCharacters : null,
+            job: first.job,
+            department: first.department,
+          ));
+        }
+      }
+      return result;
+    }
+
+    List<SeerrDiscoverItem> sortSeerrItems(List<SeerrDiscoverItem> list) {
+      final sorted = List<SeerrDiscoverItem>.from(list);
+      if (sortOpt == 'alphabetical') {
+        sorted.sort((a, b) => a.displayTitle.toLowerCase().compareTo(b.displayTitle.toLowerCase()));
+      } else {
+        final asc = sortOpt == 'releaseDateAsc';
+        sorted.sort((a, b) {
+          final dateStrA = a.releaseDate ?? a.firstAirDate;
+          final dateStrB = b.releaseDate ?? b.firstAirDate;
+          if (dateStrA == null && dateStrB == null) {
+            return a.displayTitle.toLowerCase().compareTo(b.displayTitle.toLowerCase());
+          }
+          if (dateStrA == null) return 1;
+          if (dateStrB == null) return -1;
+          final dateA = DateTime.tryParse(dateStrA);
+          final dateB = DateTime.tryParse(dateStrB);
+          if (dateA == null && dateB == null) {
+            return dateStrA.compareTo(dateStrB);
+          }
+          if (dateA == null) return 1;
+          if (dateB == null) return -1;
+          final comp = dateA.compareTo(dateB);
+          return asc ? comp : -comp;
+        });
+      }
+      return sorted;
+    }
+
+    final movies = sortJellyfinItems(viewModel.filmographyMovies);
+    final series = sortJellyfinItems(viewModel.filmographySeries);
+    final musicVideos = sortJellyfinItems(viewModel.filmographyMusicVideos);
     final useSplit = _useDesktopDetailLayout(context);
 
     final favoriteFocusNode =
         initialFocusNode ?? _sectionFocusNode('detailPersonFavorite');
+    final displayFocusNode = _sectionFocusNode('detailPersonDisplayButton');
     final bioFocusNode = _sectionFocusNode('detailPersonBio');
     final firstFocus = bioFocusNode;
     final hasBio = item.overview != null && item.overview!.isNotEmpty;
@@ -2157,12 +2313,12 @@ class _DetailContentState extends State<_DetailContent> {
     final seriesFocusNode = series.isNotEmpty
         ? _sectionFocusNode('detailPersonSeries')
         : null;
-    final guestAppearances = viewModel.filmographyEpisodes.where((episode) {
+    final guestAppearances = sortJellyfinItems(viewModel.filmographyEpisodes.where((episode) {
       final sId = episode.seriesId;
       if (sId == null || sId.isEmpty) return true;
       final isMainCastOfSeries = series.any((s) => s.id == sId);
       return !isMainCastOfSeries;
-    }).toList();
+    }).toList());
     final guestAppearancesFocusNode = guestAppearances.isNotEmpty
         ? _sectionFocusNode('detailPersonGuestAppearances')
         : null;
@@ -2170,7 +2326,20 @@ class _DetailContentState extends State<_DetailContent> {
         ? _sectionFocusNode('detailPersonMusicVideos')
         : null;
 
-    final seerrAppearances = _seerrAppearances;
+    final rawCrew = _seerrCrewCredits;
+    final seerrCrewCredits = rawCrew != null
+        ? sortSeerrItems(groupSeerrItems(rawCrew, true))
+        : null;
+    final hasSeerrCrewCredits =
+        seerrCrewCredits != null && seerrCrewCredits.isNotEmpty;
+    final seerrCrewCreditsFocusNode = hasSeerrCrewCredits
+        ? _sectionFocusNode('detailPersonSeerrCrewCredits')
+        : null;
+
+    final rawAppearances = _seerrAppearances;
+    final seerrAppearances = rawAppearances != null
+        ? sortSeerrItems(groupSeerrItems(rawAppearances, false))
+        : null;
     final hasSeerrAppearances =
         seerrAppearances != null && seerrAppearances.isNotEmpty;
     final seerrAppearancesFocusNode = hasSeerrAppearances
@@ -2225,17 +2394,49 @@ class _DetailContentState extends State<_DetailContent> {
                   moviesFocusNode ??
                       seriesFocusNode ??
                       musicVideosFocusNode ??
+                      seerrCrewCreditsFocusNode ??
                       seerrAppearancesFocusNode,
                 );
+              },
+              onArrowRight: () {
+                _requestSectionFocus(displayFocusNode);
+              },
+              onArrowLeft: () {
+                _tryFocusSidebar();
+              },
+            ),
+            const SizedBox(width: 16),
+            _DetailActionButton(
+              label: 'Display',
+              icon: Icons.tune,
+              onPressed: () => _showDisplaySettingsDialog(context),
+              isActive: false,
+              focusNode: displayFocusNode,
+              suppressAutoScrollToTop: true,
+              onArrowUp: () {
+                if (hasBio && firstFocus.canRequestFocus) {
+                  _requestSectionFocus(firstFocus);
+                } else {
+                  _tryFocusNavbar();
+                }
+              },
+              onArrowDown: () {
+                _requestSectionFocus(
+                  moviesFocusNode ??
+                      seriesFocusNode ??
+                      musicVideosFocusNode ??
+                      seerrCrewCreditsFocusNode ??
+                      seerrAppearancesFocusNode,
+                );
+              },
+              onArrowLeft: () {
+                _requestSectionFocus(favoriteFocusNode);
               },
               onArrowRight: hasSeerrButton
                   ? () {
                       _requestSectionFocus(seerrFocusNode);
                     }
                   : () {},
-              onArrowLeft: () {
-                _tryFocusSidebar();
-              },
             ),
             if (hasSeerrButton) ...[
               const SizedBox(width: 16),
@@ -2260,11 +2461,12 @@ class _DetailContentState extends State<_DetailContent> {
                     moviesFocusNode ??
                         seriesFocusNode ??
                         musicVideosFocusNode ??
+                        seerrCrewCreditsFocusNode ??
                         seerrAppearancesFocusNode,
                   );
                 },
                 onArrowLeft: () {
-                  _requestSectionFocus(favoriteFocusNode);
+                  _requestSectionFocus(displayFocusNode);
                 },
                 onArrowRight: () {},
               ),
@@ -2293,6 +2495,7 @@ class _DetailContentState extends State<_DetailContent> {
                   seriesFocusNode ??
                   guestAppearancesFocusNode ??
                   musicVideosFocusNode ??
+                  seerrCrewCreditsFocusNode ??
                   seerrAppearancesFocusNode,
               itemCount: movies.length,
             ),
@@ -2319,6 +2522,7 @@ class _DetailContentState extends State<_DetailContent> {
               downTarget:
                   guestAppearancesFocusNode ??
                   musicVideosFocusNode ??
+                  seerrCrewCreditsFocusNode ??
                   seerrAppearancesFocusNode,
               itemCount: series.length,
             ),
@@ -2342,7 +2546,7 @@ class _DetailContentState extends State<_DetailContent> {
             onItemKeyEvent: _buildVerticalRowHandler(
               sourceFocusNode: guestAppearancesFocusNode,
               upTarget: seriesFocusNode ?? moviesFocusNode ?? favoriteFocusNode,
-              downTarget: musicVideosFocusNode ?? seerrAppearancesFocusNode,
+              downTarget: musicVideosFocusNode ?? seerrCrewCreditsFocusNode ?? seerrAppearancesFocusNode,
               itemCount: guestAppearances.length,
             ),
           ),
@@ -2369,8 +2573,35 @@ class _DetailContentState extends State<_DetailContent> {
                   seriesFocusNode ??
                   moviesFocusNode ??
                   favoriteFocusNode,
-              downTarget: seerrAppearancesFocusNode,
+              downTarget: seerrCrewCreditsFocusNode ?? seerrAppearancesFocusNode,
               itemCount: musicVideos.length,
+              consumeDownWhenNoTarget: !hasSeerrCrewCredits && !hasSeerrAppearances,
+            ),
+          ),
+        ),
+      ],
+      if (hasSeerrCrewCredits) ...[
+        const SizedBox(height: 32),
+        HorizontalScrollSection(
+          title: l10n.crewContributionsSeerr,
+          builder: (_, ctrl) => _SeerrCrewCreditsRow(
+            items: seerrCrewCredits,
+            prefs: prefs,
+            scrollController: _trackSectionScrollController(
+              seerrCrewCreditsFocusNode,
+              ctrl,
+            ),
+            firstFocusNode: seerrCrewCreditsFocusNode,
+            onItemKeyEvent: _buildVerticalRowHandler(
+              sourceFocusNode: seerrCrewCreditsFocusNode,
+              upTarget:
+                  musicVideosFocusNode ??
+                  guestAppearancesFocusNode ??
+                  seriesFocusNode ??
+                  moviesFocusNode ??
+                  favoriteFocusNode,
+              downTarget: seerrAppearancesFocusNode,
+              itemCount: seerrCrewCredits.length,
               consumeDownWhenNoTarget: !hasSeerrAppearances,
             ),
           ),
@@ -2391,6 +2622,7 @@ class _DetailContentState extends State<_DetailContent> {
             onItemKeyEvent: _buildVerticalRowHandler(
               sourceFocusNode: seerrAppearancesFocusNode,
               upTarget:
+                  seerrCrewCreditsFocusNode ??
                   musicVideosFocusNode ??
                   guestAppearancesFocusNode ??
                   seriesFocusNode ??
@@ -2404,6 +2636,14 @@ class _DetailContentState extends State<_DetailContent> {
       ],
       const SizedBox(height: 48),
     ];
+  }
+
+  void _showDisplaySettingsDialog(BuildContext context) {
+    showFocusRestoringDialog(
+      context: context,
+      useRootNavigator: false,
+      builder: (_) => _PersonDisplaySettingsDialog(prefs: widget.prefs),
+    );
   }
 
   List<Widget> _buildArtistContent(BuildContext context, AggregatedItem item) {
@@ -8427,6 +8667,7 @@ class _CastRow extends StatelessWidget {
       child: ListView.separated(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
         padding: const EdgeInsets.fromLTRB(4, 10, 4, 4),
         itemCount: people.length,
         separatorBuilder: (_, _) =>
@@ -8639,6 +8880,7 @@ class _SimilarRow extends StatelessWidget {
       child: ListView.separated(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
         padding: const EdgeInsets.fromLTRB(6, 10, 6, 4),
         itemCount: items.length,
         separatorBuilder: (_, _) =>
@@ -8718,6 +8960,7 @@ class _FeaturesRow extends StatelessWidget {
       child: ListView.separated(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
         padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
         itemCount: items.length,
         separatorBuilder: (_, _) =>
@@ -8795,6 +9038,7 @@ class _ChaptersRow extends StatelessWidget {
       child: ListView.separated(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
         padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
         itemCount: chapters.length,
         separatorBuilder: (_, _) =>
@@ -9624,6 +9868,7 @@ class _SeasonsRow extends StatelessWidget {
       child: ListView.separated(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
         padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
         itemCount: seasons.length,
         separatorBuilder: (_, _) =>
@@ -9747,6 +9992,7 @@ class _EpisodesRow extends StatelessWidget {
       child: ListView.separated(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
         itemCount: episodes.length,
         separatorBuilder: (_, _) =>
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
@@ -10860,6 +11106,7 @@ class _FilmographyRow extends StatelessWidget {
       child: ListView.separated(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
         itemCount: items.length,
         separatorBuilder: (_, _) =>
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
@@ -10966,6 +11213,7 @@ class _SeerrAppearancesRow extends StatelessWidget {
       child: ListView.separated(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
         itemCount: items.length,
         separatorBuilder: (_, _) =>
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
@@ -10975,6 +11223,88 @@ class _SeerrAppearancesRow extends StatelessWidget {
           return MediaCard(
             title: item.displayTitle,
             subtitle: item.character,
+            imageUrl: item.posterPath != null
+                ? 'https://image.tmdb.org/t/p/w342${item.posterPath}'
+                : null,
+            width: cardWidth,
+            aspectRatio: 2 / 3,
+            focusColor: focusColor,
+            cardFocusExpansion: cardExpansion,
+            suppressFocusGlow: suppressFocusGlow,
+            seerrMediaType: item.mediaType,
+            seerrStatus: item.mediaInfo?.status,
+            autofocus: index == 0 && firstFocusNode != null,
+            focusNode: index == 0 ? firstFocusNode : null,
+            onKeyEvent: onItemKeyEvent == null
+                ? null
+                : (_, event) => onItemKeyEvent!(index, event),
+            onTap: () {
+              final mediaType = item.mediaType ?? 'movie';
+              context.push(
+                Destinations.seerrMedia(item.id.toString()),
+                extra: {'mediaType': mediaType},
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _SeerrCrewCreditsRow extends StatelessWidget {
+  final List<SeerrDiscoverItem> items;
+  final UserPreferences prefs;
+  final ScrollController? scrollController;
+  final FocusNode? firstFocusNode;
+  final KeyEventResult Function(int index, KeyEvent event)? onItemKeyEvent;
+
+  const _SeerrCrewCreditsRow({
+    required this.items,
+    required this.prefs,
+    this.scrollController,
+    this.firstFocusNode,
+    this.onItemKeyEvent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cardExpansion = prefs.get(UserPreferences.cardFocusExpansion);
+    final isMobile = _isCompact(context);
+    final desktopScale = _desktopUiScale(prefs: prefs);
+
+    final platformScale = PlatformDetection.isTV
+        ? 0.8 * desktopScale
+        : desktopScale;
+    final metadataScale = desktopScale;
+    final isRowsV2 =
+        prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
+    final rowScale = isRowsV2 ? 2.0 : 1.0;
+
+    final posterSize = prefs.get(UserPreferences.posterSize);
+    final cardHeight =
+        posterSize.portraitHeight.toDouble() * platformScale * rowScale;
+
+    final cardWidth = isMobile ? 120.0 : cardHeight * (2 / 3);
+    final rowHeight = isMobile ? 240.0 : cardHeight + (56 * metadataScale);
+    final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
+    final suppressFocusGlow = ThemeRegistry.active.borders.focusGlow.isNotEmpty;
+
+    return SizedBox(
+      height: rowHeight,
+      child: ListView.separated(
+        controller: scrollController,
+        scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
+        itemCount: items.length,
+        separatorBuilder: (_, _) =>
+            SizedBox(width: isMobile ? 8 : 12 * desktopScale),
+        itemBuilder: (context, index) {
+          final item = items[index];
+
+          return MediaCard(
+            title: item.displayTitle,
+            subtitle: item.job ?? item.department,
             imageUrl: item.posterPath != null
                 ? 'https://image.tmdb.org/t/p/w342${item.posterPath}'
                 : null,
@@ -11440,6 +11770,7 @@ class _AlbumsRow extends StatelessWidget {
       child: ListView.separated(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
         itemCount: albums.length,
         separatorBuilder: (_, _) =>
             SizedBox(width: isMobile ? 8 : 12 * desktopScale),
@@ -12122,4 +12453,277 @@ class _AdvancedPlaybackOption {
     required this.icon,
     required this.onTap,
   });
+}
+
+class _PersonDisplaySettingsDialog extends StatefulWidget {
+  final UserPreferences prefs;
+
+  const _PersonDisplaySettingsDialog({required this.prefs});
+
+  @override
+  State<_PersonDisplaySettingsDialog> createState() =>
+      _PersonDisplaySettingsDialogState();
+}
+
+class _PersonDisplaySettingsDialogState
+    extends State<_PersonDisplaySettingsDialog> {
+  late String _sortOption;
+  late bool _groupItems;
+  DateTime? _lastTapTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _sortOption = widget.prefs.get(UserPreferences.personPageSortOption);
+    _groupItems = widget.prefs.get(UserPreferences.personPageGroupItems);
+    print('MOONFIN_DEBUG: initState: _sortOption=$_sortOption, _groupItems=$_groupItems');
+  }
+
+  @override
+  void didUpdateWidget(covariant _PersonDisplaySettingsDialog oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final prevSort = _sortOption;
+    final prevGroup = _groupItems;
+    _sortOption = widget.prefs.get(UserPreferences.personPageSortOption);
+    _groupItems = widget.prefs.get(UserPreferences.personPageGroupItems);
+    print('MOONFIN_DEBUG: didUpdateWidget: sort $prevSort -> $_sortOption, group $prevGroup -> $_groupItems');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print('MOONFIN_DEBUG: build: _sortOption=$_sortOption, _groupItems=$_groupItems');
+    final onSurface = AppColorScheme.onSurface;
+    final accent = AppColorScheme.accent;
+    final dividerColor = onSurface.withValues(alpha: 0.12);
+    final sectionColor = onSurface.withValues(alpha: 0.72);
+    final dialogWidth = (MediaQuery.sizeOf(context).width - 32).clamp(280.0, 380.0);
+
+    return Dialog(
+      backgroundColor: AppColorScheme.surface.withValues(alpha: 0.92),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: ThemeRegistry.active.borders.chipBorder.copyWith(
+          color: onSurface.withValues(alpha: 0.18),
+        ),
+      ),
+      child: SizedBox(
+        width: dialogWidth,
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              child: Text(
+                'Display Options',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: onSurface,
+                ),
+              ),
+            ),
+            Divider(color: dividerColor),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
+              child: Text(
+                'Sort By',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: sectionColor,
+                ),
+              ),
+            ),
+            _radioTile(
+              label: 'Alphabetical',
+              selected: _sortOption == 'alphabetical',
+              onTap: () => _updateSort('alphabetical'),
+              accent: accent,
+              onSurface: onSurface,
+            ),
+            _radioTile(
+              label: 'Release Date (Ascending)',
+              selected: _sortOption == 'releaseDateAsc',
+              onTap: () => _updateSort('releaseDateAsc'),
+              accent: accent,
+              onSurface: onSurface,
+            ),
+            _radioTile(
+              label: 'Release Date (Descending)',
+              selected: _sortOption == 'releaseDateDesc',
+              onTap: () => _updateSort('releaseDateDesc'),
+              accent: accent,
+              onSurface: onSurface,
+            ),
+            Divider(color: dividerColor),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 4),
+              child: Text(
+                'Group Contributions',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: sectionColor,
+                ),
+              ),
+            ),
+            _checkboxTile(
+              label: 'Group multiple roles',
+              checked: _groupItems,
+              onTap: () => _updateGroup(!_groupItems),
+              accent: accent,
+              onSurface: onSurface,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  bool _shouldThrottleTap() {
+    final now = DateTime.now();
+    if (_lastTapTime != null &&
+        now.difference(_lastTapTime!) < const Duration(milliseconds: 300)) {
+      print('MOONFIN_DEBUG: throttling tap');
+      return true;
+    }
+    _lastTapTime = now;
+    return false;
+  }
+
+  void _updateSort(String option) {
+    if (_shouldThrottleTap()) return;
+    print('MOONFIN_DEBUG: _updateSort: $option');
+    setState(() {
+      _sortOption = option;
+    });
+    widget.prefs.set(UserPreferences.personPageSortOption, option);
+  }
+
+  void _updateGroup(bool value) {
+    if (_shouldThrottleTap()) return;
+    print('MOONFIN_DEBUG: _updateGroup: $value');
+    setState(() {
+      _groupItems = value;
+    });
+    widget.prefs.set(UserPreferences.personPageGroupItems, value);
+  }
+
+  Widget _radioTile({
+    required String label,
+    required bool selected,
+    required VoidCallback onTap,
+    Color? accent,
+    required Color onSurface,
+  }) {
+    final effectiveAccent = accent ?? AppColorScheme.accent;
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              width: 18,
+              height: 18,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.fromBorderSide(
+                  ThemeRegistry.active.borders.chipBorder.copyWith(
+                    color: selected
+                        ? effectiveAccent
+                        : onSurface.withValues(alpha: 0.5),
+                    width: 2,
+                  ),
+                ),
+                color: selected ? effectiveAccent : Colors.transparent,
+              ),
+              child: selected
+                  ? Center(
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: onSurface,
+                        ),
+                      ),
+                    )
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: selected
+                      ? onSurface
+                      : onSurface.withValues(alpha: 0.72),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _checkboxTile({
+    required String label,
+    required bool checked,
+    required VoidCallback onTap,
+    required Color accent,
+    required Color onSurface,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              width: 18,
+              height: 18,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                border: Border.fromBorderSide(
+                  ThemeRegistry.active.borders.chipBorder.copyWith(
+                    color: checked ? accent : onSurface.withValues(alpha: 0.5),
+                    width: 2,
+                  ),
+                ),
+                color: checked ? accent : Colors.transparent,
+              ),
+              child: checked
+                  ? Center(
+                      child: Text(
+                        '✓',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: onSurface,
+                        ),
+                      ),
+                    )
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 15,
+                  color: checked
+                      ? onSurface
+                      : onSurface.withValues(alpha: 0.72),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
