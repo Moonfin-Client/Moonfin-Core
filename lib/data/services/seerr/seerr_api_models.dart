@@ -569,6 +569,8 @@ class SeerrMediaInfo {
   final int? status;
   final int? status4k;
   final List<SeerrRequest>? requests;
+  final String? jellyfinMediaId;
+  final String? jellyfinMediaId4k;
 
   const SeerrMediaInfo({
     this.id,
@@ -577,6 +579,8 @@ class SeerrMediaInfo {
     this.status,
     this.status4k,
     this.requests,
+    this.jellyfinMediaId,
+    this.jellyfinMediaId4k,
   });
 
   factory SeerrMediaInfo.fromJson(Map<String, dynamic> json) =>

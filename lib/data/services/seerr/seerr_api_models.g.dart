@@ -514,6 +514,8 @@ SeerrMediaInfo _$SeerrMediaInfoFromJson(Map<String, dynamic> json) =>
       requests: (json['requests'] as List<dynamic>?)
           ?.map((e) => SeerrRequest.fromJson(e as Map<String, dynamic>))
           .toList(),
+      jellyfinMediaId: (json['jellyfinMediaId'] as String?),
+      jellyfinMediaId4k: (json['jellyfinMediaId4k'] as String?),
     );
 
 Map<String, dynamic> _$SeerrMediaInfoToJson(SeerrMediaInfo instance) =>
@@ -524,6 +526,8 @@ Map<String, dynamic> _$SeerrMediaInfoToJson(SeerrMediaInfo instance) =>
       'status': instance.status,
       'status4k': instance.status4k,
       'requests': instance.requests,
+      'jellyfinMediaId': instance.jellyfinMediaId,
+      'jellyfinMediaId4k': instance.jellyfinMediaId4k,
     };
 
 SeerrPersonDetails _$SeerrPersonDetailsFromJson(Map<String, dynamic> json) =>
