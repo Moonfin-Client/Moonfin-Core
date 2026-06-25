@@ -3589,6 +3589,54 @@
   "@subtitleCustomizationDescription": {
     "description": "Subtitle for the subtitle customization tile"
   },
+  "subtitleMode": "Subtitle Mode",
+  "@subtitleMode": {
+    "description": "Setting for subtitle mode"
+  },
+  "subtitleModeFlagged": "Flagged",
+  "@subtitleModeFlagged": {
+    "description": "Subtitle mode: default/flagged"
+  },
+  "subtitleModeAlways": "Always",
+  "@subtitleModeAlways": {
+    "description": "Subtitle mode: always play"
+  },
+  "subtitleModeForeign": "Foreign",
+  "@subtitleModeForeign": {
+    "description": "Subtitle mode: foreign/smart"
+  },
+  "subtitleModeForced": "Forced",
+  "@subtitleModeForced": {
+    "description": "Subtitle mode: only forced"
+  },
+  "subtitleModeFlaggedDescription": "Plays tracks internally flagged in the media file's metadata as \"default\" or \"forced\".",
+  "@subtitleModeFlaggedDescription": {
+    "description": "Description for flagged subtitle mode"
+  },
+  "subtitleModeAlwaysDescription": "Automatically loads and displays subtitles every time a video starts.",
+  "@subtitleModeAlwaysDescription": {
+    "description": "Description for always subtitle mode"
+  },
+  "subtitleModeForeignDescription": "Automatically turns on subtitles if the default audio track is in a foreign language.",
+  "@subtitleModeForeignDescription": {
+    "description": "Description for foreign subtitle mode"
+  },
+  "subtitleModeForcedDescription": "Only loads subtitles explicitly tagged with the forced metadata flag.",
+  "@subtitleModeForcedDescription": {
+    "description": "Description for forced subtitle mode"
+  },
+  "subtitleModeNoneDescription": "Completely disables automatic subtitle loading.",
+  "@subtitleModeNoneDescription": {
+    "description": "Description for none subtitle mode"
+  },
+  "fallbackSubtitleLanguage": "Fallback Subtitle Language",
+  "@fallbackSubtitleLanguage": {
+    "description": "Setting for fallback subtitle language"
+  },
+  "subtitleStream": "Subtitle Stream",
+  "@subtitleStream": {
+    "description": "Header for subtitle stream settings"
+  },
   "subtitlePreviewText": "The quick brown fox jumps over the lazy dog",
   "@subtitlePreviewText": {
     "description": "Sample text shown in the subtitle live preview"
@@ -7559,5 +7607,17 @@
   "sources": "Sources",
   "@sources": {
     "description": "Title of the artwork source-provider filter dialog"
+  },
+  "subtitlePreferences": "Subtitle Preferences",
+  "@subtitlePreferences": {
+    "description": "Title for the subtitle preferences settings section"
+  },
+  "subtitlePreferencesDescription": "Change subtitle modes, default languages, appearance, and rendering options.",
+  "@subtitlePreferencesDescription": {
+    "description": "Description for the subtitle preferences settings section"
+  },
+  "subtitleRendering": "Subtitle Rendering",
+  "@subtitleRendering": {
+    "description": "Header for subtitle rendering settings"
   }
 }

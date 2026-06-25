@@ -393,6 +393,7 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
   final IconData? icon;
   final String Function(T value) labelOf;
   final String Function(T value)? dialogLabelOf;
+  final String Function(T value)? dialogSubtitleOf;
   final VoidCallback? onChanged;
   final ValueChanged<T>? onChangedValue;
   final List<T>? values;
@@ -403,6 +404,7 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
     required this.title,
     required this.labelOf,
     this.dialogLabelOf,
+    this.dialogSubtitleOf,
     this.description,
     this.icon,
     this.onChanged,
@@ -489,18 +491,40 @@ class _EnumPreferenceTileState<T extends Enum>
             final v = entry.value;
             final selected = v == current;
             return TvFocusHighlight(
-              builder: (_, _) => ListTile(
+              builder: (_, focused) => ListTile(
                 autofocus: i == autofocusIndex,
+                focusColor: Colors.transparent,
+                hoverColor: Colors.transparent,
                 title: Text(
                   (widget.dialogLabelOf ?? widget.labelOf)(v),
-                  style: _kSettingsTitleTextStyle,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: focused
+                        ? AppColors.black.withValues(alpha: 0.87)
+                        : AppColorScheme.onSurface,
+                  ),
                 ),
+                subtitle: widget.dialogSubtitleOf != null
+                    ? Text(
+                        widget.dialogSubtitleOf!(v),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: focused
+                              ? AppColors.black.withValues(alpha: 0.54)
+                              : AppColorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                      )
+                    : null,
+                isThreeLine: widget.dialogSubtitleOf != null,
                 trailing: selected
                     ? Icon(
                         Icons.check,
-                        color: AppUiIdiomResolver.isApple
-                            ? AppColorScheme.accent
-                            : null,
+                        color: focused
+                            ? AppColors.black.withValues(alpha: 0.54)
+                            : (AppUiIdiomResolver.isApple
+                                ? AppColorScheme.accent
+                                : null),
                       )
                     : null,
                 onTap: () {

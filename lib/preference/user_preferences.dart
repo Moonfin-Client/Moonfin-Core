@@ -1,9 +1,11 @@
+import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
 
 import '../playback/audio_capability_profile.dart';
 import '../util/idiom/app_ui_idiom.dart';
+import '../util/language_matching.dart';
 import '../util/platform_detection.dart';
 import 'home_section_config.dart';
 import 'preference_constants.dart';
@@ -34,6 +36,7 @@ class UserPreferences extends ChangeNotifier {
     _migrateDefaultAudioLanguagePreference();
     _migrateSeerrPreferenceKeys();
     _enforceMediaQueuingAlwaysOn();
+    _initializeSubtitleLanguagePreferences();
   }
 
   // Carry over the pre-rename jellyseerr* preference keys to their seerr* names.
@@ -96,6 +99,20 @@ class UserPreferences extends ChangeNotifier {
       if (serverSub != null && serverSub.isNotEmpty) {
         _store.set(defaultSubtitleLanguage, serverSub.toLowerCase());
       }
+    }
+  }
+
+  void _initializeSubtitleLanguagePreferences() {
+    if (!_store.containsKey(subtitleMode.key)) {
+      _store.set(subtitleMode, SubtitleMode.flagged);
+    }
+    if (!_store.containsKey(defaultSubtitleLanguage.key)) {
+      final sysLang = ui.PlatformDispatcher.instance.locale.languageCode;
+      final iso3 = toIso3Language(normalizeLanguage(sysLang));
+      _store.set(defaultSubtitleLanguage, iso3);
+    }
+    if (!_store.containsKey(fallbackSubtitleLanguage.key)) {
+      _store.set(fallbackSubtitleLanguage, '');
     }
   }
 
@@ -250,6 +267,18 @@ class UserPreferences extends ChangeNotifier {
   }
 
   Future<void> set<T>(Preference<T> pref, T value) async {
+    if (pref.key == subtitleMode.key) {
+      final prevMode = get(subtitleMode);
+      final newMode = value as SubtitleMode;
+      if (newMode == SubtitleMode.none) {
+        await _store.set(defaultSubtitleLanguage, '');
+      } else if (prevMode == SubtitleMode.none && get(defaultSubtitleLanguage).isEmpty) {
+        final sysLang = ui.PlatformDispatcher.instance.locale.languageCode;
+        final iso3 = toIso3Language(normalizeLanguage(sysLang));
+        await _store.set(defaultSubtitleLanguage, iso3);
+      }
+    }
+
     if (_isScopedPreference(pref)) {
       final scoped = _scopedPreference(pref);
       if (scoped != null) {
@@ -1113,9 +1142,15 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 0.04,
   );
 
-  static final subtitlesDefaultToNone = Preference(
-    key: 'subtitles_default_to_none',
-    defaultValue: false,
+  static final subtitleMode = EnumPreference(
+    key: 'pref_subtitle_mode',
+    defaultValue: SubtitleMode.flagged,
+    values: SubtitleMode.values,
+  );
+
+  static final fallbackSubtitleLanguage = Preference(
+    key: 'pref_fallback_subtitle_language',
+    defaultValue: '',
   );
 
   /// Whether embedded subtitle styles (colours, positioning, fonts) should be
@@ -1642,4 +1677,21 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_audio_sort_option',
     defaultValue: 'name',
   );
+
+  String getSeriesSubtitleLanguage(String seriesId) {
+    final pref = Preference(
+      key: 'pref_series_subtitle_lang_$seriesId',
+      defaultValue: '',
+    );
+    return _store.get(pref);
+  }
+
+  Future<void> setSeriesSubtitleLanguage(String seriesId, String language) async {
+    final pref = Preference(
+      key: 'pref_series_subtitle_lang_$seriesId',
+      defaultValue: '',
+    );
+    await _store.set(pref, language);
+    notifyListeners();
+  }
 }

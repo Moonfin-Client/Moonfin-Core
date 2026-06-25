@@ -32,8 +32,8 @@ class _PlaybackCategoryScreen extends StatelessWidget {
             ),
             _TvSettingsListTile(
               leading: const Icon(Icons.subtitles),
-              title: Text(l10n.subtitles),
-              subtitle: Text(l10n.languageSizeAppearance),
+              title: Text(l10n.subtitlePreferences),
+              subtitle: Text(l10n.subtitlePreferencesDescription),
               onTap: () =>
                   context.pushSettingsScreen(const SubtitleSettingsScreen()),
             ),

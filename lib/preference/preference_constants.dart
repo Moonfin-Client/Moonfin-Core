@@ -1,3 +1,11 @@
+enum SubtitleMode {
+  flagged,
+  always,
+  foreign,
+  forced,
+  none,
+}
+
 enum AudioOutputMode {
   auto,
   forceStereo,

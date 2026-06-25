@@ -20,6 +20,7 @@ import '../../../playback/media3_player_backend.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/clock_format.dart';
+import '../../../util/subtitle_track_logic.dart';
 import '../../../util/play_method_label.dart';
 import '../../../util/platform_detection.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
@@ -688,8 +689,22 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
 
     final strokeShadows = subtitleStrokeShadows(strokeColor, fontSize);
 
+    final activeIndex = _manager.subtitleStreamIndex;
+    bool isAssOrPgs = false;
+    if (activeIndex != null && activeIndex >= 0) {
+      final mediaStreams = _manager.currentResolution?.mediaStreams;
+      if (mediaStreams != null) {
+        final activeStream = mediaStreams.firstWhere(
+          (s) => s['Index'] == activeIndex,
+          orElse: () => const <String, dynamic>{},
+        );
+        final codec = activeStream['Codec'] as String?;
+        isAssOrPgs = shouldRenderSubtitleNatively(codec);
+      }
+    }
+
     return SubtitleViewConfiguration(
-      visible: true,
+      visible: !isAssOrPgs,
       style: TextStyle(
         inherit: false,
         height: 1.4,

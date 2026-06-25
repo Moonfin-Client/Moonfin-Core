@@ -490,7 +490,7 @@ class Media3PlayerBackend extends PlayerBackend {
       'preferredTextLanguage': preferredSubtitleLanguage,
       'selectUndeterminedTextLanguage': false,
       'forceSubtitlesDisabledOnStart':
-          _prefs.get(UserPreferences.subtitlesDefaultToNone),
+          _prefs.get(UserPreferences.subtitleMode) == SubtitleMode.none,
       'audioDelayMs': (_audioDelaySeconds * 1000).round(),
       'subtitleDelayMs': (_subtitleDelaySeconds * 1000).round(),
       'volumeBoostLevel': _volumeBoostLevel,

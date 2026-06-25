@@ -62,6 +62,7 @@ import '../../../util/download_utils.dart';
 import '../../../util/episode_playability.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/language_matching.dart';
+import '../../../util/subtitle_track_logic.dart';
 import '../../../util/platform_detection.dart';
 
 const _textShadows = [Shadow(blurRadius: 4, color: Colors.black54)];
@@ -5461,107 +5462,48 @@ class _ActionButtonsState extends State<_ActionButtons> {
 
   int? _effectiveSubtitleStreamIndex(
     List<Map<String, dynamic>> subtitleStreams,
+    List<Map<String, dynamic>> audioStreams,
   ) {
-    if (_selectedSubtitleIndex != null) {
-      return _selectedSubtitleIndex;
-    }
-    final active = _activePlaybackSubtitleIndex();
-    if (active != null) {
-      return active;
-    }
     final prefs = GetIt.instance<UserPreferences>();
-    final defaultToNone = prefs.get(UserPreferences.subtitlesDefaultToNone);
-    if (defaultToNone) {
-      return -1;
-    }
-
-    final preferred = prefs.get(UserPreferences.defaultSubtitleLanguage).trim();
-    if (preferred.isEmpty) {
-      final defaultStream = subtitleStreams.firstWhere(
-        (s) => s['IsDefault'] == true,
+    final audioStreamIndex = _effectiveAudioStreamIndex(audioStreams);
+    String? activeAudioLanguage;
+    if (audioStreamIndex != null) {
+      final activeAudioStream = audioStreams.firstWhere(
+        (s) => s['Index'] == audioStreamIndex,
         orElse: () => <String, dynamic>{},
       );
-      return defaultStream['Index'] as int?;
+      activeAudioLanguage = activeAudioStream['Language'] as String?;
     }
 
-    final preferredNormalized = normalizeLanguage(preferred);
-    final preferredIso3 = toIso3Language(preferredNormalized);
-    final preferSdh = prefs.get(UserPreferences.preferSdhSubtitles);
+    final item = widget.viewModel.item;
+    var preferredLanguage = prefs.get(UserPreferences.defaultSubtitleLanguage);
+    var subtitleMode = prefs.get(UserPreferences.subtitleMode);
 
-    Map<String, dynamic>? bestStream;
-    var bestScore = -(subtitleStreams.length + 1);
-
-    for (var i = 0; i < subtitleStreams.length; i++) {
-      final stream = subtitleStreams[i];
-      if (!languageMatchesPreferred(
-        (stream['Language'] as String?)?.trim(),
-        preferredNormalized,
-        preferredIso3,
-      )) {
-        continue;
-      }
-
-      final streamIndex = stream['Index'] as int?;
-      if (streamIndex == null) {
-        continue;
-      }
-
-      var score = 0;
-      final isSdh = _isSdhSubtitleStream(stream);
-      final isExternal = _isExternalSubtitleStream(stream);
-      if (isSdh == preferSdh) {
-        score += 100;
-      }
-      if (!isExternal) {
-        score += 10;
-      }
-      if (stream['IsDefault'] == true) {
-        score += 5;
-      }
-      // Prefer earlier stream order when scores are equal.
-      score = score * 1000 - i;
-
-      if (score > bestScore) {
-        bestScore = score;
-        bestStream = stream;
+    if (item != null && item.type == 'Episode' && item.seriesId != null) {
+      final seriesLanguage = prefs.getSeriesSubtitleLanguage(item.seriesId!);
+      if (seriesLanguage == 'none') {
+        return -1;
+      } else if (seriesLanguage.isNotEmpty) {
+        preferredLanguage = seriesLanguage;
+        if (subtitleMode == SubtitleMode.none) {
+          subtitleMode = SubtitleMode.always;
+        }
       }
     }
 
-    if (bestStream != null) {
-      return bestStream['Index'] as int?;
-    }
-
-    if (subtitleStreams.isNotEmpty) {
-      return subtitleStreams.first['Index'] as int?;
-    }
-
-    return null;
-  }
-
-  bool _isExternalSubtitleStream(Map<String, dynamic> stream) {
-    if (stream['IsExternal'] == true) {
-      return true;
-    }
-    final deliveryMethod = (stream['DeliveryMethod'] as String?)
-        ?.trim()
-        .toLowerCase();
-    return deliveryMethod == 'external';
-  }
-
-  bool _isSdhSubtitleStream(Map<String, dynamic> stream) {
-    if (stream['IsHearingImpaired'] == true) {
-      return true;
-    }
-
-    final titleParts = [
-      stream['DisplayTitle'] as String?,
-      stream['Title'] as String?,
-      stream['Name'] as String?,
-    ].whereType<String>().map((s) => s.toLowerCase()).join(' ');
-
-    return RegExp(
-      r'\b(sdh|cc|hoh|hearing\s*impaired|closed\s*caption)\b',
-    ).hasMatch(titleParts);
+    return computeEffectiveSubtitleIndex(
+      subtitleStreams: subtitleStreams,
+      selectedSubtitleIndex: _selectedSubtitleIndex,
+      activePlaybackSubtitleIndex: _activePlaybackSubtitleIndex(),
+      subtitleMode: subtitleMode,
+      preferredLanguage: preferredLanguage,
+      fallbackLanguage: prefs.get(UserPreferences.fallbackSubtitleLanguage),
+      preferSdh: prefs.get(UserPreferences.preferSdhSubtitles),
+      pgsDirectPlay: prefs.get(UserPreferences.pgsDirectPlay),
+      assDirectPlay: prefs.get(UserPreferences.assDirectPlay),
+      preferredAudioLanguage: prefs.get(UserPreferences.defaultAudioLanguage),
+      activeAudioLanguage: activeAudioLanguage,
+    );
   }
 
   bool _isInSyncPlayGroup() {
@@ -6058,7 +6000,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
         .where((s) => s['Type'] == 'Subtitle')
         .toList();
     final audioStreamIndex = _effectiveAudioStreamIndex(audioStreams);
-    final subtitleStreamIndex = _effectiveSubtitleStreamIndex(subtitleStreams);
+    final subtitleStreamIndex = _effectiveSubtitleStreamIndex(subtitleStreams, audioStreams);
 
     if (item.type == 'Photo') {
       await context.push(Destinations.photo(item.id));
@@ -6590,7 +6532,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
         .where((s) => s['Type'] == 'Subtitle')
         .toList();
     final audioStreamIndex = _effectiveAudioStreamIndex(audioStreams);
-    final subtitleStreamIndex = _effectiveSubtitleStreamIndex(subtitleStreams);
+    final subtitleStreamIndex = _effectiveSubtitleStreamIndex(subtitleStreams, audioStreams);
     final positionTicks = item.playbackPosition == null
         ? null
         : item.playbackPosition!.inMicroseconds * 10;
@@ -7120,25 +7062,15 @@ class _ActionButtonsState extends State<_ActionButtons> {
     List<Map<String, dynamic>> streams,
     List<Map<String, dynamic>> audioStreams,
   ) async {
+    final prefs = GetIt.instance<UserPreferences>();
     _syncSubtitleSelectionFromActivePlayback();
     final canDownloadRemote = _canDownloadRemoteSubtitles(item);
-    final internalStreams = streams
-        .where((s) => !_isExternalSubtitleStream(s))
-        .toList(growable: false);
-    final externalStreams = streams
-        .where(_isExternalSubtitleStream)
-        .toList(growable: false);
-    final displayStreams = [...internalStreams, ...externalStreams];
-
-    final effectiveSubtitleIndex = _effectiveSubtitleStreamIndex(streams);
-    final currentIdx = effectiveSubtitleIndex != null
-        ? (effectiveSubtitleIndex == -1
-              ? 0
-              : displayStreams.indexWhere(
-                      (s) => s['Index'] == effectiveSubtitleIndex,
-                    ) +
-                    1)
-        : (displayStreams.indexWhere((s) => s['IsDefault'] == true) + 1);
+    final displayStreams = sortedSubtitleStreams(streams);
+    final effectiveSubtitleIndex = _effectiveSubtitleStreamIndex(streams, audioStreams);
+    final currentIdx = computeSubtitleDialogSelectedIndex(
+      displayStreams,
+      effectiveSubtitleIndex,
+    );
     final options = [
       TrackOption(label: AppLocalizations.of(context).none),
       ...displayStreams.asMap().entries.map((entry) {
@@ -7186,13 +7118,17 @@ class _ActionButtonsState extends State<_ActionButtons> {
         await _downloadRemoteSubtitles(context, item, streams, audioStreams);
         return;
       }
-      if (result == 0) {
-        setState(() => _selectedSubtitleIndex = -1);
-      } else if (result - 1 < displayStreams.length) {
-        setState(
-          () => _selectedSubtitleIndex =
-              displayStreams[result - 1]['Index'] as int?,
-        );
+      final streamIndex = mapSubtitleResultToStreamIndex(result, displayStreams);
+      if (streamIndex != null) {
+        setState(() => _selectedSubtitleIndex = streamIndex);
+        if (item.type == 'Episode' && item.seriesId != null) {
+          final selectedStream = streams.firstWhere(
+            (s) => s['Index'] == streamIndex,
+            orElse: () => <String, dynamic>{},
+          );
+          final language = selectedStream.isEmpty ? 'none' : (selectedStream['Language'] as String? ?? '');
+          await prefs.setSeriesSubtitleLanguage(item.seriesId!, language);
+        }
       }
     }
   }
