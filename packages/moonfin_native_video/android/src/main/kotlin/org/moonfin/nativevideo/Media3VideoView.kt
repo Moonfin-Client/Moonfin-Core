@@ -418,12 +418,24 @@ class Media3VideoView(
     }
 
     private val mainHandler = Handler(Looper.getMainLooper())
-    private val useSurfaceView = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-    private var videoView: View = if (useSurfaceView) {
-        SurfaceView(context)
-    } else {
-        TextureView(context)
-    }
+    // SurfaceView is required for display refresh-rate switching (applyFrameRateSwitching is gated
+    // on SurfaceView); TextureView never receives it, so 24/25fps content judders. SurfaceView works
+    // on older Android too once it is lifted above Flutter's background on the legacy hybrid-
+    // composition path (see newVideoView). Previously gated to API 30+.
+    private val useSurfaceView = true
+    private var videoView: View = newVideoView()
+
+    private fun newVideoView(): View =
+        if (useSurfaceView) {
+            SurfaceView(context).apply {
+                // Legacy hybrid composition (older devices without Impeller) otherwise composites
+                // this platform-view SurfaceView behind Flutter and the video renders black; lift it
+                // as a media overlay so it stays visible. The Flutter controls still draw on top.
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) setZOrderMediaOverlay(true)
+            }
+        } else {
+            TextureView(context)
+        }
     private val firstFrameCover = View(context).apply {
         setBackgroundColor(Color.BLACK)
     }
@@ -1043,7 +1055,7 @@ class Media3VideoView(
             Gravity.CENTER,
         )
         containerView.removeView(videoView)
-        videoView = if (useSurfaceView) SurfaceView(context) else TextureView(context)
+        videoView = newVideoView()
         containerView.addView(videoView, 0, params)
     }
 
