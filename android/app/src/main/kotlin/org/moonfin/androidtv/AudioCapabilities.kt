@@ -238,7 +238,7 @@ object AudioCapabilities {
         val supportsDts = canPassthroughDts || canPassthroughDtsHd || canPassthroughDtsX
         val supportsTrueHd = canPassthroughTrueHd || canPassthroughTrueHdJoc
 
-        val maxPcmChannels = estimateMaxPcmChannels(routeType)
+        val maxPcmChannels = detectMaxPcmChannels(bitstreamDevices, routeType)
 
         return mapOf(
             "supportsAc3" to supportsAc3,
@@ -427,6 +427,24 @@ object AudioCapabilities {
         }
 
         return ROUTE_OTHER
+    }
+
+    private fun detectMaxPcmChannels(devices: List<AudioDeviceInfo>, routeType: String): Int {
+        var maxVal = 0
+        for (device in devices) {
+            val counts = device.channelCounts
+            if (counts != null) {
+                for (count in counts) {
+                    if (count > maxVal) {
+                        maxVal = count
+                    }
+                }
+            }
+        }
+        if (maxVal > 0) {
+            return maxVal
+        }
+        return estimateMaxPcmChannels(routeType)
     }
 
     private fun estimateMaxPcmChannels(routeType: String): Int {

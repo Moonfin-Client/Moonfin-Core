@@ -173,12 +173,12 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
     AudioCapabilityProbe.apply(profile);
 
     final AudioPassthroughPreset preset;
-    if (profile != null &&
+    if (profile != null && profile.maxPcmChannels <= 2) {
+      preset = AudioPassthroughPreset.stereo;
+    } else if (profile != null &&
         profile.isAvReceiverRoute &&
         profile.hasCompressedPassthroughRoute) {
       preset = AudioPassthroughPreset.surroundReceiver;
-    } else if (profile != null && profile.maxPcmChannels <= 2) {
-      preset = AudioPassthroughPreset.stereo;
     } else {
       preset = AudioPassthroughPreset.auto;
     }
