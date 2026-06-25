@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../preference/user_preferences.dart';
 import '../models/aggregated_item.dart';
 import '../models/lyrics.dart';
 import '../repositories/item_mutation_repository.dart';
@@ -31,6 +33,7 @@ class ItemDetailViewModel extends ChangeNotifier {
   set selectedAudioIndex(int? value) {
     if (_selectedAudioIndex != value) {
       _selectedAudioIndex = value;
+      GetIt.instance<UserPreferences>().setItemAudioStreamIndex(itemId, value);
       notifyListeners();
     }
   }
@@ -40,6 +43,7 @@ class ItemDetailViewModel extends ChangeNotifier {
   set selectedSubtitleIndex(int? value) {
     if (_selectedSubtitleIndex != value) {
       _selectedSubtitleIndex = value;
+      GetIt.instance<UserPreferences>().setItemSubtitleStreamIndex(itemId, value);
       notifyListeners();
     }
   }
@@ -123,6 +127,11 @@ class ItemDetailViewModel extends ChangeNotifier {
         rawData: data,
       );
       _lyrics = LyricsData.empty;
+      final prefs = GetIt.instance<UserPreferences>();
+      final savedSubIndex = prefs.getItemSubtitleStreamIndex(itemId);
+      _selectedSubtitleIndex = savedSubIndex == -2 ? null : savedSubIndex;
+      final savedAudioIndex = prefs.getItemAudioStreamIndex(itemId);
+      _selectedAudioIndex = savedAudioIndex == -2 ? null : savedAudioIndex;
       _state = ItemDetailState.ready;
       notifyListeners();
 

@@ -1,4 +1,7 @@
+import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
+
+import '../../preference/user_preferences.dart';
 
 class ItemMutationRepository {
   final MediaServerClient _client;
@@ -16,6 +19,9 @@ class ItemMutationRepository {
   Future<void> setPlayed(String itemId, {required bool isPlayed}) async {
     if (isPlayed) {
       await _client.userLibraryApi.markPlayed(itemId);
+      final prefs = GetIt.instance<UserPreferences>();
+      await prefs.setItemSubtitleStreamIndex(itemId, null);
+      await prefs.setItemAudioStreamIndex(itemId, null);
     } else {
       await _client.userLibraryApi.unmarkPlayed(itemId);
     }

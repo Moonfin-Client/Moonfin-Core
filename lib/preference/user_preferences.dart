@@ -1694,4 +1694,46 @@ class UserPreferences extends ChangeNotifier {
     await _store.set(pref, language);
     notifyListeners();
   }
+
+  int getItemSubtitleStreamIndex(String itemId) {
+    final pref = Preference<int>(
+      key: 'pref_item_subtitle_index_$itemId',
+      defaultValue: -2,
+    );
+    return _store.get(pref);
+  }
+
+  Future<void> setItemSubtitleStreamIndex(String itemId, int? index) async {
+    final pref = Preference<int>(
+      key: 'pref_item_subtitle_index_$itemId',
+      defaultValue: -2,
+    );
+    if (index == null) {
+      await _store.delete(pref);
+    } else {
+      await _store.set(pref, index);
+    }
+    notifyListeners();
+  }
+
+  int getItemAudioStreamIndex(String itemId) {
+    final pref = Preference<int>(
+      key: 'pref_item_audio_index_$itemId',
+      defaultValue: -2,
+    );
+    return _store.get(pref);
+  }
+
+  Future<void> setItemAudioStreamIndex(String itemId, int? index) async {
+    final pref = Preference<int>(
+      key: 'pref_item_audio_index_$itemId',
+      defaultValue: -2,
+    );
+    if (index == null) {
+      await _store.delete(pref);
+    } else {
+      await _store.set(pref, index);
+    }
+    notifyListeners();
+  }
 }

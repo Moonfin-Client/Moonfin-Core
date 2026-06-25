@@ -111,6 +111,9 @@ class PlaybackManager implements AudioOwnable {
   dynamic _lastPlayedItem;
   dynamic get lastPlayedItem => _lastPlayedItem;
 
+  void Function(String itemId, int? subtitleStreamIndex)? onSubtitleTrackChanged;
+  void Function(String itemId, int? audioStreamIndex)? onAudioTrackChanged;
+
   Stream<PlaybackBringupState> get bringupStateStream =>
       _bringupStateController.stream;
   Stream<void> get sessionEndedStream => _sessionEndedController.stream;
@@ -560,6 +563,14 @@ class PlaybackManager implements AudioOwnable {
 
   void _onTrackCompleted(bool completed) {
     if (!completed) return;
+
+    final completedItem = queueService.currentItem;
+    if (completedItem != null) {
+      final itemId = MediaStreamResolver.extractItemId(completedItem);
+      onSubtitleTrackChanged?.call(itemId, null);
+      onAudioTrackChanged?.call(itemId, null);
+    }
+
     if (_waitingForMedia ||
         _isAutoNexting ||
         _isManualNexting ||
@@ -1584,6 +1595,13 @@ class PlaybackManager implements AudioOwnable {
   Future<void> changeAudioTrack(int streamIndex) async {
     _audioStreamIndex = streamIndex;
     _audioSelectionExplicit = true;
+
+    final currentItem = queueService.currentItem;
+    if (currentItem != null) {
+      final itemId = MediaStreamResolver.extractItemId(currentItem);
+      onAudioTrackChanged?.call(itemId, streamIndex >= 0 ? streamIndex : null);
+    }
+
     final streams = _currentMediaStreams;
     if (streams.isNotEmpty) {
       final selectedStream = streams.firstWhere(
@@ -1759,6 +1777,13 @@ class PlaybackManager implements AudioOwnable {
     final previousSubtitleStreamIndex = _subtitleStreamIndex;
     final isBitmap = _isSubtitleBitmap(streamIndex);
     _subtitleStreamIndex = streamIndex;
+
+    final currentItem = queueService.currentItem;
+    if (currentItem != null) {
+      final itemId = MediaStreamResolver.extractItemId(currentItem);
+      onSubtitleTrackChanged?.call(itemId, streamIndex >= 0 ? streamIndex : null);
+    }
+
     _subtitleSelectionExplicit = streamIndex >= 0;
     _lastExplicitSubtitleEnabled = streamIndex >= 0;
     if (streamIndex >= 0) {
@@ -2365,6 +2390,12 @@ class PlaybackManager implements AudioOwnable {
       );
     } else {
       _subtitleStreamIndex = null;
+    }
+
+    final itemId = MediaStreamResolver.extractItemId(item);
+    if (itemId.isNotEmpty) {
+      onSubtitleTrackChanged?.call(itemId, _subtitleStreamIndex != null && _subtitleStreamIndex! >= 0 ? _subtitleStreamIndex : null);
+      onAudioTrackChanged?.call(itemId, _audioStreamIndex != null && _audioStreamIndex! >= 0 ? _audioStreamIndex : null);
     }
   }
 }

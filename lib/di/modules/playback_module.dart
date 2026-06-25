@@ -379,6 +379,13 @@ void registerPlaybackModule() {
   _getIt.registerSingleton<PlayerBackend>(initialBackend);
 
   final manager = PlaybackManager();
+  manager.onSubtitleTrackChanged = (itemId, index) {
+    _getIt<UserPreferences>().setItemSubtitleStreamIndex(itemId, index);
+  };
+  manager.onAudioTrackChanged = (itemId, index) {
+    _getIt<UserPreferences>().setItemAudioStreamIndex(itemId, index);
+  };
+
   manager.setBackend(initialBackend);
   manager.setBackendSelector((resolution, currentBackend) {
     if (PlatformDetection.isTizen) {
