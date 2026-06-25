@@ -2166,6 +2166,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get defaultAudioLanguage => 'Default Audio Language';
 
   @override
+  String get fallbackAudioLanguage => 'Fallback Audio Language';
+
+  @override
+  String get preferDefaultAudioTrack => 'Prefer Default Audio Track';
+
+  @override
+  String get preferDefaultAudioTrackDescription =>
+      'Prefer original audio track over localized dub.';
+
+  @override
+  String get preferAudioDescription => 'Prefer Audio Description Tracks';
+
+  @override
+  String get preferAudioDescriptionDescription =>
+      'Prefer audio description tracks over normal tracks.';
+
+  @override
+  String get transcodingAudio => 'Transcoding (Audio)';
+
+  @override
   String get autoServerDefault => 'Auto (Server Default)';
 
   @override

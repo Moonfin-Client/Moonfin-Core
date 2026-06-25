@@ -34,7 +34,7 @@ String playbackMethodLabel({
     return switch (playMethod) {
       StreamPlayMethod.directPlay => l10n.directPlay,
       StreamPlayMethod.directStream => l10n.directStream,
-      StreamPlayMethod.transcode when isRemux => '${l10n.directStream} (Remux)',
+      StreamPlayMethod.transcode when isRemux => l10n.transcodingAudio,
       StreamPlayMethod.transcode => l10n.transcoding,
     };
   }

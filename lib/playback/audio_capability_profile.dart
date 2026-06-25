@@ -1,4 +1,5 @@
 import '../preference/preference_constants.dart';
+import '../util/platform_detection.dart';
 
 enum AudioRouteType { hdmi, arc, earc, bluetooth, speaker, other }
 
@@ -8,7 +9,7 @@ class AudioCapabilityProfile {
     required this.canDecodeEac3,
     required this.canDecodeDts,
     required this.canDecodeDtsHd,
-    required this.canDecodeTrueHd,
+    required bool canDecodeTrueHd,
     required this.canDecodeFlac,
     required this.canPassthroughAc3,
     required this.canPassthroughEac3,
@@ -21,14 +22,14 @@ class AudioCapabilityProfile {
     required this.maxPcmChannels,
     required this.activeRouteType,
     required this.routeSupportsHdAudio,
-  });
+  }) : _canDecodeTrueHd = canDecodeTrueHd;
 
   const AudioCapabilityProfile.optimistic()
     : canDecodeAc3 = true,
       canDecodeEac3 = true,
       canDecodeDts = true,
       canDecodeDtsHd = true,
-      canDecodeTrueHd = true,
+      _canDecodeTrueHd = true,
       canDecodeFlac = true,
       canPassthroughAc3 = false,
       canPassthroughEac3 = false,
@@ -47,7 +48,7 @@ class AudioCapabilityProfile {
       canDecodeEac3 = true,
       canDecodeDts = true,
       canDecodeDtsHd = true,
-      canDecodeTrueHd = false,
+      _canDecodeTrueHd = false,
       canDecodeFlac = true,
       canPassthroughAc3 = false,
       canPassthroughEac3 = false,
@@ -65,7 +66,8 @@ class AudioCapabilityProfile {
   final bool canDecodeEac3;
   final bool canDecodeDts;
   final bool canDecodeDtsHd;
-  final bool canDecodeTrueHd;
+  final bool _canDecodeTrueHd;
+  bool get canDecodeTrueHd => !PlatformDetection.isAndroid && _canDecodeTrueHd;
   final bool canDecodeFlac;
 
   final bool canPassthroughAc3;

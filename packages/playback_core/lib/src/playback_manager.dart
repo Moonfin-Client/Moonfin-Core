@@ -37,6 +37,8 @@ class PlaybackManager implements AudioOwnable {
   )?
   _startupRecoveryDecider;
   void Function(PlaybackDecisionContext context)? _playbackDecisionLogger;
+  int? Function(List<Map<String, dynamic>> audioStreams, int? explicitIndex)? audioTrackSelector;
+  int? Function(List<Map<String, dynamic>> subtitleStreams, List<Map<String, dynamic>> audioStreams, int? explicitIndex)? subtitleTrackSelector;
   final QueueService queueService = QueueService();
   final PlayerState state = PlayerState();
   final Set<PlayerBackend> _retainedBackends = <PlayerBackend>{};
@@ -150,6 +152,11 @@ class PlaybackManager implements AudioOwnable {
   int? get pendingAudioStreamIndex => _pendingItemAudioStreamIndex;
   int? get pendingSubtitleStreamIndex => _pendingItemSubtitleStreamIndex;
   String? get pendingMediaSourceId => _mediaSourceId;
+  bool get audioSelectionExplicit => _audioSelectionExplicit;
+  bool get subtitleSelectionExplicit => _subtitleSelectionExplicit;
+  String? get lastExplicitAudioLanguage => _lastExplicitAudioLanguage;
+  String? get lastExplicitSubtitleLanguage => _lastExplicitSubtitleLanguage;
+  bool? get lastExplicitSubtitleEnabled => _lastExplicitSubtitleEnabled;
   bool get playbackDeferredToExternalPlayer => _deferPlaybackToExternalPlayer;
   bool consumeSkipExternalRoutingOnce() {
     final shouldSkip = _skipExternalRoutingOnce;
@@ -1068,37 +1075,67 @@ class PlaybackManager implements AudioOwnable {
 
     bool needsReResolve = false;
 
-    if (_lastExplicitAudioLanguage != null) {
-      final matchedIdx = _matchStreamIndexByLanguage(
-        resolution.mediaStreams,
-        _lastExplicitAudioLanguage,
-        'Audio',
+    final audioStreams = resolution.mediaStreams.where((s) => s['Type'] == 'Audio').toList();
+    final subtitleStreams = resolution.mediaStreams.where((s) => s['Type'] == 'Subtitle').toList();
+
+    if (audioTrackSelector != null) {
+      final targetIdx = audioTrackSelector!(
+        audioStreams,
+        _audioSelectionExplicit ? _audioStreamIndex : null,
       );
-      if (matchedIdx != null && _audioStreamIndex != matchedIdx) {
-        _audioStreamIndex = matchedIdx;
+      if (targetIdx != null && _audioStreamIndex != targetIdx) {
+        _audioStreamIndex = targetIdx;
         if (resolution.playMethod == StreamPlayMethod.transcode) {
           needsReResolve = true;
+        }
+      }
+    } else {
+      if (_lastExplicitAudioLanguage != null) {
+        final matchedIdx = _matchStreamIndexByLanguage(
+          resolution.mediaStreams,
+          _lastExplicitAudioLanguage,
+          'Audio',
+        );
+        if (matchedIdx != null && _audioStreamIndex != matchedIdx) {
+          _audioStreamIndex = matchedIdx;
+          if (resolution.playMethod == StreamPlayMethod.transcode) {
+            needsReResolve = true;
+          }
         }
       }
     }
 
-    if (_lastExplicitSubtitleEnabled == false) {
-      if (_subtitleStreamIndex != -1) {
-        _subtitleStreamIndex = -1;
+    if (subtitleTrackSelector != null) {
+      final targetIdx = subtitleTrackSelector!(
+        subtitleStreams,
+        audioStreams,
+        _subtitleSelectionExplicit ? _subtitleStreamIndex : null,
+      );
+      if (targetIdx != null && _subtitleStreamIndex != targetIdx) {
+        _subtitleStreamIndex = targetIdx;
         if (resolution.playMethod == StreamPlayMethod.transcode) {
           needsReResolve = true;
         }
       }
-    } else if (_lastExplicitSubtitleLanguage != null) {
-      final matchedIdx = _matchStreamIndexByLanguage(
-        resolution.mediaStreams,
-        _lastExplicitSubtitleLanguage,
-        'Subtitle',
-      );
-      if (matchedIdx != null && _subtitleStreamIndex != matchedIdx) {
-        _subtitleStreamIndex = matchedIdx;
-        if (resolution.playMethod == StreamPlayMethod.transcode) {
-          needsReResolve = true;
+    } else {
+      if (_lastExplicitSubtitleEnabled == false) {
+        if (_subtitleStreamIndex != -1) {
+          _subtitleStreamIndex = -1;
+          if (resolution.playMethod == StreamPlayMethod.transcode) {
+            needsReResolve = true;
+          }
+        }
+      } else if (_lastExplicitSubtitleLanguage != null) {
+        final matchedIdx = _matchStreamIndexByLanguage(
+          resolution.mediaStreams,
+          _lastExplicitSubtitleLanguage,
+          'Subtitle',
+        );
+        if (matchedIdx != null && _subtitleStreamIndex != matchedIdx) {
+          _subtitleStreamIndex = matchedIdx;
+          if (resolution.playMethod == StreamPlayMethod.transcode) {
+            needsReResolve = true;
+          }
         }
       }
     }

@@ -1126,6 +1126,18 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_audio_language',
     defaultValue: 'auto',
   );
+  static final fallbackAudioLanguage = Preference<String>(
+    key: 'pref_fallback_audio_language',
+    defaultValue: '',
+  );
+  static final preferDefaultAudioTrack = Preference<bool>(
+    key: 'pref_prefer_default_audio_track',
+    defaultValue: false,
+  );
+  static final preferAudioDescription = Preference<bool>(
+    key: 'pref_prefer_audio_description',
+    defaultValue: false,
+  );
   static final defaultSubtitleLanguage = Preference(
     key: 'pref_subtitle_language',
     defaultValue: '',

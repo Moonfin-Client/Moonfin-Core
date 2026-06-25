@@ -3958,6 +3958,42 @@ abstract class AppLocalizations {
   /// **'Default Audio Language'**
   String get defaultAudioLanguage;
 
+  /// Setting for fallback audio language
+  ///
+  /// In en, this message translates to:
+  /// **'Fallback Audio Language'**
+  String get fallbackAudioLanguage;
+
+  /// Setting for preferring default audio track
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer Default Audio Track'**
+  String get preferDefaultAudioTrack;
+
+  /// Description for preferring default audio track setting
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer original audio track over localized dub.'**
+  String get preferDefaultAudioTrackDescription;
+
+  /// Setting for preferring audio description tracks
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer Audio Description Tracks'**
+  String get preferAudioDescription;
+
+  /// Description for preferring audio description tracks setting
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer audio description tracks over normal tracks.'**
+  String get preferAudioDescriptionDescription;
+
+  /// Label for audio-only transcode playback method
+  ///
+  /// In en, this message translates to:
+  /// **'Transcoding (Audio)'**
+  String get transcodingAudio;
+
   /// Option: auto server default
   ///
   /// In en, this message translates to:

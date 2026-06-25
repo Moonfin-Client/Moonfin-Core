@@ -63,6 +63,7 @@ import '../../../util/episode_playability.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/language_matching.dart';
 import '../../../util/subtitle_track_logic.dart';
+import '../../../util/audio_track_logic.dart';
 import '../../../util/platform_detection.dart';
 
 const _textShadows = [Shadow(blurRadius: 4, color: Colors.black54)];
@@ -5435,29 +5436,14 @@ class _ActionButtonsState extends State<_ActionButtons> {
     }
 
     final prefs = GetIt.instance<UserPreferences>();
-    final preferred = prefs.get(UserPreferences.defaultAudioLanguage).trim();
-    if (preferred.isEmpty) {
-      final defaultStream = audioStreams.firstWhere(
-        (s) => s['IsDefault'] == true,
-        orElse: () => <String, dynamic>{},
-      );
-      return defaultStream['Index'] as int?;
-    }
-
-    final preferredNormalized = normalizeLanguage(preferred);
-    final preferredIso3 = toIso3Language(preferredNormalized);
-
-    for (final stream in audioStreams) {
-      if (languageMatchesPreferred(
-        (stream['Language'] as String?)?.trim(),
-        preferredNormalized,
-        preferredIso3,
-      )) {
-        return stream['Index'] as int?;
-      }
-    }
-
-    return null;
+    return computeEffectiveAudioIndex(
+      audioStreams: audioStreams,
+      preferredAudioLanguage: prefs.get(UserPreferences.defaultAudioLanguage),
+      fallbackAudioLanguage: prefs.get(UserPreferences.fallbackAudioLanguage),
+      preferDefaultAudioTrack: prefs.get(UserPreferences.preferDefaultAudioTrack),
+      preferAudioDescription: prefs.get(UserPreferences.preferAudioDescription),
+      explicitAudioIndex: null,
+    );
   }
 
   int? _effectiveSubtitleStreamIndex(

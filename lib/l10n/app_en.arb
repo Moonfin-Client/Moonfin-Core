@@ -3071,6 +3071,30 @@
   "@defaultAudioLanguage": {
     "description": "Setting for default audio language"
   },
+  "fallbackAudioLanguage": "Fallback Audio Language",
+  "@fallbackAudioLanguage": {
+    "description": "Setting for fallback audio language"
+  },
+  "preferDefaultAudioTrack": "Prefer Default Audio Track",
+  "@preferDefaultAudioTrack": {
+    "description": "Setting for preferring default audio track"
+  },
+  "preferDefaultAudioTrackDescription": "Prefer original audio track over localized dub.",
+  "@preferDefaultAudioTrackDescription": {
+    "description": "Description for preferring default audio track setting"
+  },
+  "preferAudioDescription": "Prefer Audio Description Tracks",
+  "@preferAudioDescription": {
+    "description": "Setting for preferring audio description tracks"
+  },
+  "preferAudioDescriptionDescription": "Prefer audio description tracks over normal tracks.",
+  "@preferAudioDescriptionDescription": {
+    "description": "Description for preferring audio description tracks setting"
+  },
+  "transcodingAudio": "Transcoding (Audio)",
+  "@transcodingAudio": {
+    "description": "Label for audio-only transcode playback method"
+  },
   "autoServerDefault": "Auto (Server Default)",
   "@autoServerDefault": {
     "description": "Option: auto server default"

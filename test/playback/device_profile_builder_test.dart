@@ -3,6 +3,7 @@ import 'package:moonfin/playback/audio_capability_profile.dart';
 import 'package:moonfin/playback/device_profile_builder.dart';
 import 'package:moonfin/playback/known_defects.dart';
 import 'package:moonfin/preference/preference_constants.dart';
+import 'package:moonfin/util/platform_detection.dart';
 
 Set<String> _hevcUnsupportedRangeTypes(Map<String, dynamic> profile) {
   final codecProfiles = profile['CodecProfiles'] as List<dynamic>? ?? const [];
@@ -211,8 +212,13 @@ void main() {
       expect(codecs, contains('eac3'));
       expect(codecs, contains('dts'));
       expect(codecs, contains('dca'));
-      expect(codecs, contains('truehd'));
-      expect(codecs, contains('mlp'));
+      if (!PlatformDetection.isAndroid) {
+        expect(codecs, contains('truehd'));
+        expect(codecs, contains('mlp'));
+      } else {
+        expect(codecs, isNot(contains('truehd')));
+        expect(codecs, isNot(contains('mlp')));
+      }
     });
 
     test('keeps codec when local decode is available even without passthrough', () {

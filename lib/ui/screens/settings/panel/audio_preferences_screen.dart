@@ -201,6 +201,35 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
     final isAdvanced =
         _prefs.get(UserPreferences.audioPassthroughPreset) ==
         AudioPassthroughPreset.advanced;
+
+    final iso3ToIso1 = {
+      for (final entry in kIso6391To6392.entries) entry.value: entry.key
+    };
+
+    final supportedIso3Codes = AppLocalizations.supportedLocales.map((locale) {
+      final lang1 = locale.languageCode;
+      return kIso6391To6392[lang1] ?? lang1;
+    }).toSet();
+
+    final defaultAudioLangOptions = {
+      'auto': l10n.autoServerDefault,
+    };
+    final fallbackAudioLangOptions = {
+      '': l10n.none,
+    };
+
+    for (final entry in kIso6392Languages.entries) {
+      final code = entry.key;
+      if (!supportedIso3Codes.contains(code)) {
+        continue;
+      }
+      final englishName = entry.value;
+      final iso1 = iso3ToIso1[code];
+      final displayName = (iso1 != null ? kLocaleDisplayNames[iso1] : null) ?? englishName;
+      defaultAudioLangOptions[code] = displayName;
+      fallbackAudioLangOptions[code] = displayName;
+    }
+
     return Scaffold(
       appBar: buildSettingsAppBar(context, Text(l10n.settingsAudioPreferences)),
       body: ListView(
@@ -214,11 +243,34 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
                 subtitle: l10n.compressDynamicRange,
                 icon: Icons.nights_stay,
               ),
+            ],
+          ),
+          const _SectionHeader('Audio Stream'),
+          adaptiveListSection(
+            children: [
               StringPickerPreferenceTile(
                 preference: UserPreferences.defaultAudioLanguage,
                 title: l10n.defaultAudioLanguage,
                 icon: Icons.language,
-                options: {'auto': l10n.autoServerDefault, ...kIso6392Languages},
+                options: defaultAudioLangOptions,
+              ),
+              StringPickerPreferenceTile(
+                preference: UserPreferences.fallbackAudioLanguage,
+                title: l10n.fallbackAudioLanguage,
+                icon: Icons.language,
+                options: fallbackAudioLangOptions,
+              ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.preferDefaultAudioTrack,
+                title: l10n.preferDefaultAudioTrack,
+                subtitle: l10n.preferDefaultAudioTrackDescription,
+                icon: Icons.audiotrack,
+              ),
+              SwitchPreferenceTile(
+                preference: UserPreferences.preferAudioDescription,
+                title: l10n.preferAudioDescription,
+                subtitle: l10n.preferAudioDescriptionDescription,
+                icon: Icons.hearing,
               ),
             ],
           ),
