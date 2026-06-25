@@ -1672,7 +1672,7 @@ class PlaybackManager implements AudioOwnable {
     for (final sub in externals) {
       if (sub.streamIndex != streamIndex) continue;
       if (sub.deliveryUrl.isNotEmpty) {
-        return sub.deliveryUrl;
+        return _ensureSubtitleApiKey(sub.deliveryUrl);
       }
     }
 
@@ -1701,29 +1701,33 @@ class PlaybackManager implements AudioOwnable {
         return deliveryUrl;
       }
 
-      final resolved = baseUri.resolve(deliveryUrl);
-      final hasApiKey = resolved.queryParameters.keys.any(
-        (k) => k.toLowerCase() == 'api_key',
-      );
-      final baseApiKeyEntry = baseUri.queryParameters.entries.firstWhere(
-        (entry) => entry.key.toLowerCase() == 'api_key',
-        orElse: () => const MapEntry('', ''),
-      );
-
-      if (!hasApiKey &&
-          baseApiKeyEntry.key.isNotEmpty &&
-          baseApiKeyEntry.value.isNotEmpty) {
-        final mergedParams = <String, String>{
-          ...resolved.queryParameters,
-          baseApiKeyEntry.key: baseApiKeyEntry.value,
-        };
-        return resolved.replace(queryParameters: mergedParams).toString();
-      }
-
-      return resolved.toString();
+      return _ensureSubtitleApiKey(baseUri.resolve(deliveryUrl).toString());
     }
 
     return null;
+  }
+
+  String _ensureSubtitleApiKey(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return url;
+    final hasApiKey = uri.queryParameters.keys.any(
+      (k) => k.toLowerCase() == 'api_key',
+    );
+    if (hasApiKey) return url;
+    final streamUrl = _currentResolution?.streamUrl;
+    if (streamUrl == null || streamUrl.isEmpty) return url;
+    final baseUri = Uri.tryParse(streamUrl);
+    if (baseUri == null) return url;
+    final tokenEntry = baseUri.queryParameters.entries.firstWhere(
+      (entry) => entry.key.toLowerCase() == 'api_key',
+      orElse: () => const MapEntry('', ''),
+    );
+    if (tokenEntry.key.isEmpty || tokenEntry.value.isEmpty) return url;
+    final mergedParams = <String, String>{
+      ...uri.queryParameters,
+      tokenEntry.key: tokenEntry.value,
+    };
+    return uri.replace(queryParameters: mergedParams).toString();
   }
 
   SubtitleRendererMode _subtitleRendererModeForStream(int streamIndex) {
@@ -1851,7 +1855,7 @@ class PlaybackManager implements AudioOwnable {
           idx + 1,
           subtitleCodec: selectedExternal.codec,
           isExternalSubtitle: true,
-          externalSubtitleUrl: selectedExternal.deliveryUrl,
+          externalSubtitleUrl: _ensureSubtitleApiKey(selectedExternal.deliveryUrl),
         );
       } else {
         await _reResolveAtCurrentPosition(forceTranscode: true);
@@ -2022,7 +2026,7 @@ class PlaybackManager implements AudioOwnable {
           idx + 1,
           subtitleCodec: selectedExternal.codec,
           isExternalSubtitle: true,
-          externalSubtitleUrl: selectedExternal.deliveryUrl,
+          externalSubtitleUrl: _ensureSubtitleApiKey(selectedExternal.deliveryUrl),
         );
       }
     });
@@ -2049,7 +2053,7 @@ class PlaybackManager implements AudioOwnable {
         for (final sub in resolution.externalSubtitles) {
           try {
             await backend.addExternalSubtitle(
-              sub.deliveryUrl,
+              _ensureSubtitleApiKey(sub.deliveryUrl),
               title: sub.title,
               language: sub.language,
               codec: sub.codec,

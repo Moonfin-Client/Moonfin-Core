@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_tvos/flutter_tvos.dart'
+    show TvRemoteController, TvRemoteTouchEvent, TvRemoteTouchPhase;
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../preference/preference_constants.dart';
@@ -156,9 +158,12 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
     final baseTextStyle =
         Theme.of(context).textTheme.bodySmall ?? const TextStyle(fontSize: 12);
     final subtitleColor =
-        widget.subtitleColor ?? Theme.of(context).colorScheme.onSurface.withAlpha(153);
+        widget.subtitleColor ??
+        Theme.of(context).colorScheme.onSurface.withAlpha(153);
     final titleStyle = baseTextStyle.copyWith(
-      color: widget.titleColor ?? (isNeon ? AppColorScheme.accent : baseTextStyle.color),
+      color:
+          widget.titleColor ??
+          (isNeon ? AppColorScheme.accent : baseTextStyle.color),
     );
     final subtitleStyle = baseTextStyle.copyWith(color: subtitleColor);
     final textScaler = MediaQuery.textScalerOf(context);
@@ -177,6 +182,9 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
         ? (widget.externalIsFocused! || hovered)
         : (focused || hasNodeFocus);
     final showMarquee = hovered || effectiveFocused;
+    final cardActive =
+        widget.cardFocusExpansion &&
+        (externallyDriven ? effectiveFocused : showFocusBorder);
     final inner = GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (_) => widget.onPressStart?.call(),
@@ -191,74 +199,75 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
           ? null
           : () => widget.onLongPress!(),
       child: RepaintBoundary(
-        child: AnimatedScale(
-        scale:
-            widget.cardFocusExpansion &&
-                (externallyDriven ? effectiveFocused : showFocusBorder)
-            ? (PlatformDetection.isAppleTV ? 1.12 : 1.05)
-            : 1.0,
-        duration: const Duration(milliseconds: 150),
-        curve: PlatformDetection.isAppleTV ? Curves.easeOutCubic : Curves.linear,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _CardImage(
-              imageUrl: widget.imageUrl,
-              title: widget.title,
-              aspectRatio: widget.aspectRatio,
-              isFavorite: widget.isFavorite,
-              isPlayed: widget.isPlayed,
-              unplayedCount: widget.unplayedCount,
-              playedPercentage: widget.playedPercentage,
-              watchedBehavior: widget.watchedBehavior,
-              focused: effectiveFocused,
-              hovered: hovered,
-              focusColor: widget.focusColor,
-              suppressFocusBorder: widget.suppressImageFocusBorder,
-              suppressFocusGlow: widget.suppressFocusGlow,
-              isCircular: widget.itemType == 'Person',
-              itemType: widget.itemType,
-              seerrMediaType: widget.seerrMediaType,
-              seerrStatus: widget.seerrStatus,
+        child: _withTvParallax(
+          active: cardActive,
+          child: AnimatedScale(
+            scale: cardActive
+                ? (PlatformDetection.isAppleTV ? 1.12 : 1.05)
+                : 1.0,
+            duration: const Duration(milliseconds: 150),
+            curve: PlatformDetection.isAppleTV
+                ? Curves.easeOutCubic
+                : Curves.linear,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _CardImage(
+                  imageUrl: widget.imageUrl,
+                  title: widget.title,
+                  aspectRatio: widget.aspectRatio,
+                  isFavorite: widget.isFavorite,
+                  isPlayed: widget.isPlayed,
+                  unplayedCount: widget.unplayedCount,
+                  playedPercentage: widget.playedPercentage,
+                  watchedBehavior: widget.watchedBehavior,
+                  focused: effectiveFocused,
+                  hovered: hovered,
+                  focusColor: widget.focusColor,
+                  suppressFocusBorder: widget.suppressImageFocusBorder,
+                  suppressFocusGlow: widget.suppressFocusGlow,
+                  isCircular: widget.itemType == 'Person',
+                  itemType: widget.itemType,
+                  seerrMediaType: widget.seerrMediaType,
+                  seerrStatus: widget.seerrStatus,
+                ),
+                if (widget.title != null) ...[
+                  const SizedBox(height: 6),
+                  SizedBox(
+                    height: titleLineHeight,
+                    child: showMarquee
+                        ? MarqueeText(text: widget.title!, style: titleStyle)
+                        : Text(
+                            widget.title!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: titleStyle,
+                          ),
+                  ),
+                ],
+                if (widget.subtitleWidget != null) ...[
+                  SizedBox(height: widget.title != null ? 2 : 6),
+                  widget.subtitleWidget!,
+                ] else if (widget.subtitle != null &&
+                    widget.subtitle!.isNotEmpty)
+                  SizedBox(
+                    height: subtitleLineHeight,
+                    child: showMarquee
+                        ? MarqueeText(
+                            text: widget.subtitle!,
+                            style: subtitleStyle,
+                          )
+                        : Text(
+                            widget.subtitle!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: subtitleStyle,
+                          ),
+                  ),
+              ],
             ),
-            if (widget.title != null) ...[
-              const SizedBox(height: 6),
-              SizedBox(
-                height: titleLineHeight,
-                child: showMarquee
-                    ? MarqueeText(
-                        text: widget.title!,
-                        style: titleStyle,
-                      )
-                    : Text(
-                        widget.title!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: titleStyle,
-                      ),
-              ),
-            ],
-            if (widget.subtitleWidget != null) ...[
-              SizedBox(height: widget.title != null ? 2 : 6),
-              widget.subtitleWidget!,
-            ] else if (widget.subtitle != null && widget.subtitle!.isNotEmpty)
-              SizedBox(
-                height: subtitleLineHeight,
-                child: showMarquee
-                    ? MarqueeText(
-                        text: widget.subtitle!,
-                        style: subtitleStyle,
-                      )
-                    : Text(
-                        widget.subtitle!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: subtitleStyle,
-                      ),
-              ),
-          ],
-        ),
+          ),
         ),
       ),
     );
@@ -288,7 +297,8 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                   if (handlerResult != KeyEventResult.ignored) {
                     return handlerResult;
                   }
-                } else if (event is KeyDownEvent && event.logicalKey.isSelectKey) {
+                } else if (event is KeyDownEvent &&
+                    event.logicalKey.isSelectKey) {
                   widget.onTap?.call();
                   return KeyEventResult.handled;
                 }
@@ -308,6 +318,122 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
     );
 
     return SizedBox(width: widget.width, child: mouseRegion);
+  }
+
+  Widget _withTvParallax({required bool active, required Widget child}) {
+    if (!PlatformDetection.isAppleTV) return child;
+    return _TvFocusParallax(active: active, child: child);
+  }
+}
+
+class _TvFocusParallax extends StatefulWidget {
+  final bool active;
+  final Widget child;
+
+  const _TvFocusParallax({required this.active, required this.child});
+
+  @override
+  State<_TvFocusParallax> createState() => _TvFocusParallaxState();
+}
+
+class _TvFocusParallaxState extends State<_TvFocusParallax>
+    with SingleTickerProviderStateMixin {
+  static const double _maxAngle = 0.10;
+  static const double _ease = 0.18;
+
+  late final _ticker = createTicker(_onTick);
+  final ValueNotifier<Offset> _tilt = ValueNotifier<Offset>(Offset.zero);
+  Offset _target = Offset.zero;
+  bool _listening = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.active) _attach();
+  }
+
+  @override
+  void didUpdateWidget(_TvFocusParallax oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.active && !oldWidget.active) {
+      _attach();
+    } else if (!widget.active && oldWidget.active) {
+      _detach();
+    }
+  }
+
+  @override
+  void dispose() {
+    _detach();
+    _ticker.dispose();
+    _tilt.dispose();
+    super.dispose();
+  }
+
+  void _attach() {
+    if (_listening) return;
+    _listening = true;
+    TvRemoteController.instance.addRawListener(_onTouch);
+  }
+
+  void _detach() {
+    if (_listening) {
+      TvRemoteController.instance.removeRawListener(_onTouch);
+      _listening = false;
+    }
+    _target = Offset.zero;
+    _startTicker();
+  }
+
+  void _onTouch(TvRemoteTouchEvent event) {
+    if (!widget.active) return;
+    switch (event.phase) {
+      case TvRemoteTouchPhase.started:
+      case TvRemoteTouchPhase.move:
+      case TvRemoteTouchPhase.loc:
+        _target = Offset(event.x.clamp(-1.0, 1.0), event.y.clamp(-1.0, 1.0));
+        _startTicker();
+      case TvRemoteTouchPhase.ended:
+      case TvRemoteTouchPhase.cancelled:
+        _target = Offset.zero;
+        _startTicker();
+      case TvRemoteTouchPhase.clickStart:
+      case TvRemoteTouchPhase.clickEnd:
+        break;
+    }
+  }
+
+  void _startTicker() {
+    if (!_ticker.isActive) _ticker.start();
+  }
+
+  void _onTick(Duration _) {
+    final next = Offset.lerp(_tilt.value, _target, _ease)!;
+    if (_target == Offset.zero && next.distance < 0.002) {
+      _tilt.value = Offset.zero;
+      _ticker.stop();
+      return;
+    }
+    _tilt.value = next;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<Offset>(
+      valueListenable: _tilt,
+      child: widget.child,
+      builder: (context, tilt, child) {
+        if (tilt == Offset.zero) return child!;
+        return Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, 0.0012)
+            ..rotateY(tilt.dx * _maxAngle)
+            ..rotateX(-tilt.dy * _maxAngle),
+          child: child,
+        );
+      },
+    );
   }
 }
 
@@ -356,7 +482,8 @@ class _CardImage extends StatelessWidget {
     final showBorder = !suppressFocusBorder && (focused || hovered);
     final borderColor = focusColor ?? Theme.of(context).colorScheme.primary;
     final borders = ThemeRegistry.active.borders;
-    final showGlow = showBorder && !suppressFocusGlow && borders.focusGlow.isNotEmpty;
+    final showGlow =
+        showBorder && !suppressFocusGlow && borders.focusGlow.isNotEmpty;
 
     return AspectRatio(
       aspectRatio: aspectRatio,
@@ -392,8 +519,11 @@ class _CardImage extends StatelessWidget {
                   color: (itemType == 'Network' || itemType == 'Studio')
                       ? Theme.of(context).colorScheme.surfaceContainerHighest
                       : (imageUrl != null
-                          ? Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.2)
-                          : Colors.transparent),
+                            ? Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest
+                                  .withValues(alpha: 0.2)
+                            : Colors.transparent),
                   padding: (itemType == 'Network' || itemType == 'Studio')
                       ? const EdgeInsets.all(8.0)
                       : EdgeInsets.zero,
@@ -406,8 +536,10 @@ class _CardImage extends StatelessWidget {
                           fadeInDuration: Duration.zero,
                           scale: isCircular ? 0.8 : 0.9,
                           maxWidth: aspectRatio > 1.2 ? 960 : 640,
-                          errorBuilder: (_, _, _) =>
-                              _PlaceholderIcon(itemType: itemType, title: title),
+                          errorBuilder: (_, _, _) => _PlaceholderIcon(
+                            itemType: itemType,
+                            title: title,
+                          ),
                         )
                       : _PlaceholderIcon(itemType: itemType, title: title),
                 ),
@@ -445,7 +577,9 @@ class _CardImage extends StatelessWidget {
                       child: LinearProgressIndicator(
                         value: playedPercentage! / 100,
                         minHeight: 6,
-                        backgroundColor: AppColorScheme.scrim.withValues(alpha: 0.54),
+                        backgroundColor: AppColorScheme.scrim.withValues(
+                          alpha: 0.54,
+                        ),
                         valueColor: AlwaysStoppedAnimation<Color>(
                           AppColorScheme.accent,
                         ),
@@ -545,7 +679,11 @@ class _CardImage extends StatelessWidget {
     if (seerrStatus == 4) {
       return _buildStatusCircle(
         fillColor: AppColorScheme.statusAvailable,
-        icon: Icon(Icons.remove_rounded, size: 13, color: AppColorScheme.onBadge),
+        icon: Icon(
+          Icons.remove_rounded,
+          size: 13,
+          color: AppColorScheme.onBadge,
+        ),
       );
     }
 
@@ -663,7 +801,9 @@ class _PlaceholderIcon extends StatelessWidget {
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2.5,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ),

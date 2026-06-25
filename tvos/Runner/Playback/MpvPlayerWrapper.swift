@@ -219,6 +219,14 @@ class MpvPlayerWrapper: NSObject, ObservableObject {
                 "positionMs": Int((seconds * 1000).rounded()),
             ])
         }
+        nowPlaying.onSkip = { [weak self] delta in
+            guard let self else { return }
+            let target = max(0, self.currentTime + delta)
+            self.onNowPlayingCommand?([
+                "event": "seek",
+                "positionMs": Int((target * 1000).rounded()),
+            ])
+        }
         nowPlaying.onNext = { [weak self] in
             self?.onNowPlayingCommand?(["event": "next"])
         }
@@ -1730,6 +1738,7 @@ final class NowPlayingController {
     var onPause: (@MainActor () -> Void)?
     var onToggle: (@MainActor () -> Void)?
     var onSeek: (@MainActor (TimeInterval) -> Void)?
+    var onSkip: (@MainActor (TimeInterval) -> Void)?
     var onNext: (@MainActor () -> Void)?
     var onPrevious: (@MainActor () -> Void)?
 
@@ -1772,6 +1781,20 @@ final class NowPlayingController {
                 return .success
             }
         }
+        addTarget(center.skipForwardCommand) { [weak self] event in
+            MainActor.assumeIsolated {
+                let interval = (event as? MPSkipIntervalCommandEvent)?.interval ?? 10
+                self?.onSkip?(interval)
+                return .success
+            }
+        }
+        addTarget(center.skipBackwardCommand) { [weak self] event in
+            MainActor.assumeIsolated {
+                let interval = (event as? MPSkipIntervalCommandEvent)?.interval ?? 10
+                self?.onSkip?(-interval)
+                return .success
+            }
+        }
         addTarget(center.nextTrackCommand) { [weak self] _ in
             MainActor.assumeIsolated {
                 self?.onNext?()
@@ -1785,10 +1808,14 @@ final class NowPlayingController {
             }
         }
 
+        center.skipForwardCommand.preferredIntervals = [NSNumber(value: 10)]
+        center.skipBackwardCommand.preferredIntervals = [NSNumber(value: 10)]
         center.playCommand.isEnabled = true
         center.pauseCommand.isEnabled = true
         center.togglePlayPauseCommand.isEnabled = true
         center.changePlaybackPositionCommand.isEnabled = true
+        center.skipForwardCommand.isEnabled = true
+        center.skipBackwardCommand.isEnabled = true
     }
 
     func setQueueCapabilities(hasNext: Bool, hasPrevious: Bool) {

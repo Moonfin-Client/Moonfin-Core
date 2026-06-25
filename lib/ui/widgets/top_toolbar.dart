@@ -801,7 +801,7 @@ class _TopToolbarState extends State<TopToolbar> {
       ? seerrDisplayName
       : (seerrPrefs.isSeerrVariant ? l10n.seerr : l10n.jellyseerr);
     final useAndroidTvInlineLibraries =
-        PlatformDetection.isAndroid &&
+        (PlatformDetection.isAndroid || PlatformDetection.isAppleTV) &&
         PlatformDetection.isTV &&
         _prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
 

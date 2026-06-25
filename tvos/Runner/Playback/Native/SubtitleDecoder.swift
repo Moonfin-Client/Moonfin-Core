@@ -9,6 +9,7 @@ struct SubtitleEvent {
     let startTime: TimeInterval
     let endTime: TimeInterval
     let text: String?
+    let assLine: String?
     let bitmap: CGImage?
     let bitmapX: Int
     let bitmapY: Int
@@ -20,6 +21,7 @@ final class SubtitleDecoder {
 
     private var codecCtx: UnsafeMutablePointer<AVCodecContext>?
     private(set) var codecId: UInt32 = 0
+    private(set) var subtitleHeader: Data?
 
     // AVSubtitle offsets (FFmpeg 7.x, 64-bit)
     private static let subStartDisplayTimeOff = 0x04
@@ -75,6 +77,11 @@ final class SubtitleDecoder {
         guard avcodec_open2(ctx, decoder, nil) >= 0 else {
             close()
             return false
+        }
+        if let headerPtr = ctx.pointee.subtitle_header, ctx.pointee.subtitle_header_size > 0 {
+            subtitleHeader = Data(bytes: headerPtr, count: Int(ctx.pointee.subtitle_header_size))
+        } else {
+            subtitleHeader = nil
         }
         return true
 #else
@@ -155,6 +162,7 @@ final class SubtitleDecoder {
 #endif
         codecCtx = nil
         codecId = 0
+        subtitleHeader = nil
     }
 
     // MARK: - Rect decoding
@@ -171,7 +179,7 @@ final class SubtitleDecoder {
         guard !text.isEmpty else { return nil }
         return SubtitleEvent(
             startTime: startTime, endTime: endTime,
-            text: text, bitmap: nil,
+            text: text, assLine: nil, bitmap: nil,
             bitmapX: 0, bitmapY: 0, bitmapWidth: 0, bitmapHeight: 0
         )
     }
@@ -184,11 +192,12 @@ final class SubtitleDecoder {
         let assPtr = rect.advanced(by: Self.rectAssOff)
             .assumingMemoryBound(to: UnsafePointer<CChar>?.self).pointee
         guard let assPtr else { return nil }
-        let text = Self.stripASSFormatting(String(cString: assPtr))
-        guard !text.isEmpty else { return nil }
+        let raw = String(cString: assPtr)
+        let text = Self.stripASSFormatting(raw)
+        guard !text.isEmpty || !raw.isEmpty else { return nil }
         return SubtitleEvent(
             startTime: startTime, endTime: endTime,
-            text: text, bitmap: nil,
+            text: text, assLine: raw, bitmap: nil,
             bitmapX: 0, bitmapY: 0, bitmapWidth: 0, bitmapHeight: 0
         )
     }
@@ -216,7 +225,7 @@ final class SubtitleDecoder {
 
         return SubtitleEvent(
             startTime: startTime, endTime: endTime,
-            text: nil, bitmap: bitmap,
+            text: nil, assLine: nil, bitmap: bitmap,
             bitmapX: x, bitmapY: y, bitmapWidth: w, bitmapHeight: h
         )
     }

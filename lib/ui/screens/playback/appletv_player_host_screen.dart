@@ -19,6 +19,7 @@ import '../../../playback/appletv_mpv_backend.dart';
 import '../../../playback/playback_profile_diagnostics.dart';
 import '../../../syncplay/syncplay_manager.dart';
 import '../../theme/app_theme_controller.dart';
+import '../../screensaver/screensaver_controller.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 
@@ -46,6 +47,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   bool _pendingStillWatching = false;
   SyncPlayManager? _syncPlay;
   AppThemeController? _themeController;
+  ScreensaverController? _screensaverController;
+  StreamSubscription<bool>? _screensaverPlayingSub;
 
   AppleTvMpvBackend? get _backend {
     try {
@@ -66,6 +69,10 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
   @override
   void initState() {
     super.initState();
+    try {
+      _screensaverController = GetIt.instance<ScreensaverController>();
+    } catch (_) {}
+    _screensaverController?.setPlaybackActive(true);
     _exitSub = _backend?.userExitStream.listen((_) => _handleExit());
     _actionSub = _backend?.uiActionStream.listen(_handleUiAction);
     final manager = _manager;
@@ -77,6 +84,9 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         (_) => _handleExit(),
       );
       _bringupSub = manager.bringupStateStream.listen((_) => _pushMetadata());
+      _screensaverPlayingSub = manager.state.playingStream.listen(
+        (playing) => _screensaverController?.setPlaybackActive(playing),
+      );
     }
     if (GetIt.instance.isRegistered<SyncPlayManager>()) {
       _syncPlay = GetIt.instance<SyncPlayManager>();
@@ -1300,6 +1310,8 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     _sessionEndedSub?.cancel();
     _bringupSub?.cancel();
     _actionSub?.cancel();
+    _screensaverPlayingSub?.cancel();
+    _screensaverController?.setPlaybackActive(false);
     _syncPlay?.removeListener(_onSyncPlayChanged);
     _themeController?.removeListener(_onThemeChanged);
     unawaited(_backend?.dismissPlayer() ?? Future<void>.value());
