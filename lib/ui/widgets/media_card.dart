@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../preference/preference_constants.dart';
+import '../../util/platform_detection.dart';
 import '../../util/focus/dpad_keys.dart';
 import '../../util/focus/key_event_utils.dart';
 import 'bounded_network_image.dart';
@@ -194,9 +195,10 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
         scale:
             widget.cardFocusExpansion &&
                 (externallyDriven ? effectiveFocused : showFocusBorder)
-            ? 1.05
+            ? (PlatformDetection.isAppleTV ? 1.12 : 1.05)
             : 1.0,
         duration: const Duration(milliseconds: 150),
+        curve: PlatformDetection.isAppleTV ? Curves.easeOutCubic : Curves.linear,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,

@@ -6,6 +6,8 @@ import 'package:flutter/cupertino.dart' show CupertinoTheme, CupertinoThemeData;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tvos/flutter_tvos.dart'
+    show TvRemoteController, TvRemoteConfig;
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:playback_core/playback_core.dart';
@@ -68,6 +70,14 @@ class _MoonfinAppState extends State<MoonfinApp> {
     _prefs.addListener(_syncIdiomFromPrefs);
     if (PlatformDetection.isAppleTV) {
       TopShelfService().startDeepLinkListener(appRouter.go);
+      TvRemoteController.instance.init();
+      TvRemoteController.instance.config = const TvRemoteConfig(
+        shortSwipeThreshold: 0.45,
+        fastSwipeThreshold: 0.7,
+        continuousSwipeMoveThreshold: 4,
+        keyRepeatInitialDelay: Duration(milliseconds: 450),
+        keyRepeatInterval: Duration(milliseconds: 140),
+      );
     }
   }
 
@@ -1068,6 +1078,13 @@ class _TvUiScale extends StatelessWidget {
     }
     final scale = realSize.width / _designWidth;
     final logicalSize = Size(realSize.width / scale, realSize.height / scale);
+    EdgeInsets scaleInsets(EdgeInsets insets, {bool zeroTop = false}) =>
+        EdgeInsets.fromLTRB(
+          insets.left / scale,
+          zeroTop ? 0 : insets.top / scale,
+          insets.right / scale,
+          insets.bottom / scale,
+        );
     return FittedBox(
       fit: BoxFit.fill,
       child: SizedBox(
@@ -1077,6 +1094,9 @@ class _TvUiScale extends StatelessWidget {
           data: mq.copyWith(
             size: logicalSize,
             devicePixelRatio: mq.devicePixelRatio * scale,
+            padding: scaleInsets(mq.padding, zeroTop: true),
+            viewPadding: scaleInsets(mq.viewPadding, zeroTop: true),
+            viewInsets: scaleInsets(mq.viewInsets),
           ),
           child: child,
         ),
