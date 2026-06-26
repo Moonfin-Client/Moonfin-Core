@@ -10,6 +10,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
 import '../../theme/app_theme_controller.dart';
+import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -127,7 +128,7 @@ class _ThemeStoreScreenState extends State<ThemeStoreScreen> {
       await showFocusRestoringDialog<void>(
         context: context,
         builder: (dialogContext) {
-          return AlertDialog(
+          return AlertDialog.adaptive(
             backgroundColor: AppColorScheme.surface.withValues(alpha: 0.9),
             title: Text(entry.displayName),
             content: entry.description != null && entry.description!.isNotEmpty
@@ -135,14 +136,14 @@ class _ThemeStoreScreenState extends State<ThemeStoreScreen> {
                 : null,
             actions: [
               if (!saved) ...[
-                TextButton(
+                adaptiveDialogAction(
                   onPressed: () {
                     Navigator.of(dialogContext).pop();
                     unawaited(_saveTheme(entry, apply: false));
                   },
                   child: Text(l10n.themeStoreSave),
                 ),
-                TextButton(
+                adaptiveDialogAction(
                   onPressed: () {
                     Navigator.of(dialogContext).pop();
                     unawaited(_saveTheme(entry, apply: true));
@@ -151,7 +152,7 @@ class _ThemeStoreScreenState extends State<ThemeStoreScreen> {
                 ),
               ] else ...[
                 if (!isCurrent)
-                  TextButton(
+                  adaptiveDialogAction(
                     onPressed: () {
                       Navigator.of(dialogContext).pop();
                       unawaited(controller.applyThemeById(_prefs, entry.id));
@@ -169,7 +170,7 @@ class _ThemeStoreScreenState extends State<ThemeStoreScreen> {
                   ),
                 ),
               ],
-              TextButton(
+              adaptiveDialogAction(
                 onPressed: () => Navigator.of(dialogContext).pop(),
                 child: Text(l10n.cancel),
               ),

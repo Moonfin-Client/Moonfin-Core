@@ -15,6 +15,7 @@ enum TextFieldType {
 }
 
 class CustomTVTextField extends StatefulWidget {
+  static final ValueNotifier<bool> isKeyboardVisibleNotifier = ValueNotifier<bool>(false);
   final TextEditingController controller;
   final bool isFocused;
   final String hint;
@@ -244,7 +245,9 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
   }
 
   void _notifyVisibilityChanged() {
-    widget.onVisibilityChanged?.call(isKeyboardVisible);
+    final visible = isKeyboardVisible;
+    CustomTVTextField.isKeyboardVisibleNotifier.value = visible;
+    widget.onVisibilityChanged?.call(visible);
   }
 
   @override
@@ -385,6 +388,9 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
 
   @override
   void dispose() {
+    if (isKeyboardVisible) {
+      CustomTVTextField.isKeyboardVisibleNotifier.value = false;
+    }
     widget.controller.removeListener(_onTextChanged);
     _systemInputFocusNode.removeListener(_onSystemInputFocusChanged);
     _keyboardController.removeListener(_onKeyboardStateChanged);

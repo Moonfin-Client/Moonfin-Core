@@ -125,6 +125,7 @@ dependencies:
     path: packages/custom_tv_text_field_fork
   speech_to_text: ^7.3.0
   qr_flutter: ^4.1.0
+  adaptive_platform_ui: ^0.1.107
 
   # Tizen (Samsung TV) federated plugin implementations. These contribute only
   # to the `tizen` platform (no-ops on other platforms) and are resolved by

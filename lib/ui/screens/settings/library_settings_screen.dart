@@ -7,6 +7,7 @@ import '../../../data/models/aggregated_library.dart';
 import '../../../data/repositories/user_views_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../navigation/home_refresh_bus.dart';
+import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import 'settings_app_bar.dart';
@@ -67,13 +68,17 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
     }
   }
 
-  Future<void> _toggleExclude(String libraryId, bool hidden,
-      {required bool isLatest}) {
+  Future<void> _toggleExclude(
+    String libraryId,
+    bool hidden, {
+    required bool isLatest,
+  }) {
     final config = _config;
     if (config == null) return Future.value();
 
-    final source =
-        isLatest ? config.latestItemsExcludes : config.myMediaExcludes;
+    final source = isLatest
+        ? config.latestItemsExcludes
+        : config.myMediaExcludes;
     final excludes = List<String>.from(source);
     if (hidden) {
       if (!excludes.contains(libraryId)) excludes.add(libraryId);
@@ -102,11 +107,10 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      RequestInitialFocus(
-        targetNode: PlatformDetection.isTV ? _firstLibraryFocusNode : null,
-        child: _buildContent(context),
-      );
+  Widget build(BuildContext context) => RequestInitialFocus(
+    targetNode: PlatformDetection.isTV ? _firstLibraryFocusNode : null,
+    child: _buildContent(context),
+  );
 
   Widget _buildContent(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -145,52 +149,62 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
           child: Text(lib.name, style: Theme.of(context).textTheme.titleMedium),
         ),
-        TvFocusHighlight(
-          builder: (_, focused) => SwitchListTile(
-            focusNode: lib.id == firstLibId ? _firstLibraryFocusNode : null,
-            secondary: Icon(Icons.visibility,
-                color: focused
-                    ? AppColors.black.withValues(alpha: 0.54)
-                    : null),
-            title: Text(
-              l10n.showInNavigation,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: focused
-                    ? AppColors.black.withValues(alpha: 0.87)
-                    : AppColorScheme.onSurface,
-              ),
-            ),
-            value: !config.myMediaExcludes.contains(lib.id),
-            onChanged: (v) => _toggleExclude(lib.id, !v, isLatest: false),
-          ),
-        ),
-        // Playlists and boxsets use a different API path for their row content
-        // (getItems with type filtering rather than getLatestItems on a parent).
-        // Until a dedicated Latest row type exists for these, hide the toggle
-        // to avoid surfacing a setting that has no effect.
-        if (!_noLatestMediaSupport.contains(lib.collectionType.toLowerCase()))
-          TvFocusHighlight(
-            builder: (_, focused) => SwitchListTile(
-              secondary: Icon(Icons.new_releases,
+        adaptiveListSection(
+          children: [
+            TvFocusHighlight(
+              builder: (_, focused) => SwitchListTile.adaptive(
+                focusNode: lib.id == firstLibId ? _firstLibraryFocusNode : null,
+                secondary: Icon(
+                  Icons.visibility,
                   color: focused
                       ? AppColors.black.withValues(alpha: 0.54)
-                      : null),
-              title: Text(
-                l10n.showInLatestMedia,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: focused
-                      ? AppColors.black.withValues(alpha: 0.87)
-                      : AppColorScheme.onSurface,
+                      : null,
+                ),
+                title: Text(
+                  l10n.showInNavigation,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: focused
+                        ? AppColors.black.withValues(alpha: 0.87)
+                        : AppColorScheme.onSurface,
+                  ),
+                ),
+                value: !config.myMediaExcludes.contains(lib.id),
+                onChanged: (v) => _toggleExclude(lib.id, !v, isLatest: false),
+              ),
+            ),
+            // Playlists and boxsets use a different API path for their row content
+            // (getItems with type filtering rather than getLatestItems on a parent).
+            // Until a dedicated Latest row type exists for these, hide the toggle
+            // to avoid surfacing a setting that has no effect.
+            if (!_noLatestMediaSupport.contains(
+              lib.collectionType.toLowerCase(),
+            ))
+              TvFocusHighlight(
+                builder: (_, focused) => SwitchListTile.adaptive(
+                  secondary: Icon(
+                    Icons.new_releases,
+                    color: focused
+                        ? AppColors.black.withValues(alpha: 0.54)
+                        : null,
+                  ),
+                  title: Text(
+                    l10n.showInLatestMedia,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: focused
+                          ? AppColors.black.withValues(alpha: 0.87)
+                          : AppColorScheme.onSurface,
+                    ),
+                  ),
+                  value: !config.latestItemsExcludes.contains(lib.id),
+                  onChanged: (v) => _toggleExclude(lib.id, !v, isLatest: true),
                 ),
               ),
-              value: !config.latestItemsExcludes.contains(lib.id),
-              onChanged: (v) => _toggleExclude(lib.id, !v, isLatest: true),
-            ),
-          ),
+          ],
+        ),
       ],
     ];
   }
@@ -199,5 +213,4 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
   /// getLatestItems on these parents returns container contents (movies, episodes)
   /// rather than the container items themselves, which causes duplicate rows.
   static const _noLatestMediaSupport = {'playlists', 'boxsets'};
-
 }

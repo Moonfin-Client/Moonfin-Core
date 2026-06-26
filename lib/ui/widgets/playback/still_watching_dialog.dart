@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../adaptive/adaptive_dialog.dart';
 import '../overlay_sheet.dart';
 
 class StillWatchingDialog extends StatelessWidget {
@@ -28,7 +29,7 @@ class StillWatchingDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return AlertDialog(
+    return AlertDialog.adaptive(
       backgroundColor: AppColorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Text(
@@ -48,7 +49,7 @@ class StillWatchingDialog extends StatelessWidget {
       ),
       actionsAlignment: MainAxisAlignment.center,
       actions: [
-        TextButton(
+        adaptiveDialogAction(
           onPressed: onStop,
           child: Text(
             l10n.stillWatchingStop,

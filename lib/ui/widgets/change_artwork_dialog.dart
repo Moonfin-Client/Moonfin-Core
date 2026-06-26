@@ -10,6 +10,7 @@ import '../../data/models/aggregated_item.dart';
 import '../../l10n/app_localizations.dart';
 import '../../util/focus/key_event_utils.dart';
 import '../../util/platform_detection.dart';
+import 'adaptive/adaptive_dialog.dart';
 import 'focus/focusable_wrapper.dart';
 import 'overlay_sheet.dart';
 
@@ -552,16 +553,16 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
 
     final result = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AlertDialog.adaptive(
         backgroundColor: AppColorScheme.surface,
         title: Text(l10n.confirmClear),
         content: Text(message),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(context, false),
             child: Text(l10n.no),
           ),
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(context, true),
             child: Text(
               l10n.yes,
@@ -622,16 +623,16 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     final l10n = AppLocalizations.of(context);
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AlertDialog.adaptive(
         backgroundColor: AppColorScheme.surface,
         title: Text(l10n.confirmClearAll),
         content: Text(l10n.clearAllArtworkWarning),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(context, false),
             child: Text(l10n.no),
           ),
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(context, true),
             child: Text(
               l10n.yes,
@@ -953,7 +954,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       builder: (dialogContext) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            return AlertDialog(
+            return AlertDialog.adaptive(
               backgroundColor: AppColorScheme.surface,
               title: Text(l10n.sources),
               content: SizedBox(

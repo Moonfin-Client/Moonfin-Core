@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../widgets/adaptive/adaptive_dialog.dart';
 
 class AdminMetadataEditScreen extends StatefulWidget {
   final String itemId;
@@ -430,7 +431,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
       builder:
           (ctx) => StatefulBuilder(
             builder:
-                (ctx, setStateDialog) => AlertDialog(
+                (ctx, setStateDialog) => AlertDialog.adaptive(
                   title: Text(l10n.adminRefreshMetadata),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -463,7 +464,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
                     ],
                   ),
                   actions: [
-                    TextButton(
+                    adaptiveDialogAction(
                       onPressed: () => Navigator.pop(ctx, false),
                       child: Text(l10n.cancel),
                     ),
@@ -503,7 +504,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
     final query = await showDialog<String>(
       context: context,
       builder:
-          (ctx) => AlertDialog(
+          (ctx) => AlertDialog.adaptive(
             title: Text(l10n.adminSearchRemotePerson),
             content: TextField(
               controller: queryController,
@@ -515,7 +516,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
               onSubmitted: (v) => Navigator.pop(ctx, v.trim()),
             ),
             actions: [
-              TextButton(
+              adaptiveDialogAction(
                 onPressed: () => Navigator.pop(ctx),
                 child: Text(l10n.cancel),
               ),
@@ -548,7 +549,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
       final selected = await showDialog<Map<String, dynamic>>(
         context: context,
         builder:
-            (ctx) => AlertDialog(
+            (ctx) => AlertDialog.adaptive(
               title: Text(l10n.adminRemoteResults),
               content: SizedBox(
                 width: (MediaQuery.sizeOf(ctx).width - 32).clamp(280.0, 560.0),
@@ -572,7 +573,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
                 ),
               ),
               actions: [
-                TextButton(
+                adaptiveDialogAction(
                   onPressed: () => Navigator.pop(ctx),
                   child: Text(l10n.cancel),
                 ),
@@ -601,7 +602,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
     final value = await showDialog<String>(
       context: context,
       builder:
-          (ctx) => AlertDialog(
+          (ctx) => AlertDialog.adaptive(
             title: Text(title),
             content: TextField(
               controller: controller,
@@ -610,7 +611,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
               onSubmitted: (v) => Navigator.pop(ctx, v.trim()),
             ),
             actions: [
-              TextButton(
+              adaptiveDialogAction(
                 onPressed: () => Navigator.pop(ctx),
                 child: Text(l10n.cancel),
               ),
@@ -643,7 +644,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
     final person = await showDialog<Map<String, String>>(
       context: context,
       builder:
-          (ctx) => AlertDialog(
+          (ctx) => AlertDialog.adaptive(
             title: Text(index == null ? l10n.adminMetadataAddPerson : l10n.adminMetadataEditPerson),
             content: SingleChildScrollView(
               child: Column(
@@ -676,7 +677,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
               ),
             ),
             actions: [
-              TextButton(
+              adaptiveDialogAction(
                 onPressed: () => Navigator.pop(ctx),
                 child: Text(l10n.cancel),
               ),
@@ -730,7 +731,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
       builder:
           (ctx) => StatefulBuilder(
             builder:
-                (ctx, setStateDialog) => AlertDialog(
+                (ctx, setStateDialog) => AlertDialog.adaptive(
                   title: Text(l10n.adminUpdateContentType),
                   content: DropdownButtonFormField<String>(
                     initialValue: selectedValue,
@@ -754,7 +755,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
                     },
                   ),
                   actions: [
-                    TextButton(
+                    adaptiveDialogAction(
                       onPressed: () => Navigator.pop(ctx),
                       child: Text(l10n.cancel),
                     ),
@@ -1312,13 +1313,13 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder:
-          (ctx) => AlertDialog(
+          (ctx) => AlertDialog.adaptive(
             title: Text(l10n.adminMetadataDeleteImageTitle(imageType.toServerString())),
             content: Text(
               l10n.adminMetadataDeleteImageContent,
             ),
             actions: [
-              TextButton(
+              adaptiveDialogAction(
                 onPressed: () => Navigator.pop(ctx, false),
                 child: Text(l10n.cancel),
               ),

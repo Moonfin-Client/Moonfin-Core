@@ -49,6 +49,9 @@ class ConnectivityService extends ChangeNotifier {
     if (PlatformDetection.isAppleTV) {
       _isOnline = true;
       await _checkServerReachability();
+      if (_serverReachable) {
+        _triggerSync();
+      }
       _initialCheckDone = true;
       notifyListeners();
       return;
@@ -57,6 +60,9 @@ class ConnectivityService extends ChangeNotifier {
     _isOnline = results.any((r) => r != ConnectivityResult.none);
     if (_isOnline) {
       await _checkServerReachability();
+      if (_serverReachable) {
+        _triggerSync();
+      }
     } else {
       _serverReachable = false;
     }

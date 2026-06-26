@@ -48,6 +48,7 @@ import '../../../util/focus/dpad_keys.dart';
 import '../../../util/play_method_label.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
+import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/subtitle_preview.dart';
 import '../../screensaver/screensaver_controller.dart';
 import '../../widgets/remote_play_to_session_dialog.dart';
@@ -2428,7 +2429,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       });
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          Navigator.of(context).pop();
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            Navigator.of(context).pop();
+          }
         }
       });
     }
@@ -3378,7 +3383,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     if (_showNextUp && _nextUpItem != null)
                       NextUpOverlay(
                         nextItem: _nextUpItem!,
-                        imageUrl: _nextUpItem!.primaryImageTag != null
+                        isMinimal: _prefs.get(UserPreferences.nextUpBehavior) == NextUpBehavior.minimal,
+                        imageUrl: _nextUpItem!.primaryImageTag != null &&
+                                _prefs.get(UserPreferences.nextUpBehavior) != NextUpBehavior.minimal
                             ? _clientForItem(
                                 _nextUpItem!,
                               ).imageApi.getPrimaryImageUrl(
@@ -3783,7 +3790,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 tooltip: PlatformDetection.useDesktopUi
                     ? _tooltipMessage(l10n.back, shortcut: 'Esc')
                     : null,
-                icon: const Icon(
+                icon: const AdaptiveIcon(
                   Icons.arrow_back,
                   color: Colors.white,
                   size: 24,
@@ -3801,7 +3808,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     _isOsdLocked = true;
                   });
                 },
-                icon: const Icon(
+                icon: const AdaptiveIcon(
                   Icons.lock_outline,
                   color: Colors.white,
                   size: 22,
@@ -4344,7 +4351,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     errorBuilder: (_, _, _) => Container(
                       color: Colors.white.withValues(alpha: 0.08),
                       alignment: Alignment.center,
-                      child: Icon(
+                      child: AdaptiveIcon(
                         Icons.movie,
                         color: Colors.white.withValues(alpha: 0.45),
                       ),
@@ -5328,7 +5335,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Colors.white, size: 24),
+          AdaptiveIcon(icon, color: Colors.white, size: 24),
           const SizedBox(height: 10),
           SizedBox(
             height: barHeight,
@@ -5390,7 +5397,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
+                AdaptiveIcon(
                   isForward
                       ? Icons.fast_forward_rounded
                       : Icons.fast_rewind_rounded,
@@ -5448,7 +5455,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.lock, color: Colors.white70, size: 18),
+                      const AdaptiveIcon(Icons.lock, color: Colors.white70, size: 18),
                       const SizedBox(width: 8),
                       Text(
                         AppLocalizations.of(context).longPressToUnlock,
@@ -5552,7 +5559,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         tooltip: tooltip,
         onPressed: () => _handleControlButtonPress(onPressed),
         onRightBoundary: onRightBoundary,
-        child: Icon(icon, color: iconColor, size: size),
+        child: AdaptiveIcon(icon, color: iconColor, size: size),
       );
     }
     return SizedBox(
@@ -5562,7 +5569,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         focusNode: focusNode,
         onPressed: () => _handleControlButtonPress(onPressed),
         tooltip: PlatformDetection.useDesktopUi ? tooltip : null,
-        icon: Icon(icon, color: iconColor, size: size),
+        icon: AdaptiveIcon(icon, color: iconColor, size: size),
         padding: EdgeInsets.zero,
         constraints: const BoxConstraints(),
       ),
@@ -5628,7 +5635,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 controller.open();
               }
             },
-            icon: Icon(
+            icon: AdaptiveIcon(
               _volumeIcon(_osdVolume),
               color: Colors.white,
               size: iconSize,
@@ -5663,7 +5670,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     setMenuState(() {});
                     _toggleMute();
                   },
-                  icon: Icon(
+                  icon: AdaptiveIcon(
                     _volumeIcon(_osdVolume),
                     color: Colors.white,
                     size: 20,
@@ -6285,7 +6292,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     ),
                     child: Row(
                       children: [
-                        Icon(
+                        AdaptiveIcon(
                           icon,
                           color: Colors.white.withValues(alpha: 0.8),
                           size: 20,
@@ -6314,7 +6321,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                         padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
                         child: Row(
                           children: [
-                            const Icon(
+                            const AdaptiveIcon(
                               Icons.volume_up_rounded,
                               color: Colors.white,
                               size: 18,
@@ -6781,7 +6788,7 @@ class _CastPersonTileState extends State<_CastPersonTile> {
                         ? NetworkImage(widget.imageUrl!)
                         : null,
                     child: widget.imageUrl == null
-                        ? const Icon(
+                        ? const AdaptiveIcon(
                             Icons.person,
                             color: Colors.white54,
                             size: 32,
@@ -6887,7 +6894,7 @@ class _DelayFooterState extends State<_DelayFooter> {
             children: [
               IconButton(
                 onPressed: () => _adjust(-0.1),
-                icon: const Icon(
+                icon: const AdaptiveIcon(
                   Icons.remove_circle_outline,
                   color: Colors.white,
                   size: 28,
@@ -6925,7 +6932,7 @@ class _DelayFooterState extends State<_DelayFooter> {
               ),
               IconButton(
                 onPressed: () => _adjust(0.1),
-                icon: const Icon(
+                icon: const AdaptiveIcon(
                   Icons.add_circle_outline,
                   color: Colors.white,
                   size: 28,

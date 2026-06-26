@@ -47,19 +47,38 @@ class JellyfinPlaybackApi implements PlaybackApi {
     final mediaSourceId = requestBody?['MediaSourceId'] ?? requestBody?['mediaSourceId'];
     final maxStreamingBitrate = requestBody?['MaxStreamingBitrate'] ?? requestBody?['maxStreamingBitrate'];
 
-    final response = await _dio.post(
-      '/Items/$itemId/PlaybackInfo',
-      data: body,
-      queryParameters: {
-        'userId': ?userId,
-        'startTimeTicks': ?startTimeTicks,
-        'audioStreamIndex': ?audioStreamIndex?.toString(),
-        'subtitleStreamIndex': ?subtitleStreamIndex?.toString(),
-        'mediaSourceId': ?mediaSourceId,
-        'maxStreamingBitrate': ?maxStreamingBitrate?.toString(),
-      },
-    );
-    return response.data as Map<String, dynamic>;
+    final query = <String, dynamic>{
+      'userId': ?userId,
+      'startTimeTicks': ?startTimeTicks,
+      'audioStreamIndex': ?audioStreamIndex?.toString(),
+      'subtitleStreamIndex': ?subtitleStreamIndex?.toString(),
+      'mediaSourceId': ?mediaSourceId,
+      'maxStreamingBitrate': ?maxStreamingBitrate?.toString(),
+    };
+
+    try {
+      final response = await _dio.post(
+        '/Items/$itemId/PlaybackInfo',
+        data: body,
+        queryParameters: query,
+      );
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      if (e.response?.statusCode != 500) rethrow;
+      try {
+        final retry = await _dio.post(
+          '/Items/$itemId/PlaybackInfo',
+          data: <String, dynamic>{'UserId': ?userId},
+          queryParameters: query,
+        );
+        return retry.data as Map<String, dynamic>;
+      } on DioException catch (e2) {
+        throw Exception(
+          'PlaybackInfo failed for item $itemId: '
+          'HTTP ${e2.response?.statusCode} ${e2.response?.data}',
+        );
+      }
+    }
   }
 
   @override

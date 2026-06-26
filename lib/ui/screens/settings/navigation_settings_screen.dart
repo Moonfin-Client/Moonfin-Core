@@ -6,6 +6,7 @@ import '../../../data/services/plugin_sync_service.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/overlay_color_palette.dart';
+import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
@@ -68,68 +69,78 @@ class _NavigationSettingsScreenState extends State<NavigationSettingsScreen> {
         appBar: buildSettingsAppBar(context, Text(l10n.navigation)),
         body: ListView(
           children: [
-            ListTile(
-              leading: const Icon(Icons.view_sidebar),
-              title: Text(l10n.navigationStyle),
-              subtitle: Text(_navbarPositionLabel(navbarPosition, l10n)),
-              onTap: () {
-                var index = positions.indexOf(navbarPosition);
-                if (index < 0) index = 0;
-                final newPos = positions[(index + 1) % positions.length];
-                _prefs.set(UserPreferences.navbarPosition, newPos);
-                _pushSync();
-                NavigationLayout.positionNotifier.value = newPos;
-                setState(() {});
-              },
+            adaptiveListSection(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.view_sidebar),
+                  title: Text(l10n.navigationStyle),
+                  subtitle: Text(_navbarPositionLabel(navbarPosition, l10n)),
+                  onTap: () {
+                    var index = positions.indexOf(navbarPosition);
+                    if (index < 0) index = 0;
+                    final newPos = positions[(index + 1) % positions.length];
+                    _prefs.set(UserPreferences.navbarPosition, newPos);
+                    _pushSync();
+                    NavigationLayout.positionNotifier.value = newPos;
+                    setState(() {});
+                  },
+                ),
+              ],
             ),
-            const Divider(),
-            SwitchPreferenceTile(
-              preference: UserPreferences.showShuffleButton,
-              title: l10n.showShuffleButton,
-              icon: Icons.shuffle,
-              onChanged: _pushSync,
+            adaptiveListSection(
+              children: [
+                SwitchPreferenceTile(
+                  preference: UserPreferences.showShuffleButton,
+                  title: l10n.showShuffleButton,
+                  icon: Icons.shuffle,
+                  onChanged: _pushSync,
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.showGenresButton,
+                  title: l10n.showGenresButton,
+                  icon: Icons.category,
+                  onChanged: _pushSync,
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.showFavoritesButton,
+                  title: l10n.showFavoritesButton,
+                  icon: Icons.favorite,
+                  onChanged: _pushSync,
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.showLibrariesInToolbar,
+                  title: l10n.showLibrariesInToolbar,
+                  iconBuilder: (size, color) => Image.asset(
+                    'assets/icons/clapperboard.png',
+                    width: size,
+                    height: size,
+                    color: color,
+                    fit: BoxFit.contain,
+                  ),
+                  onChanged: _pushSync,
+                ),
+              ],
             ),
-            SwitchPreferenceTile(
-              preference: UserPreferences.showGenresButton,
-              title: l10n.showGenresButton,
-              icon: Icons.category,
-              onChanged: _pushSync,
-            ),
-            SwitchPreferenceTile(
-              preference: UserPreferences.showFavoritesButton,
-              title: l10n.showFavoritesButton,
-              icon: Icons.favorite,
-              onChanged: _pushSync,
-            ),
-            SwitchPreferenceTile(
-              preference: UserPreferences.showLibrariesInToolbar,
-              title: l10n.showLibrariesInToolbar,
-              iconBuilder: (size, color) => Image.asset(
-                'assets/icons/clapperboard.png',
-                width: size,
-                height: size,
-                color: color,
-                fit: BoxFit.contain,
-              ),
-              onChanged: _pushSync,
-            ),
-            const Divider(),
-            SliderPreferenceTile(
-              preference: UserPreferences.navbarOpacity,
-              title: l10n.navbarOpacity,
-              icon: Icons.opacity,
-              min: 0,
-              max: 100,
-              divisions: 20,
-              labelOf: (v) => l10n.percentValue(v),
-              onChangeEnd: _pushSync,
-            ),
-            StringPickerPreferenceTile(
-              preference: UserPreferences.navbarColor,
-              title: l10n.navbarColor,
-              icon: Icons.color_lens,
-              options: OverlayColorPalette.localizedOptions(l10n),
-              onChanged: _pushSync,
+            adaptiveListSection(
+              children: [
+                SliderPreferenceTile(
+                  preference: UserPreferences.navbarOpacity,
+                  title: l10n.navbarOpacity,
+                  icon: Icons.opacity,
+                  min: 0,
+                  max: 100,
+                  divisions: 20,
+                  labelOf: (v) => l10n.percentValue(v),
+                  onChangeEnd: _pushSync,
+                ),
+                StringPickerPreferenceTile(
+                  preference: UserPreferences.navbarColor,
+                  title: l10n.navbarColor,
+                  icon: Icons.color_lens,
+                  options: OverlayColorPalette.localizedOptions(l10n),
+                  onChanged: _pushSync,
+                ),
+              ],
             ),
           ],
         ),

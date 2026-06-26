@@ -34,6 +34,8 @@ import '../../../ui/mixins/focus_state_mixin.dart';
 import '../../../auth/repositories/user_repository.dart';
 import '../../../util/focus/key_event_utils.dart';
 import '../../navigation/destinations.dart';
+import '../../widgets/adaptive/adaptive_dialog.dart';
+import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/add_to_playlist_dialog.dart';
 import '../../widgets/logo_view.dart';
 import '../../widgets/media_card.dart';
@@ -100,12 +102,12 @@ Future<bool> _showDeleteConfirmationDialog(
 }) async {
   final confirmed = await showFocusRestoringDialog<bool>(
     context: context,
-    builder: (ctx) => AlertDialog(
+    builder: (ctx) => AlertDialog.adaptive(
       backgroundColor: const Color(0xFF171717),
       title: Text(title, style: const TextStyle(color: Colors.white)),
       content: Text(message, style: const TextStyle(color: Colors.white70)),
       actions: [
-        TextButton(
+        adaptiveDialogAction(
           onPressed: () => Navigator.pop(ctx, false),
           child: Text(
             AppLocalizations.of(ctx).cancel,
@@ -323,7 +325,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: IconButton(
-                  icon: const Icon(
+                  icon: const AdaptiveIcon(
                     Icons.arrow_back,
                     color: Colors.white,
                     size: 24,
@@ -351,7 +353,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, color: Colors.white54, size: 48),
+            const AdaptiveIcon(
+              Icons.error_outline,
+              color: Colors.white54,
+              size: 48,
+            ),
             const SizedBox(height: 16),
             Text(
               _viewModel.errorMessage ??
@@ -850,7 +856,7 @@ class _DetailContentState extends State<_DetailContent> {
             ? CachedNetworkImageProvider(imageUrl)
             : null,
         child: imageUrl == null
-            ? const Icon(Icons.person, color: Colors.white54, size: 64)
+            ? const AdaptiveIcon(Icons.person, color: Colors.white54, size: 64)
             : null,
       ),
     );
@@ -1238,7 +1244,7 @@ class _DetailContentState extends State<_DetailContent> {
                     ? Container(
                         color: const Color(0xFF2C77B7),
                         alignment: Alignment.center,
-                        child: const Icon(
+                        child: const AdaptiveIcon(
                           Icons.auto_stories_rounded,
                           color: Colors.white,
                           size: 30,
@@ -1250,7 +1256,7 @@ class _DetailContentState extends State<_DetailContent> {
                         errorWidget: (_, _, _) => Container(
                           color: const Color(0xFF2C77B7),
                           alignment: Alignment.center,
-                          child: const Icon(
+                          child: const AdaptiveIcon(
                             Icons.auto_stories_rounded,
                             color: Colors.white,
                             size: 30,
@@ -2622,7 +2628,7 @@ class _DetailContentState extends State<_DetailContent> {
 
     final ok = await showFocusRestoringDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         backgroundColor: const Color(0xFF171717),
         title: Text(
           l10n.deleteDownloadedAlbum,
@@ -2633,7 +2639,7 @@ class _DetailContentState extends State<_DetailContent> {
           style: const TextStyle(color: Colors.white70),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
               l10n.cancel,
@@ -2704,7 +2710,7 @@ class _DetailContentState extends State<_DetailContent> {
     final controller = TextEditingController(text: item.name);
     final newName = await showFocusRestoringDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         backgroundColor: const Color(0xFF171717),
         title: Text(
           l10n.renamePlaylist,
@@ -2718,7 +2724,7 @@ class _DetailContentState extends State<_DetailContent> {
           onSubmitted: (_) => Navigator.pop(ctx, controller.text.trim()),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
               l10n.cancel,
@@ -3334,7 +3340,11 @@ class _DownloadedBadgeState extends State<_DownloadedBadge> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.download_done, color: Colors.white, size: 12),
+            const AdaptiveIcon(
+              Icons.download_done,
+              color: Colors.white,
+              size: 12,
+            ),
             const SizedBox(width: 3),
             Text(
               AppLocalizations.of(context).downloaded,
@@ -3397,7 +3407,7 @@ class _PosterImage extends StatelessWidget {
                   color: Colors.black.withValues(alpha: 0.6),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: const AdaptiveIcon(
                   Icons.favorite,
                   color: Color(0xFFFF4757),
                   size: 16,
@@ -3415,7 +3425,7 @@ class _PosterImage extends StatelessWidget {
                 ),
                 child: const Padding(
                   padding: EdgeInsets.all(3),
-                  child: Icon(Icons.check, color: Colors.white, size: 12),
+                  child: AdaptiveIcon(Icons.check, color: Colors.white, size: 12),
                 ),
               ),
             ),
@@ -3487,7 +3497,7 @@ class _EpisodeThumbnail extends StatelessWidget {
                   color: Colors.black.withValues(alpha: 0.6),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: const AdaptiveIcon(
                   Icons.favorite,
                   color: Color(0xFFFF4757),
                   size: 14,
@@ -3505,7 +3515,7 @@ class _EpisodeThumbnail extends StatelessWidget {
                 ),
                 child: const Padding(
                   padding: EdgeInsets.all(3),
-                  child: Icon(Icons.check, color: Colors.white, size: 10),
+                  child: AdaptiveIcon(Icons.check, color: Colors.white, size: 10),
                 ),
               ),
             ),
@@ -4207,11 +4217,15 @@ class _AuthorHeader extends StatelessWidget {
               width: 84,
               height: 84,
               child: photoUrl == null
-                  ? const Icon(Icons.person, size: 36, color: Color(0xFFE4F0FA))
+                  ? const AdaptiveIcon(
+                      Icons.person,
+                      size: 36,
+                      color: Color(0xFFE4F0FA),
+                    )
                   : CachedNetworkImage(
                       imageUrl: photoUrl!,
                       fit: BoxFit.cover,
-                      errorWidget: (_, _, _) => const Icon(
+                      errorWidget: (_, _, _) => const AdaptiveIcon(
                         Icons.person,
                         size: 36,
                         color: Color(0xFFE4F0FA),
@@ -4260,7 +4274,7 @@ class _AuthorBookTile extends StatelessWidget {
                   color: const Color(0xFF2C77B7),
                   child: book.coverUrl == null
                       ? const Center(
-                          child: Icon(
+                          child: AdaptiveIcon(
                             Icons.auto_stories_rounded,
                             color: Colors.white,
                             size: 28,
@@ -4273,7 +4287,7 @@ class _AuthorBookTile extends StatelessWidget {
                           errorWidget: (_, _, _) => Container(
                             color: const Color(0xFF2C77B7),
                             alignment: Alignment.center,
-                            child: const Icon(
+                            child: const AdaptiveIcon(
                               Icons.auto_stories_rounded,
                               color: Colors.white,
                               size: 28,
@@ -4289,7 +4303,7 @@ class _AuthorBookTile extends StatelessWidget {
                   child: CircleAvatar(
                     radius: 12,
                     backgroundColor: Color(0xFF2FA74B),
-                    child: Icon(Icons.check, size: 15, color: Colors.white),
+                    child: AdaptiveIcon(Icons.check, size: 15, color: Colors.white),
                   ),
                 ),
             ],
@@ -5642,7 +5656,7 @@ class _ActionButtonsState extends State<_ActionButtons> {
             },
             child: Row(
               children: [
-                Icon(option.icon, size: 22),
+                AdaptiveIcon(option.icon, size: 22),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Text(
@@ -5939,6 +5953,50 @@ class _ActionButtonsState extends State<_ActionButtons> {
     await routeFuture;
     _syncAudioSelectionFromActivePlayback();
     _syncSubtitleSelectionFromActivePlayback();
+
+    final lastPlayed = manager.lastPlayedItem;
+    if (lastPlayed is AggregatedItem) {
+      final lastPlayedType = lastPlayed.type?.toLowerCase();
+      final currentType = viewModel.item?.type?.toLowerCase();
+
+      if (currentType == 'episode' &&
+          lastPlayedType == 'episode' &&
+          lastPlayed.id != widget.itemId) {
+        if (context.mounted) {
+          final currentSeasonId = viewModel.item?.seasonId;
+          if (lastPlayed.seasonId != null &&
+              lastPlayed.seasonId!.isNotEmpty &&
+              lastPlayed.seasonId != currentSeasonId) {
+            final router = GoRouter.of(context);
+            router.pushReplacement(
+              Destinations.item(lastPlayed.seasonId!, serverId: lastPlayed.serverId),
+            );
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              router.push(
+                Destinations.item(lastPlayed.id, serverId: lastPlayed.serverId),
+              );
+            });
+          } else {
+            context.pushReplacement(
+              Destinations.item(lastPlayed.id, serverId: lastPlayed.serverId),
+            );
+          }
+        }
+        return true;
+      } else if (currentType == 'season' &&
+          lastPlayedType == 'episode' &&
+          lastPlayed.seasonId != null &&
+          lastPlayed.seasonId!.isNotEmpty &&
+          lastPlayed.seasonId != widget.itemId) {
+        if (context.mounted) {
+          context.pushReplacement(
+            Destinations.item(lastPlayed.seasonId!, serverId: lastPlayed.serverId),
+          );
+        }
+        return true;
+      }
+    }
+
     if (reloadOnReturn) {
       viewModel.load();
     }
@@ -7201,7 +7259,7 @@ _showDolbyVisionDirectPlayStartupFailureDecisionDialog(
   final retryWithTranscode = await showFocusRestoringDialog<bool>(
     context: context,
     builder: (dialogContext) {
-      return AlertDialog(
+      return AlertDialog.adaptive(
         title: Text(l10n.dolbyVisionDirectPlayFailedTitle),
         content: Text(l10n.dolbyVisionDirectPlayFailedMessage),
         actions: [
@@ -7299,7 +7357,7 @@ Future<_DolbyVisionPlayDecision?> _showDolbyVisionFallbackDecisionDialog(
     builder: (dialogContext) {
       return StatefulBuilder(
         builder: (dialogContext, setDialogState) {
-          return AlertDialog(
+          return AlertDialog.adaptive(
             title: Text(l10n.dolbyVisionNotSupportedTitle),
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -7314,7 +7372,7 @@ Future<_DolbyVisionPlayDecision?> _showDolbyVisionFallbackDecisionDialog(
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
+                      AdaptiveIcon(
                         rememberChoice
                             ? Icons.check_box
                             : Icons.check_box_outline_blank,
@@ -7865,7 +7923,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
             ),
             ...availableQualities.map(
               (quality) => ListTile(
-                leading: Icon(
+                leading: AdaptiveIcon(
                   quality.isTranscoded
                       ? Icons.compress
                       : Icons.file_copy_outlined,
@@ -8008,7 +8066,7 @@ class _DeleteDownloadButtonState extends State<_DeleteDownloadButton> {
 
     final confirmed = await showFocusRestoringDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         backgroundColor: const Color(0xFF1E1E1E),
         title: Text(
           AppLocalizations.of(ctx).deleteDownloadedFiles,
@@ -8019,7 +8077,7 @@ class _DeleteDownloadButtonState extends State<_DeleteDownloadButton> {
           style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(AppLocalizations.of(ctx).cancel),
           ),
@@ -8319,7 +8377,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                       isMobile ? 14 : 15 * desktopScale,
                     ),
                   ),
-                  child: Icon(
+                  child: AdaptiveIcon(
                     widget.icon,
                     color: iconColor,
                     size: isMobile ? 22 : 27 * desktopScale,
@@ -8530,7 +8588,7 @@ class _CastPersonCardState extends State<_CastPersonCard> with FocusStateMixin {
                           ? CachedNetworkImageProvider(widget.imageUrl!)
                           : null,
                       child: widget.imageUrl == null
-                          ? Icon(
+                          ? AdaptiveIcon(
                               Icons.person,
                               color: Colors.white54,
                               size: widget.isMobile ? 24 : 32,
@@ -8906,7 +8964,7 @@ class _ChapterListCardState extends State<_ChapterListCard>
                             errorBuilder: (_, _, _) => Container(
                               color: Colors.white.withValues(alpha: 0.08),
                               alignment: Alignment.center,
-                              child: Icon(
+                              child: AdaptiveIcon(
                                 Icons.movie,
                                 size: widget.isMobile ? 22 : 26,
                                 color: Colors.white.withValues(alpha: 0.4),
@@ -9861,7 +9919,7 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
                           fit: BoxFit.cover,
                           errorWidget: (_, _, _) => Container(
                             color: Colors.white.withValues(alpha: 0.05),
-                            child: const Icon(
+                            child: const AdaptiveIcon(
                               Icons.movie,
                               color: Colors.white24,
                               size: 32,
@@ -9871,7 +9929,7 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
                       else
                         Container(
                           color: Colors.white.withValues(alpha: 0.05),
-                          child: const Icon(
+                          child: const AdaptiveIcon(
                             Icons.movie,
                             color: Colors.white24,
                             size: 32,
@@ -9883,7 +9941,7 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
                         const Positioned(
                           top: 6,
                           right: 6,
-                          child: Icon(
+                          child: AdaptiveIcon(
                             Icons.check_circle,
                             color: Colors.green,
                             size: 18,
@@ -10094,7 +10152,7 @@ class _NextUpCardState extends State<_NextUpCard> with FocusStateMixin {
                     ),
                   ),
                   SizedBox(width: isMobile ? 16 : 16 * desktopScale),
-                  Icon(
+                  AdaptiveIcon(
                     Icons.play_circle_outline,
                     color: Colors.white54,
                     size: isMobile ? 40 : 40 * desktopScale,
@@ -10225,7 +10283,7 @@ class _EpisodeCardState extends State<_EpisodeCard> with FocusStateMixin {
                             fit: BoxFit.cover,
                             errorWidget: (_, _, _) => Container(
                               color: Colors.white.withValues(alpha: 0.05),
-                              child: const Icon(
+                              child: const AdaptiveIcon(
                                 Icons.movie,
                                 color: Colors.white24,
                                 size: 32,
@@ -10235,7 +10293,7 @@ class _EpisodeCardState extends State<_EpisodeCard> with FocusStateMixin {
                         else
                           Container(
                             color: Colors.white.withValues(alpha: 0.05),
-                            child: const Icon(
+                            child: const AdaptiveIcon(
                               Icons.movie,
                               color: Colors.white24,
                               size: 32,
@@ -10256,7 +10314,7 @@ class _EpisodeCardState extends State<_EpisodeCard> with FocusStateMixin {
                               ),
                               child: Padding(
                                 padding: EdgeInsets.all(3),
-                                child: Icon(
+                                child: AdaptiveIcon(
                                   Icons.check,
                                   color: Colors.white,
                                   size: 14,
@@ -10359,7 +10417,11 @@ class _PersonHeader extends StatelessWidget {
           ? CachedNetworkImageProvider(imageUrl)
           : null,
       child: imageUrl == null
-          ? Icon(Icons.person, color: Colors.white54, size: isMobile ? 48 : 64)
+          ? AdaptiveIcon(
+              Icons.person,
+              color: Colors.white54,
+              size: isMobile ? 48 : 64,
+            )
           : null,
     );
 
@@ -10995,7 +11057,7 @@ class _ArtistHeader extends StatelessWidget {
           ? CachedNetworkImageProvider(imageUrl)
           : null,
       child: imageUrl == null
-          ? Icon(
+          ? AdaptiveIcon(
               Icons.music_note,
               color: Colors.white54,
               size: isMobile ? 48 : 64,
@@ -11162,7 +11224,7 @@ class _AlbumHeader extends StatelessWidget {
       width: size,
       height: size,
       color: Colors.white.withValues(alpha: 0.1),
-      child: const Icon(Icons.album, color: Colors.white24, size: 64),
+      child: const AdaptiveIcon(Icons.album, color: Colors.white24, size: 64),
     );
   }
 }
@@ -11783,7 +11845,7 @@ class _TrackTileState extends State<_TrackTile> with FocusStateMixin {
                               _keepTrackVisible();
                             }
                           : null,
-                      icon: Icon(
+                      icon: AdaptiveIcon(
                         Icons.arrow_back,
                         color: showFocusBorder ? Colors.white : Colors.white38,
                         size: 18,
@@ -11802,7 +11864,7 @@ class _TrackTileState extends State<_TrackTile> with FocusStateMixin {
                               _keepTrackVisible();
                             }
                           : null,
-                      icon: Icon(
+                      icon: AdaptiveIcon(
                         Icons.arrow_forward,
                         color: showFocusBorder ? Colors.white : Colors.white38,
                         size: 18,
@@ -11821,7 +11883,7 @@ class _TrackTileState extends State<_TrackTile> with FocusStateMixin {
                       index: widget.reorderIndex,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 6),
-                        child: Icon(
+                        child: AdaptiveIcon(
                           Icons.drag_indicator,
                           color: showFocusBorder
                               ? Colors.white70
@@ -11832,7 +11894,7 @@ class _TrackTileState extends State<_TrackTile> with FocusStateMixin {
                     ),
                   IconButton(
                     onPressed: widget.onTap,
-                    icon: Icon(
+                    icon: AdaptiveIcon(
                       Icons.play_arrow,
                       color: showFocusBorder ? Colors.white : Colors.white54,
                       size: 22,
@@ -11841,7 +11903,7 @@ class _TrackTileState extends State<_TrackTile> with FocusStateMixin {
                   ),
                   IconButton(
                     onPressed: () => _showTrackActions(context),
-                    icon: Icon(
+                    icon: AdaptiveIcon(
                       Icons.more_vert,
                       color: showFocusBorder ? Colors.white : Colors.white54,
                       size: 20,

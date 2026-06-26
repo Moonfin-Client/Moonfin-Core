@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:playback_core/playback_core.dart';
 
 import '../data/database/offline_database.dart';
+import '../data/repositories/offline_repository.dart';
 import '../data/services/offline_playback_tracker.dart';
 import '../data/services/storage_path_service.dart';
 import '../l10n/app_localizations.dart';
@@ -35,10 +36,20 @@ Future<void> launchOfflinePlayback(
   final backend = manager.backend;
   if (backend == null) return;
 
-  final startTicks = item.playbackPositionTicks;
+  // The exit flow fires stop with unawaited, so the tracker's DB write may
+  // still be in flight.  Wait for it before reading the saved position.
+  await manager.pendingStop;
+
+  // Always read the latest position from the DB, not from the (potentially
+  // stale) UI item.  The stop callback writes the position asynchronously,
+  // so the DownloadedItem passed from the grid may not reflect it yet.
+  final repo = GetIt.instance<OfflineRepository>();
+  final freshItem = await repo.getItem(item.itemId);
+  final startTicks = freshItem?.playbackPositionTicks ?? item.playbackPositionTicks;
   final startPos = startTicks > 0
       ? Duration(microseconds: startTicks ~/ 10)
       : Duration.zero;
+
   final metadata = jsonDecode(item.metadataJson) as Map<String, dynamic>;
   final mediaType = metadata['MediaType'] as String?;
   final type = metadata['Type'] as String?;
@@ -110,7 +121,7 @@ Future<void> launchOfflinePlayback(
             codec: sub.codec,
           );
         }
-        tracker.startTracking(
+        await tracker.startTracking(
           itemId: nextResult.itemId,
           duration: nextResult.duration,
           positionStream: backend.positionStream,
@@ -127,7 +138,7 @@ Future<void> launchOfflinePlayback(
       codec: sub.codec,
     );
   }
-  tracker.startTracking(
+  await tracker.startTracking(
     itemId: result.itemId,
     duration: result.duration,
     positionStream: backend.positionStream,

@@ -74,6 +74,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
 
   private var pipChannel: FlutterMethodChannel?
   private var pipController: NSObject?
+  private var sfSymbolChannel: FlutterMethodChannel?
 
   private struct PendingCastRequest {
     let targetId: String
@@ -142,6 +143,40 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
       name: "com.moonfin/ios_storage",
       binaryMessenger: messenger
     )
+
+    let sfSymbolChannel = FlutterMethodChannel(
+      name: "moonfin/sf_symbols",
+      binaryMessenger: messenger
+    )
+    self.sfSymbolChannel = sfSymbolChannel
+    sfSymbolChannel.setMethodCallHandler { (call, result) in
+      guard call.method == "render",
+        let args = call.arguments as? [String: Any],
+        let name = args["name"] as? String
+      else {
+        result(FlutterMethodNotImplemented)
+        return
+      }
+      let size = CGFloat(args["size"] as? Double ?? 18)
+      let scale = CGFloat(args["scale"] as? Double ?? 2)
+      let color = UIColor(
+        red: CGFloat(args["r"] as? Double ?? 1),
+        green: CGFloat(args["g"] as? Double ?? 1),
+        blue: CGFloat(args["b"] as? Double ?? 1),
+        alpha: CGFloat(args["a"] as? Double ?? 1)
+      )
+      let config = UIImage.SymbolConfiguration(pointSize: size, weight: .regular)
+      guard let symbol = UIImage(systemName: name, withConfiguration: config) else {
+        result(nil)
+        return
+      }
+      let tinted = symbol.withTintColor(color, renderingMode: .alwaysOriginal)
+      let format = UIGraphicsImageRendererFormat()
+      format.scale = scale
+      let renderer = UIGraphicsImageRenderer(size: tinted.size, format: format)
+      let data = renderer.pngData { _ in tinted.draw(at: .zero) }
+      result(FlutterStandardTypedData(bytes: data))
+    }
 
       let pipChannel = FlutterMethodChannel(
         name: "org.moonfin.ios/pip",

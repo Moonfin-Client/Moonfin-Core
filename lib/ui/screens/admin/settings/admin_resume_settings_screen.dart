@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../widgets/adaptive/adaptive_slider.dart';
 
 class AdminResumeSettingsScreen extends StatefulWidget {
   const AdminResumeSettingsScreen({super.key});
@@ -183,7 +184,7 @@ class _AdminResumeSettingsScreenState extends State<AdminResumeSettingsScreen> {
         Row(
           children: [
             Expanded(
-              child: Slider(
+              child: adaptiveSlider(
                 value: value,
                 min: min,
                 max: max,

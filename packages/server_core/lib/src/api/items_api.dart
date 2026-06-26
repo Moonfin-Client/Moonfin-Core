@@ -63,6 +63,15 @@ abstract class ItemsApi {
     int? imageTypeLimit,
   });
 
+  Future<Map<String, dynamic>> getRecentlyReleasedItems({
+    String? parentId,
+    List<String>? includeItemTypes,
+    int? limit,
+    String? fields,
+    String? enableImageTypes,
+    int? imageTypeLimit,
+  });
+
   Future<Map<String, dynamic>> getSeasons(String seriesId);
 
   Future<Map<String, dynamic>> getEpisodes(

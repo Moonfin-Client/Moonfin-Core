@@ -4,6 +4,7 @@ import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/language_codes.dart';
 import '../../../util/platform_detection.dart';
+import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../widgets/settings/settings_panel.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -36,74 +37,74 @@ class SubtitleSettingsScreen extends StatelessWidget {
                 ),
               ),
             ),
-            StringPickerPreferenceTile(
-              preference: UserPreferences.defaultSubtitleLanguage,
-              title: l10n.defaultSubtitleLanguage,
-              icon: Icons.language,
-              options: {
-                '': l10n.none,
-                ...kIso6392Languages,
-              },
-            ),
-            SwitchPreferenceTile(
-              preference: UserPreferences.subtitlesDefaultToNone,
-              title: l10n.defaultToNoSubtitles,
-              subtitle: l10n.turnOffSubtitlesByDefault,
-              icon: Icons.subtitles_off,
-            ),
-            SwitchPreferenceTile(
-              preference: UserPreferences.preferSdhSubtitles,
-              title: l10n.preferSdhSubtitles,
-              subtitle: l10n.preferSdhSubtitlesSubtitle,
-              icon: Icons.hearing,
-            ),
-            TvFocusHighlight(
-              builder: (context, _) {
-                var pushed = false;
-                return ListTile(
-                  focusColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  leading: const Icon(Icons.style),
-                  title: Text(l10n.subtitleCustomization),
-                  subtitle: Text(l10n.subtitleCustomizationDescription),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    if (pushed) return;
-                    pushed = true;
-                    context.pushSettingsScreen(
-                      const SubtitleCustomizationScreen(),
+            adaptiveListSection(
+              children: [
+                StringPickerPreferenceTile(
+                  preference: UserPreferences.defaultSubtitleLanguage,
+                  title: l10n.defaultSubtitleLanguage,
+                  icon: Icons.language,
+                  options: {'': l10n.none, ...kIso6392Languages},
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.subtitlesDefaultToNone,
+                  title: l10n.defaultToNoSubtitles,
+                  subtitle: l10n.turnOffSubtitlesByDefault,
+                  icon: Icons.subtitles_off,
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.preferSdhSubtitles,
+                  title: l10n.preferSdhSubtitles,
+                  subtitle: l10n.preferSdhSubtitlesSubtitle,
+                  icon: Icons.hearing,
+                ),
+                TvFocusHighlight(
+                  builder: (context, _) {
+                    var pushed = false;
+                    return ListTile(
+                      focusColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                      leading: const Icon(Icons.style),
+                      title: Text(l10n.subtitleCustomization),
+                      subtitle: Text(l10n.subtitleCustomizationDescription),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        if (pushed) return;
+                        pushed = true;
+                        context.pushSettingsScreen(
+                          const SubtitleCustomizationScreen(),
+                        );
+                      },
                     );
                   },
-                );
-              },
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.pgsDirectPlay,
+                  title: l10n.pgsDirectPlay,
+                  subtitle: l10n.directPlayPgsSubtitles,
+                  icon: Icons.image,
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.assDirectPlay,
+                  title: l10n.assSsaDirectPlay,
+                  subtitle: l10n.directPlayAssSsaSubtitles,
+                  icon: Icons.text_snippet,
+                ),
+                if (PlatformDetection.isAndroid) ...[
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.subtitlesUseEmbeddedStyles,
+                    title: l10n.subtitlesUseEmbeddedStyles,
+                    subtitle: l10n.subtitlesUseEmbeddedStylesSubtitle,
+                    icon: Icons.format_paint,
+                  ),
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.subtitlesUseEmbeddedFontSizes,
+                    title: l10n.subtitlesUseEmbeddedFontSizes,
+                    subtitle: l10n.subtitlesUseEmbeddedFontSizesSubtitle,
+                    icon: Icons.format_size,
+                  ),
+                ],
+              ],
             ),
-            SwitchPreferenceTile(
-              preference: UserPreferences.pgsDirectPlay,
-              title: l10n.pgsDirectPlay,
-              subtitle: l10n.directPlayPgsSubtitles,
-              icon: Icons.image,
-            ),
-            SwitchPreferenceTile(
-              preference: UserPreferences.assDirectPlay,
-              title: l10n.assSsaDirectPlay,
-              subtitle: l10n.directPlayAssSsaSubtitles,
-              icon: Icons.text_snippet,
-            ),
-            // Embedded-style overrides are only meaningful on Android (Media3).
-            if (PlatformDetection.isAndroid) ...[
-              SwitchPreferenceTile(
-                preference: UserPreferences.subtitlesUseEmbeddedStyles,
-                title: l10n.subtitlesUseEmbeddedStyles,
-                subtitle: l10n.subtitlesUseEmbeddedStylesSubtitle,
-                icon: Icons.format_paint,
-              ),
-              SwitchPreferenceTile(
-                preference: UserPreferences.subtitlesUseEmbeddedFontSizes,
-                title: l10n.subtitlesUseEmbeddedFontSizes,
-                subtitle: l10n.subtitlesUseEmbeddedFontSizesSubtitle,
-                icon: Icons.format_size,
-              ),
-            ],
           ],
         ),
       ),

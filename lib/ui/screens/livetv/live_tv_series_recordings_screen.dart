@@ -7,6 +7,7 @@ import '../../../data/viewmodels/series_recordings_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
+import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import 'widgets/live_tv_section_header.dart';
@@ -146,7 +147,7 @@ class _LiveTvSeriesRecordingsScreenState
     final l10n = AppLocalizations.of(context);
     showFocusRestoringDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         backgroundColor: const Color(0xFF1A1A2E),
         title: Text(
           timer.name,
@@ -164,7 +165,7 @@ class _LiveTvSeriesRecordingsScreenState
           ],
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
             child: Text(l10n.close),
           ),
@@ -185,7 +186,7 @@ class _LiveTvSeriesRecordingsScreenState
     final l10n = AppLocalizations.of(context);
     final confirmed = await showFocusRestoringDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         backgroundColor: const Color(0xFF1A1A2E),
         title: Text(
           l10n.cancelSeriesRecordingQuestion,
@@ -196,7 +197,7 @@ class _LiveTvSeriesRecordingsScreenState
           style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed:
                 () => Navigator.of(ctx, rootNavigator: true).pop(false),
             child: Text(l10n.no),

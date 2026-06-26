@@ -30,7 +30,9 @@ class AboutScreen extends StatelessWidget {
         body: ListView(
           children: [
             const SizedBox(height: 32),
-            Center(child: Image.asset('assets/images/logo_and_text.png', height: 80)),
+            Center(
+              child: Image.asset('assets/images/logo_and_text.png', height: 80),
+            ),
             const SizedBox(height: 4),
             Center(child: Text(l10n.versionValue(appVersion))),
             if (AppDistribution.supportsInAppUpdates) ...[
@@ -48,7 +50,10 @@ class AboutScreen extends StatelessWidget {
                 applicationVersion: appVersion,
                 applicationIcon: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Image.asset('assets/images/logo_and_text.png', height: 48),
+                  child: Image.asset(
+                    'assets/images/logo_and_text.png',
+                    height: 48,
+                  ),
                 ),
               ),
             ),
@@ -56,7 +61,9 @@ class AboutScreen extends StatelessWidget {
               leading: const Icon(Icons.code),
               title: Text(l10n.sourceCode),
               subtitle: Text(l10n.sourceCodeUrl),
-              onTap: () => launchUrl(Uri.parse('https://github.com/Moonfin-Client/Mobile-Desktop')),
+              onTap: () => launchUrl(
+                Uri.parse('https://github.com/Moonfin-Client/Mobile-Desktop'),
+              ),
             ),
             if (AppDistribution.supportsInAppUpdates) ...[
               const Divider(),

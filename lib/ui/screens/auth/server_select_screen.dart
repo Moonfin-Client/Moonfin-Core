@@ -26,6 +26,7 @@ import '../../../util/platform_detection.dart';
 import '../../../util/server_url.dart';
 import '../../../util/web_diagnostics_failure.dart';
 import '../../navigation/destinations.dart';
+import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/login_scaffold.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/server_type_icon.dart';
@@ -404,12 +405,12 @@ class _ServerSelectScreenState extends State<ServerSelectScreen> {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showFocusRestoringDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(l10n.removeServer),
         content: Text(l10n.removeServerConfirmation(server.name)),
         actions: [
-          TextButton(onPressed: () => ctx.pop(false), child: Text(l10n.cancel)),
-          TextButton(onPressed: () => ctx.pop(true), child: Text(l10n.remove)),
+          adaptiveDialogAction(onPressed: () => ctx.pop(false), child: Text(l10n.cancel)),
+          adaptiveDialogAction(onPressed: () => ctx.pop(true), isDestructive: true, child: Text(l10n.remove)),
         ],
       ),
     );
@@ -1115,7 +1116,7 @@ class _AddServerDialogState extends State<_AddServerDialog> {
       canRequestFocus: false,
       skipTraversal: true,
       onKeyEvent: _onDialogKey,
-      child: AlertDialog(
+      child: AlertDialog.adaptive(
         title: Text(widget.l10n.connectToServer),
         content: Column(
           mainAxisSize: MainAxisSize.min,

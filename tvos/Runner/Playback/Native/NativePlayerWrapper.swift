@@ -17,6 +17,9 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
     private let nativeVideoSurface = NativeVideoSurface()
     nonisolated(unsafe) private var subtitleDecoder: SubtitleDecoder?
     private let subtitleOverlay = SubtitleOverlay(frame: .zero)
+    private let assRenderer = AssRenderer()
+    nonisolated(unsafe) private var assActive = false
+    private var assDelaySeconds: TimeInterval = 0
 
     private let readQueue = DispatchQueue(label: "nativePlayer.readLoop", qos: .userInitiated)
     nonisolated(unsafe) private var readLoopRunning = false
@@ -25,6 +28,8 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
     nonisolated(unsafe) private var activeVideoStreamIndex: Int32 = -1
     nonisolated(unsafe) private var activeAudioStreamIndex: Int32 = -1
     nonisolated(unsafe) private var activeSubtitleStreamIndex: Int32 = -1
+    private var audioStreamIndices: [Int32] = []
+    private var subtitleStreamIndices: [Int32] = []
     private var videoConfigured = false
     private var firstFrameDelivered = false
     private var resumeAwaitingFirstFrame = false
@@ -33,6 +38,7 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
 
     nonisolated(unsafe) private var pendingStartPosition: TimeInterval?
     nonisolated(unsafe) private var seekTarget: TimeInterval?
+    nonisolated(unsafe) private var pendingSeekSeconds: TimeInterval?
     private var nativePlaybackRate: Float = 1.0
 
     private var nativeRequestedContentRange: VideoDynamicRange = .unknown
@@ -204,12 +210,16 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
         currentSubtitleTrackIndex = trackIndex
         subtitleOverlay.clear()
         subtitleDecoder?.close()
-        if trackIndex >= 0, let demuxer,
-           let streamInfo = demuxer.streams.first(where: { $0.index == trackIndex && $0.type == .subtitle }),
-           let codecpar = demuxer.codecpar(forStreamIndex: trackIndex) {
+        deactivateAss()
+        if trackIndex >= 1,
+           let streamIndex = ffmpegStreamIndex(forOrdinal: trackIndex, in: subtitleStreamIndices),
+           let demuxer,
+           let streamInfo = demuxer.streams.first(where: { $0.index == streamIndex && $0.type == .subtitle }),
+           let codecpar = demuxer.codecpar(forStreamIndex: streamIndex) {
             if subtitleDecoder == nil { subtitleDecoder = SubtitleDecoder() }
             if subtitleDecoder?.configure(codecId: streamInfo.codecId, codecpar: codecpar) == true {
-                activeSubtitleStreamIndex = trackIndex
+                activeSubtitleStreamIndex = streamIndex
+                activateAssIfAvailable()
             } else {
                 activeSubtitleStreamIndex = -1
             }
@@ -218,12 +228,27 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
         }
     }
 
+    private func activateAssIfAvailable() {
+        assActive = false
+        assRenderer.close()
+        guard let header = subtitleDecoder?.subtitleHeader, !header.isEmpty else { return }
+        if assRenderer.configure(header: header) {
+            assActive = true
+        }
+    }
+
+    private func deactivateAss() {
+        assActive = false
+        assRenderer.close()
+    }
+
     override func disableSubtitles() {
         guard useNativeBackend else { super.disableSubtitles(); return }
         currentSubtitleTrackIndex = -1
         activeSubtitleStreamIndex = -1
         subtitleOverlay.clear()
         subtitleDecoder?.close()
+        deactivateAss()
     }
 
     override func addSubtitle(url: URL) {
@@ -248,6 +273,8 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
         subtitleDecoder = decoder
         subtitleOverlay.clear()
         activeSubtitleStreamIndex = -1
+        deactivateAss()
+        activateAssIfAvailable()
 
         let timeBase = subDemux.timeBase(forStreamIndex: subStream.index)
         let streamIdx = subStream.index
@@ -262,7 +289,7 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
                     guard pkt.streamIndex == streamIdx else { continue }
                     if let event = dec.decodePacket(pkt, timeBase: timeBase) {
                         DispatchQueue.main.async { [weak self] in
-                            self?.subtitleOverlay.enqueue(event)
+                            self?.dispatchSubtitleEvent(event)
                         }
                     }
                 case .eof:
@@ -276,6 +303,32 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
         }
     }
 
+    private func renderAss(atSeconds seconds: Double) {
+        guard assActive else { return }
+        let scale = subtitleOverlay.window?.screen.scale ?? 1
+        let width = Int32((subtitleOverlay.bounds.width * scale).rounded())
+        let height = Int32((subtitleOverlay.bounds.height * scale).rounded())
+        assRenderer.setFrameSize(width: width, height: height)
+        switch assRenderer.render(atTimeMs: Int64(seconds * 1000)) {
+        case .image(let cgImage):
+            subtitleOverlay.showAssImage(cgImage)
+        case .cleared:
+            subtitleOverlay.showAssImage(nil)
+        case .unchanged:
+            break
+        }
+    }
+
+    private func dispatchSubtitleEvent(_ event: SubtitleEvent) {
+        if assActive, let line = event.assLine {
+            let startMs = Int64(event.startTime * 1000)
+            let durationMs = Int64((event.endTime - event.startTime) * 1000)
+            assRenderer.processEvent(line, startMs: startMs, durationMs: durationMs)
+        } else {
+            subtitleOverlay.enqueue(event)
+        }
+    }
+
     override func configureSubtitleAppearance(_ options: [String: Any]) {
         super.configureSubtitleAppearance(options)
         subtitleOverlay.applyStyle(options: options)
@@ -286,6 +339,7 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
     override func setSubtitleDelay(_ interval: TimeInterval) {
         guard useNativeBackend else { super.setSubtitleDelay(interval); return }
         subtitleOverlay.delaySeconds = interval
+        assDelaySeconds = interval
     }
 
     override func setAudioDelay(_ interval: TimeInterval) {
@@ -496,6 +550,7 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
         subtitleOverlay.removeFromSuperview()
         subtitleDecoder?.close()
         subtitleDecoder = nil
+        deactivateAss()
         demuxer?.close()
         demuxer = nil
         useNativeBackend = false
@@ -553,6 +608,13 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
 
     private nonisolated func readLoop() {
         while readLoopRunning {
+            pauseCondition.lock()
+            let seekRequest = pendingSeekSeconds
+            pendingSeekSeconds = nil
+            pauseCondition.unlock()
+            if let seekRequest {
+                _ = demuxer?.seek(to: seekRequest)
+            }
             if readLoopPaused || nativeBackgroundPaused {
                 pauseCondition.lock()
                 while (readLoopPaused || nativeBackgroundPaused) && readLoopRunning {
@@ -670,7 +732,7 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
                 let tb = demuxRef.timeBase(forStreamIndex: subtitleIdx)
                 if let event = decoder.decodePacket(pkt, timeBase: tb) {
                     DispatchQueue.main.async { [weak self] in
-                        self?.subtitleOverlay.enqueue(event)
+                        self?.dispatchSubtitleEvent(event)
                     }
                 }
             }
@@ -734,6 +796,7 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
             if ptsSec.isFinite && ptsSec >= 0 {
                 self.currentTime = ptsSec
                 self.subtitleOverlay.update(currentTime: ptsSec)
+                self.renderAss(atSeconds: ptsSec - self.assDelaySeconds)
                 if self.duration > 0 {
                     self.position = Float(max(0, min(1, ptsSec / self.duration)))
                 }
@@ -793,7 +856,7 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
     // MARK: - Seek
 
     private func performSeek(to seconds: TimeInterval) {
-        guard let demuxer else { return }
+        guard demuxer != nil else { return }
         state = .buffering(0.25)
         seekTarget = seconds
         consecutiveReadErrors = 0
@@ -806,13 +869,15 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
         audioRenderer?.flush()
         subtitleOverlay.clear()
         subtitleDecoder?.flush()
+        assRenderer.reset()
 
-        readQueue.async { [weak self] in
-            _ = demuxer.seek(to: seconds)
-            if self?.readLoopRunning == false {
-                self?.readLoopRunning = true
-                self?.readLoop()
-            }
+        pauseCondition.lock()
+        pendingSeekSeconds = seconds
+        pauseCondition.signal()
+        pauseCondition.unlock()
+        if !readLoopRunning {
+            readLoopRunning = true
+            readQueue.async { [weak self] in self?.readLoop() }
         }
     }
 
@@ -824,14 +889,15 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
             return
         }
 
-        let streamInfo = demuxer.streams.first { $0.index == trackIndex && $0.type == .audio }
-        guard let streamInfo, let codecpar = demuxer.codecpar(forStreamIndex: trackIndex) else {
+        guard let streamIndex = ffmpegStreamIndex(forOrdinal: trackIndex, in: audioStreamIndices),
+              let streamInfo = demuxer.streams.first(where: { $0.index == streamIndex && $0.type == .audio }),
+              let codecpar = demuxer.codecpar(forStreamIndex: streamIndex) else {
             currentAudioTrackIndex = trackIndex
             return
         }
 
         if audioRenderer.setAudioTrack(streamInfo: streamInfo, codecpar: codecpar) {
-            activeAudioStreamIndex = trackIndex
+            activeAudioStreamIndex = streamIndex
             currentAudioTrackIndex = trackIndex
         }
     }
@@ -855,10 +921,19 @@ final class NativePlayerWrapper: MpvPlayerWrapper {
 
         audioTracks = audioList
         subtitleTracks = subtitleList
+        audioStreamIndices = audioList.map { $0.id }
+        subtitleStreamIndices = subtitleList.map { $0.id }
 
-        if demux.audioStreamIndex >= 0 {
-            currentAudioTrackIndex = demux.audioStreamIndex
+        if demux.audioStreamIndex >= 0,
+           let position = audioStreamIndices.firstIndex(of: demux.audioStreamIndex) {
+            currentAudioTrackIndex = Int32(position + 1)
         }
+    }
+
+    private func ffmpegStreamIndex(forOrdinal ordinal: Int32, in indices: [Int32]) -> Int32? {
+        let pos = Int(ordinal) - 1
+        guard pos >= 0, pos < indices.count else { return nil }
+        return indices[pos]
     }
 
     private func makeTrack(from stream: FFStreamInfo) -> PlayerTrack {

@@ -10,6 +10,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../widgets/adaptive/sf_symbol.dart';
 
 class PhotoPlayerScreen extends StatefulWidget {
   final String itemId;
@@ -180,7 +181,7 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen> {
     final url = _getImageUrl(item);
     if (url == null) {
       return Center(
-        child: Icon(
+        child: AdaptiveIcon(
           Icons.broken_image,
           color: AppColorScheme.onSurface.withValues(alpha: 0.38),
           size: 64,
@@ -202,7 +203,7 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen> {
             placeholder: (_, _) => Center(
               child: CircularProgressIndicator(color: AppColorScheme.accent),
             ),
-            errorWidget: (_, _, _) => Icon(
+            errorWidget: (_, _, _) => AdaptiveIcon(
               Icons.broken_image,
               color: AppColorScheme.onSurface,
               size: 64,
@@ -240,7 +241,7 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen> {
             child: Row(
               children: [
                 IconButton(
-                  icon: Icon(Icons.arrow_back, color: AppColorScheme.onSurface),
+                  icon: AdaptiveIcon(Icons.arrow_back, color: AppColorScheme.onSurface),
                   onPressed: () {
                     if (context.canPop()) {
                       context.pop();
@@ -296,7 +297,7 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                  icon: Icon(
+                  icon: AdaptiveIcon(
                     Icons.skip_previous,
                     color: AppColorScheme.onSurface,
                     size: 32,
@@ -305,7 +306,7 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen> {
                 ),
                 const SizedBox(width: 24),
                 IconButton(
-                  icon: Icon(
+                  icon: AdaptiveIcon(
                     _isPlaying ? Icons.pause : Icons.play_arrow,
                     color: AppColorScheme.onSurface,
                     size: 40,
@@ -314,7 +315,7 @@ class _PhotoPlayerScreenState extends State<PhotoPlayerScreen> {
                 ),
                 const SizedBox(width: 24),
                 IconButton(
-                  icon: Icon(
+                  icon: AdaptiveIcon(
                     Icons.skip_next,
                     color: AppColorScheme.onSurface,
                     size: 32,

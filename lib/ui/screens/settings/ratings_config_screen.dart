@@ -91,10 +91,7 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
   void _loadFromPrefs() {
     final csv = _store.get(UserPreferences.enabledRatings);
     _lastEnabledRatingsCsv = csv;
-    final enabled = csv
-        .split(',')
-        .where((s) => s.isNotEmpty)
-        .toList();
+    final enabled = csv.split(',').where((s) => s.isNotEmpty).toList();
 
     final items = <_RatingItem>[];
     for (final key in enabled) {
@@ -123,10 +120,7 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
   }
 
   void _save() {
-    final csv = _items
-        .where((i) => i.enabled)
-        .map((i) => i.key)
-        .join(',');
+    final csv = _items.where((i) => i.enabled).map((i) => i.key).join(',');
     // Keep local ordering/focus stable for in-screen edits; external updates
     // still refresh via _onPrefsChanged when the stored CSV differs.
     _lastEnabledRatingsCsv = csv;
@@ -163,8 +157,9 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
                 onPressed: () {
                   setState(() {
                     _store.set(
-                        UserPreferences.enabledRatings,
-                        UserPreferences.enabledRatings.defaultValue);
+                      UserPreferences.enabledRatings,
+                      UserPreferences.enabledRatings.defaultValue,
+                    );
                     _loadFromPrefs();
                   });
                   _save();
@@ -172,7 +167,9 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
               ),
             ],
           ),
-          body: PlatformDetection.isTV ? _buildTvList(l10n) : _buildReorderableList(l10n),
+          body: PlatformDetection.isTV
+              ? _buildTvList(l10n)
+              : _buildReorderableList(l10n),
         ),
       ),
     );
@@ -214,10 +211,9 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
                 index: index,
                 child: Icon(
                   Icons.drag_handle,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.7),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
               onToggle: (enabled) {
@@ -252,8 +248,7 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (itemIndex != 0)
-                const Icon(Icons.arrow_left, size: 18),
+              if (itemIndex != 0) const Icon(Icons.arrow_left, size: 18),
               if (itemIndex != _items.length - 1)
                 const Icon(Icons.arrow_right, size: 18),
             ],
@@ -350,7 +345,7 @@ class _ReorderableTileState extends State<_ReorderableTile> {
     final colorScheme = Theme.of(context).colorScheme;
     final bg = _focused
         ? colorScheme.primary.withValues(alpha: 0.18)
-      : Colors.transparent;
+        : Colors.transparent;
 
     return Focus(
       focusNode: widget.focusNode,
@@ -364,11 +359,13 @@ class _ReorderableTileState extends State<_ReorderableTile> {
       },
       onKeyEvent: (node, event) {
         if (event is! KeyDownEvent) return KeyEventResult.ignored;
-        if (event.logicalKey == LogicalKeyboardKey.arrowLeft && !widget.isFirst) {
+        if (event.logicalKey == LogicalKeyboardKey.arrowLeft &&
+            !widget.isFirst) {
           widget.onMoveUp();
           return KeyEventResult.handled;
         }
-        if (event.logicalKey == LogicalKeyboardKey.arrowRight && !widget.isLast) {
+        if (event.logicalKey == LogicalKeyboardKey.arrowRight &&
+            !widget.isLast) {
           widget.onMoveDown();
           return KeyEventResult.handled;
         }

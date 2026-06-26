@@ -4,7 +4,9 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/idiom/app_ui_idiom.dart';
 import '../../theme/app_theme_controller.dart';
+import '../../widgets/adaptive/adaptive_segmented.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import 'settings_app_bar.dart';
 import '../../../util/platform_detection.dart';
@@ -35,7 +37,10 @@ class _AppearanceThemeScreenState extends State<AppearanceThemeScreen> {
     return withCleanSettingsTypography(
       context,
       Scaffold(
-        appBar: buildSettingsAppBar(context, Text(l10n.settingsAppearanceTheme)),
+        appBar: buildSettingsAppBar(
+          context,
+          Text(l10n.settingsAppearanceTheme),
+        ),
         body: ListenableBuilder(
           listenable: prefs,
           builder: (context, _) {
@@ -60,15 +65,44 @@ class _AppearanceThemeScreenState extends State<AppearanceThemeScreen> {
                 padding: const EdgeInsets.all(20),
                 children: [
                   Text(
+                    l10n.interfaceStyle,
+                    style: theme.textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 10),
+                  adaptiveSegmented<InterfaceStyle>(
+                    options: {
+                      InterfaceStyle.automatic: l10n.interfaceStyleAutomatic,
+                      InterfaceStyle.apple: l10n.interfaceStyleApple,
+                      InterfaceStyle.material: l10n.interfaceStyleMaterial,
+                    },
+                    selected: prefs.get(UserPreferences.interfaceStyle),
+                    onChanged: (s) =>
+                        prefs.set(UserPreferences.interfaceStyle, s),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.interfaceStyleSubtitle,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.6,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
                     l10n.settingsAppearanceThemeSubtitle,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.74),
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.74,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
                   for (var i = 0; i < themes.length; i++) ...[
                     _ThemePreviewCard(
-                      focusNode: themes[i].id == ThemeRegistry.moonfinId ? _moonfinFocusNode : null,
+                      focusNode: themes[i].id == ThemeRegistry.moonfinId
+                          ? _moonfinFocusNode
+                          : null,
                       themeId: themes[i].id,
                       title: _titleForTheme(l10n, themes[i]),
                       subtitle: _subtitleForTheme(l10n, themes[i]),
@@ -155,30 +189,31 @@ class _ThemePreviewCardState extends State<_ThemePreviewCard> {
             width: 2.0,
           )
         : (widget.selected
-            ? borderTokens.chipBorder.copyWith(
-                color: AppColorScheme.accent,
-                width: 2.0,
-              )
-            : borderTokens.chipBorder.copyWith(
-                color: theme.colorScheme.outlineVariant,
-                width: 1.0,
-              ));
+              ? borderTokens.chipBorder.copyWith(
+                  color: AppColorScheme.accent,
+                  width: 2.0,
+                )
+              : borderTokens.chipBorder.copyWith(
+                  color: theme.colorScheme.outlineVariant,
+                  width: 1.0,
+                ));
 
     final shadow = _focused
         ? (borderTokens.focusGlow.isNotEmpty
-            ? borderTokens.focusGlow
-            : [
-                BoxShadow(
-                  color: AppColorScheme.accent.withValues(alpha: 0.22),
-                  blurRadius: 14,
-                  spreadRadius: 0.5,
-                ),
-              ])
+              ? borderTokens.focusGlow
+              : [
+                  BoxShadow(
+                    color: AppColorScheme.accent.withValues(alpha: 0.22),
+                    blurRadius: 14,
+                    spreadRadius: 0.5,
+                  ),
+                ])
         : null;
 
     return InkWell(
       focusNode: widget.focusNode,
-      autofocus: PlatformDetection.isTV && widget.themeId == ThemeRegistry.moonfinId,
+      autofocus:
+          PlatformDetection.isTV && widget.themeId == ThemeRegistry.moonfinId,
       borderRadius: BorderRadius.circular(18),
       onFocusChange: (f) {
         setState(() => _focused = f);
@@ -199,7 +234,9 @@ class _ThemePreviewCardState extends State<_ThemePreviewCard> {
           children: [
             Row(
               children: [
-                Expanded(child: Text(widget.title, style: theme.textTheme.titleMedium)),
+                Expanded(
+                  child: Text(widget.title, style: theme.textTheme.titleMedium),
+                ),
                 if (widget.selected)
                   Icon(Icons.check_circle, color: AppColorScheme.accent),
               ],

@@ -119,7 +119,7 @@ class _AdminBrandingScreenState extends State<AdminBrandingScreen> {
           onChanged: (v) => _config!['CustomCss'] = v,
         ),
         const SizedBox(height: 16),
-        SwitchListTile(
+        SwitchListTile.adaptive(
           title: Text(l10n.adminBrandingEnableSplash),
           value: _config!['SplashscreenEnabled'] as bool? ?? false,
           onChanged: (v) =>

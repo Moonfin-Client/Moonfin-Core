@@ -221,7 +221,7 @@ class _AdminNetworkingScreenState extends State<AdminNetworkingScreen> {
   }
 
   Widget _switchTile(String key, String title) {
-    return SwitchListTile(
+    return SwitchListTile.adaptive(
       title: Text(title),
       value: _config![key] as bool? ?? false,
       onChanged: (v) => setState(() => _config![key] = v),

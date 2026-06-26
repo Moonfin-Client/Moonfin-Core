@@ -141,6 +141,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsAppearanceTheme => 'App-Theme';
 
   @override
+  String get interfaceStyle => 'Interface style';
+
+  @override
+  String get interfaceStyleSubtitle =>
+      'Automatic uses the native look on Apple devices. Choose Apple to force it, or Material for the standard look.';
+
+  @override
+  String get interfaceStyleAutomatic => 'Automatic';
+
+  @override
+  String get interfaceStyleApple => 'Apple';
+
+  @override
+  String get interfaceStyleMaterial => 'Material';
+
+  @override
   String get settingsAppearanceThemeSubtitle =>
       'Wechseln Sie zwischen Moonfin und Neon Pulse, ohne die App neu zu starten';
 
@@ -837,7 +853,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String endsAt(String time) {
-    return 'Endet bei $time';
+    return 'Endet um $time';
   }
 
   @override
@@ -2009,7 +2025,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get focusExpansionAnimation => 'Fokus-Vergrößerungsanimation';
 
   @override
-  String get desktopUiScale => 'Desktop-UI-Skalierung';
+  String get desktopUiScale => 'UI-Skalierung';
 
   @override
   String get scaleFocusedCards =>
@@ -7401,6 +7417,11 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String latestLibraryName(String libraryName) {
     return 'Neueste $libraryName';
+  }
+
+  @override
+  String recentlyReleasedLibraryName(String libraryName) {
+    return 'Recently Released $libraryName';
   }
 
   @override

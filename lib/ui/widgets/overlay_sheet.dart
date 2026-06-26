@@ -86,7 +86,7 @@ Future<T?> showFocusRestoringDialog<T>({
   String? barrierLabel,
 }) {
   final previousFocus = FocusManager.instance.primaryFocus;
-  return showDialog<T>(
+  return showAdaptiveDialog<T>(
     context: context,
     builder: (dialogContext) => Focus(
       canRequestFocus: false,

@@ -180,6 +180,36 @@ class RowDataSource {
     );
   }
 
+  Future<HomeRow> loadRecentlyReleased(
+    String parentId,
+    String libraryName,
+    String serverId, [
+    String? collectionType,
+  ]) async {
+    final fetchLimit = latestMediaFetchLimitForCollection(
+      collectionType,
+      defaultLimit: _defaultLimit,
+      maxLimit: _maxItems,
+    );
+    final response = await _getRecentlyReleasedItemsWithFallback(
+      parentId: parentId,
+      limit: fetchLimit,
+    );
+    final items = normalizeLatestMediaItems(
+      _parseItems(response, serverId),
+      collectionType: collectionType,
+      limit: _defaultLimit,
+    );
+    return HomeRow(
+      id: 'recently_released_$parentId',
+      title: _l10n.recentlyReleasedLibraryName(libraryName),
+      items: items,
+      rowType: HomeRowType.recentlyReleased,
+      totalCount: items.length < _defaultLimit ? items.length : _maxItems,
+      isAudio: collectionType == 'music',
+    );
+  }
+
   Future<HomeRow> loadPlaylists(
     String serverId, {
     String? mediaType,
@@ -201,7 +231,9 @@ class RowDataSource {
       serverId: serverId,
       rowType: HomeRowType.playlists,
     );
-    final playlistsOnly = row.items.where((item) => item.type == 'Playlist').toList();
+    final playlistsOnly = row.items
+        .where((item) => item.type == 'Playlist')
+        .toList();
     row = row.copyWith(
       items: await filterBrowsablePlaylists(
         _client,
@@ -301,7 +333,6 @@ class RowDataSource {
       isAudio: true,
     );
   }
-
 
   Future<HomeRow> loadGenres(
     String serverId, {
@@ -779,7 +810,10 @@ class RowDataSource {
           final pageCount = (currentOffset / _defaultLimit).ceil();
           final startIndex = pageCount * _defaultLimit;
           final sortOpt = prefs?.get(UserPreferences.audioSortOption) ?? 'name';
-          final (querySortBy, querySortOrder) = _resolveAudioSort(sortOpt, 'Playlist');
+          final (querySortBy, querySortOrder) = _resolveAudioSort(
+            sortOpt,
+            'Playlist',
+          );
           response = await _getItemsWithFallback(
             includeItemTypes: const ['Playlist'],
             sortBy: querySortBy,
@@ -944,7 +978,10 @@ class RowDataSource {
         } else if (row.id.startsWith('favorites_')) {
           final parentId = row.id.substring('favorites_'.length);
           final sortOpt = prefs?.get(UserPreferences.audioSortOption) ?? 'name';
-          final (querySortBy, querySortOrder) = _resolveAudioSort(sortOpt, 'Favorites');
+          final (querySortBy, querySortOrder) = _resolveAudioSort(
+            sortOpt,
+            'Favorites',
+          );
           response = await _getItemsWithFallback(
             parentId: parentId,
             isFavorite: true,
@@ -979,7 +1016,10 @@ class RowDataSource {
         } else if (row.id.startsWith('albumartist_')) {
           final parentId = row.id.substring('albumartist_'.length);
           final sortOpt = prefs?.get(UserPreferences.audioSortOption) ?? 'name';
-          final (querySortBy, querySortOrder) = _resolveAudioSort(sortOpt, 'AlbumArtist');
+          final (querySortBy, querySortOrder) = _resolveAudioSort(
+            sortOpt,
+            'AlbumArtist',
+          );
           response = await _client.itemsApi.getAlbumArtists(
             parentId: parentId,
             userId: _client.userId,
@@ -1001,8 +1041,12 @@ class RowDataSource {
             if (itemType == 'Musicartist') itemType = 'MusicArtist';
             if (itemType == 'Musicalbum') itemType = 'MusicAlbum';
 
-            final sortOpt = prefs?.get(UserPreferences.audioSortOption) ?? 'name';
-            final (querySortBy, querySortOrder) = _resolveAudioSort(sortOpt, itemType);
+            final sortOpt =
+                prefs?.get(UserPreferences.audioSortOption) ?? 'name';
+            final (querySortBy, querySortOrder) = _resolveAudioSort(
+              sortOpt,
+              itemType,
+            );
 
             response = await _getItemsWithFallback(
               parentId: parentId,
@@ -1017,6 +1061,7 @@ class RowDataSource {
             return (row.items, row.totalCount);
           }
         }
+      case HomeRowType.recentlyReleased:
       case HomeRowType.resume:
       case HomeRowType.resumeAudio:
       case HomeRowType.nextUp:
@@ -1030,13 +1075,15 @@ class RowDataSource {
         return (row.items, row.totalCount);
     }
 
-    final newItems = (row.rowType == HomeRowType.playlists ||
+    final newItems =
+        (row.rowType == HomeRowType.playlists ||
             row.rowType == HomeRowType.audioPlaylists)
         ? await filterBrowsablePlaylists(
             _client,
-            _parseItems(response, serverId)
-                .where((item) => item.type == 'Playlist')
-                .toList(),
+            _parseItems(
+              response,
+              serverId,
+            ).where((item) => item.type == 'Playlist').toList(),
             mediaType: row.rowType == HomeRowType.audioPlaylists || row.isAudio
                 ? 'Audio'
                 : null,
@@ -1318,6 +1365,33 @@ class RowDataSource {
     );
   }
 
+  Future<Map<String, dynamic>> _getRecentlyReleasedItemsWithFallback({
+    required String parentId,
+    required int limit,
+  }) async {
+    try {
+      final response = await _client.itemsApi.getRecentlyReleasedItems(
+        parentId: parentId,
+        limit: limit,
+        fields: _fields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
+      );
+      return response;
+    } on DioException catch (e) {
+      final statusCode = e.response?.statusCode ?? 0;
+      if (statusCode < 500) rethrow;
+      final response = await _client.itemsApi.getRecentlyReleasedItems(
+        parentId: parentId,
+        limit: limit,
+        fields: _fallbackFields,
+        enableImageTypes: _imageTypes,
+        imageTypeLimit: _imageTypeLimit,
+      );
+      return response;
+    }
+  }
+
   /// Loads items for a dynamic section provided by a third-party plugin or dynamic source.
   /// Dispatches on [pluginSource] so callers can mix HSS rows (server-driven
   /// REST endpoint) and other dynamic source rows (like collections, genres, or playlists).
@@ -1472,8 +1546,6 @@ class RowDataSource {
       );
     }
   }
-
-
 
   Future<Map<String, dynamic>> _enrichItemsWithFields(
     Map<String, dynamic> response,

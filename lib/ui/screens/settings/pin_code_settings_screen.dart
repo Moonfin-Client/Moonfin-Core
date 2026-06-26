@@ -5,6 +5,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import '../../../auth/repositories/session_repository.dart';
 import '../../../util/pin_code_util.dart';
 import '../../widgets/pin_entry_dialog.dart';
+import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../../l10n/app_localizations.dart';
 import 'settings_app_bar.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -93,7 +94,9 @@ class _PinCodeSettingsScreenState extends State<PinCodeSettingsScreen> {
       if (!verified || !mounted) return;
 
       await _pinUtil.removePin();
-      _suppressEnableUntil = DateTime.now().add(const Duration(milliseconds: 500));
+      _suppressEnableUntil = DateTime.now().add(
+        const Duration(milliseconds: 500),
+      );
       _refresh();
     } finally {
       _pinActionInProgress = false;
@@ -140,28 +143,34 @@ class _PinCodeSettingsScreenState extends State<PinCodeSettingsScreen> {
         appBar: buildSettingsAppBar(context, Text(l10n.pinCode)),
         body: ListView(
           children: [
-            SwitchListTile(
-              title: Text(l10n.enablePinCode),
-              subtitle: Text(l10n.requirePinToAccess),
-              secondary: const Icon(Icons.lock),
-              value: _pinEnabled,
-              onChanged: _togglePinEnabled,
+            adaptiveListSection(
+              children: [
+                SwitchListTile.adaptive(
+                  title: Text(l10n.enablePinCode),
+                  subtitle: Text(l10n.requirePinToAccess),
+                  secondary: const Icon(Icons.lock),
+                  value: _pinEnabled,
+                  onChanged: _togglePinEnabled,
+                ),
+              ],
             ),
-            if (_pinEnabled) ...[
-              const Divider(),
-              ListTile(
-                leading: const Icon(Icons.edit),
-                title: Text(l10n.changePin),
-                subtitle: Text(l10n.setNewPinCode),
-                onTap: _changePin,
+            if (_pinEnabled)
+              adaptiveListSection(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.edit),
+                    title: Text(l10n.changePin),
+                    subtitle: Text(l10n.setNewPinCode),
+                    onTap: _changePin,
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.delete),
+                    title: Text(l10n.removePin),
+                    subtitle: Text(l10n.removePinProtection),
+                    onTap: _removePin,
+                  ),
+                ],
               ),
-              ListTile(
-                leading: const Icon(Icons.delete),
-                title: Text(l10n.removePin),
-                subtitle: Text(l10n.removePinProtection),
-                onTap: _removePin,
-              ),
-            ],
           ],
         ),
       ),

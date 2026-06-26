@@ -5,6 +5,8 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../widgets/adaptive/adaptive_dialog.dart';
+import '../../../widgets/adaptive/adaptive_slider.dart';
 
 class SessionDetailSheet extends StatefulWidget {
   final Map<String, dynamic> session;
@@ -96,7 +98,7 @@ class _SessionDetailSheetState extends State<SessionDetailSheet> {
     final l10n = AppLocalizations.of(context);
     showDialog<void>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(l10n.adminSendMessage),
         content: TextField(
           controller: controller,
@@ -105,7 +107,7 @@ class _SessionDetailSheetState extends State<SessionDetailSheet> {
           decoration: InputDecoration(hintText: l10n.adminMessageTextHint),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx),
             child: Text(l10n.cancel),
           ),
@@ -136,9 +138,9 @@ class _SessionDetailSheetState extends State<SessionDetailSheet> {
     showDialog<void>(
       context: context,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setInner) => AlertDialog(
+        builder: (ctx, setInner) => AlertDialog.adaptive(
           title: Text(l10n.adminSetVolume),
-          content: Slider(
+          content: adaptiveSlider(
             value: volume,
             min: 0,
             max: 100,
@@ -147,7 +149,7 @@ class _SessionDetailSheetState extends State<SessionDetailSheet> {
             onChanged: (v) => setInner(() => volume = v),
           ),
           actions: [
-            TextButton(
+            adaptiveDialogAction(
               onPressed: () => Navigator.pop(ctx),
               child: Text(l10n.cancel),
             ),
@@ -301,7 +303,7 @@ class _SessionDetailSheetState extends State<SessionDetailSheet> {
                                   style: theme.textTheme.labelSmall,
                                 ),
                                 Expanded(
-                                  child: Slider(
+                                  child: adaptiveSlider(
                                     value:
                                         (_seekPosition ??
                                                 positionTicks / runtimeTicks)

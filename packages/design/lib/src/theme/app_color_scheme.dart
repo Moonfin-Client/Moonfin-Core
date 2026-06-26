@@ -10,6 +10,9 @@ class AppColorScheme {
   /// surfaces + animated backdrop). Cheap check for glass-aware widgets.
   static bool get isGlass => ThemeRegistry.active.isGlass;
 
+  static bool get isNeonPulse =>
+      ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+
   // Background & Surface
   static Color get background => ThemeRegistry.active.colors.background;
   static Color get onBackground => ThemeRegistry.active.colors.onBackground;
@@ -39,39 +42,50 @@ class AppColorScheme {
   static Color get buttonDisabled => ThemeRegistry.active.colors.buttonDisabled;
   static Color get buttonActive => ThemeRegistry.active.colors.buttonActive;
   static Color get onButtonNormal => ThemeRegistry.active.colors.onButtonNormal;
-  static Color get onButtonFocused => ThemeRegistry.active.colors.onButtonFocused;
-  static Color get onButtonDisabled => ThemeRegistry.active.colors.onButtonDisabled;
+  static Color get onButtonFocused =>
+      ThemeRegistry.active.colors.onButtonFocused;
+  static Color get onButtonDisabled =>
+      ThemeRegistry.active.colors.onButtonDisabled;
 
   // Input
-  static Color get inputBackground => ThemeRegistry.active.colors.inputBackground;
+  static Color get inputBackground =>
+      ThemeRegistry.active.colors.inputBackground;
   static Color get inputFocused => ThemeRegistry.active.colors.inputFocused;
   static Color get inputBorder => ThemeRegistry.active.colors.inputBorder;
-  static Color get inputBorderFocused => ThemeRegistry.active.colors.inputBorderFocused;
+  static Color get inputBorderFocused =>
+      ThemeRegistry.active.colors.inputBorderFocused;
 
   // Range / Seekbar
   static Color get rangeTrack => ThemeRegistry.active.colors.rangeTrack;
   static Color get rangeProgress => ThemeRegistry.active.colors.rangeProgress;
   static Color get rangeThumb => ThemeRegistry.active.colors.rangeThumb;
-  static Color get seekbarBuffered => ThemeRegistry.active.colors.seekbarBuffered;
+  static Color get seekbarBuffered =>
+      ThemeRegistry.active.colors.seekbarBuffered;
 
   // Badge
-  static Color get badgeBackground => ThemeRegistry.active.colors.badgeBackground;
+  static Color get badgeBackground =>
+      ThemeRegistry.active.colors.badgeBackground;
   static Color get onBadge => ThemeRegistry.active.colors.onBadge;
   static Color get badgeUnplayed => ThemeRegistry.active.colors.badgeUnplayed;
   static Color get badgeWatched => ThemeRegistry.active.colors.badgeWatched;
 
   // Recording
-  static Color get recordingActive => ThemeRegistry.active.colors.recordingActive;
-  static Color get recordingScheduled => ThemeRegistry.active.colors.recordingScheduled;
+  static Color get recordingActive =>
+      ThemeRegistry.active.colors.recordingActive;
+  static Color get recordingScheduled =>
+      ThemeRegistry.active.colors.recordingScheduled;
 
-    // Semantic status and badges
-    static Color get statusAvailable => ThemeRegistry.active.semantic.statusAvailable;
-    static Color get statusRequested => ThemeRegistry.active.semantic.statusRequested;
-    static Color get statusPending => ThemeRegistry.active.semantic.statusPending;
-    static Color get statusDownloading => ThemeRegistry.active.semantic.statusDownloading;
-    static Color get mediaTypeBadgeMovie =>
+  // Semantic status and badges
+  static Color get statusAvailable =>
+      ThemeRegistry.active.semantic.statusAvailable;
+  static Color get statusRequested =>
+      ThemeRegistry.active.semantic.statusRequested;
+  static Color get statusPending => ThemeRegistry.active.semantic.statusPending;
+  static Color get statusDownloading =>
+      ThemeRegistry.active.semantic.statusDownloading;
+  static Color get mediaTypeBadgeMovie =>
       ThemeRegistry.active.semantic.mediaTypeBadgeMovie;
-    static Color get mediaTypeBadgeShow =>
+  static Color get mediaTypeBadgeShow =>
       ThemeRegistry.active.semantic.mediaTypeBadgeShow;
 
   // Focus border presets

@@ -5,6 +5,7 @@ import 'package:server_core/server_core.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
+import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import 'settings_app_bar.dart';
@@ -25,32 +26,33 @@ class LocalPreviewsSettingsScreen extends StatelessWidget {
     return withCleanSettingsTypography(
       context,
       Scaffold(
-        appBar: buildSettingsAppBar(
-          context,
-          Text(l10n.localPreviews),
-        ),
+        appBar: buildSettingsAppBar(context, Text(l10n.localPreviews)),
         body: ListView(
           children: [
-            SwitchPreferenceTile(
-              preference: UserPreferences.mediaBarTrailerPreview,
-              title: l10n.trailerPreview,
-              subtitle: l10n.autoPlayTrailers,
-              icon: Icons.movie_outlined,
-              onChanged: _pushSync,
-            ),
-            SwitchPreferenceTile(
-              preference: UserPreferences.episodePreviewEnabled,
-              title: l10n.mediaPreview,
-              subtitle: l10n.mediaPreviewDescription,
-              icon: Icons.ondemand_video,
-              onChanged: _pushSync,
-            ),
-            SwitchPreferenceTile(
-              preference: UserPreferences.previewAudioEnabled,
-              title: l10n.previewAudio,
-              subtitle: l10n.enablePreviewAudio,
-              icon: Icons.volume_up,
-              onChanged: _pushSync,
+            adaptiveListSection(
+              children: [
+                SwitchPreferenceTile(
+                  preference: UserPreferences.mediaBarTrailerPreview,
+                  title: l10n.trailerPreview,
+                  subtitle: l10n.autoPlayTrailers,
+                  icon: Icons.movie_outlined,
+                  onChanged: _pushSync,
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.episodePreviewEnabled,
+                  title: l10n.mediaPreview,
+                  subtitle: l10n.mediaPreviewDescription,
+                  icon: Icons.ondemand_video,
+                  onChanged: _pushSync,
+                ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.previewAudioEnabled,
+                  title: l10n.previewAudio,
+                  subtitle: l10n.enablePreviewAudio,
+                  icon: Icons.volume_up,
+                  onChanged: _pushSync,
+                ),
+              ],
             ),
           ],
         ),

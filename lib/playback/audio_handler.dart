@@ -141,10 +141,36 @@ class MoonfinAudioHandler extends BaseAudioHandler
       }
     } catch (_) {}
 
+    final String? artistName;
+    if (item.type == 'Episode') {
+      artistName = (item.seriesName != null && item.seriesName!.isNotEmpty)
+          ? item.seriesName
+          : 'TV Show';
+    } else if (item.type == 'Movie') {
+      final directors = item.people
+          .where((p) => p['Type'] == 'Director')
+          .map((p) => p['Name'] as String?)
+          .whereType<String>()
+          .toList();
+      if (directors.isNotEmpty) {
+        artistName = directors.join(', ');
+      } else {
+        final studios = item.studios
+            .map((s) => s['Name'] as String?)
+            .whereType<String>()
+            .toList();
+        artistName = studios.isNotEmpty ? studios.first : 'Movie';
+      }
+    } else {
+      artistName = item.artists.isNotEmpty
+          ? item.artists.join(', ')
+          : item.albumArtist;
+    }
+
     return MediaItem(
       id: item.id,
       title: item.name,
-      artist: item.artists.isNotEmpty ? item.artists.join(', ') : item.albumArtist,
+      artist: artistName,
       album: item.album,
       duration: item.runtime,
       artUri: artUri != null ? Uri.parse(artUri) : null,

@@ -8,6 +8,7 @@ import 'package:server_core/server_core.dart';
 
 import '../providers/admin_user_providers.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../widgets/adaptive/adaptive_dialog.dart';
 
 class AdminTaskDetailScreen extends ConsumerStatefulWidget {
   final String taskId;
@@ -460,7 +461,7 @@ class _AddTriggerDialogState extends State<_AddTriggerDialog> {
       'IntervalTrigger': l10n.adminTaskTriggerTypeInterval,
       'StartupTrigger': l10n.adminTaskTriggerStartup,
     };
-    return AlertDialog(
+    return AlertDialog.adaptive(
       title: Text(l10n.adminAddTrigger),
       content: SizedBox(
         width: 360,
@@ -496,7 +497,7 @@ class _AddTriggerDialogState extends State<_AddTriggerDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        adaptiveDialogAction(
           onPressed: () => Navigator.pop(context),
           child: Text(l10n.cancel),
         ),

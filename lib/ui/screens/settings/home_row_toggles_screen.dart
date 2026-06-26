@@ -9,6 +9,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
+import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/settings/preference_tiles.dart';
@@ -32,13 +33,13 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
   void _pushHomeSectionsScreen(BuildContext context) {
     if (_navigating) return;
     _navigating = true;
-    context.pushSettingsScreen(
-      const HomeSectionsScreen(showGeneralOptions: false),
-    ).then((_) {
-      if (mounted) {
-        setState(() => _navigating = false);
-      }
-    });
+    context
+        .pushSettingsScreen(const HomeSectionsScreen(showGeneralOptions: false))
+        .then((_) {
+          if (mounted) {
+            setState(() => _navigating = false);
+          }
+        });
   }
 
   @override
@@ -145,7 +146,9 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     final seerrEnabledOnAccount = GetIt.instance<SeerrPreferences>().enabled;
 
     final showFavoritesRows = _prefs.get(UserPreferences.displayFavoritesRows);
-    final showCollectionsRows = _prefs.get(UserPreferences.displayCollectionsRows);
+    final showCollectionsRows = _prefs.get(
+      UserPreferences.displayCollectionsRows,
+    );
     final showGenresRows = _prefs.get(UserPreferences.displayGenresRows);
     final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
     final showAudioRows = _prefs.get(UserPreferences.displayAudioRows);
@@ -160,205 +163,242 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
       child: withCleanSettingsTypography(
         context,
         Scaffold(
-        appBar: buildSettingsAppBar(context, Text(l10n.homeRowToggles)),
-        body: ListView(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLow.withValues(alpha: 0.82),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.fromBorderSide(
-                    borderTokens.cardBorder.copyWith(
-                      color: unfocusedBorderColor,
-                      width: 1.0,
+          appBar: buildSettingsAppBar(context, Text(l10n.homeRowToggles)),
+          body: ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerLow.withValues(
+                      alpha: 0.82,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.fromBorderSide(
+                      borderTokens.cardBorder.copyWith(
+                        color: unfocusedBorderColor,
+                        width: 1.0,
+                      ),
                     ),
                   ),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        l10n.homeRowTogglesDescription,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          l10n.homeRowTogglesDescription,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Focus(
-                      canRequestFocus: false,
-                      skipTraversal: true,
-                      onFocusChange: (f) => setState(() => _buttonFocused = f),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: _buttonFocused
-                              ? AppColorScheme.onSurface.withValues(alpha: 0.18)
-                              : theme.colorScheme.primary.withValues(alpha: 0.15),
-                          shape: BoxShape.circle,
-                          border: Border.all(
+                      const SizedBox(width: 10),
+                      Focus(
+                        canRequestFocus: false,
+                        skipTraversal: true,
+                        onFocusChange: (f) =>
+                            setState(() => _buttonFocused = f),
+                        child: Container(
+                          decoration: BoxDecoration(
                             color: _buttonFocused
-                                ? AppColorScheme.onSurface
-                                : theme.colorScheme.primary.withValues(alpha: 0.35),
-                            width: 1.5,
-                          ),
-                          boxShadow: _buttonFocused
-                              ? [
-                                  BoxShadow(
-                                    color: AppColorScheme.onSurface.withValues(alpha: 0.22),
-                                    blurRadius: 14,
-                                    spreadRadius: 0.5,
+                                ? AppColorScheme.onSurface.withValues(
+                                    alpha: 0.18,
+                                  )
+                                : theme.colorScheme.primary.withValues(
+                                    alpha: 0.15,
                                   ),
-                                ]
-                              : null,
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.list,
-                            color: theme.colorScheme.primary,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: _buttonFocused
+                                  ? AppColorScheme.onSurface
+                                  : theme.colorScheme.primary.withValues(
+                                      alpha: 0.35,
+                                    ),
+                              width: 1.5,
+                            ),
+                            boxShadow: _buttonFocused
+                                ? [
+                                    BoxShadow(
+                                      color: AppColorScheme.onSurface
+                                          .withValues(alpha: 0.22),
+                                      blurRadius: 14,
+                                      spreadRadius: 0.5,
+                                    ),
+                                  ]
+                                : null,
                           ),
-                          tooltip: l10n.homeSections,
-                          onPressed: () => _pushHomeSectionsScreen(context),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.list,
+                              color: theme.colorScheme.primary,
+                            ),
+                            tooltip: l10n.homeSections,
+                            onPressed: () => _pushHomeSectionsScreen(context),
+                          ),
                         ),
                       ),
+                    ],
+                  ),
+                ),
+              ),
+
+              _SectionHeader(l10n.audio),
+              adaptiveListSection(
+                children: [
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.displayAudioRows,
+                    title: l10n.displayAudioRows,
+                    subtitle: l10n.displayAudioRowsSubtitle,
+                    icon: Icons.music_note,
+                    onChanged: _onAudioRowsToggleChanged,
+                  ),
+                  if (showAudioRows)
+                    EnumPreferenceTile<LibrarySortBy>(
+                      preference: UserPreferences.audioRowsSortBy,
+                      title: l10n.audioRowsSorting,
+                      description: l10n.audioRowsSortingDescription,
+                      icon: Icons.sort,
+                      values: const [
+                        LibrarySortBy.name,
+                        LibrarySortBy.dateAdded,
+                        LibrarySortBy.premiereDate,
+                        LibrarySortBy.runtime,
+                        LibrarySortBy.random,
+                      ],
+                      labelOf: (v) => v == LibrarySortBy.premiereDate
+                          ? 'Release Date'
+                          : v.displayName,
+                      dialogLabelOf: (v) => v == LibrarySortBy.premiereDate
+                          ? 'Release Date'
+                          : v.displayName,
+                      onChanged: _onAudioSortChanged,
+                    ),
+                ],
+              ),
+
+              _SectionHeader(l10n.collections),
+              adaptiveListSection(
+                children: [
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.displayCollectionsRows,
+                    title: l10n.displayCollectionsRows,
+                    subtitle: l10n.displayCollectionsRowsSubtitle,
+                    icon: Icons.collections,
+                    onChanged: _onCollectionsRowsToggleChanged,
+                  ),
+                  if (showCollectionsRows)
+                    EnumPreferenceTile<LibrarySortBy>(
+                      preference: UserPreferences.collectionsRowSortBy,
+                      title: l10n.collectionsRowSorting,
+                      description: l10n.collectionsRowSortingDescription,
+                      icon: Icons.sort,
+                      labelOf: (v) => v.displayName,
+                      onChanged: _onCollectionsSortChanged,
+                    ),
+                ],
+              ),
+
+              _SectionHeader(l10n.favorites),
+              adaptiveListSection(
+                children: [
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.displayFavoritesRows,
+                    title: l10n.displayFavoritesRows,
+                    subtitle: l10n.displayFavoritesRowsSubtitle,
+                    icon: Icons.favorite,
+                    onChanged: _onFavoritesRowsToggleChanged,
+                  ),
+                  if (showFavoritesRows)
+                    EnumPreferenceTile<LibrarySortBy>(
+                      preference: UserPreferences.favoritesRowSortBy,
+                      title: l10n.favoritesRowSorting,
+                      description: l10n.favoritesRowSortingDescription,
+                      icon: Icons.sort,
+                      labelOf: (v) => v.displayName,
+                      onChanged: _onFavoritesSortChanged,
+                    ),
+                ],
+              ),
+
+              _SectionHeader(l10n.genres),
+              adaptiveListSection(
+                children: [
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.displayGenresRows,
+                    title: l10n.displayGenresRows,
+                    subtitle: l10n.displayGenresRowsSubtitle,
+                    icon: Icons.theater_comedy,
+                    onChanged: _onGenresRowsToggleChanged,
+                  ),
+                  if (showGenresRows) ...[
+                    EnumPreferenceTile<LibrarySortBy>(
+                      preference: UserPreferences.genresRowSortBy,
+                      title: l10n.genresRowSorting,
+                      description: l10n.genresRowSortingDescription,
+                      icon: Icons.sort,
+                      labelOf: (v) => v.displayName,
+                      onChanged: _onGenresSortChanged,
+                    ),
+                    EnumPreferenceTile<GenresRowItemFilter>(
+                      preference: UserPreferences.genresRowItemFilter,
+                      title: l10n.genresRowItems,
+                      description: l10n.genresRowItemsDescription,
+                      icon: Icons.filter_list,
+                      labelOf: (v) => v.displayName,
+                      onChanged: _onGenresItemFilterChanged,
+                    ),
+                  ],
+                ],
+              ),
+
+              _SectionHeader(l10n.playlists),
+              adaptiveListSection(
+                children: [
+                  SwitchPreferenceTile(
+                    preference: UserPreferences.displayPlaylistsRows,
+                    title: l10n.displayPlaylistsRows,
+                    subtitle: l10n.displayPlaylistsRowsSubtitle,
+                    icon: Icons.playlist_play,
+                    onChanged: _onPlaylistsRowsToggleChanged,
+                  ),
+                  if (showPlaylistsRows)
+                    EnumPreferenceTile<LibrarySortBy>(
+                      preference: UserPreferences.playlistsRowSortBy,
+                      title: l10n.playlistsRowSorting,
+                      description: l10n.playlistsRowSortingDescription,
+                      icon: Icons.sort,
+                      labelOf: (v) => v.displayName,
+                      onChanged: _onPlaylistsSortChanged,
+                    ),
+                ],
+              ),
+
+              if (_syncService.seerrAvailable) ...[
+                _SectionHeader(l10n.seerr),
+                adaptiveListSection(
+                  children: [
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.displaySeerrRows,
+                      title: l10n.displaySeerrRows,
+                      subtitle: seerrEnabledOnAccount
+                          ? l10n.displaySeerrRowsSubtitle
+                          : '${l10n.displaySeerrRowsSubtitle} (Requires Seerr login in Plugins)',
+                      enabled: seerrEnabledOnAccount,
+                      iconBuilder: (size, color) => Image.asset(
+                        'assets/icons/seerr.png',
+                        width: size,
+                        height: size,
+                      ),
+                      onChanged: _onSeerrRowsToggleChanged,
                     ),
                   ],
                 ),
-              ),
-            ),
-            
-            _SectionHeader(l10n.audio),
-            SwitchPreferenceTile(
-              preference: UserPreferences.displayAudioRows,
-              title: l10n.displayAudioRows,
-              subtitle: l10n.displayAudioRowsSubtitle,
-              icon: Icons.music_note,
-              onChanged: _onAudioRowsToggleChanged,
-            ),
-            if (showAudioRows)
-              EnumPreferenceTile<LibrarySortBy>(
-                preference: UserPreferences.audioRowsSortBy,
-                title: l10n.audioRowsSorting,
-                description: l10n.audioRowsSortingDescription,
-                icon: Icons.sort,
-                values: const [
-                  LibrarySortBy.name,
-                  LibrarySortBy.dateAdded,
-                  LibrarySortBy.premiereDate,
-                  LibrarySortBy.runtime,
-                  LibrarySortBy.random,
-                ],
-                labelOf: (v) => v == LibrarySortBy.premiereDate ? 'Release Date' : v.displayName,
-                dialogLabelOf: (v) => v == LibrarySortBy.premiereDate ? 'Release Date' : v.displayName,
-                onChanged: _onAudioSortChanged,
-              ),
-
-            _SectionHeader(l10n.collections),
-            SwitchPreferenceTile(
-              preference: UserPreferences.displayCollectionsRows,
-              title: l10n.displayCollectionsRows,
-              subtitle: l10n.displayCollectionsRowsSubtitle,
-              icon: Icons.collections,
-              onChanged: _onCollectionsRowsToggleChanged,
-            ),
-            if (showCollectionsRows)
-              EnumPreferenceTile<LibrarySortBy>(
-                preference: UserPreferences.collectionsRowSortBy,
-                title: l10n.collectionsRowSorting,
-                description: l10n.collectionsRowSortingDescription,
-                icon: Icons.sort,
-                labelOf: (v) => v.displayName,
-                onChanged: _onCollectionsSortChanged,
-              ),
-
-            _SectionHeader(l10n.favorites),
-            SwitchPreferenceTile(
-              preference: UserPreferences.displayFavoritesRows,
-              title: l10n.displayFavoritesRows,
-              subtitle: l10n.displayFavoritesRowsSubtitle,
-              icon: Icons.favorite,
-              onChanged: _onFavoritesRowsToggleChanged,
-            ),
-            if (showFavoritesRows)
-              EnumPreferenceTile<LibrarySortBy>(
-                preference: UserPreferences.favoritesRowSortBy,
-                title: l10n.favoritesRowSorting,
-                description: l10n.favoritesRowSortingDescription,
-                icon: Icons.sort,
-                labelOf: (v) => v.displayName,
-                onChanged: _onFavoritesSortChanged,
-              ),
-
-            _SectionHeader(l10n.genres),
-            SwitchPreferenceTile(
-              preference: UserPreferences.displayGenresRows,
-              title: l10n.displayGenresRows,
-              subtitle: l10n.displayGenresRowsSubtitle,
-              icon: Icons.theater_comedy,
-              onChanged: _onGenresRowsToggleChanged,
-            ),
-            if (showGenresRows) ...[
-              EnumPreferenceTile<LibrarySortBy>(
-                preference: UserPreferences.genresRowSortBy,
-                title: l10n.genresRowSorting,
-                description: l10n.genresRowSortingDescription,
-                icon: Icons.sort,
-                labelOf: (v) => v.displayName,
-                onChanged: _onGenresSortChanged,
-              ),
-              EnumPreferenceTile<GenresRowItemFilter>(
-                preference: UserPreferences.genresRowItemFilter,
-                title: l10n.genresRowItems,
-                description: l10n.genresRowItemsDescription,
-                icon: Icons.filter_list,
-                labelOf: (v) => v.displayName,
-                onChanged: _onGenresItemFilterChanged,
-              ),
+              ],
+              const SizedBox(height: 32),
             ],
-
-            _SectionHeader(l10n.playlists),
-            SwitchPreferenceTile(
-              preference: UserPreferences.displayPlaylistsRows,
-              title: l10n.displayPlaylistsRows,
-              subtitle: l10n.displayPlaylistsRowsSubtitle,
-              icon: Icons.playlist_play,
-              onChanged: _onPlaylistsRowsToggleChanged,
-            ),
-            if (showPlaylistsRows)
-              EnumPreferenceTile<LibrarySortBy>(
-                preference: UserPreferences.playlistsRowSortBy,
-                title: l10n.playlistsRowSorting,
-                description: l10n.playlistsRowSortingDescription,
-                icon: Icons.sort,
-                labelOf: (v) => v.displayName,
-                onChanged: _onPlaylistsSortChanged,
-              ),
-
-            if (_syncService.seerrAvailable) ...[
-              _SectionHeader(l10n.seerr),
-              SwitchPreferenceTile(
-                preference: UserPreferences.displaySeerrRows,
-                title: l10n.displaySeerrRows,
-                subtitle: seerrEnabledOnAccount
-                    ? l10n.displaySeerrRowsSubtitle
-                    : '${l10n.displaySeerrRowsSubtitle} (Requires Seerr login in Plugins)',
-                enabled: seerrEnabledOnAccount,
-                iconBuilder: (size, color) => Image.asset(
-                  'assets/icons/seerr.png',
-                  width: size,
-                  height: size,
-                ),
-                onChanged: _onSeerrRowsToggleChanged,
-              ),
-            ],
-            const SizedBox(height: 32),
-
-          ],
+          ),
         ),
-      ),
       ),
     );
   }

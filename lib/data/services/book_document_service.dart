@@ -12,6 +12,36 @@ enum BookDocumentTheme {
   sepia,
 }
 
+@immutable
+class BookDocumentStyle {
+  final String fontFamilyCss;
+  final int fontSizePx;
+  final double lineHeight;
+  final int marginPx;
+  final int maxWidthPx;
+  final bool justify;
+  final bool bold;
+
+  final String? backgroundCss;
+  final String? foregroundCss;
+  final String? linkCss;
+
+  const BookDocumentStyle({
+    this.fontFamilyCss = 'Georgia, serif',
+    this.fontSizePx = 18,
+    this.lineHeight = 1.6,
+    this.marginPx = 16,
+    this.maxWidthPx = 800,
+    this.justify = false,
+    this.bold = false,
+    this.backgroundCss,
+    this.foregroundCss,
+    this.linkCss,
+  });
+
+  static const BookDocumentStyle defaults = BookDocumentStyle();
+}
+
 class BookDocumentService {
   static Future<Uint8List> downloadBytes(
     List<Uri> uris,
@@ -109,8 +139,9 @@ class BookDocumentService {
   static List<String> extractEpubChapterHtml(
     Uint8List bytes, {
     BookDocumentTheme theme = BookDocumentTheme.light,
+    BookDocumentStyle? style,
   }) {
-    return _extractEpubChapterHtmlInternal(bytes, theme: theme);
+    return _extractEpubChapterHtmlInternal(bytes, theme: theme, style: style);
   }
 
   /// Parses the table of contents from an EPUB (NCX or EPUB3 nav).
@@ -269,6 +300,7 @@ class BookDocumentService {
   static List<String> _extractEpubChapterHtmlInternal(
     Uint8List bytes, {
     BookDocumentTheme theme = BookDocumentTheme.light,
+    BookDocumentStyle? style,
   }) {
     final archive = ZipDecoder().decodeBytes(bytes);
 
@@ -319,6 +351,7 @@ class BookDocumentService {
         cssBuffer.toString(),
         sanitized,
         theme: theme,
+        style: style,
       ));
     }
 
@@ -417,8 +450,11 @@ class BookDocumentService {
     String css,
     String body, {
     required BookDocumentTheme theme,
+    BookDocumentStyle? style,
   }) {
-    final colors = switch (theme) {
+    final s = style ?? BookDocumentStyle.defaults;
+
+    final themeColors = switch (theme) {
       BookDocumentTheme.light => (
           background: '#fafafa',
           foreground: '#222222',
@@ -436,26 +472,50 @@ class BookDocumentService {
         ),
     };
 
+    final background = s.backgroundCss ?? themeColors.background;
+    final foreground = s.foregroundCss ?? themeColors.foreground;
+    final link = s.linkCss ?? themeColors.link;
+    final textAlign = s.justify ? 'justify' : 'initial';
+    final fontWeight = s.bold ? '600' : 'normal';
+
     return '''<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: Georgia, serif;
-      line-height: 1.6;
-      padding: 16px;
-      margin: 0 auto;
-      max-width: 800px;
-      color: ${colors.foreground};
-      background: ${colors.background};
-      overflow-wrap: anywhere;
-    }
-    a { color: ${colors.link}; }
-    img { max-width: 100%; height: auto; }
     $css
+
+    * { box-sizing: border-box; }
+    html {
+      -webkit-text-size-adjust: 100%;
+      background: $background !important;
+    }
+    body {
+      font-family: ${s.fontFamilyCss} !important;
+      font-size: ${s.fontSizePx}px !important;
+      font-weight: $fontWeight;
+      line-height: ${s.lineHeight} !important;
+      text-align: $textAlign;
+      padding: ${s.marginPx}px;
+      margin: 0 auto;
+      max-width: ${s.maxWidthPx}px;
+      background: $background !important;
+      overflow-wrap: anywhere;
+      -webkit-hyphens: auto;
+      hyphens: auto;
+    }
+    body, body *:not(a) {
+      color: $foreground !important;
+      -webkit-text-fill-color: $foreground !important;
+      background-color: transparent !important;
+      border-color: $foreground !important;
+    }
+    a, a * {
+      color: $link !important;
+      -webkit-text-fill-color: $link !important;
+    }
+    img, svg, picture { max-width: 100%; height: auto; }
   </style>
 </head>
 <body>

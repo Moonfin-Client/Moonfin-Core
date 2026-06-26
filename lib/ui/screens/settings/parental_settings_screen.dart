@@ -7,6 +7,7 @@ import 'package:server_core/server_core.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
+import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/settings/preference_binding.dart';
 import '../../widgets/settings/preference_tiles.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -85,7 +86,10 @@ class _ParentalSettingsScreenState extends State<ParentalSettingsScreen> {
         final items = response['Items'];
         final totalRecordCount = response['TotalRecordCount'] as num?;
         final page = items is List
-            ? items.whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList()
+            ? items
+                  .whereType<Map>()
+                  .map((e) => Map<String, dynamic>.from(e))
+                  .toList()
             : const <Map<String, dynamic>>[];
 
         for (final item in page) {
@@ -101,7 +105,8 @@ class _ParentalSettingsScreenState extends State<ParentalSettingsScreen> {
 
         startIndex += page.length;
         safetyPages += 1;
-        if (totalRecordCount != null && startIndex >= totalRecordCount.toInt()) {
+        if (totalRecordCount != null &&
+            startIndex >= totalRecordCount.toInt()) {
           break;
         }
       }
@@ -200,41 +205,49 @@ class _ParentalSettingsScreenState extends State<ParentalSettingsScreen> {
                         ),
                       ),
                     ),
-                  ...ratings.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final rating = entry.value;
-                    final isBlocked = blocked.contains(rating);
-                    return TvFocusHighlight(
-                      builder: (_, focused) => ListTile(
-                        focusNode: index == 0 ? _firstRatingFocusNode : null,
-                        autofocus: PlatformDetection.isTV && index == 0,
-                        focusColor: Colors.transparent,
-                        hoverColor: Colors.transparent,
-                        leading: IconTheme(
-                          data: IconThemeData(
-                            color: focused
-                                ? AppColors.black.withValues(alpha: 0.54)
-                                : AppColorScheme.onSurface.withValues(alpha: 0.7),
-                            size: 24,
+                  adaptiveListSection(
+                    children: [
+                      ...ratings.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final rating = entry.value;
+                        final isBlocked = blocked.contains(rating);
+                        return TvFocusHighlight(
+                          builder: (_, focused) => ListTile(
+                            focusNode: index == 0
+                                ? _firstRatingFocusNode
+                                : null,
+                            autofocus: PlatformDetection.isTV && index == 0,
+                            focusColor: Colors.transparent,
+                            hoverColor: Colors.transparent,
+                            leading: IconTheme(
+                              data: IconThemeData(
+                                color: focused
+                                    ? AppColors.black.withValues(alpha: 0.54)
+                                    : AppColorScheme.onSurface.withValues(
+                                        alpha: 0.7,
+                                      ),
+                                size: 24,
+                              ),
+                              child: Icon(
+                                isBlocked
+                                    ? Icons.check_box
+                                    : Icons.check_box_outline_blank,
+                              ),
+                            ),
+                            title: DefaultTextStyle.merge(
+                              style: TextStyle(
+                                color: focused
+                                    ? AppColors.black.withValues(alpha: 0.87)
+                                    : AppColorScheme.onSurface,
+                              ),
+                              child: Text(rating),
+                            ),
+                            onTap: () => _toggle(rating),
                           ),
-                          child: Icon(
-                            isBlocked
-                                ? Icons.check_box
-                                : Icons.check_box_outline_blank,
-                          ),
-                        ),
-                        title: DefaultTextStyle.merge(
-                          style: TextStyle(
-                            color: focused
-                                ? AppColors.black.withValues(alpha: 0.87)
-                                : AppColorScheme.onSurface,
-                          ),
-                          child: Text(rating),
-                        ),
-                        onTap: () => _toggle(rating),
-                      ),
-                    );
-                  }),
+                        );
+                      }),
+                    ],
+                  ),
                 ],
               ],
             );

@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../providers/admin_user_providers.dart';
 
 class AdminRepositoriesScreen extends ConsumerStatefulWidget {
@@ -52,13 +53,13 @@ class _AdminRepositoriesScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder:
-          (context) => AlertDialog(
+          (context) => AlertDialog.adaptive(
             title: Text(l10n.adminRemoveRepository),
             content: Text(
               l10n.adminRemoveRepositoryConfirm(repo.name.isNotEmpty ? repo.name : repo.url),
             ),
             actions: [
-              TextButton(
+              adaptiveDialogAction(
                 onPressed: () => Navigator.pop(context, false),
                 child: Text(l10n.cancel),
               ),
@@ -237,7 +238,7 @@ class _RepositoryTile extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Switch(value: repo.enabled, onChanged: (_) => onToggle()),
+          Switch.adaptive(value: repo.enabled, onChanged: (_) => onToggle()),
           PopupMenuButton<String>(
             onSelected: (value) {
               switch (value) {
@@ -305,7 +306,7 @@ class _RepositoryDialogState extends State<_RepositoryDialog> {
       280.0,
       400.0,
     );
-    return AlertDialog(
+    return AlertDialog.adaptive(
       title: Text(isEdit ? AppLocalizations.of(context).adminReposEditTitle : AppLocalizations.of(context).adminReposAddTitle),
       content: SizedBox(
         width: dialogWidth,
@@ -332,7 +333,7 @@ class _RepositoryDialogState extends State<_RepositoryDialog> {
               keyboardType: TextInputType.url,
             ),
             const SizedBox(height: 12),
-            SwitchListTile(
+            SwitchListTile.adaptive(
               contentPadding: EdgeInsets.zero,
               title: Text(AppLocalizations.of(context).enabled),
               value: _enabled,
@@ -342,7 +343,7 @@ class _RepositoryDialogState extends State<_RepositoryDialog> {
         ),
       ),
       actions: [
-        TextButton(
+        adaptiveDialogAction(
           onPressed: () => Navigator.pop(context),
           child: Text(AppLocalizations.of(context).cancel),
         ),

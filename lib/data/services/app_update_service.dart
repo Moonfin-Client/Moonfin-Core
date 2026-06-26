@@ -226,7 +226,14 @@ class AppUpdateService {
       case DistributionChannel.macosDmg:
         return _firstByExtension(assets, const ['.dmg']);
       case DistributionChannel.windows:
-        return _firstByExtension(assets, const ['.exe']);
+        final isArm64 = Platform.version.toLowerCase().contains('windows_arm64');
+        if (isArm64) {
+          return _firstWhere(assets, '.exe', requireSubstring: 'arm64') ??
+              _firstByExtension(assets, const ['.exe']);
+        } else {
+          return _firstWhere(assets, '.exe', excludeSubstring: 'arm64') ??
+              _firstByExtension(assets, const ['.exe']);
+        }
       default:
         return null;
     }

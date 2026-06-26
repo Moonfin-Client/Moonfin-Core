@@ -141,6 +141,22 @@ class AppLocalizationsUk extends AppLocalizations {
   String get settingsAppearanceTheme => 'Тема програми';
 
   @override
+  String get interfaceStyle => 'Interface style';
+
+  @override
+  String get interfaceStyleSubtitle =>
+      'Automatic uses the native look on Apple devices. Choose Apple to force it, or Material for the standard look.';
+
+  @override
+  String get interfaceStyleAutomatic => 'Automatic';
+
+  @override
+  String get interfaceStyleApple => 'Apple';
+
+  @override
+  String get interfaceStyleMaterial => 'Material';
+
+  @override
   String get settingsAppearanceThemeSubtitle =>
       'Перемикайтеся між Moonfin і Neon Pulse без перезапуску програми';
 
@@ -7382,6 +7398,11 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String latestLibraryName(String libraryName) {
     return 'Останні $libraryName';
+  }
+
+  @override
+  String recentlyReleasedLibraryName(String libraryName) {
+    return 'Recently Released $libraryName';
   }
 
   @override

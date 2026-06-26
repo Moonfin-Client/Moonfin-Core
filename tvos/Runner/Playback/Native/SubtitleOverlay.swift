@@ -4,6 +4,7 @@ final class SubtitleOverlay: UIView {
 
     private let textLabel = UILabel()
     private let bitmapView = UIImageView()
+    private let assImageView = UIImageView()
     private var eventQueue: [SubtitleEvent] = []
     private var activeEvent: SubtitleEvent?
     var delaySeconds: TimeInterval = 0
@@ -37,12 +38,27 @@ final class SubtitleOverlay: UIView {
         bitmapView.contentMode = .scaleAspectFit
         bitmapView.isHidden = true
         addSubview(bitmapView)
+
+        assImageView.contentMode = .scaleToFill
+        assImageView.isHidden = true
+        addSubview(assImageView)
     }
 
     override func layoutSubviews() {
         super.layoutSubviews()
         layoutTextLabel()
         layoutBitmapView()
+        assImageView.frame = bounds
+    }
+
+    func showAssImage(_ image: CGImage?) {
+        if let image {
+            assImageView.image = UIImage(cgImage: image)
+            assImageView.isHidden = false
+        } else {
+            assImageView.image = nil
+            assImageView.isHidden = true
+        }
     }
 
     func enqueue(_ event: SubtitleEvent) {
@@ -70,6 +86,8 @@ final class SubtitleOverlay: UIView {
     func clear() {
         eventQueue.removeAll()
         hideAll()
+        assImageView.image = nil
+        assImageView.isHidden = true
     }
 
     func applyStyle(options: [String: Any]) {

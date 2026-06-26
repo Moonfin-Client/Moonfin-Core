@@ -21,6 +21,7 @@ import '../../../data/services/media_server_client_factory.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/platform_detection.dart';
+import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/remote_play_to_session_dialog.dart';
 import '../../widgets/playback/lyrics_view.dart';
@@ -683,13 +684,13 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         children: [
           if (!isTv)
             IconButton(
-              icon: const Icon(Icons.arrow_back, size: 24),
+              icon: const AdaptiveIcon(Icons.arrow_back, size: 24),
               onPressed: () => Navigator.of(context).pop(),
             ),
           const Spacer(),
           if (_lyrics != null && _lyrics!.isNotEmpty && !useSplitLyricsLayout)
             IconButton(
-              icon: Icon(
+              icon: AdaptiveIcon(
                 Icons.lyrics_outlined,
                 size: 24,
                 color: _showLyrics ? AppColorScheme.accent : null,
@@ -703,7 +704,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
             ValueListenableBuilder<CastTargetKind?>(
               valueListenable: _castService.activeKindNotifier,
               builder: (context, kind, _) => IconButton(
-                icon: Icon(
+                icon: AdaptiveIcon(
                   _castIcon(kind),
                   size: 24,
                   color: kind != null ? AppColorScheme.accent : null,
@@ -717,14 +718,14 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               builder: (context, kind, _) {
                 if (kind == null) return const SizedBox.shrink();
                 return IconButton(
-                  icon: const Icon(Icons.settings_remote_rounded, size: 24),
+                  icon: const AdaptiveIcon(Icons.settings_remote_rounded, size: 24),
                   onPressed: _showCastControls,
                 );
               },
             ),
           if (!isTv)
             IconButton(
-              icon: Icon(
+              icon: AdaptiveIcon(
                 _showQueue ? Icons.album : Icons.queue_music,
                 size: 24,
                 color: _showQueue ? AppColorScheme.accent : null,
@@ -869,7 +870,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     return Container(
       color: AppColorScheme.surfaceVariant,
       child: Center(
-        child: Icon(
+        child: AdaptiveIcon(
           Icons.music_note,
           size: 64,
           color: AppColorScheme.onSurface.withValues(alpha: 0.38),
@@ -881,7 +882,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   Widget _queueArtPlaceholder() {
     return Container(
       color: AppColorScheme.surfaceVariant,
-      child: Icon(
+      child: AdaptiveIcon(
         Icons.music_note,
         size: 24,
         color: AppColorScheme.onSurface.withValues(alpha: 0.38),
@@ -1032,7 +1033,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
             if (kind == CastTargetKind.googleCast ||
                 kind == CastTargetKind.dlna)
               ListTile(
-                leading: Icon(
+                leading: AdaptiveIcon(
                   Icons.volume_up_rounded,
                   color: AppColorScheme.onSurface,
                 ),
@@ -1084,7 +1085,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                 ),
               ),
             ListTile(
-              leading: Icon(
+              leading: AdaptiveIcon(
                 Icons.play_arrow_rounded,
                 color: AppColorScheme.onSurface,
               ),
@@ -1098,7 +1099,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               },
             ),
             ListTile(
-              leading: Icon(
+              leading: AdaptiveIcon(
                 Icons.pause_rounded,
                 color: AppColorScheme.onSurface,
               ),
@@ -1112,7 +1113,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               },
             ),
             ListTile(
-              leading: Icon(
+              leading: AdaptiveIcon(
                 Icons.sync_rounded,
                 color: AppColorScheme.onSurface,
               ),
@@ -1129,7 +1130,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               },
             ),
             ListTile(
-              leading: Icon(
+              leading: AdaptiveIcon(
                 Icons.stop_rounded,
                 color: AppColorScheme.onSurface,
               ),
@@ -1152,7 +1153,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     final isTv = PlatformDetection.isTV;
     final isFav = _getIsFavorite(item);
     final favoriteButton = IconButton(
-      icon: Icon(
+      icon: AdaptiveIcon(
         isFav ? Icons.favorite : Icons.favorite_border,
         size: 28,
         color: isFav
@@ -1186,7 +1187,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
           _tvFocusShell(
             focused: queueFocused,
             child: IconButton(
-              icon: Icon(
+              icon: AdaptiveIcon(
                 _showQueue ? Icons.album : Icons.queue_music,
                 size: 28,
                 color: _showQueue
@@ -1295,7 +1296,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
           wrapTvTransport(
             index: 0,
             child: IconButton(
-              icon: Icon(
+              icon: AdaptiveIcon(
                 Icons.shuffle,
                 size: 24,
                 color: isShuffled
@@ -1308,7 +1309,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
           wrapTvTransport(
             index: 1,
             child: IconButton(
-              icon: Icon(
+              icon: AdaptiveIcon(
                 Icons.skip_previous,
                 size: 36,
                 color: AppColorScheme.onSurface,
@@ -1325,7 +1326,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                 color: AppColorScheme.accent,
               ),
               child: IconButton(
-                icon: Icon(
+                icon: AdaptiveIcon(
                   isPlaying ? Icons.pause : Icons.play_arrow,
                   size: 36,
                   color: AppColorScheme.onSurface,
@@ -1343,7 +1344,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
           wrapTvTransport(
             index: 3,
             child: IconButton(
-              icon: Icon(
+              icon: AdaptiveIcon(
                 Icons.skip_next,
                 size: 36,
                 color: AppColorScheme.onSurface,
@@ -1354,7 +1355,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
           wrapTvTransport(
             index: 4,
             child: IconButton(
-              icon: Icon(
+              icon: AdaptiveIcon(
                 repeatMode == RepeatMode.repeatOne
                     ? Icons.repeat_one
                     : Icons.repeat,
@@ -1443,7 +1444,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
             overflow: TextOverflow.ellipsis,
           ),
           trailing: isCurrent
-              ? Icon(Icons.equalizer, color: AppColorScheme.accent, size: 20)
+              ? AdaptiveIcon(Icons.equalizer, color: AppColorScheme.accent, size: 20)
               : null,
           onTap: () {
             if (isTv) {

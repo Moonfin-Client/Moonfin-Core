@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
@@ -14,17 +15,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pdfrx/pdfrx.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+
+import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/models/aggregated_item.dart';
+import '../../../data/models/reader_settings.dart';
 import '../../../data/repositories/offline_repository.dart';
 import '../../../data/services/book_document_service.dart';
 import '../../../data/services/book_reader_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
+import '../../../data/services/reader_settings_store.dart';
 import '../../../util/platform_detection.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/current_app_localizations.dart';
-import '../../widgets/overlay_sheet.dart';
+import '../../widgets/adaptive/sf_symbol.dart';
+import '../../widgets/reader/reader_chrome_bar.dart';
+import '../../widgets/reader/reader_contents_hub.dart';
+import '../../widgets/reader/reader_settings_sheet.dart';
 
 class BookReaderScreen extends StatefulWidget {
   final String itemId;
@@ -44,20 +52,11 @@ class BookReaderScreen extends StatefulWidget {
   State<BookReaderScreen> createState() => _BookReaderScreenState();
 }
 
-enum _ReaderMode {
-  web,
-  comic,
-  pdf,
-  epub,
-  fallback,
-}
+enum _ReaderMode { web, comic, pdf, epub, fallback }
 
-enum _ReaderThemeMode {
-  system,
-  light,
-  dark,
-  sepia,
-}
+enum _ComicLayout { single, double, vertical }
+
+enum _ComicDirection { ltr, rtl }
 
 class _BookReaderScreenState extends State<BookReaderScreen>
     with WidgetsBindingObserver {
@@ -68,16 +67,28 @@ class _BookReaderScreenState extends State<BookReaderScreen>
   bool _loadingContent = false;
   bool _markingPlayed = false;
   _ReaderMode _mode = _ReaderMode.web;
-  WebViewController? _webController;
+  InAppWebViewController? _webController;
+  Uri? _webUri;
+  Map<String, String> _webHeaders = const {};
   final PdfViewerController _pdfController = PdfViewerController();
   final PageController _pageController = PageController();
   final TransformationController _comicTransformController =
       TransformationController();
+  final ScrollController _comicVerticalController = ScrollController();
   List<ArchiveFile> _comicEntries = const [];
   final Map<int, Uint8List> _comicPageCache = {};
+  final Map<int, double> _comicAspectRatios = {};
+  double? _comicMeasuredAspect;
+  int _comicDecodeWidth = 1080;
   int _currentComicPage = 0;
   double _comicZoom = 1.0;
-  bool _twoPageSpreadEnabled = false;
+  _ComicLayout _comicLayout = _ComicLayout.single;
+  _ComicDirection _comicDirection = _ComicDirection.ltr;
+  bool _filmstripVisible = false;
+
+  PdfTextSearcher? _pdfSearcher;
+  final TextEditingController _pdfSearchField = TextEditingController();
+  bool _pdfSearchVisible = false;
   int _webLoadProgress = 0;
   String? _fallbackMessage;
   Uri? _fallbackExternalUri;
@@ -88,18 +99,88 @@ class _BookReaderScreenState extends State<BookReaderScreen>
   List<String> _epubChapterHtml = const [];
   int _currentEpubChapter = 0;
   Uint8List? _epubBytes;
-  final Map<BookDocumentTheme, List<String>> _epubThemeCache = {};
+  final Map<String, List<String>> _epubThemeCache = {};
   Timer? _comicStateSaveDebounce;
   Timer? _pdfPageSaveDebounce;
   List<_BookmarkEntry> _bookmarks = const [];
-  List<({String title, int chapterIndex, int depth})> _epubTocEntries = const [];
+  List<_HighlightEntry> _highlights = const [];
+  List<({String title, int chapterIndex, int depth})> _epubTocEntries =
+      const [];
   List<({String title, int page, int depth})> _pdfOutline = const [];
-  static const int _comicCacheRadius = 2;
-  static const String _readerThemePrefKey = 'book_reader_theme_mode';
+  static const int _comicCacheRadius = 3;
+  static const double _defaultComicAspect = 0.66;
   static const String _fixedLayoutInvertPrefKey =
       'book_reader_fixed_layout_invert';
-  _ReaderThemeMode _readerThemeMode = _ReaderThemeMode.system;
+  static const String _comicLayoutPrefKey = 'book_reader_comic_layout';
+  static const String _comicDirectionPrefKey = 'book_reader_comic_direction';
+  ReaderSettings _settings = ReaderSettings.defaults;
   bool _invertFixedLayout = false;
+
+  ReaderThemeColors get _pageColors =>
+      _settings.resolveColors(Theme.of(context).brightness);
+
+  Color get _readerAccent => AppColorScheme.accent;
+
+  bool get _useNativeHtmlEpub =>
+      !kIsWeb &&
+      (PlatformDetection.isMacOS ||
+          PlatformDetection.isLinux ||
+          PlatformDetection.isWindows);
+
+  ReaderThemeColors get _fixedLayoutChromeColors => ReaderThemeColors(
+    background: _invertFixedLayout
+        ? const Color(0xFFF2F2F2)
+        : const Color(0xFF0A0A0A),
+    foreground: _invertFixedLayout ? const Color(0xFF1A1A1A) : Colors.white,
+    link: const Color(0xFF6FA8FF),
+    isDark: !_invertFixedLayout,
+  );
+
+  Widget _readerDimWarmthOverlay() {
+    final dim = 1.0 - _settings.brightness;
+    final warmth = _settings.warmth;
+    if (dim <= 0.001 && warmth <= 0.001) {
+      return const SizedBox.shrink();
+    }
+    return Positioned.fill(
+      child: IgnorePointer(
+        child: Stack(
+          children: [
+            if (dim > 0.001)
+              Positioned.fill(
+                child: ColoredBox(
+                  color: Colors.black.withValues(alpha: dim * 0.7),
+                ),
+              ),
+            if (warmth > 0.001)
+              Positioned.fill(
+                child: ColoredBox(
+                  color: const Color(
+                    0xFFFF9B2E,
+                  ).withValues(alpha: warmth * 0.28),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  BookDocumentStyle _epubStyle() {
+    final colors = _pageColors;
+    return BookDocumentStyle(
+      fontFamilyCss: _settings.fontFamilyCss,
+      fontSizePx: _settings.fontSizePx,
+      lineHeight: _settings.lineHeight,
+      marginPx: _settings.marginPx,
+      maxWidthPx: _settings.maxWidthPx,
+      justify: _settings.justify,
+      bold: _settings.bold,
+      backgroundCss: colors.backgroundCss,
+      foregroundCss: colors.foregroundCss,
+      linkCss: colors.linkCss,
+    );
+  }
 
   bool get _supportsEmbeddedWebView {
     if (kIsWeb) {
@@ -116,7 +197,8 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       return true;
     }
 
-    return !kIsWeb && (PlatformDetection.isLinux || PlatformDetection.isWindows);
+    return !kIsWeb &&
+        (PlatformDetection.isLinux || PlatformDetection.isWindows);
   }
 
   bool get _supportsRarExtraction {
@@ -144,8 +226,11 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
   int get _comicPageCount => _comicEntries.length;
 
+  bool get _comicVerticalActive =>
+      _mode == _ReaderMode.comic && _comicLayout == _ComicLayout.vertical;
+
   bool get _twoPageSpreadActive {
-    if (!_desktopInputEnabled || !_twoPageSpreadEnabled || _mode != _ReaderMode.comic) {
+    if (_mode != _ReaderMode.comic || _comicLayout != _ComicLayout.double) {
       return false;
     }
 
@@ -154,7 +239,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       return false;
     }
 
-    return size.width >= 1100 && size.width > size.height;
+    return size.width > size.height && size.width >= 700;
   }
 
   int get _comicViewportCount {
@@ -194,6 +279,12 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     return 'book_reader_bookmarks_${item.serverId}_${item.id}';
   }
 
+  String get _highlightPrefKey {
+    final item = _item;
+    if (item == null) return 'book_reader_highlights_unknown';
+    return 'book_reader_highlights_${item.serverId}_${item.id}';
+  }
+
   MediaServerClient _resolveClient() {
     final factory = GetIt.instance<MediaServerClientFactory>();
     if (widget.serverId == null) {
@@ -220,6 +311,9 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     _pageController.dispose();
     _comicTransformController.dispose();
+    _comicVerticalController.dispose();
+    _pdfSearcher?.dispose();
+    _pdfSearchField.dispose();
     super.dispose();
   }
 
@@ -235,6 +329,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     if (_item != null && _error == null) {
       await Future.wait([
         _loadBookmarks(),
+        _loadHighlights(),
         _prepareReaderContent(),
       ]);
     }
@@ -263,7 +358,8 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       );
       final extension = BookReaderService.detectExtension(item);
 
-      if (extension != null && !BookReaderService.isSupportedExtension(extension)) {
+      if (extension != null &&
+          !BookReaderService.isSupportedExtension(extension)) {
         if (!mounted) return;
         final l10n = AppLocalizations.of(context);
         setState(() {
@@ -307,6 +403,8 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       _fallbackMessage = null;
       _comicEntries = const [];
       _comicPageCache.clear();
+      _comicAspectRatios.clear();
+      _comicMeasuredAspect = null;
       _currentComicPage = 0;
       _comicZoom = 1.0;
       _webLoadProgress = 0;
@@ -328,8 +426,9 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     try {
       final offlineRepo = GetIt.instance<OfflineRepository>();
       final offlineItem = await offlineRepo.getItem(item.id);
-      final localFilePath =
-          offlineItem?.downloadStatus == 2 ? offlineItem?.localFilePath : null;
+      final localFilePath = offlineItem?.downloadStatus == 2
+          ? offlineItem?.localFilePath
+          : null;
 
       final List<Uri> uris;
       final Map<String, String> headers;
@@ -347,11 +446,14 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
       var ext = _extension ?? '';
       if (ext.isEmpty && localFilePath != null) {
-        ext = BookReaderService.extractExtensionFromFileName(localFilePath) ?? '';
+        ext =
+            BookReaderService.extractExtensionFromFileName(localFilePath) ?? '';
       }
       if (ext.isEmpty) {
-        final probedExt =
-            await BookDocumentService.probeExtensionFromResponse(uris, headers);
+        final probedExt = await BookDocumentService.probeExtensionFromResponse(
+          uris,
+          headers,
+        );
         if (probedExt != null) {
           ext = probedExt;
           if (mounted) {
@@ -362,8 +464,16 @@ class _BookReaderScreenState extends State<BookReaderScreen>
         }
       }
 
-      if (ext == 'cbz' || ext == 'zip' || ext == 'cbt' || ext == 'cbr' || ext == 'cb7') {
-        final entries = await _extractComicEntriesForExtension(uris, headers, ext);
+      if (ext == 'cbz' ||
+          ext == 'zip' ||
+          ext == 'cbt' ||
+          ext == 'cbr' ||
+          ext == 'cb7') {
+        final entries = await _extractComicEntriesForExtension(
+          uris,
+          headers,
+          ext,
+        );
         if (entries.isEmpty) {
           throw StateError(
             currentAppLocalizations().noImagePagesFoundInArchive(ext),
@@ -381,6 +491,11 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
         await _restoreComicState();
         _primeComicCacheAround(_currentComicPage);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _precacheComicNeighbors(_currentComicPage);
+          }
+        });
       } else if (ext == 'pdf') {
         final bytes = await BookDocumentService.downloadBytes(uris, headers);
         if (!mounted) return;
@@ -407,8 +522,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
         await _prepareEpubReader(uris, headers);
       } else {
-        final unsupportedDoc =
-            ext == 'mobi' || ext == 'azw' || ext == 'azw3';
+        final unsupportedDoc = ext == 'mobi' || ext == 'azw' || ext == 'azw3';
         if (unsupportedDoc) {
           if (!mounted) return;
           final l10n = AppLocalizations.of(context);
@@ -432,35 +546,13 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
         final uri = await _resolveReadableUri(uris, headers);
 
-        final controller = WebViewController()
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..setNavigationDelegate(
-            NavigationDelegate(
-              onProgress: (progress) {
-                if (!mounted) return;
-                setState(() {
-                  _webLoadProgress = progress;
-                });
-              },
-              onWebResourceError: (error) {
-                if (!mounted) return;
-                final l10n = AppLocalizations.of(context);
-                setState(() {
-                  _mode = _ReaderMode.fallback;
-                  _fallbackMessage = l10n.embeddedRendererFailed(
-                    error.errorCode,
-                    error.description,
-                  );
-                });
-              },
-            ),
-          );
-
-        await controller.loadRequest(uri, headers: headers);
         if (!mounted) return;
         setState(() {
           _mode = _ReaderMode.web;
-          _webController = controller;
+          _webController = null;
+          _webUri = uri;
+          _webHeaders = headers;
+          _webLoadProgress = 0;
         });
       }
     } catch (e) {
@@ -493,7 +585,11 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).couldNotOpenExternalViewer)),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).couldNotOpenExternalViewer,
+          ),
+        ),
       );
     }
   }
@@ -509,70 +605,12 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       setState(() => _epubTocEntries = tocEntries);
     }
 
-    if (!_supportsEmbeddedWebView && !kIsWeb && (PlatformDetection.isLinux || PlatformDetection.isWindows)) {
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        _mode = _ReaderMode.epub;
-        _webController = null;
-        _epubBytes = bytes;
-        _epubChapterHtml = chapterHtml;
-        _currentEpubChapter = 0;
-        _webLoadProgress = 100;
-      });
-      final prefs = await SharedPreferences.getInstance();
-      final initialChapter = (widget.initialMode == 'epub' && widget.initialPosition != null)
-          ? widget.initialPosition!
-          : (prefs.getInt(_epubProgressPrefKey) ?? 0);
-      final savedChapter = initialChapter.clamp(0, chapterHtml.length - 1);
-      if (savedChapter > 0 && mounted) {
-        setState(() {
-          _currentEpubChapter = savedChapter;
-        });
-      }
-      return;
-    }
-
-    final controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(_readerBackgroundColor)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onNavigationRequest: (request) {
-            if (_shouldAllowEpubNavigation(request.url, isMainFrame: request.isMainFrame)) {
-              return NavigationDecision.navigate;
-            }
-            return NavigationDecision.prevent;
-          },
-          onProgress: (progress) {
-            if (!mounted) {
-              return;
-            }
-            setState(() {
-              _webLoadProgress = progress;
-            });
-          },
-          onWebResourceError: (error) {
-            final isMainFrame = error.isForMainFrame ?? true;
-            if (!isMainFrame) {
-              return;
-            }
-            if (!mounted) {
-              return;
-            }
-            final l10n = AppLocalizations.of(context);
-            setState(() {
-              _mode = _ReaderMode.fallback;
-              _fallbackMessage = l10n.epubRendererFailed(
-                error.errorCode,
-                error.description,
-              );
-            });
-          },
-        ),
-      );
+    final prefs = await SharedPreferences.getInstance();
+    final initialChapter =
+        (widget.initialMode == 'epub' && widget.initialPosition != null)
+        ? widget.initialPosition!
+        : (prefs.getInt(_epubProgressPrefKey) ?? 0);
+    final savedChapter = initialChapter.clamp(0, chapterHtml.length - 1);
 
     if (!mounted) {
       return;
@@ -580,18 +618,13 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
     setState(() {
       _mode = _ReaderMode.epub;
-      _webController = controller;
+      _webController = null;
       _epubBytes = bytes;
       _epubChapterHtml = chapterHtml;
-      _currentEpubChapter = 0;
+      _currentEpubChapter = savedChapter;
+      _webLoadProgress = _useNativeHtmlEpub ? 100 : 0;
     });
-
-    final prefs = await SharedPreferences.getInstance();
-    final initialChapter = (widget.initialMode == 'epub' && widget.initialPosition != null)
-        ? widget.initialPosition!
-        : (prefs.getInt(_epubProgressPrefKey) ?? 0);
-    final savedChapter = initialChapter.clamp(0, chapterHtml.length - 1);
-    await _loadEpubChapter(savedChapter);
+    await prefs.setInt(_epubProgressPrefKey, savedChapter);
   }
 
   bool _shouldAllowEpubNavigation(String url, {required bool isMainFrame}) {
@@ -620,7 +653,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
     final controller = _webController;
     if (controller != null) {
-      await controller.loadHtmlString(_epubChapterHtml[clamped]);
+      await controller.loadData(data: _epubChapterHtml[clamped]);
     }
 
     if (!mounted) {
@@ -668,8 +701,10 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     }
   }
 
-
-  Future<Uri> _resolveReadableUri(List<Uri> uris, Map<String, String> headers) async {
+  Future<Uri> _resolveReadableUri(
+    List<Uri> uris,
+    Map<String, String> headers,
+  ) async {
     final client = HttpClient();
     final l10n = AppLocalizations.of(context);
     try {
@@ -748,12 +783,17 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       final outputDir = Directory('${workspace.path}/out');
       await outputDir.create(recursive: true);
 
-      if (!kIsWeb && (PlatformDetection.isLinux || PlatformDetection.isWindows)) {
-        await ArchiveExtract.extract7z(
-          archivePath: archiveFile.path,
-          destinationPath: outputDir.path,
-        );
-        return await _readExtractedComicEntries(outputDir);
+      if (!kIsWeb) {
+        try {
+          await ArchiveExtract.extract7z(
+            archivePath: archiveFile.path,
+            destinationPath: outputDir.path,
+          );
+          final entries = await _readExtractedComicEntries(outputDir);
+          if (entries.isNotEmpty) {
+            return entries;
+          }
+        } catch (_) {}
       }
 
       if (!_supportsRarExtraction) {
@@ -761,6 +801,11 @@ class _BookReaderScreenState extends State<BookReaderScreen>
           currentAppLocalizations().cbrExtractionPluginUnavailable,
         );
       }
+
+      if (await outputDir.exists()) {
+        await outputDir.delete(recursive: true);
+      }
+      await outputDir.create(recursive: true);
 
       final Map<dynamic, dynamic> result;
       try {
@@ -775,7 +820,8 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       }
 
       if (result['success'] != true) {
-        final message = result['message']?.toString() ??
+        final message =
+            result['message']?.toString() ??
             currentAppLocalizations().failedToExtractCbrArchive;
         throw StateError(message);
       }
@@ -816,13 +862,18 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     }
   }
 
-  Future<List<ArchiveFile>> _readExtractedComicEntries(Directory outputDir) async {
-    final files = outputDir
-        .listSync(recursive: true, followLinks: false)
-        .whereType<File>()
-        .where((file) => _isImageFileName(file.path))
-        .toList()
-      ..sort((a, b) => a.path.toLowerCase().compareTo(b.path.toLowerCase()));
+  Future<List<ArchiveFile>> _readExtractedComicEntries(
+    Directory outputDir,
+  ) async {
+    final files =
+        outputDir
+            .listSync(recursive: true, followLinks: false)
+            .whereType<File>()
+            .where((file) => _isImageFileName(file.path))
+            .toList()
+          ..sort(
+            (a, b) => a.path.toLowerCase().compareTo(b.path.toLowerCase()),
+          );
 
     final entries = <ArchiveFile>[];
     for (final file in files) {
@@ -842,9 +893,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
         : ZipDecoder().decodeBytes(bytes);
 
     return archive.files
-        .where((file) =>
-            file.isFile &&
-        _isImageFileName(file.name))
+        .where((file) => file.isFile && _isImageFileName(file.name))
         .toList()
       ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
   }
@@ -875,9 +924,11 @@ class _BookReaderScreenState extends State<BookReaderScreen>
   }
 
   void _primeComicCacheAround(int centerIndex) {
-    for (var i = centerIndex - _comicCacheRadius;
-        i <= centerIndex + _comicCacheRadius;
-        i++) {
+    for (
+      var i = centerIndex - _comicCacheRadius;
+      i <= centerIndex + _comicCacheRadius;
+      i++
+    ) {
       _comicPageBytesAt(i);
     }
     _trimComicCache(centerIndex);
@@ -887,6 +938,29 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     _comicPageCache.removeWhere(
       (index, _) => (index - centerIndex).abs() > _comicCacheRadius,
     );
+  }
+
+  ImageProvider _comicImageProvider(Uint8List bytes) =>
+      ResizeImage(MemoryImage(bytes), width: _comicDecodeWidth);
+
+  void _precacheComicNeighbors(int centerIndex) {
+    if (!mounted) {
+      return;
+    }
+    for (final i in [
+      centerIndex + 1,
+      centerIndex + 2,
+      centerIndex - 1,
+    ]) {
+      if (i < 0 || i >= _comicPageCount) {
+        continue;
+      }
+      final bytes = _comicPageBytesAt(i);
+      if (bytes == null) {
+        continue;
+      }
+      precacheImage(_comicImageProvider(bytes), context);
+    }
   }
 
   int _viewportFromPageIndex(int pageIndex) {
@@ -951,6 +1025,69 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     );
   }
 
+  Future<void> _loadHighlights() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getStringList(_highlightPrefKey) ?? const [];
+    final entries = raw
+        .map((s) {
+          try {
+            return _HighlightEntry.fromJson(s);
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<_HighlightEntry>()
+        .toList();
+    if (mounted) {
+      setState(() => _highlights = entries);
+    }
+  }
+
+  Future<void> _saveHighlights() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+      _highlightPrefKey,
+      _highlights.map((h) => h.toJson()).toList(),
+    );
+  }
+
+  Future<void> _addHighlight(String rawText) async {
+    final text = rawText.trim().replaceAll(RegExp(r'\s+'), ' ');
+    if (text.isEmpty || _mode != _ReaderMode.epub) {
+      return;
+    }
+    final snippet = text.length > 280 ? '${text.substring(0, 280)}…' : text;
+    if (_highlights.any(
+      (h) => h.chapterIndex == _currentEpubChapter && h.text == snippet,
+    )) {
+      return;
+    }
+    setState(() {
+      _highlights = [
+        _HighlightEntry(
+          chapterIndex: _currentEpubChapter,
+          text: snippet,
+          createdAt: DateTime.now(),
+        ),
+        ..._highlights,
+      ];
+    });
+    await _saveHighlights();
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Highlight saved')));
+    }
+  }
+
+  Future<void> _deleteHighlight(int index) async {
+    if (index < 0 || index >= _highlights.length) return;
+    setState(() {
+      _highlights = [..._highlights]..removeAt(index);
+    });
+    await _saveHighlights();
+  }
+
   String _currentPositionLabel() {
     final l10n = AppLocalizations.of(context);
     return switch (_mode) {
@@ -978,7 +1115,11 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     if (_bookmarks.any((b) => b.mode == mode && b.position == position)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).bookmarkAlreadySaved(label))),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).bookmarkAlreadySaved(label),
+            ),
+          ),
         );
       }
       return;
@@ -999,7 +1140,9 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).bookmarkAdded(label))),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).bookmarkAdded(label)),
+        ),
       );
     }
   }
@@ -1012,8 +1155,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     await _saveBookmarks();
   }
 
-  Future<void> _navigateToBookmark(_BookmarkEntry bookmark) async {
-    Navigator.of(context).pop();
+  Future<void> _jumpToBookmarkPosition(_BookmarkEntry bookmark) async {
     switch (bookmark.mode) {
       case _ReaderMode.epub:
         await _loadEpubChapter(bookmark.position);
@@ -1026,103 +1168,40 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     }
   }
 
-  void _showBookmarksSheet() {
-    showFocusRestoringModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: const Color(0xFF1A2740),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            final l10n = AppLocalizations.of(context);
-            return DraggableScrollableSheet(
-              expand: false,
-              initialChildSize: 0.45,
-              minChildSize: 0.25,
-              maxChildSize: 0.85,
-              builder: (context, scrollController) {
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.bookmarks,
-                              color: Colors.white, size: 20),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              l10n.bookmarks,
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.close, color: Colors.white70),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Divider(color: Colors.white24, height: 1),
-                    Expanded(
-                      child: _bookmarks.isEmpty
-                          ? Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(24),
-                                child: Text(
-                                  l10n.noBookmarksYet,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      color: Colors.white54, fontSize: 14),
-                                ),
-                              ),
-                            )
-                          : ListView.builder(
-                              controller: scrollController,
-                              itemCount: _bookmarks.length,
-                              itemBuilder: (context, index) {
-                                final bookmark = _bookmarks[index];
-                                return ListTile(
-                                  leading: const Icon(Icons.bookmark,
-                                      color: Color(0xFF32B9E8), size: 20),
-                                  title: Text(
-                                    bookmark.label,
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  subtitle: Text(
-                                    _formatBookmarkDate(bookmark.createdAt, l10n),
-                                    style: const TextStyle(
-                                        color: Colors.white54, fontSize: 12),
-                                  ),
-                                  trailing: IconButton(
-                                    icon: const Icon(Icons.delete_outline,
-                                        color: Colors.white38, size: 20),
-                                    onPressed: () async {
-                                      await _deleteBookmark(index);
-                                      setSheetState(() {});
-                                    },
-                                  ),
-                                  onTap: () => _navigateToBookmark(bookmark),
-                                );
-                              },
-                            ),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-        );
-      },
-    );
+  double _readerProgressFraction() {
+    switch (_mode) {
+      case _ReaderMode.epub:
+        final count = _epubChapterHtml.length;
+        if (count <= 1) return 0;
+        return ((_currentEpubChapter + 1) / count).clamp(0.0, 1.0);
+      case _ReaderMode.pdf:
+        if (_pdfPageCount <= 1) return 0;
+        return (_currentPdfPage / _pdfPageCount).clamp(0.0, 1.0);
+      case _ReaderMode.comic:
+        if (_comicPageCount <= 1) return 0;
+        return ((_currentComicPage + 1) / _comicPageCount).clamp(0.0, 1.0);
+      default:
+        return 0;
+    }
+  }
+
+  String _readerProgressCaption() {
+    final pct = (_readerProgressFraction() * 100).round();
+    return '$pct%';
+  }
+
+  int _estimateEpubChapterMinutes() {
+    if (_currentEpubChapter < 0 ||
+        _currentEpubChapter >= _epubChapterHtml.length) {
+      return 0;
+    }
+    final text = _epubChapterHtml[_currentEpubChapter]
+        .replaceAll(RegExp(r'<[^>]*>'), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+    if (text.isEmpty) return 0;
+    final words = text.split(' ').length;
+    return (words / 200).ceil().clamp(1, 600);
   }
 
   String _formatBookmarkDate(DateTime dt, AppLocalizations l10n) {
@@ -1135,177 +1214,14 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
   }
 
-  void _showTocPanel() {
-    final l10n = AppLocalizations.of(context);
-    showGeneralDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: l10n.tableOfContents,
-      barrierColor: const Color(0xB3000000),
-      transitionDuration: const Duration(milliseconds: 220),
-      pageBuilder: (dialogContext, _, _) {
-        final l10n = AppLocalizations.of(dialogContext);
-        final media = MediaQuery.of(dialogContext);
-        final panelWidth = (media.size.width * 0.38).clamp(280.0, 420.0);
-        final isEmpty =
-            _mode == _ReaderMode.epub ? _epubTocEntries.isEmpty : _pdfOutline.isEmpty;
-
-        return SafeArea(
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Material(
-              color: const Color(0xFF1E1E1E),
-              child: SizedBox(
-                width: panelWidth,
-                height: media.size.height,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.menu_book, color: Colors.white70, size: 20),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              l10n.tableOfContents,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.close, color: Colors.white70),
-                            onPressed: () => Navigator.of(dialogContext).pop(),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Divider(color: Colors.white24, height: 1),
-                    Expanded(
-                      child: isEmpty
-                          ? Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(24),
-                                child: Text(
-                                  l10n.noTableOfContentsAvailable,
-                                  style: Theme.of(dialogContext).textTheme.bodyMedium,
-                                ),
-                              ),
-                            )
-                          : (_mode == _ReaderMode.epub
-                                ? _buildEpubTocList(dialogContext)
-                                : _buildPdfTocList(dialogContext)),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-      transitionBuilder: (context, animation, secondaryAnimation, child) {
-        final offset = Tween<Offset>(
-          begin: const Offset(-1, 0),
-          end: Offset.zero,
-        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic));
-        return SlideTransition(position: offset, child: child);
-      },
-    );
-  }
-
-  Widget _buildEpubTocList(BuildContext dialogContext) {
-    final l10n = AppLocalizations.of(dialogContext);
-    return ListView.builder(
-      itemCount: _epubTocEntries.length,
-      itemBuilder: (context, index) {
-        final entry = _epubTocEntries[index];
-        return ListTile(
-          contentPadding: EdgeInsets.fromLTRB(
-            16.0 + (entry.depth * 12.0),
-            4,
-            16,
-            4,
-          ),
-          leading: const Icon(
-            Icons.description_outlined,
-            color: Colors.white70,
-            size: 18,
-          ),
-          title: Text(
-            entry.title,
-            style: const TextStyle(color: Colors.white, fontSize: 14),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text(
-            l10n.chapterNumber(entry.chapterIndex + 1),
-            style: const TextStyle(
-              color: Colors.white54,
-              fontSize: 12,
-            ),
-          ),
-          onTap: () {
-            Navigator.of(dialogContext).pop();
-            _loadEpubChapter(entry.chapterIndex);
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildPdfTocList(BuildContext dialogContext) {
-    final l10n = AppLocalizations.of(dialogContext);
-    return ListView.builder(
-      itemCount: _pdfOutline.length,
-      itemBuilder: (context, index) {
-        final entry = _pdfOutline[index];
-        return ListTile(
-          contentPadding: EdgeInsets.fromLTRB(
-            16.0 + (entry.depth * 12.0),
-            4,
-            16,
-            4,
-          ),
-          leading: const Icon(
-            Icons.picture_in_picture,
-            color: Colors.white70,
-            size: 18,
-          ),
-          title: Text(
-            entry.title,
-            style: const TextStyle(color: Colors.white, fontSize: 14),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text(
-            l10n.pageLabel(entry.page),
-            style: const TextStyle(
-              color: Colors.white54,
-              fontSize: 12,
-            ),
-          ),
-          onTap: () {
-            Navigator.of(dialogContext).pop();
-            _goToPdfPage(entry.page);
-          },
-        );
-      },
-    );
-  }
-
-  // ────────────────────────────────────────────────────────────────────────────
-
   Future<void> _restoreComicState() async {
     final prefs = await SharedPreferences.getInstance();
-    final initialPage = (widget.initialMode == 'comic' && widget.initialPosition != null)
+    final initialPage =
+        (widget.initialMode == 'comic' && widget.initialPosition != null)
         ? widget.initialPosition!
         : (prefs.getInt('${_comicProgressKeyPrefix}_page') ?? 0);
     final savedPage = initialPage;
     final savedZoom = prefs.getDouble('${_comicProgressKeyPrefix}_zoom') ?? 1.0;
-    final savedSpread = prefs.getBool(_twoPageSpreadPrefKey) ?? false;
 
     final clampedPage = savedPage.clamp(0, _comicPageCount - 1);
 
@@ -1315,7 +1231,6 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
     setState(() {
       _currentComicPage = clampedPage;
-      _twoPageSpreadEnabled = savedSpread;
     });
 
     _setComicZoom(savedZoom);
@@ -1339,7 +1254,6 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('${_comicProgressKeyPrefix}_page', _currentComicPage);
     await prefs.setDouble('${_comicProgressKeyPrefix}_zoom', _comicZoom);
-    await prefs.setBool(_twoPageSpreadPrefKey, _twoPageSpreadEnabled);
   }
 
   void _scheduleComicStateSave() {
@@ -1349,38 +1263,44 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     });
   }
 
-  Future<void> _toggleTwoPageSpread() async {
-    if (!_desktopInputEnabled) {
-      return;
-    }
-
-    setState(() {
-      _twoPageSpreadEnabled = !_twoPageSpreadEnabled;
-    });
-
-    if (_pageController.hasClients) {
-      _pageController.jumpToPage(_viewportFromPageIndex(_currentComicPage));
-    }
-
-    await _saveComicState();
-  }
-
   Future<void> _goToComicPage(int target) async {
     if (_comicPageCount == 0) {
       return;
     }
 
     final clamped = target.clamp(0, _comicPageCount - 1);
+
+    if (_comicVerticalActive) {
+      if (_comicVerticalController.hasClients) {
+        final max = _comicVerticalController.position.maxScrollExtent;
+        final offset = _comicPageCount > 1
+            ? max * (clamped / (_comicPageCount - 1))
+            : 0.0;
+        await _comicVerticalController.animateTo(
+          offset,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      }
+      if (mounted) {
+        setState(() => _currentComicPage = clamped);
+      }
+      await _saveComicState();
+      return;
+    }
+
     final normalized = _pageIndexFromViewport(_viewportFromPageIndex(clamped));
     if (normalized == _currentComicPage) {
       return;
     }
 
-    await _pageController.animateToPage(
-      _viewportFromPageIndex(clamped),
-      duration: const Duration(milliseconds: 160),
-      curve: Curves.easeOut,
-    );
+    if (_pageController.hasClients) {
+      await _pageController.animateToPage(
+        _viewportFromPageIndex(clamped),
+        duration: const Duration(milliseconds: 160),
+        curve: Curves.easeOut,
+      );
+    }
 
     if (mounted) {
       setState(() {
@@ -1393,10 +1313,29 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
   int get _comicNavigationStep => _twoPageSpreadActive ? 2 : 1;
 
-  Future<void> _nextComicPage() => _goToComicPage(_currentComicPage + _comicNavigationStep);
+  Future<void> _nextComicPage() =>
+      _goToComicPage(_currentComicPage + _comicNavigationStep);
 
   Future<void> _previousComicPage() =>
       _goToComicPage(_currentComicPage - _comicNavigationStep);
+
+  void _handleComicTap(TapUpDetails details) {
+    if (_comicZoom > 1.01) {
+      _toggleOverlay();
+      return;
+    }
+    final width = MediaQuery.sizeOf(context).width;
+    final edge = width * 0.3;
+    final x = details.localPosition.dx;
+    final rtl = _comicDirection == _ComicDirection.rtl;
+    if (x < edge) {
+      rtl ? _nextComicPage() : _previousComicPage();
+    } else if (x > width - edge) {
+      rtl ? _previousComicPage() : _nextComicPage();
+    } else {
+      _toggleOverlay();
+    }
+  }
 
   void _resetComicZoom() {
     _setComicZoom(1.0);
@@ -1437,7 +1376,8 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     }
 
     final keys = HardwareKeyboard.instance.logicalKeysPressed;
-    final zoomGesture = keys.contains(LogicalKeyboardKey.controlLeft) ||
+    final zoomGesture =
+        keys.contains(LogicalKeyboardKey.controlLeft) ||
         keys.contains(LogicalKeyboardKey.controlRight) ||
         keys.contains(LogicalKeyboardKey.metaLeft) ||
         keys.contains(LogicalKeyboardKey.metaRight);
@@ -1459,7 +1399,9 @@ class _BookReaderScreenState extends State<BookReaderScreen>
   }
 
   KeyEventResult _onComicKey(FocusNode _, KeyEvent event) {
-    if (!_desktopInputEnabled || event is! KeyDownEvent || _mode != _ReaderMode.comic) {
+    if (!_desktopInputEnabled ||
+        event is! KeyDownEvent ||
+        _mode != _ReaderMode.comic) {
       return KeyEventResult.ignored;
     }
 
@@ -1493,8 +1435,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       _zoomComicOut();
       return KeyEventResult.handled;
     }
-    if (key == LogicalKeyboardKey.digit0 ||
-        key == LogicalKeyboardKey.numpad0) {
+    if (key == LogicalKeyboardKey.digit0 || key == LogicalKeyboardKey.numpad0) {
       _resetComicZoom();
       return KeyEventResult.handled;
     }
@@ -1502,79 +1443,100 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     return KeyEventResult.ignored;
   }
 
-  void _onReaderMenuSelected(String value) {
-    switch (value) {
-      case 'read':
-        _setPlayed(true);
-        return;
-      case 'unread':
-        _setPlayed(false);
-        return;
-      case 'reload':
-        _prepareReaderContent();
-        return;
-      case 'view_bookmarks':
-        _showBookmarksSheet();
-        return;
-      case 'theme-system':
-        _setReaderThemeMode(_ReaderThemeMode.system);
-        return;
-      case 'theme-light':
-        _setReaderThemeMode(_ReaderThemeMode.light);
-        return;
-      case 'theme-dark':
-        _setReaderThemeMode(_ReaderThemeMode.dark);
-        return;
-      case 'theme-sepia':
-        _setReaderThemeMode(_ReaderThemeMode.sepia);
-        return;
-      case 'invert-fixed-layout':
-        _setFixedLayoutInvert(!_invertFixedLayout);
-        return;
+  void _openContentsHub() {
+    final l10n = AppLocalizations.of(context);
+    final isPlayed = _item?.isPlayed ?? false;
+    final isFixedLayout =
+        _mode == _ReaderMode.pdf || _mode == _ReaderMode.comic;
+
+    final chapters = <ReaderHubEntry>[];
+    if (_mode == _ReaderMode.epub) {
+      for (final e in _epubTocEntries) {
+        chapters.add(
+          ReaderHubEntry(
+            title: e.title,
+            trailing: l10n.chapterNumber(e.chapterIndex + 1),
+            depth: e.depth,
+            isCurrent: e.chapterIndex == _currentEpubChapter,
+            onTap: () => _loadEpubChapter(e.chapterIndex),
+          ),
+        );
+      }
+    } else if (_mode == _ReaderMode.pdf) {
+      for (final e in _pdfOutline) {
+        chapters.add(
+          ReaderHubEntry(
+            title: e.title,
+            trailing: l10n.pageLabel(e.page),
+            depth: e.depth,
+            isCurrent: e.page == _currentPdfPage,
+            onTap: () => _goToPdfPage(e.page),
+          ),
+        );
+      }
     }
+
+    final bookmarks = <ReaderHubEntry>[
+      for (final entry in _bookmarks.asMap().entries)
+        ReaderHubEntry(
+          title: entry.value.label,
+          trailing: _formatBookmarkDate(entry.value.createdAt, l10n),
+          onTap: () => _jumpToBookmarkPosition(entry.value),
+          onDelete: () => _deleteBookmark(entry.key),
+        ),
+    ];
+
+    final highlights = <ReaderHubEntry>[
+      for (final entry in _highlights.asMap().entries)
+        ReaderHubEntry(
+          title: entry.value.text,
+          trailing: l10n.chapterNumber(entry.value.chapterIndex + 1),
+          onTap: () => _loadEpubChapter(entry.value.chapterIndex),
+          onDelete: () => _deleteHighlight(entry.key),
+        ),
+    ];
+
+    showReaderContentsHub(
+      context: context,
+      accent: _readerAccent,
+      pageColors: _pageColors,
+      chapters: chapters,
+      bookmarks: bookmarks,
+      highlights: highlights,
+      isPlayed: isPlayed,
+      onToggleRead: () => _setPlayed(!isPlayed),
+      onReload: _prepareReaderContent,
+      progressLabel: _readerProgressCaption(),
+      extraActionLabel: isFixedLayout ? l10n.invertColorsFixedLayout : null,
+      extraActionIcon: isFixedLayout ? Icons.invert_colors : null,
+      onExtraAction: isFixedLayout
+          ? () => _setFixedLayoutInvert(!_invertFixedLayout)
+          : null,
+    );
   }
 
-  Brightness get _effectiveReaderBrightness {
-    return switch (_readerThemeMode) {
-      _ReaderThemeMode.dark => Brightness.dark,
-      _ReaderThemeMode.light => Brightness.light,
-      _ReaderThemeMode.sepia => Brightness.light,
-      _ReaderThemeMode.system => Theme.of(context).brightness,
-    };
-  }
+  BookDocumentTheme get _currentEpubTheme =>
+      _pageColors.isDark ? BookDocumentTheme.dark : BookDocumentTheme.light;
 
-  BookDocumentTheme get _currentEpubTheme {
-    return switch (_readerThemeMode) {
-      _ReaderThemeMode.dark => BookDocumentTheme.dark,
-      _ReaderThemeMode.sepia => BookDocumentTheme.sepia,
-      _ReaderThemeMode.light => BookDocumentTheme.light,
-      _ReaderThemeMode.system =>
-        _effectiveReaderBrightness == Brightness.dark
-            ? BookDocumentTheme.dark
-            : BookDocumentTheme.light,
-    };
-  }
-
-  Color get _readerBackgroundColor {
-    return switch (_readerThemeMode) {
-      _ReaderThemeMode.dark => const Color(0xFF121212),
-      _ReaderThemeMode.sepia => const Color(0xFFF4ECD8),
-      _ReaderThemeMode.light => const Color(0xFFFAFAFA),
-      _ReaderThemeMode.system => _effectiveReaderBrightness == Brightness.dark
-          ? const Color(0xFF121212)
-          : const Color(0xFFFAFAFA),
-    };
-  }
+  Color get _readerBackgroundColor => _pageColors.background;
 
   Future<void> _loadDisplayPreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    final themeName = prefs.getString(_readerThemePrefKey) ??
-        _ReaderThemeMode.system.name;
     final invert = prefs.getBool(_fixedLayoutInvertPrefKey) ?? false;
+    final settings = await ReaderSettingsStore.load();
 
-    final theme = _ReaderThemeMode.values.firstWhere(
-      (value) => value.name == themeName,
-      orElse: () => _ReaderThemeMode.system,
+    final layoutName = prefs.getString(_comicLayoutPrefKey);
+    final legacyTwoPage = prefs.getBool(_twoPageSpreadPrefKey) ?? false;
+    final layout = layoutName != null
+        ? _ComicLayout.values.firstWhere(
+            (e) => e.name == layoutName,
+            orElse: () => _ComicLayout.single,
+          )
+        : (legacyTwoPage ? _ComicLayout.double : _ComicLayout.single);
+    final directionName = prefs.getString(_comicDirectionPrefKey);
+    final direction = _ComicDirection.values.firstWhere(
+      (e) => e.name == directionName,
+      orElse: () => _ComicDirection.ltr,
     );
 
     if (!mounted) {
@@ -1582,26 +1544,53 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     }
 
     setState(() {
-      _readerThemeMode = theme;
+      _settings = settings;
       _invertFixedLayout = invert;
+      _comicLayout = layout;
+      _comicDirection = direction;
     });
   }
 
-  Future<void> _setReaderThemeMode(_ReaderThemeMode mode) async {
-    if (_readerThemeMode == mode) {
-      return;
-    }
-
-    setState(() {
-      _readerThemeMode = mode;
-    });
-
+  Future<void> _setComicLayout(_ComicLayout layout) async {
+    if (_comicLayout == layout) return;
+    final previousPage = _currentComicPage;
+    setState(() => _comicLayout = layout);
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_readerThemePrefKey, mode.name);
+    await prefs.setString(_comicLayoutPrefKey, layout.name);
 
-    if (_mode == _ReaderMode.epub) {
+    if (layout != _ComicLayout.vertical) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _goToComicPage(previousPage);
+      });
+    }
+  }
+
+  Future<void> _setComicDirection(_ComicDirection direction) async {
+    if (_comicDirection == direction) return;
+    setState(() => _comicDirection = direction);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_comicDirectionPrefKey, direction.name);
+  }
+
+  void _openReaderSettings() {
+    showReaderSettingsSheet(
+      context: context,
+      settings: _settings,
+      accent: _readerAccent,
+      pageColors: _pageColors,
+      onChanged: _applyReaderSettings,
+    );
+  }
+
+  Future<void> _applyReaderSettings(ReaderSettings next) async {
+    final epubAffecting = next.epubStyleKey != _settings.epubStyleKey;
+    setState(() {
+      _settings = next;
+    });
+    if (epubAffecting && _mode == _ReaderMode.epub) {
       await _refreshEpubTheme();
     }
+    await ReaderSettingsStore.save(next);
   }
 
   Future<void> _setFixedLayoutInvert(bool value) async {
@@ -1620,8 +1609,8 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     }
 
     final currentIndex = _epubChapterHtml.isEmpty
-      ? 0
-      : _currentEpubChapter.clamp(0, _epubChapterHtml.length - 1);
+        ? 0
+        : _currentEpubChapter.clamp(0, _epubChapterHtml.length - 1);
     final themed = _resolveEpubChapterHtml(bytes, _currentEpubTheme);
 
     if (!mounted) {
@@ -1630,13 +1619,10 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
     setState(() {
       _epubChapterHtml = themed;
+      _currentEpubChapter = currentIndex;
     });
 
-    final controller = _webController;
-    if (controller != null) {
-      await controller.setBackgroundColor(_readerBackgroundColor);
-    }
-    await _loadEpubChapter(currentIndex);
+    await _webController?.loadData(data: themed[currentIndex]);
   }
 
   List<({String title, int page, int depth})> _flattenPdfOutline(
@@ -1658,7 +1644,8 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     Uint8List bytes,
     BookDocumentTheme theme,
   ) {
-    final cached = _epubThemeCache[theme];
+    final key = _settings.epubStyleKey;
+    final cached = _epubThemeCache[key];
     if (cached != null) {
       return cached;
     }
@@ -1666,8 +1653,9 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     final chapters = BookDocumentService.extractEpubChapterHtml(
       bytes,
       theme: theme,
+      style: _epubStyle(),
     );
-    _epubThemeCache[theme] = chapters;
+    _epubThemeCache[key] = chapters;
     return chapters;
   }
 
@@ -1678,52 +1666,29 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
     return ColorFiltered(
       colorFilter: const ColorFilter.matrix(<double>[
-        -1, 0, 0, 0, 255,
-        0, -1, 0, 0, 255,
-        0, 0, -1, 0, 255,
-        0, 0, 0, 1, 0,
+        -1,
+        0,
+        0,
+        0,
+        255,
+        0,
+        -1,
+        0,
+        0,
+        255,
+        0,
+        0,
+        -1,
+        0,
+        255,
+        0,
+        0,
+        0,
+        1,
+        0,
       ]),
       child: child,
     );
-  }
-
-  List<PopupMenuEntry<String>> _buildReaderThemeEntries({
-    bool includeFixedLayoutInvert = false,
-    String invertLabel = '',
-  }) {
-    final l10n = AppLocalizations.of(context);
-    final resolvedInvertLabel = invertLabel.isEmpty ? l10n.invertColorsFixedLayout : invertLabel;
-    return [
-      const PopupMenuDivider(),
-      CheckedPopupMenuItem(
-        value: 'theme-system',
-        checked: _readerThemeMode == _ReaderThemeMode.system,
-        child: Text(l10n.themeSystem),
-      ),
-      CheckedPopupMenuItem(
-        value: 'theme-light',
-        checked: _readerThemeMode == _ReaderThemeMode.light,
-        child: Text(l10n.themeLight),
-      ),
-      CheckedPopupMenuItem(
-        value: 'theme-dark',
-        checked: _readerThemeMode == _ReaderThemeMode.dark,
-        child: Text(l10n.themeDark),
-      ),
-      CheckedPopupMenuItem(
-        value: 'theme-sepia',
-        checked: _readerThemeMode == _ReaderThemeMode.sepia,
-        child: Text(l10n.themeSepia),
-      ),
-      if (includeFixedLayoutInvert) ...[
-        const PopupMenuDivider(),
-        CheckedPopupMenuItem(
-          value: 'invert-fixed-layout',
-          checked: _invertFixedLayout,
-          child: Text(resolvedInvertLabel),
-        ),
-      ],
-    ];
   }
 
   Future<void> _setPlayed(bool isPlayed) async {
@@ -1754,7 +1719,9 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(isPlayed ? l10n.markedAsRead : l10n.markedAsUnread)),
+        SnackBar(
+          content: Text(isPlayed ? l10n.markedAsRead : l10n.markedAsUnread),
+        ),
       );
     } catch (e) {
       if (!mounted) {
@@ -1819,8 +1786,10 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     final item = _item;
     final l10n = AppLocalizations.of(context);
     final title = item?.name ?? l10n.bookReader;
-    final canOpen = item != null &&
-        (_extension == null || BookReaderService.isSupportedExtension(_extension));
+    final canOpen =
+        item != null &&
+        (_extension == null ||
+            BookReaderService.isSupportedExtension(_extension));
     final playedPercentage = item?.playedPercentage;
     final playbackPosition = item?.playbackPosition;
     final hasProgress = (playedPercentage ?? 0) > 0;
@@ -1839,7 +1808,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.menu_book),
+                          const AdaptiveIcon(Icons.menu_book),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -1858,7 +1827,9 @@ class _BookReaderScreenState extends State<BookReaderScreen>
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           if (_extension != null)
-                            Chip(label: Text(l10n.formatExtension(_extension!))),
+                            Chip(
+                              label: Text(l10n.formatExtension(_extension!)),
+                            ),
                           if (hasProgress)
                             Chip(
                               label: Text(
@@ -1876,9 +1847,11 @@ class _BookReaderScreenState extends State<BookReaderScreen>
                                 ? const SizedBox(
                                     width: 14,
                                     height: 14,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
                                   )
-                                : Icon(
+                                : AdaptiveIcon(
                                     isPlayed
                                         ? Icons.check_circle
                                         : Icons.check_circle_outline,
@@ -1886,7 +1859,9 @@ class _BookReaderScreenState extends State<BookReaderScreen>
                             label: Text(
                               _markingPlayed
                                   ? l10n.updating
-                                  : (isPlayed ? l10n.markUnread : l10n.markAsRead),
+                                  : (isPlayed
+                                        ? l10n.markUnread
+                                        : l10n.markAsRead),
                             ),
                           ),
                           FilledButton.icon(
@@ -1897,9 +1872,11 @@ class _BookReaderScreenState extends State<BookReaderScreen>
                                 ? const SizedBox(
                                     width: 14,
                                     height: 14,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
                                   )
-                                : const Icon(Icons.refresh),
+                                : const AdaptiveIcon(Icons.refresh),
                             label: Text(l10n.reloadReader),
                           ),
                         ],
@@ -1908,7 +1885,9 @@ class _BookReaderScreenState extends State<BookReaderScreen>
                         const SizedBox(height: 8),
                         Text(
                           _error!,
-                          style: TextStyle(color: Theme.of(context).colorScheme.error),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
                         ),
                       ],
                     ],
@@ -1925,560 +1904,629 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     final item = _item;
     final l10n = AppLocalizations.of(context);
     final title = item?.name ?? l10n.bookReader;
-    final isPlayed = item?.isPlayed ?? false;
 
     return Scaffold(
       backgroundColor: _invertFixedLayout ? Colors.white : Colors.black,
       body: _loadingContent
           ? const Center(child: CircularProgressIndicator())
           : _comicEntries.isEmpty
-              ? Center(
-                  child: Text(l10n.noPagesFound,
-                      style: const TextStyle(color: Colors.white)))
-              : Stack(
-                  children: [
-                    Positioned.fill(
-                      child: Focus(
-                        autofocus: true,
-                        onKeyEvent: _onComicKey,
-                        child: Listener(
-                          onPointerSignal: _handleComicPointerSignal,
-                          child: PageView.builder(
-                            controller: _pageController,
-                            itemCount: _comicViewportCount,
-                            onPageChanged: (viewportIndex) {
-                              final pageIndex =
-                                  _pageIndexFromViewport(viewportIndex);
-                              _resetComicZoom();
-                              _primeComicCacheAround(pageIndex);
-                              setState(() {
-                                _currentComicPage = pageIndex;
-                              });
-                              _saveComicState();
-                            },
-                            itemBuilder: (context, viewportIndex) {
-                              final leftIndex =
-                                  _pageIndexFromViewport(viewportIndex);
-                              final leftBytes = _comicPageBytesAt(leftIndex);
-                              if (leftBytes == null) {
-                                return Center(
-                                  child: Text(
-                                      l10n.failedToDecodePageImage,
-                                      style: const TextStyle(color: Colors.white)),
-                                );
-                              }
+          ? Center(
+              child: Text(
+                l10n.noPagesFound,
+                style: const TextStyle(color: Colors.white),
+              ),
+            )
+          : Stack(
+              fit: StackFit.expand,
+              children: [
+                Positioned.fill(child: _buildComicContent(l10n)),
 
-                              final rightIndex = _twoPageSpreadActive
-                                  ? leftIndex + 1
-                                  : null;
-                              final rightBytes = rightIndex != null &&
-                                      rightIndex < _comicPageCount
-                                  ? _comicPageBytesAt(rightIndex)
-                                  : null;
+                _readerDimWarmthOverlay(),
 
-                              return GestureDetector(
-                                onTap: _toggleOverlay,
-                                onDoubleTap: _toggleComicZoom,
-                                child: InteractiveViewer(
-                                  transformationController:
-                                      _comicTransformController,
-                                  minScale: 1,
-                                  maxScale: 5,
-                                  onInteractionEnd: (_) {
-                                    final zoom = _comicTransformController
-                                        .value
-                                        .getMaxScaleOnAxis();
-                                    if (mounted) {
-                                      setState(() {
-                                        _comicZoom = zoom;
-                                      });
-                                    }
-                                    _saveComicState();
-                                  },
-                                  child: _maybeInvertFixedLayout(
-                                    SizedBox.expand(
-                                      child: _twoPageSpreadActive
-                                          ? Row(
-                                              children: [
-                                                Expanded(
-                                                  child: _ComicPageImage(
-                                                    bytes: leftBytes,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 8),
-                                                Expanded(
-                                                  child: rightBytes != null
-                                                      ? _ComicPageImage(
-                                                          bytes: rightBytes,
-                                                        )
-                                                      : const SizedBox.shrink(),
-                                                ),
-                                              ],
-                                            )
-                                          : _ComicPageImage(bytes: leftBytes),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: IgnorePointer(
+                    ignoring: !_overlayVisible,
+                    child: AnimatedOpacity(
+                      opacity: _overlayVisible ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 250),
+                      child: ReaderTopBar(
+                        title: title,
+                        pageColors: _fixedLayoutChromeColors,
+                        onBack: () => Navigator.of(context).pop(),
+                        onContents: _openContentsHub,
+                        onSettings: () {},
+                        showSettings: false,
+                        onBookmark: _addCurrentBookmark,
+                        hasBookmarks: _bookmarks.isNotEmpty,
                       ),
                     ),
-
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: IgnorePointer(
-                        ignoring: !_overlayVisible,
-                        child: AnimatedOpacity(
-                          opacity: _overlayVisible ? 1.0 : 0.0,
-                          duration: const Duration(milliseconds: 250),
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [Colors.black87, Colors.transparent],
-                              ),
-                            ),
-                            child: SafeArea(
-                              bottom: false,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 4, vertical: 2),
-                                child: Row(
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.arrow_back,
-                                          color: Colors.white),
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(),
-                                    ),
-                                    if (_epubTocEntries.isNotEmpty || _pdfOutline.isNotEmpty)
-                                      IconButton(
-                                        icon: const Icon(Icons.menu_book,
-                                            color: Colors.white),
-                                        tooltip: l10n.tableOfContents,
-                                        onPressed: _showTocPanel,
-                                      ),
-                                    Expanded(
-                                      child: Text(
-                                        title,
-                                        style: const TextStyle(
-                                            color: Colors.white, fontSize: 16),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(
-                                          Icons.center_focus_strong,
-                                          color: Colors.white),
-                                      tooltip:
-                                          l10n.resetZoom(_comicZoom.toStringAsFixed(1)),
-                                      onPressed: _resetComicZoom,
-                                    ),
-                                    if (_desktopInputEnabled)
-                                      IconButton(
-                                        icon: Icon(
-                                          _twoPageSpreadEnabled
-                                              ? Icons.chrome_reader_mode
-                                              : Icons.splitscreen,
-                                          color: Colors.white,
-                                        ),
-                                        tooltip: _twoPageSpreadEnabled
-                                            ? l10n.singlePage
-                                            : l10n.twoPageSpread,
-                                        onPressed: _toggleTwoPageSpread,
-                                      ),
-                                    IconButton(
-                                      icon: Icon(
-                                        _bookmarks.isEmpty
-                                            ? Icons.bookmark_add_outlined
-                                            : Icons.bookmark_add,
-                                        color: Colors.white,
-                                      ),
-                                      tooltip: l10n.addBookmark,
-                                      onPressed: _addCurrentBookmark,
-                                    ),
-                                    PopupMenuButton<String>(
-                                      icon: const Icon(Icons.more_vert,
-                                          color: Colors.white),
-                                      onSelected: _onReaderMenuSelected,
-                                      itemBuilder: (_) => [
-                                        PopupMenuItem(
-                                          value:
-                                              isPlayed ? 'unread' : 'read',
-                                          child: Text(isPlayed
-                                              ? l10n.markUnread
-                                              : l10n.markAsRead),
-                                        ),
-                                        PopupMenuItem(
-                                          value: 'reload',
-                                          child: Text(l10n.reloadReader),
-                                        ),
-                                        PopupMenuItem(
-                                          value: 'view_bookmarks',
-                                          child: Text(l10n.bookmarksEllipsis),
-                                        ),
-                                        ..._buildReaderThemeEntries(
-                                          includeFixedLayoutInvert: true,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: IgnorePointer(
-                        ignoring: !_overlayVisible,
-                        child: AnimatedOpacity(
-                          opacity: _overlayVisible ? 1.0 : 0.0,
-                          duration: const Duration(milliseconds: 250),
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.bottomCenter,
-                                end: Alignment.topCenter,
-                                colors: [Colors.black87, Colors.transparent],
-                              ),
-                            ),
-                            child: SafeArea(
-                              top: false,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(4, 8, 4, 4),
-                                child: Row(
-                                  children: [
-                                    IconButton(
-                                      onPressed: _currentComicPage > 0
-                                          ? _previousComicPage
-                                          : null,
-                                      icon: const Icon(Icons.chevron_left,
-                                          color: Colors.white),
-                                    ),
-                                    Expanded(
-                                      child: SliderTheme(
-                                        data: const SliderThemeData(
-                                          activeTrackColor: Colors.white,
-                                          inactiveTrackColor: Colors.white38,
-                                          thumbColor: Colors.white,
-                                          overlayColor: Colors.white24,
-                                          valueIndicatorColor: Colors.white,
-                                          valueIndicatorTextStyle:
-                                              TextStyle(color: Colors.black),
-                                        ),
-                                        child: Slider(
-                                          value:
-                                              (_viewportFromPageIndex(
-                                                          _currentComicPage) +
-                                                      1)
-                                                  .toDouble(),
-                                          min: 1,
-                                          max: _comicViewportCount.toDouble(),
-                                          divisions: _comicViewportCount > 1
-                                              ? _comicViewportCount - 1
-                                              : null,
-                                          label: _currentComicPageLabel(),
-                                          onChanged: (value) {
-                                            final viewport =
-                                                value.round() - 1;
-                                            final page =
-                                                _pageIndexFromViewport(
-                                                    viewport);
-                                            _goToComicPage(page);
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    IconButton(
-                                      onPressed: _currentComicPage <
-                                              _comicPageCount - 1
-                                          ? _nextComicPage
-                                          : null,
-                                      icon: const Icon(Icons.chevron_right,
-                                          color: Colors.white),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      _currentComicPageLabel(),
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
-                                    if (_desktopInputEnabled)
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 12),
-                                        child: Text(
-                                          'Arrows/PgUp/PgDn, +/- zoom, 0 reset',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall
-                                              ?.copyWith(
-                                                  color: Colors.white70),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
+
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: IgnorePointer(
+                    ignoring: !_overlayVisible,
+                    child: AnimatedOpacity(
+                      opacity: _overlayVisible ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 250),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildComicControlsBar(),
+                          if (_filmstripVisible) _buildComicFilmstrip(),
+                          ReaderBottomBar(
+                            pageColors: _fixedLayoutChromeColors,
+                            accent: _readerAccent,
+                            leftLabel: _currentComicPageLabel(),
+                            captionLabel: _readerProgressCaption(),
+                            value:
+                                (_viewportFromPageIndex(_currentComicPage) + 1)
+                                    .toDouble(),
+                            min: 1,
+                            max: _comicViewportCount > 0
+                                ? _comicViewportCount.toDouble()
+                                : 1,
+                            divisions: _comicViewportCount > 1
+                                ? _comicViewportCount - 1
+                                : null,
+                            onPrev: _currentComicPage > 0
+                                ? _previousComicPage
+                                : null,
+                            onNext: _currentComicPage < _comicPageCount - 1
+                                ? _nextComicPage
+                                : null,
+                            onChanged: (value) {
+                              final viewport = value.round() - 1;
+                              _goToComicPage(_pageIndexFromViewport(viewport));
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+
+  Widget _buildComicContent(AppLocalizations l10n) {
+    final mq = MediaQuery.of(context);
+    _comicDecodeWidth = (mq.size.width * mq.devicePixelRatio)
+        .clamp(1, 2048)
+        .round();
+    if (_comicVerticalActive) {
+      return _buildComicVertical(l10n);
+    }
+    return _buildComicPaged(l10n);
+  }
+
+  Widget _buildComicPaged(AppLocalizations l10n) {
+    return Focus(
+      autofocus: true,
+      onKeyEvent: _onComicKey,
+      child: Listener(
+        onPointerSignal: _handleComicPointerSignal,
+        child: PageView.builder(
+          controller: _pageController,
+          reverse: _comicDirection == _ComicDirection.rtl,
+          itemCount: _comicViewportCount,
+          onPageChanged: (viewportIndex) {
+            final pageIndex = _pageIndexFromViewport(viewportIndex);
+            _resetComicZoom();
+            _primeComicCacheAround(pageIndex);
+            _precacheComicNeighbors(pageIndex);
+            setState(() {
+              _currentComicPage = pageIndex;
+            });
+            _saveComicState();
+          },
+          itemBuilder: (context, viewportIndex) {
+            final leftIndex = _pageIndexFromViewport(viewportIndex);
+            final leftBytes = _comicPageBytesAt(leftIndex);
+            if (leftBytes == null) {
+              return Center(
+                child: Text(
+                  l10n.failedToDecodePageImage,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              );
+            }
+
+            final rightIndex = _twoPageSpreadActive ? leftIndex + 1 : null;
+            final rightBytes =
+                rightIndex != null && rightIndex < _comicPageCount
+                ? _comicPageBytesAt(rightIndex)
+                : null;
+
+            final pages = <Widget>[
+              Expanded(
+                child: _ComicPageImage(
+                  bytes: leftBytes,
+                  decodeWidth: _comicDecodeWidth,
+                ),
+              ),
+              if (_twoPageSpreadActive) ...[
+                const SizedBox(width: 8),
+                Expanded(
+                  child: rightBytes != null
+                      ? _ComicPageImage(
+                          bytes: rightBytes,
+                          decodeWidth: _comicDecodeWidth,
+                        )
+                      : const SizedBox.shrink(),
+                ),
+              ],
+            ];
+
+            return GestureDetector(
+              onTapUp: _handleComicTap,
+              onDoubleTap: _toggleComicZoom,
+              child: InteractiveViewer(
+                transformationController: _comicTransformController,
+                minScale: 1,
+                maxScale: 5,
+                onInteractionEnd: (_) {
+                  final zoom = _comicTransformController.value
+                      .getMaxScaleOnAxis();
+                  if (mounted) {
+                    setState(() {
+                      _comicZoom = zoom;
+                    });
+                  }
+                  _saveComicState();
+                },
+                child: _maybeInvertFixedLayout(
+                  SizedBox.expand(
+                    child: _twoPageSpreadActive
+                        ? Row(
+                            textDirection:
+                                _comicDirection == _ComicDirection.rtl
+                                ? TextDirection.rtl
+                                : TextDirection.ltr,
+                            children: pages,
+                          )
+                        : _ComicPageImage(
+                            bytes: leftBytes,
+                            decodeWidth: _comicDecodeWidth,
+                          ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildComicVertical(AppLocalizations l10n) {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        final metrics = notification.metrics;
+        if (metrics.maxScrollExtent > 0 && _comicPageCount > 1) {
+          final fraction = (metrics.pixels / metrics.maxScrollExtent).clamp(
+            0.0,
+            1.0,
+          );
+          final page = (fraction * (_comicPageCount - 1)).round();
+          if (page != _currentComicPage) {
+            _currentComicPage = page;
+            _primeComicCacheAround(page);
+            _precacheComicNeighbors(page);
+          }
+        }
+        if (notification is ScrollEndNotification) {
+          if (mounted) {
+            setState(() {});
+          }
+          _scheduleComicStateSave();
+        }
+        return false;
+      },
+      child: GestureDetector(
+        onTap: _toggleOverlay,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth.isFinite
+                ? constraints.maxWidth
+                : MediaQuery.sizeOf(context).width;
+            return ListView.builder(
+              controller: _comicVerticalController,
+              itemCount: _comicPageCount,
+              itemBuilder: (context, index) {
+                final aspect =
+                    _comicAspectRatios[index] ??
+                    _comicMeasuredAspect ??
+                    _defaultComicAspect;
+                final estimatedHeight = aspect > 0 ? width / aspect : width;
+                final bytes = _comicPageBytesAt(index);
+                if (bytes == null) {
+                  return SizedBox(height: estimatedHeight);
+                }
+                return _maybeInvertFixedLayout(
+                  _ComicVerticalPage(
+                    key: ValueKey<int>(index),
+                    bytes: bytes,
+                    width: width,
+                    decodeWidth: _comicDecodeWidth,
+                    initialAspect: aspect,
+                    onAspect: (value) {
+                      _comicAspectRatios[index] = value;
+                      _comicMeasuredAspect ??= value;
+                    },
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildComicFilmstrip() {
+    return Container(
+      height: 92,
+      color: Colors.black.withValues(alpha: 0.55),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _comicPageCount,
+        itemBuilder: (context, index) {
+          final selected = index == _currentComicPage;
+          final bytes = _comicEntries[index].content;
+          return GestureDetector(
+            onTap: () => _goToComicPage(index),
+            child: Container(
+              width: 54,
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: selected ? _readerAccent : Colors.white24,
+                  width: selected ? 2 : 1,
+                ),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Image.memory(
+                bytes,
+                fit: BoxFit.cover,
+                cacheWidth: 110,
+                gaplessPlayback: true,
+                errorBuilder: (context, error, stack) =>
+                    const ColoredBox(color: Colors.white10),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildComicControlsBar() {
+    final accent = _readerAccent;
+    const double controlHeight = 36;
+
+    Widget pill(String label, bool selected, VoidCallback onTap) {
+      return Padding(
+        padding: const EdgeInsets.only(right: 6),
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            height: controlHeight,
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: selected ? accent : Colors.white.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(controlHeight / 2),
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: selected ? Colors.white : Colors.white70,
+                fontSize: 13,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    Widget iconToggle(
+      IconData icon,
+      bool active,
+      String tooltip,
+      VoidCallback onTap,
+    ) {
+      return Tooltip(
+        message: tooltip,
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            margin: const EdgeInsets.only(left: 6),
+            width: controlHeight,
+            height: controlHeight,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: active ? accent : Colors.white.withValues(alpha: 0.14),
+              shape: BoxShape.circle,
+            ),
+            child: AdaptiveIcon(
+              icon,
+              size: 18,
+              color: active ? Colors.white : Colors.white70,
+            ),
+          ),
+        ),
+      );
+    }
+
+    final paged = _comicLayout != _ComicLayout.vertical;
+    return Container(
+      color: Colors.black.withValues(alpha: 0.55),
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
+      child: Row(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  pill(
+                    'Single',
+                    _comicLayout == _ComicLayout.single,
+                    () => _setComicLayout(_ComicLayout.single),
+                  ),
+                  pill(
+                    'Two-page',
+                    _comicLayout == _ComicLayout.double,
+                    () => _setComicLayout(_ComicLayout.double),
+                  ),
+                  pill(
+                    'Vertical',
+                    _comicLayout == _ComicLayout.vertical,
+                    () => _setComicLayout(_ComicLayout.vertical),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (paged)
+            iconToggle(
+              _comicDirection == _ComicDirection.rtl
+                  ? Icons.format_textdirection_r_to_l
+                  : Icons.format_textdirection_l_to_r,
+              _comicDirection == _ComicDirection.rtl,
+              _comicDirection == _ComicDirection.rtl
+                  ? 'Right to left (manga)'
+                  : 'Left to right',
+              () => _setComicDirection(
+                _comicDirection == _ComicDirection.rtl
+                    ? _ComicDirection.ltr
+                    : _ComicDirection.rtl,
+              ),
+            ),
+          iconToggle(
+            Icons.view_carousel_outlined,
+            _filmstripVisible,
+            'Thumbnails',
+            () => setState(() => _filmstripVisible = !_filmstripVisible),
+          ),
+          iconToggle(
+            Icons.invert_colors,
+            _invertFixedLayout,
+            'Invert colors',
+            () => _setFixedLayoutInvert(!_invertFixedLayout),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildDocumentFullscreen() {
     final l10n = AppLocalizations.of(context);
     final title = _item?.name ?? l10n.bookReader;
-    final isPlayed = _item?.isPlayed ?? false;
     final isEpub = _mode == _ReaderMode.epub;
     final isPdf = _mode == _ReaderMode.pdf;
     final chapterCount = _epubChapterHtml.length;
     final pdfPageCount = _pdfPageCount;
 
+    final chromeColors = isPdf ? _fixedLayoutChromeColors : _pageColors;
+    final epubMinutes = isEpub ? _estimateEpubChapterMinutes() : 0;
+
     return Scaffold(
       backgroundColor: _readerBackgroundColor,
-      body: Stack(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Positioned.fill(
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: _toggleOverlay,
-              child: _buildReaderSurface(),
-            ),
+          ReaderTopBar(
+            title: title,
+            subtitle: isEpub && chapterCount > 1
+                ? l10n.chapterNumber(_currentEpubChapter + 1)
+                : null,
+            pageColors: chromeColors,
+            onBack: () => Navigator.of(context).pop(),
+            onContents: _openContentsHub,
+            onSettings: _openReaderSettings,
+            onBookmark: _addCurrentBookmark,
+            hasBookmarks: _bookmarks.isNotEmpty,
+            showSettings: isEpub,
+            onSearch: isPdf ? _togglePdfSearch : null,
           ),
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: IgnorePointer(
-              ignoring: !_overlayVisible,
-              child: AnimatedOpacity(
-                opacity: _overlayVisible ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 250),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Colors.black87, Colors.transparent],
-                    ),
-                  ),
-                  child: SafeArea(
-                    bottom: false,
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: () => Navigator.of(context).pop(),
-                        ),
-                        if (_epubTocEntries.isNotEmpty || _pdfOutline.isNotEmpty)
-                          IconButton(
-                            icon: const Icon(Icons.menu_book, color: Colors.white),
-                            tooltip: l10n.tableOfContents,
-                            onPressed: _showTocPanel,
-                          ),
-                        Expanded(
-                          child: Text(
-                            title,
-                            style: const TextStyle(color: Colors.white, fontSize: 16),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            _bookmarks.isEmpty
-                                ? Icons.bookmark_add_outlined
-                                : Icons.bookmark_add,
-                            color: Colors.white,
-                          ),
-                          tooltip: l10n.addBookmark,
-                          onPressed: _addCurrentBookmark,
-                        ),
-                        PopupMenuButton<String>(
-                          icon: const Icon(Icons.more_vert, color: Colors.white),
-                          onSelected: _onReaderMenuSelected,
-                          itemBuilder: (_) => [
-                            PopupMenuItem(
-                              value: isPlayed ? 'unread' : 'read',
-                              child: Text(isPlayed ? l10n.markUnread : l10n.markAsRead),
-                            ),
-                            PopupMenuItem(
-                              value: 'reload',
-                              child: Text(l10n.reloadReader),
-                            ),
-                            PopupMenuItem(
-                              value: 'view_bookmarks',
-                              child: Text(l10n.bookmarksEllipsis),
-                            ),
-                            ..._buildReaderThemeEntries(
-                              includeFixedLayoutInvert: isPdf,
-                              invertLabel: AppLocalizations.of(context).invertColorsPdf,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+          if (isPdf && _pdfSearchVisible) _buildPdfSearchBar(chromeColors),
+          Expanded(
+            child: Stack(
+              children: [
+                Positioned.fill(child: _buildReaderSurface()),
+                _readerDimWarmthOverlay(),
+                if (isPdf) _buildPdfZoomControls(),
+              ],
             ),
           ),
           if (isEpub && chapterCount > 1)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: IgnorePointer(
-                ignoring: !_overlayVisible,
-                child: AnimatedOpacity(
-                  opacity: _overlayVisible ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 250),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [Colors.black87, Colors.transparent],
-                      ),
-                    ),
-                    child: SafeArea(
-                      top: false,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              onPressed: _currentEpubChapter > 0
-                                  ? () => _loadEpubChapter(_currentEpubChapter - 1)
-                                  : null,
-                              icon: const Icon(Icons.chevron_left, color: Colors.white),
-                            ),
-                            Expanded(
-                              child: SliderTheme(
-                                data: const SliderThemeData(
-                                  activeTrackColor: Colors.white,
-                                  inactiveTrackColor: Colors.white38,
-                                  thumbColor: Colors.white,
-                                  overlayColor: Colors.white24,
-                                  valueIndicatorColor: Colors.white,
-                                  valueIndicatorTextStyle: TextStyle(color: Colors.black),
-                                ),
-                                child: Slider(
-                                  value: (_currentEpubChapter + 1).toDouble(),
-                                  min: 1,
-                                  max: chapterCount.toDouble(),
-                                  divisions: chapterCount - 1,
-                                  label: '${_currentEpubChapter + 1}/$chapterCount',
-                                  onChanged: (value) {
-                                    _loadEpubChapter(value.round() - 1);
-                                  },
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: _currentEpubChapter < chapterCount - 1
-                                  ? () => _loadEpubChapter(_currentEpubChapter + 1)
-                                  : null,
-                              icon: const Icon(Icons.chevron_right, color: Colors.white),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '${_currentEpubChapter + 1}/$chapterCount',
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+            ReaderBottomBar(
+              pageColors: chromeColors,
+              accent: _readerAccent,
+              leftLabel: '${_currentEpubChapter + 1} / $chapterCount',
+              rightLabel: epubMinutes > 0 ? '~$epubMinutes min' : null,
+              captionLabel: _readerProgressCaption(),
+              value: (_currentEpubChapter + 1).toDouble(),
+              min: 1,
+              max: chapterCount.toDouble(),
+              divisions: chapterCount > 1 ? chapterCount - 1 : null,
+              onPrev: _currentEpubChapter > 0
+                  ? () => _loadEpubChapter(_currentEpubChapter - 1)
+                  : null,
+              onNext: _currentEpubChapter < chapterCount - 1
+                  ? () => _loadEpubChapter(_currentEpubChapter + 1)
+                  : null,
+              onChanged: (value) => _loadEpubChapter(value.round() - 1),
             ),
           if (isPdf && pdfPageCount > 1)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: IgnorePointer(
-                ignoring: !_overlayVisible,
-                child: AnimatedOpacity(
-                  opacity: _overlayVisible ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 250),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [Colors.black87, Colors.transparent],
-                      ),
-                    ),
-                    child: SafeArea(
-                      top: false,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              onPressed: _currentPdfPage > 1 ? _previousPdfPage : null,
-                              icon: const Icon(Icons.chevron_left, color: Colors.white),
-                            ),
-                            Expanded(
-                              child: SliderTheme(
-                                data: const SliderThemeData(
-                                  activeTrackColor: Colors.white,
-                                  inactiveTrackColor: Colors.white38,
-                                  thumbColor: Colors.white,
-                                  overlayColor: Colors.white24,
-                                  valueIndicatorColor: Colors.white,
-                                  valueIndicatorTextStyle: TextStyle(color: Colors.black),
-                                ),
-                                child: Slider(
-                                  value: _currentPdfPage.toDouble(),
-                                  min: 1,
-                                  max: pdfPageCount.toDouble(),
-                                  divisions: pdfPageCount - 1,
-                                  label: '$_currentPdfPage/$pdfPageCount',
-                                  onChanged: (value) {
-                                    _goToPdfPage(value.round());
-                                  },
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: _currentPdfPage < pdfPageCount ? _nextPdfPage : null,
-                              icon: const Icon(Icons.chevron_right, color: Colors.white),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '$_currentPdfPage/$pdfPageCount',
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+            ReaderBottomBar(
+              pageColors: chromeColors,
+              accent: _readerAccent,
+              leftLabel: '$_currentPdfPage / $pdfPageCount',
+              captionLabel: _readerProgressCaption(),
+              value: _currentPdfPage.toDouble(),
+              min: 1,
+              max: pdfPageCount.toDouble(),
+              divisions: pdfPageCount > 1 ? pdfPageCount - 1 : null,
+              onPrev: _currentPdfPage > 1 ? _previousPdfPage : null,
+              onNext: _currentPdfPage < pdfPageCount ? _nextPdfPage : null,
+              onChanged: (value) => _goToPdfPage(value.round()),
             ),
         ],
+      ),
+    );
+  }
+
+  void _togglePdfSearch() {
+    setState(() => _pdfSearchVisible = !_pdfSearchVisible);
+    if (!_pdfSearchVisible) {
+      _pdfSearchField.clear();
+      _pdfSearcher?.resetTextSearch();
+    }
+  }
+
+  void _runPdfSearch(String query) {
+    if (query.trim().isEmpty) {
+      _pdfSearcher?.resetTextSearch();
+      return;
+    }
+    _pdfSearcher?.startTextSearch(query, caseInsensitive: true);
+  }
+
+  Widget _buildPdfSearchBar(ReaderThemeColors colors) {
+    final accent = _readerAccent;
+    return Material(
+      color: colors.background,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 4, 8, 8),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _pdfSearchField,
+                autofocus: true,
+                style: TextStyle(color: colors.foreground),
+                textInputAction: TextInputAction.search,
+                decoration: InputDecoration(
+                  isDense: true,
+                  hintText: 'Search in document',
+                  hintStyle: TextStyle(
+                    color: colors.foreground.withValues(alpha: 0.5),
+                  ),
+                  prefixIcon: AdaptiveIcon(Icons.search, color: accent, size: 20),
+                  border: const OutlineInputBorder(),
+                ),
+                onChanged: _runPdfSearch,
+                onSubmitted: (_) => _pdfSearcher?.goToNextMatch(),
+              ),
+            ),
+
+            if (_pdfSearcher != null)
+              ListenableBuilder(
+                listenable: _pdfSearcher!,
+                builder: (context, _) {
+                  final searcher = _pdfSearcher!;
+                  final total = searcher.matches.length;
+                  final current = searcher.currentIndex;
+                  final label = total == 0
+                      ? '0'
+                      : '${(current ?? 0) + 1}/$total';
+                  return Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        child: Text(
+                          label,
+                          style: TextStyle(
+                            color: colors.foreground.withValues(alpha: 0.7),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: AdaptiveIcon(
+                          Icons.keyboard_arrow_up,
+                          color: colors.foreground,
+                        ),
+                        onPressed: total == 0 ? null : searcher.goToPrevMatch,
+                      ),
+                      IconButton(
+                        icon: AdaptiveIcon(
+                          Icons.keyboard_arrow_down,
+                          color: colors.foreground,
+                        ),
+                        onPressed: total == 0 ? null : searcher.goToNextMatch,
+                      ),
+                    ],
+                  );
+                },
+              ),
+            IconButton(
+              icon: AdaptiveIcon(Icons.close, color: colors.foreground),
+              onPressed: _togglePdfSearch,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPdfZoomControls() {
+    return Positioned(
+      right: 12,
+      bottom: 12,
+      child: IgnorePointer(
+        ignoring: !_overlayVisible,
+        child: AnimatedOpacity(
+          opacity: _overlayVisible ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 250),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _PdfRoundButton(
+                icon: Icons.add,
+                onPressed: () => _pdfController.zoomUp(),
+              ),
+              const SizedBox(height: 8),
+              _PdfRoundButton(
+                icon: Icons.remove,
+                onPressed: () => _pdfController.zoomDown(),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -2503,7 +2551,9 @@ class _BookReaderScreenState extends State<BookReaderScreen>
     if (_mode == _ReaderMode.pdf) {
       final bytes = _pdfBytes;
       if (bytes == null) {
-        return Center(child: Text(AppLocalizations.of(context).pdfDataNotAvailable));
+        return Center(
+          child: Text(AppLocalizations.of(context).pdfDataNotAvailable),
+        );
       }
       return ColoredBox(
         color: _readerBackgroundColor,
@@ -2513,13 +2563,23 @@ class _BookReaderScreenState extends State<BookReaderScreen>
             sourceName: 'book.pdf',
             controller: _pdfController,
             params: PdfViewerParams(
+              pagePaintCallbacks: [
+                (canvas, pageRect, page) => _pdfSearcher
+                    ?.pageTextMatchPaintCallback(canvas, pageRect, page),
+              ],
               onViewerReady: (document, controller) async {
+                _pdfSearcher ??= PdfTextSearcher(controller)
+                  ..addListener(() {
+                    if (mounted) setState(() {});
+                  });
                 if (!mounted) {
                   return;
                 }
                 final pageCount = controller.pageCount;
                 final prefs = await SharedPreferences.getInstance();
-                final initialPage = (widget.initialMode == 'pdf' && widget.initialPosition != null)
+                final initialPage =
+                    (widget.initialMode == 'pdf' &&
+                        widget.initialPosition != null)
                     ? widget.initialPosition!
                     : (prefs.getInt(_pdfProgressPrefKey) ?? 1);
                 final savedPage = initialPage.clamp(1, pageCount);
@@ -2532,7 +2592,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
                     if (flat.isNotEmpty) _pdfOutline = flat;
                   });
                 }
-                if (savedPage > 1) {
+                if (mounted && savedPage > 1) {
                   await controller.goToPage(pageNumber: savedPage);
                 }
               },
@@ -2544,11 +2604,13 @@ class _BookReaderScreenState extends State<BookReaderScreen>
                   _currentPdfPage = pageNumber;
                 });
                 _pdfPageSaveDebounce?.cancel();
-                _pdfPageSaveDebounce =
-                    Timer(const Duration(milliseconds: 300), () async {
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.setInt(_pdfProgressPrefKey, pageNumber);
-                });
+                _pdfPageSaveDebounce = Timer(
+                  const Duration(milliseconds: 300),
+                  () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setInt(_pdfProgressPrefKey, pageNumber);
+                  },
+                );
               },
             ),
           ),
@@ -2567,7 +2629,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.desktop_windows_outlined, size: 56),
+                const AdaptiveIcon(Icons.desktop_windows_outlined, size: 56),
                 const SizedBox(height: 12),
                 Text(
                   l10n.readerFallbackModeActive,
@@ -2590,7 +2652,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
                   const SizedBox(height: 16),
                   FilledButton.icon(
                     onPressed: _openFallbackExternally,
-                    icon: const Icon(Icons.open_in_new),
+                    icon: const AdaptiveIcon(Icons.open_in_new),
                     label: Text(l10n.openExternally),
                   ),
                 ],
@@ -2601,34 +2663,135 @@ class _BookReaderScreenState extends State<BookReaderScreen>
       );
     }
 
-    if (_mode == _ReaderMode.epub && (!_supportsEmbeddedWebView && !kIsWeb && (PlatformDetection.isLinux || PlatformDetection.isWindows))) {
+    if (_mode == _ReaderMode.epub && _useNativeHtmlEpub) {
       if (_epubChapterHtml.isEmpty) {
-        return Center(child: Text(AppLocalizations.of(context).noEpubChaptersFound));
+        return Center(
+          child: Text(AppLocalizations.of(context).noEpubChaptersFound),
+        );
       }
 
-      final chapter = _epubChapterHtml[
-          _currentEpubChapter.clamp(0, _epubChapterHtml.length - 1)];
+      final chapter =
+          _epubChapterHtml[_currentEpubChapter.clamp(
+            0,
+            _epubChapterHtml.length - 1,
+          )];
+      final colors = _pageColors;
 
-      return SingleChildScrollView(
-        key: ValueKey<String>('epub-${_readerThemeMode.name}'),
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
-        child: HtmlWidget(
-          chapter,
-          textStyle: Theme.of(context).textTheme.bodyLarge,
+      return ColoredBox(
+        color: colors.background,
+        child: SingleChildScrollView(
+          key: ValueKey<String>(
+            'epub-native-${_settings.epubStyleKey}-$_currentEpubChapter',
+          ),
+          padding: EdgeInsets.symmetric(
+            horizontal: _settings.marginPx.toDouble(),
+            vertical: 20,
+          ),
+
+          child: SelectionArea(
+            child: HtmlWidget(
+              chapter,
+              textStyle: TextStyle(
+                color: colors.foreground,
+                fontSize: _settings.fontSizePx.toDouble(),
+                height: _settings.lineHeight,
+                fontWeight: _settings.bold ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ),
         ),
       );
     }
 
-    final controller = _webController;
-    if (controller == null) {
-      return Center(
-        child: Text(_error ?? AppLocalizations.of(context).readerNotReady),
-      );
+    final l10n = AppLocalizations.of(context);
+    final isEpub = _mode == _ReaderMode.epub;
+
+    if (isEpub && _epubChapterHtml.isEmpty) {
+      return Center(child: Text(l10n.noEpubChaptersFound));
     }
+    if (!isEpub && _webUri == null) {
+      return Center(child: Text(_error ?? l10n.readerNotReady));
+    }
+
+    final settings = InAppWebViewSettings(
+      javaScriptEnabled: true,
+      transparentBackground: true,
+      supportZoom: false,
+      useShouldOverrideUrlLoading: true,
+
+      mediaPlaybackRequiresUserGesture: true,
+    );
+
+    final webView = InAppWebView(
+      key: ValueKey<String>(isEpub ? 'epub-web' : 'reader-web'),
+      initialData: isEpub
+          ? InAppWebViewInitialData(
+              data:
+                  _epubChapterHtml[_currentEpubChapter.clamp(
+                    0,
+                    _epubChapterHtml.length - 1,
+                  )],
+            )
+          : null,
+      initialUrlRequest: isEpub
+          ? null
+          : URLRequest(url: WebUri.uri(_webUri!), headers: _webHeaders),
+      initialSettings: settings,
+
+      contextMenu: isEpub
+          ? ContextMenu(
+              menuItems: [
+                ContextMenuItem(
+                  id: 1,
+                  title: 'Highlight',
+                  action: () async {
+                    final selected = await _webController?.getSelectedText();
+                    if (selected != null && selected.trim().isNotEmpty) {
+                      await _addHighlight(selected);
+                    }
+                  },
+                ),
+              ],
+            )
+          : null,
+      onWebViewCreated: (controller) {
+        _webController = controller;
+      },
+      onProgressChanged: (controller, progress) {
+        if (!mounted) return;
+        setState(() => _webLoadProgress = progress);
+      },
+      onLoadStop: (controller, url) {
+        if (!mounted) return;
+        setState(() => _webLoadProgress = 100);
+      },
+      shouldOverrideUrlLoading: (controller, action) async {
+        if (!isEpub) {
+          return NavigationActionPolicy.ALLOW;
+        }
+        final url = action.request.url?.toString() ?? '';
+        final isMainFrame = action.isForMainFrame;
+        return _shouldAllowEpubNavigation(url, isMainFrame: isMainFrame)
+            ? NavigationActionPolicy.ALLOW
+            : NavigationActionPolicy.CANCEL;
+      },
+      onReceivedError: (controller, request, error) {
+        final isMainFrame = request.isForMainFrame ?? true;
+        if (!isMainFrame || !mounted) return;
+        final l10n = AppLocalizations.of(context);
+        final description = '${error.type}: ${error.description}';
+        setState(() {
+          _mode = _ReaderMode.fallback;
+          _fallbackMessage = isEpub
+              ? l10n.epubRendererFailed(0, description)
+              : l10n.embeddedRendererFailed(0, description);
+        });
+      },
+    );
 
     return Stack(
       children: [
-        WebViewWidget(controller: controller),
+        Positioned.fill(child: webView),
         if (_webLoadProgress < 100)
           Align(
             alignment: Alignment.topCenter,
@@ -2661,10 +2824,11 @@ class _BookmarkEntry {
 
   factory _BookmarkEntry.fromJson(String raw) {
     final map = <String, dynamic>{};
-    // minimal hand-parsed JSON for the simple flat structure we write
+
     final clean = raw.trim();
-    final pairs = RegExp(r'"(\w+)"\s*:\s*(?:"([^"]*)"|([\d]+))')
-        .allMatches(clean);
+    final pairs = RegExp(
+      r'"(\w+)"\s*:\s*(?:"([^"]*)"|([\d]+))',
+    ).allMatches(clean);
     for (final m in pairs) {
       final key = m.group(1)!;
       final strVal = m.group(2);
@@ -2680,24 +2844,163 @@ class _BookmarkEntry {
       mode: mode,
       position: map['position'] as int? ?? 0,
       label: map['label'] as String? ?? '',
-      createdAt: DateTime.tryParse(map['createdAt'] as String? ?? '') ??
+      createdAt:
+          DateTime.tryParse(map['createdAt'] as String? ?? '') ??
           DateTime.now(),
     );
   }
 }
 
+class _HighlightEntry {
+  final int chapterIndex;
+  final String text;
+  final DateTime createdAt;
+
+  const _HighlightEntry({
+    required this.chapterIndex,
+    required this.text,
+    required this.createdAt,
+  });
+
+  String toJson() => jsonEncode({
+    'chapterIndex': chapterIndex,
+    'text': text,
+    'createdAt': createdAt.toIso8601String(),
+  });
+
+  factory _HighlightEntry.fromJson(String raw) {
+    final map = jsonDecode(raw) as Map<String, dynamic>;
+    return _HighlightEntry(
+      chapterIndex: (map['chapterIndex'] as num?)?.toInt() ?? 0,
+      text: map['text'] as String? ?? '',
+      createdAt:
+          DateTime.tryParse(map['createdAt'] as String? ?? '') ??
+          DateTime.now(),
+    );
+  }
+}
+
+class _PdfRoundButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  const _PdfRoundButton({required this.icon, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black.withValues(alpha: 0.55),
+      shape: const CircleBorder(),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: AdaptiveIcon(icon, color: Colors.white, size: 22),
+        ),
+      ),
+    );
+  }
+}
+
+Widget _comicImageError(BuildContext context, Object error, StackTrace? stack) =>
+    const Center(
+      child: AdaptiveIcon(Icons.broken_image_outlined, color: Colors.white38, size: 64),
+    );
+
 class _ComicPageImage extends StatelessWidget {
   final Uint8List bytes;
+  final int decodeWidth;
 
-  const _ComicPageImage({required this.bytes});
+  const _ComicPageImage({required this.bytes, required this.decodeWidth});
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Image.memory(
-      bytes,
-      fit: BoxFit.contain,
-      gaplessPlayback: true,
+      child: Image(
+        image: ResizeImage(MemoryImage(bytes), width: decodeWidth),
+        fit: BoxFit.contain,
+        gaplessPlayback: true,
+        filterQuality: FilterQuality.medium,
+        errorBuilder: _comicImageError,
+      ),
+    );
+  }
+}
+
+class _ComicVerticalPage extends StatefulWidget {
+  final Uint8List bytes;
+  final double width;
+  final int decodeWidth;
+  final double initialAspect;
+  final ValueChanged<double> onAspect;
+
+  const _ComicVerticalPage({
+    super.key,
+    required this.bytes,
+    required this.width,
+    required this.decodeWidth,
+    required this.initialAspect,
+    required this.onAspect,
+  });
+
+  @override
+  State<_ComicVerticalPage> createState() => _ComicVerticalPageState();
+}
+
+class _ComicVerticalPageState extends State<_ComicVerticalPage> {
+  late final ImageProvider _provider = ResizeImage(
+    MemoryImage(widget.bytes),
+    width: widget.decodeWidth,
+  );
+  ImageStream? _stream;
+  ImageStreamListener? _listener;
+  double? _aspect;
+
+  @override
+  void initState() {
+    super.initState();
+    final stream = _provider.resolve(ImageConfiguration.empty);
+    final listener = ImageStreamListener(
+      (info, _) {
+        final h = info.image.height;
+        if (h <= 0) {
+          return;
+        }
+        final aspect = info.image.width / h;
+        widget.onAspect(aspect);
+        if (mounted && (_aspect == null || (_aspect! - aspect).abs() > 0.001)) {
+          setState(() => _aspect = aspect);
+        }
+      },
+      onError: (_, _) {},
+    );
+    stream.addListener(listener);
+    _stream = stream;
+    _listener = listener;
+  }
+
+  @override
+  void dispose() {
+    if (_stream != null && _listener != null) {
+      _stream!.removeListener(_listener!);
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final aspect = _aspect ?? widget.initialAspect;
+    final height = aspect > 0 ? widget.width / aspect : widget.width;
+    return SizedBox(
+      width: widget.width,
+      height: height,
+      child: Image(
+        image: _provider,
+        fit: BoxFit.fitWidth,
+        gaplessPlayback: true,
+        filterQuality: FilterQuality.medium,
+        errorBuilder: _comicImageError,
       ),
     );
   }

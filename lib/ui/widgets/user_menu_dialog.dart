@@ -18,6 +18,7 @@ import '../../l10n/app_localizations.dart';
 import '../../util/platform_detection.dart';
 import '../../util/pin_code_util.dart';
 import '../navigation/destinations.dart';
+import 'adaptive/adaptive_dialog.dart';
 import '../screens/settings/settings_side_panel.dart';
 import 'overlay_sheet.dart';
 import 'pin_entry_dialog.dart';
@@ -513,7 +514,7 @@ Future<String?> _promptQuickConnectCode(BuildContext context) async {
   final code = await showFocusRestoringDialog<String>(
     context: context,
     useRootNavigator: true,
-    builder: (ctx) => AlertDialog(
+    builder: (ctx) => AlertDialog.adaptive(
       backgroundColor: AppColorScheme.surface.withValues(alpha: 0.9),
       title: Text(
         l10n.quickConnect,
@@ -540,7 +541,7 @@ Future<String?> _promptQuickConnectCode(BuildContext context) async {
         },
       ),
       actions: [
-        TextButton(
+        adaptiveDialogAction(
           onPressed: () => Navigator.pop(ctx),
           child: Text(l10n.cancel),
         ),

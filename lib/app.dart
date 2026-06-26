@@ -2,15 +2,19 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart' show kBackMouseButton, kForwardMouseButton;
+import 'package:flutter/cupertino.dart' show CupertinoTheme, CupertinoThemeData;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tvos/flutter_tvos.dart'
+    show TvRemoteController, TvRemoteConfig;
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'data/models/aggregated_item.dart';
 import 'data/services/app_update_service.dart';
 import 'data/services/cast/cast_service.dart';
 import 'data/services/download_service.dart';
@@ -34,11 +38,13 @@ import 'util/focus/dpad_keys.dart';
 import 'util/fullscreen_helper.dart';
 import 'util/global_shortcut_focus.dart';
 import 'util/focus/input_mode_tracker.dart';
+import 'util/idiom/app_ui_idiom.dart';
 import 'util/platform_detection.dart';
 import 'ui/widgets/overlay_sheet.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'util/focus/key_event_utils.dart';
 import 'ui/widgets/focus/request_initial_focus.dart';
+import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 
 class MoonfinApp extends StatefulWidget {
   const MoonfinApp({super.key});
@@ -58,15 +64,33 @@ class _MoonfinAppState extends State<MoonfinApp> {
     _prefs = GetIt.instance<UserPreferences>();
     _themeController = AppThemeController.fromPreferences(_prefs);
     _lastResolvedLocale = _resolveLocale();
+    AppUiIdiomResolver.setOverride(_prefs.get(UserPreferences.interfaceStyle));
     _prefs.addListener(_syncThemeFromPrefs);
     _prefs.addListener(_syncLocaleFromPrefs);
+    _prefs.addListener(_syncIdiomFromPrefs);
     if (PlatformDetection.isAppleTV) {
       TopShelfService().startDeepLinkListener(appRouter.go);
+      TvRemoteController.instance.init();
+      TvRemoteController.instance.config = const TvRemoteConfig(
+        shortSwipeThreshold: 0.45,
+        fastSwipeThreshold: 0.7,
+        continuousSwipeMoveThreshold: 4,
+        keyRepeatInitialDelay: Duration(milliseconds: 450),
+        keyRepeatInterval: Duration(milliseconds: 140),
+      );
     }
   }
 
   void _syncThemeFromPrefs() {
     _themeController.refreshFromPreferences(_prefs);
+  }
+
+  void _syncIdiomFromPrefs() {
+    final before = AppUiIdiomResolver.current;
+    AppUiIdiomResolver.setOverride(_prefs.get(UserPreferences.interfaceStyle));
+    if (AppUiIdiomResolver.current != before && mounted) {
+      setState(() {});
+    }
   }
 
   void _syncLocaleFromPrefs() {
@@ -96,6 +120,7 @@ class _MoonfinAppState extends State<MoonfinApp> {
   void dispose() {
     _prefs.removeListener(_syncThemeFromPrefs);
     _prefs.removeListener(_syncLocaleFromPrefs);
+    _prefs.removeListener(_syncIdiomFromPrefs);
     _themeController.dispose();
     super.dispose();
   }
@@ -184,7 +209,15 @@ class _MoonfinAppState extends State<MoonfinApp> {
                           child: _GlobalShortcutScope(
                             child: Material(
                               type: MaterialType.transparency,
-                              child: content,
+                              child: CupertinoTheme(
+                                data: CupertinoThemeData(
+                                  brightness: Brightness.dark,
+                                  primaryColor: AppColorScheme.accent,
+                                  scaffoldBackgroundColor:
+                                      AppColorScheme.background,
+                                ),
+                                child: content,
+                              ),
                             ),
                           ),
                         );
@@ -462,7 +495,13 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
   bool _isEditingText() {
     final focusContext = FocusManager.instance.primaryFocus?.context;
     if (focusContext == null) return false;
-    return focusContext.findAncestorWidgetOfExactType<EditableText>() != null;
+    if (focusContext.findAncestorWidgetOfExactType<EditableText>() != null) {
+      return true;
+    }
+    if (CustomTVTextField.isKeyboardVisibleNotifier.value) {
+      return true;
+    }
+    return false;
   }
 
   bool _onHardwareKeyEvent(KeyEvent event) {
@@ -566,6 +605,26 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
         state == AppLifecycleState.hidden ||
         state == AppLifecycleState.detached;
     if (!isBackground) return;
+
+    if (GetIt.instance.isRegistered<PlaybackManager>()) {
+      final manager = GetIt.instance<PlaybackManager>();
+      final item = manager.queueService.currentItem;
+      bool isAudio = false;
+      if (item is AggregatedItem) {
+        isAudio = item.isAudioLike;
+      } else if (item is String) {
+        try {
+          final meta = manager.currentOfflineMetadata;
+          if (meta != null) {
+            final type = meta['Type']?.toString();
+            final mediaType = meta['MediaType']?.toString();
+            isAudio = type == 'Audio' || type == 'AudioBook' || mediaType == 'Audio';
+          }
+        } catch (_) {}
+      }
+      if (isAudio) return;
+    }
+
     if (!GetIt.instance.isRegistered<PlaybackArbiter>()) return;
     final arbiter = GetIt.instance<PlaybackArbiter>();
     if (arbiter.pipActive) return;
@@ -1019,6 +1078,13 @@ class _TvUiScale extends StatelessWidget {
     }
     final scale = realSize.width / _designWidth;
     final logicalSize = Size(realSize.width / scale, realSize.height / scale);
+    EdgeInsets scaleInsets(EdgeInsets insets, {bool zeroTop = false}) =>
+        EdgeInsets.fromLTRB(
+          insets.left / scale,
+          zeroTop ? 0 : insets.top / scale,
+          insets.right / scale,
+          insets.bottom / scale,
+        );
     return FittedBox(
       fit: BoxFit.fill,
       child: SizedBox(
@@ -1028,6 +1094,9 @@ class _TvUiScale extends StatelessWidget {
           data: mq.copyWith(
             size: logicalSize,
             devicePixelRatio: mq.devicePixelRatio * scale,
+            padding: scaleInsets(mq.padding, zeroTop: true),
+            viewPadding: scaleInsets(mq.viewPadding, zeroTop: true),
+            viewInsets: scaleInsets(mq.viewInsets),
           ),
           child: child,
         ),

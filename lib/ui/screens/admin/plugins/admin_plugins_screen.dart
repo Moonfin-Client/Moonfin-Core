@@ -6,6 +6,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../navigation/destinations.dart';
+import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../admin_plugin_version_utils.dart';
 import '../providers/admin_user_providers.dart';
 
@@ -128,11 +129,11 @@ class _AdminPluginsScreenState extends ConsumerState<AdminPluginsScreen>
   Future<void> _uninstallPlugin(PluginInfo plugin) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AlertDialog.adaptive(
         title: Text(AppLocalizations.of(context).adminUninstallPlugin),
         content: Text(AppLocalizations.of(context).adminUninstallPluginConfirm(plugin.name)),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(context, false),
             child: Text(AppLocalizations.of(context).cancel),
           ),

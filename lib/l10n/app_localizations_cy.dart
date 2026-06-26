@@ -141,6 +141,22 @@ class AppLocalizationsCy extends AppLocalizations {
   String get settingsAppearanceTheme => 'Thema Ap';
 
   @override
+  String get interfaceStyle => 'Interface style';
+
+  @override
+  String get interfaceStyleSubtitle =>
+      'Automatic uses the native look on Apple devices. Choose Apple to force it, or Material for the standard look.';
+
+  @override
+  String get interfaceStyleAutomatic => 'Automatic';
+
+  @override
+  String get interfaceStyleApple => 'Apple';
+
+  @override
+  String get interfaceStyleMaterial => 'Material';
+
+  @override
   String get settingsAppearanceThemeSubtitle =>
       'Newid rhwng Moonfin a Neon Pulse heb ailgychwyn yr app';
 
@@ -7360,6 +7376,11 @@ class AppLocalizationsCy extends AppLocalizations {
   @override
   String latestLibraryName(String libraryName) {
     return 'Diweddaraf $libraryName';
+  }
+
+  @override
+  String recentlyReleasedLibraryName(String libraryName) {
+    return 'Recently Released $libraryName';
   }
 
   @override

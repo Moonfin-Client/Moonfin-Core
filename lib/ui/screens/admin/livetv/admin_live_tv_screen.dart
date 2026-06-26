@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../widgets/adaptive/adaptive_dialog.dart';
 
 class AdminLiveTvScreen extends StatefulWidget {
   const AdminLiveTvScreen({super.key});
@@ -127,7 +128,7 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
 
     final payload = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(AppLocalizations.of(context).adminAddTuner),
         content: SingleChildScrollView(
           child: Column(
@@ -161,7 +162,7 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
           ),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx),
             child: Text(AppLocalizations.of(context).cancel),
           ),
@@ -211,7 +212,7 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
 
     final payload = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(AppLocalizations.of(context).adminAddProvider),
         content: SingleChildScrollView(
           child: Column(
@@ -263,7 +264,7 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
           ),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx),
             child: Text(AppLocalizations.of(context).cancel),
           ),
@@ -374,7 +375,7 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
 
     final updated = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(AppLocalizations.of(context).adminRecordingSettings),
         content: SingleChildScrollView(
           child: Column(
@@ -417,7 +418,7 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
           ),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx),
             child: Text(AppLocalizations.of(context).cancel),
           ),
@@ -470,7 +471,7 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
     final controller = TextEditingController();
     final payload = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(AppLocalizations.of(context).adminSetChannelMappings),
         content: TextField(
           controller: controller,
@@ -483,7 +484,7 @@ class _AdminLiveTvScreenState extends State<AdminLiveTvScreen> {
           maxLines: 8,
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx),
             child: Text(AppLocalizations.of(context).cancel),
           ),

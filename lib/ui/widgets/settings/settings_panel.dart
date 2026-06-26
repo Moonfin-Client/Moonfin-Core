@@ -1,8 +1,11 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../../util/idiom/app_ui_idiom.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../overlay_sheet.dart';
@@ -45,35 +48,51 @@ class SettingsPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
+    final appleTv = AppUiIdiomResolver.appleTvStyle;
     final panelWidth = PlatformDetection.isAppleTV
-        ? screenWidth
+        ? (screenWidth * 0.42).clamp(560.0, screenWidth)
         : PlatformDetection.useMobileUi
-            ? (screenWidth - 8).clamp(320.0, screenWidth)
-            : (screenWidth - 16).clamp(320.0, 420.0);
+        ? (screenWidth - 8).clamp(320.0, screenWidth)
+        : (screenWidth - 16).clamp(320.0, 420.0);
     final glass = AppColorScheme.isGlass;
+    final frostedForTv = appleTv && !glass;
+    final surface = Theme.of(context).colorScheme.surface;
     final Widget body = SizedBox(
       width: panelWidth,
       height: double.infinity,
-      child: SettingsListTypography(
-        child: _SettingsNavigator(initial: child),
-      ),
+      child: SettingsListTypography(child: _SettingsNavigator(initial: child)),
     );
+    Widget content;
+    if (glass) {
+      content = GlassSurface(
+        cornerRadius: 16,
+        reinforced: true,
+        fallbackColor: Colors.transparent,
+        child: body,
+      );
+    } else if (frostedForTv) {
+      content = BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 32, sigmaY: 32),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: surface.withValues(alpha: 0.62),
+            border: Border(
+              left: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+            ),
+          ),
+          child: body,
+        ),
+      );
+    } else {
+      content = body;
+    }
     return Align(
       alignment: Alignment.centerRight,
       child: Material(
-        color: glass
-            ? Colors.transparent
-            : Theme.of(context).colorScheme.surface,
+        color: (glass || frostedForTv) ? Colors.transparent : surface,
         borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
         clipBehavior: Clip.antiAlias,
-        child: glass
-            ? GlassSurface(
-                cornerRadius: 16,
-                reinforced: true,
-                fallbackColor: Colors.transparent,
-                child: body,
-              )
-            : body,
+        child: content,
       ),
     );
   }
@@ -152,24 +171,29 @@ class _SettingsNavigatorState extends State<_SettingsNavigator> {
 extension SettingsPush on BuildContext {
   Future<void> pushSettingsScreen(Widget screen, {FocusNode? returnFocus}) {
     final focusToRestore = returnFocus ?? FocusManager.instance.primaryFocus;
-    return Navigator.of(this).push(
-      PageRouteBuilder(
-        pageBuilder: (_, _, _) => _AutoFocusWrapper(child: screen),
-        transitionDuration: const Duration(milliseconds: 160),
-        reverseTransitionDuration: const Duration(milliseconds: 130),
-        transitionsBuilder: (context, anim, _, child) {
-          final slide = Tween<Offset>(
-            begin: const Offset(1.0, 0.0),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(parent: anim, curve: Curves.easeOutCubic));
-          return SlideTransition(position: slide, child: child);
-        },
-      ),
-    ).then((_) {
-      if (focusToRestore != null && focusToRestore.context != null) {
-        focusToRestore.requestFocus();
-      }
-    });
+    return Navigator.of(this)
+        .push(
+          PageRouteBuilder(
+            pageBuilder: (_, _, _) => _AutoFocusWrapper(child: screen),
+            transitionDuration: const Duration(milliseconds: 160),
+            reverseTransitionDuration: const Duration(milliseconds: 130),
+            transitionsBuilder: (context, anim, _, child) {
+              final slide =
+                  Tween<Offset>(
+                    begin: const Offset(1.0, 0.0),
+                    end: Offset.zero,
+                  ).animate(
+                    CurvedAnimation(parent: anim, curve: Curves.easeOutCubic),
+                  );
+              return SlideTransition(position: slide, child: child);
+            },
+          ),
+        )
+        .then((_) {
+          if (focusToRestore != null && focusToRestore.context != null) {
+            focusToRestore.requestFocus();
+          }
+        });
   }
 }
 

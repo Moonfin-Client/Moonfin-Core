@@ -75,6 +75,7 @@ class Destinations {
   static const collectionBrowse = '/collection/:collectionId';
   static const libraryViewRoute = '/library-view/:libraryId';
   static const musicBrowse = '/music/:libraryId';
+  static const bookBrowse = '/books/:libraryId';
   static const genreBrowse = '/genre/:genreName';
 
   // Item details
@@ -149,16 +150,12 @@ class Destinations {
   static String library(
     String libraryId, {
     List<String>? includeItemTypes,
-    bool bookUi = false,
   }) {
     final base = '/library/$libraryId';
     final params = <String>[];
     if (includeItemTypes != null && includeItemTypes.isNotEmpty) {
       final types = includeItemTypes.map(Uri.encodeComponent).join(',');
       params.add('types=$types');
-    }
-    if (bookUi) {
-      params.add('bookUi=1');
     }
     if (params.isEmpty) return base;
     return '$base?${params.join('&')}';
@@ -204,6 +201,12 @@ class Destinations {
   }
   static String collection(String collectionId) => '/collection/$collectionId';
   static String musicLibrary(String libraryId) => '/music/$libraryId';
+  static String bookLibrary(String libraryId, {String? collectionType}) {
+    final base = '/books/$libraryId';
+    return collectionType != null && collectionType.isNotEmpty
+        ? '$base?collectionType=${Uri.encodeComponent(collectionType)}'
+        : base;
+  }
   static String photo(String itemId) => '/player/photo/$itemId';
   static String trailer({String? videoId, String? url}) {
     final params = <String, String>{

@@ -188,6 +188,26 @@
   "@settingsAppearanceTheme": {
     "description": "Title for the theme selection screen and theme settings entry"
   },
+  "interfaceStyle": "Interface style",
+  "@interfaceStyle": {
+    "description": "Label for the Automatic/Apple/Material interface style setting"
+  },
+  "interfaceStyleSubtitle": "Automatic uses the native look on Apple devices. Choose Apple to force it, or Material for the standard look.",
+  "@interfaceStyleSubtitle": {
+    "description": "Explanation under the interface style setting"
+  },
+  "interfaceStyleAutomatic": "Automatic",
+  "@interfaceStyleAutomatic": {
+    "description": "Interface style option: follow the platform"
+  },
+  "interfaceStyleApple": "Apple",
+  "@interfaceStyleApple": {
+    "description": "Interface style option: Apple native look"
+  },
+  "interfaceStyleMaterial": "Material",
+  "@interfaceStyleMaterial": {
+    "description": "Interface style option: Material look"
+  },
   "settingsAppearanceThemeSubtitle": "Switch between Moonfin and Neon Pulse without restarting the app",
   "@settingsAppearanceThemeSubtitle": {
     "description": "Subtitle for the theme selection screen and theme settings entry"
@@ -3944,9 +3964,9 @@
   "@showInNavigation": {
     "description": "Toggle for showing library in navigation"
   },
-  "showInLatestMedia": "Show in latest media",
+  "showInLatestMedia": "Show in recently added/released media",
   "@showInLatestMedia": {
-    "description": "Toggle for showing library in latest media"
+    "description": "Toggle for showing library in recently added/released media"
   },
   "sourceLibraries": "Source Libraries",
   "@sourceLibraries": {
@@ -4105,9 +4125,9 @@
   "@enablePreviewAudio": {
     "description": "Description for preview audio"
   },
-  "latestMedia": "Latest Media",
+  "latestMedia": "Recently Added Media",
   "@latestMedia": {
-    "description": "Home section: latest media"
+    "description": "Home section: recently added media"
   },
   "recentlyReleased": "Recently Released",
   "@recentlyReleased": {
@@ -7014,9 +7034,18 @@
       }
     }
   },
-  "latestLibraryName": "Latest {libraryName}",
+  "latestLibraryName": "Recently Added {libraryName}",
   "@latestLibraryName": {
-    "description": "Row title for latest media in a specific library",
+    "description": "Row title for recently added media in a specific library",
+    "placeholders": {
+      "libraryName": {
+        "type": "String"
+      }
+    }
+  },
+  "recentlyReleasedLibraryName": "Recently Released {libraryName}",
+  "@recentlyReleasedLibraryName": {
+    "description": "Row title for recently released media in a specific library",
     "placeholders": {
       "libraryName": {
         "type": "String"

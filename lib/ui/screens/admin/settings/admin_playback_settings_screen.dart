@@ -202,7 +202,7 @@ class _AdminPlaybackSettingsScreenState
   List<Widget> _buildCodecToggles() {
     final enabled = _getHardwareDecodingCodecs();
     return _hwDecodeCodecs.map((codec) {
-      return SwitchListTile(
+      return SwitchListTile.adaptive(
         title: Text(codec.$2),
         dense: true,
         value: enabled.contains(codec.$1),
@@ -267,7 +267,7 @@ class _AdminPlaybackSettingsScreenState
   }
 
   Widget _switchTile(String key, String title) {
-    return SwitchListTile(
+    return SwitchListTile.adaptive(
       title: Text(title),
       value: _config![key] as bool? ?? false,
       onChanged: (v) => setState(() => _config![key] = v),

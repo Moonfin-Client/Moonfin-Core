@@ -205,6 +205,40 @@ class EmbyItemsApi implements ItemsApi {
   }
 
   @override
+  Future<Map<String, dynamic>> getRecentlyReleasedItems({
+    String? parentId,
+    List<String>? includeItemTypes,
+    int? limit,
+    String? fields,
+    String? enableImageTypes,
+    int? imageTypeLimit,
+  }) async {
+    final response = await _dio.get(
+      '/Items',
+      queryParameters: {
+        if (parentId != null) 'ParentId': parentId,
+        if (includeItemTypes != null)
+          'IncludeItemTypes': includeItemTypes.join(','),
+        if (limit != null) 'Limit': limit,
+        if (fields != null) 'Fields': fields,
+        if (enableImageTypes != null) 'EnableImageTypes': enableImageTypes,
+        if (imageTypeLimit != null) 'ImageTypeLimit': imageTypeLimit,
+        'SortBy' : 'PremiereDate',
+        'SortOrder' : 'Descending',
+        'MaxPremiereDate': DateTime.now().toUtc().toIso8601String(),
+      },
+    );
+
+    // /Items/Latest returns a bare array, so normalize it into the
+    // same shape as /Items so all callers stay unchanged.
+    final data = response.data;
+    if (data is List) {
+      return {'Items': data, 'TotalRecordCount': data.length};
+    }
+    return data as Map<String, dynamic>;
+  }
+
+  @override
   Future<Map<String, dynamic>> getSeasons(String seriesId) async {
     final response = await _dio.get('/Shows/$seriesId/Seasons');
     return response.data as Map<String, dynamic>;

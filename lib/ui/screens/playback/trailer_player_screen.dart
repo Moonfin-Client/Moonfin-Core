@@ -10,6 +10,7 @@ import '../../../data/services/youtube_stream_resolver.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../playback/appletv_preview_player.dart';
 import '../../../util/platform_detection.dart';
+import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/web_youtube_trailer.dart';
 
 class TrailerPlayerScreen extends StatefulWidget {
@@ -405,7 +406,7 @@ class _TrailerPlayerScreenState extends State<TrailerPlayerScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  icon: const AdaptiveIcon(Icons.arrow_back, color: Colors.white),
                   onPressed: () {
                     _player?.stop();
                     unawaited(_appleTvPlayer?.stop());

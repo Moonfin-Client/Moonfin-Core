@@ -141,6 +141,22 @@ class AppLocalizationsSv extends AppLocalizations {
   String get settingsAppearanceTheme => 'App-tema';
 
   @override
+  String get interfaceStyle => 'Interface style';
+
+  @override
+  String get interfaceStyleSubtitle =>
+      'Automatic uses the native look on Apple devices. Choose Apple to force it, or Material for the standard look.';
+
+  @override
+  String get interfaceStyleAutomatic => 'Automatic';
+
+  @override
+  String get interfaceStyleApple => 'Apple';
+
+  @override
+  String get interfaceStyleMaterial => 'Material';
+
+  @override
   String get settingsAppearanceThemeSubtitle =>
       'Växla mellan Moonfin och Neon Pulse utan att starta om appen';
 
@@ -7353,6 +7369,11 @@ class AppLocalizationsSv extends AppLocalizations {
   @override
   String latestLibraryName(String libraryName) {
     return 'Latest $libraryName';
+  }
+
+  @override
+  String recentlyReleasedLibraryName(String libraryName) {
+    return 'Recently Released $libraryName';
   }
 
   @override

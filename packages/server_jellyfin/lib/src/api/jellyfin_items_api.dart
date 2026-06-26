@@ -197,6 +197,36 @@ class JellyfinItemsApi implements ItemsApi {
   }
 
   @override
+  Future<Map<String, dynamic>> getRecentlyReleasedItems({
+    String? parentId,
+    List<String>? includeItemTypes,
+    int? limit,
+    String? fields,
+    String? enableImageTypes,
+    int? imageTypeLimit,
+  }) async {
+    final userId = _getUserId();
+    final response = await _dio.get(
+      '/Users/$userId/Items',
+      queryParameters: {
+        'ParentId': ?parentId,
+        if (includeItemTypes != null)
+          'IncludeItemTypes': includeItemTypes.join(','),
+        'Limit': ?limit,
+        'Fields': ?fields,
+        'EnableImageTypes': ?enableImageTypes,
+        'ImageTypeLimit': ?imageTypeLimit,
+        'SortBy': 'PremiereDate',
+        'SortOrder': 'Descending',
+         'MaxPremiereDate': DateTime.now().toUtc().toIso8601String(),
+      },
+    );
+    final data = response.data;
+    if (data is List) return {'Items': data, 'TotalRecordCount': data.length};
+    return data as Map<String, dynamic>;
+  }
+
+  @override
   Future<Map<String, dynamic>> getSeasons(String seriesId) async {
     final response = await _dio.get('/Shows/$seriesId/Seasons');
     return response.data as Map<String, dynamic>;

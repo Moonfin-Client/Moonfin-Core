@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../widgets/adaptive/adaptive_dialog.dart';
 
 class ServerActionsCard extends StatelessWidget {
   final MediaServerClient client;
@@ -100,11 +101,11 @@ class ServerActionsCard extends StatelessWidget {
       barrierDismissible: true,
       builder: (ctx) => PopScope(
         canPop: true,
-        child: AlertDialog(
+        child: AlertDialog.adaptive(
           title: Text(l10n.adminServerRebootInProgress),
           content: Text(l10n.adminServerRebootMessage),
           actions: [
-            TextButton(
+            adaptiveDialogAction(
               onPressed: () => Navigator.of(ctx).pop(),
               child: Text(l10n.ok),
             ),
@@ -123,11 +124,11 @@ class ServerActionsCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(title),
         content: Text(message),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.of(ctx).pop(false),
             child: Text(l10n.cancel),
           ),

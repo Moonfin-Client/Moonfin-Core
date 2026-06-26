@@ -39,6 +39,7 @@ import '../../data/models/aggregated_item.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../util/focus/dpad_keys.dart';
 import '../navigation/app_router.dart';
+import 'adaptive/sf_symbol.dart';
 
 const _kToolbarHeightTV = 95.0;
 const _kToolbarHeightDesktop = 80.0;
@@ -401,14 +402,20 @@ class _TopToolbarState extends State<TopToolbar> {
     final primary = FocusManager.instance.primaryFocus;
     if (primary == null || !_isInsideToolbar(primary)) return false;
 
+    final insideMusicBar = _isDescendantOf(primary, _musicBarFocusNode);
+
     final nodes = _toolbarScopeNode.descendants
         .where((n) => !n.skipTraversal && _isLaidOutFocusNode(n))
-        .map((n) => (
-              node: n,
-              x: (n.context!.findRenderObject()! as RenderBox)
-                  .localToGlobal(Offset.zero)
-                  .dx,
-            ))
+        .where((n) {
+          final isMusicNode = _isDescendantOf(n, _musicBarFocusNode);
+          return insideMusicBar == isMusicNode;
+        })
+        .map((n) {
+          final box = n.context!.findRenderObject() as RenderBox?;
+          final pos = box?.localToGlobal(Offset.zero);
+          return (node: n, x: pos?.dx ?? -1.0);
+        })
+        .where((item) => item.x > 0)
         .toList()
       ..sort((a, b) => a.x.compareTo(b.x));
 
@@ -521,9 +528,19 @@ class _TopToolbarState extends State<TopToolbar> {
                 if (primary != null) {
                   final insideMusicBar = _isDescendantOf(primary, _musicBarFocusNode);
                   if (!insideMusicBar && isMusicActive) {
-                    final target = _firstFocusableDescendant(_musicBarFocusNode);
-                    if (target != null) {
-                      target.requestFocus();
+                    final musicNodes = _musicBarFocusNode.descendants
+                        .where((n) => !n.skipTraversal && _isLaidOutFocusNode(n))
+                        .map((n) {
+                          final box = n.context!.findRenderObject() as RenderBox?;
+                          final pos = box?.localToGlobal(Offset.zero);
+                          return (node: n, x: pos?.dx ?? -1.0);
+                        })
+                        .where((item) => item.x > 0)
+                        .toList()
+                      ..sort((a, b) => a.x.compareTo(b.x));
+
+                    if (musicNodes.isNotEmpty) {
+                      musicNodes.first.node.requestFocus();
                       return KeyEventResult.handled;
                     }
                   }
@@ -542,7 +559,35 @@ class _TopToolbarState extends State<TopToolbar> {
                 _restoreFocusBelowToolbar();
                 return KeyEventResult.handled;
               }
-              if (PlatformDetection.isTV &&
+              if (event is KeyDownEvent &&
+                  event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                final primary = FocusManager.instance.primaryFocus;
+                if (primary != null) {
+                  final insideMusicBar = _isDescendantOf(primary, _musicBarFocusNode);
+                  if (insideMusicBar) {
+                    if (_homeFocus.canRequestFocus) {
+                      _homeFocus.requestFocus();
+                      return KeyEventResult.handled;
+                    }
+                    FocusNode? targetNode;
+                    for (final n in _toolbarScopeNode.descendants) {
+                      if (!n.skipTraversal && _isLaidOutFocusNode(n) && !_isDescendantOf(n, _musicBarFocusNode)) {
+                        final box = n.context!.findRenderObject() as RenderBox?;
+                        final pos = box?.localToGlobal(Offset.zero);
+                        if (pos != null && pos.dx > 0) {
+                          targetNode = n;
+                          break;
+                        }
+                      }
+                    }
+                    if (targetNode != null) {
+                      targetNode.requestFocus();
+                      return KeyEventResult.handled;
+                    }
+                  }
+                }
+              }
+              if ((PlatformDetection.isTV || PlatformDetection.isDesktop) &&
                   event is KeyDownEvent &&
                   (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
                       event.logicalKey == LogicalKeyboardKey.arrowRight)) {
@@ -667,7 +712,7 @@ class _TopToolbarState extends State<TopToolbar> {
           _restoreFocusBelowToolbar();
           return KeyEventResult.handled;
         }
-        if (PlatformDetection.isTV &&
+        if ((PlatformDetection.isTV || PlatformDetection.isDesktop) &&
             event.logicalKey == LogicalKeyboardKey.arrowRight) {
           _homeFocus.requestFocus();
           return KeyEventResult.handled;
@@ -756,7 +801,7 @@ class _TopToolbarState extends State<TopToolbar> {
       ? seerrDisplayName
       : (seerrPrefs.isSeerrVariant ? l10n.seerr : l10n.seerr);
     final useAndroidTvInlineLibraries =
-        PlatformDetection.isAndroid &&
+        (PlatformDetection.isAndroid || PlatformDetection.isAppleTV) &&
         PlatformDetection.isTV &&
         _prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
 
@@ -1015,6 +1060,11 @@ class _TopToolbarState extends State<TopToolbar> {
       onLibraryTap: (lib) {
         if (lib.collectionType == 'music') {
           context.navigateTopLevel('/music/${lib.id}');
+        } else if (lib.collectionType == 'books' ||
+            lib.collectionType == 'audiobooks') {
+          context.navigateTopLevel(
+            Destinations.bookLibrary(lib.id, collectionType: lib.collectionType),
+          );
         } else if (lib.collectionType == 'livetv') {
           context.navigateTopLevel(Destinations.liveTvGuide);
         } else {
@@ -1039,6 +1089,11 @@ class _TopToolbarState extends State<TopToolbar> {
       onLibraryTap: (lib) {
         if (lib.collectionType == 'music') {
           context.navigateTopLevel('/music/${lib.id}');
+        } else if (lib.collectionType == 'books' ||
+            lib.collectionType == 'audiobooks') {
+          context.navigateTopLevel(
+            Destinations.bookLibrary(lib.id, collectionType: lib.collectionType),
+          );
         } else if (lib.collectionType == 'livetv') {
           context.navigateTopLevel(Destinations.liveTvGuide);
         } else {
@@ -1953,7 +2008,7 @@ class _TopMusicBarState extends State<TopMusicBar> {
                     ? AppColorScheme.onSurface
                     : Colors.transparent,
               ),
-              child: Icon(
+              child: AdaptiveIcon(
                 icon,
                 size: 20,
                 color: focused ? AppColorScheme.surface : AppColorScheme.onSurface,

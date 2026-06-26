@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../../util/idiom/app_ui_idiom.dart';
+
 const String kCleanSettingsFontFamily = 'NotoSans';
 
 Widget withCleanSettingsTypography(BuildContext context, Widget child) {
   final theme = Theme.of(context);
+  final apple = AppUiIdiomResolver.isApple;
   final cleanTextTheme = theme.textTheme.apply(
     fontFamily: kCleanSettingsFontFamily,
   );
@@ -19,6 +22,12 @@ Widget withCleanSettingsTypography(BuildContext context, Widget child) {
 
   return Theme(
     data: theme.copyWith(
+      scaffoldBackgroundColor: apple
+          ? Color.alphaBlend(
+              Colors.white.withValues(alpha: 0.05),
+              theme.scaffoldBackgroundColor,
+            )
+          : null,
       textTheme: cleanTextTheme,
       primaryTextTheme: cleanPrimaryTextTheme,
       listTileTheme: theme.listTileTheme.copyWith(

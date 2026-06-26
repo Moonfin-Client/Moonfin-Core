@@ -5,6 +5,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../providers/admin_user_providers.dart';
 
 class AdminDevicesScreen extends ConsumerStatefulWidget {
@@ -32,7 +33,7 @@ class _AdminDevicesScreenState extends ConsumerState<AdminDevicesScreen> {
     final controller = TextEditingController(text: device.displayName);
     final newName = await showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(l10n.adminEditDeviceName),
         content: TextField(
           controller: controller,
@@ -44,7 +45,7 @@ class _AdminDevicesScreenState extends ConsumerState<AdminDevicesScreen> {
           onSubmitted: (value) => Navigator.pop(ctx, value.trim()),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx),
             child: Text(l10n.cancel),
           ),
@@ -82,14 +83,14 @@ class _AdminDevicesScreenState extends ConsumerState<AdminDevicesScreen> {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(l10n.adminDeleteDevice),
         content: Text(
           "Remove device '${device.displayName}'?\n\n"
           'The user will need to sign in again on this device.',
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel),
           ),

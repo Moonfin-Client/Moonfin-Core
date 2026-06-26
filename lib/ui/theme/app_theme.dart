@@ -1,5 +1,8 @@
+import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+
+import '../../util/idiom/app_ui_idiom.dart';
 
 class AppTheme {
   const AppTheme._();
@@ -58,6 +61,12 @@ class AppTheme {
     final c = spec.colors;
     return ThemeData(
       useMaterial3: true,
+      platform: switch (AppUiIdiomResolver.current) {
+        AppUiIdiom.iosMobile => TargetPlatform.iOS,
+        AppUiIdiom.macDesktop => TargetPlatform.macOS,
+        AppUiIdiom.material => TargetPlatform.android,
+        AppUiIdiom.tvosLeanback => null,
+      },
       brightness: Brightness.dark,
       fontFamily: spec.fontFamily,
       colorScheme: ColorScheme.dark(
@@ -79,16 +88,9 @@ class AppTheme {
         backgroundColor: c.background,
         elevation: 0,
       ),
-      pageTransitionsTheme: const PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: _FadeScalePageTransitionsBuilder(),
-          TargetPlatform.fuchsia: _FadeScalePageTransitionsBuilder(),
-          TargetPlatform.linux: _FadeScalePageTransitionsBuilder(),
-          TargetPlatform.macOS: _FadeScalePageTransitionsBuilder(),
-          TargetPlatform.windows: _FadeScalePageTransitionsBuilder(),
-          TargetPlatform.iOS: _FadeScalePageTransitionsBuilder(),
-        },
-      ),
+      pageTransitionsTheme: AppUiIdiomResolver.current == AppUiIdiom.iosMobile
+          ? _cupertinoTransitions
+          : _fadeScaleTransitions,
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: c.surface,
         selectedItemColor: c.accent,
@@ -158,6 +160,28 @@ class AppTheme {
   }
 
   static final darkTheme = buildTheme(ThemeRegistry.resolveById(ThemeRegistry.moonfinId));
+
+  static const _fadeScaleTransitions = PageTransitionsTheme(
+    builders: {
+      TargetPlatform.android: _FadeScalePageTransitionsBuilder(),
+      TargetPlatform.fuchsia: _FadeScalePageTransitionsBuilder(),
+      TargetPlatform.linux: _FadeScalePageTransitionsBuilder(),
+      TargetPlatform.macOS: _FadeScalePageTransitionsBuilder(),
+      TargetPlatform.windows: _FadeScalePageTransitionsBuilder(),
+      TargetPlatform.iOS: _FadeScalePageTransitionsBuilder(),
+    },
+  );
+
+  static const _cupertinoTransitions = PageTransitionsTheme(
+    builders: {
+      TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+      TargetPlatform.fuchsia: CupertinoPageTransitionsBuilder(),
+      TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
+      TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+      TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+      TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+    },
+  );
 }
 
 class _FadeScalePageTransitionsBuilder extends PageTransitionsBuilder {

@@ -15,6 +15,7 @@ import '../../../preference/user_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
+import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/library_row.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/navigation_layout.dart';
@@ -1364,7 +1365,7 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
 
     showFocusRestoringDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         backgroundColor: const Color(0xFF1A1A2E),
         title: Text(
           l10n.cancelRequest,
@@ -1372,7 +1373,7 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
         ),
         content: Text(message, style: const TextStyle(color: Colors.white70)),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx),
             child: Text(l10n.keep),
           ),
@@ -2076,7 +2077,7 @@ class _RequestDialogState extends State<_RequestDialog> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (widget.vm.canRequest4k)
-            SwitchListTile(
+            SwitchListTile.adaptive(
               title: Text(
                 l10n.uhd4k,
                 style: const TextStyle(color: Colors.white),

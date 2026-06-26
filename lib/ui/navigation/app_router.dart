@@ -26,6 +26,7 @@ import '../screens/browse/library_browse_screen.dart';
 import '../screens/browse/library_genres_screen.dart';
 import '../screens/browse/library_letters_screen.dart';
 import '../screens/browse/library_suggestions_screen.dart';
+import '../screens/browse/book_browse_screen.dart';
 import '../screens/browse/music_browse_screen.dart';
 import '../screens/detail/item_detail_screen.dart';
 import '../screens/detail/item_list_screen.dart';
@@ -262,7 +263,6 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final libraryId = state.pathParameters['libraryId']!;
         final typesParam = state.uri.queryParameters['types'];
-        final bookUiParam = state.uri.queryParameters['bookUi'];
         final includeItemTypes = typesParam
             ?.split(',')
             .map(Uri.decodeComponent)
@@ -270,8 +270,6 @@ final appRouter = GoRouter(
         return LibraryBrowseScreen(
           libraryId: libraryId,
           includeItemTypes: includeItemTypes,
-          forceBookExperience:
-              bookUiParam == '1' || bookUiParam?.toLowerCase() == 'true',
         );
       },
       routes: [
@@ -330,6 +328,17 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final libraryId = state.pathParameters['libraryId']!;
         return MusicBrowseScreen(libraryId: libraryId);
+      },
+    ),
+    GoRoute(
+      path: Destinations.bookBrowse,
+      builder: (context, state) {
+        final libraryId = state.pathParameters['libraryId']!;
+        final collectionType = state.uri.queryParameters['collectionType'];
+        return BookBrowseScreen(
+          libraryId: libraryId,
+          collectionType: collectionType,
+        );
       },
     ),
     GoRoute(

@@ -24,7 +24,7 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
   bool _isAudioMediaItem(dynamic mediaItem) {
     bool isAudioType(String? rawType) {
       final type = rawType?.trim().toLowerCase();
-      return type == 'audio';
+      return type == 'audio' || type == 'audiobook';
     }
 
     try {
@@ -72,20 +72,32 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       enableTranscoding: enableTranscoding,
     );
 
-    final rawInfo = await _client.playbackApi.getPlaybackInfo(
-      itemId,
-      requestBody: request.toJson(),
-      userId: _client.userId,
-      startTimeTicks: startTimeTicks,
-    );
-
-    final info = PlaybackInfoResult.fromJson(rawInfo);
-
-    if (info.errorCode != null) {
-      throw Exception('Playback error: ${info.errorCode}');
-    }
-    if (info.mediaSources.isEmpty) {
-      throw Exception('No media sources available for item $itemId');
+    final PlaybackInfoResult info;
+    try {
+      final rawInfo = await _client.playbackApi.getPlaybackInfo(
+        itemId,
+        requestBody: request.toJson(),
+        userId: _client.userId,
+        startTimeTicks: startTimeTicks,
+      );
+      final parsed = PlaybackInfoResult.fromJson(rawInfo);
+      if (parsed.errorCode != null) {
+        throw Exception('Playback error: ${parsed.errorCode}');
+      }
+      if (parsed.mediaSources.isEmpty) {
+        throw Exception('No media sources available for item $itemId');
+      }
+      info = parsed;
+    } catch (e) {
+      if (_isAudioMediaItem(mediaItem)) {
+        return _buildAudioUniversalFallback(
+          itemId,
+          resolvedMediaSourceId,
+          maxStreamingBitrate,
+          startTimeTicks,
+        );
+      }
+      rethrow;
     }
 
     final source = _selectBestSource(info.mediaSources, preferredId: resolvedMediaSourceId);
@@ -222,6 +234,42 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
     if (lowerUrl.contains('api_key=') || lowerUrl.contains('apikey=')) return url;
     final separator = url.contains('?') ? '&' : '?';
     return '$url${separator}api_key=${Uri.encodeComponent(token)}';
+  }
+
+  StreamResolutionResult _buildAudioUniversalFallback(
+    String itemId,
+    String? mediaSourceId,
+    int? maxStreamingBitrate,
+    int? startTimeTicks,
+  ) {
+    final msid = (mediaSourceId != null && mediaSourceId.isNotEmpty)
+        ? mediaSourceId
+        : itemId;
+    final params = <String, String>{
+      if (_client.userId != null && _client.userId!.isNotEmpty)
+        'UserId': _client.userId!,
+      if (_client.deviceInfo.id.isNotEmpty) 'DeviceId': _client.deviceInfo.id,
+      'MaxStreamingBitrate': '${maxStreamingBitrate ?? 320000000}',
+      'Container':
+          'mp3,aac,m4a,m4b,flac,alac,ogg,oga,opus,wav,wma,ape,mka,webma',
+      'TranscodingContainer': 'ts',
+      'TranscodingProtocol': 'hls',
+      'AudioCodec': 'aac',
+      'StartTimeTicks': '${startTimeTicks ?? 0}',
+      'EnableRedirection': 'true',
+      'MediaSourceId': msid,
+    };
+    final query = params.entries
+        .map((e) => '${e.key}=${Uri.encodeQueryComponent(e.value)}')
+        .join('&');
+    final url = _appendAuth('${_client.baseUrl}/Audio/$itemId/universal?$query');
+    return StreamResolutionResult(
+      streamUrl: url,
+      mediaSourceId: msid,
+      playMethod: StreamPlayMethod.directStream,
+      requestHeaders: _buildRequestHeaders(),
+      mediaType: 'audio',
+    );
   }
 
   String _buildDirectPlayAudioUrl(String itemId, PlaybackMediaSource source) {

@@ -10,6 +10,7 @@ import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
+import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/horizontal_scroll_section.dart';
 import '../../widgets/live_tv/live_tv_mini_player.dart';
 import '../../widgets/marquee_text.dart';
@@ -897,7 +898,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
 
     showFocusRestoringDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
+      builder: (dialogContext) => AlertDialog.adaptive(
         backgroundColor: AppColorScheme.surface,
         title: Text(program.name, style: const TextStyle(color: Colors.white)),
         content: SingleChildScrollView(
@@ -942,7 +943,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
           ),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () async {
               if (dialogActionInProgress) return;
               dialogActionInProgress = true;
@@ -975,7 +976,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
             },
             child: Text(hasTimer ? l10n.cancelRecordingAction : l10n.record),
           ),
-          TextButton(
+          adaptiveDialogAction(
             onPressed: channel == null
                 ? null
                 : () async {
@@ -1008,7 +1009,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
               isFavoriteChannel ? l10n.unfavoriteChannel : l10n.favoriteChannel,
             ),
           ),
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () {
               if (dialogActionInProgress) return;
               dialogActionInProgress = true;
@@ -1017,7 +1018,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
             },
             child: Text(l10n.watch),
           ),
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () {
               if (dialogActionInProgress) return;
               dialogActionInProgress = true;

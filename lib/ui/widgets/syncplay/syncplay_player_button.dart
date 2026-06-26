@@ -73,7 +73,7 @@ class SyncPlayPlayerButton extends StatelessWidget {
                         style: TextStyle(color: AppColorScheme.onSurface.withValues(alpha: 0.7)),
                       ),
                     ),
-                    SwitchListTile(
+                    SwitchListTile.adaptive(
                       value: _manager.ignoreWaitEnabled,
                       onChanged: (v) => _manager.requestSetIgnoreWait(v),
                       title: Text(l10n.syncPlayIgnoreWait,

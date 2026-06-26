@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../widgets/adaptive/adaptive_dialog.dart';
 
 class AdminApiKeysScreen extends StatefulWidget {
   const AdminApiKeysScreen({super.key});
@@ -88,7 +89,7 @@ class _AdminApiKeysScreenState extends State<AdminApiKeysScreen> {
     final controller = TextEditingController();
     final appName = await showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(l10n.adminCreateApiKey),
         content: TextField(
           controller: controller,
@@ -100,7 +101,7 @@ class _AdminApiKeysScreenState extends State<AdminApiKeysScreen> {
           onSubmitted: (value) => Navigator.pop(ctx, value.trim()),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx),
             child: Text(l10n.cancel),
           ),
@@ -136,14 +137,14 @@ class _AdminApiKeysScreenState extends State<AdminApiKeysScreen> {
       final generated = newKeys.length == 1 ? newKeys.first : null;
       await showDialog<void>(
         context: context,
-        builder: (ctx) => AlertDialog(
+        builder: (ctx) => AlertDialog.adaptive(
           title: Text(l10n.adminApiKeyCreated),
           content: generated == null
               ? Text(l10n.adminApiKeyCreatedNoToken)
               : SelectableText(generated),
           actions: [
             if (generated != null)
-              TextButton(
+              adaptiveDialogAction(
                 onPressed: () async {
                   await Clipboard.setData(ClipboardData(text: generated));
                   if (ctx.mounted) {
@@ -182,11 +183,11 @@ class _AdminApiKeysScreenState extends State<AdminApiKeysScreen> {
 
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(l10n.adminRevokeApiKey),
         content: Text(l10n.adminRevokeKeyConfirm(_appName(item, l10n))),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel),
           ),

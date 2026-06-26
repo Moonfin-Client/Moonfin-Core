@@ -16,6 +16,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/offline_image.dart';
 import '../../widgets/overlay_sheet.dart';
+import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 
 class SavedSeriesScreen extends ConsumerWidget {
@@ -256,11 +257,11 @@ class SavedSeriesScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showFocusRestoringDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(l10n.deleteSeason),
         content: Text(l10n.deleteAllEpisodesInSeason(seasonLabel)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          adaptiveDialogAction(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: TextButton.styleFrom(

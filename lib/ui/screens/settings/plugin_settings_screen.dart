@@ -102,18 +102,16 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
     setState(() => _profileSyncBusy = true);
     final client = GetIt.instance<MediaServerClient>();
     final profile = _syncService.selectedCustomizationProfile;
-    await _syncService.pushSettingsForProfile(
-      client,
-      profile: profile,
-    );
+    await _syncService.pushSettingsForProfile(client, profile: profile);
 
     if (!mounted) return;
     setState(() => _profileSyncBusy = false);
     final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content:
-            Text(l10n.syncedSettingsToProfile(_profileLabel(profile, l10n))),
+        content: Text(
+          l10n.syncedSettingsToProfile(_profileLabel(profile, l10n)),
+        ),
       ),
     );
   }
@@ -140,7 +138,9 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
             if (_syncService.tmdbAvailable) 'TMDB',
             if (_syncService.seerrEnabled) 'Seerr',
           ];
-          final pluginSyncEnabled = _prefs.get(UserPreferences.pluginSyncEnabled);
+          final pluginSyncEnabled = _prefs.get(
+            UserPreferences.pluginSyncEnabled,
+          );
           final showProfileSync = pluginAvailable && pluginSyncEnabled;
 
           return Padding(
@@ -157,7 +157,9 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
                       borders.cardBorder.copyWith(
                         color: pluginAvailable
                             ? colorScheme.primary.withValues(alpha: 0.35)
-                            : colorScheme.outlineVariant.withValues(alpha: 0.45),
+                            : colorScheme.outlineVariant.withValues(
+                                alpha: 0.45,
+                              ),
                       ),
                     ),
                   ),
@@ -199,8 +201,12 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  pluginVersion != null && pluginVersion.trim().isNotEmpty
-                                      ? l10n.pluginStatusVersion(pluginStateText, pluginVersion)
+                                  pluginVersion != null &&
+                                          pluginVersion.trim().isNotEmpty
+                                      ? l10n.pluginStatusVersion(
+                                          pluginStateText,
+                                          pluginVersion,
+                                        )
                                       : pluginStateText,
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
@@ -227,11 +233,17 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
                             for (final service in availableServices)
                               Chip(
                                 visualDensity: VisualDensity.compact,
-                                avatar: Icon(Icons.check_circle, size: 16, color: AppColorScheme.accent),
+                                avatar: Icon(
+                                  Icons.check_circle,
+                                  size: 16,
+                                  color: AppColorScheme.accent,
+                                ),
                                 label: Text(service),
                                 backgroundColor: borders.chipBackground,
                                 side: borders.chipBorder,
-                                shape: RoundedRectangleBorder(borderRadius: borders.chipRadius),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: borders.chipRadius,
+                                ),
                               ),
                           ],
                         ),
@@ -258,7 +270,8 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
                               Scrollable.ensureVisible(
                                 tileContext,
                                 alignment: 0.1,
-                                alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+                                alignmentPolicy:
+                                    ScrollPositionAlignmentPolicy.explicit,
                                 duration: const Duration(milliseconds: 120),
                                 curve: Curves.easeOut,
                               );
@@ -278,7 +291,8 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
                         child: Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+                            color: colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.35),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
@@ -296,16 +310,18 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
                                   children: [
                                     Text(
                                       l10n.whatSyncControls,
-                                      style: theme.textTheme.titleSmall?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                                      style: theme.textTheme.titleSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
                                       l10n.syncControlsDescription,
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: colorScheme.onSurfaceVariant,
-                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -498,14 +514,14 @@ class _ProfileChipState extends State<_ProfileChip> {
 
     final glow = _focused
         ? (borders.focusGlow.isNotEmpty
-            ? borders.focusGlow
-            : [
-                BoxShadow(
-                  color: AppColorScheme.accent.withValues(alpha: 0.22),
-                  blurRadius: 10,
-                  spreadRadius: 1.0,
-                )
-              ])
+              ? borders.focusGlow
+              : [
+                  BoxShadow(
+                    color: AppColorScheme.accent.withValues(alpha: 0.22),
+                    blurRadius: 10,
+                    spreadRadius: 1.0,
+                  ),
+                ])
         : null;
 
     return AnimatedContainer(
@@ -535,4 +551,3 @@ class _ProfileChipState extends State<_ProfileChip> {
     );
   }
 }
-

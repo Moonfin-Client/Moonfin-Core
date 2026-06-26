@@ -3,6 +3,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
 
 import '../playback/audio_capability_profile.dart';
+import '../util/idiom/app_ui_idiom.dart';
 import '../util/platform_detection.dart';
 import 'home_section_config.dart';
 import 'preference_constants.dart';
@@ -657,6 +658,12 @@ class UserPreferences extends ChangeNotifier {
     key: 'app_theme_id',
     defaultValue: VisualThemeId.moonfin,
     values: VisualThemeId.values,
+  );
+
+  static final interfaceStyle = EnumPreference(
+    key: 'pref_interface_style',
+    defaultValue: InterfaceStyle.automatic,
+    values: InterfaceStyle.values,
   );
 
   /// Optional id of a plugin-supplied custom theme. When non-empty and the id

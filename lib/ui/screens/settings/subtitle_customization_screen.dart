@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoSlider;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -6,6 +7,7 @@ import 'package:jellyfin_preference/jellyfin_preference.dart';
 
 import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../util/idiom/app_ui_idiom.dart';
 import '../../../util/platform_detection.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -39,8 +41,10 @@ class _SubtitleCustomizationScreenState
     super.initState();
     final store = GetIt.instance<PreferenceStore>();
     _sizeBind = PreferenceBinding(store, UserPreferences.subtitlesTextSize);
-    _offsetBind =
-        PreferenceBinding(store, UserPreferences.subtitlesOffsetPosition);
+    _offsetBind = PreferenceBinding(
+      store,
+      UserPreferences.subtitlesOffsetPosition,
+    );
     _sizeOuterNode = FocusNode(debugLabel: 'SubtitleSizeOuter');
     _sizeInnerNode = FocusNode(
       debugLabel: 'SubtitleSizeInner',
@@ -253,15 +257,23 @@ class _SubtitleCustomizationScreenState
                 hoverColor: Colors.transparent,
                 leading: Icon(icon),
                 title: Text(label),
-                subtitle: Slider(
-                  focusNode: innerNode,
-                  value: value.clamp(min, max),
-                  min: min,
-                  max: max,
-                  divisions: divisions,
-                  label: labelBuilder(value),
-                  onChanged: (v) => binding.value = v,
-                ),
+                subtitle: AppUiIdiomResolver.isApple
+                    ? CupertinoSlider(
+                        value: value.clamp(min, max),
+                        min: min,
+                        max: max,
+                        divisions: divisions,
+                        onChanged: (v) => binding.value = v,
+                      )
+                    : Slider(
+                        focusNode: innerNode,
+                        value: value.clamp(min, max),
+                        min: min,
+                        max: max,
+                        divisions: divisions,
+                        label: labelBuilder(value),
+                        onChanged: (v) => binding.value = v,
+                      ),
               ),
             ),
           ),
@@ -306,8 +318,10 @@ class _ColorPickerTileState extends State<_ColorPickerTile> {
   @override
   void initState() {
     super.initState();
-    _binding =
-        PreferenceBinding(GetIt.instance<PreferenceStore>(), widget.preference);
+    _binding = PreferenceBinding(
+      GetIt.instance<PreferenceStore>(),
+      widget.preference,
+    );
   }
 
   @override
@@ -332,7 +346,9 @@ class _ColorPickerTileState extends State<_ColorPickerTile> {
             decoration: BoxDecoration(
               color: Color(value),
               shape: BoxShape.circle,
-              border: Border.fromBorderSide(ThemeRegistry.active.borders.chipBorder),
+              border: Border.fromBorderSide(
+                ThemeRegistry.active.borders.chipBorder,
+              ),
             ),
           ),
           onTap: () => _showPicker(context),
@@ -366,7 +382,9 @@ class _ColorPickerTileState extends State<_ColorPickerTile> {
                 decoration: BoxDecoration(
                   color: Color(e.value),
                   shape: BoxShape.circle,
-                  border: Border.fromBorderSide(ThemeRegistry.active.borders.chipBorder),
+                  border: Border.fromBorderSide(
+                    ThemeRegistry.active.borders.chipBorder,
+                  ),
                 ),
               ),
               title: Text(e.key),

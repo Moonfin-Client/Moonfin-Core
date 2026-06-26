@@ -13,6 +13,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../util/pin_code_util.dart';
 import '../../../preference/preference_constants.dart';
 import '../../navigation/destinations.dart';
+import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/pin_entry_dialog.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -147,13 +148,13 @@ class _StartupScreenState extends State<StartupScreen>
     await showFocusRestoringDialog<void>(
       context: context,
       barrierDismissible: true,
-      builder: (context) => AlertDialog(
+      builder: (context) => AlertDialog.adaptive(
         title: Text(l10n.secureStorageUnavailable),
         content: Text(
           l10n.secureStorageUnavailableMessage,
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(l10n.ok),
           ),

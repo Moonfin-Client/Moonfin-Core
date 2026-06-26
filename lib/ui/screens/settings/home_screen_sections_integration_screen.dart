@@ -102,9 +102,7 @@ class _HomeScreenSectionsIntegrationScreenState
                   ListTile(
                     leading: const Icon(Icons.tune),
                     title: Text(l10n.integrationOpenHomeSections),
-                    subtitle: Text(
-                      l10n.integrationOpenHomeSectionsSubtitle,
-                    ),
+                    subtitle: Text(l10n.integrationOpenHomeSectionsSubtitle),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => context.pushSettingsScreen(
                       const HomeSectionsScreen(showGeneralOptions: false),
@@ -119,7 +117,8 @@ class _HomeScreenSectionsIntegrationScreenState
   }
 
   bool _canOpenHomeSections() {
-    final hssAvailable = GetIt.instance.isRegistered<HomeScreenSectionsService>() &&
+    final hssAvailable =
+        GetIt.instance.isRegistered<HomeScreenSectionsService>() &&
         GetIt.instance<HomeScreenSectionsService>().availableServers.isNotEmpty;
     return hssAvailable;
   }
@@ -132,7 +131,9 @@ class _HomeScreenSectionsIntegrationScreenState
     final subtitle = StringBuffer(status);
     if (cap.pluginVersion != null) subtitle.write(' • v${cap.pluginVersion}');
     if (cap.sections.isNotEmpty) {
-      subtitle.write(' • ${l10n.integrationSectionsCount(cap.sections.length)}');
+      subtitle.write(
+        ' • ${l10n.integrationSectionsCount(cap.sections.length)}',
+      );
     }
     if (cap.lastError != null && !cap.installed) {
       subtitle.write('\n${cap.lastError}');

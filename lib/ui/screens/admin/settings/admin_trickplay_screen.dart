@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../widgets/adaptive/adaptive_slider.dart';
 
 class AdminTrickplayScreen extends StatefulWidget {
   const AdminTrickplayScreen({super.key});
@@ -139,17 +140,17 @@ class _AdminTrickplayScreenState extends State<AdminTrickplayScreen> {
         ),
         const SizedBox(height: 24),
         _sectionHeader(l10n.general),
-        SwitchListTile(
+        SwitchListTile.adaptive(
           title: Text(l10n.adminTrickplayHwAccel),
           value: _boolOpt('EnableHwAcceleration'),
           onChanged: (v) => setState(() => _opts['EnableHwAcceleration'] = v),
         ),
-        SwitchListTile(
+        SwitchListTile.adaptive(
           title: Text(l10n.adminTrickplayHwEncoding),
           value: _boolOpt('EnableHwEncoding'),
           onChanged: (v) => setState(() => _opts['EnableHwEncoding'] = v),
         ),
-        SwitchListTile(
+        SwitchListTile.adaptive(
           title: Text(l10n.adminTrickplayKeyFrameOnly),
           subtitle: Text(l10n.adminTrickplayKeyFrameOnlySubtitle),
           value: _boolOpt('EnableKeyFrameOnlyExtraction'),
@@ -285,7 +286,7 @@ class _AdminTrickplayScreenState extends State<AdminTrickplayScreen> {
         Row(
           children: [
             Expanded(
-              child: Slider(
+              child: adaptiveSlider(
                 value: value,
                 min: min,
                 max: max,

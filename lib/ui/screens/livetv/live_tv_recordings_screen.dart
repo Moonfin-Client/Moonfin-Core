@@ -12,6 +12,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
 import '../../navigation/destinations.dart';
+import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/overlay_sheet.dart';
 
@@ -258,7 +259,7 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showFocusRestoringDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         backgroundColor: const Color(0xFF1A1A2E),
         title: Text(l10n.cancelRecording, style: const TextStyle(color: Colors.white)),
         content: Text(
@@ -266,7 +267,7 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
           style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(false),
             child: Text(l10n.no),
           ),
@@ -295,7 +296,7 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showFocusRestoringDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         backgroundColor: const Color(0xFF1A1A2E),
         title: Text(l10n.cancelSeriesRecordingQuestion, style: const TextStyle(color: Colors.white)),
         content: Text(
@@ -303,7 +304,7 @@ class _LiveTvRecordingsScreenState extends State<LiveTvRecordingsScreen> {
           style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(false),
             child: Text(l10n.no),
           ),

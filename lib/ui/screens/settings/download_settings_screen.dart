@@ -1,4 +1,3 @@
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +15,8 @@ import '../../../util/download_utils.dart';
 import '../../../util/platform_detection.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../navigation/destinations.dart';
+import '../../widgets/adaptive/adaptive_dialog.dart';
+import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -42,75 +43,102 @@ class DownloadSettingsScreen extends ConsumerWidget {
         appBar: AppBar(title: Text(l10n.download)),
         body: ListView(
           children: [
-          _Section(title: l10n.quality),
-          ListTile(
-            leading: const Icon(Icons.high_quality),
-            title: Text(l10n.defaultDownloadQuality),
-            subtitle: Text(_qualityLabel(qualityName)),
-            onTap: () => _pickQuality(context, prefs, qualityName),
-          ),
-
-          _Section(title: l10n.network),
-          if (!PlatformDetection.useDesktopUi)
-            SwitchListTile(
-              secondary: const Icon(Icons.wifi),
-              title: Text(l10n.wifiOnlyDownloads),
-              subtitle: Text(l10n.onlyDownloadOnWifi),
-              value: wifiOnly,
-              onChanged: (v) => prefs.set(UserPreferences.downloadWifiOnly, v),
-            ),
-          _Section(title: l10n.storage),
-          storage.when(
-            data: (bytes) => ListTile(
-              leading: const Icon(Icons.storage),
-              title: Text(l10n.storageUsed),
-              subtitle: Text(formatBytes(bytes)),
-              trailing: TextButton(
-                child: Text(l10n.manage),
-                onPressed: () => context.push(Destinations.storageManagement),
-              ),
-            ),
-            loading: () => ListTile(
-              leading: const Icon(Icons.storage),
-              title: Text(l10n.storageUsed),
-              subtitle: Text(l10n.calculating),
-            ),
-            error: (_, _) => const SizedBox.shrink(),
-          ),
-          ListTile(
-            leading: const Icon(Icons.data_usage),
-            title: Text(l10n.storageLimit),
-            subtitle: Text(storageLimitMb == 0 ? l10n.noLimit : l10n.gbValue((storageLimitMb / 1024).toStringAsFixed(1))),
-            onTap: () => _pickStorageLimit(context, prefs, storageLimitMb),
-          ),
-          if (PlatformDetection.useDesktopUi)
-            ListTile(
-              leading: const Icon(Icons.folder_open),
-              title: Text(l10n.downloadLocation),
-              subtitle: Text(customPath.isEmpty ? l10n.defaultLabel : customPath),
-              onTap: () => _pickFolder(context, prefs),
-            ),
-          if (PlatformDetection.isAndroid)
-            SwitchListTile(
-              secondary: const Icon(Icons.folder_open),
-              title: Text(l10n.saveToDownloadsFolder),
-              subtitle: Text(l10n.downloadsVisibleToOtherApps),
-              value: customPath == 'mediastore',
-              onChanged: (v) => _toggleMediaStore(context, prefs, v),
+            _Section(title: l10n.quality),
+            adaptiveListSection(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.high_quality),
+                  title: Text(l10n.defaultDownloadQuality),
+                  subtitle: Text(_qualityLabel(qualityName)),
+                  onTap: () => _pickQuality(context, prefs, qualityName),
+                ),
+              ],
             ),
 
-          _Section(title: l10n.dangerZone),
-          ListTile(
-            leading: Icon(
-              Icons.delete_forever,
-              color: AppColorScheme.statusRequested,
+            _Section(title: l10n.network),
+            adaptiveListSection(
+              children: [
+                if (!PlatformDetection.useDesktopUi)
+                  SwitchListTile.adaptive(
+                    secondary: const Icon(Icons.wifi),
+                    title: Text(l10n.wifiOnlyDownloads),
+                    subtitle: Text(l10n.onlyDownloadOnWifi),
+                    value: wifiOnly,
+                    onChanged: (v) =>
+                        prefs.set(UserPreferences.downloadWifiOnly, v),
+                  ),
+              ],
             ),
-            title: Text(
-              l10n.clearAllDownloads,
-                style: TextStyle(color: AppColorScheme.statusRequested),
+            _Section(title: l10n.storage),
+            adaptiveListSection(
+              children: [
+                storage.when(
+                  data: (bytes) => ListTile(
+                    leading: const Icon(Icons.storage),
+                    title: Text(l10n.storageUsed),
+                    subtitle: Text(formatBytes(bytes)),
+                    trailing: TextButton(
+                      child: Text(l10n.manage),
+                      onPressed: () =>
+                          context.push(Destinations.storageManagement),
+                    ),
+                  ),
+                  loading: () => ListTile(
+                    leading: const Icon(Icons.storage),
+                    title: Text(l10n.storageUsed),
+                    subtitle: Text(l10n.calculating),
+                  ),
+                  error: (_, _) => const SizedBox.shrink(),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.data_usage),
+                  title: Text(l10n.storageLimit),
+                  subtitle: Text(
+                    storageLimitMb == 0
+                        ? l10n.noLimit
+                        : l10n.gbValue(
+                            (storageLimitMb / 1024).toStringAsFixed(1),
+                          ),
+                  ),
+                  onTap: () =>
+                      _pickStorageLimit(context, prefs, storageLimitMb),
+                ),
+                if (PlatformDetection.useDesktopUi)
+                  ListTile(
+                    leading: const Icon(Icons.folder_open),
+                    title: Text(l10n.downloadLocation),
+                    subtitle: Text(
+                      customPath.isEmpty ? l10n.defaultLabel : customPath,
+                    ),
+                    onTap: () => _pickFolder(context, prefs),
+                  ),
+                if (PlatformDetection.isAndroid)
+                  SwitchListTile.adaptive(
+                    secondary: const Icon(Icons.folder_open),
+                    title: Text(l10n.saveToDownloadsFolder),
+                    subtitle: Text(l10n.downloadsVisibleToOtherApps),
+                    value: customPath == 'mediastore',
+                    onChanged: (v) => _toggleMediaStore(context, prefs, v),
+                  ),
+              ],
             ),
-            onTap: () => _confirmClearAll(context),
-          ),
+
+            _Section(title: l10n.dangerZone),
+            adaptiveListSection(
+              children: [
+                ListTile(
+                  leading: Icon(
+                    Icons.delete_forever,
+                    color: AppColorScheme.statusRequested,
+                  ),
+                  title: Text(
+                    l10n.clearAllDownloads,
+                    style: TextStyle(color: AppColorScheme.statusRequested),
+                  ),
+                  onTap: () => _confirmClearAll(context),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -119,12 +147,17 @@ class DownloadSettingsScreen extends ConsumerWidget {
 
   String _qualityLabel(String name) {
     return DownloadQuality.values
-        .where((q) => q.name == name)
-        .map((q) => q.label)
-        .firstOrNull ?? 'Original';
+            .where((q) => q.name == name)
+            .map((q) => q.label)
+            .firstOrNull ??
+        'Original';
   }
 
-  void _pickQuality(BuildContext context, UserPreferences prefs, String current) {
+  void _pickQuality(
+    BuildContext context,
+    UserPreferences prefs,
+    String current,
+  ) {
     showFocusRestoringModalBottomSheet(
       context: context,
       builder: (ctx) => SafeArea(
@@ -136,18 +169,30 @@ class DownloadSettingsScreen extends ConsumerWidget {
           },
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: DownloadQuality.values.map((q) => RadioListTile<String>(
-              title: Text(q.label),
-              subtitle: Text(q.isTranscoded ? '${q.estimatedSizePerHour} • ${q.encodingInfo}' : q.estimatedSizePerHour),
-              value: q.name,
-            )).toList(),
+            children: DownloadQuality.values
+                .map(
+                  (q) => RadioListTile<String>(
+                    title: Text(q.label),
+                    subtitle: Text(
+                      q.isTranscoded
+                          ? '${q.estimatedSizePerHour} • ${q.encodingInfo}'
+                          : q.estimatedSizePerHour,
+                    ),
+                    value: q.name,
+                  ),
+                )
+                .toList(),
           ),
         ),
       ),
     );
   }
 
-  void _pickStorageLimit(BuildContext context, UserPreferences prefs, int current) {
+  void _pickStorageLimit(
+    BuildContext context,
+    UserPreferences prefs,
+    int current,
+  ) {
     final l10n = AppLocalizations.of(context);
     final values = [0, 1024, 2048, 5120, 10240, 20480, 51200, 102400];
     showFocusRestoringModalBottomSheet(
@@ -161,10 +206,18 @@ class DownloadSettingsScreen extends ConsumerWidget {
           },
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: values.map((mb) => RadioListTile<int>(
-              title: Text(mb == 0 ? l10n.noLimit : l10n.gbValue((mb / 1024).toStringAsFixed(0))),
-              value: mb,
-            )).toList(),
+            children: values
+                .map(
+                  (mb) => RadioListTile<int>(
+                    title: Text(
+                      mb == 0
+                          ? l10n.noLimit
+                          : l10n.gbValue((mb / 1024).toStringAsFixed(0)),
+                    ),
+                    value: mb,
+                  ),
+                )
+                .toList(),
           ),
         ),
       ),
@@ -182,15 +235,15 @@ class DownloadSettingsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showFocusRestoringDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(l10n.changeDownloadLocation),
         content: Text(l10n.changeDownloadLocationDescription),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel),
           ),
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(l10n.confirm),
           ),
@@ -202,11 +255,9 @@ class DownloadSettingsScreen extends ConsumerWidget {
     final storage = GetIt.instance<StoragePathService>();
     if (!await storage.canWriteTo(result)) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.cannotWriteToFolder),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.cannotWriteToFolder)));
       }
       return;
     }
@@ -230,15 +281,15 @@ class DownloadSettingsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showFocusRestoringDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(l10n.saveToDownloadsFolderQuestion),
         content: Text(l10n.saveToDownloadsFolderDescription),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel),
           ),
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(l10n.enable),
           ),
@@ -255,11 +306,14 @@ class DownloadSettingsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showFocusRestoringDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(l10n.clearAllDownloads),
         content: Text(l10n.clearAllDownloadsWarning),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          adaptiveDialogAction(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: TextButton.styleFrom(

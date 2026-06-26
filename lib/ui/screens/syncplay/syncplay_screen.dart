@@ -16,6 +16,7 @@ import '../../../syncplay/syncplay_state.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -300,7 +301,7 @@ class _ActiveGroupSectionState extends State<_ActiveGroupSection> {
             const Divider(height: 24),
             _buildTileWithFocused(
               context,
-              builder: (context, focused) => SwitchListTile(
+              builder: (context, focused) => SwitchListTile.adaptive(
                 focusNode: widget.ignoreWaitFocus,
                 contentPadding: PlatformDetection.isTV
                     ? const EdgeInsets.symmetric(horizontal: 16)
@@ -823,11 +824,11 @@ Future<void> _confirmIfNeeded(
   final l10n = AppLocalizations.of(context);
   final proceed = await showFocusRestoringDialog<bool>(
     context: context,
-    builder: (ctx) => AlertDialog(
+    builder: (ctx) => AlertDialog.adaptive(
       title: Text(l10n.syncPlayJoinGroupQuestion),
       content: Text(l10n.syncPlayJoinGroupWarning),
       actions: [
-        TextButton(
+        adaptiveDialogAction(
             onPressed: () => Navigator.of(ctx).pop(false),
             child: Text(l10n.cancel)),
         FilledButton(

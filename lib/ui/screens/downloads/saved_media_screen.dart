@@ -20,6 +20,7 @@ import '../../navigation/destinations.dart';
 import '../../widgets/offline_image.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/sync_indicator.dart';
+import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../../util/focus/dpad_keys.dart';
 
@@ -408,19 +409,20 @@ class _SavedMediaScreenState extends ConsumerState<SavedMediaScreen> {
     final l10n = AppLocalizations.of(context);
     showFocusRestoringDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(l10n.deleteDownload),
         content: Text(l10n.removeItemAndFiles(item.name)),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(ctx),
             child: Text(l10n.cancel),
           ),
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () async {
               Navigator.pop(ctx);
               await _deleteItem(item);
             },
+            isDestructive: true,
             child: Text(
               l10n.delete,
               style: TextStyle(color: AppColorScheme.statusRequested),

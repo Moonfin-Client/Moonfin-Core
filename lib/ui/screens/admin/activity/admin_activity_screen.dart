@@ -7,6 +7,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../data/services/socket_handler.dart';
+import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../widgets/activity_log_ui.dart';
 
 enum _ActivityFilter { all, user, system }
@@ -334,7 +335,7 @@ class _ActivityTile extends StatelessWidget {
     final theme = Theme.of(context);
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AlertDialog.adaptive(
         title: Text(entry.name),
         content: SingleChildScrollView(
           child: Column(
@@ -370,7 +371,7 @@ class _ActivityTile extends StatelessWidget {
           ),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(context),
             child: Text(l10n.close),
           ),

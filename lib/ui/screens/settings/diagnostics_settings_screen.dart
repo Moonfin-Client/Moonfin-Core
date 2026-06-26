@@ -85,8 +85,7 @@ class _DiagnosticsSettingsScreenState extends State<DiagnosticsSettingsScreen> {
       builder: (ctx) => SafeArea(
         child: RadioGroup<LogCategory?>(
           groupValue: _filter,
-          onChanged: (value) =>
-              Navigator.pop(ctx, _FilterChoice(value)),
+          onChanged: (value) => Navigator.pop(ctx, _FilterChoice(value)),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -163,7 +162,8 @@ class _DiagnosticsSettingsScreenState extends State<DiagnosticsSettingsScreen> {
                 icon: Icons.cloud_upload,
                 title: 'Send report to server',
                 subtitle: _sendSubtitle(enabled),
-                enabled: enabled && hasEntries && _supportsUpload && !_uploading,
+                enabled:
+                    enabled && hasEntries && _supportsUpload && !_uploading,
                 trailing: _uploading
                     ? const SizedBox(
                         width: 20,
@@ -248,7 +248,8 @@ class _DiagnosticsSettingsScreenState extends State<DiagnosticsSettingsScreen> {
       message = 'No log entries yet. Reproduce the issue, then send a report.';
     } else {
       icon = Icons.toggle_off_outlined;
-      message = 'Logging is off. Turn it on, reproduce the issue, then send '
+      message =
+          'Logging is off. Turn it on, reproduce the issue, then send '
           'a report to the server.';
     }
 
@@ -332,8 +333,9 @@ class _ActionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent =
-        destructive ? AppColorScheme.statusRequested : AppColorScheme.accent;
+    final accent = destructive
+        ? AppColorScheme.statusRequested
+        : AppColorScheme.accent;
 
     return Focus(
       canRequestFocus: false,
@@ -348,13 +350,13 @@ class _ActionTile extends StatelessWidget {
           final foreground = !enabled
               ? AppColorScheme.onSurface.withValues(alpha: 0.38)
               : focused
-                  ? AppColors.black.withValues(alpha: 0.87)
-                  : (destructive ? accent : AppColorScheme.onSurface);
+              ? AppColors.black.withValues(alpha: 0.87)
+              : (destructive ? accent : AppColorScheme.onSurface);
           final iconColor = !enabled
               ? AppColorScheme.onSurface.withValues(alpha: 0.38)
               : focused
-                  ? AppColors.black.withValues(alpha: 0.7)
-                  : accent;
+              ? AppColors.black.withValues(alpha: 0.7)
+              : accent;
 
           return ListTile(
             enabled: enabled,
@@ -437,7 +439,9 @@ class _LogTile extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: focused ? AppColors.black.withValues(alpha: 0.7) : levelColor,
+                color: focused
+                    ? AppColors.black.withValues(alpha: 0.7)
+                    : levelColor,
               ),
             ),
             subtitle: Column(

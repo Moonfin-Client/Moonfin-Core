@@ -7,6 +7,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../util/download_utils.dart';
+import '../../../widgets/adaptive/adaptive_dialog.dart';
 
 class AdminBackupsScreen extends StatefulWidget {
   const AdminBackupsScreen({super.key});
@@ -109,7 +110,7 @@ class _AdminBackupsScreenState extends State<AdminBackupsScreen> {
       context: context,
       barrierDismissible: false,
       builder:
-          (ctx) => AlertDialog(
+          (ctx) => AlertDialog.adaptive(
             content: Row(
               children: [
                 const CircularProgressIndicator(),
@@ -161,7 +162,7 @@ class _AdminBackupsScreenState extends State<AdminBackupsScreen> {
       await showDialog<void>(
         context: context,
         builder:
-            (ctx) => AlertDialog(
+            (ctx) => AlertDialog.adaptive(
               title: Text(AppLocalizations.of(context).adminBackupManifest(_backupName(backup))),
               content: SizedBox(
                 width: (MediaQuery.sizeOf(ctx).width - 32).clamp(280.0, 640.0),
@@ -176,7 +177,7 @@ class _AdminBackupsScreenState extends State<AdminBackupsScreen> {
                 ),
               ),
               actions: [
-                TextButton(
+                adaptiveDialogAction(
                   onPressed: () => Navigator.pop(ctx),
                   child: Text(AppLocalizations.of(context).close),
                 ),
@@ -195,11 +196,11 @@ class _AdminBackupsScreenState extends State<AdminBackupsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder:
-          (ctx) => AlertDialog(
+          (ctx) => AlertDialog.adaptive(
             title: Text(AppLocalizations.of(context).adminConfirmRestore),
             content: Text(message),
             actions: [
-              TextButton(
+              adaptiveDialogAction(
                 onPressed: () => Navigator.pop(ctx, false),
                 child: Text(AppLocalizations.of(context).cancel),
               ),
@@ -250,7 +251,7 @@ class _AdminBackupsScreenState extends State<AdminBackupsScreen> {
       context: context,
       barrierDismissible: false,
       builder:
-          (ctx) => AlertDialog(
+          (ctx) => AlertDialog.adaptive(
             content: Row(
               children: [
                 const CircularProgressIndicator(),

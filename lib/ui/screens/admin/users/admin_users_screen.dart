@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../navigation/destinations.dart';
+import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../providers/admin_user_providers.dart';
 import 'admin_user_delete_dialog.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -27,7 +28,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
 
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx) => AlertDialog.adaptive(
         title: Text(willDisable ? l10n.adminDisableUser : l10n.adminEnableUser),
         content: Text(
           willDisable
@@ -35,7 +36,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
               : l10n.adminEnableUserConfirm(user.name ?? ''),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.of(ctx).pop(false),
             child: Text(l10n.cancel),
           ),

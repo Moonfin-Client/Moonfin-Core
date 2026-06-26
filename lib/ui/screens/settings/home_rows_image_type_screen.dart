@@ -8,6 +8,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_tiles.dart';
@@ -18,7 +19,8 @@ class HomeRowsImageTypeScreen extends StatefulWidget {
   const HomeRowsImageTypeScreen({super.key});
 
   @override
-  State<HomeRowsImageTypeScreen> createState() => _HomeRowsImageTypeScreenState();
+  State<HomeRowsImageTypeScreen> createState() =>
+      _HomeRowsImageTypeScreenState();
 }
 
 class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
@@ -50,53 +52,66 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
     await _syncService.pushSettings(client);
   }
 
-  String _sectionLabel(HomeSectionType type, AppLocalizations l10n) => switch (type) {
-    HomeSectionType.mediaBar => l10n.mediaBar,
-    HomeSectionType.latestMedia => l10n.latestMedia,
-    HomeSectionType.recentlyReleased => l10n.recentlyReleased,
-    HomeSectionType.libraryTilesSmall => l10n.myMedia,
-    HomeSectionType.libraryButtons => l10n.myMediaSmall,
-    HomeSectionType.resume => l10n.continueWatching,
-    HomeSectionType.resumeAudio => l10n.resumeAudio,
-    HomeSectionType.resumeBook => l10n.resumeBooks,
-    HomeSectionType.activeRecordings => l10n.activeRecordings,
-    HomeSectionType.nextUp => l10n.nextUp,
-    HomeSectionType.playlists => l10n.playlists,
-    HomeSectionType.audioArtists => l10n.artists,
-    HomeSectionType.audioAlbums => l10n.albums,
-    HomeSectionType.audioPlaylists => l10n.playlists,
-    HomeSectionType.favoriteMovies => 'Favorite ${FavoriteTypeFilter.movie.displayName}',
-    HomeSectionType.favoriteSeries => 'Favorite ${FavoriteTypeFilter.series.displayName}',
-    HomeSectionType.favoriteEpisodes => 'Favorite ${FavoriteTypeFilter.episode.displayName}',
-    HomeSectionType.favoritePeople => 'Favorite ${FavoriteTypeFilter.person.displayName}',
-    HomeSectionType.favoriteArtists => 'Favorite ${FavoriteTypeFilter.musicArtist.displayName}',
-    HomeSectionType.favoriteMusicVideos => 'Favorite ${FavoriteTypeFilter.musicVideo.displayName}',
-    HomeSectionType.favoriteAlbums => 'Favorite ${FavoriteTypeFilter.musicAlbum.displayName}',
-    HomeSectionType.favoriteSongs => 'Favorite ${FavoriteTypeFilter.audio.displayName}',
-    HomeSectionType.collections => l10n.collections,
-    HomeSectionType.genres => l10n.genres,
-    HomeSectionType.liveTv => l10n.liveTV,
-    HomeSectionType.seerrRecentRequests => l10n.recentRequests,
-    HomeSectionType.seerrRecentlyAdded => l10n.recentlyAdded,
-    HomeSectionType.seerrPopularMovies => l10n.popularMovies,
-    HomeSectionType.seerrUpcomingMovies => l10n.upcomingMovies,
-    HomeSectionType.seerrPopularSeries => l10n.popularSeries,
-    HomeSectionType.seerrUpcomingSeries => l10n.upcomingSeries,
-    HomeSectionType.seerrTrending => l10n.trending,
-    HomeSectionType.seerrMovieGenres => l10n.movieGenres,
-    HomeSectionType.seerrStudios => l10n.studios,
-    HomeSectionType.seerrSeriesGenres => l10n.seriesGenres,
-    HomeSectionType.seerrNetworks => l10n.networks,
-    HomeSectionType.none => l10n.none,
-  };
+  String _sectionLabel(HomeSectionType type, AppLocalizations l10n) =>
+      switch (type) {
+        HomeSectionType.mediaBar => l10n.mediaBar,
+        HomeSectionType.latestMedia => l10n.latestMedia,
+        HomeSectionType.recentlyReleased => l10n.recentlyReleased,
+        HomeSectionType.libraryTilesSmall => l10n.myMedia,
+        HomeSectionType.libraryButtons => l10n.myMediaSmall,
+        HomeSectionType.resume => l10n.continueWatching,
+        HomeSectionType.resumeAudio => l10n.resumeAudio,
+        HomeSectionType.resumeBook => l10n.resumeBooks,
+        HomeSectionType.activeRecordings => l10n.activeRecordings,
+        HomeSectionType.nextUp => l10n.nextUp,
+        HomeSectionType.playlists => l10n.playlists,
+        HomeSectionType.audioArtists => l10n.artists,
+        HomeSectionType.audioAlbums => l10n.albums,
+        HomeSectionType.audioPlaylists => l10n.playlists,
+        HomeSectionType.favoriteMovies =>
+          'Favorite ${FavoriteTypeFilter.movie.displayName}',
+        HomeSectionType.favoriteSeries =>
+          'Favorite ${FavoriteTypeFilter.series.displayName}',
+        HomeSectionType.favoriteEpisodes =>
+          'Favorite ${FavoriteTypeFilter.episode.displayName}',
+        HomeSectionType.favoritePeople =>
+          'Favorite ${FavoriteTypeFilter.person.displayName}',
+        HomeSectionType.favoriteArtists =>
+          'Favorite ${FavoriteTypeFilter.musicArtist.displayName}',
+        HomeSectionType.favoriteMusicVideos =>
+          'Favorite ${FavoriteTypeFilter.musicVideo.displayName}',
+        HomeSectionType.favoriteAlbums =>
+          'Favorite ${FavoriteTypeFilter.musicAlbum.displayName}',
+        HomeSectionType.favoriteSongs =>
+          'Favorite ${FavoriteTypeFilter.audio.displayName}',
+        HomeSectionType.collections => l10n.collections,
+        HomeSectionType.genres => l10n.genres,
+        HomeSectionType.liveTv => l10n.liveTV,
+        HomeSectionType.seerrRecentRequests => l10n.recentRequests,
+        HomeSectionType.seerrRecentlyAdded => l10n.recentlyAdded,
+        HomeSectionType.seerrPopularMovies => l10n.popularMovies,
+        HomeSectionType.seerrUpcomingMovies => l10n.upcomingMovies,
+        HomeSectionType.seerrPopularSeries => l10n.popularSeries,
+        HomeSectionType.seerrUpcomingSeries => l10n.upcomingSeries,
+        HomeSectionType.seerrTrending => l10n.trending,
+        HomeSectionType.seerrMovieGenres => l10n.movieGenres,
+        HomeSectionType.seerrStudios => l10n.studios,
+        HomeSectionType.seerrSeriesGenres => l10n.seriesGenres,
+        HomeSectionType.seerrNetworks => l10n.networks,
+        HomeSectionType.none => l10n.none,
+      };
 
-  String _imageTypeLabel(ImageType type, AppLocalizations l10n) => switch (type) {
-    ImageType.poster => l10n.posterLabel,
-    ImageType.thumb => l10n.thumbnailLabel,
-    ImageType.banner => l10n.bannerLabel,
-  };
+  String _imageTypeLabel(ImageType type, AppLocalizations l10n) =>
+      switch (type) {
+        ImageType.poster => l10n.posterLabel,
+        ImageType.thumb => l10n.thumbnailLabel,
+        ImageType.banner => l10n.bannerLabel,
+      };
 
-  Future<void> _setPerRowImageType(HomeSectionType type, ImageType value) async {
+  Future<void> _setPerRowImageType(
+    HomeSectionType type,
+    ImageType value,
+  ) async {
     await _prefs.set(UserPreferences.homeRowImageType(type), value);
     await _pushSync();
   }
@@ -107,15 +122,18 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
 
   Widget _buildContent(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final enabledSections = _prefs.homeSectionsConfig
-        .where((c) =>
-            c.enabled &&
-            c.type != HomeSectionType.none &&
-            c.type != HomeSectionType.mediaBar &&
-            c.type != HomeSectionType.resumeAudio &&
-            c.type != HomeSectionType.libraryButtons)
-        .toList()
-      ..sort((a, b) => a.order.compareTo(b.order));
+    final enabledSections =
+        _prefs.homeSectionsConfig
+            .where(
+              (c) =>
+                  c.enabled &&
+                  c.type != HomeSectionType.none &&
+                  c.type != HomeSectionType.mediaBar &&
+                  c.type != HomeSectionType.resumeAudio &&
+                  c.type != HomeSectionType.libraryButtons,
+            )
+            .toList()
+          ..sort((a, b) => a.order.compareTo(b.order));
 
     return withCleanSettingsTypography(
       context,
@@ -123,29 +141,43 @@ class _HomeRowsImageTypeScreenState extends State<HomeRowsImageTypeScreen> {
         appBar: buildSettingsAppBar(context, Text(l10n.perRowImageType)),
         body: ListView(
           children: [
-            TvFocusHighlight(
-              builder: (_, _) => ListTile(
-                focusColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                leading: const Icon(Icons.view_stream),
-                title: Text(l10n.perRowSettings),
-              ),
-            ),
-            for (final section in enabledSections)
-              TvFocusHighlight(
-                builder: (_, _) => ListTile(
-                  focusColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  leading: const Icon(Icons.image_outlined),
-                  title: Text(_sectionLabel(section.type, l10n)),
-                  subtitle: Text(_imageTypeLabel(_prefs.get(UserPreferences.homeRowImageType(section.type)), l10n)),
-                  onTap: () => _showImageTypePicker(
-                    context,
-                    current: _prefs.get(UserPreferences.homeRowImageType(section.type)),
-                    onSelected: (value) => _setPerRowImageType(section.type, value),
+            adaptiveListSection(
+              children: [
+                TvFocusHighlight(
+                  builder: (_, _) => ListTile(
+                    focusColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                    leading: const Icon(Icons.view_stream),
+                    title: Text(l10n.perRowSettings),
                   ),
                 ),
-              ),
+                for (final section in enabledSections)
+                  TvFocusHighlight(
+                    builder: (_, _) => ListTile(
+                      focusColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                      leading: const Icon(Icons.image_outlined),
+                      title: Text(_sectionLabel(section.type, l10n)),
+                      subtitle: Text(
+                        _imageTypeLabel(
+                          _prefs.get(
+                            UserPreferences.homeRowImageType(section.type),
+                          ),
+                          l10n,
+                        ),
+                      ),
+                      onTap: () => _showImageTypePicker(
+                        context,
+                        current: _prefs.get(
+                          UserPreferences.homeRowImageType(section.type),
+                        ),
+                        onSelected: (value) =>
+                            _setPerRowImageType(section.type, value),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ],
         ),
       ),

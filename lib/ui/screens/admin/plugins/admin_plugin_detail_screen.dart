@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../admin_plugin_version_utils.dart';
+import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../providers/admin_user_providers.dart';
 import 'plugin_web_settings_screen.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -85,13 +86,13 @@ class _AdminPluginDetailScreenState
   Future<void> _uninstallPlugin(PluginInfo plugin) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AlertDialog.adaptive(
         title: Text(AppLocalizations.of(context).adminUninstallPlugin),
         content: Text(
           AppLocalizations.of(context).adminUninstallPluginConfirm(plugin.name),
         ),
         actions: [
-          TextButton(
+          adaptiveDialogAction(
             onPressed: () => Navigator.pop(context, false),
             child: Text(AppLocalizations.of(context).cancel),
           ),
@@ -623,7 +624,7 @@ class _ActionsSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SwitchListTile(
+            SwitchListTile.adaptive(
               contentPadding: EdgeInsets.zero,
               title: Text(
                 AppLocalizations.of(context).adminPluginDetailEnablePlugin,

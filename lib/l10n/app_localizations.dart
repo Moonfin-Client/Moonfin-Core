@@ -460,6 +460,36 @@ abstract class AppLocalizations {
   /// **'App Theme'**
   String get settingsAppearanceTheme;
 
+  /// Label for the Automatic/Apple/Material interface style setting
+  ///
+  /// In en, this message translates to:
+  /// **'Interface style'**
+  String get interfaceStyle;
+
+  /// Explanation under the interface style setting
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic uses the native look on Apple devices. Choose Apple to force it, or Material for the standard look.'**
+  String get interfaceStyleSubtitle;
+
+  /// Interface style option: follow the platform
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get interfaceStyleAutomatic;
+
+  /// Interface style option: Apple native look
+  ///
+  /// In en, this message translates to:
+  /// **'Apple'**
+  String get interfaceStyleApple;
+
+  /// Interface style option: Material look
+  ///
+  /// In en, this message translates to:
+  /// **'Material'**
+  String get interfaceStyleMaterial;
+
   /// Subtitle for the theme selection screen and theme settings entry
   ///
   /// In en, this message translates to:
@@ -5200,10 +5230,10 @@ abstract class AppLocalizations {
   /// **'Show in navigation'**
   String get showInNavigation;
 
-  /// Toggle for showing library in latest media
+  /// Toggle for showing library in recently added/released media
   ///
   /// In en, this message translates to:
-  /// **'Show in latest media'**
+  /// **'Show in recently added/released media'**
   String get showInLatestMedia;
 
   /// Setting for source libraries
@@ -5422,10 +5452,10 @@ abstract class AppLocalizations {
   /// **'Enable audio for trailer and episode previews'**
   String get enablePreviewAudio;
 
-  /// Home section: latest media
+  /// Home section: recently added media
   ///
   /// In en, this message translates to:
-  /// **'Latest Media'**
+  /// **'Recently Added Media'**
   String get latestMedia;
 
   /// Home section: recently released
@@ -13072,11 +13102,17 @@ abstract class AppLocalizations {
   /// **'{libraryName} ({serverName})'**
   String libraryNameWithServer(String libraryName, String serverName);
 
-  /// Row title for latest media in a specific library
+  /// Row title for recently added media in a specific library
   ///
   /// In en, this message translates to:
-  /// **'Latest {libraryName}'**
+  /// **'Recently Added {libraryName}'**
   String latestLibraryName(String libraryName);
+
+  /// Row title for recently released media in a specific library
+  ///
+  /// In en, this message translates to:
+  /// **'Recently Released {libraryName}'**
+  String recentlyReleasedLibraryName(String libraryName);
 
   /// Setting title: automatically start the next episode
   ///

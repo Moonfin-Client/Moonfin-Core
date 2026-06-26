@@ -9,6 +9,8 @@ import '../../../data/services/plugin_sync_service.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../widgets/adaptive/adaptive_dialog.dart';
+import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import '../../widgets/settings/preference_binding.dart';
@@ -232,7 +234,7 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
               builder: (builderContext, setDialogState) =>
                   withCleanSettingsTypography(
                     builderContext,
-                    AlertDialog(
+                    AlertDialog.adaptive(
                       title: Text(title),
                       content: SizedBox(
                         width: double.maxFinite,
@@ -294,7 +296,7 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                         ),
                       ),
                       actions: [
-                        TextButton(
+                        adaptiveDialogAction(
                           onPressed: () {
                             if (popped) return;
                             popped = true;
@@ -342,45 +344,50 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
         appBar: buildSettingsAppBar(context, Text(l10n.mediaBar)),
         body: ListView(
           children: [
-            StringPickerPreferenceTile(
-              preference: UserPreferences.mediaBarMode,
-              title: l10n.mediaBarMode,
-              description: l10n.mediaBarModeDescription,
-              icon: Icons.featured_play_list,
-              options: {
-                UserPreferences.mediaBarModeMoonfin: l10n.mediaBarModeMoonfin,
-                UserPreferences.mediaBarModeMakd: l10n.mediaBarModeMakd,
-                UserPreferences.mediaBarModeBookshelf: 'Bookshelf',
-                UserPreferences.mediaBarModeGallery: 'Gallery',
-                UserPreferences.mediaBarModeBanner: 'Banner',
-                UserPreferences.mediaBarModeOff: l10n.mediaBarModeOff,
-              },
-              onChanged: _pushSync,
-            ),
-            StringPickerPreferenceTile(
-              preference: UserPreferences.mediaBarContentType,
-              title: l10n.contentType,
-              icon: Icons.category,
-              options: {
-                'both': l10n.moviesAndTvShows,
-                'movies': l10n.moviesOnly,
-                'tvshows': l10n.tvShowsOnly,
-              },
-              onChanged: _pushSync,
-            ),
-            StringPickerPreferenceTile(
-              preference: UserPreferences.mediaBarItemCount,
-              title: l10n.itemCount,
-              icon: Icons.format_list_numbered,
-              options: const {
-                '5': '5',
-                '10': '10',
-                '15': '15',
-                '20': '20',
-                '25': '25',
-                '30': '30',
-              },
-              onChanged: _pushSync,
+            adaptiveListSection(
+              children: [
+                StringPickerPreferenceTile(
+                  preference: UserPreferences.mediaBarMode,
+                  title: l10n.mediaBarMode,
+                  description: l10n.mediaBarModeDescription,
+                  icon: Icons.featured_play_list,
+                  options: {
+                    UserPreferences.mediaBarModeMoonfin:
+                        l10n.mediaBarModeMoonfin,
+                    UserPreferences.mediaBarModeMakd: l10n.mediaBarModeMakd,
+                    UserPreferences.mediaBarModeBookshelf: 'Bookshelf',
+                    UserPreferences.mediaBarModeGallery: 'Gallery',
+                    UserPreferences.mediaBarModeBanner: 'Banner',
+                    UserPreferences.mediaBarModeOff: l10n.mediaBarModeOff,
+                  },
+                  onChanged: _pushSync,
+                ),
+                StringPickerPreferenceTile(
+                  preference: UserPreferences.mediaBarContentType,
+                  title: l10n.contentType,
+                  icon: Icons.category,
+                  options: {
+                    'both': l10n.moviesAndTvShows,
+                    'movies': l10n.moviesOnly,
+                    'tvshows': l10n.tvShowsOnly,
+                  },
+                  onChanged: _pushSync,
+                ),
+                StringPickerPreferenceTile(
+                  preference: UserPreferences.mediaBarItemCount,
+                  title: l10n.itemCount,
+                  icon: Icons.format_list_numbered,
+                  options: const {
+                    '5': '5',
+                    '10': '10',
+                    '15': '15',
+                    '20': '20',
+                    '25': '25',
+                    '30': '30',
+                  },
+                  onChanged: _pushSync,
+                ),
+              ],
             ),
 
             Padding(
@@ -392,47 +399,51 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                 ),
               ),
             ),
-            _MediaBarActionTile(
-              leading: Image.asset(
-                'assets/icons/clapperboard.png',
-                width: 24,
-                height: 24,
-                color: AppColorScheme.onSurface,
-                fit: BoxFit.contain,
-              ),
-              title: Text(l10n.sourceLibraries),
-              subtitle: Text(
-                _sourceSubtitle(
-                  UserPreferences.mediaBarLibraryIds,
-                  l10n.noneSelected,
-                  l10n,
+            adaptiveListSection(
+              children: [
+                _MediaBarActionTile(
+                  leading: Image.asset(
+                    'assets/icons/clapperboard.png',
+                    width: 24,
+                    height: 24,
+                    color: AppColorScheme.onSurface,
+                    fit: BoxFit.contain,
+                  ),
+                  title: Text(l10n.sourceLibraries),
+                  subtitle: Text(
+                    _sourceSubtitle(
+                      UserPreferences.mediaBarLibraryIds,
+                      l10n.noneSelected,
+                      l10n,
+                    ),
+                  ),
+                  onTap: _showLibrarySelector,
                 ),
-              ),
-              onTap: _showLibrarySelector,
-            ),
-            _MediaBarActionTile(
-              leading: const Icon(Icons.collections_bookmark),
-              title: Text(l10n.sourceCollections),
-              subtitle: Text(
-                _sourceSubtitle(
-                  UserPreferences.mediaBarCollectionIds,
-                  l10n.noneSelected,
-                  l10n,
+                _MediaBarActionTile(
+                  leading: const Icon(Icons.collections_bookmark),
+                  title: Text(l10n.sourceCollections),
+                  subtitle: Text(
+                    _sourceSubtitle(
+                      UserPreferences.mediaBarCollectionIds,
+                      l10n.noneSelected,
+                      l10n,
+                    ),
+                  ),
+                  onTap: _showCollectionSelector,
                 ),
-              ),
-              onTap: _showCollectionSelector,
-            ),
-            _MediaBarActionTile(
-              leading: const Icon(Icons.label_off),
-              title: Text(l10n.excludedGenres),
-              subtitle: Text(
-                _sourceSubtitle(
-                  UserPreferences.mediaBarExcludedGenres,
-                  l10n.noneExcluded,
-                  l10n,
+                _MediaBarActionTile(
+                  leading: const Icon(Icons.label_off),
+                  title: Text(l10n.excludedGenres),
+                  subtitle: Text(
+                    _sourceSubtitle(
+                      UserPreferences.mediaBarExcludedGenres,
+                      l10n.noneExcluded,
+                      l10n,
+                    ),
+                  ),
+                  onTap: _showGenreSelector,
                 ),
-              ),
-              onTap: _showGenreSelector,
+              ],
             ),
 
             Padding(
@@ -444,23 +455,27 @@ class _MediaBarSettingsScreenState extends State<MediaBarSettingsScreen> {
                 ),
               ),
             ),
-            SwitchPreferenceTile(
-              preference: UserPreferences.mediaBarAutoAdvance,
-              title: l10n.autoAdvance,
-              subtitle: l10n.autoAdvanceSlides,
-              icon: Icons.skip_next,
-            ),
-            IntPickerPreferenceTile(
-              preference: UserPreferences.mediaBarIntervalMs,
-              title: l10n.autoAdvanceInterval,
-              icon: Icons.timer,
-              options: {
-                5000: l10n.fiveSeconds,
-                10000: l10n.tenSeconds,
-                15000: l10n.fifteenSeconds,
-                30000: l10n.thirtySeconds,
-              },
-              onChanged: _pushSync,
+            adaptiveListSection(
+              children: [
+                SwitchPreferenceTile(
+                  preference: UserPreferences.mediaBarAutoAdvance,
+                  title: l10n.autoAdvance,
+                  subtitle: l10n.autoAdvanceSlides,
+                  icon: Icons.skip_next,
+                ),
+                IntPickerPreferenceTile(
+                  preference: UserPreferences.mediaBarIntervalMs,
+                  title: l10n.autoAdvanceInterval,
+                  icon: Icons.timer,
+                  options: {
+                    5000: l10n.fiveSeconds,
+                    10000: l10n.tenSeconds,
+                    15000: l10n.fifteenSeconds,
+                    30000: l10n.thirtySeconds,
+                  },
+                  onChanged: _pushSync,
+                ),
+              ],
             ),
           ],
         ),
