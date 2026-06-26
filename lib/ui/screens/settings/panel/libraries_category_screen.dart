@@ -44,16 +44,16 @@ class _LibrariesCategoryScreen extends StatelessWidget {
                   final isEnabled = prefs.get(UserPreferences.groupItemsIntoCollections);
                   if (isEnabled) {
                     final client = GetIt.instance<MediaServerClient>();
-                    if (client.serverType == ServerType.jellyfin) {
-                      try {
-                        final config = await client.adminSystemApi.getServerConfiguration();
-                        final groupMovies = config['EnableGroupingMoviesIntoCollections'] as bool? ?? false;
-                        final groupShows = config['EnableGroupingShowsIntoCollections'] as bool? ?? false;
-                        if (groupMovies && groupShows) {
-                          return;
-                        }
-                      } catch (_) {}
-                    }
+                    try {
+                      final config =
+                          await client.adminSystemApi.getServerConfiguration();
+                      final groupingEnabled =
+                          config['EnableGroupingIntoCollections'] as bool? ??
+                              false;
+                      if (groupingEnabled) {
+                        return;
+                      }
+                    } catch (_) {}
 
                     if (!context.mounted) return;
                     showFocusRestoringDialog(
