@@ -36,6 +36,7 @@ class UserPreferences extends ChangeNotifier {
     _migrateDefaultAudioLanguagePreference();
     _migrateSeerrPreferenceKeys();
     _enforceMediaQueuingAlwaysOn();
+    _migrateSubtitleModePreference();
     _initializeSubtitleLanguagePreferences();
   }
 
