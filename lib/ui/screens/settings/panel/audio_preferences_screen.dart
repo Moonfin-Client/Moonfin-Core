@@ -42,6 +42,7 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
         PlatformDetection.hasAudioCapabilities
             ? PlatformDetection.audioCapabilitiesSnapshot
             : null,
+        audioOutputMode: _prefs.resolveAudioOutputMode(),
       );
 
   String _audioRouteLabel(AppLocalizations l10n, AudioRouteType routeType) {
@@ -173,12 +174,12 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
     AudioCapabilityProbe.apply(profile);
 
     final AudioPassthroughPreset preset;
-    if (profile != null &&
+    if (profile != null && profile.maxPcmChannels <= 2) {
+      preset = AudioPassthroughPreset.stereo;
+    } else if (profile != null &&
         profile.isAvReceiverRoute &&
         profile.hasCompressedPassthroughRoute) {
       preset = AudioPassthroughPreset.surroundReceiver;
-    } else if (profile != null && profile.maxPcmChannels <= 2) {
-      preset = AudioPassthroughPreset.stereo;
     } else {
       preset = AudioPassthroughPreset.auto;
     }

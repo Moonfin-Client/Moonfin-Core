@@ -227,7 +227,7 @@ object AudioCapabilities {
         val supportsDts = canPassthroughDts || canPassthroughDtsHd || canPassthroughDtsX
         val supportsTrueHd = canPassthroughTrueHd || canPassthroughTrueHdJoc
 
-        val maxPcmChannels = estimateMaxPcmChannels(routeType)
+        val maxPcmChannels = detectMaxPcmChannels(bitstreamDevices, routeType)
 
         return mapOf(
             "supportsAc3" to supportsAc3,
@@ -418,51 +418,44 @@ object AudioCapabilities {
             return ROUTE_ARC
         }
 
-        // 4. Built-in speakers. Only route to Speaker if the device is a Smart TV panel
-        // (not an external set-top box/dongle like Shield or Chromecast, which advertise
-        // dummy built-in speakers).
-        if (!isExternalBox()) {
-            if (types.contains(AudioDeviceInfo.TYPE_BUILTIN_SPEAKER) ||
-                types.contains(AudioDeviceInfo.TYPE_BUILTIN_EARPIECE)
-            ) {
-                return ROUTE_SPEAKER
-            }
-        }
-
-        // 5. Standard HDMI (e.g. for external streaming boxes like Nvidia Shield,
-        // Chromecast, Fire Stick, which have no built-in speakers).
-        if (types.contains(AudioDeviceInfo.TYPE_HDMI) ||
-            types.contains(AudioDeviceInfo.TYPE_LINE_DIGITAL)
-        ) {
-            return ROUTE_HDMI
-        }
-
-        // Fallback for TV panels if we didn't match HDMI above but TYPE_BUILTIN_SPEAKER
-        // was skipped.
+        // 4. Built-in speakers default to a safe stereo route. We prefer this
+        // over plain HDMI on purpose, so a TV panel never tries to bitstream
+        // lossless audio to speakers that cannot decode it, which is the silent
+        // playback bug. A box wired to a real AV receiver should turn on the
+        // "AV receiver" output mode, which forces the HDMI route and passthrough
+        // on the Dart side.
         if (types.contains(AudioDeviceInfo.TYPE_BUILTIN_SPEAKER) ||
             types.contains(AudioDeviceInfo.TYPE_BUILTIN_EARPIECE)
         ) {
             return ROUTE_SPEAKER
         }
 
+        // 5. Standard HDMI for boxes with no built-in speaker.
+        if (types.contains(AudioDeviceInfo.TYPE_HDMI) ||
+            types.contains(AudioDeviceInfo.TYPE_LINE_DIGITAL)
+        ) {
+            return ROUTE_HDMI
+        }
+
         return ROUTE_OTHER
     }
 
-    private fun isExternalBox(): Boolean {
-        val brand = Build.BRAND.lowercase()
-        val manufacturer = Build.MANUFACTURER.lowercase()
-        val model = Build.MODEL.lowercase()
-        
-        return brand.contains("nvidia") || 
-               brand.contains("google") || 
-               manufacturer.contains("nvidia") ||
-               manufacturer.contains("google") ||
-               model.contains("shield") || 
-               model.contains("chromecast") || 
-               model.contains("mi box") || 
-               model.contains("mibox") ||
-               model.contains("fire tv") ||
-               model.contains("onn")
+    private fun detectMaxPcmChannels(devices: List<AudioDeviceInfo>, routeType: String): Int {
+        var maxVal = 0
+        for (device in devices) {
+            val counts = device.channelCounts
+            if (counts != null) {
+                for (count in counts) {
+                    if (count > maxVal) {
+                        maxVal = count
+                    }
+                }
+            }
+        }
+        if (maxVal > 0) {
+            return maxVal
+        }
+        return estimateMaxPcmChannels(routeType)
     }
 
     private fun estimateMaxPcmChannels(routeType: String): Int {

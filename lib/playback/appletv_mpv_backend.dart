@@ -6,6 +6,7 @@ import 'package:playback_core/playback_core.dart';
 import '../preference/preference_constants.dart';
 import '../preference/user_preferences.dart';
 import '../util/platform_detection.dart';
+import 'audio_capability_profile.dart';
 
 import 'device_profile_builder.dart';
 import 'known_defects.dart';
@@ -328,11 +329,7 @@ class AppleTvMpvBackend implements PlayerBackend {
     if (_prefs.resolveAudioOutputMode() == AudioOutputMode.forceStereo) {
       return 'stereo';
     }
-    final profile = PlatformDetection.hasAudioCapabilities
-        ? AudioCapabilityProfile.fromMap(
-            PlatformDetection.audioCapabilitiesSnapshot,
-          )
-        : const AudioCapabilityProfile.optimistic();
+    final profile = _prefs.detectedAudioCapabilities;
     if (profile.maxPcmChannels <= 2) {
       return 'stereo';
     }

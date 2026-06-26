@@ -322,7 +322,9 @@ class UserPreferences extends ChangeNotifier {
           PlatformDetection.audioCapabilitiesSnapshot,
           audioOutputMode: resolveAudioOutputMode(),
         )
-      : const AudioCapabilityProfile.optimistic();
+      : PlatformDetection.isIOS
+          ? const AudioCapabilityProfile.appleMobile()
+          : const AudioCapabilityProfile.optimistic();
 
   // Tri-state passthrough resolution: an explicitly-set toggle wins (On or
   // Off); when unset, the resolved value follows the detected hardware

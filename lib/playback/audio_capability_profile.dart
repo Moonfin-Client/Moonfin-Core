@@ -182,12 +182,11 @@ class AudioCapabilityProfile {
       canPassthroughTrueHdJoc:
           isHdRoute &&
           _readBool(values, 'canPassthroughTrueHdJoc', defaultValue: false),
-      maxPcmChannels: (() {
-        final rawMaxChannels = _readInt(values, 'maxPcmChannels', defaultValue: 8);
-        return audioOutputMode == AudioOutputMode.avrPassthrough && rawMaxChannels < 8
-            ? 8
-            : rawMaxChannels;
-      })(),
+      maxPcmChannels:
+          audioOutputMode == AudioOutputMode.avrPassthrough &&
+              _readInt(values, 'maxPcmChannels', defaultValue: 8) < 8
+          ? 8
+          : _readInt(values, 'maxPcmChannels', defaultValue: 8),
       activeRouteType: activeRouteType,
       routeSupportsHdAudio: _readBool(
         values,
