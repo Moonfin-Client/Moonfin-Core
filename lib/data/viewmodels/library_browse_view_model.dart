@@ -310,12 +310,10 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     final groupCollections = _prefs.get(UserPreferences.groupItemsIntoCollections);
     if (includeItemTypes != null) {
       includeTypes = List<String>.from(includeItemTypes!);
-      if (groupCollections) {
-        if (includeTypes.contains('Movie')) {
-          collapseBoxSets = true;
-        } else if (includeTypes.contains('Series')) {
-          collapseBoxSets = true;
-        }
+      if (groupCollections &&
+          (includeTypes.contains('Movie') ||
+              includeTypes.contains('Series'))) {
+        collapseBoxSets = true;
       }
     } else {
       switch (_collectionType) {
