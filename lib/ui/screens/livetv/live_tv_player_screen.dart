@@ -704,7 +704,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
     }
 
     return SubtitleViewConfiguration(
-      visible: !isAssOrPgs,
+      visible: PlatformDetection.isDesktop ? false : !isAssOrPgs,
       style: TextStyle(
         inherit: false,
         height: 1.4,

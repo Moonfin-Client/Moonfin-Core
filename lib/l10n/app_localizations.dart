@@ -4708,6 +4708,78 @@ abstract class AppLocalizations {
   /// **'Customize subtitle appearance'**
   String get subtitleCustomizationDescription;
 
+  /// Setting for subtitle mode
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle Mode'**
+  String get subtitleMode;
+
+  /// Subtitle mode: default/flagged
+  ///
+  /// In en, this message translates to:
+  /// **'Flagged'**
+  String get subtitleModeFlagged;
+
+  /// Subtitle mode: always play
+  ///
+  /// In en, this message translates to:
+  /// **'Always'**
+  String get subtitleModeAlways;
+
+  /// Subtitle mode: foreign/smart
+  ///
+  /// In en, this message translates to:
+  /// **'Foreign'**
+  String get subtitleModeForeign;
+
+  /// Subtitle mode: only forced
+  ///
+  /// In en, this message translates to:
+  /// **'Forced'**
+  String get subtitleModeForced;
+
+  /// Description for flagged subtitle mode
+  ///
+  /// In en, this message translates to:
+  /// **'Plays tracks internally flagged in the media file\'s metadata as \"default\" or \"forced\".'**
+  String get subtitleModeFlaggedDescription;
+
+  /// Description for always subtitle mode
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically loads and displays subtitles every time a video starts.'**
+  String get subtitleModeAlwaysDescription;
+
+  /// Description for foreign subtitle mode
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically turns on subtitles if the default audio track is in a foreign language.'**
+  String get subtitleModeForeignDescription;
+
+  /// Description for forced subtitle mode
+  ///
+  /// In en, this message translates to:
+  /// **'Only loads subtitles explicitly tagged with the forced metadata flag.'**
+  String get subtitleModeForcedDescription;
+
+  /// Description for none subtitle mode
+  ///
+  /// In en, this message translates to:
+  /// **'Completely disables automatic subtitle loading.'**
+  String get subtitleModeNoneDescription;
+
+  /// Setting for fallback subtitle language
+  ///
+  /// In en, this message translates to:
+  /// **'Fallback Subtitle Language'**
+  String get fallbackSubtitleLanguage;
+
+  /// Header for subtitle stream settings
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle Stream'**
+  String get subtitleStream;
+
   /// Sample text shown in the subtitle live preview
   ///
   /// In en, this message translates to:
@@ -14799,6 +14871,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sources'**
   String get sources;
+
+  /// Title for the subtitle preferences settings section
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle Preferences'**
+  String get subtitlePreferences;
+
+  /// Description for the subtitle preferences settings section
+  ///
+  /// In en, this message translates to:
+  /// **'Change subtitle modes, default languages, appearance, and rendering options.'**
+  String get subtitlePreferencesDescription;
+
+  /// Header for subtitle rendering settings
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle Rendering'**
+  String get subtitleRendering;
 }
 
 class _AppLocalizationsDelegate

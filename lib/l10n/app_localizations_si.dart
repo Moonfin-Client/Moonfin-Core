@@ -2577,6 +2577,47 @@ class AppLocalizationsSi extends AppLocalizations {
       'උපසිරැසි පෙනුම අභිරුචිකරණය කරන්න';
 
   @override
+  String get subtitleMode => 'Subtitle Mode';
+
+  @override
+  String get subtitleModeFlagged => 'Flagged';
+
+  @override
+  String get subtitleModeAlways => 'Always';
+
+  @override
+  String get subtitleModeForeign => 'Foreign';
+
+  @override
+  String get subtitleModeForced => 'Forced';
+
+  @override
+  String get subtitleModeFlaggedDescription =>
+      'Plays tracks internally flagged in the media file\'s metadata as \"default\" or \"forced\".';
+
+  @override
+  String get subtitleModeAlwaysDescription =>
+      'Automatically loads and displays subtitles every time a video starts.';
+
+  @override
+  String get subtitleModeForeignDescription =>
+      'Automatically turns on subtitles if the default audio track is in a foreign language.';
+
+  @override
+  String get subtitleModeForcedDescription =>
+      'Only loads subtitles explicitly tagged with the forced metadata flag.';
+
+  @override
+  String get subtitleModeNoneDescription =>
+      'Completely disables automatic subtitle loading.';
+
+  @override
+  String get fallbackSubtitleLanguage => 'Fallback Subtitle Language';
+
+  @override
+  String get subtitleStream => 'Subtitle Stream';
+
+  @override
   String get subtitlePreviewText =>
       'ඉක්මන් දුඹුරු නරියා කම්මැලි බල්ලා උඩින් පනිනවා';
 
@@ -8310,4 +8351,14 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get sources => 'Sources';
+
+  @override
+  String get subtitlePreferences => 'Subtitle Preferences';
+
+  @override
+  String get subtitlePreferencesDescription =>
+      'Change subtitle modes, default languages, appearance, and rendering options.';
+
+  @override
+  String get subtitleRendering => 'Subtitle Rendering';
 }
