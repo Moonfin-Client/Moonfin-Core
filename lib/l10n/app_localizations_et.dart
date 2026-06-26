@@ -7988,6 +7988,9 @@ class AppLocalizationsEt extends AppLocalizations {
   String get appearancesSeerr => 'Esinemised (nägija)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Vaadake koos rühmaga';
 
   @override

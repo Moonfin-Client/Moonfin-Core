@@ -7994,6 +7994,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get appearancesSeerr => 'Rol Aldığı Yapımlar (Seerr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Grupça İzle';
 
   @override

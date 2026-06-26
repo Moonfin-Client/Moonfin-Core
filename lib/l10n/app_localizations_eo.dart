@@ -7965,6 +7965,9 @@ class AppLocalizationsEo extends AppLocalizations {
   String get appearancesSeerr => 'Aperoj (Seerr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Rigardu kun grupo';
 
   @override

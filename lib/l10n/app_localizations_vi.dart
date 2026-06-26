@@ -7986,6 +7986,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get appearancesSeerr => 'Xuất hiện (Seerr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Xem cùng nhóm';
 
   @override

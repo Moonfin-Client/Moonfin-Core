@@ -7929,6 +7929,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get appearancesSeerr => 'المظاهر (العراف)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'شاهد مع المجموعة';
 
   @override

@@ -7871,6 +7871,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get appearancesSeerr => 'Appearances (Seerr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Watch with group';
 
   @override

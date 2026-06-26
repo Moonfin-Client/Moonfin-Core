@@ -7987,6 +7987,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get appearancesSeerr => 'Vzhled (Seerr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Sledujte se skupinou';
 
   @override

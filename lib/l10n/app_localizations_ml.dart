@@ -8071,6 +8071,9 @@ class AppLocalizationsMl extends AppLocalizations {
   String get appearancesSeerr => 'രൂപഭാവങ്ങൾ (സീർ)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'ഗ്രൂപ്പിനൊപ്പം കാണുക';
 
   @override

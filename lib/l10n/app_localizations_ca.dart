@@ -8092,6 +8092,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get appearancesSeerr => 'Aparicions (Seerr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Veure amb grup';
 
   @override

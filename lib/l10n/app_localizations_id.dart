@@ -7978,6 +7978,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get appearancesSeerr => 'Penampilan (Seerr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Tonton bersama grup';
 
   @override

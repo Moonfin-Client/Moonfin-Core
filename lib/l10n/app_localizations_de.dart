@@ -8043,6 +8043,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get appearancesSeerr => 'Auftritte (Seerr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Mit der Gruppe ansehen';
 
   @override

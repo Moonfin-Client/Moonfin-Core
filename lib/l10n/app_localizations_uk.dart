@@ -8027,6 +8027,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get appearancesSeerr => 'Поява (Seerr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Дивіться з групою';
 
   @override

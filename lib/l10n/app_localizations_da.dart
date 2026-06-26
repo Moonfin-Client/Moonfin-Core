@@ -7971,6 +7971,9 @@ class AppLocalizationsDa extends AppLocalizations {
   String get appearancesSeerr => 'Optrædener (seer)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Se med gruppen';
 
   @override

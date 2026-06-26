@@ -8053,6 +8053,9 @@ class AppLocalizationsBg extends AppLocalizations {
   String get appearancesSeerr => 'Изяви (Seerr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Гледайте с група';
 
   @override

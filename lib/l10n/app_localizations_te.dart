@@ -8026,6 +8026,9 @@ class AppLocalizationsTe extends AppLocalizations {
   String get appearancesSeerr => 'ప్రదర్శనలు (సీర్)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'సమూహంతో చూడండి';
 
   @override

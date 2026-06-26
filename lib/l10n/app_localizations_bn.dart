@@ -7968,6 +7968,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get appearancesSeerr => 'উপস্থিতি (দ্রষ্টা)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'গ্রুপের সাথে দেখুন';
 
   @override

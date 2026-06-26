@@ -8007,6 +8007,9 @@ class AppLocalizationsLt extends AppLocalizations {
   String get appearancesSeerr => 'Pasirodymai (Serr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Žiūrėkite su grupe';
 
   @override

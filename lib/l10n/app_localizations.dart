@@ -14182,6 +14182,12 @@ abstract class AppLocalizations {
   /// **'Appearances (Seerr)'**
   String get appearancesSeerr;
 
+  /// No description provided for @crewContributionsSeerr.
+  ///
+  /// In en, this message translates to:
+  /// **'Crew Contributions (Seerr)'**
+  String get crewContributionsSeerr;
+
   /// No description provided for @watchWithGroup.
   ///
   /// In en, this message translates to:

@@ -7922,6 +7922,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get appearancesSeerr => 'การปรากฏตัว (เซียร์)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'ดูกับกลุ่ม.';
 
   @override

@@ -8034,6 +8034,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get appearancesSeerr => 'Aparições (Seerr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Assista com grupo';
 
   @override

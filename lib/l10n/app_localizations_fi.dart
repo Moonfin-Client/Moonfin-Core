@@ -8002,6 +8002,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get appearancesSeerr => 'Ulkonäkö (näkijä)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Katso ryhmän kanssa';
 
   @override

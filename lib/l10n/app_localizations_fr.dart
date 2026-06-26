@@ -8076,6 +8076,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get appearancesSeerr => 'Apparitions (Seerr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Regarder en groupe';
 
   @override

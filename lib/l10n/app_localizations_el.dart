@@ -8099,6 +8099,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get appearancesSeerr => 'Εμφανίσεις (Seerr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Παρακολουθήστε με ομάδα';
 
   @override

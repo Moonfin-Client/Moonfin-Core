@@ -7981,6 +7981,9 @@ class AppLocalizationsAf extends AppLocalizations {
   String get appearancesSeerr => 'Voorkoms (Siener)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Kyk saam met die groep';
 
   @override

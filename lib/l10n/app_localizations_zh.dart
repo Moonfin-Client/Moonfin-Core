@@ -7681,6 +7681,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appearancesSeerr => '出场作品（Seerr）';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => '与群组一起观看';
 
   @override

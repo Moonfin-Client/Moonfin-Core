@@ -8055,6 +8055,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get appearancesSeerr => 'Apariciones (Vidente)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Ver con grupo';
 
   @override

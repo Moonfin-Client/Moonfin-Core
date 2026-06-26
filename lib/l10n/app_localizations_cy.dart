@@ -8002,6 +8002,9 @@ class AppLocalizationsCy extends AppLocalizations {
   String get appearancesSeerr => 'Ymddangosiadau (Seerr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Gwyliwch gyda\'r grŵp';
 
   @override

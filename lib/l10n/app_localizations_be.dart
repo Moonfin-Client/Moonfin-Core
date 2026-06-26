@@ -8008,6 +8008,9 @@ class AppLocalizationsBe extends AppLocalizations {
   String get appearancesSeerr => 'З\'яўленне (Seerr)';
 
   @override
+  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+
+  @override
   String get watchWithGroup => 'Глядзіце з групай';
 
   @override

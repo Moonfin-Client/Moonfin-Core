@@ -47,6 +47,7 @@ import '../../widgets/track_action_dialog.dart';
 import '../../widgets/track_selector_dialog.dart';
 import '../../widgets/remote_play_to_session_dialog.dart';
 import '../../widgets/fullscreen_backdrop_switcher.dart';
+import '../../widgets/seerr_icons.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/focusable_button.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -2442,7 +2443,7 @@ class _DetailContentState extends State<_DetailContent> {
               const SizedBox(width: 16),
               _DetailActionButton(
                 label: l10n.seerr,
-                icon: Icons.explore_outlined,
+                iconBuilder: (size, color) => SeerrIcon(size: size, color: color),
                 onPressed: () {
                   context.push(Destinations.seerrPerson(item.tmdbId!));
                 },
@@ -8329,7 +8330,8 @@ class _DeleteDownloadButtonState extends State<_DeleteDownloadButton> {
 
 class _DetailActionButton extends StatefulWidget {
   final String label;
-  final IconData icon;
+  final IconData? icon;
+  final Widget Function(double size, Color color)? iconBuilder;
   final VoidCallback onPressed;
   final VoidCallback? onLongPress;
   final VoidCallback? onFocused;
@@ -8346,7 +8348,8 @@ class _DetailActionButton extends StatefulWidget {
 
   const _DetailActionButton({
     required this.label,
-    required this.icon,
+    this.icon,
+    this.iconBuilder,
     required this.onPressed,
     this.onLongPress,
     this.onFocused,
@@ -8592,11 +8595,16 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                       isMobile ? 14 : 15 * desktopScale,
                     ),
                   ),
-                  child: AdaptiveIcon(
-                    widget.icon,
-                    color: iconColor,
-                    size: isMobile ? 22 : 27 * desktopScale,
-                  ),
+                  child: widget.iconBuilder != null
+                      ? widget.iconBuilder!(
+                          isMobile ? 22 : 27 * desktopScale,
+                          iconColor,
+                        )
+                      : AdaptiveIcon(
+                          widget.icon!,
+                          color: iconColor,
+                          size: isMobile ? 22 : 27 * desktopScale,
+                        ),
                 ),
                 SizedBox(height: isMobile ? 6 : 8 * desktopScale),
                 Text(
@@ -12476,22 +12484,17 @@ class _PersonDisplaySettingsDialogState
     super.initState();
     _sortOption = widget.prefs.get(UserPreferences.personPageSortOption);
     _groupItems = widget.prefs.get(UserPreferences.personPageGroupItems);
-    print('MOONFIN_DEBUG: initState: _sortOption=$_sortOption, _groupItems=$_groupItems');
   }
 
   @override
   void didUpdateWidget(covariant _PersonDisplaySettingsDialog oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final prevSort = _sortOption;
-    final prevGroup = _groupItems;
     _sortOption = widget.prefs.get(UserPreferences.personPageSortOption);
     _groupItems = widget.prefs.get(UserPreferences.personPageGroupItems);
-    print('MOONFIN_DEBUG: didUpdateWidget: sort $prevSort -> $_sortOption, group $prevGroup -> $_groupItems');
   }
 
   @override
   Widget build(BuildContext context) {
-    print('MOONFIN_DEBUG: build: _sortOption=$_sortOption, _groupItems=$_groupItems');
     final onSurface = AppColorScheme.onSurface;
     final accent = AppColorScheme.accent;
     final dividerColor = onSurface.withValues(alpha: 0.12);
@@ -12585,7 +12588,6 @@ class _PersonDisplaySettingsDialogState
     final now = DateTime.now();
     if (_lastTapTime != null &&
         now.difference(_lastTapTime!) < const Duration(milliseconds: 300)) {
-      print('MOONFIN_DEBUG: throttling tap');
       return true;
     }
     _lastTapTime = now;
@@ -12594,7 +12596,6 @@ class _PersonDisplaySettingsDialogState
 
   void _updateSort(String option) {
     if (_shouldThrottleTap()) return;
-    print('MOONFIN_DEBUG: _updateSort: $option');
     setState(() {
       _sortOption = option;
     });
@@ -12603,7 +12604,6 @@ class _PersonDisplaySettingsDialogState
 
   void _updateGroup(bool value) {
     if (_shouldThrottleTap()) return;
-    print('MOONFIN_DEBUG: _updateGroup: $value');
     setState(() {
       _groupItems = value;
     });
