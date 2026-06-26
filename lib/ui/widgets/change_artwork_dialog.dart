@@ -567,9 +567,10 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
           }
         }
       }
-      dio.close(force: true);
     } catch (e) {
       debugPrint('[Moonfin] Failed to check libraries write access: $e');
+    } finally {
+      dio.close(force: true);
     }
   }
 
