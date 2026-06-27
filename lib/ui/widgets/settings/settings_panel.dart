@@ -60,7 +60,11 @@ class SettingsPanel extends StatelessWidget {
     final Widget body = SizedBox(
       width: panelWidth,
       height: double.infinity,
-      child: SettingsListTypography(child: _SettingsNavigator(initial: child)),
+      child: SettingsListTypography(
+        child: ScaffoldMessenger(
+          child: _SettingsNavigator(initial: child),
+        ),
+      ),
     );
     Widget content;
     if (glass) {
