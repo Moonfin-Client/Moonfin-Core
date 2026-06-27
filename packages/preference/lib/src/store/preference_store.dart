@@ -170,6 +170,8 @@ class PreferenceStore {
       _trackSharedPrefsWrite(() => _requirePrefs.remove(key));
   Future<bool> clear() => _trackSharedPrefsWrite(() => _requirePrefs.clear());
 
+  Set<String> get keys => _requirePrefs.getKeys();
+
   static final _versionKey = 'store_version';
 
   Future<void> runMigrations(

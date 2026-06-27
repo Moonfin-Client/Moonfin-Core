@@ -245,6 +245,26 @@ class UserPreferences extends ChangeNotifier {
     'pref_audio_sort_option',
     'pref_person_page_sort_option',
     'pref_person_page_group_items',
+    'enable_imdb_external_lists',
+    'imdb_top_250_movies_enabled',
+    'imdb_top_250_tv_shows_enabled',
+    'imdb_most_popular_movies_enabled',
+    'imdb_most_popular_tv_shows_enabled',
+    'imdb_lowest_rated_movies_enabled',
+    'imdb_top_english_movies_enabled',
+    'tmdb_popular_movies_enabled',
+    'tmdb_top_rated_movies_enabled',
+    'tmdb_now_playing_movies_enabled',
+    'tmdb_upcoming_movies_enabled',
+    'tmdb_popular_tv_enabled',
+    'tmdb_top_rated_tv_enabled',
+    'tmdb_airing_today_tv_enabled',
+    'tmdb_on_the_air_tv_enabled',
+    'tmdb_trending_movie_daily_enabled',
+    'tmdb_trending_movie_weekly_enabled',
+    'tmdb_trending_tv_daily_enabled',
+    'tmdb_trending_tv_weekly_enabled',
+    'tmdb_trending_all_weekly_enabled',
   };
 
   bool _isScopedPreference<T>(Preference<T> pref) {
@@ -1409,6 +1429,106 @@ class UserPreferences extends ChangeNotifier {
   static final homeSectionsJson = Preference(
     key: 'home_sections_config',
     defaultValue: '',
+  );
+
+  static final enableImdbExternalLists = Preference(
+    key: 'enable_imdb_external_lists',
+    defaultValue: false,
+  );
+
+  static final imdbTop250MoviesEnabled = Preference(
+    key: 'imdb_top_250_movies_enabled',
+    defaultValue: false,
+  );
+
+  static final imdbTop250TvShowsEnabled = Preference(
+    key: 'imdb_top_250_tv_shows_enabled',
+    defaultValue: false,
+  );
+
+  static final imdbMostPopularMoviesEnabled = Preference(
+    key: 'imdb_most_popular_movies_enabled',
+    defaultValue: false,
+  );
+
+  static final imdbMostPopularTvShowsEnabled = Preference(
+    key: 'imdb_most_popular_tv_shows_enabled',
+    defaultValue: false,
+  );
+
+  static final imdbLowestRatedMoviesEnabled = Preference(
+    key: 'imdb_lowest_rated_movies_enabled',
+    defaultValue: false,
+  );
+
+  static final imdbTopEnglishMoviesEnabled = Preference(
+    key: 'imdb_top_english_movies_enabled',
+    defaultValue: false,
+  );
+
+  static final tmdbPopularMoviesEnabled = Preference(
+    key: 'tmdb_popular_movies_enabled',
+    defaultValue: false,
+  );
+
+  static final tmdbTopRatedMoviesEnabled = Preference(
+    key: 'tmdb_top_rated_movies_enabled',
+    defaultValue: false,
+  );
+
+  static final tmdbNowPlayingMoviesEnabled = Preference(
+    key: 'tmdb_now_playing_movies_enabled',
+    defaultValue: false,
+  );
+
+  static final tmdbUpcomingMoviesEnabled = Preference(
+    key: 'tmdb_upcoming_movies_enabled',
+    defaultValue: false,
+  );
+
+  static final tmdbPopularTvEnabled = Preference(
+    key: 'tmdb_popular_tv_enabled',
+    defaultValue: false,
+  );
+
+  static final tmdbTopRatedTvEnabled = Preference(
+    key: 'tmdb_top_rated_tv_enabled',
+    defaultValue: false,
+  );
+
+  static final tmdbAiringTodayTvEnabled = Preference(
+    key: 'tmdb_airing_today_tv_enabled',
+    defaultValue: false,
+  );
+
+  static final tmdbOnTheAirTvEnabled = Preference(
+    key: 'tmdb_on_the_air_tv_enabled',
+    defaultValue: false,
+  );
+
+  static final tmdbTrendingMovieDailyEnabled = Preference(
+    key: 'tmdb_trending_movie_daily_enabled',
+    defaultValue: false,
+  );
+
+  static final tmdbTrendingMovieWeeklyEnabled = Preference(
+    key: 'tmdb_trending_movie_weekly_enabled',
+    defaultValue: false,
+  );
+
+  static final tmdbTrendingTvDailyEnabled = Preference(
+    key: 'tmdb_trending_tv_daily_enabled',
+    defaultValue: false,
+  );
+
+  static final tmdbTrendingTvWeeklyEnabled = Preference(
+    key: 'tmdb_trending_tv_weekly_enabled',
+    defaultValue: false,
+  );
+
+  static final tmdbTrendingAllWeeklyEnabled = Preference(
+    key: 'tmdb_trending_all_weekly_enabled',
+    defaultValue: false,
   );
 
   List<HomeSectionConfig> get homeSectionsConfig {

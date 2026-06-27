@@ -61,6 +61,13 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
                     context.pushSettingsScreen(const SeerrConfigScreen()),
               ),
               _TvSettingsListTile(
+                leading: const Icon(Icons.list_alt),
+                title: Text(l10n.externalLists),
+                subtitle: const Text('Configure external lists for display on the Home Screen.'),
+                onTap: () =>
+                    context.pushSettingsScreen(const _ExternalListsScreen()),
+              ),
+              _TvSettingsListTile(
                 leading: Image.asset(
                   'assets/icons/hss.png',
                   width: 24,

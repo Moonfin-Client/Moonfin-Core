@@ -98,17 +98,12 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
     final vm = _vm;
     if (vm == null) return;
 
-    final tmdbId = int.tryParse(widget.itemId);
-    if (tmdbId == null) return;
-
     final extra = GoRouterState.of(context).extra;
-    final mediaType =
-        (extra is Map<String, dynamic>
-            ? extra['mediaType'] as String?
-            : null) ??
-        'movie';
+    final extraMap = extra is Map ? extra.cast<String, dynamic>() : null;
+    final mediaType = (extraMap?['mediaType'] as String?) ?? 'movie';
+    final title = extraMap?['title'] as String?;
 
-    vm.load(tmdbId, mediaType);
+    vm.load(widget.itemId, mediaType, title: title);
   }
 
   @override

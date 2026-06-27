@@ -189,7 +189,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
     _state = _state.copyWith(requestSuccess: null, requestError: null);
   }
 
-  Future<void> load(int tmdbId, String mediaType) async {
+  Future<void> load(String itemId, String mediaType, {String? title}) async {
     _state = const SeerrMediaDetailState(isLoading: true);
     notifyListeners();
 
@@ -201,7 +201,40 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
         user = await _repo.getCurrentUser();
       } catch (_) {}
 
-      if (mediaType == 'tv') {
+      int tmdbId;
+      String resolvedMediaType = mediaType;
+
+      if (itemId.startsWith('tt')) {
+        SeerrDiscoverPage? searchPage;
+        if (title != null && title.isNotEmpty) {
+          try {
+            searchPage = await _repo.search(title);
+          } catch (e) {
+            print('[SeerrDetail] Search by title failed: $e');
+          }
+        }
+        if (searchPage == null || searchPage.results.isEmpty) {
+          try {
+            searchPage = await _repo.search(itemId);
+          } catch (e) {
+            print('[SeerrDetail] Search by IMDb ID failed: $e');
+          }
+        }
+        if (searchPage == null || searchPage.results.isEmpty) {
+          throw Exception('Media not found on Seerr');
+        }
+        final firstResult = searchPage.results.first;
+        tmdbId = firstResult.id;
+        resolvedMediaType = firstResult.mediaType ?? mediaType;
+      } else {
+        final parsed = int.tryParse(itemId);
+        if (parsed == null) {
+          throw Exception('Invalid media ID');
+        }
+        tmdbId = parsed;
+      }
+
+      if (resolvedMediaType == 'tv') {
         final details = await _repo.getTvDetails(tmdbId);
         _state = SeerrMediaDetailState(tv: details, currentUser: user);
         notifyListeners();

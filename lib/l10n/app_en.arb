@@ -7712,5 +7712,14 @@
   "libraryWriteAccessReactiveBody": "It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders ('Save artwork into media folders' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.",
   "@libraryWriteAccessReactiveBody": {
     "description": "Reactive error warning message when artwork update fails"
-  }
+  },
+  "externalLists": "External Lists",
+  "enableImdb": "IMDb External Lists",
+  "enableImdbDescription": "Fetch IMDb lists for display on the Home Screen.",
+  "imdbTop250Movies": "IMDb Top 250 Movies",
+  "imdbTop250TvShows": "IMDb Top 250 TV Shows",
+  "imdbMostPopularMovies": "IMDb Most Popular Movies",
+  "imdbMostPopularTvShows": "IMDb Most Popular TV Shows",
+  "imdbLowestRatedMovies": "IMDb Lowest Rated Movies",
+  "imdbTopEnglishMovies": "IMDb Top Rated English Movies"
 }

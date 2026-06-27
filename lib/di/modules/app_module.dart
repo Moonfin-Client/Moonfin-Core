@@ -29,6 +29,8 @@ import '../../data/services/cast/native_cast_channel.dart';
 import '../../data/services/cast/remote_session_cast_provider.dart';
 import '../../data/services/home_screen_sections_service.dart';
 import '../../data/services/plugin_sync_service.dart';
+import '../../data/services/imdb_external_lists_service.dart';
+import '../../data/services/tmdb_external_lists_service.dart';
 import '../../data/services/row_data_source.dart';
 import '../../data/services/socket_handler.dart';
 import '../../data/services/sync_service.dart';
@@ -70,6 +72,8 @@ void resetUserScopedSingletons() {
 
 void registerAppModule() {
   _getIt.registerLazySingleton(() => SocketHandler());
+  _getIt.registerLazySingleton(() => ImdbExternalListsService());
+  _getIt.registerLazySingleton(() => TmdbExternalListsService(_getIt<UserPreferences>()));
   _getIt.registerLazySingleton(
     () => BackgroundService(),
     dispose: (service) => service.dispose(),
