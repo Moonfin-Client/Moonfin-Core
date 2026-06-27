@@ -129,6 +129,7 @@ class UserConfiguration {
   final bool rememberSubtitleSelections;
   final String? audioLanguagePreference;
   final String? subtitleLanguagePreference;
+  final String? subtitleMode;
   final Map<String, dynamic> _raw;
 
   const UserConfiguration({
@@ -143,6 +144,7 @@ class UserConfiguration {
     this.rememberSubtitleSelections = true,
     this.audioLanguagePreference, // = null
     this.subtitleLanguagePreference, // = null
+    this.subtitleMode, // = null
     Map<String, dynamic> raw = const {},
   }) : _raw = raw;
 
@@ -163,6 +165,7 @@ class UserConfiguration {
             json['RememberSubtitleSelections'] as bool? ?? true,
         audioLanguagePreference: _nonEmptyString(json['AudioLanguagePreference']),
         subtitleLanguagePreference: _nonEmptyString(json['SubtitleLanguagePreference']),
+        subtitleMode: _subtitleModeString(json['SubtitleMode']),
         raw: json,
       );
 
@@ -173,6 +176,28 @@ class UserConfiguration {
 
   static String? _nonEmptyString(dynamic value) {
     if (value is String && value.trim().isNotEmpty) return value.trim();
+    return null;
+  }
+
+  /// Normalises the SubtitleMode field which Jellyfin/Emby may return as either a
+  /// string or an integer depending on the server version.  Returns a lowercase
+  /// string matching Jellyfin's enum names, or null if the value is absent.
+  static String? _subtitleModeString(dynamic value) {
+    if (value == null) return null;
+    if (value is String && value.trim().isNotEmpty) {
+      return value.trim().toLowerCase();
+    }
+    // SubtitlePlaybackMode: Default=0, Always=1, OnlyForced=2, None=3, Smart=4
+    if (value is int) {
+      return switch (value) {
+        0 => 'default',
+        1 => 'always',
+        2 => 'onlyforced',
+        3 => 'none',
+        4 => 'smart',
+        _ => null,
+      };
+    }
     return null;
   }
 
