@@ -6247,13 +6247,13 @@ abstract class AppLocalizations {
   /// Description for discover rows with plugin
   ///
   /// In en, this message translates to:
-  /// **'Enable to show rows on Seerr mainpage and drag to reorder. Selection and order syncs with Moonbase.'**
+  /// **'Enable rows to see on Seerr mainpage. Drag to reorder. Custom order syncs with Moonbase.'**
   String get discoverRowsDescriptionPlugin;
 
   /// Description for discover rows without plugin
   ///
   /// In en, this message translates to:
-  /// **'Enable to show rows on Seerr mainpage and drag to reorder. Selection and order syncs with Moonbase.'**
+  /// **'Enable rows to see on Seerr mainpage. Drag to reorder. Custom order syncs with Moonbase.'**
   String get discoverRowsDescription;
 
   /// Status: enabled

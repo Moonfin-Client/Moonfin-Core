@@ -153,6 +153,11 @@ class HomeViewModel extends ChangeNotifier {
         _prefs.get(UserPreferences.imdbTopEnglishMoviesEnabled);
   }
 
+  bool _isAnySeerrSectionEnabled() {
+    final seerrPrefs = GetIt.instance<SeerrPreferences>();
+    return seerrPrefs.rowsConfig.any((r) => r.enabled);
+  }
+
   static bool _isTmdbSectionType(HomeSectionType type) {
     return type == HomeSectionType.tmdbPopularMovies ||
         type == HomeSectionType.tmdbTopRatedMovies ||
@@ -293,7 +298,7 @@ class HomeViewModel extends ChangeNotifier {
       );
       final showAudioRows = _prefs.get(UserPreferences.displayAudioRows);
       final showSeerrRows =
-          _prefs.get(UserPreferences.displaySeerrRows) &&
+          _isAnySeerrSectionEnabled() &&
           GetIt.instance<PluginSyncService>().seerrAvailable;
       final showImdbRows = _isAnyImdbSectionEnabled();
       final showTmdbRows = _isAnyTmdbSectionEnabled();

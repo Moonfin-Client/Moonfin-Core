@@ -36,6 +36,7 @@ import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/seerr_preferences.dart';
+import '../../../preference/seerr_row_config.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/adaptive/adaptive_list_section.dart';

@@ -12,6 +12,7 @@ import '../../../data/services/home_screen_sections_service.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
+import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
 import '../../widgets/overlay_sheet.dart';
@@ -466,6 +467,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     }
   }
 
+  bool _isAnySeerrSectionEnabled() {
+    final seerrPrefs = GetIt.instance<SeerrPreferences>();
+    return seerrPrefs.rowsConfig.any((r) => r.enabled);
+  }
+
   bool _isHiddenByRowVisibilityGates(HomeSectionConfig section) {
     final showFavoritesRows = _prefs.get(UserPreferences.displayFavoritesRows);
     final showCollectionsRows = _prefs.get(
@@ -474,7 +480,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     final showGenresRows = _prefs.get(UserPreferences.displayGenresRows);
     final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
     final showSeerrRows =
-        _prefs.get(UserPreferences.displaySeerrRows) &&
+        _isAnySeerrSectionEnabled() &&
         GetIt.instance<PluginSyncService>().seerrAvailable;
 
     final hiddenByFavorites =

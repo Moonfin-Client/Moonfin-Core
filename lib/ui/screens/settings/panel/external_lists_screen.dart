@@ -913,3 +913,150 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
     );
   }
 }
+
+class _SeerrListsScreen extends StatefulWidget {
+  const _SeerrListsScreen();
+
+  @override
+  State<_SeerrListsScreen> createState() => _SeerrListsScreenState();
+}
+
+class _SeerrListsScreenState extends State<_SeerrListsScreen> {
+  late final SeerrPreferences _seerrPrefs;
+  late List<SeerrRowConfig> _rows;
+  final _syncService = GetIt.instance<PluginSyncService>();
+  final _scope = FocusScopeNode(debugLabel: 'SeerrListsScope');
+  final _firstFocusNode = FocusNode(debugLabel: 'seerr_display_rows');
+
+  @override
+  void initState() {
+    super.initState();
+    _seerrPrefs = GetIt.instance<SeerrPreferences>();
+    _rows = List.of(_seerrPrefs.rowsConfig);
+  }
+
+  @override
+  void dispose() {
+    _scope.dispose();
+    _firstFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _pushPersonalizationSync() {
+    final client = GetIt.instance.isRegistered<MediaServerClient>()
+        ? GetIt.instance<MediaServerClient>()
+        : null;
+    if (client != null) {
+      _syncService.pushSettings(client);
+    }
+  }
+
+  void _saveRows() {
+    _seerrPrefs.setRowsConfig(_rows);
+    _pushPersonalizationSync();
+    if (mounted) setState(() {});
+  }
+
+  String _rowLabel(SeerrRowType type, AppLocalizations l10n) => switch (type) {
+    SeerrRowType.recentRequests => l10n.recentRequests,
+    SeerrRowType.recentlyAdded => l10n.recentlyAdded,
+    SeerrRowType.trending => l10n.trending,
+    SeerrRowType.popularMovies => l10n.popularMovies,
+    SeerrRowType.movieGenres => l10n.movieGenres,
+    SeerrRowType.upcomingMovies => l10n.upcomingMovies,
+    SeerrRowType.studios => l10n.studios,
+    SeerrRowType.popularSeries => l10n.popularSeries,
+    SeerrRowType.seriesGenres => l10n.seriesGenres,
+    SeerrRowType.upcomingSeries => l10n.upcomingSeries,
+    SeerrRowType.networks => l10n.networks,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return withCleanSettingsTypography(
+      context,
+      RequestInitialFocus(
+        targetNode: PlatformDetection.isTV ? _firstFocusNode : null,
+        child: Scaffold(
+          appBar: buildSettingsAppBar(
+            context,
+            const Text('Seerr Lists'),
+          ),
+          body: FocusScope(
+            node: _scope,
+            autofocus: true,
+            child: ListView(
+              children: [
+                const _SectionHeader('Seerr Home Page Rows'),
+                adaptiveListSection(
+                  children: _rows.map((row) {
+                    final rowIndex = _rows.indexOf(row);
+                    return _SeerrRowSwitchTile(
+                      focusNode: rowIndex == 0 ? _firstFocusNode : null,
+                      title: _rowLabel(row.type, l10n),
+                      value: row.enabled,
+                      onChanged: (enabled) {
+                        setState(() {
+                          _rows[rowIndex] = row.copyWith(enabled: enabled);
+                        });
+                        _saveRows();
+                      },
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SeerrRowSwitchTile extends StatelessWidget {
+  final String title;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  final FocusNode? focusNode;
+
+  const _SeerrRowSwitchTile({
+    required this.title,
+    required this.value,
+    required this.onChanged,
+    this.focusNode,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TvFocusHighlight(
+      enabled: true,
+      builder: (context, focused) {
+        final iconColor = focused
+            ? AppColors.black.withValues(alpha: 0.54)
+            : (Theme.of(context).iconTheme.color ?? AppColorScheme.onSurface);
+        final secondary = buildSettingsLeadingIconShell(
+          context,
+          icon: const Icon(Icons.list_alt),
+          focused: focused,
+          iconColor: iconColor,
+        );
+
+        return SwitchListTile.adaptive(
+          focusNode: focusNode,
+          secondary: secondary,
+          title: Text(
+            title,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColorScheme.onSurface,
+            ),
+          ),
+          value: value,
+          onChanged: onChanged,
+        );
+      },
+    );
+  }
+}

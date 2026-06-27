@@ -49,7 +49,17 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
                 onTap: () =>
                     context.pushSettingsScreen(const _MetadataRatingsScreen()),
               ),
-
+              _TvSettingsListTile(
+                leading: Image.asset(
+                  'assets/icons/seerr.png',
+                  width: 24,
+                  height: 24,
+                ),
+                title: Text(l10n.seerr),
+                subtitle: Text(l10n.mediaRequestIntegration),
+                onTap: () =>
+                    context.pushSettingsScreen(const SeerrConfigScreen()),
+              ),
               _TvSettingsListTile(
                 leading: const Icon(Icons.list_alt),
                 title: Text(l10n.externalLists),

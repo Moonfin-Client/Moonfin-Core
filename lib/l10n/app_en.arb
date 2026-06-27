@@ -4680,11 +4680,11 @@
   "@discoverRows": {
     "description": "Section title for discover rows"
   },
-  "discoverRowsDescriptionPlugin": "Enable to show rows on Seerr mainpage and drag to reorder. Selection and order syncs with Moonbase.",
+  "discoverRowsDescriptionPlugin": "Enable rows to see on Seerr mainpage. Drag to reorder. Custom order syncs with Moonbase.",
   "@discoverRowsDescriptionPlugin": {
     "description": "Description for discover rows with plugin"
   },
-  "discoverRowsDescription": "Enable to show rows on Seerr mainpage and drag to reorder. Selection and order syncs with Moonbase.",
+  "discoverRowsDescription": "Enable rows to see on Seerr mainpage. Drag to reorder. Custom order syncs with Moonbase.",
   "@discoverRowsDescription": {
     "description": "Description for discover rows without plugin"
   },
