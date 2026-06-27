@@ -48,7 +48,8 @@ class PluginSyncService extends ChangeNotifier {
   String? get seerrUrl => _seerrUrl;
   bool _seerrEnabled = false;
   bool get seerrEnabled => _seerrEnabled;
-  bool get seerrAvailable => _pluginAvailable && _seerrEnabled;
+  bool get seerrAvailable =>
+      _pluginAvailable && _seerrEnabled && _prefs.get(UserPreferences.seerrEnabled);
   bool _seerrInfoAvailable = false;
   bool get seerrInfoAvailable => _seerrInfoAvailable;
 
@@ -170,6 +171,7 @@ class PluginSyncService extends ChangeNotifier {
       _prefs.getEffectivePreference(UserPreferences.seerrEnabled),
       enabled,
     );
+    _seerrPrefs.setEnabled(enabled);
     _prefs.notifyPreferenceChanged();
   }
 
@@ -217,7 +219,11 @@ class PluginSyncService extends ChangeNotifier {
 
         final enabled = _readBool(seerrConfig, 'enabled');
         final userEnabled = _readBool(seerrConfig, 'userEnabled');
-        _seerrEnabled = (enabled ?? _seerrEnabled) && (userEnabled ?? true);
+        _seerrEnabled = enabled ?? _seerrEnabled;
+
+        if (userEnabled != null) {
+          _setLocalSeerrEnabled(userEnabled);
+        }
 
         final variant = _readString(seerrConfig, 'variant');
         if (variant != null && variant.trim().isNotEmpty) {
@@ -228,9 +234,9 @@ class PluginSyncService extends ChangeNotifier {
         if (displayName != null && displayName.trim().isNotEmpty) {
           await _seerrPrefs.setMoonfinDisplayName(displayName);
         }
+      } else {
+        _setLocalSeerrEnabled(_seerrEnabled);
       }
-
-      _setLocalSeerrEnabled(_seerrEnabled);
 
       notifyListeners();
       return _PluginAvailabilityStatus.available;
@@ -1236,6 +1242,9 @@ class PluginSyncService extends ChangeNotifier {
     final value = data[serverKey];
     if (value is bool) {
       _store.set(_prefs.getEffectivePreference(pref), value);
+      if (pref == UserPreferences.seerrEnabled) {
+        _seerrPrefs.setEnabled(value);
+      }
     }
   }
 
