@@ -7,7 +7,6 @@ import '../../../data/services/plugin_sync_service.dart';
 import '../home/home_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
-import '../../../preference/seerr_preferences.dart';
 import '../../../preference/user_preferences.dart';
 import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -122,12 +121,6 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     setState(() {});
   }
 
-  void _onSeerrRowsToggleChanged() {
-    _pushPersonalizationSync();
-    if (!mounted) return;
-    setState(() {});
-  }
-
   void _onPlaylistsSortChanged() {
     _pushPersonalizationSync();
     _reloadHomeRows();
@@ -143,7 +136,6 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final seerrEnabledOnAccount = GetIt.instance<SeerrPreferences>().enabled;
 
     final showFavoritesRows = _prefs.get(UserPreferences.displayFavoritesRows);
     final showCollectionsRows = _prefs.get(
@@ -373,28 +365,6 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                     ),
                 ],
               ),
-
-              if (_syncService.seerrAvailable) ...[
-                _SectionHeader(l10n.seerr),
-                adaptiveListSection(
-                  children: [
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.displaySeerrRows,
-                      title: l10n.displaySeerrRows,
-                      subtitle: seerrEnabledOnAccount
-                          ? l10n.displaySeerrRowsSubtitle
-                          : '${l10n.displaySeerrRowsSubtitle} (Requires Seerr login in Plugins)',
-                      enabled: seerrEnabledOnAccount,
-                      iconBuilder: (size, color) => Image.asset(
-                        'assets/icons/seerr.png',
-                        width: size,
-                        height: size,
-                      ),
-                      onChanged: _onSeerrRowsToggleChanged,
-                    ),
-                  ],
-                ),
-              ],
               const SizedBox(height: 32),
             ],
           ),

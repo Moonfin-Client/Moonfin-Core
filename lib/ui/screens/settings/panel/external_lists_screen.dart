@@ -103,6 +103,18 @@ class _ExternalListsScreenState extends State<_ExternalListsScreen> {
                         subtitle: const Text('Toggle Upcoming Calendars from Radarr/Sonarr.'),
                         onTap: () => context.pushSettingsScreen(const _UpcomingCalendarsScreen()),
                       ),
+                    if (syncService.seerrAvailable)
+                      _TvSettingsListTile(
+                        leading: Image.asset(
+                          'assets/icons/seerr.png',
+                          width: 24,
+                          height: 24,
+                        ),
+                        title: const Text('Seerr Lists'),
+                        subtitle: const Text('Configure Seerr Discovery Rows'),
+                        onTap: () =>
+                            context.pushSettingsScreen(const _SeerrListsScreen()),
+                      ),
                   ],
                 ),
               ),
