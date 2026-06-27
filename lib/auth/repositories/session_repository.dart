@@ -58,6 +58,7 @@ class SessionRepository {
   StreamSubscription<ServerWebSocketMessage>? _remoteCommandSubscription;
   double _lastUnmutedVolume = 100;
   bool _remoteMuted = false;
+  bool _hasCheckedWriteAccess = false;
 
   final _stateController = StreamController<SessionState>.broadcast();
 
@@ -105,6 +106,9 @@ class SessionRepository {
 
   SessionState get state => _state;
   Stream<SessionState> get stateStream => _stateController.stream;
+
+  bool get hasCheckedWriteAccess => _hasCheckedWriteAccess;
+  set hasCheckedWriteAccess(bool value) => _hasCheckedWriteAccess = value;
 
   Future<bool> restoreSession() async {
     _setState(SessionState.restoring);
@@ -308,6 +312,7 @@ class SessionRepository {
 
     _activeServerId = null;
     _activeUserId = null;
+    _hasCheckedWriteAccess = false;
     _userRepository.setCurrentUser(null);
     _setState(SessionState.ready);
   }

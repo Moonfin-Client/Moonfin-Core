@@ -7680,5 +7680,37 @@
   "groupMultipleRoles": "Group multiple roles",
   "@groupMultipleRoles": {
     "description": "Option to group multiple roles for a person"
+  },
+  "libraryWriteAccessWarningTitle": "Library Write Access Warning",
+  "@libraryWriteAccessWarningTitle": {
+    "description": "Title for library write access warning dialog"
+  },
+  "libraryWriteAccessHowToFix": "How to fix this:",
+  "@libraryWriteAccessHowToFix": {
+    "description": "Section header for write access troubleshooting"
+  },
+  "libraryWriteAccessFixSteps": "1. Grant write permissions to the Jellyfin service user (e.g., jellyfin or Docker PUID/PGID) for your media library folders on the server.\n\n2. Or, go to your Jellyfin Dashboard -> Libraries, edit this library, and disable 'Save artwork into media folders' to store artwork in Jellyfin's internal database.",
+  "@libraryWriteAccessFixSteps": {
+    "description": "Troubleshooting steps for write access issues"
+  },
+  "dismiss": "Dismiss",
+  "@dismiss": {
+    "description": "Dismiss button text"
+  },
+  "libraryWriteAccessProactiveBody": "Your '{libraryName}' library is configured to save artwork directly into the media folders ('Save artwork into media folders' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n{failedPath}",
+  "@libraryWriteAccessProactiveBody": {
+    "description": "Proactive warning message about server write access",
+    "placeholders": {
+      "libraryName": {
+        "type": "String"
+      },
+      "failedPath": {
+        "type": "String"
+      }
+    }
+  },
+  "libraryWriteAccessReactiveBody": "It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders ('Save artwork into media folders' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.",
+  "@libraryWriteAccessReactiveBody": {
+    "description": "Reactive error warning message when artwork update fails"
   }
 }

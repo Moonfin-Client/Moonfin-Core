@@ -5776,7 +5776,8 @@ class _ActionButtonsState extends State<_ActionButtons> {
         !forceStartOver && (item.playbackPosition?.inMilliseconds ?? 0) > 0;
 
     final client = GetIt.instance<MediaServerClient>();
-    final canChangeArtwork = client.serverType == ServerType.jellyfin;
+    final isAdmin = GetIt.instance<UserRepository>().currentUser?.isAdministrator ?? false;
+    final canChangeArtwork = client.serverType == ServerType.jellyfin && isAdmin;
 
     final options = [
       if (canChangeArtwork)

@@ -10,6 +10,9 @@ import '../../data/models/aggregated_item.dart';
 import '../../l10n/app_localizations.dart';
 import '../../util/focus/key_event_utils.dart';
 import '../../util/platform_detection.dart';
+import '../../auth/repositories/user_repository.dart';
+import '../../auth/repositories/session_repository.dart';
+import 'package:dio/dio.dart';
 import 'adaptive/adaptive_dialog.dart';
 import 'focus/focusable_wrapper.dart';
 import 'overlay_sheet.dart';
@@ -167,6 +170,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     _refreshItemMetadata();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusFirstItem();
+      _checkLibrariesWriteAccess();
     });
   }
 
@@ -468,6 +472,150 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     return '${client.baseUrl}/Items/${_item.id}/Images/$category?tag=$tag&maxWidth=300$indexParam';
   }
 
+  Future<void> _checkLibrariesWriteAccess() async {
+    final isAdmin = GetIt.instance<UserRepository>().currentUser?.isAdministrator ?? false;
+    if (!isAdmin) return;
+
+    final sessionRepo = GetIt.instance<SessionRepository>();
+    if (sessionRepo.hasCheckedWriteAccess) return;
+
+    final client = GetIt.instance<MediaServerClient>();
+    final token = client.accessToken;
+    if (token == null) return;
+
+    final dio = Dio();
+    configureServerDio(dio);
+    try {
+      final response = await dio.get(
+        '${client.baseUrl}/Moonfin/Libraries/CheckWriteAccess',
+        options: Options(headers: {
+          'Authorization': 'MediaBrowser Token="$token"',
+        }),
+      );
+      sessionRepo.hasCheckedWriteAccess = true;
+
+      final data = response.data;
+      if (data is List) {
+        final reports = data.cast<Map<String, dynamic>>();
+        final itemPath = _item.rawData['Path'] as String?;
+        if (itemPath != null && itemPath.isNotEmpty) {
+          Map<String, dynamic>? matchingFailedReport;
+          String? matchingFailedPath;
+
+          for (final report in reports) {
+            final failedPaths = report['FailedPaths'] as List?;
+            if (failedPaths != null) {
+              for (final path in failedPaths) {
+                if (path is String && itemPath.startsWith(path)) {
+                  matchingFailedReport = report;
+                  matchingFailedPath = path;
+                  break;
+                }
+              }
+            }
+            if (matchingFailedReport != null) break;
+          }
+
+          if (matchingFailedReport != null && mounted) {
+            final libraryName = matchingFailedReport['LibraryName'] ?? 'Library';
+            final l10n = AppLocalizations.of(context);
+            await _showWriteAccessWarningDialog(
+              l10n.libraryWriteAccessProactiveBody(libraryName.toString(), matchingFailedPath ?? ''),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('[Moonfin] Failed to check libraries write access: $e');
+    } finally {
+      dio.close(force: true);
+    }
+  }
+
+  Future<void> _handleActionError(dynamic error, String actionName) async {
+    bool isLocalMetadataEnabled = false;
+    try {
+      final client = GetIt.instance<MediaServerClient>();
+      final folders = await client.adminLibraryApi.getVirtualFolders();
+      final itemPath = _item.rawData['Path'] as String?;
+      if (itemPath != null && itemPath.isNotEmpty) {
+        for (final folder in folders) {
+          if (folder.locations.any((loc) => itemPath.startsWith(loc))) {
+            isLocalMetadataEnabled =
+                folder.libraryOptions?['SaveLocalMetadata'] as bool? ?? false;
+            break;
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Failed to check virtual folders: $e');
+    }
+
+    if (!mounted) return;
+
+    if (isLocalMetadataEnabled) {
+      final l10n = AppLocalizations.of(context);
+      await _showWriteAccessWarningDialog(l10n.libraryWriteAccessReactiveBody);
+    } else {
+      final l10n = AppLocalizations.of(context);
+      final message = switch (actionName) {
+        'download' => l10n.imageDownloadFailed(error.toString()),
+        'delete' => l10n.imageDeleteFailed(error.toString()),
+        'clear' => l10n.clearAllArtworkFailed(error.toString()),
+        'upload' => l10n.imageUploadFailed(error.toString()),
+        _ => error.toString(),
+      };
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    }
+  }
+
+  Future<void> _showWriteAccessWarningDialog(String bodyText) async {
+    final l10n = AppLocalizations.of(context);
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColorScheme.surface,
+        title: Text(l10n.libraryWriteAccessWarningTitle),
+        content: Scrollbar(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(bodyText),
+                const SizedBox(height: 12),
+                Text(
+                  l10n.libraryWriteAccessHowToFix,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(l10n.libraryWriteAccessFixSteps),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          FocusableWrapper(
+            autofocus: true,
+            borderRadius: 8,
+            suppressFocusGlow: true,
+            onSelect: () => Navigator.of(context).pop(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                l10n.dismiss,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _fetchRemoteImages(String category) async {
     if (!mounted) return;
     setState(() {
@@ -503,7 +651,6 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     String category,
     Map<String, dynamic> remoteImage,
   ) async {
-    final l10n = AppLocalizations.of(context);
     final url = remoteImage['Url'] as String?;
     if (url == null || url.isEmpty) return;
 
@@ -539,9 +686,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         setState(() {
           _actionInProgress.remove(category);
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.imageDownloadFailed(e.toString()))),
-        );
+        await _handleActionError(e, 'download');
       }
     }
   }
@@ -611,10 +756,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         setState(() {
           _actionInProgress.remove(category);
         });
-        final l10n = AppLocalizations.of(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.imageDeleteFailed(e.toString()))),
-        );
+        await _handleActionError(e, 'delete');
       }
     }
   }
@@ -692,10 +834,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         setState(() {
           _actionInProgress.clear();
         });
-        final l10n = AppLocalizations.of(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.clearAllArtworkFailed(e.toString()))),
-        );
+        await _handleActionError(e, 'clear');
       }
     }
   }
@@ -753,9 +892,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         setState(() {
           _actionInProgress.remove(category);
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.imageUploadFailed(e.toString()))),
-        );
+        await _handleActionError(e, 'upload');
       }
     }
   }
