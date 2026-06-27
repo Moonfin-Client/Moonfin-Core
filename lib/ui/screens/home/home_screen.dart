@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonfin/util/language_matching.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -1388,6 +1389,7 @@ class _ContentRowsState extends State<_ContentRows>
     final mediaSourceId = item.mediaSources.isNotEmpty
         ? item.mediaSources.first['Id']?.toString()
         : null;
+    final audioIndex = _getPreferredAudioIndex(item);
     final startTicks = startPosition.inMicroseconds * 10;
     final params = <String, String>{
       'Static': 'false',
@@ -1404,6 +1406,7 @@ class _ContentRowsState extends State<_ContentRows>
       if (kIsWeb) 'TranscodingContainer': 'mp4',
       if (startTicks > 0) 'StartTimeTicks': '$startTicks',
       'MediaSourceId': ?mediaSourceId,
+      'AudioStreamIndex': ?audioIndex?.toString(),
       if (client.accessToken != null) 'ApiKey': client.accessToken!,
     };
 
@@ -1414,6 +1417,46 @@ class _ContentRowsState extends State<_ContentRows>
     final fullPath = '$normalizedBasePath/Videos/${item.id}/$streamPath';
 
     return baseUri.replace(path: fullPath, queryParameters: params).toString();
+  }
+
+  int? _getPreferredAudioIndex(AggregatedItem item) {
+    final allAudio = item.mediaStreams.where((s) => s['Type'] == 'Audio').toList();
+    if (allAudio.isEmpty) return null;
+
+    final preferred = widget.prefs.get(UserPreferences.defaultAudioLanguage).trim();
+    List<Map<String, dynamic>> candidates = [];
+
+    // find tracks matching the preferred language
+    if (preferred.isNotEmpty) {
+      final norm = normalizeLanguage(preferred);
+      final iso3 = toIso3Language(norm);
+      candidates = allAudio.where((s) {
+        final lang = (s['Language'] as String?)?.trim();
+        return languageMatchesPreferred(lang, norm, iso3);
+      }).toList();
+    }
+
+    // if no language matches (or no preference set), use all audio tracks
+    final finalPool = candidates.isNotEmpty ? candidates : allAudio;
+
+    // return if only one option remains
+    if (finalPool.length == 1) return finalPool.first['Index'] as int?;
+
+    // Tie breaker selection
+    // Prefer tracks not marked as Commentary or Audio Description
+    // Prefer the track marked as Default
+    // Prefer the lowest index
+    final bestMatch = finalPool.firstWhere(
+          (s) => s['IsCommentary'] != true &&
+          s['IsAudioDescription'] != true &&
+          s['IsDefault'] == true,
+      orElse: () => finalPool.firstWhere(
+            (s) => s['IsCommentary'] != true && s['IsAudioDescription'] != true,
+        orElse: () => finalPool.first,
+      ),
+    );
+
+    return bestMatch['Index'] as int?;
   }
 
   bool _isMediaBarIncluded() {
