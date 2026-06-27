@@ -109,6 +109,14 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                 onTap: () =>
                     context.pushSettingsScreen(const HomeRowTogglesScreen()),
               ),
+              if (GetIt.instance<PluginSyncService>().seerrAvailable)
+                _TvSettingsListTile(
+                  leading: const Icon(Icons.link),
+                  title: const Text('External Home Rows'),
+                  subtitle: const Text('Set-up external sources for Home Rows (e.g., Seerr, IMDb, Letterboxd, and more!)'),
+                  onTap: () =>
+                      context.pushSettingsScreen(const _ExternalListsScreen()),
+                ),
             ],
           ),
 

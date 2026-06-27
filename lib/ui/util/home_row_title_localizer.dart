@@ -77,6 +77,9 @@ String localizeHomeRowTitle({
     return _localizeLatestRowTitle(row.title, l10n);
   }
 
+  if (row.id.startsWith('imdb_')) {
+    return row.title.replaceAll('IMDb ', '').replaceAll('IMDb', '').trim();
+  }
   return row.title;
 }
 

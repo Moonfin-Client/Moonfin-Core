@@ -1460,6 +1460,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final lastExternalRowsRefreshTime = Preference(
+    key: 'last_external_rows_refresh_time',
+    defaultValue: 0,
+  );
+
   static final imdbTop250MoviesEnabled = Preference(
     key: 'imdb_top_250_movies_enabled',
     defaultValue: false,

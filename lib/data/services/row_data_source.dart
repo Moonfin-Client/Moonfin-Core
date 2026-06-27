@@ -17,6 +17,8 @@ import '../utils/latest_media_row_normalizer.dart';
 import '../utils/genre_browse_utils.dart';
 import '../utils/next_up_enrichment.dart';
 import '../utils/playlist_utils.dart';
+import 'package:flutter/foundation.dart';
+import 'custom_external_lists_service.dart';
 
 class RowDataSource {
   final MediaServerClient _client;
@@ -1494,6 +1496,58 @@ class RowDataSource {
             id: rowId,
             title: title,
             rowType: HomeRowType.playlists,
+          );
+        }
+
+      case HomeSectionPluginSource.custom:
+        try {
+          final customService = GetIt.instance<CustomExternalListsService>();
+          final config = HomeSectionConfig.pluginDynamic(
+            serverId: serverId,
+            pluginSection: section,
+            pluginAdditionalData: additionalData,
+            pluginDisplayText: title,
+            pluginSource: pluginSource,
+          );
+          var items = await customService.loadCustomRowFromCache(config);
+          if (items.isEmpty) {
+            items = await customService.fetchCustomRow(config);
+          }
+          Map<String, dynamic> rowConfig = {};
+          try {
+            rowConfig = jsonDecode(additionalData ?? '{}') as Map<String, dynamic>;
+          } catch (_) {}
+          final showUserRatings = rowConfig['show_user_ratings'] == true;
+
+          final aggregatedItems = items.map((item) {
+            return AggregatedItem(
+              id: item.imdbId,
+              serverId: 'seerr',
+              rawData: {
+                'Name': item.title,
+                'Type': item.type,
+                'Overview': '',
+                'PosterPath': item.posterUrl ?? '',
+                'BackdropPath': item.posterUrl ?? '',
+                'ProductionYear': item.year,
+                'SeerrMediaType': item.type == 'Series' ? 'tv' : 'movie',
+                'UserRating': item.userRating ?? '',
+                'ShowUserRatings': showUserRatings,
+              },
+            );
+          }).toList();
+          return HomeRow(
+            id: rowId,
+            title: title,
+            rowType: HomeRowType.pluginDynamic,
+            items: aggregatedItems,
+          );
+        } catch (e) {
+          debugPrint('[RowDataSource] Failed to load custom dynamic section: $e');
+          return HomeRow(
+            id: rowId,
+            title: title,
+            rowType: HomeRowType.pluginDynamic,
           );
         }
 

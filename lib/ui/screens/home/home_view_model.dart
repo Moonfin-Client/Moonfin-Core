@@ -28,6 +28,7 @@ import '../../../preference/seerr_preferences.dart';
 import '../../../data/viewmodels/seerr_discover_view_model.dart';
 import '../../../data/repositories/mdblist_repository.dart';
 import 'package:dio/dio.dart';
+import '../../../data/services/custom_external_lists_service.dart';
 
 class HomeViewModel extends ChangeNotifier {
   final RowDataSource _dataSource;
@@ -242,6 +243,7 @@ class HomeViewModel extends ChangeNotifier {
        _ownerUserId = client.userId ?? '';
 
   Future<void> load({bool preserveExisting = false, bool forceRefresh = false}) async {
+    _checkAndTriggerDailyExternalRowsRefresh();
     if (_isLoading) {
       _reloadRequestedWhileLoading = true;
       _pendingReloadPreserveExisting =
@@ -308,6 +310,7 @@ class HomeViewModel extends ChangeNotifier {
           .where(
             (c) =>
                 (c.isBuiltin ||
+                    c.pluginSource == HomeSectionPluginSource.custom ||
                     (c.serverId != null && c.serverId == _serverId)) &&
                 (showFavoritesRows || !_isFavoriteSectionType(c.type)) &&
                 (showCollectionsRows ||
@@ -804,6 +807,7 @@ class HomeViewModel extends ChangeNotifier {
       case HomeSectionPluginSource.collections:
       case HomeSectionPluginSource.genres:
       case HomeSectionPluginSource.playlists:
+      case HomeSectionPluginSource.custom:
         return const <String>{};
       case HomeSectionPluginSource.hss:
         final builtin = _builtinForPluginSection(cfg.pluginSection);
@@ -2887,6 +2891,60 @@ class HomeViewModel extends ChangeNotifier {
       debugPrint('[MergedCalendar] Failed to load merged calendar: $e');
       return const [];
     }
+  }
+
+  Future<void> _checkAndTriggerDailyExternalRowsRefresh() async {
+    final lastRefreshMs = _prefs.get(UserPreferences.lastExternalRowsRefreshTime);
+    final now = DateTime.now();
+    final lastRefreshDate = DateTime.fromMillisecondsSinceEpoch(lastRefreshMs);
+    final isDifferentDay = lastRefreshMs == 0 ||
+        now.year != lastRefreshDate.year ||
+        now.month != lastRefreshDate.month ||
+        now.day != lastRefreshDate.day ||
+        now.difference(lastRefreshDate).inHours >= 24;
+
+    if (!isDifferentDay) return;
+
+    final syncService = GetIt.instance<PluginSyncService>();
+    if (!syncService.seerrAvailable) return;
+
+    debugPrint('[DailyRefresh] Day changed or first run. Triggering background cache refresh of enabled lists...');
+    
+    await _prefs.set(UserPreferences.lastExternalRowsRefreshTime, now.millisecondsSinceEpoch);
+
+    unawaited(() async {
+      try {
+        final futures = <Future<void>>[];
+
+        // Custom Enabled Rows
+
+        // 3. Custom Enabled Rows
+        final customService = GetIt.instance<CustomExternalListsService>();
+        final configs = _prefs.homeSectionsConfig;
+        for (final config in configs) {
+          if (config.pluginSource == HomeSectionPluginSource.custom && config.enabled) {
+            futures.add(() async {
+              try {
+                final items = await customService.fetchCustomRow(config);
+                if (items.isNotEmpty) {
+                  await customService.saveCustomRowToCache(config, items);
+                }
+              } catch (e) {
+                debugPrint('[DailyRefresh] Failed to refresh custom row ${config.pluginSection}: $e');
+              }
+            }());
+          }
+        }
+
+        if (futures.isNotEmpty) {
+          await Future.wait(futures);
+          debugPrint('[DailyRefresh] Background cache refresh complete. Reloading HomeViewModel rows...');
+          await load(preserveExisting: true);
+        }
+      } catch (e) {
+        debugPrint('[DailyRefresh] Error during background refresh: $e');
+      }
+    }());
   }
 }
 
