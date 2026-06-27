@@ -341,6 +341,7 @@ class Media3VideoView(
     companion object {
         private const val TS_SEARCH_BYTES_LOW_RAM = TsExtractor.TS_PACKET_SIZE * 1800
         private const val TS_SEARCH_BYTES_DEFAULT = TsExtractor.DEFAULT_TIMESTAMP_SEARCH_BYTES
+        private const val EXTERNAL_SUBTITLE_ID_BASE = 10000
         private const val ASS_FALLBACK_FONT_ASSET = "fonts/NotoSans-Regular.ttf"
         private const val ASS_FALLBACK_FONT_NAME = "Noto Sans"
         private val ASS_SYSTEM_CJK_FONTS = listOf(
@@ -944,7 +945,7 @@ class Media3VideoView(
         httpDataSourceFactory = DefaultHttpDataSource.Factory()
             .setAllowCrossProtocolRedirects(true)
         val bootDataSourceFactory = DefaultDataSource.Factory(context, httpDataSourceFactory)
-        val assHandler = AssHandler(AssRenderType.OVERLAY_OPEN_GL)
+        val assHandler = AssHandler(AssRenderType.OVERLAY_CANVAS)
         registerAssFonts(assHandler)
         val assParserFactory = AssSubtitleParserFactory(assHandler)
         val bootMediaSourceFactory = DefaultMediaSourceFactory(
@@ -2320,6 +2321,8 @@ class Media3VideoView(
 
         val subtitleBuilder = MediaItem.SubtitleConfiguration.Builder(Uri.parse(url))
             .setSelectionFlags(C.SELECTION_FLAG_DEFAULT)
+            // ass-media matches selected Media3 text tracks back to libass tracks by ID.
+            .setId((EXTERNAL_SUBTITLE_ID_BASE + externalSubtitleConfigurations.size).toString())
 
         val mimeType = codecToMimeType(codec)
         if (!mimeType.isNullOrEmpty()) {
