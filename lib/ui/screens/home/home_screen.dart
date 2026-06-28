@@ -2970,8 +2970,10 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   String? _rowSubtitle(HomeRow row, AppLocalizations l10n) {
+    if (row.id == 'merged_calendar' || row.id == 'radarr_calendar' || row.id == 'sonarr_calendar') {
+      return 'Radarr and Sonarr Calendars';
+    }
     if (row.id.startsWith('seerr_')) return l10n.seerrDiscoveryRows;
-    if (row.id.startsWith('imdb_')) return 'IMDb Lists';
     if (row.id.startsWith('tmdb_')) return 'TMDB Lists';
 
     final config = widget.prefs.homeSectionsConfig.firstWhereOrNull((c) => c.stableId == row.id);
@@ -2990,14 +2992,17 @@ class _ContentRowsState extends State<_ContentRows>
         _ => source.toUpperCase(),
       };
       final typeLabel = switch (type) {
-        'user_list' => 'Custom List',
+        'user_list' => source == 'tmdb'
+            ? 'List'
+            : (source == 'mdblist' ? '' : 'List from URL'),
+        'user_diary' => 'Diary',
         'watchlist' => 'Watchlist',
-        'films' => 'Films',
+        'films' => 'Complete Films',
         'awards_events' => 'Awards/Events',
-        'movie_collection' => 'Movie Collection',
+        'movie_collection' => 'Collection',
         _ => type,
       };
-      return '$sourceLabel $typeLabel';
+      return '$sourceLabel $typeLabel'.trim();
     }
     return null;
   }
@@ -4505,14 +4510,19 @@ class _ContentRowsState extends State<_ContentRows>
       return prefs.get(UserPreferences.homeRowsUniversalImageType);
     }
 
-    final sectionType = _sectionTypeForRow(row);
+    final sectionType = _sectionTypeForRow(row, prefs);
     if (sectionType == null) {
       return ImageType.poster;
     }
     return prefs.get(UserPreferences.homeRowImageType(sectionType));
   }
 
-  static HomeSectionType? _sectionTypeForRow(HomeRow row) {
+  static HomeSectionType? _sectionTypeForRow(HomeRow row, UserPreferences prefs) {
+    final config = prefs.homeSectionsConfig.firstWhereOrNull((c) => c.stableId == row.id);
+    if (config != null) {
+      return config.type;
+    }
+
     return switch (row.rowType) {
       HomeRowType.resume => HomeSectionType.resume,
       HomeRowType.nextUp => HomeSectionType.nextUp,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
@@ -10,12 +11,20 @@ import 'package:moonfin/data/services/custom_external_lists_service.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  final tempDir = Directory.systemTemp.createTempSync('moonfin_test_');
+
   // Mock path_provider channel
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(
           const MethodChannel('plugins.flutter.io/path_provider'),
           (MethodCall methodCall) async {
-    return '.';
+    return tempDir.path;
+  });
+
+  tearDownAll(() {
+    try {
+      tempDir.deleteSync(recursive: true);
+    } catch (_) {}
   });
 
   group('CustomExternalLists Config Mapping', () {

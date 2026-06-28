@@ -8,12 +8,9 @@ class _ExternalListsScreen extends StatefulWidget {
 }
 
 class _ExternalListsScreenState extends State<_ExternalListsScreen> {
-  final _imdbScope = FocusScopeNode(
+  final _externalListsScope = FocusScopeNode(
     debugLabel: 'ExternalListsScope',
     traversalEdgeBehavior: TraversalEdgeBehavior.stop,
-  );
-  final _imdbListsFocusNode = FocusNode(
-    debugLabel: 'imdb_lists_button',
   );
   final _homeSectionsFocusNode = FocusNode(
     debugLabel: 'home_sections_shortcut_button',
@@ -55,8 +52,7 @@ class _ExternalListsScreenState extends State<_ExternalListsScreen> {
 
   @override
   void dispose() {
-    _imdbScope.dispose();
-    _imdbListsFocusNode.dispose();
+    _externalListsScope.dispose();
     _homeSectionsFocusNode.dispose();
     _refreshFocusNode.dispose();
     super.dispose();
@@ -177,7 +173,7 @@ class _ExternalListsScreenState extends State<_ExternalListsScreen> {
                 Text(l10n.externalLists),
               ),
               body: FocusScope(
-                node: _imdbScope,
+                node: _externalListsScope,
                 autofocus: true,
                 child: ListView(
                   children: [
@@ -205,13 +201,6 @@ class _ExternalListsScreenState extends State<_ExternalListsScreen> {
                     const _SectionHeader('External Home Row Configurations'),
                     adaptiveListSection(
                       children: [
-                        _TvSettingsListTile(
-                          focusNode: _imdbListsFocusNode,
-                          leading: const Icon(Icons.movie_outlined),
-                          title: const Text('IMDb Lists'),
-                          subtitle: const Text('Configure IMDb Top 250, Popular, and other charts.'),
-                          onTap: () => context.pushSettingsScreen(const _ImdbListsScreen()),
-                        ),
                         _TvSettingsListTile(
                           leading: const Icon(Icons.trending_up),
                           title: const Text('TMDB Lists'),
@@ -245,9 +234,9 @@ class _ExternalListsScreenState extends State<_ExternalListsScreen> {
                           ),
                         _TvSettingsListTile(
                           leading: const Icon(Icons.tune_outlined),
-                          title: const Text('Fully Custom Home Rows Wizard'),
+                          title: const Text('Custom Home Rows Wizard'),
                           subtitle: const Text(
-                              'ADVANCED: Configure fully customized home rows from a variety of sources.'),
+                              'ADVANCED: Configure customized home rows from a variety of sources.'),
                           onTap: () => context
                               .pushSettingsScreen(const _CustomListsScreen()),
                         ),
@@ -259,239 +248,6 @@ class _ExternalListsScreenState extends State<_ExternalListsScreen> {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class _ImdbListsScreen extends StatefulWidget {
-  const _ImdbListsScreen();
-
-  @override
-  State<_ImdbListsScreen> createState() => _ImdbListsScreenState();
-}
-
-class _ImdbListsScreenState extends State<_ImdbListsScreen> {
-  bool _isFetching = false;
-  final _scope = FocusScopeNode(debugLabel: 'ImdbListsScope');
-  final _firstFocusNode = FocusNode(debugLabel: 'imdb_top_250_movies');
-
-  @override
-  void dispose() {
-    _scope.dispose();
-    _firstFocusNode.dispose();
-    super.dispose();
-  }
-
-  Future<bool> _fetchAndCacheList(HomeSectionType type, String title) async {
-    return true;
-  }
-
-  void _syncSingleImdbSectionState(HomeSectionType type, bool enabled) {
-    final prefs = GetIt.instance<UserPreferences>();
-    final configs = List<HomeSectionConfig>.from(prefs.homeSectionsConfig);
-
-    final idx = configs.indexWhere((c) => c.type == type);
-    var changed = false;
-    if (idx >= 0) {
-      if (configs[idx].enabled != enabled) {
-        configs[idx] = configs[idx].copyWith(enabled: enabled);
-        changed = true;
-      }
-    } else {
-      configs.add(HomeSectionConfig(
-        type: type,
-        enabled: enabled,
-        order: configs.length,
-      ));
-      changed = true;
-    }
-
-    if (changed) {
-      prefs.setHomeSectionsConfig(configs);
-    }
-    _pushPersonalizationSync();
-  }
-
-  String _stripImdb(String title) {
-    if (title.startsWith('IMDb ')) {
-      return title.substring(5);
-    }
-    return title;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final prefs = GetIt.instance<UserPreferences>();
-
-    return withCleanSettingsTypography(
-      context,
-      RequestInitialFocus(
-        targetNode: PlatformDetection.isTV ? _firstFocusNode : null,
-        child: Scaffold(
-          appBar: buildSettingsAppBar(
-            context,
-            const Text('IMDb Lists'),
-          ),
-          body: FocusScope(
-            node: _scope,
-            autofocus: true,
-            child: ListView(
-              children: [
-                adaptiveListSection(
-                  children: [
-                    SwitchPreferenceTile(
-                      focusNode: _firstFocusNode,
-                      preference: UserPreferences.imdbTop250MoviesEnabled,
-                      title: _stripImdb(l10n.imdbTop250Movies),
-                      icon: Icons.movie_outlined,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.imdbTop250Movies,
-                            l10n.imdbTop250Movies,
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.imdbTop250MoviesEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleImdbSectionState(
-                          HomeSectionType.imdbTop250Movies,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.imdbTop250TvShowsEnabled,
-                      title: _stripImdb(l10n.imdbTop250TvShows),
-                      icon: Icons.live_tv,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.imdbTop250TvShows,
-                            l10n.imdbTop250TvShows,
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.imdbTop250TvShowsEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleImdbSectionState(
-                          HomeSectionType.imdbTop250TvShows,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.imdbMostPopularMoviesEnabled,
-                      title: _stripImdb(l10n.imdbMostPopularMovies),
-                      icon: Icons.trending_up,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.imdbMostPopularMovies,
-                            l10n.imdbMostPopularMovies,
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.imdbMostPopularMoviesEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleImdbSectionState(
-                          HomeSectionType.imdbMostPopularMovies,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.imdbMostPopularTvShowsEnabled,
-                      title: _stripImdb(l10n.imdbMostPopularTvShows),
-                      icon: Icons.live_tv,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.imdbMostPopularTvShows,
-                            l10n.imdbMostPopularTvShows,
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.imdbMostPopularTvShowsEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleImdbSectionState(
-                          HomeSectionType.imdbMostPopularTvShows,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.imdbLowestRatedMoviesEnabled,
-                      title: _stripImdb(l10n.imdbLowestRatedMovies),
-                      icon: Icons.trending_down,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.imdbLowestRatedMovies,
-                            l10n.imdbLowestRatedMovies,
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.imdbLowestRatedMoviesEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleImdbSectionState(
-                          HomeSectionType.imdbLowestRatedMovies,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                    SwitchPreferenceTile(
-                      preference: UserPreferences.imdbTopEnglishMoviesEnabled,
-                      title: _stripImdb(l10n.imdbTopEnglishMovies),
-                      icon: Icons.language,
-                      enabled: !_isFetching,
-                      onChangedValue: (isEnabled) async {
-                        if (_isFetching) return;
-                        if (isEnabled) {
-                          final success = await _fetchAndCacheList(
-                            HomeSectionType.imdbTopEnglishMovies,
-                            l10n.imdbTopEnglishMovies,
-                          );
-                          if (!success) {
-                            await prefs.set(UserPreferences.imdbTopEnglishMoviesEnabled, false);
-                            setState(() {});
-                            return;
-                          }
-                        }
-                        _syncSingleImdbSectionState(
-                          HomeSectionType.imdbTopEnglishMovies,
-                          isEnabled,
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -940,6 +696,11 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
 
     final radarrEnabled = prefs.get(UserPreferences.enableRadarrCalendar);
     final sonarrEnabled = prefs.get(UserPreferences.enableSonarrCalendar);
+    final calendarsCanMerge = radarrEnabled && sonarrEnabled;
+
+    if (!calendarsCanMerge && prefs.get(UserPreferences.mergeRadarrSonarrCalendars)) {
+      prefs.set(UserPreferences.mergeRadarrSonarrCalendars, false);
+    }
 
     return withCleanSettingsTypography(
       context,
@@ -962,6 +723,7 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
                       preference: UserPreferences.mergeRadarrSonarrCalendars,
                       title: "Merge Sonarr and Radarr Calendars?",
                       icon: Icons.merge_type,
+                      enabled: calendarsCanMerge,
                       onChanged: () => setState(() {}),
                     ),
                   ],
@@ -1076,7 +838,24 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
   void initState() {
     super.initState();
     _seerrPrefs = GetIt.instance<SeerrPreferences>();
-    _rows = List.of(_seerrPrefs.rowsConfig);
+    final prefs = GetIt.instance<UserPreferences>();
+    final configs = prefs.homeSectionsConfig;
+
+    _rows = SeerrRowConfig.defaults().map((defaultRow) {
+      final homeSectionType = _mapSeerrRowTypeToHomeSection(defaultRow.type);
+      if (homeSectionType != null) {
+        final config = configs.firstWhere(
+          (c) => c.type == homeSectionType,
+          orElse: () => HomeSectionConfig(
+            type: homeSectionType,
+            enabled: false,
+            order: configs.length,
+          ),
+        );
+        return defaultRow.copyWith(enabled: config.enabled);
+      }
+      return defaultRow.copyWith(enabled: false);
+    }).toList();
   }
 
   @override
@@ -1096,7 +875,6 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
   }
 
   void _saveRows() {
-    _seerrPrefs.setRowsConfig(_rows);
     final prefs = GetIt.instance<UserPreferences>();
     final configs = List<HomeSectionConfig>.from(prefs.homeSectionsConfig);
     var changed = false;
@@ -1343,15 +1121,33 @@ class _CustomListsScreenState extends State<_CustomListsScreen> {
     }
   }
 
-  String _getTypeLabel(String type) {
+  String _getTypeLabel(String type, String source) {
     switch (type) {
       case 'user_list':
-        return 'User List';
+        if (source == 'tmdb') {
+          return 'List';
+        }
+        if (source == 'mdblist') {
+          return 'List from User ID';
+        }
+        return 'List from URL';
+      case 'list_url':
+        if (source == 'mdblist') {
+          return 'List from URL';
+        }
+        return 'List from URL';
+      case 'user_diary':
+        return source == 'letterboxd' ? 'User Diary' : 'Diary';
       case 'watchlist':
-        return 'Watchlist';
+        return source == 'letterboxd' ? 'User Watchlist' : 'Watchlist';
+      case 'films':
+        return source == 'letterboxd' ? 'User Complete Films' : 'Complete Films';
       case 'awards_events':
         return 'Awards/Events';
       case 'movie_collection':
+        if (source == 'tmdb') {
+          return 'Collection';
+        }
         return 'Movie Collection';
       default:
         return type;
@@ -1376,7 +1172,7 @@ class _CustomListsScreenState extends State<_CustomListsScreen> {
         child: Scaffold(
           appBar: buildSettingsAppBar(
             context,
-            const Text('Fully Custom Home Rows Wizard'),
+            const Text('Custom Home Rows Wizard'),
           ),
           body: FocusScope(
             node: _scope,
@@ -1389,7 +1185,7 @@ class _CustomListsScreenState extends State<_CustomListsScreen> {
                       focusNode: _addFocusNode,
                       leading: const Icon(Icons.add),
                       title: const Text('Add a New Custom Home Row'),
-                      subtitle: const Text('Create a custom row from IMDb, TMDB, Letterboxd, or MDBList.'),
+                      subtitle: const Text('Create a custom row from TMDB, Letterboxd, or MDBList.'),
                       onTap: () => _showAddEditDialog(null),
                     ),
                   ],
@@ -1450,7 +1246,7 @@ class _CustomListsScreenState extends State<_CustomListsScreen> {
                               ],
                             ),
                             subtitle: Text(
-                              'Source: ${_getSourceLabel(source)} | Type: ${_getTypeLabel(type)}',
+                              'Source: ${_getSourceLabel(source)} | Type: ${_getTypeLabel(type, source)}',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: focused ? Colors.black54 : AppColorScheme.onSurface.withValues(alpha: 0.5),
@@ -1533,15 +1329,26 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
       }
 
       if (_source == 'letterboxd') {
-        _letterboxdUsernameController.text = params['user'] as String? ?? '';
         if (_type == 'user_list') {
-          _letterboxdListNameController.text = params['name'] as String? ?? '';
+          _letterboxdListNameController.text = params['url'] as String? ?? '';
+        } else {
+          _letterboxdUsernameController.text = params['user'] as String? ?? '';
         }
       } else if (_source == 'tmdb') {
         _tmdbIdController.text = params['id'] as String? ?? '';
       } else if (_source == 'mdblist') {
         _mdblistUsernameController.text = params['username'] as String? ?? '';
-        _mdblistListNameController.text = params['listname'] as String? ?? '';
+        if (_type == 'list_url') {
+          final user = params['username'] as String? ?? '';
+          final list = params['listname'] as String? ?? '';
+          if (user.isNotEmpty && list.isNotEmpty) {
+            _mdblistListNameController.text = 'https://mdblist.com/lists/$user/$list';
+          } else {
+            _mdblistListNameController.text = '';
+          }
+        } else {
+          _mdblistListNameController.text = params['listname'] as String? ?? '';
+        }
       }
     } else {
       _source = 'tmdb';
@@ -1577,9 +1384,9 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
       case 'tmdb':
         return ['user_list', 'movie_collection'];
       case 'letterboxd':
-        return ['user_list', 'watchlist', 'films'];
+        return ['user_list', 'user_diary', 'watchlist', 'films'];
       case 'mdblist':
-        return ['user_list'];
+        return ['list_url', 'user_list'];
       default:
         return ['user_list'];
     }
@@ -1588,14 +1395,30 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
   String _getTypeLabel(String type) {
     switch (type) {
       case 'user_list':
-        return 'User List';
+        if (_source == 'tmdb') {
+          return 'List from TMDB List ID or URL';
+        }
+        if (_source == 'mdblist') {
+          return 'List from User ID';
+        }
+        return 'List from URL';
+      case 'list_url':
+        if (_source == 'mdblist') {
+          return 'List from URL';
+        }
+        return 'List from URL';
+      case 'user_diary':
+        return 'Diary';
       case 'watchlist':
         return 'Watchlist';
       case 'films':
-        return 'Films List';
+        return 'Complete Films';
       case 'awards_events':
         return 'Awards/Events';
       case 'movie_collection':
+        if (_source == 'tmdb') {
+          return 'Collection from TMDB Collection ID or URL';
+        }
         return 'Movie Collection';
       default:
         return type;
@@ -1658,15 +1481,42 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
 
     final params = <String, dynamic>{};
     if (_source == 'letterboxd') {
-      params['user'] = _letterboxdUsernameController.text.trim();
       if (_type == 'user_list') {
-        params['name'] = _letterboxdListNameController.text.trim();
+        params['url'] = _letterboxdListNameController.text.trim();
+      } else {
+        params['user'] = _letterboxdUsernameController.text.trim().toLowerCase();
       }
     } else if (_source == 'tmdb') {
-      params['id'] = _tmdbIdController.text.trim();
+      var rawId = _tmdbIdController.text.trim();
+      if (rawId.contains('/') || rawId.startsWith('http')) {
+        if (rawId.endsWith('/')) {
+          rawId = rawId.substring(0, rawId.length - 1);
+        }
+        final parts = rawId.split('/');
+        if (parts.isNotEmpty) {
+          rawId = parts.last;
+        }
+      }
+      params['id'] = rawId;
     } else if (_source == 'mdblist') {
-      params['username'] = _mdblistUsernameController.text.trim();
-      params['listname'] = _mdblistListNameController.text.trim();
+      if (_type == 'list_url') {
+        var rawUrl = _mdblistListNameController.text.trim();
+        if (rawUrl.endsWith('/')) {
+          rawUrl = rawUrl.substring(0, rawUrl.length - 1);
+        }
+        final parts = rawUrl.split('/');
+        String parsedUser = '';
+        String parsedList = '';
+        if (parts.length >= 2) {
+          parsedList = parts.last;
+          parsedUser = parts[parts.length - 2];
+        }
+        params['username'] = parsedUser;
+        params['listname'] = parsedList;
+      } else {
+        params['username'] = _mdblistUsernameController.text.trim();
+        params['listname'] = _mdblistListNameController.text.trim();
+      }
     }
 
     final additionalData = jsonEncode({
@@ -1799,20 +1649,13 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
 
     return withCleanSettingsTypography(
       context,
-      Focus(
-        onKeyEvent: (node, event) {
-          if (event.logicalKey == LogicalKeyboardKey.backspace) {
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
+      PopScope(
+        canPop: _allowPop,
+        onPopInvokedWithResult: (didPop, _) {
+          if (didPop) return;
+          _maybeExit();
         },
-        child: PopScope(
-          canPop: _allowPop,
-          onPopInvokedWithResult: (didPop, _) {
-            if (didPop) return;
-            _maybeExit();
-          },
-          child: AlertDialog(
+        child: AlertDialog(
             backgroundColor: Colors.grey[900],
             title: Text(
               widget.existing != null ? 'Edit Custom Home Row' : 'Add Custom Home Row',
@@ -1857,52 +1700,52 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text('Type', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                  const SizedBox(height: 4),
-                  Theme(
-                    data: Theme.of(context).copyWith(canvasColor: Colors.grey[900]),
-                    child: DropdownButtonFormField<String>(
-                      value: _type,
-                      dropdownColor: Colors.grey[900],
-                      style: const TextStyle(color: Colors.white, fontSize: 14),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.black26,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+                    const SizedBox(height: 16),
+                    const Text('Type', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                    const SizedBox(height: 4),
+                    Theme(
+                      data: Theme.of(context).copyWith(canvasColor: Colors.grey[900]),
+                      child: DropdownButtonFormField<String>(
+                        value: _type,
+                        dropdownColor: Colors.grey[900],
+                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.black26,
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+                        ),
+                        items: typeOptions.map((t) {
+                          return DropdownMenuItem(value: t, child: Text(_getTypeLabel(t)));
+                        }).toList(),
+                        onChanged: (val) {
+                          if (val != null) {
+                            setState(() {
+                              _type = val;
+                            });
+                          }
+                        },
                       ),
-                      items: typeOptions.map((t) {
-                        return DropdownMenuItem(value: t, child: Text(_getTypeLabel(t)));
-                      }).toList(),
-                      onChanged: (val) {
-                        if (val != null) {
-                          setState(() {
-                            _type = val;
-                          });
-                        }
-                      },
                     ),
-                  ),
                   const SizedBox(height: 16),
 
                   // Source + Type specific parameters
 
                   if (_source == 'letterboxd') ...[
-                    const Text('Letterboxd Username', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                    const SizedBox(height: 4),
-                    _SettingsTextField(
-                      controller: _letterboxdUsernameController,
-                      hint: 'Username',
-                      focusNode: _letterboxdUsernameFocusNode,
-                    ),
                     if (_type == 'user_list') ...[
-                      const SizedBox(height: 16),
-                      const Text('List Name (slug in URL)', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                      const Text('Letterboxd List URL or Path', style: TextStyle(color: Colors.grey, fontSize: 12)),
                       const SizedBox(height: 4),
                       _SettingsTextField(
                         controller: _letterboxdListNameController,
-                        hint: 'list-name-slug',
+                        hint: 'https://letterboxd.com/official/list/letterboxds-top-500-films/',
                         focusNode: _letterboxdListNameFocusNode,
+                      ),
+                    ] else ...[
+                      const Text('Letterboxd Username', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                      const SizedBox(height: 4),
+                      _SettingsTextField(
+                        controller: _letterboxdUsernameController,
+                        hint: 'Username',
+                        focusNode: _letterboxdUsernameFocusNode,
                       ),
                     ],
                     if (tmdbApiKey.isEmpty) ...[
@@ -1915,11 +1758,13 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
                   ],
 
                   if (_source == 'tmdb') ...[
-                    Text(_type == 'movie_collection' ? 'TMDB Collection ID' : 'TMDB List ID', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                    Text(_type == 'movie_collection' ? 'TMDB Collection ID or URL' : 'TMDB List ID or URL', style: const TextStyle(color: Colors.grey, fontSize: 12)),
                     const SizedBox(height: 4),
                     _SettingsTextField(
                       controller: _tmdbIdController,
-                      hint: 'e.g. 12345',
+                      hint: _type == 'movie_collection'
+                          ? '12345 OR https://www.themoviedb.org/collection/12345'
+                          : '12345 OR https://www.themoviedb.org/list/12345',
                       focusNode: _tmdbIdFocusNode,
                     ),
                     if (tmdbApiKey.isEmpty) ...[
@@ -1932,21 +1777,31 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
                   ],
 
                   if (_source == 'mdblist') ...[
-                    const Text('MDBList Username', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                    const SizedBox(height: 4),
-                    _SettingsTextField(
-                      controller: _mdblistUsernameController,
-                      hint: 'Username',
-                      focusNode: _mdblistUsernameFocusNode,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text('List Name (slug)', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                    const SizedBox(height: 4),
-                    _SettingsTextField(
-                      controller: _mdblistListNameController,
-                      hint: 'list-name-slug',
-                      focusNode: _mdblistListNameFocusNode,
-                    ),
+                    if (_type == 'list_url') ...[
+                      const Text('MDBList URL', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                      const SizedBox(height: 4),
+                      _SettingsTextField(
+                        controller: _mdblistListNameController,
+                        hint: 'e.g. https://mdblist.com/lists/username/list-slug',
+                        focusNode: _mdblistListNameFocusNode,
+                      ),
+                    ] else ...[
+                      const Text('MDBList Username', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                      const SizedBox(height: 4),
+                      _SettingsTextField(
+                        controller: _mdblistUsernameController,
+                        hint: 'Username',
+                        focusNode: _mdblistUsernameFocusNode,
+                      ),
+                      const SizedBox(height: 16),
+                      const Text('List Name (slug)', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                      const SizedBox(height: 4),
+                      _SettingsTextField(
+                        controller: _mdblistListNameController,
+                        hint: 'list-name-slug',
+                        focusNode: _mdblistListNameFocusNode,
+                      ),
+                    ],
                     if (mdblistApiKey.isEmpty) ...[
                       const SizedBox(height: 12),
                       const Text(
@@ -2040,8 +1895,7 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
                   ],
 
                   (() {
-                    final isUserRatingRelevant = (_source == 'letterboxd' && (_type == 'user_list' || _type == 'films')) ||
-                        (_source == 'imdb' && _type == 'user_list');
+                    final isUserRatingRelevant = (_source == 'letterboxd' && _type == 'user_diary');
                     if (isUserRatingRelevant) {
                       return Column(
                         mainAxisSize: MainAxisSize.min,
@@ -2081,7 +1935,7 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
           ),
         ),
       ),
-        actions: _isValidating
+      actions: _isValidating
             ? [
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -2103,10 +1957,9 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
                 ),
               ],
       ),
-        ),
-      ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class _SettingsTextField extends StatefulWidget {

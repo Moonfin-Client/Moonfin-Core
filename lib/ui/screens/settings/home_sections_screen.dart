@@ -1220,35 +1220,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
   }
 
   void _syncIndividualPreferences() {
-    final seerrPrefs = GetIt.instance<SeerrPreferences>();
-    final seerrRows = List<SeerrRowConfig>.from(seerrPrefs.rowsConfig);
-    var seerrChanged = false;
-
-    SeerrRowType? mapToSeerr(HomeSectionType type) {
-      return switch (type) {
-        HomeSectionType.seerrRecentRequests => SeerrRowType.recentRequests,
-        HomeSectionType.seerrRecentlyAdded => SeerrRowType.recentlyAdded,
-        HomeSectionType.seerrTrending => SeerrRowType.trending,
-        HomeSectionType.seerrPopularMovies => SeerrRowType.popularMovies,
-        HomeSectionType.seerrMovieGenres => SeerrRowType.movieGenres,
-        HomeSectionType.seerrUpcomingMovies => SeerrRowType.upcomingMovies,
-        HomeSectionType.seerrStudios => SeerrRowType.studios,
-        HomeSectionType.seerrPopularSeries => SeerrRowType.popularSeries,
-        HomeSectionType.seerrSeriesGenres => SeerrRowType.seriesGenres,
-        HomeSectionType.seerrUpcomingSeries => SeerrRowType.upcomingSeries,
-        HomeSectionType.seerrNetworks => SeerrRowType.networks,
-        _ => null,
-      };
-    }
-
     Preference<bool>? mapToExternalPref(HomeSectionType type) {
       return switch (type) {
-        HomeSectionType.imdbTop250Movies => UserPreferences.imdbTop250MoviesEnabled,
-        HomeSectionType.imdbTop250TvShows => UserPreferences.imdbTop250TvShowsEnabled,
-        HomeSectionType.imdbMostPopularMovies => UserPreferences.imdbMostPopularMoviesEnabled,
-        HomeSectionType.imdbMostPopularTvShows => UserPreferences.imdbMostPopularTvShowsEnabled,
-        HomeSectionType.imdbLowestRatedMovies => UserPreferences.imdbLowestRatedMoviesEnabled,
-        HomeSectionType.imdbTopEnglishMovies => UserPreferences.imdbTopEnglishMoviesEnabled,
         HomeSectionType.tmdbPopularMovies => UserPreferences.tmdbPopularMoviesEnabled,
         HomeSectionType.tmdbTopRatedMovies => UserPreferences.tmdbTopRatedMoviesEnabled,
         HomeSectionType.tmdbNowPlayingMovies => UserPreferences.tmdbNowPlayingMoviesEnabled,
@@ -1267,23 +1240,10 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     }
 
     for (final section in _sections) {
-      final seerrType = mapToSeerr(section.type);
-      if (seerrType != null) {
-        final idx = seerrRows.indexWhere((r) => r.type == seerrType);
-        if (idx >= 0 && seerrRows[idx].enabled != section.enabled) {
-          seerrRows[idx] = seerrRows[idx].copyWith(enabled: section.enabled);
-          seerrChanged = true;
-        }
-      } else {
-        final prefKey = mapToExternalPref(section.type);
-        if (prefKey != null && _prefs.get(prefKey) != section.enabled) {
-          _prefs.set(prefKey, section.enabled);
-        }
+      final prefKey = mapToExternalPref(section.type);
+      if (prefKey != null && _prefs.get(prefKey) != section.enabled) {
+        _prefs.set(prefKey, section.enabled);
       }
-    }
-
-    if (seerrChanged) {
-      seerrPrefs.setRowsConfig(seerrRows);
     }
   }
 

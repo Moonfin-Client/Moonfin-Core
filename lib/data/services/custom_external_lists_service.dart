@@ -13,6 +13,7 @@ class ImdbExternalListItem {
   final String imdbId;
   final String title;
   final String? posterUrl;
+  final String? backdropUrl;
   final int? year;
   final String type; // 'Movie' or 'Series'
   final double? popularity;
@@ -23,6 +24,7 @@ class ImdbExternalListItem {
     required this.imdbId,
     required this.title,
     this.posterUrl,
+    this.backdropUrl,
     this.year,
     required this.type,
     this.popularity,
@@ -34,6 +36,7 @@ class ImdbExternalListItem {
         'imdbId': imdbId,
         'title': title,
         'posterUrl': posterUrl,
+        'backdropUrl': backdropUrl,
         'year': year,
         'type': type,
         'popularity': popularity,
@@ -46,6 +49,7 @@ class ImdbExternalListItem {
         imdbId: json['imdbId'] as String,
         title: json['title'] as String,
         posterUrl: json['posterUrl'] as String?,
+        backdropUrl: json['backdropUrl'] as String?,
         year: json['year'] as int?,
         type: json['type'] as String,
         popularity: (json['popularity'] as num?)?.toDouble(),
@@ -83,14 +87,16 @@ class CustomExternalListsService {
           return 'https://www.themoviedb.org/list/$id';
         }
       case 'letterboxd':
+        if (type == 'user_list') {
+          return params['url'] as String? ?? 'https://letterboxd.com/';
+        }
         final username = params['user'] as String? ?? '';
-        final name = params['name'] as String? ?? '';
         if (type == 'watchlist') {
           return 'https://letterboxd.com/$username/watchlist/';
         } else if (type == 'films') {
           return 'https://letterboxd.com/$username/films/';
         } else {
-          return 'https://letterboxd.com/$username/list/$name/';
+          return 'https://letterboxd.com/$username/rss/';
         }
       case 'mdblist':
         final username = params['username'] as String? ?? '';
@@ -175,6 +181,7 @@ class CustomExternalListsService {
         final tmdbId = providerIds['Tmdb'] as String? ?? '';
         final title = rawItem['name'] as String? ?? 'Unknown';
         final posterUrl = rawItem['posterUrl'] as String?;
+        final backdropUrl = rawItem['backdropUrl'] as String?;
         final year = rawItem['productionYear'] as int?;
         final itemType = rawItem['type'] as String? ?? 'Movie';
         final userRating = rawItem['userRating'] as String?;
@@ -184,6 +191,7 @@ class CustomExternalListsService {
             imdbId: imdbId.isNotEmpty ? imdbId : tmdbId,
             title: title,
             posterUrl: posterUrl,
+            backdropUrl: backdropUrl,
             year: year,
             type: itemType,
             userRating: userRating,
@@ -230,6 +238,14 @@ class CustomExternalListsService {
         final items = decoded
             .map((item) => ImdbExternalListItem.fromJson(item as Map<String, dynamic>))
             .toList();
+        final hasOldCache = decoded.any((item) => item is Map && !item.containsKey('backdropUrl'));
+        if (hasOldCache) {
+          debugPrint('[CustomService] Old custom row cache detected without backdropUrl, invalidating...');
+          try {
+            await file.delete();
+          } catch (_) {}
+          return [];
+        }
         return _applySorting(items, config);
       }
     } catch (e) {
