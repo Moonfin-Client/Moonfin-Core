@@ -2967,6 +2967,11 @@ class _ContentRowsState extends State<_ContentRows>
   @override
   Widget build(BuildContext context) {
     final rows = widget.viewModel.rows;
+    // Guard against a stale focused-row index pointing past the end of the
+    // (potentially shorter) new row list
+    if (_activeFocusedRowIndex != null && _activeFocusedRowIndex! >= rows.length) {
+      _activeFocusedRowIndex = null;
+    }
     final prefs = widget.prefs;
     final posterSize =
         (_isHomeRowsStyleV2() &&
@@ -4490,8 +4495,9 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   static bool _isLatestMusicRow(HomeRow row) {
-    if (row.rowType != HomeRowType.latestMedia || row.items.isEmpty)
+    if (row.rowType != HomeRowType.latestMedia || row.items.isEmpty) {
       return false;
+    }
     return row.items.every(
       (item) =>
           item.type == 'Audio' ||
