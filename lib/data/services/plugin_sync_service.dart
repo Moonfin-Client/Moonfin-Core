@@ -558,44 +558,6 @@ class PluginSyncService extends ChangeNotifier {
 
       return true;
     } catch (_) {
-      return false;
-    }
-  }
-
-  Future<void> _fetchAndApplyAdminPluginConfig(MediaServerClient client) async {
-    try {
-      final user = GetIt.instance<UserRepository>().currentUser;
-      final isAdmin = user?.isAdministrator ?? false;
-      if (!isAdmin) return;
-
-      final pluginConfig = await client.adminPluginsApi
-          .getPluginConfiguration('8c5d0e914f2a4b6d9e3f1a7c8d9e0f2b');
-      
-      final tmdbKey = pluginConfig['TmdbApiKey'] as String?;
-      final mdblistKey = pluginConfig['MdblistApiKey'] as String?;
-
-      var updated = false;
-
-      if (tmdbKey != null && tmdbKey.isNotEmpty) {
-        final localTmdbKey = _prefs.get(UserPreferences.tmdbApiKey);
-        if (localTmdbKey.isEmpty) {
-          await _prefs.set(UserPreferences.tmdbApiKey, tmdbKey);
-          updated = true;
-        }
-      }
-
-      if (mdblistKey != null && mdblistKey.isNotEmpty) {
-        final localMdblistKey = _prefs.get(UserPreferences.mdblistApiKey);
-        if (localMdblistKey.isEmpty) {
-          await _prefs.set(UserPreferences.mdblistApiKey, mdblistKey);
-          updated = true;
-        }
-      }
-
-      if (updated) {
-        await pushSettings(client);
-      }
-    } catch (_) {}
   }
 
   Future<Map<String, dynamic>?> _ping(MediaServerClient client) async {
