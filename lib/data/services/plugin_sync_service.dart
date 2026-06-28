@@ -19,7 +19,6 @@ import '../../preference/seerr_preferences.dart';
 import '../../preference/seerr_row_config.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
-import '../../auth/repositories/user_repository.dart';
 
 enum _PluginAvailabilityStatus { available, unavailable, unknown }
 
