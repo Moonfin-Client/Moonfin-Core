@@ -323,22 +323,7 @@ class PluginSyncService extends ChangeNotifier {
 
       await _prefs.set(UserPreferences.pluginSyncEnabled, true);
 
-      final tmdbOriginal = resolved['tmdbApiKey'] as String?;
-      final mdblistOriginal = resolved['mdblistApiKey'] as String?;
-
       await _applyServerSettings(resolved);
-      await _fetchAndApplyAdminPluginConfig(client);
-
-      // Auto-heal empty overrides (new profile case, though rare)
-      if (tmdbOriginal == null || tmdbOriginal.isEmpty || tmdbOriginal == 'null' ||
-          mdblistOriginal == null || mdblistOriginal.isEmpty || mdblistOriginal == 'null') {
-        await pushSettings(client);
-        final healedResolved = await _fetchResolvedProfile(client, _profileName);
-        if (healedResolved != null) {
-          await _applyServerSettings(healedResolved);
-        }
-      }
-
       await _prefs.set(syncInitializedPref, true);
       await _startSettingsStream(client);
     } catch (_) {
