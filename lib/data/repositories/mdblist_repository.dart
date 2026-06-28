@@ -187,6 +187,7 @@ class MdbListItem {
   final String type;
   final int? productionYear;
   final int? rank;
+  final String? poster;
   final MdbListItemProviderIds providerIds;
 
   MdbListItem({
@@ -195,6 +196,7 @@ class MdbListItem {
     required this.type,
     this.productionYear,
     this.rank,
+    this.poster,
     required this.providerIds,
   });
 
@@ -205,6 +207,7 @@ class MdbListItem {
       type: json['type'] as String? ?? '',
       productionYear: json['productionYear'] as int?,
       rank: json['rank'] as int?,
+      poster: json['poster'] as String?,
       providerIds: MdbListItemProviderIds.fromJson(json['providerIds'] as Map<String, dynamic>? ?? {}),
     );
   }
