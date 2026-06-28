@@ -816,41 +816,17 @@ class PluginSyncService extends ChangeNotifier {
       if (serverId.isNotEmpty) {
         var tmdbVal = resolved['tmdbApiKey'] as String?;
         if (tmdbVal == null || tmdbVal.isEmpty || tmdbVal == 'null') {
-          final localTmdbPref = _prefs.getEffectivePreference(UserPreferences.tmdbApiKey);
-          final localTmdbVal = _store.get(localTmdbPref);
+          final localTmdbVal = _store.get(_prefs.getEffectivePreference(UserPreferences.tmdbApiKey));
           if (localTmdbVal.isNotEmpty && localTmdbVal != 'null') {
             resolved['tmdbApiKey'] = localTmdbVal;
-          } else {
-            final prefix = 'tmdbApiKey_${serverId}_';
-            for (final key in _store.keys) {
-              if (key.startsWith(prefix)) {
-                final val = _store.getString(key);
-                if (val != null && val.isNotEmpty && val != 'null') {
-                  resolved['tmdbApiKey'] = val;
-                  break;
-                }
-              }
-            }
           }
         }
 
         var mdblistVal = resolved['mdblistApiKey'] as String?;
         if (mdblistVal == null || mdblistVal.isEmpty || mdblistVal == 'null') {
-          final localMdblistPref = _prefs.getEffectivePreference(UserPreferences.mdblistApiKey);
-          final localMdblistVal = _store.get(localMdblistPref);
+          final localMdblistVal = _store.get(_prefs.getEffectivePreference(UserPreferences.mdblistApiKey));
           if (localMdblistVal.isNotEmpty && localMdblistVal != 'null') {
             resolved['mdblistApiKey'] = localMdblistVal;
-          } else {
-            final prefix = 'mdblistApiKey_${serverId}_';
-            for (final key in _store.keys) {
-              if (key.startsWith(prefix)) {
-                final val = _store.getString(key);
-                if (val != null && val.isNotEmpty && val != 'null') {
-                  resolved['mdblistApiKey'] = val;
-                  break;
-                }
-              }
-            }
           }
         }
       }
