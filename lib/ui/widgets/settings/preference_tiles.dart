@@ -158,7 +158,7 @@ BoxDecoration _settingsTileDecoration(
   if (AppUiIdiomResolver.isApple) {
     if (!focused) return const BoxDecoration();
     return BoxDecoration(
-      color: AppColorScheme.onSurface.withValues(alpha: 0.14),
+      color: AppColorScheme.buttonFocused.withValues(alpha: 0.14),
       borderRadius: BorderRadius.circular(8),
       border: Border.all(
         color: AppColorScheme.accent.withValues(alpha: 0.9),
@@ -184,7 +184,7 @@ BoxDecoration _settingsTileDecoration(
 
   return BoxDecoration(
     color: focused
-        ? AppColorScheme.onSurface
+        ? AppColorScheme.buttonFocused
         : colorScheme.surfaceContainerLow.withValues(alpha: 0.82),
     borderRadius: BorderRadius.circular(_kSettingsTileRadius),
     border: Border.fromBorderSide(
