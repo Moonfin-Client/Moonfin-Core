@@ -118,7 +118,7 @@ class UserPreferences extends ChangeNotifier {
     _setIfMissing(defaultSubtitleLanguage, subToSet);
 
     // subtitleMode
-    if (!containsScopedPreference(subtitleMode)) {
+    if (!containsPreference(subtitleMode, scopedOnly: true)) {
       final mode = switch (config.subtitleMode) {
         'smart' => SubtitleMode.foreign,
         'onlyforced' => SubtitleMode.forced,
@@ -347,22 +347,19 @@ class UserPreferences extends ChangeNotifier {
 
   bool containsPreferenceKey(String key) => _store.containsKey(key);
 
-  bool containsPreference<T>(Preference<T> pref) {
+  bool containsPreference<T>(Preference<T> pref, {bool scopedOnly = false}) {
     if (_isScopedPreference(pref)) {
       final scoped = _scopedPreference(pref);
-      return (scoped != null && _store.containsKey(scoped.key)) ||
-          _store.containsKey(pref.key);
+      if (scoped == null) return false;
+      final hasScoped = _store.containsKey(scoped.key);
+      if (scopedOnly) {
+        return hasScoped;
+      }
+      return hasScoped || _store.containsKey(pref.key);
     }
+    if (scopedOnly) return false;
 
     return _store.containsKey(pref.key);
-  }
-
-  bool containsScopedPreference<T>(Preference<T> pref) {
-    if (_isScopedPreference(pref)) {
-      final scoped = _scopedPreference(pref);
-      return scoped != null && _store.containsKey(scoped.key);
-    }
-    return false;
   }
 
   AudioOutputMode resolveAudioOutputMode() => get(audioOutputMode);
@@ -372,14 +369,14 @@ class UserPreferences extends ChangeNotifier {
   int resolveMaxAudioChannels() => get(maxAudioChannels);
 
   PosterSize resolveLibraryPosterSize() {
-    if (containsPreference(libraryPosterSize)) {
+    if (containsPreference(libraryPosterSize, scopedOnly: true)) {
       return get(libraryPosterSize);
     }
     return get(posterSize);
   }
 
   PosterSize resolvePlaylistPosterSize() {
-    if (containsPreference(playlistPosterSize)) {
+    if (containsPreference(playlistPosterSize, scopedOnly: true)) {
       return get(playlistPosterSize);
     }
     return get(posterSize);
