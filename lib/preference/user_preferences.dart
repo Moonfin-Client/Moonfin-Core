@@ -41,37 +41,25 @@ class UserPreferences extends ChangeNotifier {
   // Carry over the pre-rename jellyseerr* preference keys to their seerr* names.
   void _migrateSeerrPreferenceKeys() {
     const legacyBlockNsfw = 'jellyseerrBlockNsfw';
-    if (_store.containsKey(legacyBlockNsfw) &&
-        !_store.containsKey(seerrBlockNsfw.key)) {
-      _store.set(
-        seerrBlockNsfw,
-        _store.get(Preference(key: legacyBlockNsfw, defaultValue: false)),
-      );
+    if (_store.containsKey(legacyBlockNsfw)) {
+      final value = _store.get(Preference(key: legacyBlockNsfw, defaultValue: false));
+      _setIfMissing(seerrBlockNsfw, value);
     }
   }
 
   void _migrateOverlayPreferences() {
-    if (!_store.containsKey(navbarOpacity.key)) {
-      _store.set(navbarOpacity, _store.get(mediaBarOverlayOpacity));
-    }
-    if (!_store.containsKey(navbarColor.key)) {
-      _store.set(navbarColor, _store.get(mediaBarOverlayColor));
-    }
+    _setIfMissing(navbarOpacity, get(mediaBarOverlayOpacity));
+    _setIfMissing(navbarColor, get(mediaBarOverlayColor));
   }
 
   void _migrateDefaultAudioLanguagePreference() {
-    if (!_store.containsKey(defaultAudioLanguage.key)) {
-      return;
-    }
-    final current = _store.get(defaultAudioLanguage).trim();
-    if (current.isEmpty) {
-      _store.set(defaultAudioLanguage, 'auto');
-    }
+    final current = get(defaultAudioLanguage).trim();
+    _setIfMissing(defaultAudioLanguage, current.isNotEmpty ? current : 'auto');
   }
 
   void _enforceMediaQueuingAlwaysOn() {
-    if (_store.get(mediaQueuingEnabled) != true) {
-      _store.set(mediaQueuingEnabled, true);
+    if (get(mediaQueuingEnabled) != true) {
+      _setIfMissing(mediaQueuingEnabled, true);
     }
   }
 
@@ -126,6 +114,7 @@ class UserPreferences extends ChangeNotifier {
   }
 
   static final Set<String> _scopedPreferenceKeys = {
+    'pref_enable_tv_queuing',
     'pref_enable_cinema_mode',
     'pref_resume_preroll',
     'media_segment_actions',
