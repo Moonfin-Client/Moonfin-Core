@@ -179,7 +179,7 @@ class UserConfiguration {
     return null;
   }
 
-  /// Normalises the SubtitleMode field which Jellyfin/Emby may return as either a
+  /// Normalizes the SubtitleMode field which Jellyfin/Emby may return as either a
   /// string or an integer depending on the server version.  Returns a lowercase
   /// string matching Jellyfin's enum names, or null if the value is absent.
   static String? _subtitleModeString(dynamic value) {

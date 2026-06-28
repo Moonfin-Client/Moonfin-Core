@@ -101,46 +101,32 @@ class UserPreferences extends ChangeNotifier {
   /// - SubtitleMode: if the local pref has never been explicitly stored (empty
   ///   default), convert it to the closest Moonfin subtitle mode.
   void initLanguagePrefs(UserConfiguration config) {
+    final sysIso3 = toIso3Language(normalizeLanguage(ui.PlatformDispatcher.instance.locale.languageCode));
+
     // defaultAudioLanguage
-    if (!containsPreference(defaultAudioLanguage)) {
-      final serverAudio = config.audioLanguagePreference;
-      if (serverAudio != null && serverAudio.isNotEmpty) {
-        _store.set(defaultAudioLanguage, serverAudio.toLowerCase());
-      } else {
-        // system language default
-        final sysLang = ui.PlatformDispatcher.instance.locale.languageCode;
-        final iso3 = toIso3Language(normalizeLanguage(sysLang));
-        _store.set(defaultSubtitleLanguage, iso3);
-      }
-    }
+    final serverAudio = config.audioLanguagePreference;
+    final audioToSet = (serverAudio != null && serverAudio.isNotEmpty)
+      ? serverAudio.toLowerCase()
+      : sysIso3; // fallback to system language
+    _setIfMissing(defaultAudioLanguage, audioToSet);
+
     // defaultSubtitleLanguage
-    if (!containsPreference(defaultSubtitleLanguage)) {
-      final serverSub = config.subtitleLanguagePreference;
-      if (serverSub != null && serverSub.isNotEmpty) {
-        _store.set(defaultSubtitleLanguage, serverSub.toLowerCase());
-      } else {
-        // system language default
-        final sysLang = ui.PlatformDispatcher.instance.locale.languageCode;
-        final iso3 = toIso3Language(normalizeLanguage(sysLang));
-        _store.set(defaultSubtitleLanguage, iso3);
-      }
-    }
+    final serverSubtitle = config.subtitleLanguagePreference;
+    final subToSet = (serverSubtitle != null && serverSubtitle.isNotEmpty)
+      ? serverSubtitle.toLowerCase()
+      : sysIso3; // fallback to system language
+    _setIfMissing(defaultSubtitleLanguage, subToSet);
+
     // subtitleMode
-    if (!containsPreference(subtitleMode)) {
+    if (!containsScopedPreference(subtitleMode)) {
       final mode = switch (config.subtitleMode) {
-        'default' => SubtitleMode.flagged,
         'smart' => SubtitleMode.foreign,
         'onlyforced' => SubtitleMode.forced,
         'always' => SubtitleMode.always,
         'none' => SubtitleMode.none,
-        _ => null,
+        _ => SubtitleMode.flagged, // jellyfin 'default'/catch all case
       };
-      if (mode != null) {
-        _store.set(subtitleMode, mode);
-      } else {
-        // flagged default
-        _store.set(subtitleMode, SubtitleMode.flagged);
-      }
+      _setIfMissing(subtitleMode, mode);
     }
   }
 
@@ -183,7 +169,12 @@ class UserPreferences extends ChangeNotifier {
     'pref_clock_behavior',
     'pref_prefer_system_ime_keyboard',
     'pref_audio_language',
+    'pref_fallback_audio_language',
+    'pref_prefer_default_audio_track',
+    'pref_prefer_audio_description',
     'pref_subtitle_language',
+    'pref_fallback_subtitle_language',
+    'pref_subtitle_mode',
     'subtitles_background_color',
     'subtitles_text_weight',
     'subtitles_text_color',
@@ -330,6 +321,14 @@ class UserPreferences extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// set pref if it doesn't exist, scoped to the active profile
+  void _setIfMissing<T>(Preference<T> pref, T value) {
+    final scoped = _scopedPreference(pref);
+    if (scoped != null && !_store.containsKey(scoped.key)) {
+      _store.set(scoped, value);
+    }
+  }
+
   /// Clears any stored value for [pref] so subsequent reads fall back to the
   /// default / capability-derived value. Used to return a tri-state passthrough
   /// toggle to its "Auto (follow detection)" state.
@@ -356,6 +355,14 @@ class UserPreferences extends ChangeNotifier {
     }
 
     return _store.containsKey(pref.key);
+  }
+
+  bool containsScopedPreference<T>(Preference<T> pref) {
+    if (_isScopedPreference(pref)) {
+      final scoped = _scopedPreference(pref);
+      return scoped != null && _store.containsKey(scoped.key);
+    }
+    return false;
   }
 
   AudioOutputMode resolveAudioOutputMode() => get(audioOutputMode);
