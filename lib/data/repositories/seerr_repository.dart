@@ -382,6 +382,10 @@ class SeerrRepository {
     (c) async => SeerrTvDetails.fromJson(await c.getTvDetails(tmdbId)),
   );
 
+  Future<SeerrTvDetails> getTvDetailsByTvdb(int tvdbId) => _withClient(
+    (c) async => SeerrTvDetails.fromJson(await c.getTvDetailsByTvdb(tvdbId)),
+  );
+
   Future<SeerrDiscoverPage> getSimilarMovies(int tmdbId, {int page = 1}) =>
       _withClient(
         (c) async => SeerrDiscoverPage.fromJson(

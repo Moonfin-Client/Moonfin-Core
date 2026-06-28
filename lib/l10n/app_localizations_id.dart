@@ -142,20 +142,19 @@ class AppLocalizationsId extends AppLocalizations {
   String get settingsAppearanceTheme => 'Tema Aplikasi';
 
   @override
-  String get interfaceStyle => 'Interface style';
+  String get interfaceStyle => '';
 
   @override
-  String get interfaceStyleSubtitle =>
-      'Automatic uses the native look on Apple devices. Choose Apple to force it, or Material for the standard look.';
+  String get interfaceStyleSubtitle => '';
 
   @override
-  String get interfaceStyleAutomatic => 'Automatic';
+  String get interfaceStyleAutomatic => '';
 
   @override
-  String get interfaceStyleApple => 'Apple';
+  String get interfaceStyleApple => '';
 
   @override
-  String get interfaceStyleMaterial => 'Material';
+  String get interfaceStyleMaterial => '';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
@@ -2179,6 +2178,24 @@ class AppLocalizationsId extends AppLocalizations {
   String get defaultAudioLanguage => 'Bahasa Audio Default';
 
   @override
+  String get fallbackAudioLanguage => '';
+
+  @override
+  String get preferDefaultAudioTrack => '';
+
+  @override
+  String get preferDefaultAudioTrackDescription => '';
+
+  @override
+  String get preferAudioDescription => '';
+
+  @override
+  String get preferAudioDescriptionDescription => '';
+
+  @override
+  String get transcodingAudio => '';
+
+  @override
   String get autoServerDefault => 'Otomatis (Default Server)';
 
   @override
@@ -2584,45 +2601,40 @@ class AppLocalizationsId extends AppLocalizations {
   String get subtitleCustomizationDescription => 'Sesuaikan tampilan subtitle';
 
   @override
-  String get subtitleMode => 'Subtitle Mode';
+  String get subtitleMode => '';
 
   @override
-  String get subtitleModeFlagged => 'Flagged';
+  String get subtitleModeFlagged => '';
 
   @override
-  String get subtitleModeAlways => 'Always';
+  String get subtitleModeAlways => '';
 
   @override
-  String get subtitleModeForeign => 'Foreign';
+  String get subtitleModeForeign => '';
 
   @override
-  String get subtitleModeForced => 'Forced';
+  String get subtitleModeForced => '';
 
   @override
-  String get subtitleModeFlaggedDescription =>
-      'Plays tracks internally flagged in the media file\'s metadata as \"default\" or \"forced\".';
+  String get subtitleModeFlaggedDescription => '';
 
   @override
-  String get subtitleModeAlwaysDescription =>
-      'Automatically loads and displays subtitles every time a video starts.';
+  String get subtitleModeAlwaysDescription => '';
 
   @override
-  String get subtitleModeForeignDescription =>
-      'Automatically turns on subtitles if the default audio track is in a foreign language.';
+  String get subtitleModeForeignDescription => '';
 
   @override
-  String get subtitleModeForcedDescription =>
-      'Only loads subtitles explicitly tagged with the forced metadata flag.';
+  String get subtitleModeForcedDescription => '';
 
   @override
-  String get subtitleModeNoneDescription =>
-      'Completely disables automatic subtitle loading.';
+  String get subtitleModeNoneDescription => '';
 
   @override
-  String get fallbackSubtitleLanguage => 'Fallback Subtitle Language';
+  String get fallbackSubtitleLanguage => '';
 
   @override
-  String get subtitleStream => 'Subtitle Stream';
+  String get subtitleStream => '';
 
   @override
   String get subtitlePreviewText =>
@@ -2893,18 +2905,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get showFolderBrowsingOption => 'Tampilkan opsi penelusuran folder';
 
   @override
-  String get groupItemsIntoCollections => 'Group Items into Collections';
+  String get groupItemsIntoCollections => '';
 
   @override
-  String get hideCollectionAssociatedItems =>
-      'Hide Collection associated library items when browsing libraries';
+  String get hideCollectionAssociatedItems => '';
 
   @override
-  String get groupItemsIntoCollectionsDialogTitle => 'Library Grouping Notice';
+  String get groupItemsIntoCollectionsDialogTitle => '';
 
   @override
-  String get groupItemsIntoCollectionsDialogMessage =>
-      'To use this setting, please ensure the \"Group movies into collections\" and/or \"Group shows into collections\" Library settings are enabled under your library\'s Display settings on your Jellyfin or Emby server.';
+  String get groupItemsIntoCollectionsDialogMessage => '';
 
   @override
   String get libraryVisibility => 'Visibilitas Pustaka';
@@ -7415,7 +7425,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String recentlyReleasedLibraryName(String libraryName) {
-    return 'Recently Released $libraryName';
+    return '';
   }
 
   @override
@@ -7691,13 +7701,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get audioPlaylists => 'Playlist Audio';
-
-  @override
-  String get displaySeerrRows => 'Tampilkan Baris Discovery Seerr';
-
-  @override
-  String get displaySeerrRowsSubtitle =>
-      'Tampilkan baris discovery Seerr di Bagian Beranda.';
 
   @override
   String get appearance => 'Tampilan';
@@ -7978,7 +7981,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get appearancesSeerr => 'Penampilan (Seerr)';
 
   @override
-  String get crewContributionsSeerr => 'Crew Contributions (Seerr)';
+  String get crewContributionsSeerr => '';
 
   @override
   String get watchWithGroup => 'Tonton bersama grup';
@@ -8386,12 +8389,77 @@ class AppLocalizationsId extends AppLocalizations {
   String get sources => 'Sumber';
 
   @override
-  String get subtitlePreferences => 'Subtitle Preferences';
+  String get subtitlePreferences => '';
 
   @override
-  String get subtitlePreferencesDescription =>
-      'Change subtitle modes, default languages, appearance, and rendering options.';
+  String get subtitlePreferencesDescription => '';
 
   @override
-  String get subtitleRendering => 'Subtitle Rendering';
+  String get subtitleRendering => '';
+
+  @override
+  String get displayOptions => '';
+
+  @override
+  String get releaseDateAscending => '';
+
+  @override
+  String get releaseDateDescending => '';
+
+  @override
+  String get groupContributions => '';
+
+  @override
+  String get groupMultipleRoles => '';
+
+  @override
+  String get libraryWriteAccessWarningTitle => '';
+
+  @override
+  String get libraryWriteAccessHowToFix => '';
+
+  @override
+  String get libraryWriteAccessFixSteps => '';
+
+  @override
+  String get dismiss => '';
+
+  @override
+  String libraryWriteAccessProactiveBody(
+    String libraryName,
+    String failedPath,
+  ) {
+    return '';
+  }
+
+  @override
+  String get libraryWriteAccessReactiveBody => '';
+
+  @override
+  String get externalLists => 'External Lists';
+
+  @override
+  String get enableImdb => 'IMDb External Lists';
+
+  @override
+  String get enableImdbDescription =>
+      'Fetch IMDb lists for display on the Home Screen.';
+
+  @override
+  String get imdbTop250Movies => 'IMDb Top 250 Movies';
+
+  @override
+  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
+
+  @override
+  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
+
+  @override
+  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
+
+  @override
+  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
+
+  @override
+  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
 }

@@ -299,6 +299,7 @@ class SwitchPreferenceTile extends StatefulWidget {
   final IconData? icon;
   final Widget Function(double size, Color color)? iconBuilder;
   final VoidCallback? onChanged;
+  final ValueChanged<bool>? onChangedValue;
 
   final bool inverted;
   final bool enabled;
@@ -312,6 +313,7 @@ class SwitchPreferenceTile extends StatefulWidget {
     this.icon,
     this.iconBuilder,
     this.onChanged,
+    this.onChangedValue,
     this.inverted = false,
     this.enabled = true,
     this.focusNode,
@@ -375,8 +377,10 @@ class _SwitchPreferenceTileState extends State<SwitchPreferenceTile> {
             value: widget.inverted ? !value : value,
             onChanged: widget.enabled
                 ? (v) {
-                    _binding.value = widget.inverted ? !v : v;
+                    final targetValue = widget.inverted ? !v : v;
+                    _binding.value = targetValue;
                     widget.onChanged?.call();
+                    widget.onChangedValue?.call(targetValue);
                   }
                 : null,
           ),

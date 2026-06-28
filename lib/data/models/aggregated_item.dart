@@ -103,6 +103,10 @@ class AggregatedItem {
   }
 
   String? get subtitle {
+    final customSubtitle = rawData['Subtitle'] as String?;
+    if (customSubtitle != null && customSubtitle.isNotEmpty) {
+      return customSubtitle;
+    }
     if (type == 'Episode') {
       final s = parentIndexNumber;
       final e = indexNumber;

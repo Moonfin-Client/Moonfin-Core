@@ -4676,15 +4676,15 @@
       }
     }
   },
-  "discoverRows": "Discover Rows",
+  "discoverRows": "Seerr Homepage",
   "@discoverRows": {
     "description": "Section title for discover rows"
   },
-  "discoverRowsDescriptionPlugin": "Drag to reorder. Enable or disable rows. Enabled row order syncs with the Moonfin plugin.",
+  "discoverRowsDescriptionPlugin": "Enable rows to see on Seerr mainpage. Drag to reorder. Custom order syncs with Moonbase.",
   "@discoverRowsDescriptionPlugin": {
     "description": "Description for discover rows with plugin"
   },
-  "discoverRowsDescription": "Drag to reorder. Enable or disable rows.",
+  "discoverRowsDescription": "Enable rows to see on Seerr mainpage. Drag to reorder. Custom order syncs with Moonbase.",
   "@discoverRowsDescription": {
     "description": "Description for discover rows without plugin"
   },
@@ -4819,7 +4819,7 @@
   "@navbarStyleToolbarAppearance": {
     "description": "Navigation settings subtitle"
   },
-  "reorderToggleHomeRows": "Reorder and toggle home rows",
+  "reorderToggleHomeRows": "Reorder and toggle both library and external-based home rows",
   "@reorderToggleHomeRows": {
     "description": "Home sections settings subtitle"
   },
@@ -7298,7 +7298,7 @@
   "homeRowDisplay": "Home Row Display",
   "homeRowSections": "Home Row Sections",
   "homeRowToggles": "Home Row Toggles",
-  "homeRowTogglesSubtitle": "Enable or disable different home row categories",
+  "homeRowTogglesSubtitle": "Enable or disable library-based home row categories",
   "homeRowTogglesDescription": "Enable the following toggles to display the rows in Home Sections.",
   "rowsType": "Row Type",
   "rowsTypeDescription": "Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.",
@@ -7325,8 +7325,6 @@
   "audioRowsSorting": "Audio Rows sorting",
   "audioRowsSortingDescription": "Sort Audio rows by date added, release date, alphabetically, and more.",
   "audioPlaylists": "Audio Playlists",
-  "displaySeerrRows": "Display Seerr Discovery Rows",
-  "displaySeerrRowsSubtitle": "Show Seerr discovery rows in Home Sections.",
   "appearance": "Appearance",
   "cardSize": "Home Row Card Display Size",
   "externalPlayerApp": "External player app",
@@ -7712,5 +7710,14 @@
   "libraryWriteAccessReactiveBody": "It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders ('Save artwork into media folders' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.",
   "@libraryWriteAccessReactiveBody": {
     "description": "Reactive error warning message when artwork update fails"
-  }
+  },
+  "externalLists": "External Home Row Lists",
+  "enableImdb": "IMDb External Lists",
+  "enableImdbDescription": "Fetch IMDb lists for display on the Home Screen.",
+  "imdbTop250Movies": "IMDb Top 250 Movies",
+  "imdbTop250TvShows": "IMDb Top 250 TV Shows",
+  "imdbMostPopularMovies": "IMDb Most Popular Movies",
+  "imdbMostPopularTvShows": "IMDb Most Popular TV Shows",
+  "imdbLowestRatedMovies": "IMDb Lowest Rated Movies",
+  "imdbTopEnglishMovies": "IMDb Top Rated English Movies"
 }

@@ -47,6 +47,7 @@ class JellyfinItemsApi implements ItemsApi {
     DateTime? minPremiereDate,
     String? maxOfficialRating,
     bool? hasParentalRating,
+    String? anyProviderIdEquals,
   }) async {
     final userId = _getUserId();
     final queryParams = {
@@ -82,6 +83,7 @@ class JellyfinItemsApi implements ItemsApi {
         'MinPremiereDate': minPremiereDate.toUtc().toIso8601String(),
       'MaxOfficialRating': ?maxOfficialRating,
       'HasParentalRating': ?hasParentalRating,
+      'AnyProviderIdEquals': ?anyProviderIdEquals,
     };
     final response = await _dio.get(
       '/Users/$userId/Items',

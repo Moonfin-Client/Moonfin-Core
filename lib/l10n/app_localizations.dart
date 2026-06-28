@@ -6241,19 +6241,19 @@ abstract class AppLocalizations {
   /// Section title for discover rows
   ///
   /// In en, this message translates to:
-  /// **'Discover Rows'**
+  /// **'Seerr Homepage'**
   String get discoverRows;
 
   /// Description for discover rows with plugin
   ///
   /// In en, this message translates to:
-  /// **'Drag to reorder. Enable or disable rows. Enabled row order syncs with the Moonfin plugin.'**
+  /// **'Enable rows to see on Seerr mainpage. Drag to reorder. Custom order syncs with Moonbase.'**
   String get discoverRowsDescriptionPlugin;
 
   /// Description for discover rows without plugin
   ///
   /// In en, this message translates to:
-  /// **'Drag to reorder. Enable or disable rows.'**
+  /// **'Enable rows to see on Seerr mainpage. Drag to reorder. Custom order syncs with Moonbase.'**
   String get discoverRowsDescription;
 
   /// Status: enabled
@@ -6433,7 +6433,7 @@ abstract class AppLocalizations {
   /// Home sections settings subtitle
   ///
   /// In en, this message translates to:
-  /// **'Reorder and toggle home rows'**
+  /// **'Reorder and toggle both library and external-based home rows'**
   String get reorderToggleHomeRows;
 
   /// Media bar settings subtitle
@@ -13555,7 +13555,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeRowTogglesSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Enable or disable different home row categories'**
+  /// **'Enable or disable library-based home row categories'**
   String get homeRowTogglesSubtitle;
 
   /// No description provided for @homeRowTogglesDescription.
@@ -13713,18 +13713,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Audio Playlists'**
   String get audioPlaylists;
-
-  /// No description provided for @displaySeerrRows.
-  ///
-  /// In en, this message translates to:
-  /// **'Display Seerr Discovery Rows'**
-  String get displaySeerrRows;
-
-  /// No description provided for @displaySeerrRowsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Show Seerr discovery rows in Home Sections.'**
-  String get displaySeerrRowsSubtitle;
 
   /// No description provided for @appearance.
   ///
@@ -14955,6 +14943,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Subtitle Rendering'**
   String get subtitleRendering;
+
+  /// Title for details display options dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Display Options'**
+  String get displayOptions;
+
+  /// Sort option for crew/cast contributions in ascending release date order
+  ///
+  /// In en, this message translates to:
+  /// **'Release Date (Ascending)'**
+  String get releaseDateAscending;
+
+  /// Sort option for crew/cast contributions in descending release date order
+  ///
+  /// In en, this message translates to:
+  /// **'Release Date (Descending)'**
+  String get releaseDateDescending;
+
+  /// Section header for grouping person contributions
+  ///
+  /// In en, this message translates to:
+  /// **'Group Contributions'**
+  String get groupContributions;
+
+  /// Option to group multiple roles for a person
+  ///
+  /// In en, this message translates to:
+  /// **'Group multiple roles'**
+  String get groupMultipleRoles;
+
+  /// Title for library write access warning dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Library Write Access Warning'**
+  String get libraryWriteAccessWarningTitle;
+
+  /// Section header for write access troubleshooting
+  ///
+  /// In en, this message translates to:
+  /// **'How to fix this:'**
+  String get libraryWriteAccessHowToFix;
+
+  /// Troubleshooting steps for write access issues
+  ///
+  /// In en, this message translates to:
+  /// **'1. Grant write permissions to the Jellyfin service user (e.g., jellyfin or Docker PUID/PGID) for your media library folders on the server.\n\n2. Or, go to your Jellyfin Dashboard -> Libraries, edit this library, and disable \'Save artwork into media folders\' to store artwork in Jellyfin\'s internal database.'**
+  String get libraryWriteAccessFixSteps;
+
+  /// Dismiss button text
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismiss;
+
+  /// Proactive warning message about server write access
+  ///
+  /// In en, this message translates to:
+  /// **'Your \'{libraryName}\' library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n{failedPath}'**
+  String libraryWriteAccessProactiveBody(String libraryName, String failedPath);
+
+  /// Reactive error warning message when artwork update fails
+  ///
+  /// In en, this message translates to:
+  /// **'It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.'**
+  String get libraryWriteAccessReactiveBody;
+
+  /// No description provided for @externalLists.
+  ///
+  /// In en, this message translates to:
+  /// **'External Home Row Lists'**
+  String get externalLists;
+
+  /// No description provided for @enableImdb.
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb External Lists'**
+  String get enableImdb;
+
+  /// No description provided for @enableImdbDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetch IMDb lists for display on the Home Screen.'**
+  String get enableImdbDescription;
+
+  /// No description provided for @imdbTop250Movies.
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb Top 250 Movies'**
+  String get imdbTop250Movies;
+
+  /// No description provided for @imdbTop250TvShows.
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb Top 250 TV Shows'**
+  String get imdbTop250TvShows;
+
+  /// No description provided for @imdbMostPopularMovies.
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb Most Popular Movies'**
+  String get imdbMostPopularMovies;
+
+  /// No description provided for @imdbMostPopularTvShows.
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb Most Popular TV Shows'**
+  String get imdbMostPopularTvShows;
+
+  /// No description provided for @imdbLowestRatedMovies.
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb Lowest Rated Movies'**
+  String get imdbLowestRatedMovies;
+
+  /// No description provided for @imdbTopEnglishMovies.
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb Top Rated English Movies'**
+  String get imdbTopEnglishMovies;
 }
 
 class _AppLocalizationsDelegate

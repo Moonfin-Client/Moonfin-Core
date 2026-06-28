@@ -29,6 +29,7 @@ abstract class ItemsApi {
     DateTime? minPremiereDate,
     String? maxOfficialRating,
     bool? hasParentalRating,
+    String? anyProviderIdEquals,
   });
 
   Future<Map<String, dynamic>> getItem(String itemId);

@@ -7533,8 +7533,6 @@
     "audioRowsSorting": "Audio Rows sorting",
     "audioRowsSortingDescription": "Sort Audio rows by date added, release date, alphabetically, and more.",
     "audioPlaylists": "Audio Playlists",
-    "displaySeerrRows": "Display Seerr Discovery Rows",
-    "displaySeerrRowsSubtitle": "Show Seerr discovery rows in Home Sections.",
     "externalPlayerAppDescription": "Set external player to enable long-press play option",
     "changeArtwork": "Change Artwork",
     "missing": "Missing",

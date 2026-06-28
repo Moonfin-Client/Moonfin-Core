@@ -497,7 +497,7 @@
     "@justNow": {
         "description": "Relative time for less than a minute ago"
     },
-    "minutesAgo": "Vor {count}m",
+    "minutesAgo": "Vor {count} Minute(n)",
     "@minutesAgo": {
         "description": "Relative time in minutes",
         "placeholders": {
@@ -506,7 +506,7 @@
             }
         }
     },
-    "hoursAgo": "Vor {count}h",
+    "hoursAgo": "Vor {count} Stunde(n)",
     "@hoursAgo": {
         "description": "Relative time in hours",
         "placeholders": {
@@ -515,7 +515,7 @@
             }
         }
     },
-    "daysAgo": "Vor {count}d",
+    "daysAgo": "Vor {count} Tag(en)",
     "@daysAgo": {
         "description": "Relative time in days",
         "placeholders": {
@@ -524,11 +524,11 @@
             }
         }
     },
-    "discoverySubjects": "Entdecken-Themen",
+    "discoverySubjects": "Themen zum Entdecken",
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Wähle aus, welche Themen-Feeds in Entdecken angezeigt werden.",
+    "pickDiscoverySubjects": "Wähle aus, welche Themen-Feeds in \"Entdecken\" angezeigt werden.",
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
@@ -540,7 +540,7 @@
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
     },
-    "pickAudiobookGenres": "Wähle aus, welche Genres in Hörbuch-Entdecken angezeigt werden.",
+    "pickAudiobookGenres": "Wähle aus, welche Genres in \"Hörbücher entdecken\" angezeigt werden.",
     "@pickAudiobookGenres": {
         "description": "Instruction text in audiobook genre picker"
     },
@@ -597,15 +597,15 @@
     "@failedToLoadLibrary": {
         "description": "Error when a library cannot be loaded"
     },
-    "popularNow": "Jetzt beliebt",
+    "popularNow": "Aktuell beliebt",
     "@popularNow": {
         "description": "Book rail title for popular items"
     },
-    "savedForLater": "Für später gespeichert",
+    "savedForLater": "Für später vorgemerkt",
     "@savedForLater": {
         "description": "Book rail title for bookmarked items"
     },
-    "topListens": "Am meisten gehört",
+    "topListens": "Viel gehört",
     "@topListens": {
         "description": "Book rail title for popular audiobooks"
     },
@@ -633,11 +633,11 @@
     "@booksWithHighlights": {
         "description": "Subtitle for bookmarks secondary rail"
     },
-    "jumpBackNarration": "Springe zurück in die Erzählung, ohne deine Stelle suchen zu müssen.",
+    "jumpBackNarration": "Setze das Anhören fort, ohne lange suchen zu müssen, wo.",
     "@jumpBackNarration": {
         "description": "Subtitle for audiobook continue listening rail"
     },
-    "unreadBooksReady": "Ungelesene Bücher, bereit für die nächste ruhige Stunde.",
+    "unreadBooksReady": "Ungelesene Bücher, verfügbar für die nächste ruhige Gelegenheit.",
     "@unreadBooksReady": {
         "description": "Subtitle for unread discoveries rail"
     },
@@ -649,15 +649,15 @@
     "@searchAudiobooks": {
         "description": "Placeholder text in audiobook search bar"
     },
-    "searchYourLibrary": "Deine Bibliothek durchsuchen",
+    "searchYourLibrary": "Die Bibliothek durchsuchen",
     "@searchYourLibrary": {
         "description": "Placeholder text in library search bar"
     },
-    "pickUpStory": "Setze die Geschichte dort fort, wo du aufgehört hast",
+    "pickUpStory": "Setze mit der Handlung fort, wo du zuletzt aufgehört hast",
     "@pickUpStory": {
         "description": "Hero card subtitle for library and audiobook sections"
     },
-    "savedPlacesChapters": "Deine gespeicherten Stellen und unvollständigen Kapitel",
+    "savedPlacesChapters": "Deine gespeicherten Stellen und nicht beendete Kapitel",
     "@savedPlacesChapters": {
         "description": "Hero card subtitle for bookmarks section"
     },
@@ -679,7 +679,7 @@
             }
         }
     },
-    "percentCompleted": "{percent}% abgeschlossen",
+    "percentCompleted": "Zu {percent}% beendet",
     "@percentCompleted": {
         "description": "Reading progress percentage label",
         "placeholders": {
@@ -692,11 +692,11 @@
     "@readyWhenYouAre": {
         "description": "Label shown when no reading progress exists"
     },
-    "details": "Einzelheiten",
+    "details": "Details",
     "@details": {
         "description": "Button and title label for detail views"
     },
-    "listeningRoom": "Hörzimmer",
+    "listeningRoom": "Hörbücher",
     "@listeningRoom": {
         "description": "Panel header for audiobook section"
     },
@@ -704,7 +704,7 @@
     "@bookmarksAndProgress": {
         "description": "Panel header for bookmarks section"
     },
-    "titlesArrangedForBrowsing": "{count} Titel so angeordnet, dass sie zuerst gelesen werden können.",
+    "titlesArrangedForBrowsing": "{count} Titel für Durchsuchen mit Fokus aufs Lesen angeordnet.",
     "@titlesArrangedForBrowsing": {
         "description": "Panel subtitle showing total titles",
         "placeholders": {
@@ -741,11 +741,11 @@
     "@trendingTitlesOpenLibrary": {
         "description": "Subtitle for book discovery section"
     },
-    "noBookmarkedItems": "Noch keine mit Lesezeichen versehenen Einträge",
+    "noBookmarkedItems": "Noch keine mit Lesezeichen versehenen Inhalte",
     "@noBookmarkedItems": {
         "description": "Empty state for bookmarks grid"
     },
-    "nothingMatchesSection": "Nichts passt zu diesem Bereich. Versuche einen anderen Tab oder komme nach der Bibliothekssynchronisierung zurück.",
+    "nothingMatchesSection": "Keine zu diesem Bereich passenden Inhalte gefunden; wechsle zu einen anderen Tab oder warte ggf. auf Synchronisierung der Bibliothek.",
     "@nothingMatchesSection": {
         "description": "Empty state for book experience when no items match"
     },
@@ -753,7 +753,7 @@
     "@audiobooks": {
         "description": "Audiobooks navigation and tab label"
     },
-    "noLabelFound": "Kein {label} gefunden",
+    "noLabelFound": "Nichts ({label}) gefunden",
     "@noLabelFound": {
         "description": "Empty state with dynamic label like books or audiobooks",
         "placeholders": {
@@ -782,7 +782,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "Gesehen",
+    "watched": "Angesehen",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -790,7 +790,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Nicht gesehen",
+    "unwatched": "Nicht angesehen",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -810,11 +810,11 @@
     "@author": {
         "description": "Organize mode label for grouping by author"
     },
-    "unknownAuthor": "Unbekannter Autor",
+    "unknownAuthor": "Autor unbekannt",
     "@unknownAuthor": {
         "description": "Fallback text when book author is not available"
     },
-    "uncategorized": "Unkategorisiert",
+    "uncategorized": "Nicht kategorisiert",
     "@uncategorized": {
         "description": "Fallback text when genre is not available"
     },
@@ -822,7 +822,7 @@
     "@overview": {
         "description": "Section header for content overview/description"
     },
-    "noLibrivoxDescription": "Für diesen Titel ist noch keine Beschreibung von LibriVox vorhanden.",
+    "noLibrivoxDescription": "Für diesen Titel ist keine Beschreibung von LibriVox verfügbar.",
     "@noLibrivoxDescription": {
         "description": "Fallback when LibriVox title has no description"
     },
@@ -838,7 +838,7 @@
     "@librivoxPage": {
         "description": "Button label for LibriVox external link"
     },
-    "internetArchive": "Internetarchiv",
+    "internetArchive": "Internet Archive",
     "@internetArchive": {
         "description": "Button label for Internet Archive external link"
     },
@@ -846,7 +846,7 @@
     "@rssFeed": {
         "description": "Button label for RSS feed external link"
     },
-    "downloadZip": "ZIP herunterladen",
+    "downloadZip": "ZIP-Datei herunterladen",
     "@downloadZip": {
         "description": "Button label for zip download external link"
     },
@@ -859,7 +859,7 @@
             }
         }
     },
-    "firstPublished": "Erstveröffentlichung {year}",
+    "firstPublished": "Erstveröffentlichung: {year}",
     "@firstPublished": {
         "description": "Publication year for a book",
         "placeholders": {
@@ -868,7 +868,7 @@
             }
         }
     },
-    "noOpenLibraryOverview": "Für diesen Titel ist noch keine Übersicht von Open Library verfügbar.",
+    "noOpenLibraryOverview": "Für diesen Titel ist keine Übersicht von Open Library verfügbar.",
     "@noOpenLibraryOverview": {
         "description": "Fallback when Open Library has no description"
     },
@@ -906,7 +906,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
+    "audiobookCountLabel": "{count, plural, =1{1 Hörbuch} other{{count} Hörbücher}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -919,7 +919,7 @@
     "@trackList": {
         "description": "AppBar title for the item list screen"
     },
-    "itemListPlaceholder": "Die Elementliste wird hier angezeigt",
+    "itemListPlaceholder": "Die Liste der Inhalte wird hier angezeigt",
     "@itemListPlaceholder": {
         "description": "Placeholder text for an empty item list screen"
     },
@@ -939,7 +939,7 @@
     "@save": {
         "description": "Save action button label"
     },
-    "moreLikeThis": "Mehr davon",
+    "moreLikeThis": "Mehr ähnliche Inhalte",
     "@moreLikeThis": {
         "description": "Section header for similar items"
     },
@@ -955,7 +955,7 @@
     "@episodes": {
         "description": "Section header for episodes"
     },
-    "nextUp": "Als Nächstes",
+    "nextUp": "Nächste Folge",
     "@nextUp": {
         "description": "Home section: next up"
     },
@@ -995,7 +995,7 @@
     "@tracklist": {
         "description": "Section header for album track listing"
     },
-    "discNumber": "Disc {number}",
+    "discNumber": "Platte {number}",
     "@discNumber": {
         "description": "Label for an album disc section in a multi-disc track list",
         "placeholders": {
@@ -1008,11 +1008,11 @@
     "@biography": {
         "description": "Section header for person biography"
     },
-    "authorDetails": "Autordetails",
+    "authorDetails": "Details zum Autor",
     "@authorDetails": {
         "description": "AppBar title for author detail screen"
     },
-    "noOverviewAvailable": "Für diesen Titel ist noch keine Übersicht verfügbar.",
+    "noOverviewAvailable": "Für diesen Titel ist keine Übersicht verfügbar.",
     "@noOverviewAvailable": {
         "description": "Placeholder when no overview text is available"
     },
@@ -1020,15 +1020,15 @@
     "@noBiographyAvailable": {
         "description": "Placeholder when no biography text is available"
     },
-    "noBooksFound": "Keine Bücher für diesen Autor gefunden.",
+    "noBooksFound": "Keine Bücher von diesem Autor gefunden.",
     "@noBooksFound": {
         "description": "Placeholder when no books are found for an author"
     },
-    "unableToLoadAuthorDetails": "Autordetails konnten gerade nicht geladen werden.",
+    "unableToLoadAuthorDetails": "Details zum Autor konnten nicht geladen werden.",
     "@unableToLoadAuthorDetails": {
         "description": "Error message when author details fail to load"
     },
-    "published": "Veröffentlicht {year}",
+    "published": "Veröffentlichung: {year}",
     "@published": {
         "description": "Publication year for an author book tile",
         "placeholders": {
@@ -1041,7 +1041,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
+    "seasonCount": "{count, plural, =1{1 Staffel} other{{count} Staffeln}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1071,7 +1071,7 @@
     "@read": {
         "description": "Action button label to start reading a book"
     },
-    "resumeFrom": "Fortsetzen von {position}",
+    "resumeFrom": "Fortsetzen bei {position}",
     "@resumeFrom": {
         "description": "Action button label showing resume position",
         "placeholders": {
@@ -1084,11 +1084,11 @@
     "@play": {
         "description": "Action button label to play media"
     },
-    "startOver": "Von vorn beginnen",
+    "startOver": "Am Anfang beginnen",
     "@startOver": {
         "description": "Action button label to restart reading a book"
     },
-    "restart": "Neustart",
+    "restart": "Neu starten",
     "@restart": {
         "description": "Action button label to restart playing media"
     },
@@ -1112,7 +1112,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Besetzung",
+    "cast": "Abspielen auf",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1120,7 +1120,7 @@
     "@trailer": {
         "description": "Action button label for trailer playback"
     },
-    "finished": "Abgeschlossen",
+    "finished": "Durchgelesen",
     "@finished": {
         "description": "Status label for a finished book"
     },
@@ -1128,7 +1128,7 @@
     "@favorited": {
         "description": "Status label for a favorited item"
     },
-    "favorite": "Favorit",
+    "favorite": "Favorisieren",
     "@favorite": {
         "description": "Action button label to favorite an item"
     },
@@ -1148,11 +1148,11 @@
     "@download": {
         "description": "Action button label to download an item"
     },
-    "deleteDownloaded": "Download löschen",
+    "deleteDownloaded": "Heruntergeladene löschen",
     "@deleteDownloaded": {
         "description": "Action button label to delete downloaded album tracks"
     },
-    "goToSeries": "Zur Serie",
+    "goToSeries": "Zur gesamten Serie",
     "@goToSeries": {
         "description": "Action button label to navigate to the parent series"
     },
@@ -1160,15 +1160,15 @@
     "@editMetadata": {
         "description": "Action button label to edit item metadata"
     },
-    "less": "Weniger",
+    "less": "Weniger anzeigen",
     "@less": {
         "description": "Action button label to collapse extra buttons"
     },
-    "more": "Mehr",
+    "more": "Mehr anzeigen",
     "@more": {
         "description": "Action button label to expand extra buttons"
     },
-    "deleteItem": "Element löschen",
+    "deleteItem": "Inhalt löschen",
     "@deleteItem": {
         "description": "Dialog title for deleting an item"
     },
@@ -1180,7 +1180,7 @@
     "@deletePlaylistMessage": {
         "description": "Confirmation message for deleting a playlist"
     },
-    "deleteItemMessage": "Dieses Element vom Server löschen?",
+    "deleteItemMessage": "Diesen Inhalt vom Server löschen?",
     "@deleteItemMessage": {
         "description": "Confirmation message for deleting an item"
     },
@@ -1188,7 +1188,7 @@
     "@failedToDeletePlaylist": {
         "description": "Error message when playlist deletion fails"
     },
-    "failedToDeleteItem": "Element konnte nicht gelöscht werden",
+    "failedToDeleteItem": "Inhalt konnte nicht gelöscht werden",
     "@failedToDeleteItem": {
         "description": "Error message when item deletion fails"
     },
@@ -1204,7 +1204,7 @@
     "@deleteDownloadedAlbum": {
         "description": "Dialog title for deleting downloaded album tracks"
     },
-    "deleteDownloadedTracksMessage": "Heruntergeladene Titel für „{title}“ löschen?",
+    "deleteDownloadedTracksMessage": "Heruntergeladene Titel für Album \"{title}\" löschen?",
     "@deleteDownloadedTracksMessage": {
         "description": "Confirmation message for deleting downloaded album tracks",
         "placeholders": {
@@ -1225,7 +1225,7 @@
     "@noTracksLoaded": {
         "description": "Message when no tracks are available"
     },
-    "noItemsLoaded": "Kein {itemLabel} geladen",
+    "noItemsLoaded": "{itemLabel} nicht geladen",
     "@noItemsLoaded": {
         "description": "Message when no items are loaded for download",
         "placeholders": {
@@ -1234,7 +1234,7 @@
             }
         }
     },
-    "downloadingTitle": "{title} ({count} Elemente werden heruntergeladen)...",
+    "downloadingTitle": "{title} ({count} Inhalte) wird heruntergeladen...",
     "@downloadingTitle": {
         "description": "Snackbar message when downloading album tracks",
         "placeholders": {
@@ -1246,7 +1246,7 @@
             }
         }
     },
-    "deleteConfirmMessage": "Sind Sie sicher, dass Sie „{name}“ vom Server löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteConfirmMessage": "Soll \"{name}\" wirklich vom Server gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden.",
     "@deleteConfirmMessage": {
         "description": "Confirmation message for permanently deleting an item",
         "placeholders": {
@@ -6260,7 +6260,7 @@
     "@openLink": {
         "description": "Action label to open a URL externally"
     },
-    "scanWithYourPhone": "Scannen Sie mit Ihrem Telefon",
+    "scanWithYourPhone": "Scanne mit dem Mobiltelefon",
     "@scanWithYourPhone": {
         "description": "Instruction shown above a QR code"
     },
@@ -7478,7 +7478,7 @@
         "description": "Option: Stereo (2 channels)"
     },
     "displayAudioRows": "",
-    "endsIn": "",
+    "endsIn": "verbleibend: {time}",
     "@endsIn": {
         "description": "Label showing remaining time for segment or timeout",
         "placeholders": {
@@ -7746,8 +7746,6 @@
     "audioRowsSorting": "",
     "audioRowsSortingDescription": "",
     "audioPlaylists": "",
-    "displaySeerrRows": "",
-    "displaySeerrRowsSubtitle": "",
     "externalPlayerAppDescription": "",
     "crewContributionsSeerr": "",
     "changeArtwork": "",

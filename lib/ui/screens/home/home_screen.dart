@@ -19,6 +19,7 @@ import 'package:window_manager/window_manager.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/models/home_row.dart';
 import '../../../data/repositories/mdblist_repository.dart';
+import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/background_service.dart';
 import '../../widgets/rating_display.dart';
 import '../../../data/services/theme_music_service.dart';
@@ -579,6 +580,8 @@ class _ContentRowsState extends State<_ContentRows>
   // Cache for non-focused row image URLs (independent of focus state). Cleared
   // with the extent cache on data/pref/scale change, and size-capped.
   final Map<String, String?> _rowImageUrlCache = {};
+  final Map<String, String> _dynamicBackdrops = {};
+  final Set<String> _fetchingBackdrops = {};
   int? _activeFocusedRowIndex;
   Timer? _previewDelayTimer;
   Timer? _previewStopTimer;
@@ -1470,6 +1473,7 @@ class _ContentRowsState extends State<_ContentRows>
       v2ImageHeight,
       useSeriesThumbs,
       requestScale,
+      isPrefetch: true,
     );
     if (url == null || url.isEmpty) return;
     if (!_v2FocusPrefetchedUrls.add(url)) return;
@@ -3753,7 +3757,10 @@ class _ContentRowsState extends State<_ContentRows>
             }
           } else {
             cardTitle = item.name;
-            cardSubtitle = canUseExpandedV2Card
+            cardSubtitle = (canUseExpandedV2Card &&
+                    row.id != 'radarr_calendar' &&
+                    row.id != 'sonarr_calendar' &&
+                    row.id != 'merged_calendar')
                 ? _v2MetadataLine(item)
                 : item.subtitle;
             cardSubtitleWidget = null;
@@ -4159,7 +4166,7 @@ class _ContentRowsState extends State<_ContentRows>
           : 'movie';
       context.push(
         Destinations.seerrMedia(item.id),
-        extra: {'mediaType': mediaType},
+        extra: {'mediaType': mediaType, 'title': item.name},
       );
     }
   }
@@ -4253,19 +4260,70 @@ class _ContentRowsState extends State<_ContentRows>
     return _resolvePrimaryImageUrl(item, imageApi, maxWidth: maxW);
   }
 
-  static String? _resolveV2FocusedImageUrl(
+  void _fetchBackdropIfNeeded(AggregatedItem item) async {
+    if (item.serverId != 'seerr') return;
+    final backdrop = item.rawData['BackdropPath'] as String?;
+    if (backdrop != null && backdrop.startsWith('/')) return;
+    if (_dynamicBackdrops.containsKey(item.id)) return;
+    if (!_fetchingBackdrops.add(item.id)) return;
+
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+
+      final title = item.rawData['Name'] as String?;
+      final searchPage = await repo.search(title != null && title.isNotEmpty ? title : item.id);
+      if (searchPage.results.isNotEmpty) {
+        final year = item.rawData['ProductionYear'] as int?;
+        var matchedItem = searchPage.results.first;
+        if (year != null) {
+          for (final result in searchPage.results) {
+            final resultYearStr = result.releaseDate ?? result.firstAirDate;
+            if (resultYearStr != null && resultYearStr.length >= 4) {
+              final resultYear = int.tryParse(resultYearStr.substring(0, 4));
+              if (resultYear == year) {
+                matchedItem = result;
+                break;
+              }
+            }
+          }
+        }
+        if (matchedItem.backdropPath != null && matchedItem.backdropPath!.isNotEmpty) {
+          if (mounted) {
+            setState(() {
+              _dynamicBackdrops[item.id] = matchedItem.backdropPath!;
+            });
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('[HomeScreen] Failed to fetch backdrop for ${item.id}: $e');
+    } finally {
+      _fetchingBackdrops.remove(item.id);
+    }
+  }
+
+  String? _resolveV2FocusedImageUrl(
     AggregatedItem item,
     ImageApi imageApi,
     double height,
     bool useSeriesThumbs,
-    double requestScale,
-  ) {
+    double requestScale, {
+    bool isPrefetch = false,
+  }) {
     if (item.serverId == 'seerr') {
-      return _seerrTmdbImageUrl(
-            item.rawData['BackdropPath'] as String?,
-            1280,
-          ) ??
-          _seerrTmdbImageUrl(item.rawData['PosterPath'] as String?, 300);
+      if (!isPrefetch) {
+        _fetchBackdropIfNeeded(item);
+      }
+      final dynamicBackdrop = _dynamicBackdrops[item.id];
+      if (dynamicBackdrop != null) {
+        return _seerrTmdbImageUrl(dynamicBackdrop, 1280);
+      }
+      final backdrop = item.rawData['BackdropPath'] as String?;
+      if (backdrop != null && backdrop.startsWith('/')) {
+        return _seerrTmdbImageUrl(backdrop, 1280);
+      }
+      return _seerrTmdbImageUrl(item.rawData['PosterPath'] as String?, 300);
     }
     final maxW = (height * 16 / 9 * requestScale).toInt();
     final maxH = (height * requestScale).toInt();

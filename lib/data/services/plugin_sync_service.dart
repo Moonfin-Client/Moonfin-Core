@@ -318,7 +318,6 @@ class PluginSyncService extends ChangeNotifier {
 
       final resolved = await _fetchResolvedProfile(client, _profileName);
       if (resolved == null) {
-        // Keep initialization pending so a later login can retry profile pull.
         return;
       }
 
@@ -545,18 +544,22 @@ class PluginSyncService extends ChangeNotifier {
     MediaServerClient client, {
     required String profile,
   }) async {
-    if (!supportedProfiles.contains(profile)) return false;
-    if (!_pluginAvailable) return false;
+    try {
+      if (!supportedProfiles.contains(profile)) return false;
+      if (!_pluginAvailable) return false;
 
-    await _refreshCustomThemes(client);
+      await _refreshCustomThemes(client);
 
-    final resolved = await _fetchResolvedProfile(client, profile);
-    if (resolved == null) {
+      final resolved = await _fetchResolvedProfile(client, profile);
+      if (resolved == null) {
+        return false;
+      }
+      await _applyServerSettings(resolved);
+
+      return true;
+    } catch (_) {
       return false;
     }
-
-    _applyServerSettings(resolved);
-    return true;
   }
 
   Future<Map<String, dynamic>?> _ping(MediaServerClient client) async {
@@ -811,6 +814,25 @@ class PluginSyncService extends ChangeNotifier {
   Future<void> _applyServerSettings(Map<String, dynamic> resolved) async {
     _isSyncingFromServer = true;
     try {
+      final serverId = (_store.getString('pref_last_server_id') ?? '').trim();
+      if (serverId.isNotEmpty) {
+        var tmdbVal = resolved['tmdbApiKey'] as String?;
+        if (tmdbVal == null || tmdbVal.isEmpty || tmdbVal == 'null') {
+          final localTmdbVal = _store.get(_prefs.getEffectivePreference(UserPreferences.tmdbApiKey));
+          if (localTmdbVal.isNotEmpty && localTmdbVal != 'null') {
+            resolved['tmdbApiKey'] = localTmdbVal;
+          }
+        }
+
+        var mdblistVal = resolved['mdblistApiKey'] as String?;
+        if (mdblistVal == null || mdblistVal.isEmpty || mdblistVal == 'null') {
+          final localMdblistVal = _store.get(_prefs.getEffectivePreference(UserPreferences.mdblistApiKey));
+          if (localMdblistVal.isNotEmpty && localMdblistVal != 'null') {
+            resolved['mdblistApiKey'] = localMdblistVal;
+          }
+        }
+      }
+
       _applyString(
         resolved,
         'visualTheme',
@@ -878,11 +900,6 @@ class PluginSyncService extends ChangeNotifier {
         resolved,
         'displayGenresRows',
         UserPreferences.displayGenresRows,
-      );
-      _applyBool(
-        resolved,
-        'displaySeerrRows',
-        UserPreferences.displaySeerrRows,
       );
       _applyBool(
         resolved,
@@ -1164,7 +1181,63 @@ class PluginSyncService extends ChangeNotifier {
           if (sections.isEmpty) {
             await _applyFallbackHomeRows(preserve: pluginEntries);
           } else {
-            order = _appendDisabledBuiltinSections(sections, order);
+            final enabledTypes = sections.map((s) => s.type).toSet();
+            for (final type in prefs.HomeSectionType.values) {
+              if (type == prefs.HomeSectionType.none) continue;
+              if (_isImdbSectionType(type)) {
+                final localEnabled = _prefs.get(_imdbPrefForType(type));
+                final idx = sections.indexWhere((s) => s.type == type);
+                if (idx >= 0) {
+                  sections[idx] = sections[idx].copyWith(enabled: localEnabled);
+                } else {
+                  sections.add(
+                    HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
+                  );
+                }
+                continue;
+              }
+              if (_isTmdbSectionType(type)) {
+                final localEnabled = _prefs.get(_tmdbPrefForType(type));
+                final idx = sections.indexWhere((s) => s.type == type);
+                if (idx >= 0) {
+                  sections[idx] = sections[idx].copyWith(enabled: localEnabled);
+                } else {
+                  sections.add(
+                    HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
+                  );
+                }
+                continue;
+              }
+              if (type == prefs.HomeSectionType.radarrCalendar) {
+                final localEnabled = _prefs.get(UserPreferences.enableRadarrCalendar);
+                final idx = sections.indexWhere((s) => s.type == type);
+                if (idx >= 0) {
+                  sections[idx] = sections[idx].copyWith(enabled: localEnabled);
+                } else {
+                  sections.add(
+                    HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
+                  );
+                }
+                continue;
+              }
+              if (type == prefs.HomeSectionType.sonarrCalendar) {
+                final localEnabled = _prefs.get(UserPreferences.enableSonarrCalendar);
+                final idx = sections.indexWhere((s) => s.type == type);
+                if (idx >= 0) {
+                  sections[idx] = sections[idx].copyWith(enabled: localEnabled);
+                } else {
+                  sections.add(
+                    HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
+                  );
+                }
+                continue;
+              }
+              if (!enabledTypes.contains(type)) {
+                sections.add(
+                  HomeSectionConfig(type: type, enabled: false, order: order++),
+                );
+              }
+            }
             for (final entry in pluginEntries) {
               sections.add(entry.copyWith(order: order++));
             }
@@ -1234,7 +1307,43 @@ class PluginSyncService extends ChangeNotifier {
       );
     }
 
-    order = _appendDisabledBuiltinSections(sections, order);
+    for (final type in prefs.HomeSectionType.values) {
+      if (type == prefs.HomeSectionType.none ||
+          fallbackEnabled.contains(type)) {
+        continue;
+      }
+      if (_isImdbSectionType(type)) {
+        final localEnabled = _prefs.get(_imdbPrefForType(type));
+        sections.add(
+          HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
+        );
+        continue;
+      }
+      if (_isTmdbSectionType(type)) {
+        final localEnabled = _prefs.get(_tmdbPrefForType(type));
+        sections.add(
+          HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
+        );
+        continue;
+      }
+      if (type == prefs.HomeSectionType.radarrCalendar) {
+        final localEnabled = _prefs.get(UserPreferences.enableRadarrCalendar);
+        sections.add(
+          HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
+        );
+        continue;
+      }
+      if (type == prefs.HomeSectionType.sonarrCalendar) {
+        final localEnabled = _prefs.get(UserPreferences.enableSonarrCalendar);
+        sections.add(
+          HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
+        );
+        continue;
+      }
+      sections.add(
+        HomeSectionConfig(type: type, enabled: false, order: order++),
+      );
+    }
 
     for (final entry in preserve) {
       sections.add(entry.copyWith(order: order++));
@@ -1381,7 +1490,7 @@ class PluginSyncService extends ChangeNotifier {
       _prefs.get(UserPreferences.mediaBarMode),
     );
     final mediaBarEnabled = UserPreferences.isMediaBarModeEnabled(mediaBarMode);
-    return {
+    final payload = <String, dynamic>{
       'visualTheme': _prefs.get(UserPreferences.visualTheme).name,
       'customThemeId': _prefs.get(UserPreferences.customThemeId),
       'navbarPosition': _prefs.get(UserPreferences.navbarPosition).name,
@@ -1401,7 +1510,6 @@ class PluginSyncService extends ChangeNotifier {
       ),
       'displayGenresRows': _prefs.get(UserPreferences.displayGenresRows),
       'fullScreenRows': _prefs.get(UserPreferences.fullScreenRows),
-      'displaySeerrRows': _prefs.get(UserPreferences.displaySeerrRows),
       'useDetailedSubHeadings': _prefs.get(
         UserPreferences.useDetailedSubHeadings,
       ),
@@ -1475,13 +1583,11 @@ class PluginSyncService extends ChangeNotifier {
           .get(UserPreferences.browsingBackgroundBlurAmount)
           .toString(),
       'mdblistEnabled': _prefs.get(UserPreferences.enableAdditionalRatings),
-      'mdblistApiKey': _prefs.get(UserPreferences.mdblistApiKey),
       'mdblistShowRatingNames': _prefs.get(UserPreferences.showRatingLabels),
       'mdblistShowRatingBadges': _prefs.get(UserPreferences.showRatingBadges),
       'tmdbEpisodeRatingsEnabled': _prefs.get(
         UserPreferences.enableEpisodeRatings,
       ),
-      'tmdbApiKey': _prefs.get(UserPreferences.tmdbApiKey),
       'seerrEnabled': _prefs.get(UserPreferences.seerrEnabled),
       'seerrBlockNsfw': _prefs.get(UserPreferences.seerrBlockNsfw),
       'mdblistRatingSources': _csvToList(UserPreferences.enabledRatings),
@@ -1497,6 +1603,14 @@ class PluginSyncService extends ChangeNotifier {
             .toList(),
       },
     };
+
+    final mdblistKey = _prefs.get(UserPreferences.mdblistApiKey);
+    payload['mdblistApiKey'] = (mdblistKey.isNotEmpty && mdblistKey != 'null') ? mdblistKey : null;
+
+    final tmdbKey = _prefs.get(UserPreferences.tmdbApiKey);
+    payload['tmdbApiKey'] = (tmdbKey.isNotEmpty && tmdbKey != 'null') ? tmdbKey : null;
+
+    return payload;
   }
 
   void _onPrefsChanged() {
@@ -1515,6 +1629,83 @@ class PluginSyncService extends ChangeNotifier {
         pushSettings(client);
       }
     });
+  }
+
+  bool _isImdbSectionType(prefs.HomeSectionType type) {
+    return type == prefs.HomeSectionType.imdbTop250Movies ||
+        type == prefs.HomeSectionType.imdbTop250TvShows ||
+        type == prefs.HomeSectionType.imdbMostPopularMovies ||
+        type == prefs.HomeSectionType.imdbMostPopularTvShows ||
+        type == prefs.HomeSectionType.imdbLowestRatedMovies ||
+        type == prefs.HomeSectionType.imdbTopEnglishMovies;
+  }
+
+  Preference<bool> _imdbPrefForType(prefs.HomeSectionType type) {
+    switch (type) {
+      case prefs.HomeSectionType.imdbTop250Movies:
+        return UserPreferences.imdbTop250MoviesEnabled;
+      case prefs.HomeSectionType.imdbTop250TvShows:
+        return UserPreferences.imdbTop250TvShowsEnabled;
+      case prefs.HomeSectionType.imdbMostPopularMovies:
+        return UserPreferences.imdbMostPopularMoviesEnabled;
+      case prefs.HomeSectionType.imdbMostPopularTvShows:
+        return UserPreferences.imdbMostPopularTvShowsEnabled;
+      case prefs.HomeSectionType.imdbLowestRatedMovies:
+        return UserPreferences.imdbLowestRatedMoviesEnabled;
+      case prefs.HomeSectionType.imdbTopEnglishMovies:
+        return UserPreferences.imdbTopEnglishMoviesEnabled;
+      default:
+        throw ArgumentError('Not an IMDb section type: $type');
+    }
+  }
+
+  bool _isTmdbSectionType(prefs.HomeSectionType type) {
+    return type == prefs.HomeSectionType.tmdbPopularMovies ||
+        type == prefs.HomeSectionType.tmdbTopRatedMovies ||
+        type == prefs.HomeSectionType.tmdbNowPlayingMovies ||
+        type == prefs.HomeSectionType.tmdbUpcomingMovies ||
+        type == prefs.HomeSectionType.tmdbPopularTv ||
+        type == prefs.HomeSectionType.tmdbTopRatedTv ||
+        type == prefs.HomeSectionType.tmdbAiringTodayTv ||
+        type == prefs.HomeSectionType.tmdbOnTheAirTv ||
+        type == prefs.HomeSectionType.tmdbTrendingMovieDaily ||
+        type == prefs.HomeSectionType.tmdbTrendingMovieWeekly ||
+        type == prefs.HomeSectionType.tmdbTrendingTvDaily ||
+        type == prefs.HomeSectionType.tmdbTrendingTvWeekly ||
+        type == prefs.HomeSectionType.tmdbTrendingAllWeekly;
+  }
+
+  Preference<bool> _tmdbPrefForType(prefs.HomeSectionType type) {
+    switch (type) {
+      case prefs.HomeSectionType.tmdbPopularMovies:
+        return UserPreferences.tmdbPopularMoviesEnabled;
+      case prefs.HomeSectionType.tmdbTopRatedMovies:
+        return UserPreferences.tmdbTopRatedMoviesEnabled;
+      case prefs.HomeSectionType.tmdbNowPlayingMovies:
+        return UserPreferences.tmdbNowPlayingMoviesEnabled;
+      case prefs.HomeSectionType.tmdbUpcomingMovies:
+        return UserPreferences.tmdbUpcomingMoviesEnabled;
+      case prefs.HomeSectionType.tmdbPopularTv:
+        return UserPreferences.tmdbPopularTvEnabled;
+      case prefs.HomeSectionType.tmdbTopRatedTv:
+        return UserPreferences.tmdbTopRatedTvEnabled;
+      case prefs.HomeSectionType.tmdbAiringTodayTv:
+        return UserPreferences.tmdbAiringTodayTvEnabled;
+      case prefs.HomeSectionType.tmdbOnTheAirTv:
+        return UserPreferences.tmdbOnTheAirTvEnabled;
+      case prefs.HomeSectionType.tmdbTrendingMovieDaily:
+        return UserPreferences.tmdbTrendingMovieDailyEnabled;
+      case prefs.HomeSectionType.tmdbTrendingMovieWeekly:
+        return UserPreferences.tmdbTrendingMovieWeeklyEnabled;
+      case prefs.HomeSectionType.tmdbTrendingTvDaily:
+        return UserPreferences.tmdbTrendingTvDailyEnabled;
+      case prefs.HomeSectionType.tmdbTrendingTvWeekly:
+        return UserPreferences.tmdbTrendingTvWeeklyEnabled;
+      case prefs.HomeSectionType.tmdbTrendingAllWeekly:
+        return UserPreferences.tmdbTrendingAllWeeklyEnabled;
+      default:
+        throw ArgumentError('Not a TMDB section type: $type');
+    }
   }
 
   @override

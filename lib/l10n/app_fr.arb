@@ -3466,7 +3466,7 @@
     "@showInNavigation": {
         "description": "Toggle for showing library in navigation"
     },
-    "showInLatestMedia": "Afficher dans ajouts récents",
+    "showInLatestMedia": "Afficher dans les médias récemment ajoutés ou sortis",
     "@showInLatestMedia": {
         "description": "Toggle for showing library in latest media"
     },
@@ -3591,7 +3591,7 @@
     "@enablePreviewAudio": {
         "description": "Description for preview audio"
     },
-    "latestMedia": "Derniers médias",
+    "latestMedia": "Médias récemment ajoutés",
     "@latestMedia": {
         "description": "Home section: latest media"
     },
@@ -7524,8 +7524,6 @@
         "description": "Subtitle shown under Seerr discovery home rows"
     },
     "settingsShowSeerrButtonInNavigation": "Afficher le bouton Seerr dans la barre de navigation",
-    "displaySeerrRows": "Afficher les rangées de découverte Seerr",
-    "displaySeerrRowsSubtitle": "Afficher les rangées de découverte Seerr dans les sections de l'accueil.",
     "settingsProgressBar": "Barre de progression",
     "@settingsProgressBar": {
         "description": "Option label to show only progress bar on media segment countdown overlay"
@@ -7668,59 +7666,59 @@
         }
     },
     "themeStoreInvalidMessage": "Le thème n'a pas pu être chargé.",
-    "fallbackAudioLanguage": "",
+    "fallbackAudioLanguage": "Langue audio secondaire",
     "@fallbackAudioLanguage": {
         "description": "Setting for fallback audio language"
     },
-    "preferDefaultAudioTrack": "",
+    "preferDefaultAudioTrack": "Préférer la piste audio par défaut",
     "@preferDefaultAudioTrack": {
         "description": "Setting for preferring default audio track"
     },
-    "preferDefaultAudioTrackDescription": "",
+    "preferDefaultAudioTrackDescription": "Préférer la piste audio originale au doublage.",
     "@preferDefaultAudioTrackDescription": {
         "description": "Description for preferring default audio track setting"
     },
-    "preferAudioDescription": "",
+    "preferAudioDescription": "Préférer les pistes d'audiodescription",
     "@preferAudioDescription": {
         "description": "Setting for preferring audio description tracks"
     },
-    "preferAudioDescriptionDescription": "",
+    "preferAudioDescriptionDescription": "Préférer les pistes d'audiodescription aux pistes normales.",
     "@preferAudioDescriptionDescription": {
         "description": "Description for preferring audio description tracks setting"
     },
-    "transcodingAudio": "",
+    "transcodingAudio": "Transcodage (audio)",
     "@transcodingAudio": {
         "description": "Label for audio-only transcode playback method"
     },
-    "subtitleModeNoneDescription": "",
+    "subtitleModeNoneDescription": "Désactive complètement le chargement automatique des sous-titres.",
     "@subtitleModeNoneDescription": {
         "description": "Description for none subtitle mode"
     },
-    "fallbackSubtitleLanguage": "",
+    "fallbackSubtitleLanguage": "Langue de sous-titres secondaire",
     "@fallbackSubtitleLanguage": {
         "description": "Setting for fallback subtitle language"
     },
-    "subtitleStream": "",
+    "subtitleStream": "Piste de sous-titres",
     "@subtitleStream": {
         "description": "Header for subtitle stream settings"
     },
-    "groupItemsIntoCollections": "",
+    "groupItemsIntoCollections": "Regrouper les éléments en collections",
     "@groupItemsIntoCollections": {
         "description": "Setting for grouping items into collections"
     },
-    "hideCollectionAssociatedItems": "",
+    "hideCollectionAssociatedItems": "Masquer les éléments appartenant à une collection lors de la navigation dans les bibliothèques",
     "@hideCollectionAssociatedItems": {
         "description": "Description for grouping items into collections"
     },
-    "groupItemsIntoCollectionsDialogTitle": "",
+    "groupItemsIntoCollectionsDialogTitle": "À propos du regroupement",
     "@groupItemsIntoCollectionsDialogTitle": {
         "description": "Title of the alert dialog explaining server settings requirement"
     },
-    "groupItemsIntoCollectionsDialogMessage": "",
+    "groupItemsIntoCollectionsDialogMessage": "Pour utiliser ce réglage, assurez-vous que les options « Regrouper les films en collections » et/ou « Regrouper les séries en collections » sont activées dans les réglages d'affichage de votre bibliothèque, sur votre serveur Jellyfin ou Emby.",
     "@groupItemsIntoCollectionsDialogMessage": {
         "description": "Message of the alert dialog explaining server settings requirement"
     },
-    "recentlyReleasedLibraryName": "",
+    "recentlyReleasedLibraryName": "{libraryName}, sorties récentes",
     "@recentlyReleasedLibraryName": {
         "description": "Row title for recently released media in a specific library",
         "placeholders": {
@@ -7729,112 +7727,112 @@
             }
         }
     },
-    "crewContributionsSeerr": "",
-    "subtitlePreferences": "",
+    "crewContributionsSeerr": "Contributions techniques (Seerr)",
+    "subtitlePreferences": "Préférences de sous-titres",
     "@subtitlePreferences": {
         "description": "Title for the subtitle preferences settings section"
     },
-    "subtitlePreferencesDescription": "",
+    "subtitlePreferencesDescription": "Modifier les modes de sous-titres, les langues par défaut, l'apparence et les options de rendu.",
     "@subtitlePreferencesDescription": {
         "description": "Description for the subtitle preferences settings section"
     },
-    "subtitleRendering": "",
+    "subtitleRendering": "Rendu des sous-titres",
     "@subtitleRendering": {
         "description": "Header for subtitle rendering settings"
     },
-    "displayOptions": "",
+    "displayOptions": "Options d'affichage",
     "@displayOptions": {
         "description": "Title for details display options dialog"
     },
-    "releaseDateAscending": "",
+    "releaseDateAscending": "Date de sortie (croissant)",
     "@releaseDateAscending": {
         "description": "Sort option for crew/cast contributions in ascending release date order"
     },
-    "releaseDateDescending": "",
+    "releaseDateDescending": "Date de sortie (décroissant)",
     "@releaseDateDescending": {
         "description": "Sort option for crew/cast contributions in descending release date order"
     },
-    "groupContributions": "",
+    "groupContributions": "Regrouper les contributions",
     "@groupContributions": {
         "description": "Section header for grouping person contributions"
     },
-    "groupMultipleRoles": "",
+    "groupMultipleRoles": "Regrouper les rôles d'une même personne",
     "@groupMultipleRoles": {
         "description": "Option to group multiple roles for a person"
     },
-    "interfaceStyle": "",
+    "interfaceStyle": "Style d'interface",
     "@interfaceStyle": {
         "description": "Label for the Automatic/Apple/Material interface style setting"
     },
-    "interfaceStyleSubtitle": "",
+    "interfaceStyleSubtitle": "Automatique utilise l'apparence native sur les appareils Apple. Choisissez Apple pour la forcer, ou Material pour l'apparence standard.",
     "@interfaceStyleSubtitle": {
         "description": "Explanation under the interface style setting"
     },
-    "interfaceStyleAutomatic": "",
+    "interfaceStyleAutomatic": "Automatique",
     "@interfaceStyleAutomatic": {
         "description": "Interface style option: follow the platform"
     },
-    "interfaceStyleApple": "",
+    "interfaceStyleApple": "Apple",
     "@interfaceStyleApple": {
         "description": "Interface style option: Apple native look"
     },
-    "interfaceStyleMaterial": "",
+    "interfaceStyleMaterial": "Material",
     "@interfaceStyleMaterial": {
         "description": "Interface style option: Material look"
     },
-    "subtitleMode": "",
+    "subtitleMode": "Sélection des sous-titres",
     "@subtitleMode": {
         "description": "Setting for subtitle mode"
     },
-    "subtitleModeFlagged": "",
+    "subtitleModeFlagged": "Par défaut",
     "@subtitleModeFlagged": {
         "description": "Subtitle mode: default/flagged"
     },
-    "subtitleModeAlways": "",
+    "subtitleModeAlways": "Toujours",
     "@subtitleModeAlways": {
         "description": "Subtitle mode: always play"
     },
-    "subtitleModeForeign": "",
+    "subtitleModeForeign": "Langue étrangère",
     "@subtitleModeForeign": {
         "description": "Subtitle mode: foreign/smart"
     },
-    "subtitleModeForced": "",
+    "subtitleModeForced": "Forcés",
     "@subtitleModeForced": {
         "description": "Subtitle mode: only forced"
     },
-    "subtitleModeFlaggedDescription": "",
+    "subtitleModeFlaggedDescription": "Lit les pistes définies comme « par défaut » ou « forcées » dans les métadonnées du fichier.",
     "@subtitleModeFlaggedDescription": {
         "description": "Description for flagged subtitle mode"
     },
-    "subtitleModeAlwaysDescription": "",
+    "subtitleModeAlwaysDescription": "Charge et affiche automatiquement les sous-titres à chaque démarrage d'une vidéo.",
     "@subtitleModeAlwaysDescription": {
         "description": "Description for always subtitle mode"
     },
-    "subtitleModeForeignDescription": "",
+    "subtitleModeForeignDescription": "Active automatiquement les sous-titres si la piste audio par défaut est dans une langue étrangère.",
     "@subtitleModeForeignDescription": {
         "description": "Description for foreign subtitle mode"
     },
-    "subtitleModeForcedDescription": "",
+    "subtitleModeForcedDescription": "Ne charge que les sous-titres explicitement marqués comme « forcés » dans les métadonnées.",
     "@subtitleModeForcedDescription": {
         "description": "Description for forced subtitle mode"
     },
-    "libraryWriteAccessWarningTitle": "",
+    "libraryWriteAccessWarningTitle": "Avertissement d'accès en écriture à la bibliothèque",
     "@libraryWriteAccessWarningTitle": {
         "description": "Title for library write access warning dialog"
     },
-    "libraryWriteAccessHowToFix": "",
+    "libraryWriteAccessHowToFix": "Comment résoudre ce problème :",
     "@libraryWriteAccessHowToFix": {
         "description": "Section header for write access troubleshooting"
     },
-    "libraryWriteAccessFixSteps": "",
+    "libraryWriteAccessFixSteps": "1. Accordez les permissions d'écriture à l'utilisateur du service Jellyfin (par exemple, jellyfin ou le PUID/PGID Docker) sur les dossiers de votre bibliothèque multimédia, côté serveur.\n\n2. Ou, dans le tableau de bord Jellyfin → Bibliothèques, modifiez cette bibliothèque et désactivez « Enregistrer les illustrations dans les dossiers multimédias » pour stocker les visuels dans la base de données interne de Jellyfin.",
     "@libraryWriteAccessFixSteps": {
         "description": "Troubleshooting steps for write access issues"
     },
-    "dismiss": "",
+    "dismiss": "Ignorer",
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "",
+    "libraryWriteAccessProactiveBody": "Votre bibliothèque {libraryName} est configurée pour enregistrer les visuels directement dans les dossiers multimédias (l'option « Enregistrer les illustrations dans les dossiers multimédias » est activée). Cependant, Jellyfin a testé l'accès en écriture et n'a pas la permission d'écrire dans ce répertoire :\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -7846,7 +7844,7 @@
             }
         }
     },
-    "libraryWriteAccessReactiveBody": "",
+    "libraryWriteAccessReactiveBody": "Il semble que Jellyfin n'ait pas réussi à mettre à jour le visuel. Votre bibliothèque est configurée pour enregistrer les visuels directement dans les dossiers multimédias (l'option « Enregistrer les illustrations dans les dossiers multimédias » est activée). Cette erreur survient généralement lorsque le serveur Jellyfin n'a pas la permission d'écrire dans vos répertoires multimédias.",
     "@libraryWriteAccessReactiveBody": {
         "description": "Reactive error warning message when artwork update fails"
     },

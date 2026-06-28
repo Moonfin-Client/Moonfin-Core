@@ -21,6 +21,7 @@ final _iconColorOverrides = <IconData, Color>{
   Icons.brightness_medium: Color(0xFFFF9500),
   Icons.text_fields: Color(0xFF007AFF),
   Icons.format_size: Color(0xFF007AFF),
+  Icons.list_alt: Color(0xFF007AFF),
   Icons.play_arrow: Color(0xFF34C759),
   Icons.shuffle: Color(0xFFAF52DE),
   Icons.volume_up: Color(0xFFFF3B30),

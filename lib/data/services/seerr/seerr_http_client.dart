@@ -366,6 +366,15 @@ class SeerrHttpClient {
     return response.data as Map<String, dynamic>;
   }
 
+  Future<Map<String, dynamic>> getTvDetailsByTvdb(int tvdbId) async {
+    final response = await _dio.get(
+      _apiUrl('tv/tvdb/$tvdbId'),
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'getTvDetailsByTvdb');
+    return response.data as Map<String, dynamic>;
+  }
+
   Future<Map<String, dynamic>> getSimilarMovies(int tmdbId, {int page = 1}) async {
     final response = await _dio.get(
       _apiUrl('movie/$tmdbId/similar'),

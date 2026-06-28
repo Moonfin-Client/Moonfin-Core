@@ -189,7 +189,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
     _state = _state.copyWith(requestSuccess: null, requestError: null);
   }
 
-  Future<void> load(int tmdbId, String mediaType) async {
+  Future<void> load(String itemId, String mediaType, {String? title}) async {
     _state = const SeerrMediaDetailState(isLoading: true);
     notifyListeners();
 
@@ -201,16 +201,71 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
         user = await _repo.getCurrentUser();
       } catch (_) {}
 
-      if (mediaType == 'tv') {
-        final details = await _repo.getTvDetails(tmdbId);
-        _state = SeerrMediaDetailState(tv: details, currentUser: user);
-        notifyListeners();
-        _loadRelated(tmdbId, 'tv');
+      int tmdbId;
+      String resolvedMediaType = mediaType;
+
+      if (itemId.startsWith('tt')) {
+        SeerrDiscoverPage? searchPage;
+        if (title != null && title.isNotEmpty) {
+          try {
+            searchPage = await _repo.search(title);
+          } catch (e) {
+            debugPrint('[SeerrDetail] Search by title failed: $e');
+          }
+        }
+        if (searchPage == null || searchPage.results.isEmpty) {
+          try {
+            searchPage = await _repo.search(itemId);
+          } catch (e) {
+            debugPrint('[SeerrDetail] Search by IMDb ID failed: $e');
+          }
+        }
+        if (searchPage == null || searchPage.results.isEmpty) {
+          throw Exception('Media not found on Seerr');
+        }
+        final firstResult = searchPage.results.first;
+        tmdbId = firstResult.id;
+        resolvedMediaType = firstResult.mediaType ?? mediaType;
       } else {
-        final details = await _repo.getMovieDetails(tmdbId);
-        _state = SeerrMediaDetailState(movie: details, currentUser: user);
-        notifyListeners();
-        _loadRelated(tmdbId, 'movie');
+        final parsed = int.tryParse(itemId);
+        if (parsed == null) {
+          throw Exception('Invalid media ID');
+        }
+        tmdbId = parsed;
+      }
+
+      if (resolvedMediaType == 'tv') {
+        try {
+          final details = await _repo.getTvDetails(tmdbId);
+          _state = SeerrMediaDetailState(tv: details, currentUser: user);
+          notifyListeners();
+          _loadRelated(tmdbId, 'tv');
+        } catch (e) {
+          debugPrint('[SeerrDetail] getTvDetails failed: $e. Attempting fallback to search...');
+          final fallbackDetails = await _trySearchFallbackTv(tmdbId, title);
+          if (fallbackDetails != null) {
+            _state = SeerrMediaDetailState(tv: fallbackDetails, currentUser: user);
+            notifyListeners();
+          } else {
+            rethrow;
+          }
+        }
+      } else {
+        try {
+          final details = await _repo.getMovieDetails(tmdbId);
+          _state = SeerrMediaDetailState(movie: details, currentUser: user);
+          notifyListeners();
+          _loadRelated(tmdbId, 'movie');
+        } catch (e) {
+          debugPrint('[SeerrDetail] getMovieDetails failed: $e. Attempting fallback to search...');
+          final fallbackDetails = await _trySearchFallbackMovie(tmdbId, title);
+          if (fallbackDetails != null) {
+            _state = SeerrMediaDetailState(movie: fallbackDetails, currentUser: user);
+            notifyListeners();
+          } else {
+            rethrow;
+          }
+        }
       }
     } catch (e) {
       _state = SeerrMediaDetailState(error: e.toString());
@@ -412,5 +467,70 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
   String? get saved4kServerId {
     if (_state.isTv) return _prefs.fourKTvServerId;
     return _prefs.fourKMovieServerId;
+  }
+
+  Future<SeerrTvDetails?> _trySearchFallbackTv(int tmdbId, String? title) async {
+    try {
+      SeerrDiscoverPage? searchPage;
+      if (title != null && title.isNotEmpty) {
+        searchPage = await _repo.search(title);
+      }
+      if (searchPage == null || searchPage.results.isEmpty) {
+        searchPage = await _repo.search(tmdbId.toString());
+      }
+      if (searchPage.results.isNotEmpty) {
+        final match = searchPage.results.firstWhere(
+          (item) => item.id == tmdbId,
+          orElse: () => searchPage!.results.first,
+        );
+        return SeerrTvDetails(
+          id: match.id,
+          mediaType: match.mediaType ?? 'tv',
+          name: match.name ?? match.title,
+          title: match.title ?? match.name,
+          posterPath: match.posterPath,
+          backdropPath: match.backdropPath,
+          overview: match.overview,
+          voteAverage: match.voteAverage,
+          voteCount: match.voteCount,
+          mediaInfo: match.mediaInfo,
+        );
+      }
+    } catch (e) {
+      debugPrint('[SeerrDetail] TV search fallback error: $e');
+    }
+    return null;
+  }
+
+  Future<SeerrMovieDetails?> _trySearchFallbackMovie(int tmdbId, String? title) async {
+    try {
+      SeerrDiscoverPage? searchPage;
+      if (title != null && title.isNotEmpty) {
+        searchPage = await _repo.search(title);
+      }
+      if (searchPage == null || searchPage.results.isEmpty) {
+        searchPage = await _repo.search(tmdbId.toString());
+      }
+      if (searchPage.results.isNotEmpty) {
+        final match = searchPage.results.firstWhere(
+          (item) => item.id == tmdbId,
+          orElse: () => searchPage!.results.first,
+        );
+        return SeerrMovieDetails(
+          id: match.id,
+          mediaType: match.mediaType ?? 'movie',
+          title: match.title ?? match.name ?? '',
+          posterPath: match.posterPath,
+          backdropPath: match.backdropPath,
+          overview: match.overview,
+          voteAverage: match.voteAverage,
+          voteCount: match.voteCount,
+          mediaInfo: match.mediaInfo,
+        );
+      }
+    } catch (e) {
+      debugPrint('[SeerrDetail] Movie search fallback error: $e');
+    }
+    return null;
   }
 }

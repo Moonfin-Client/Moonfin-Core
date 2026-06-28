@@ -7430,8 +7430,6 @@
     "audioRowsSorting": "音频行排序",
     "audioRowsSortingDescription": "按添加日期、发布日期、字母顺序等方式排序音频行。",
     "audioPlaylists": "音频播放列表",
-    "displaySeerrRows": "显示 Seerr 发现栏目",
-    "displaySeerrRowsSubtitle": "在首页栏目中显示 Seerr 发现栏目。",
     "externalPlayerAppDescription": "设置外部播放器以启用长按播放选项",
     "changeArtwork": "更换艺术图",
     "missing": "缺失",

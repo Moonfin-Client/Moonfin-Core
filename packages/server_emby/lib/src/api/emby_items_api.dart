@@ -46,6 +46,7 @@ class EmbyItemsApi implements ItemsApi {
     DateTime? minPremiereDate,
     String? maxOfficialRating,
     bool? hasParentalRating,
+    String? anyProviderIdEquals,
   }) async {
     final userId = _getUserId();
     final response = await _dio.get(
@@ -83,6 +84,7 @@ class EmbyItemsApi implements ItemsApi {
           'MinPremiereDate': minPremiereDate.toUtc().toIso8601String(),
         'MaxOfficialRating': ?maxOfficialRating,
         'HasParentalRating': ?hasParentalRating,
+        'AnyProviderIdEquals': ?anyProviderIdEquals,
       },
     );
     return response.data as Map<String, dynamic>;

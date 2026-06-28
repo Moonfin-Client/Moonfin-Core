@@ -7652,13 +7652,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get audioPlaylists => 'Audio Playlists';
 
   @override
-  String get displaySeerrRows => 'Display Seerr Discovery Rows';
-
-  @override
-  String get displaySeerrRowsSubtitle =>
-      'Show Seerr discovery rows in Home Sections.';
-
-  @override
   String get appearance => 'Appearance';
 
   @override
@@ -8351,6 +8344,74 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get subtitleRendering => 'Subtitle Rendering';
+
+  @override
+  String get displayOptions => 'Display Options';
+
+  @override
+  String get releaseDateAscending => 'Release Date (Ascending)';
+
+  @override
+  String get releaseDateDescending => 'Release Date (Descending)';
+
+  @override
+  String get groupContributions => 'Group Contributions';
+
+  @override
+  String get groupMultipleRoles => 'Group multiple roles';
+
+  @override
+  String get libraryWriteAccessWarningTitle => 'Library Write Access Warning';
+
+  @override
+  String get libraryWriteAccessHowToFix => 'How to fix this:';
+
+  @override
+  String get libraryWriteAccessFixSteps =>
+      '1. Grant write permissions to the Jellyfin service user (e.g., jellyfin or Docker PUID/PGID) for your media library folders on the server.\n\n2. Or, go to your Jellyfin Dashboard -> Libraries, edit this library, and disable \'Save artwork into media folders\' to store artwork in Jellyfin\'s internal database.';
+
+  @override
+  String get dismiss => 'Dismiss';
+
+  @override
+  String libraryWriteAccessProactiveBody(
+    String libraryName,
+    String failedPath,
+  ) {
+    return 'Your \'$libraryName\' library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). However, Jellyfin has tested write access and does not have permission to write files into this directory:\n\n$failedPath';
+  }
+
+  @override
+  String get libraryWriteAccessReactiveBody =>
+      'It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.';
+
+  @override
+  String get externalLists => 'External Lists';
+
+  @override
+  String get enableImdb => 'IMDb External Lists';
+
+  @override
+  String get enableImdbDescription =>
+      'Fetch IMDb lists for display on the Home Screen.';
+
+  @override
+  String get imdbTop250Movies => 'IMDb Top 250 Movies';
+
+  @override
+  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
+
+  @override
+  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
+
+  @override
+  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
+
+  @override
+  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
+
+  @override
+  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
 }
 
 /// The translations for English, as used in the United Kingdom (`en_GB`).
@@ -8488,6 +8549,21 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get settingsAppearanceTheme => 'App Theme';
+
+  @override
+  String get interfaceStyle => '';
+
+  @override
+  String get interfaceStyleSubtitle => '';
+
+  @override
+  String get interfaceStyleAutomatic => '';
+
+  @override
+  String get interfaceStyleApple => '';
+
+  @override
+  String get interfaceStyleMaterial => '';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
@@ -10499,6 +10575,24 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get defaultAudioLanguage => 'Default Audio Language';
 
   @override
+  String get fallbackAudioLanguage => '';
+
+  @override
+  String get preferDefaultAudioTrack => '';
+
+  @override
+  String get preferDefaultAudioTrackDescription => '';
+
+  @override
+  String get preferAudioDescription => '';
+
+  @override
+  String get preferAudioDescriptionDescription => '';
+
+  @override
+  String get transcodingAudio => '';
+
+  @override
   String get autoServerDefault => 'Auto (Server Default)';
 
   @override
@@ -10902,6 +10996,42 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
       'Customize subtitle appearance';
 
   @override
+  String get subtitleMode => '';
+
+  @override
+  String get subtitleModeFlagged => '';
+
+  @override
+  String get subtitleModeAlways => '';
+
+  @override
+  String get subtitleModeForeign => '';
+
+  @override
+  String get subtitleModeForced => '';
+
+  @override
+  String get subtitleModeFlaggedDescription => '';
+
+  @override
+  String get subtitleModeAlwaysDescription => '';
+
+  @override
+  String get subtitleModeForeignDescription => '';
+
+  @override
+  String get subtitleModeForcedDescription => '';
+
+  @override
+  String get subtitleModeNoneDescription => '';
+
+  @override
+  String get fallbackSubtitleLanguage => '';
+
+  @override
+  String get subtitleStream => '';
+
+  @override
   String get subtitlePreviewText =>
       'The quick brown fox jumps over the lazy dog';
 
@@ -11170,6 +11300,18 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get showFolderBrowsingOption => 'Show folder browsing option';
 
   @override
+  String get groupItemsIntoCollections => '';
+
+  @override
+  String get hideCollectionAssociatedItems => '';
+
+  @override
+  String get groupItemsIntoCollectionsDialogTitle => '';
+
+  @override
+  String get groupItemsIntoCollectionsDialogMessage => '';
+
+  @override
   String get libraryVisibility => 'Library Visibility';
 
   @override
@@ -11180,7 +11322,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get showInNavigation => 'Show in navigation';
 
   @override
-  String get showInLatestMedia => 'Show in recently added/released media';
+  String get showInLatestMedia => 'Show in latest media';
 
   @override
   String get sourceLibraries => 'Source Libraries';
@@ -11300,7 +11442,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
       'Enable audio for trailer and episode previews';
 
   @override
-  String get latestMedia => 'Recently Added Media';
+  String get latestMedia => 'Latest Media';
 
   @override
   String get recentlyReleased => 'Recently Released';
@@ -15629,7 +15771,7 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String latestLibraryName(String libraryName) {
-    return 'Recently Added $libraryName';
+    return 'Latest $libraryName';
   }
 
   @override
@@ -15910,13 +16052,6 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get audioPlaylists => 'Audio Playlists';
 
   @override
-  String get displaySeerrRows => 'Display Seerr Discovery Rows';
-
-  @override
-  String get displaySeerrRowsSubtitle =>
-      'Show Seerr discovery rows in Home Sections.';
-
-  @override
   String get appearance => 'Appearance';
 
   @override
@@ -16193,6 +16328,9 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get appearancesSeerr => 'Appearances (Seerr)';
+
+  @override
+  String get crewContributionsSeerr => '';
 
   @override
   String get watchWithGroup => 'Watch with group';
@@ -16596,4 +16734,51 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get sources => 'Sources';
+
+  @override
+  String get subtitlePreferences => '';
+
+  @override
+  String get subtitlePreferencesDescription => '';
+
+  @override
+  String get subtitleRendering => '';
+
+  @override
+  String get displayOptions => '';
+
+  @override
+  String get releaseDateAscending => '';
+
+  @override
+  String get releaseDateDescending => '';
+
+  @override
+  String get groupContributions => '';
+
+  @override
+  String get groupMultipleRoles => '';
+
+  @override
+  String get libraryWriteAccessWarningTitle => '';
+
+  @override
+  String get libraryWriteAccessHowToFix => '';
+
+  @override
+  String get libraryWriteAccessFixSteps => '';
+
+  @override
+  String get dismiss => '';
+
+  @override
+  String libraryWriteAccessProactiveBody(
+    String libraryName,
+    String failedPath,
+  ) {
+    return '';
+  }
+
+  @override
+  String get libraryWriteAccessReactiveBody => '';
 }

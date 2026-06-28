@@ -7426,7 +7426,6 @@
     "displayAudioRowsSubtitle": "",
     "audioRowsSorting": "",
     "audioRowsSortingDescription": "",
-    "displaySeerrRows": "",
     "externalPlayerAppDescription": "",
     "crewContributionsSeerr": "",
     "changeArtwork": "",
@@ -7586,7 +7585,6 @@
     "@empty": {
         "description": "Label indicating a section or category is empty"
     },
-    "displaySeerrRowsSubtitle": "",
     "themeGlass": "",
     "@themeGlass": {
         "description": "Display name for the Glass theme"
