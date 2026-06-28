@@ -278,7 +278,7 @@ class UserPreferences extends ChangeNotifier {
       final newMode = value as SubtitleMode;
       if (newMode == SubtitleMode.none) {
         await set(defaultSubtitleLanguage, '');
-      } else if (prevMode == SubtitleMode.none && get(defaultSubtitleLanguage).isEmpty) {
+      } else if (prevMode == SubtitleMode.none && !containsPreference(defaultSubtitleLanguage, scopedOnly: true)) {
         final sysLang = ui.PlatformDispatcher.instance.locale.languageCode;
         final iso3 = toIso3Language(normalizeLanguage(sysLang));
         await set(defaultSubtitleLanguage, iso3);
