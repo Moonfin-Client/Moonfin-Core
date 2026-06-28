@@ -495,6 +495,8 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
           voteCount: match.voteCount,
           mediaInfo: match.mediaInfo,
         );
+      }
+    } catch (e) {
       debugPrint('[SeerrDetail] TV search fallback error: $e');
     }
     return null;
@@ -525,6 +527,8 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
           voteCount: match.voteCount,
           mediaInfo: match.mediaInfo,
         );
+      }
+    } catch (e) {
       debugPrint('[SeerrDetail] Movie search fallback error: $e');
     }
     return null;

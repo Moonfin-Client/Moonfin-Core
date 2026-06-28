@@ -558,6 +558,8 @@ class PluginSyncService extends ChangeNotifier {
 
       return true;
     } catch (_) {
+      return false;
+    }
   }
 
   Future<Map<String, dynamic>?> _ping(MediaServerClient client) async {
