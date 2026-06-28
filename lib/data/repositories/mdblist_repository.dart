@@ -212,29 +212,6 @@ class MdbListRepository {
   }
 }
 
-class MdbListCatalogEntry {
-  final String slug;
-  final String name;
-  final String? mediatype;
-  final int count;
-
-  MdbListCatalogEntry({
-    required this.slug,
-    required this.name,
-    this.mediatype,
-    required this.count,
-  });
-
-  factory MdbListCatalogEntry.fromJson(Map<String, dynamic> json) {
-    return MdbListCatalogEntry(
-      slug: json['slug'] as String? ?? '',
-      name: json['name'] as String? ?? '',
-      mediatype: json['mediatype'] as String?,
-      count: json['count'] as int? ?? 0,
-    );
-  }
-}
-
 class MdbListItem {
   final int? id;
   final String name;
