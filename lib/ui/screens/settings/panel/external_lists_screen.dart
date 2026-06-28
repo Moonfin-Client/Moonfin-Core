@@ -106,58 +106,7 @@ class _ExternalListsScreenState extends State<_ExternalListsScreen> {
     try {
       final futures = <Future<void>>[];
 
-      // 1. IMDb Enabled Charts
-      final imdbService = GetIt.instance<ImdbExternalListsService>();
-      final imdbChecks = {
-        UserPreferences.imdbTop250MoviesEnabled: HomeSectionType.imdbTop250Movies,
-        UserPreferences.imdbTop250TvShowsEnabled: HomeSectionType.imdbTop250TvShows,
-        UserPreferences.imdbMostPopularMoviesEnabled: HomeSectionType.imdbMostPopularMovies,
-        UserPreferences.imdbMostPopularTvShowsEnabled: HomeSectionType.imdbMostPopularTvShows,
-        UserPreferences.imdbLowestRatedMoviesEnabled: HomeSectionType.imdbLowestRatedMovies,
-        UserPreferences.imdbTopEnglishMoviesEnabled: HomeSectionType.imdbTopEnglishMovies,
-      };
-      for (final entry in imdbChecks.entries) {
-        if (prefs.get(entry.key)) {
-          futures.add(() async {
-            try {
-              final items = await imdbService.fetchChart(entry.value, limit: 250);
-              if (items.isNotEmpty) {
-                await imdbService.saveChartToCache(entry.value, items);
-              }
-            } catch (e) {
-              debugPrint('[RefreshAll] Failed to refresh IMDb ${entry.value}: $e');
-            }
-          }());
-        }
-      }
-
-      // 2. TMDB Enabled Charts
-      final tmdbService = GetIt.instance<TmdbExternalListsService>();
-      final tmdbChecks = {
-        UserPreferences.tmdbPopularMoviesEnabled: HomeSectionType.tmdbPopularMovies,
-        UserPreferences.tmdbTopRatedMoviesEnabled: HomeSectionType.tmdbTopRatedMovies,
-        UserPreferences.tmdbNowPlayingMoviesEnabled: HomeSectionType.tmdbNowPlayingMovies,
-        UserPreferences.tmdbUpcomingMoviesEnabled: HomeSectionType.tmdbUpcomingMovies,
-        UserPreferences.tmdbPopularTvEnabled: HomeSectionType.tmdbPopularTv,
-        UserPreferences.tmdbTopRatedTvEnabled: HomeSectionType.tmdbTopRatedTv,
-        UserPreferences.tmdbAiringTodayTvEnabled: HomeSectionType.tmdbAiringTodayTv,
-      };
-      for (final entry in tmdbChecks.entries) {
-        if (prefs.get(entry.key)) {
-          futures.add(() async {
-            try {
-              final items = await tmdbService.fetchChart(entry.value, limit: 250);
-              if (items.isNotEmpty) {
-                await tmdbService.saveChartToCache(entry.value, items);
-              }
-            } catch (e) {
-              debugPrint('[RefreshAll] Failed to refresh TMDB ${entry.value}: $e');
-            }
-          }());
-        }
-      }
-
-      // 3. Custom Enabled Rows
+      // Custom Enabled Rows
       final customService = GetIt.instance<CustomExternalListsService>();
       final configs = prefs.homeSectionsConfig;
       for (final config in configs) {
@@ -1545,10 +1494,6 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
   bool _allowPop = false;
 
   final _nameController = TextEditingController();
-  final _imdbListIdController = TextEditingController();
-  final _imdbEventIdController = TextEditingController();
-  final _imdbEventYearController = TextEditingController();
-  final _imdbSubcategoryController = TextEditingController();
   final _letterboxdUsernameController = TextEditingController();
   final _letterboxdListNameController = TextEditingController();
   final _tmdbIdController = TextEditingController();
@@ -1556,10 +1501,6 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
   final _mdblistListNameController = TextEditingController();
 
   final _nameFocusNode = FocusNode(debugLabel: 'custom_row_name_field');
-  final _imdbListIdFocusNode = FocusNode(debugLabel: 'imdb_list_id_field');
-  final _imdbEventIdFocusNode = FocusNode(debugLabel: 'imdb_event_id_field');
-  final _imdbEventYearFocusNode = FocusNode(debugLabel: 'imdb_event_year_field');
-  final _imdbSubcategoryFocusNode = FocusNode(debugLabel: 'imdb_subcat_field');
   final _letterboxdUsernameFocusNode = FocusNode(debugLabel: 'letterboxd_user_field');
   final _letterboxdListNameFocusNode = FocusNode(debugLabel: 'letterboxd_list_field');
   final _tmdbIdFocusNode = FocusNode(debugLabel: 'tmdb_id_field');
@@ -1579,20 +1520,19 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
       try {
         rowConfig = jsonDecode(widget.existing!.pluginAdditionalData ?? '{}') as Map<String, dynamic>;
       } catch (_) {}
-      _source = rowConfig['source'] as String? ?? 'imdb';
+      _source = rowConfig['source'] as String? ?? 'tmdb';
       _type = rowConfig['type'] as String? ?? 'user_list';
       _sortBy = rowConfig['sort_by'] as String? ?? 'none';
       _sortOrder = rowConfig['sort_order'] as String? ?? 'desc';
       _showUserRatings = rowConfig['show_user_ratings'] as bool? ?? false;
       final params = rowConfig['params'] as Map<String, dynamic>? ?? {};
 
-      if (_source == 'imdb' && _type == 'user_list') {
-        _imdbListIdController.text = params['listid'] as String? ?? '';
-      } else if (_source == 'imdb' && _type == 'awards_events') {
-        _imdbEventIdController.text = params['eventid'] as String? ?? '';
-        _imdbEventYearController.text = params['year'] as String? ?? '';
-        _imdbSubcategoryController.text = params['subcategory'] as String? ?? '';
-      } else if (_source == 'letterboxd') {
+      if (_source == 'imdb') {
+        _source = 'tmdb';
+        _type = 'user_list';
+      }
+
+      if (_source == 'letterboxd') {
         _letterboxdUsernameController.text = params['user'] as String? ?? '';
         if (_type == 'user_list') {
           _letterboxdListNameController.text = params['name'] as String? ?? '';
@@ -1604,7 +1544,7 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
         _mdblistListNameController.text = params['listname'] as String? ?? '';
       }
     } else {
-      _source = 'imdb';
+      _source = 'tmdb';
       _type = 'user_list';
       _sortBy = 'none';
       _sortOrder = 'desc';
@@ -1614,10 +1554,6 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
   @override
   void dispose() {
     _nameController.dispose();
-    _imdbListIdController.dispose();
-    _imdbEventIdController.dispose();
-    _imdbEventYearController.dispose();
-    _imdbSubcategoryController.dispose();
     _letterboxdUsernameController.dispose();
     _letterboxdListNameController.dispose();
     _tmdbIdController.dispose();
@@ -1625,10 +1561,6 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
     _mdblistListNameController.dispose();
 
     _nameFocusNode.dispose();
-    _imdbListIdFocusNode.dispose();
-    _imdbEventIdFocusNode.dispose();
-    _imdbEventYearFocusNode.dispose();
-    _imdbSubcategoryFocusNode.dispose();
     _letterboxdUsernameFocusNode.dispose();
     _letterboxdListNameFocusNode.dispose();
     _tmdbIdFocusNode.dispose();
@@ -1642,8 +1574,6 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
 
   List<String> _getTypesForSource(String source) {
     switch (source) {
-      case 'imdb':
-        return ['user_list', 'awards_events'];
       case 'tmdb':
         return ['user_list', 'movie_collection'];
       case 'letterboxd':
@@ -1727,15 +1657,7 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
     if (name.isEmpty) return;
 
     final params = <String, dynamic>{};
-    if (_source == 'imdb' && _type == 'user_list') {
-      params['listid'] = _imdbListIdController.text.trim();
-    } else if (_source == 'imdb' && _type == 'awards_events') {
-      params['eventid'] = _imdbEventIdController.text.trim();
-      params['year'] = _imdbEventYearController.text.trim();
-      if (_imdbSubcategoryController.text.trim().isNotEmpty) {
-        params['subcategory'] = _imdbSubcategoryController.text.trim();
-      }
-    } else if (_source == 'letterboxd') {
+    if (_source == 'letterboxd') {
       params['user'] = _letterboxdUsernameController.text.trim();
       if (_type == 'user_list') {
         params['name'] = _letterboxdListNameController.text.trim();
@@ -1921,7 +1843,6 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
                       ),
                       items: const [
-                        DropdownMenuItem(value: 'imdb', child: Text('IMDb')),
                         DropdownMenuItem(value: 'tmdb', child: Text('TMDB')),
                         DropdownMenuItem(value: 'letterboxd', child: Text('Letterboxd')),
                         DropdownMenuItem(value: 'mdblist', child: Text('MDBList')),
@@ -1965,41 +1886,6 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
                   const SizedBox(height: 16),
 
                   // Source + Type specific parameters
-                  if (_source == 'imdb' && _type == 'user_list') ...[
-                    const Text('IMDb List ID (e.g. ls123456789)', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                    const SizedBox(height: 4),
-                    _SettingsTextField(
-                      controller: _imdbListIdController,
-                      hint: 'lsXXXXXXXXX',
-                      focusNode: _imdbListIdFocusNode,
-                    ),
-                  ],
-
-                  if (_source == 'imdb' && _type == 'awards_events') ...[
-                    const Text('IMDb Event ID (e.g. ev0000003)', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                    const SizedBox(height: 4),
-                    _SettingsTextField(
-                      controller: _imdbEventIdController,
-                      hint: 'evXXXXXXXX',
-                      focusNode: _imdbEventIdFocusNode,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text('Event Year', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                    const SizedBox(height: 4),
-                    _SettingsTextField(
-                      controller: _imdbEventYearController,
-                      hint: 'e.g. 2024',
-                      focusNode: _imdbEventYearFocusNode,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text('Subcategory/Fragment (optional, e.g. oscar_best_sound)', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                    const SizedBox(height: 4),
-                    _SettingsTextField(
-                      controller: _imdbSubcategoryController,
-                      hint: 'e.g. oscar_best_sound',
-                      focusNode: _imdbSubcategoryFocusNode,
-                    ),
-                  ],
 
                   if (_source == 'letterboxd') ...[
                     const Text('Letterboxd Username', style: TextStyle(color: Colors.grey, fontSize: 12)),

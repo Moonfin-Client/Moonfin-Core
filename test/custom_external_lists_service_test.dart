@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:moonfin/preference/home_section_config.dart';
 import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/data/services/custom_external_lists_service.dart';
-import 'package:moonfin/data/services/imdb_external_lists_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -98,7 +97,7 @@ void main() {
         pluginSection: 'custom_row_title_test',
         pluginDisplayText: 'Test Title Sort',
         pluginAdditionalData: jsonEncode({
-          'source': 'imdb',
+          'source': 'tmdb',
           'type': 'user_list',
           'sort_by': 'title',
           'sort_order': 'asc',
@@ -121,7 +120,7 @@ void main() {
         pluginSection: 'custom_row_year_test',
         pluginDisplayText: 'Test Year Sort',
         pluginAdditionalData: jsonEncode({
-          'source': 'imdb',
+          'source': 'tmdb',
           'type': 'user_list',
           'sort_by': 'year',
           'sort_order': 'desc',
@@ -143,7 +142,7 @@ void main() {
         pluginSection: 'custom_row_pop_test',
         pluginDisplayText: 'Test Pop Sort',
         pluginAdditionalData: jsonEncode({
-          'source': 'imdb',
+          'source': 'tmdb',
           'type': 'user_list',
           'sort_by': 'popularity',
           'sort_order': 'desc',
@@ -165,7 +164,7 @@ void main() {
         pluginSection: 'custom_row_rating_test',
         pluginDisplayText: 'Test Rating Sort',
         pluginAdditionalData: jsonEncode({
-          'source': 'imdb',
+          'source': 'tmdb',
           'type': 'user_list',
           'sort_by': 'rating',
           'sort_order': 'desc',
@@ -187,7 +186,7 @@ void main() {
         pluginSection: 'custom_row_none_test',
         pluginDisplayText: 'Test None Sort',
         pluginAdditionalData: jsonEncode({
-          'source': 'imdb',
+          'source': 'tmdb',
           'type': 'user_list',
           'sort_by': 'none',
         }),
