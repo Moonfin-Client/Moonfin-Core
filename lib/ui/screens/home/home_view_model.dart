@@ -2736,8 +2736,8 @@ class HomeViewModel extends ChangeNotifier {
           }
 
           String? subtitleText;
-          final sNum = (episodeInfo['seasonNumber'] ?? 0).toString().padLeft(2, '0');
-          final eNum = (episodeInfo['episodeNumber'] ?? 0).toString().padLeft(2, '0');
+          final sNum = (episodeInfo['seasonNumber'] ?? 0).toString();
+          final eNum = (episodeInfo['episodeNumber'] ?? 0).toString();
           if (showDate && showEpisodeInfo) {
             final dateStr = _formatDateHuman(airDateUtc);
             subtitleText = 'Next Episode: $dateStr (S$sNum:E$eNum)';
