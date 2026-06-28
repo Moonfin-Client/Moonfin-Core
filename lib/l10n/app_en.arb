@@ -7325,8 +7325,6 @@
   "audioRowsSorting": "Audio Rows sorting",
   "audioRowsSortingDescription": "Sort Audio rows by date added, release date, alphabetically, and more.",
   "audioPlaylists": "Audio Playlists",
-  "displaySeerrRows": "Display Seerr Discovery Rows",
-  "displaySeerrRowsSubtitle": "Show Seerr discovery rows in Home Sections.",
   "appearance": "Appearance",
   "cardSize": "Home Row Card Display Size",
   "externalPlayerApp": "External player app",

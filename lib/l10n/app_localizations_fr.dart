@@ -7797,13 +7797,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get audioPlaylists => 'Playlists audio';
 
   @override
-  String get displaySeerrRows => 'Afficher les rangées de découverte Seerr';
-
-  @override
-  String get displaySeerrRowsSubtitle =>
-      'Afficher les rangées de découverte Seerr dans les sections de l\'accueil.';
-
-  @override
   String get appearance => 'Apparence';
 
   @override

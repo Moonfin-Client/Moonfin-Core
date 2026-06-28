@@ -7740,12 +7740,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get audioPlaylists => '';
 
   @override
-  String get displaySeerrRows => '';
-
-  @override
-  String get displaySeerrRowsSubtitle => '';
-
-  @override
   String get appearance => 'Aparência';
 
   @override
@@ -16243,12 +16237,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get audioPlaylists => '';
 
   @override
-  String get displaySeerrRows => '';
-
-  @override
-  String get displaySeerrRowsSubtitle => '';
-
-  @override
   String get appearance => 'Appearance';
 
   @override
@@ -24727,13 +24715,6 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
 
   @override
   String get audioPlaylists => '';
-
-  @override
-  String get displaySeerrRows => 'Mostrar linhas de descoberta Seerr';
-
-  @override
-  String get displaySeerrRowsSubtitle =>
-      'Mostrar linhas de descoberta Seerr nas Secções Iniciais.';
 
   @override
   String get appearance => 'Aparência';

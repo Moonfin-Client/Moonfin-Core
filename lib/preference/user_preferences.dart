@@ -9,6 +9,7 @@ import '../util/language_matching.dart';
 import '../util/platform_detection.dart';
 import 'home_section_config.dart';
 import 'preference_constants.dart';
+import 'seerr_row_config.dart';
 
 class UserPreferences extends ChangeNotifier {
   static const _lastServerIdPreferenceKey = 'pref_last_server_id';
@@ -35,6 +36,7 @@ class UserPreferences extends ChangeNotifier {
     _migrateOverlayPreferences();
     _migrateDefaultAudioLanguagePreference();
     _migrateSeerrPreferenceKeys();
+    _migrateSeerrRowsVisibility();
     _enforceMediaQueuingAlwaysOn();
     _migrateSubtitleModePreference();
     _initializeSubtitleLanguagePreferences();
@@ -50,6 +52,30 @@ class UserPreferences extends ChangeNotifier {
         _store.get(Preference(key: legacyBlockNsfw, defaultValue: false)),
       );
     }
+  }
+
+  // The global "Display Seerr Discovery Rows" toggle (default off) was removed.
+  // Seerr rows now show whenever any Seerr row category is enabled. Preserve the
+  // opt-out for anyone who had that toggle off by disabling their stored Seerr row
+  // configs, so the rows don't suddenly appear after upgrading. Gating on the
+  // legacy key's presence makes this run once and skips users who never had it.
+  void _migrateSeerrRowsVisibility() {
+    const legacyKey = 'pref_display_seerr_rows';
+    if (!_store.containsKey(legacyKey)) return;
+
+    final wasVisible = _store.getBool(legacyKey) ?? false;
+    if (!wasVisible) {
+      for (final key in _store.keys.toList()) {
+        if (!key.startsWith('seerr_rows_config_')) continue;
+        final disabled =
+            SeerrRowConfig.fromJsonString(_store.getString(key) ?? '')
+                .map((c) => c.copyWith(enabled: false))
+                .toList();
+        _store.setString(key, SeerrRowConfig.toJsonString(disabled));
+      }
+    }
+
+    _store.remove(legacyKey);
   }
 
   void _migrateSubtitleModePreference() {
@@ -667,11 +693,6 @@ class UserPreferences extends ChangeNotifier {
 
   static final displayAudioRows = Preference(
     key: 'pref_display_audio_rows',
-    defaultValue: false,
-  );
-
-  static final displaySeerrRows = Preference(
-    key: 'pref_display_seerr_rows',
     defaultValue: false,
   );
 

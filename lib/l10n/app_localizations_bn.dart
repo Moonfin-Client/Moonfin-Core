@@ -7677,12 +7677,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get audioPlaylists => '';
 
   @override
-  String get displaySeerrRows => '';
-
-  @override
-  String get displaySeerrRowsSubtitle => '';
-
-  @override
   String get appearance => 'চেহারা';
 
   @override

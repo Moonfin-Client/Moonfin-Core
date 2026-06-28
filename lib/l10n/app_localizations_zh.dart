@@ -7423,12 +7423,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get audioPlaylists => '音频播放列表';
 
   @override
-  String get displaySeerrRows => '显示 Seerr 发现栏目';
-
-  @override
-  String get displaySeerrRowsSubtitle => '在首页栏目中显示 Seerr 发现栏目。';
-
-  @override
   String get appearance => '外观';
 
   @override
@@ -15593,12 +15587,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get audioPlaylists => '';
-
-  @override
-  String get displaySeerrRows => '';
-
-  @override
-  String get displaySeerrRowsSubtitle => '';
 
   @override
   String get appearance => 'Appearance';

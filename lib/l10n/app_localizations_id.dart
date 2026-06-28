@@ -7703,13 +7703,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get audioPlaylists => 'Playlist Audio';
 
   @override
-  String get displaySeerrRows => 'Tampilkan Baris Discovery Seerr';
-
-  @override
-  String get displaySeerrRowsSubtitle =>
-      'Tampilkan baris discovery Seerr di Bagian Beranda.';
-
-  @override
   String get appearance => 'Tampilan';
 
   @override

@@ -478,7 +478,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
       if (searchPage == null || searchPage.results.isEmpty) {
         searchPage = await _repo.search(tmdbId.toString());
       }
-      if (searchPage != null && searchPage.results.isNotEmpty) {
+      if (searchPage.results.isNotEmpty) {
         final match = searchPage.results.firstWhere(
           (item) => item.id == tmdbId,
           orElse: () => searchPage!.results.first,
@@ -511,7 +511,7 @@ class SeerrMediaDetailViewModel extends ChangeNotifier {
       if (searchPage == null || searchPage.results.isEmpty) {
         searchPage = await _repo.search(tmdbId.toString());
       }
-      if (searchPage != null && searchPage.results.isNotEmpty) {
+      if (searchPage.results.isNotEmpty) {
         final match = searchPage.results.firstWhere(
           (item) => item.id == tmdbId,
           orElse: () => searchPage!.results.first,

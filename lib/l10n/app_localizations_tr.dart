@@ -7715,13 +7715,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get audioPlaylists => 'Ses Oynatma Listeleri';
 
   @override
-  String get displaySeerrRows => 'Seerr Keşif Satırlarını Göster';
-
-  @override
-  String get displaySeerrRowsSubtitle =>
-      'Seerr keşif satırlarını Ana Sayfa Bölümleri\'nde göster.';
-
-  @override
   String get appearance => 'Görünüm';
 
   @override

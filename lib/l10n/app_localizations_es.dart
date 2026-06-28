@@ -7759,12 +7759,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get audioPlaylists => '';
 
   @override
-  String get displaySeerrRows => '';
-
-  @override
-  String get displaySeerrRowsSubtitle => '';
-
-  @override
   String get appearance => 'Apariencia';
 
   @override
@@ -16321,12 +16315,6 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   String get audioPlaylists => '';
 
   @override
-  String get displaySeerrRows => '';
-
-  @override
-  String get displaySeerrRowsSubtitle => '';
-
-  @override
   String get appearance => 'Apariencia';
 
   @override
@@ -24843,12 +24831,6 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get audioPlaylists => '';
-
-  @override
-  String get displaySeerrRows => '';
-
-  @override
-  String get displaySeerrRowsSubtitle => '';
 
   @override
   String get appearance => 'Apariencia';
@@ -33369,12 +33351,6 @@ class AppLocalizationsEsDo extends AppLocalizationsEs {
   String get audioPlaylists => '';
 
   @override
-  String get displaySeerrRows => '';
-
-  @override
-  String get displaySeerrRowsSubtitle => '';
-
-  @override
   String get appearance => 'Apariencia';
 
   @override
@@ -41891,12 +41867,6 @@ class AppLocalizationsEsMx extends AppLocalizationsEs {
 
   @override
   String get audioPlaylists => '';
-
-  @override
-  String get displaySeerrRows => '';
-
-  @override
-  String get displaySeerrRowsSubtitle => '';
 
   @override
   String get appearance => 'Apariencia';

@@ -7524,8 +7524,6 @@
         "description": "Subtitle shown under Seerr discovery home rows"
     },
     "settingsShowSeerrButtonInNavigation": "Afficher le bouton Seerr dans la barre de navigation",
-    "displaySeerrRows": "Afficher les rangées de découverte Seerr",
-    "displaySeerrRowsSubtitle": "Afficher les rangées de découverte Seerr dans les sections de l'accueil.",
     "settingsProgressBar": "Barre de progression",
     "@settingsProgressBar": {
         "description": "Option label to show only progress bar on media segment countdown overlay"

@@ -7652,13 +7652,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get audioPlaylists => 'Audio Playlists';
 
   @override
-  String get displaySeerrRows => 'Display Seerr Discovery Rows';
-
-  @override
-  String get displaySeerrRowsSubtitle =>
-      'Show Seerr discovery rows in Home Sections.';
-
-  @override
   String get appearance => 'Appearance';
 
   @override
@@ -16057,13 +16050,6 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get audioPlaylists => 'Audio Playlists';
-
-  @override
-  String get displaySeerrRows => 'Display Seerr Discovery Rows';
-
-  @override
-  String get displaySeerrRowsSubtitle =>
-      'Show Seerr discovery rows in Home Sections.';
 
   @override
   String get appearance => 'Appearance';

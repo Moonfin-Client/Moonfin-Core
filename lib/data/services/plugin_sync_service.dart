@@ -903,11 +903,6 @@ class PluginSyncService extends ChangeNotifier {
       );
       _applyBool(
         resolved,
-        'displaySeerrRows',
-        UserPreferences.displaySeerrRows,
-      );
-      _applyBool(
-        resolved,
         'useDetailedSubHeadings',
         UserPreferences.useDetailedSubHeadings,
       );
@@ -1515,7 +1510,6 @@ class PluginSyncService extends ChangeNotifier {
       ),
       'displayGenresRows': _prefs.get(UserPreferences.displayGenresRows),
       'fullScreenRows': _prefs.get(UserPreferences.fullScreenRows),
-      'displaySeerrRows': _prefs.get(UserPreferences.displaySeerrRows),
       'useDetailedSubHeadings': _prefs.get(
         UserPreferences.useDetailedSubHeadings,
       ),

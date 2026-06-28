@@ -791,9 +791,8 @@ class _UpcomingCalendarsScreenState extends State<_UpcomingCalendarsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     final prefs = GetIt.instance<UserPreferences>();
-    
+
     final radarrEnabled = prefs.get(UserPreferences.enableRadarrCalendar);
     final sonarrEnabled = prefs.get(UserPreferences.enableSonarrCalendar);
 

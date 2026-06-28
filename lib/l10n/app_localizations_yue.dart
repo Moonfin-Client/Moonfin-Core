@@ -7441,12 +7441,6 @@ class AppLocalizationsYue extends AppLocalizations {
   String get audioPlaylists => '';
 
   @override
-  String get displaySeerrRows => '';
-
-  @override
-  String get displaySeerrRowsSubtitle => '';
-
-  @override
   String get appearance => 'Appearance';
 
   @override
@@ -15639,12 +15633,6 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   String get audioPlaylists => '';
 
   @override
-  String get displaySeerrRows => '';
-
-  @override
-  String get displaySeerrRowsSubtitle => '';
-
-  @override
   String get appearance => 'Appearance';
 
   @override
@@ -23808,12 +23796,6 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
 
   @override
   String get audioPlaylists => '';
-
-  @override
-  String get displaySeerrRows => '';
-
-  @override
-  String get displaySeerrRowsSubtitle => '';
 
   @override
   String get appearance => 'Appearance';
