@@ -2340,19 +2340,23 @@ class HomeViewModel extends ChangeNotifier {
     try {
       final nowMs = DateTime.now().millisecondsSinceEpoch;
       final lastFetch = _prefs.get(UserPreferences.lastSonarrCalendarFetchTime);
-      final cacheAge = nowMs - lastFetch;
-      final shouldFetch = forceRefresh || cacheAge > const Duration(days: 1).inMilliseconds;
-
-      List<AggregatedItem> items;
-      if (shouldFetch) {
-        final fetchedItems = await _fetchSonarrCalendarFromApi();
-        if (fetchedItems != null) {
-          items = fetchedItems;
-          await _saveSonarrCalendarToCache(items);
-          await _prefs.set(UserPreferences.lastSonarrCalendarFetchTime, nowMs);
-        } else {
-          items = await _loadSonarrCalendarFromCache();
-        }
+        return AggregatedItem(
+          id: imdbId.isNotEmpty ? imdbId : tmdbId,
+          serverId: 'seerr',
+          rawData: {
+            'Name': item.name,
+            'Type': displayType,
+            'Overview': '',
+            'PosterPath': item.poster ?? '',
+            'BackdropPath': '',
+            'ProductionYear': item.productionYear,
+            'SeerrMediaType': seerrMediaType,
+            'ProviderIds': {
+              if (imdbId.isNotEmpty) 'Imdb': imdbId,
+              if (tmdbId.isNotEmpty) 'Tmdb': tmdbId,
+            },
+          },
+        );
       } else {
         items = await _loadSonarrCalendarFromCache();
         if (items.isEmpty) {
