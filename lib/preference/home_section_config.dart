@@ -312,36 +312,6 @@ class HomeSectionConfig {
       order: 31,
     ),
     HomeSectionConfig(
-      type: HomeSectionType.imdbTop250Movies,
-      enabled: false,
-      order: 32,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.imdbTop250TvShows,
-      enabled: false,
-      order: 33,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.imdbMostPopularMovies,
-      enabled: false,
-      order: 34,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.imdbMostPopularTvShows,
-      enabled: false,
-      order: 35,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.imdbLowestRatedMovies,
-      enabled: false,
-      order: 36,
-    ),
-    HomeSectionConfig(
-      type: HomeSectionType.imdbTopEnglishMovies,
-      enabled: false,
-      order: 37,
-    ),
-    HomeSectionConfig(
       type: HomeSectionType.radarrCalendar,
       enabled: false,
       order: 38,

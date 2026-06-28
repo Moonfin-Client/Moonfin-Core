@@ -250,13 +250,6 @@ class UserPreferences extends ChangeNotifier {
     'pref_audio_sort_option',
     'pref_person_page_sort_option',
     'pref_person_page_group_items',
-    'enable_imdb_external_lists',
-    'imdb_top_250_movies_enabled',
-    'imdb_top_250_tv_shows_enabled',
-    'imdb_most_popular_movies_enabled',
-    'imdb_most_popular_tv_shows_enabled',
-    'imdb_lowest_rated_movies_enabled',
-    'imdb_top_english_movies_enabled',
     'tmdb_popular_movies_enabled',
     'tmdb_top_rated_movies_enabled',
     'tmdb_now_playing_movies_enabled',
@@ -1539,46 +1532,10 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: '',
   );
 
-  static final enableImdbExternalLists = Preference(
-    key: 'enable_imdb_external_lists',
-    defaultValue: false,
-  );
-
   static final lastExternalRowsRefreshTime = Preference(
     key: 'last_external_rows_refresh_time',
     defaultValue: 0,
   );
-
-  static final imdbTop250MoviesEnabled = Preference(
-    key: 'imdb_top_250_movies_enabled',
-    defaultValue: false,
-  );
-
-  static final imdbTop250TvShowsEnabled = Preference(
-    key: 'imdb_top_250_tv_shows_enabled',
-    defaultValue: false,
-  );
-
-  static final imdbMostPopularMoviesEnabled = Preference(
-    key: 'imdb_most_popular_movies_enabled',
-    defaultValue: false,
-  );
-
-  static final imdbMostPopularTvShowsEnabled = Preference(
-    key: 'imdb_most_popular_tv_shows_enabled',
-    defaultValue: false,
-  );
-
-  static final imdbLowestRatedMoviesEnabled = Preference(
-    key: 'imdb_lowest_rated_movies_enabled',
-    defaultValue: false,
-  );
-
-  static final imdbTopEnglishMoviesEnabled = Preference(
-    key: 'imdb_top_english_movies_enabled',
-    defaultValue: false,
-  );
-
   static final tmdbPopularMoviesEnabled = Preference(
     key: 'tmdb_popular_movies_enabled',
     defaultValue: false,

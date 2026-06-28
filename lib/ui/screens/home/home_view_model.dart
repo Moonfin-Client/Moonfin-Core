@@ -117,42 +117,7 @@ class HomeViewModel extends ChangeNotifier {
         type == HomeSectionType.seerrNetworks;
   }
 
-  static bool _isImdbSectionType(HomeSectionType type) {
-    return type == HomeSectionType.imdbTop250Movies ||
-        type == HomeSectionType.imdbTop250TvShows ||
-        type == HomeSectionType.imdbMostPopularMovies ||
-        type == HomeSectionType.imdbMostPopularTvShows ||
-        type == HomeSectionType.imdbLowestRatedMovies ||
-        type == HomeSectionType.imdbTopEnglishMovies;
-  }
 
-  bool _isImdbSectionEnabled(HomeSectionType type) {
-    switch (type) {
-      case HomeSectionType.imdbTop250Movies:
-        return _prefs.get(UserPreferences.imdbTop250MoviesEnabled);
-      case HomeSectionType.imdbTop250TvShows:
-        return _prefs.get(UserPreferences.imdbTop250TvShowsEnabled);
-      case HomeSectionType.imdbMostPopularMovies:
-        return _prefs.get(UserPreferences.imdbMostPopularMoviesEnabled);
-      case HomeSectionType.imdbMostPopularTvShows:
-        return _prefs.get(UserPreferences.imdbMostPopularTvShowsEnabled);
-      case HomeSectionType.imdbLowestRatedMovies:
-        return _prefs.get(UserPreferences.imdbLowestRatedMoviesEnabled);
-      case HomeSectionType.imdbTopEnglishMovies:
-        return _prefs.get(UserPreferences.imdbTopEnglishMoviesEnabled);
-      default:
-        return false;
-    }
-  }
-
-  bool _isAnyImdbSectionEnabled() {
-    return _prefs.get(UserPreferences.imdbTop250MoviesEnabled) ||
-        _prefs.get(UserPreferences.imdbTop250TvShowsEnabled) ||
-        _prefs.get(UserPreferences.imdbMostPopularMoviesEnabled) ||
-        _prefs.get(UserPreferences.imdbMostPopularTvShowsEnabled) ||
-        _prefs.get(UserPreferences.imdbLowestRatedMoviesEnabled) ||
-        _prefs.get(UserPreferences.imdbTopEnglishMoviesEnabled);
-  }
 
   bool _isAnySeerrSectionEnabled() {
     final seerrPrefs = GetIt.instance<SeerrPreferences>();
@@ -320,7 +285,6 @@ class HomeViewModel extends ChangeNotifier {
       final showSeerrRows =
           _isAnySeerrSectionEnabled() &&
           GetIt.instance<PluginSyncService>().seerrAvailable;
-      final showImdbRows = _isAnyImdbSectionEnabled();
       final showTmdbRows = _isAnyTmdbSectionEnabled();
       final showSinceYouWatched = _prefs.get(UserPreferences.displaySinceYouWatchedRows);
       final sinceYouWatchedNum = _prefs.get(UserPreferences.sinceYouWatchedNumRows).value;
@@ -351,7 +315,6 @@ class HomeViewModel extends ChangeNotifier {
                                 HomeSectionPluginSource.playlists))) &&
                 (showAudioRows || !_isAudioSectionType(c.type)) &&
                 (showSeerrRows || !_isSeerrSectionType(c.type)) &&
-                (!_isImdbSectionType(c.type) || (showImdbRows && _isImdbSectionEnabled(c.type))) &&
                 (!_isTmdbSectionType(c.type) || (showTmdbRows && _isTmdbSectionEnabled(c.type))) &&
                 (c.type != HomeSectionType.radarrCalendar || _prefs.get(UserPreferences.enableRadarrCalendar)) &&
                 (c.type != HomeSectionType.sonarrCalendar || _prefs.get(UserPreferences.enableSonarrCalendar)) &&
@@ -644,18 +607,6 @@ class HomeViewModel extends ChangeNotifier {
         return row.id == 'seerr_series_genres';
       case HomeSectionType.seerrNetworks:
         return row.id == 'seerr_networks';
-      case HomeSectionType.imdbTop250Movies:
-        return row.id == 'imdb_top_250_movies';
-      case HomeSectionType.imdbTop250TvShows:
-        return row.id == 'imdb_top_250_tv_shows';
-      case HomeSectionType.imdbMostPopularMovies:
-        return row.id == 'imdb_most_popular_movies';
-      case HomeSectionType.imdbMostPopularTvShows:
-        return row.id == 'imdb_most_popular_tv_shows';
-      case HomeSectionType.imdbLowestRatedMovies:
-        return row.id == 'imdb_lowest_rated_movies';
-      case HomeSectionType.imdbTopEnglishMovies:
-        return row.id == 'imdb_top_english_movies';
       case HomeSectionType.tmdbPopularMovies:
         return row.id == 'tmdb_popular_movies';
       case HomeSectionType.tmdbTopRatedMovies:
@@ -854,18 +805,6 @@ class HomeViewModel extends ChangeNotifier {
         return const {'audioAlbums'};
       case HomeSectionType.audioPlaylists:
         return const {'audioPlaylists'};
-      case HomeSectionType.imdbTop250Movies:
-        return const {'imdbTop250Movies'};
-      case HomeSectionType.imdbTop250TvShows:
-        return const {'imdbTop250TvShows'};
-      case HomeSectionType.imdbMostPopularMovies:
-        return const {'imdbMostPopularMovies'};
-      case HomeSectionType.imdbMostPopularTvShows:
-        return const {'imdbMostPopularTvShows'};
-      case HomeSectionType.imdbLowestRatedMovies:
-        return const {'imdbLowestRatedMovies'};
-      case HomeSectionType.imdbTopEnglishMovies:
-        return const {'imdbTopEnglishMovies'};
       case HomeSectionType.tmdbPopularMovies:
         return const {'tmdbPopularMovies'};
       case HomeSectionType.tmdbTopRatedMovies:
@@ -1193,54 +1132,6 @@ class HomeViewModel extends ChangeNotifier {
         return _loadRadarrCalendarRow(forceRefresh: forceRefresh);
       case HomeSectionType.sonarrCalendar:
         return _loadSonarrCalendarRow(forceRefresh: forceRefresh);
-      case HomeSectionType.imdbTop250Movies:
-        return _loadMdbListRow(
-          HomeSectionType.imdbTop250Movies,
-          l10n.imdbTop250Movies,
-          'imdb_top_250_movies',
-          'top_rated_movies',
-          'movie',
-        );
-      case HomeSectionType.imdbTop250TvShows:
-        return _loadMdbListRow(
-          HomeSectionType.imdbTop250TvShows,
-          l10n.imdbTop250TvShows,
-          'imdb_top_250_tv_shows',
-          'top_rated_shows',
-          'show',
-        );
-      case HomeSectionType.imdbMostPopularMovies:
-        return _loadMdbListRow(
-          HomeSectionType.imdbMostPopularMovies,
-          l10n.imdbMostPopularMovies,
-          'imdb_most_popular_movies',
-          'moviemeter',
-          'movie',
-        );
-      case HomeSectionType.imdbMostPopularTvShows:
-        return _loadMdbListRow(
-          HomeSectionType.imdbMostPopularTvShows,
-          l10n.imdbMostPopularTvShows,
-          'imdb_most_popular_tv_shows',
-          'moviemeter',
-          'show',
-        );
-      case HomeSectionType.imdbLowestRatedMovies:
-        return _loadMdbListRow(
-          HomeSectionType.imdbLowestRatedMovies,
-          l10n.imdbLowestRatedMovies,
-          'imdb_lowest_rated_movies',
-          'bottom',
-          'movie',
-        );
-      case HomeSectionType.imdbTopEnglishMovies:
-        return _loadMdbListRow(
-          HomeSectionType.imdbTopEnglishMovies,
-          l10n.imdbTopEnglishMovies,
-          'imdb_top_english_movies',
-          'top_english_movies',
-          'movie',
-        );
       case HomeSectionType.tmdbPopularMovies:
         return _loadTmdbChartRow(HomeSectionType.tmdbPopularMovies, 'Popular Movies', 'tmdb_popular_movies');
       case HomeSectionType.tmdbTopRatedMovies:
@@ -1566,48 +1457,6 @@ class HomeViewModel extends ChangeNotifier {
         return HomeRow(
           id: 'sonarr_calendar',
           title: 'Upcoming TV Shows (Sonarr)',
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.imdbTop250Movies:
-        return HomeRow(
-          id: 'imdb_top_250_movies',
-          title: l10n.imdbTop250Movies,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.imdbTop250TvShows:
-        return HomeRow(
-          id: 'imdb_top_250_tv_shows',
-          title: l10n.imdbTop250TvShows,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.imdbMostPopularMovies:
-        return HomeRow(
-          id: 'imdb_most_popular_movies',
-          title: l10n.imdbMostPopularMovies,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.imdbMostPopularTvShows:
-        return HomeRow(
-          id: 'imdb_most_popular_tv_shows',
-          title: l10n.imdbMostPopularTvShows,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.imdbLowestRatedMovies:
-        return HomeRow(
-          id: 'imdb_lowest_rated_movies',
-          title: l10n.imdbLowestRatedMovies,
-          rowType: HomeRowType.pluginDynamic,
-          isLoading: true,
-        );
-      case HomeSectionType.imdbTopEnglishMovies:
-        return HomeRow(
-          id: 'imdb_top_english_movies',
-          title: l10n.imdbTopEnglishMovies,
           rowType: HomeRowType.pluginDynamic,
           isLoading: true,
         );

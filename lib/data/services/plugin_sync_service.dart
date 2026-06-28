@@ -1184,18 +1184,6 @@ class PluginSyncService extends ChangeNotifier {
             final enabledTypes = sections.map((s) => s.type).toSet();
             for (final type in prefs.HomeSectionType.values) {
               if (type == prefs.HomeSectionType.none) continue;
-              if (_isImdbSectionType(type)) {
-                final localEnabled = _prefs.get(_imdbPrefForType(type));
-                final idx = sections.indexWhere((s) => s.type == type);
-                if (idx >= 0) {
-                  sections[idx] = sections[idx].copyWith(enabled: localEnabled);
-                } else {
-                  sections.add(
-                    HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
-                  );
-                }
-                continue;
-              }
               if (_isTmdbSectionType(type)) {
                 final localEnabled = _prefs.get(_tmdbPrefForType(type));
                 final idx = sections.indexWhere((s) => s.type == type);
@@ -1310,13 +1298,6 @@ class PluginSyncService extends ChangeNotifier {
     for (final type in prefs.HomeSectionType.values) {
       if (type == prefs.HomeSectionType.none ||
           fallbackEnabled.contains(type)) {
-        continue;
-      }
-      if (_isImdbSectionType(type)) {
-        final localEnabled = _prefs.get(_imdbPrefForType(type));
-        sections.add(
-          HomeSectionConfig(type: type, enabled: localEnabled, order: order++),
-        );
         continue;
       }
       if (_isTmdbSectionType(type)) {
@@ -1651,33 +1632,7 @@ class PluginSyncService extends ChangeNotifier {
     });
   }
 
-  bool _isImdbSectionType(prefs.HomeSectionType type) {
-    return type == prefs.HomeSectionType.imdbTop250Movies ||
-        type == prefs.HomeSectionType.imdbTop250TvShows ||
-        type == prefs.HomeSectionType.imdbMostPopularMovies ||
-        type == prefs.HomeSectionType.imdbMostPopularTvShows ||
-        type == prefs.HomeSectionType.imdbLowestRatedMovies ||
-        type == prefs.HomeSectionType.imdbTopEnglishMovies;
-  }
 
-  Preference<bool> _imdbPrefForType(prefs.HomeSectionType type) {
-    switch (type) {
-      case prefs.HomeSectionType.imdbTop250Movies:
-        return UserPreferences.imdbTop250MoviesEnabled;
-      case prefs.HomeSectionType.imdbTop250TvShows:
-        return UserPreferences.imdbTop250TvShowsEnabled;
-      case prefs.HomeSectionType.imdbMostPopularMovies:
-        return UserPreferences.imdbMostPopularMoviesEnabled;
-      case prefs.HomeSectionType.imdbMostPopularTvShows:
-        return UserPreferences.imdbMostPopularTvShowsEnabled;
-      case prefs.HomeSectionType.imdbLowestRatedMovies:
-        return UserPreferences.imdbLowestRatedMoviesEnabled;
-      case prefs.HomeSectionType.imdbTopEnglishMovies:
-        return UserPreferences.imdbTopEnglishMoviesEnabled;
-      default:
-        throw ArgumentError('Not an IMDb section type: $type');
-    }
-  }
 
   bool _isTmdbSectionType(prefs.HomeSectionType type) {
     return type == prefs.HomeSectionType.tmdbPopularMovies ||

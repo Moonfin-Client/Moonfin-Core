@@ -521,14 +521,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     return seerrPrefs.rowsConfig.any((r) => r.enabled);
   }
 
-  bool _isAnyImdbSectionEnabled() {
-    return _prefs.get(UserPreferences.imdbTop250MoviesEnabled) ||
-        _prefs.get(UserPreferences.imdbTop250TvShowsEnabled) ||
-        _prefs.get(UserPreferences.imdbMostPopularMoviesEnabled) ||
-        _prefs.get(UserPreferences.imdbMostPopularTvShowsEnabled) ||
-        _prefs.get(UserPreferences.imdbLowestRatedMoviesEnabled) ||
-        _prefs.get(UserPreferences.imdbTopEnglishMoviesEnabled);
-  }
 
   bool _isAnyTmdbSectionEnabled() {
     return _prefs.get(UserPreferences.tmdbPopularMoviesEnabled) ||
@@ -569,19 +561,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     ).enabled;
   }
 
-  bool _isImdbRowEnabled(HomeSectionType type) {
-    final prefKey = switch (type) {
-      HomeSectionType.imdbTop250Movies => UserPreferences.imdbTop250MoviesEnabled,
-      HomeSectionType.imdbTop250TvShows => UserPreferences.imdbTop250TvShowsEnabled,
-      HomeSectionType.imdbMostPopularMovies => UserPreferences.imdbMostPopularMoviesEnabled,
-      HomeSectionType.imdbMostPopularTvShows => UserPreferences.imdbMostPopularTvShowsEnabled,
-      HomeSectionType.imdbLowestRatedMovies => UserPreferences.imdbLowestRatedMoviesEnabled,
-      HomeSectionType.imdbTopEnglishMovies => UserPreferences.imdbTopEnglishMoviesEnabled,
-      _ => null,
-    };
-    if (prefKey == null) return false;
-    return _prefs.get(prefKey);
-  }
 
   bool _isTmdbRowEnabled(HomeSectionType type) {
     final prefKey = switch (type) {
@@ -604,14 +583,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     return _prefs.get(prefKey);
   }
 
-  bool _isImdbSectionType(HomeSectionType type) {
-    return type == HomeSectionType.imdbTop250Movies ||
-        type == HomeSectionType.imdbTop250TvShows ||
-        type == HomeSectionType.imdbMostPopularMovies ||
-        type == HomeSectionType.imdbMostPopularTvShows ||
-        type == HomeSectionType.imdbLowestRatedMovies ||
-        type == HomeSectionType.imdbTopEnglishMovies;
-  }
 
   bool _isTmdbSectionType(HomeSectionType type) {
     return type == HomeSectionType.tmdbPopularMovies ||
@@ -639,7 +610,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     final showSeerrRows =
         _isAnySeerrSectionEnabled() &&
         GetIt.instance<PluginSyncService>().seerrAvailable;
-    final showImdbRows = _isAnyImdbSectionEnabled();
     final showTmdbRows = _isAnyTmdbSectionEnabled();
 
     final hiddenByFavorites =
@@ -661,8 +631,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                 section.pluginSource == HomeSectionPluginSource.playlists));
     final hiddenBySeerr = _isSeerrSectionType(section.type) &&
         (!showSeerrRows || !_isSeerrRowEnabled(section.type));
-    final hiddenByImdb = _isImdbSectionType(section.type) &&
-        (!showImdbRows || !_isImdbRowEnabled(section.type));
     final hiddenByTmdb = _isTmdbSectionType(section.type) &&
         (!showTmdbRows || !_isTmdbRowEnabled(section.type));
 
@@ -683,7 +651,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         hiddenByGenres ||
         hiddenByPlaylists ||
         hiddenBySeerr ||
-        hiddenByImdb ||
         hiddenByTmdb ||
         hiddenByAudio ||
         hiddenBySinceYouWatched ||
@@ -1366,11 +1333,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
           ? cfg.pluginDisplayText!
           : (cfg.pluginSection ?? l10n.none);
     }
-    String label = _labelForType(cfg.type, l10n);
-    if (_isImdbSectionType(cfg.type)) {
-      label = label.replaceAll('IMDb ', '').replaceAll('IMDb', '').trim();
-    }
-    return label;
+    return _labelForType(cfg.type, l10n);
   }
 
   String _labelForType(HomeSectionType type, AppLocalizations l10n) =>
@@ -1421,12 +1384,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         HomeSectionType.seerrNetworks => l10n.networks,
         HomeSectionType.radarrCalendar => 'Upcoming Movies (Radarr)',
         HomeSectionType.sonarrCalendar => 'Upcoming TV Shows (Sonarr)',
-        HomeSectionType.imdbTop250Movies => l10n.imdbTop250Movies,
-        HomeSectionType.imdbTop250TvShows => l10n.imdbTop250TvShows,
-        HomeSectionType.imdbMostPopularMovies => l10n.imdbMostPopularMovies,
-        HomeSectionType.imdbMostPopularTvShows => l10n.imdbMostPopularTvShows,
-        HomeSectionType.imdbLowestRatedMovies => l10n.imdbLowestRatedMovies,
-        HomeSectionType.imdbTopEnglishMovies => l10n.imdbTopEnglishMovies,
         HomeSectionType.tmdbPopularMovies => 'Popular Movies',
         HomeSectionType.tmdbTopRatedMovies => 'Top Rated Movies',
         HomeSectionType.tmdbNowPlayingMovies => 'Now Playing Movies',
@@ -1835,9 +1792,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                                           .withValues(alpha: 0.7),
                                     ),
                                   )
-                                : (_isImdbSectionType(section.type)
+                                : (_isTmdbSectionType(section.type)
                                       ? Text(
-                                          'IMDb Lists',
+                                          'TMDB Lists',
                                           style: TextStyle(
                                             fontSize: 12,
                                             fontFamily: kCleanSettingsFontFamily,
@@ -1845,17 +1802,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                                                 .withValues(alpha: 0.7),
                                           ),
                                         )
-                                      : (_isTmdbSectionType(section.type)
-                                            ? Text(
-                                                'TMDB Lists',
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontFamily: kCleanSettingsFontFamily,
-                                                  color: AppColorScheme.onSurface
-                                                      .withValues(alpha: 0.7),
-                                                ),
-                                              )
-                                            : null)))),
+                                      : null))),
                 onTap: isEmpty
                     ? null
                     : () {
@@ -1911,11 +1858,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                     ? 'Audio row'
                     : (_isSeerrSectionType(section.type)
                           ? 'Seerr Discovery Rows'
-                          : (_isImdbSectionType(section.type)
-                                ? 'IMDb Lists'
-                                : (_isTmdbSectionType(section.type)
-                                      ? 'TMDB Lists'
-                                      : null)))),
+                          : (_isTmdbSectionType(section.type)
+                                ? 'TMDB Lists'
+                                : null))),
           enabled: section.enabled,
           isFirst: visibleIndex == 0,
           isLast: visibleIndex == visibleIndices.length - 1,
