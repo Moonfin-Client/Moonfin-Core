@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:drift/drift.dart';
 
@@ -104,6 +105,34 @@ class OfflineRepository {
     await (_db.delete(_db.downloadedItems)
           ..where((t) => t.itemId.equals(itemId)))
         .go();
+  }
+
+  Future<void> cleanupEpisodeContainers(
+    String? seriesId,
+    String? seasonId,
+    String imageDirPath,
+  ) async {
+    if (seasonId != null) {
+      final seasonEpisodes = await getSeasonEpisodes(seasonId);
+      if (seasonEpisodes.isEmpty) {
+        await deleteItem(seasonId);
+        final seasonImageDir = Directory('$imageDirPath/$seasonId');
+        if (await seasonImageDir.exists()) {
+          await seasonImageDir.delete(recursive: true);
+        }
+      }
+    }
+
+    if (seriesId != null) {
+      final seriesEpisodes = await getSeriesEpisodes(seriesId);
+      if (seriesEpisodes.isEmpty) {
+        await deleteItem(seriesId);
+        final seriesImageDir = Directory('$imageDirPath/$seriesId');
+        if (await seriesImageDir.exists()) {
+          await seriesImageDir.delete(recursive: true);
+        }
+      }
+    }
   }
 
   Future<void> deleteSeriesItems(String seriesId) async {

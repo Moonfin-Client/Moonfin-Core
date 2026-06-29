@@ -9,6 +9,7 @@ import 'package:dio/dio.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:path/path.dart' as p;
 import 'package:server_core/server_core.dart';
 
 import '../../platform/ios_storage.dart';
@@ -228,8 +229,7 @@ class DownloadService extends ChangeNotifier {
   OfflineRepository get _offlineRepo => GetIt.instance<OfflineRepository>();
 
   String _fileNameBaseFromPath(String savePath) {
-    final fileName = savePath.split(PlatformDetection.pathSeparator).last;
-    return fileName.replaceAll(RegExp(r'\.[^.]+$'), '');
+    return p.basenameWithoutExtension(savePath);
   }
 
   Future<void> _deleteSubtitleFiles(Directory dir, String fileNameBase) async {
@@ -243,7 +243,7 @@ class DownloadService extends ChangeNotifier {
         continue;
       }
 
-      final name = entity.path.split(PlatformDetection.pathSeparator).last;
+      final name = p.basename(entity.path);
       if (name.startsWith(prefix)) {
         await entity.delete();
       }
@@ -256,7 +256,7 @@ class DownloadService extends ChangeNotifier {
   ) async {
     var current = start;
 
-    while (current.path.startsWith(root.path) && current.path != root.path) {
+    while (p.isWithin(root.path, current.path) && !p.equals(current.path, root.path)) {
       if (!await current.exists()) {
         current = current.parent;
         continue;

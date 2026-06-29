@@ -74,6 +74,9 @@ class _OfflineDownloadsScreenState extends State<_OfflineDownloadsScreen> {
                       initialDirectory: initialDir,
                     );
                   },
+                  onChanged: (_) {
+                    GetIt.instance<StoragePathService>().clearCache();
+                  },
                 ),
                 IntPickerPreferenceTile(
                   preference: UserPreferences.downloadConcurrentCount,

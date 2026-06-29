@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/database/offline_database.dart';
+import '../../../data/models/aggregated_item.dart';
 import '../../../data/providers/offline_providers.dart';
 import '../../../data/repositories/offline_repository.dart';
 import '../../../data/services/download_service.dart';
@@ -340,19 +341,12 @@ class _StorageManagementScreenState extends ConsumerState<StorageManagementScree
     if (confirmed != true) return;
 
     final repo = GetIt.instance<OfflineRepository>();
-    final storagePath = GetIt.instance<StoragePathService>();
-    final imageDir = await storagePath.getImageCacheDir();
+    final downloadService = GetIt.instance<DownloadService>();
 
     for (final itemId in _selected) {
       final item = await repo.getItem(itemId);
       if (item == null) continue;
-      if (item.localFilePath != null) {
-        final f = File(item.localFilePath!);
-        if (await f.exists()) await f.delete();
-      }
-      final imgDir = Directory('${imageDir.path}/$itemId');
-      if (await imgDir.exists()) await imgDir.delete(recursive: true);
-      await repo.deleteItem(itemId);
+      await downloadService.deleteDownloadedFiles(AggregatedItem.fromOffline(item));
     }
 
     setState(() {
