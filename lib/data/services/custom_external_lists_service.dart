@@ -23,6 +23,7 @@ class ImdbExternalListItem {
 
   ImdbExternalListItem({
     required this.imdbId,
+    this.tmdbId = '',
     required this.title,
     this.posterUrl,
     this.backdropUrl,
