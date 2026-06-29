@@ -2077,7 +2077,7 @@ class RowDataSource {
       if (allPersonIds.isNotEmpty) {
         futures.add(() async {
           try {
-            final cacheKey = 'people:${candidateItemTypes.join(",")}:${allPersonIds.join(",")}';
+            final cacheKey = '$serverId:people:${candidateItemTypes.join(",")}:${allPersonIds.join(",")}';
             if (_recommendationCache.containsKey(cacheKey)) {
               final cached = _recommendationCache[cacheKey]!;
               for (final item in cached) {
