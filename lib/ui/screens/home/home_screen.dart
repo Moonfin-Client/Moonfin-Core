@@ -445,20 +445,22 @@ class _GradientScrim extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            AppColorScheme.scrim.withValues(alpha: 0.8),
-            AppColorScheme.scrim.withValues(alpha: 0.4),
-            AppColorScheme.scrim.withValues(alpha: 0.8),
-          ],
-          stops: [0.0, 0.3, 1.0],
+    return RepaintBoundary(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColorScheme.scrim.withValues(alpha: 0.8),
+              AppColorScheme.scrim.withValues(alpha: 0.4),
+              AppColorScheme.scrim.withValues(alpha: 0.8),
+            ],
+            stops: [0.0, 0.3, 1.0],
+          ),
         ),
+        child: SizedBox.expand(),
       ),
-      child: SizedBox.expand(),
     );
   }
 }
@@ -476,43 +478,45 @@ class _Backdrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FullscreenBackdropSwitcher(
-      imageUrl: url,
-      duration: BackgroundService.transitionDuration,
-      imageBuilder: (imageUrl) {
-        final image = _blurredImage(context, imageUrl, blurAmount);
-        if (!useMakdBackdropFx) {
-          return image;
-        }
+    return RepaintBoundary(
+      child: FullscreenBackdropSwitcher(
+        imageUrl: url,
+        duration: BackgroundService.transitionDuration,
+        imageBuilder: (imageUrl) {
+          final image = _blurredImage(context, imageUrl, blurAmount);
+          if (!useMakdBackdropFx) {
+            return image;
+          }
 
-        return ClipRect(
-          child: TweenAnimationBuilder<double>(
-            key: ValueKey('makd_home_backdrop_$imageUrl'),
-            tween: Tween(begin: 1.0, end: 1.08),
-            duration: const Duration(seconds: 10),
-            curve: Curves.easeOut,
-            builder: (context, scale, child) {
-              return Transform.scale(
-                scale: scale,
-                alignment: Alignment.center,
-                child: child,
-              );
-            },
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                image,
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: AppColorScheme.scrim.withValues(alpha: 0.26),
+          return ClipRect(
+            child: TweenAnimationBuilder<double>(
+              key: ValueKey('makd_home_backdrop_$imageUrl'),
+              tween: Tween(begin: 1.0, end: 1.08),
+              duration: const Duration(seconds: 10),
+              curve: Curves.easeOut,
+              builder: (context, scale, child) {
+                return Transform.scale(
+                  scale: scale,
+                  alignment: Alignment.center,
+                  child: child,
+                );
+              },
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  image,
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: AppColorScheme.scrim.withValues(alpha: 0.26),
+                    ),
+                    child: const SizedBox.expand(),
                   ),
-                  child: const SizedBox.expand(),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
@@ -2044,7 +2048,7 @@ class _ContentRowsState extends State<_ContentRows>
       childHeight = maxCardHeight + (10 * metadataScale);
     }
 
-    final subtitle = _rowSubtitle(row, AppLocalizations.of(context)!);
+    final subtitle = _rowSubtitle(row, AppLocalizations.of(context));
     final hasSubtitle = subtitle != null &&
         (row.rowType != HomeRowType.liveTv &&
             row.rowType != HomeRowType.libraryTilesSmall);
@@ -2945,14 +2949,20 @@ class _ContentRowsState extends State<_ContentRows>
       if (focusedRowIndex != null) {
         if (fullScreenRows) {
           if (rowIndex != focusedRowIndex) {
-            return IgnorePointer(child: Opacity(opacity: 0, child: child));
+            return IgnorePointer(
+              child: Visibility(visible: false, child: child),
+            );
           }
         } else if (rowIndex < focusedRowIndex) {
-          return IgnorePointer(child: Opacity(opacity: 0, child: child));
+          return IgnorePointer(
+            child: Visibility(visible: false, child: child),
+          );
         }
       }
       if (rowBottom < overlayBottom - 80) {
-        return IgnorePointer(child: Opacity(opacity: 0, child: child));
+        return IgnorePointer(
+          child: Visibility(visible: false, child: child),
+        );
       }
       return child;
     }
@@ -2968,7 +2978,9 @@ class _ContentRowsState extends State<_ContentRows>
     final rowViewportBottom = rowViewportTop + rowExtents[rowIndex];
 
     if (rowViewportBottom <= overlayBottom + 8) {
-      return IgnorePointer(child: Opacity(opacity: 0, child: child));
+      return IgnorePointer(
+        child: Visibility(visible: false, child: child),
+      );
     }
 
     if (focusedRowIndex != null &&
