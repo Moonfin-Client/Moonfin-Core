@@ -6534,38 +6534,6 @@ class AppLocalizationsRo extends AppLocalizations {
   String get requestTranscode => 'Solicitați transcodare';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Detectați rândurile expuse de pluginul „Secțiuni ecran de pornire” de la IAmParadox27. Rândurile pot fi activate și reordonate mai jos.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Niciun server Jellyfin nu raportează încă pluginul.';
-
-  @override
-  String get integrationOpenHomeSections => 'Deschideți secțiunile de pornire';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Activați, dezactivați și reordonați rândurile';
-
-  @override
-  String get integrationInstalledButDisabled => 'Instalat dar dezactivat';
-
-  @override
-  String get integrationNotInstalled => 'Nu este instalat';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7607,9 +7575,6 @@ class AppLocalizationsRo extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Gestionați temele de plugin descărcate pe acest dispozitiv';
-
-  @override
-  String get homeScreenSectionsTitle => 'Secțiunile ecranului de pornire';
 
   @override
   String get themeEditor => 'Theme Editor';

@@ -68,18 +68,6 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
                   onTap: () =>
                       context.pushSettingsScreen(const _ExternalListsScreen()),
                 ),
-              _TvSettingsListTile(
-                leading: Image.asset(
-                  'assets/icons/hss.png',
-                  width: 24,
-                  height: 24,
-                ),
-                title: Text(l10n.homeScreenSectionsTitle),
-                subtitle: Text(l10n.homeScreenSectionsIntegrationDescription),
-                onTap: () => context.pushSettingsScreen(
-                  const HomeScreenSectionsIntegrationScreen(),
-                ),
-              ),
             ],
           ),
         ),

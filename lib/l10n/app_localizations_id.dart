@@ -6506,39 +6506,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get requestTranscode => 'Minta transcode';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Deteksi baris yang diekspos oleh plugin \"Home Screen Sections\" milik IAmParadox27. Baris dapat diaktifkan dan diatur ulang urutannya di bawah.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Belum ada server Jellyfin yang melaporkan plugin tersebut.';
-
-  @override
-  String get integrationOpenHomeSections => 'Buka Home Sections';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Aktifkan, nonaktifkan, dan atur ulang urutan baris';
-
-  @override
-  String get integrationInstalledButDisabled =>
-      'Terinstal tetapi dinonaktifkan';
-
-  @override
-  String get integrationNotInstalled => 'Tidak terinstal';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# bagian',
-      one: '# bagian',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7573,9 +7540,6 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Kelola tema plugin yang diunduh pada perangkat ini';
-
-  @override
-  String get homeScreenSectionsTitle => 'Bagian Layar Beranda';
 
   @override
   String get themeEditor => 'Editor Tema';

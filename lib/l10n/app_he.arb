@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "זכור את הבחירה שלי",
     "playHdr10Fallback": "הפעל HDR10 חזרה",
     "requestTranscode": "בקש טרנסקוד",
-    "homeScreenSectionsIntegrationDescription": "זיהוי שורות שנחשפו על ידי התוסף \"חלקי מסך הבית\" של IAmParadox27. ניתן להפעיל שורות ולסדר מחדש למטה.",
-    "homeScreenSectionsIntegrationNoServers": "עדיין אין שרתי Jellyfin שדיווחו על התוסף.",
-    "integrationOpenHomeSections": "פתח את מדור הבית",
-    "integrationOpenHomeSectionsSubtitle": "הפעל, השבת וסדר מחדש שורות",
-    "integrationInstalledButDisabled": "מותקן אך מושבת",
-    "integrationNotInstalled": "לא מותקן",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Delete saved theme",
     "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
-    "homeScreenSectionsTitle": "Home Screen Sections",
     "themeEditor": "Theme Editor",
     "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
     "homeScreen": "Home Screen",

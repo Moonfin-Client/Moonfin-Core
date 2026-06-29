@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Запамти мој избор",
     "playHdr10Fallback": "Пусти __АРБ_ТЕРМ_0__ резервни део",
     "requestTranscode": "Захтевај транскодирање",
-    "homeScreenSectionsIntegrationDescription": "Откријте редове изложене ИАмПарадок27 додатку „Секције почетног екрана“. Редови се могу омогућити и преуредити у наставку.",
-    "homeScreenSectionsIntegrationNoServers": "Још нема __АРБ_ТЕРМ_0__ сервера који пријављују додатак.",
-    "integrationOpenHomeSections": "Отворите Хоме Сецтионс",
-    "integrationOpenHomeSectionsSubtitle": "Омогућите, онемогућите и промените редослед редова",
-    "integrationInstalledButDisabled": "Инсталиран али онемогућен",
-    "integrationNotInstalled": "Није инсталирано",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Delete saved theme",
     "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
-    "homeScreenSectionsTitle": "Home Screen Sections",
     "themeEditor": "Theme Editor",
     "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
     "homeScreen": "Home Screen",

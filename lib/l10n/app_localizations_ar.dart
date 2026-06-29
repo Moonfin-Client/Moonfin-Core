@@ -6462,38 +6462,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get requestTranscode => 'طلب تحويل الرمز';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'اكتشف الصفوف المكشوفة بواسطة البرنامج المساعد \"أقسام الشاشة الرئيسية\" الخاص بـ IAmParadox27. يمكن تمكين الصفوف وإعادة ترتيبها أدناه.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'لا توجد خوادم Jellyfin تقوم بالإبلاغ عن المكون الإضافي حتى الآن.';
-
-  @override
-  String get integrationOpenHomeSections => 'فتح الأقسام الرئيسية';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'تمكين الصفوف وتعطيلها وإعادة ترتيبها';
-
-  @override
-  String get integrationInstalledButDisabled => 'تم التثبيت ولكنه معطل';
-
-  @override
-  String get integrationNotInstalled => 'غير مثبت';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7516,9 +7484,6 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'إدارة سمات المكونات الإضافية التي تم تنزيلها على هذا الجهاز';
-
-  @override
-  String get homeScreenSectionsTitle => 'أقسام الشاشة الرئيسية';
 
   @override
   String get themeEditor => 'محرر الموضوع';

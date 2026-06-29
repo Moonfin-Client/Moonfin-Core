@@ -6589,38 +6589,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String get requestTranscode => 'Sol·licita la transcodificació';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Detecteu les files exposades pel connector \"Seccions de la pantalla d\'inici\" d\'IAmParadox27. Les files es poden activar i reordenar a continuació.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Encara no hi ha cap servidor Jellyfin que informi del connector.';
-
-  @override
-  String get integrationOpenHomeSections => 'Obriu les seccions d\'inici';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Activa, desactiva i reordena les files';
-
-  @override
-  String get integrationInstalledButDisabled => 'Instal·lat però desactivat';
-
-  @override
-  String get integrationNotInstalled => 'No instal·lat';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7679,9 +7647,6 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Gestiona els temes de connectors baixats en aquest dispositiu';
-
-  @override
-  String get homeScreenSectionsTitle => 'Seccions de la pantalla d\'inici';
 
   @override
   String get themeEditor => 'Editor de temes';

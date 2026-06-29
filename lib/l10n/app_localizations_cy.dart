@@ -6513,39 +6513,6 @@ class AppLocalizationsCy extends AppLocalizations {
   String get requestTranscode => 'Gofyn am drawsgod';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Canfod rhesi a ddatgelwyd gan ategyn \"Home Screen Sections\" IAmParadox27. Gellir galluogi ac aildrefnu rhesi isod.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Dim gweinyddwyr Jellyfin yn adrodd am yr ategyn eto.';
-
-  @override
-  String get integrationOpenHomeSections => 'Adrannau Cartref Agored';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Galluogi, analluogi, ac aildrefnu rhesi';
-
-  @override
-  String get integrationInstalledButDisabled =>
-      'Wedi\'i osod ond wedi\'i analluogi';
-
-  @override
-  String get integrationNotInstalled => 'Heb ei osod';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7583,9 +7550,6 @@ class AppLocalizationsCy extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Rheoli themâu ategyn wedi\'u lawrlwytho ar y ddyfais hon';
-
-  @override
-  String get homeScreenSectionsTitle => 'Adrannau Sgrin Cartref';
 
   @override
   String get themeEditor => 'Golygydd Thema';

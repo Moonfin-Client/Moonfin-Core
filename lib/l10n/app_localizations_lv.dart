@@ -6525,38 +6525,6 @@ class AppLocalizationsLv extends AppLocalizations {
   String get requestTranscode => 'Pieprasīt pārkodēšanu';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Noteikt rindas, ko atklāj IAmParadox27 spraudnis Home Screen Sections. Rindas var iespējot un pārkārtot tālāk.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Pagaidām neviens Jellyfin serveris neziņo par spraudni.';
-
-  @override
-  String get integrationOpenHomeSections => 'Atveriet sākuma sadaļas';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Iespējot, atspējot un pārkārtot rindas';
-
-  @override
-  String get integrationInstalledButDisabled => 'Uzstādīts, bet atspējots';
-
-  @override
-  String get integrationNotInstalled => 'Nav instalēts';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7597,9 +7565,6 @@ class AppLocalizationsLv extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Pārvaldiet šajā ierīcē lejupielādētos spraudņu motīvus';
-
-  @override
-  String get homeScreenSectionsTitle => 'Sākuma ekrāna sadaļas';
 
   @override
   String get themeEditor => 'Tēmas redaktors';

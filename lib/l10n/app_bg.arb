@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Запомни моя избор",
     "playHdr10Fallback": "Играйте HDR10 резервен вариант",
     "requestTranscode": "Заявка за прекодиране",
-    "homeScreenSectionsIntegrationDescription": "Откриване на редове, изложени от плъгина „Секции на началния екран“ на IAmParadox27. Редовете могат да бъдат активирани и пренаредени по-долу.",
-    "homeScreenSectionsIntegrationNoServers": "Все още няма Jellyfin сървъри, които да докладват плъгина.",
-    "integrationOpenHomeSections": "Отворете началните секции",
-    "integrationOpenHomeSectionsSubtitle": "Активирайте, деактивирайте и пренаредете редовете",
-    "integrationInstalledButDisabled": "Инсталиран, но деактивиран",
-    "integrationNotInstalled": "Не е инсталиран",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Изтриване на запазена тема",
     "savedThemesManageSubtitle": "Управлявайте изтеглените теми на приставката на това устройство",
-    "homeScreenSectionsTitle": "Секции на началния екран",
     "themeEditor": "Редактор на теми",
     "themeEditorSubtitle": "Отворете Moonfin редактора на теми във вашия браузър",
     "homeScreen": "Начален екран",

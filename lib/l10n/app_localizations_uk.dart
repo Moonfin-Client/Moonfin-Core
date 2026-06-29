@@ -6527,38 +6527,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get requestTranscode => 'Запит на перекодування';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Виявлення рядків, відкритих плагіном IAmParadox27 «Розділи головного екрана». Нижче можна ввімкнути та змінити порядок рядків.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Жоден сервер Jellyfin не повідомляє про плагін.';
-
-  @override
-  String get integrationOpenHomeSections => 'Відкрийте головні розділи';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Увімкнути, вимкнути та змінити порядок рядків';
-
-  @override
-  String get integrationInstalledButDisabled => 'Встановлено, але вимкнено';
-
-  @override
-  String get integrationNotInstalled => 'Не встановлено';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7606,9 +7574,6 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Керуйте завантаженими темами плагінів на цьому пристрої';
-
-  @override
-  String get homeScreenSectionsTitle => 'Розділи головного екрана';
 
   @override
   String get themeEditor => 'Редактор тем';

@@ -52,7 +52,6 @@ import '../../widgets/navigation_layout.dart';
 import '../../widgets/support_dialog.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../home/home_view_model.dart';
-import 'home_screen_sections_integration_screen.dart';
 import 'appearance_theme_screen.dart';
 import 'diagnostics_settings_screen.dart';
 import 'saved_themes_screen.dart';

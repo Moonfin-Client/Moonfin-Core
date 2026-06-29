@@ -1420,7 +1420,7 @@ class RowDataSource {
     required String title,
     required String serverId,
     String? additionalData,
-    HomeSectionPluginSource pluginSource = HomeSectionPluginSource.hss,
+    HomeSectionPluginSource pluginSource = HomeSectionPluginSource.collections,
   }) async {
     switch (pluginSource) {
       case HomeSectionPluginSource.collections:
@@ -1571,155 +1571,9 @@ class RowDataSource {
             rowType: HomeRowType.pluginDynamic,
           );
         }
-
-      case HomeSectionPluginSource.hss:
-        return _loadHssSection(
-          rowId: rowId,
-          section: section,
-          title: title,
-          serverId: serverId,
-          additionalData: additionalData,
-        );
     }
   }
 
-  Future<HomeRow> _loadHssSection({
-    required String rowId,
-    required String section,
-    required String title,
-    required String serverId,
-    String? additionalData,
-  }) async {
-    final api = _client.homeScreenSectionsApi;
-    if (api == null) {
-      return HomeRow(
-        id: rowId,
-        title: title,
-        rowType: HomeRowType.pluginDynamic,
-      );
-    }
-    try {
-      final response = await api.getSectionItems(
-        section,
-        additionalData: additionalData,
-      );
-      // The plugin endpoint omits expensive fields like Overview, so re-fetch
-      // via /Items to populate the info overlay.
-      final enriched = await _enrichItemsWithFields(response);
-      return _buildRow(
-        id: rowId,
-        title: title,
-        response: enriched,
-        serverId: serverId,
-        rowType: HomeRowType.pluginDynamic,
-      );
-    } catch (_) {
-      return HomeRow(
-        id: rowId,
-        title: title,
-        rowType: HomeRowType.pluginDynamic,
-      );
-    }
-  }
-
-  Future<Map<String, dynamic>> _enrichItemsWithFields(
-    Map<String, dynamic> response,
-  ) async {
-    final items = response['Items'];
-    if (items is! List || items.isEmpty) return response;
-
-    Map<String, dynamic> mergeItemData(
-      Map<String, dynamic> rawItem,
-      Map<String, dynamic> enrichedItem,
-    ) {
-      final merged = <String, dynamic>{...rawItem, ...enrichedItem};
-
-      final rawImageTags = rawItem['ImageTags'];
-      final enrichedImageTags = enrichedItem['ImageTags'];
-      if (rawImageTags is Map || enrichedImageTags is Map) {
-        final rawTags = rawImageTags is Map
-            ? rawImageTags.cast<String, dynamic>()
-            : const <String, dynamic>{};
-        final enrichedTags = enrichedImageTags is Map
-            ? enrichedImageTags.cast<String, dynamic>()
-            : const <String, dynamic>{};
-        merged['ImageTags'] = {...rawTags, ...enrichedTags};
-      }
-
-      void restoreRawIfMissing(String key) {
-        final rawValue = rawItem[key];
-        final mergedValue = merged[key];
-        final missing =
-            mergedValue == null ||
-            (mergedValue is String && mergedValue.isEmpty) ||
-            (mergedValue is List && mergedValue.isEmpty);
-        if (missing && rawValue != null) {
-          merged[key] = rawValue;
-        }
-      }
-
-      for (final key in const [
-        'PrimaryImageTag',
-        'PrimaryImageItemId',
-        'ParentPrimaryImageTag',
-        'ParentPrimaryImageItemId',
-        'SeriesPrimaryImageTag',
-        'SeriesId',
-        'ParentThumbItemId',
-        'ParentThumbImageTag',
-        'BackdropImageTags',
-        'ParentBackdropItemId',
-        'ParentBackdropImageTags',
-      ]) {
-        restoreRawIfMissing(key);
-      }
-
-      return merged;
-    }
-
-    final ids = <String>[];
-    for (final raw in items) {
-      if (raw is Map && raw['Id'] is String) {
-        ids.add(raw['Id']?.toString() ?? '');
-      }
-    }
-    if (ids.isEmpty) return response;
-    try {
-      final full = await _client.itemsApi.getItems(
-        ids: ids,
-        fields: _fields,
-        enableImageTypes: _imageTypes,
-        imageTypeLimit: _imageTypeLimit,
-        limit: ids.length,
-      );
-      final fullItems = full['Items'];
-      if (fullItems is! List || fullItems.isEmpty) return response;
-      final byId = <String, Map<String, dynamic>>{};
-      for (final raw in fullItems) {
-        if (raw is Map && raw['Id'] is String) {
-          byId[raw['Id']?.toString() ?? ''] = raw.cast<String, dynamic>();
-        }
-      }
-      final merged = <Map<String, dynamic>>[];
-      for (final raw in items) {
-        if (raw is Map && raw['Id'] is String) {
-          final id = raw['Id']?.toString() ?? '';
-          final rawMap = raw.cast<String, dynamic>();
-          final enrichedMap = byId[id];
-          if (enrichedMap != null) {
-            merged.add(mergeItemData(rawMap, enrichedMap));
-          } else {
-            merged.add(rawMap);
-          }
-        } else if (raw is Map) {
-          merged.add(raw.cast<String, dynamic>());
-        }
-      }
-      return {...response, 'Items': merged};
-    } catch (_) {
-      return response;
-    }
-  }
 
   List<AggregatedItem> _parseItems(
     Map<String, dynamic> response,

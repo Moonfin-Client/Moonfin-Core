@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Zapamätaj si moju voľbu",
     "playHdr10Fallback": "Prehrajte si záložnú verziu HDR10",
     "requestTranscode": "Vyžiadať prekódovanie",
-    "homeScreenSectionsIntegrationDescription": "Zistiť riadky odhalené zásuvným modulom „Sekcie domovskej obrazovky“ IAmParadox27. Nižšie je možné povoliť a zmeniť poradie riadkov.",
-    "homeScreenSectionsIntegrationNoServers": "Doplnok zatiaľ nenahlásili žiadne servery Jellyfin.",
-    "integrationOpenHomeSections": "Otvorte sekcie Domov",
-    "integrationOpenHomeSectionsSubtitle": "Povoliť, zakázať a zmeniť poradie riadkov",
-    "integrationInstalledButDisabled": "Nainštalované, ale vypnuté",
-    "integrationNotInstalled": "Nie je nainštalované",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Delete saved theme",
     "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
-    "homeScreenSectionsTitle": "Home Screen Sections",
     "themeEditor": "Theme Editor",
     "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
     "homeScreen": "Home Screen",

@@ -6340,37 +6340,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get requestTranscode => '트랜스코드 요청';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'IAmParadox27의 \"홈 화면 섹션\" 플러그인에 의해 노출된 행을 감지합니다. 아래에서 행을 활성화하고 재정렬할 수 있습니다.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      '아직 플러그인을 보고하는 Jellyfin 서버가 없습니다.';
-
-  @override
-  String get integrationOpenHomeSections => '홈 섹션 열기';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle => '행 활성화, 비활성화 및 재정렬';
-
-  @override
-  String get integrationInstalledButDisabled => '설치되었지만 비활성화됨';
-
-  @override
-  String get integrationNotInstalled => '설치되지 않음';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7360,9 +7329,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';

@@ -6540,38 +6540,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get requestTranscode => 'Solicitar transcodificação';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Detecte linhas expostas pelo plugin \"Home Screen Sections\" do IAmParadox27. As linhas podem ser habilitadas e reordenadas abaixo.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Nenhum servidor Jellyfin reportando o plugin ainda.';
-
-  @override
-  String get integrationOpenHomeSections => 'Abrir seções iniciais';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Ativar, desativar e reordenar linhas';
-
-  @override
-  String get integrationInstalledButDisabled => 'Instalado, mas desativado';
-
-  @override
-  String get integrationNotInstalled => 'Não instalado';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7615,9 +7583,6 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Gerenciar temas de plug-ins baixados neste dispositivo';
-
-  @override
-  String get homeScreenSectionsTitle => 'Seções da tela inicial';
 
   @override
   String get themeEditor => 'Editor de Tema';
@@ -15042,38 +15007,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get requestTranscode => 'Solicitar transcodificação';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Detecte linhas expostas pelo plugin \"Home Screen Sections\" do IAmParadox27. As linhas podem ser habilitadas e reordenadas abaixo.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Nenhum servidor Jellyfin reportando o plugin ainda.';
-
-  @override
-  String get integrationOpenHomeSections => 'Abrir seções iniciais';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Ativar, desativar e reordenar linhas';
-
-  @override
-  String get integrationInstalledButDisabled => 'Instalado, mas desativado';
-
-  @override
-  String get integrationNotInstalled => 'Não instalado';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -16113,9 +16046,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';
@@ -23508,38 +23438,6 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
   String get requestTranscode => 'Pedir transcodificação';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Deteta linhas expostas pelo plugin \"Home Screen Sections\" do IAmParadox27. As linhas podem ser ativadas e reordenadas abaixo.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Nenhum servidor Jellyfin a reportar o plugin ainda.';
-
-  @override
-  String get integrationOpenHomeSections => 'Abrir secções iniciais';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Ativar, desativar e reordenar linhas';
-
-  @override
-  String get integrationInstalledButDisabled => 'Instalado, mas desativado';
-
-  @override
-  String get integrationNotInstalled => 'Não instalado';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# secções',
-      one: '# secção',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -24587,9 +24485,6 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
   @override
   String get savedThemesManageSubtitle =>
       'Gerir temas de plugins baixados neste dispositivo';
-
-  @override
-  String get homeScreenSectionsTitle => 'Secções do ecrã inicial';
 
   @override
   String get themeEditor => 'Editor de Tema';

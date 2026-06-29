@@ -6494,38 +6494,6 @@ class AppLocalizationsDa extends AppLocalizations {
   String get requestTranscode => 'Anmod om omkodning';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Registrer rækker afsløret af IAmParadox27\'s \"Home Screen Sections\" plugin. Rækker kan aktiveres og omarrangeres nedenfor.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Ingen Jellyfin-servere rapporterer pluginnet endnu.';
-
-  @override
-  String get integrationOpenHomeSections => 'Åbn Home Sektioner';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Aktiver, deaktiver og omarranger rækker';
-
-  @override
-  String get integrationInstalledButDisabled => 'Installeret men deaktiveret';
-
-  @override
-  String get integrationNotInstalled => 'Ikke installeret';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7560,9 +7528,6 @@ class AppLocalizationsDa extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Administrer downloadede plugin-temaer på denne enhed';
-
-  @override
-  String get homeScreenSectionsTitle => 'Sektioner på startskærmen';
 
   @override
   String get themeEditor => 'Tema redaktør';

@@ -6486,38 +6486,6 @@ class AppLocalizationsPa extends AppLocalizations {
   String get requestTranscode => 'ਟ੍ਰਾਂਸਕੋਡ ਦੀ ਬੇਨਤੀ ਕਰੋ';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'IAmParadox27 ਦੇ \"ਹੋਮ ਸਕ੍ਰੀਨ ਸੈਕਸ਼ਨ\" ਪਲੱਗਇਨ ਦੁਆਰਾ ਉਜਾਗਰ ਕੀਤੀਆਂ ਕਤਾਰਾਂ ਦਾ ਪਤਾ ਲਗਾਓ। ਕਤਾਰਾਂ ਨੂੰ ਯੋਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ ਅਤੇ ਹੇਠਾਂ ਮੁੜ ਕ੍ਰਮਬੱਧ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'ਕੋਈ Jellyfin ਸਰਵਰ ਅਜੇ ਪਲੱਗਇਨ ਦੀ ਰਿਪੋਰਟ ਕਰ ਰਹੇ ਹਨ।';
-
-  @override
-  String get integrationOpenHomeSections => 'ਹੋਮ ਸੈਕਸ਼ਨ ਖੋਲ੍ਹੋ';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'ਕਤਾਰਾਂ ਨੂੰ ਸਮਰੱਥ, ਅਯੋਗ ਅਤੇ ਮੁੜ ਕ੍ਰਮਬੱਧ ਕਰੋ';
-
-  @override
-  String get integrationInstalledButDisabled => 'ਇੰਸਟੌਲ ਕੀਤਾ ਪਰ ਅਸਮਰੱਥ';
-
-  @override
-  String get integrationNotInstalled => 'ਇੰਸਟਾਲ ਨਹੀਂ ਹੈ';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7542,9 +7510,6 @@ class AppLocalizationsPa extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';

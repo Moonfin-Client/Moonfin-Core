@@ -6463,38 +6463,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get requestTranscode => 'درخواست ترانکد';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'ردیف‌هایی را که توسط افزونه «بخش‌های صفحه اصلی» IAmParadox27 در معرض دید قرار گرفته‌اند، شناسایی کنید. ردیف‌ها را می‌توان در زیر فعال و مرتب کرد.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'هنوز هیچ سرور Jellyfin این افزونه را گزارش نکرده است.';
-
-  @override
-  String get integrationOpenHomeSections => 'بخش های صفحه اصلی را باز کنید';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'فعال کردن، غیرفعال کردن و ترتیب مجدد ردیف ها';
-
-  @override
-  String get integrationInstalledButDisabled => 'نصب شده اما غیرفعال است';
-
-  @override
-  String get integrationNotInstalled => 'نصب نشده است';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7520,9 +7488,6 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'مضامین بارگیری شده افزونه را در این دستگاه مدیریت کنید';
-
-  @override
-  String get homeScreenSectionsTitle => 'بخش های صفحه اصلی';
 
   @override
   String get themeEditor => 'ویرایشگر تم';

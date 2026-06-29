@@ -10,9 +10,7 @@ import 'package:server_core/server_core.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/utils/playlist_utils.dart';
-import '../../../data/services/home_screen_sections_service.dart';
 import '../../../data/services/plugin_sync_service.dart';
-import 'package:jellyfin_preference/jellyfin_preference.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/seerr_preferences.dart';
@@ -472,9 +470,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
 
   int _getSectionCategory(HomeSectionConfig section) {
     if (section.isPluginDynamic) {
-      if (section.pluginSource == HomeSectionPluginSource.hss) {
-        return 7;
-      }
       if (section.pluginSource == HomeSectionPluginSource.collections) {
         return 2;
       }
@@ -759,15 +754,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       _showOverlay = true;
     });
     try {
-      final futures = <Future<void>>[];
-      if (GetIt.instance.isRegistered<HomeScreenSectionsService>()) {
-        futures.add(GetIt.instance<HomeScreenSectionsService>().refreshAll());
-      }
-      if (futures.isNotEmpty) {
-        try {
-          await Future.wait(futures);
-        } catch (_) {}
-      }
       final collectionsFuture = _fetchCollectionsForHomeSections();
       final genresFuture = _fetchGenresForHomeSections();
       final playlistsFuture = _fetchPlaylistsForHomeSections();
@@ -815,12 +801,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     }
   }
 
-  /// Adds plugin-dynamic sections discovered by the Home Screen Sections
-  /// plugin into the in-memory list (disabled by default)
-  /// and prunes stale entries whose section is no longer reported.
   bool _mergeDiscoveredPluginSections() {
-    final hssChanged = _mergeHssSections();
-    return hssChanged;
+    return false;
   }
 
   Future<List<_DiscoveredCollectionRow>>
@@ -1162,68 +1144,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     return changed;
   }
 
-  bool _mergeHssSections() {
-    if (!GetIt.instance.isRegistered<HomeScreenSectionsService>()) return false;
-    final service = GetIt.instance<HomeScreenSectionsService>();
-    final discovered = service.availableServers.toList();
-    final allProbed = service.allCapabilities.toList();
-    if (allProbed.isEmpty) return false;
-    var changed = false;
 
-    final existing = <String, HomeSectionConfig>{
-      for (final cfg in _sections.where(
-        (c) =>
-            c.isPluginDynamic && c.pluginSource == HomeSectionPluginSource.hss,
-      ))
-        cfg.stableId: cfg,
-    };
-
-    final freshIds = <String>{};
-    var nextOrder = _sections.length;
-    for (final cap in discovered) {
-      for (final section in cap.sections) {
-        final cfg = HomeSectionConfig.pluginDynamic(
-          serverId: cap.serverId,
-          pluginSection: section.section,
-          pluginAdditionalData: section.additionalData,
-          pluginDisplayText: section.displayText,
-          pluginSource: HomeSectionPluginSource.hss,
-          enabled:
-              existing['pluginDynamic:hss:${cap.serverId}:${section.section}:${section.additionalData ?? ''}']
-                  ?.enabled ??
-              false,
-          order: nextOrder++,
-        );
-        freshIds.add(cfg.stableId);
-        final idx = _sections.indexWhere((s) => s.stableId == cfg.stableId);
-        if (idx >= 0) {
-          final updated = _sections[idx].copyWith(
-            pluginDisplayText: cfg.pluginDisplayText,
-          );
-          if (_sections[idx].pluginDisplayText != updated.pluginDisplayText) {
-            _sections[idx] = updated;
-            changed = true;
-          }
-        } else {
-          _addSection(cfg);
-          changed = true;
-        }
-      }
-    }
-
-    final probedServers = allProbed.map((c) => c.serverId).toSet();
-    final before = _sections.length;
-    _sections.removeWhere(
-      (s) =>
-          s.isPluginDynamic &&
-          s.pluginSource == HomeSectionPluginSource.hss &&
-          s.serverId != null &&
-          probedServers.contains(s.serverId) &&
-          !freshIds.contains(s.stableId),
-    );
-    if (_sections.length != before) changed = true;
-    return changed;
-  }
 
   void _rebuildFocusNodes() {
     final activeIds = _sections.map((s) => s.stableId).toSet();
@@ -2029,7 +1950,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       HomeSectionPluginSource.collections => 'Collections row',
       HomeSectionPluginSource.genres => 'Genres row',
       HomeSectionPluginSource.playlists => 'Playlists row',
-      HomeSectionPluginSource.hss => 'Home Screen Sections plugin',
       HomeSectionPluginSource.custom => (() {
           Map<String, dynamic> rowConfig = {};
           try {

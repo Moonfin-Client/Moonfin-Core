@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Помни мой выбор",
     "playHdr10Fallback": "Воспроизвести резервный вариант HDR10",
     "requestTranscode": "Запросить перекодирование",
-    "homeScreenSectionsIntegrationDescription": "Обнаружение строк, предоставляемых плагином IAmParadox27 «Разделы главного экрана». Строки можно включить и изменить порядок ниже.",
-    "homeScreenSectionsIntegrationNoServers": "Ни один сервер Jellyfin пока не сообщил о плагине.",
-    "integrationOpenHomeSections": "Открытые домашние разделы",
-    "integrationOpenHomeSectionsSubtitle": "Включение, отключение и изменение порядка строк",
-    "integrationInstalledButDisabled": "Установлено, но отключено",
-    "integrationNotInstalled": "Не установлено",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Delete saved theme",
     "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
-    "homeScreenSectionsTitle": "Home Screen Sections",
     "themeEditor": "Theme Editor",
     "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
     "homeScreen": "Home Screen",

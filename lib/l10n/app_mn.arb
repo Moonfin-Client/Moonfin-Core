@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Миний сонголтыг санаарай",
     "playHdr10Fallback": "HDR10 нөөцөөр тогло",
     "requestTranscode": "Код хувиргах хүсэлт гаргах",
-    "homeScreenSectionsIntegrationDescription": "IAmParadox27-ийн \"Нүүр дэлгэцийн хэсгүүд\" залгаасаас илэрсэн мөрүүдийг илрүүлэх. Мөрүүдийг идэвхжүүлж, доор эрэмбэлж болно.",
-    "homeScreenSectionsIntegrationNoServers": "Одоогоор залгаасын талаар мэдээлсэн Jellyfin сервер алга.",
-    "integrationOpenHomeSections": "Нүүр хуудасны хэсгийг нээнэ үү",
-    "integrationOpenHomeSectionsSubtitle": "Мөрүүдийг идэвхжүүлэх, идэвхгүй болгох, дахин эрэмбэлэх",
-    "integrationInstalledButDisabled": "Суулгасан боловч идэвхгүй болсон",
-    "integrationNotInstalled": "Суулгаагүй байна",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Хадгалсан загварыг устгах",
     "savedThemesManageSubtitle": "Татаж авсан залгаасын загваруудыг энэ төхөөрөмж дээр удирдаарай",
-    "homeScreenSectionsTitle": "Үндсэн дэлгэцийн хэсгүүд",
     "themeEditor": "Сэдвийн редактор",
     "themeEditorSubtitle": "Хөтөч дээрээ Moonfin загвар засварлагчийг нээнэ үү",
     "homeScreen": "Үндсэн дэлгэц",

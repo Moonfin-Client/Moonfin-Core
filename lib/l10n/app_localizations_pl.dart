@@ -6529,38 +6529,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String get requestTranscode => 'Poproś o transkodowanie';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Wykryj wiersze ujawnione przez wtyczkę „Sekcje ekranu głównego” IAmParadox27. Poniżej można włączyć i zmienić kolejność wierszy.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Żaden serwer Jellyfin nie zgłosił jeszcze wtyczki.';
-
-  @override
-  String get integrationOpenHomeSections => 'Otwórz sekcje główne';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Włącz, wyłącz i zmień kolejność wierszy';
-
-  @override
-  String get integrationInstalledButDisabled => 'Zainstalowany, ale wyłączony';
-
-  @override
-  String get integrationNotInstalled => 'Nie zainstalowano';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7604,9 +7572,6 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';

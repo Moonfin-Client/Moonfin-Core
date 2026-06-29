@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "انتخاب من را به خاطر بسپار",
     "playHdr10Fallback": "پخش مجدد HDR10",
     "requestTranscode": "درخواست ترانکد",
-    "homeScreenSectionsIntegrationDescription": "ردیف‌هایی را که توسط افزونه «بخش‌های صفحه اصلی» IAmParadox27 در معرض دید قرار گرفته‌اند، شناسایی کنید. ردیف‌ها را می‌توان در زیر فعال و مرتب کرد.",
-    "homeScreenSectionsIntegrationNoServers": "هنوز هیچ سرور Jellyfin این افزونه را گزارش نکرده است.",
-    "integrationOpenHomeSections": "بخش های صفحه اصلی را باز کنید",
-    "integrationOpenHomeSectionsSubtitle": "فعال کردن، غیرفعال کردن و ترتیب مجدد ردیف ها",
-    "integrationInstalledButDisabled": "نصب شده اما غیرفعال است",
-    "integrationNotInstalled": "نصب نشده است",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "حذف تم ذخیره شده",
     "savedThemesManageSubtitle": "مضامین بارگیری شده افزونه را در این دستگاه مدیریت کنید",
-    "homeScreenSectionsTitle": "بخش های صفحه اصلی",
     "themeEditor": "ویرایشگر تم",
     "themeEditorSubtitle": "ویرایشگر تم Moonfin را در مرورگر خود باز کنید",
     "homeScreen": "صفحه اصلی",

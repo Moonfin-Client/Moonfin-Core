@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Emlékezz a választásomra",
     "playHdr10Fallback": "HDR10 tartalék lejátszása",
     "requestTranscode": "Átkódolás kérése",
-    "homeScreenSectionsIntegrationDescription": "Az IAmParadox27 „Home Screen Sections” beépülő modulja által közzétett sorok észlelése. A sorokat alább engedélyezheti és átrendezheti.",
-    "homeScreenSectionsIntegrationNoServers": "Még nincs Jellyfin szerver, amely jelentené a beépülő modult.",
-    "integrationOpenHomeSections": "Nyissa meg a Kezdőlap szakaszokat",
-    "integrationOpenHomeSectionsSubtitle": "A sorok engedélyezése, letiltása és átrendezése",
-    "integrationInstalledButDisabled": "Telepítve, de letiltva",
-    "integrationNotInstalled": "Nincs telepítve",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Delete saved theme",
     "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
-    "homeScreenSectionsTitle": "Home Screen Sections",
     "themeEditor": "Theme Editor",
     "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
     "homeScreen": "Home Screen",

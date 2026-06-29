@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "എൻ്റെ തിരഞ്ഞെടുപ്പ് ഓർക്കുക",
     "playHdr10Fallback": "HDR10 ഫാൾബാക്ക് പ്ലേ ചെയ്യുക",
     "requestTranscode": "ട്രാൻസ്കോഡ് അഭ്യർത്ഥിക്കുക",
-    "homeScreenSectionsIntegrationDescription": "IAmParadox27-ൻ്റെ \"ഹോം സ്‌ക്രീൻ സെക്ഷൻസ്\" പ്ലഗിൻ മുഖേന തുറന്നുകാട്ടപ്പെട്ട വരികൾ കണ്ടെത്തുക. വരികൾ പ്രവർത്തനക്ഷമമാക്കാനും ചുവടെ പുനഃക്രമീകരിക്കാനും കഴിയും.",
-    "homeScreenSectionsIntegrationNoServers": "Jellyfin സെർവറുകളൊന്നും ഇതുവരെ പ്ലഗിൻ റിപ്പോർട്ട് ചെയ്യുന്നില്ല.",
-    "integrationOpenHomeSections": "ഹോം സെക്ഷനുകൾ തുറക്കുക",
-    "integrationOpenHomeSectionsSubtitle": "വരികൾ പ്രവർത്തനക്ഷമമാക്കുക, പ്രവർത്തനരഹിതമാക്കുക, പുനഃക്രമീകരിക്കുക",
-    "integrationInstalledButDisabled": "ഇൻസ്റ്റാൾ ചെയ്‌തെങ്കിലും പ്രവർത്തനരഹിതമാക്കി",
-    "integrationNotInstalled": "ഇൻസ്റ്റാൾ ചെയ്തിട്ടില്ല",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "സംരക്ഷിച്ച തീം ഇല്ലാതാക്കുക",
     "savedThemesManageSubtitle": "ഈ ഉപകരണത്തിൽ ഡൗൺലോഡ് ചെയ്‌ത പ്ലഗിൻ തീമുകൾ നിയന്ത്രിക്കുക",
-    "homeScreenSectionsTitle": "ഹോം സ്‌ക്രീൻ വിഭാഗങ്ങൾ",
     "themeEditor": "തീം എഡിറ്റർ",
     "themeEditorSubtitle": "നിങ്ങളുടെ ബ്രൗസറിൽ Moonfin തീം എഡിറ്റർ തുറക്കുക",
     "homeScreen": "ഹോം സ്‌ക്രീൻ",

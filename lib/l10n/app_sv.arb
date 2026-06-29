@@ -6522,21 +6522,6 @@
     "rememberMyChoice": "Kom ihåg mitt val",
     "playHdr10Fallback": "Spela HDR10 reserv",
     "requestTranscode": "Begär omkodning",
-    "homeScreenSectionsIntegrationDescription": "Upptäck rader exponerade av IAmParadox27:s \"Home Screen Sections\"-plugin. Rader kan aktiveras och omordnas nedan.",
-    "homeScreenSectionsIntegrationNoServers": "Inga Jellyfin-servrar rapporterar plugin-programmet ännu.",
-    "integrationOpenHomeSections": "Öppna Home Sektioner",
-    "integrationOpenHomeSectionsSubtitle": "Aktivera, inaktivera och ändra ordning på rader",
-    "integrationInstalledButDisabled": "Installerad men inaktiverad",
-    "integrationNotInstalled": "Ej installerad",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Delete saved theme",
     "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
-    "homeScreenSectionsTitle": "Home Screen Sections",
     "themeEditor": "Theme Editor",
     "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
     "homeScreen": "Home Screen",

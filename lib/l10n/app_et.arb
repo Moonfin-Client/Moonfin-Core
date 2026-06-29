@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Pidage meeles minu valikut",
     "playHdr10Fallback": "Esitage HDR10 varuvarianti",
     "requestTranscode": "Küsi transkodeerimist",
-    "homeScreenSectionsIntegrationDescription": "Tuvastage IAmParadox27 pistikprogrammi \"Home Screen Sections\" paljastatud read. Ridu saab allpool lubada ja ümber järjestada.",
-    "homeScreenSectionsIntegrationNoServers": "Ükski Jellyfini server pole pistikprogrammist veel teatanud.",
-    "integrationOpenHomeSections": "Avage jaotised Avaleht",
-    "integrationOpenHomeSectionsSubtitle": "Lubage, keelake ja järjestage ridu ümber",
-    "integrationInstalledButDisabled": "Installitud, kuid keelatud",
-    "integrationNotInstalled": "Pole installitud",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Kustutage salvestatud teema",
     "savedThemesManageSubtitle": "Hallake selles seadmes allalaaditud pistikprogrammide teemasid",
-    "homeScreenSectionsTitle": "Avakuva jaotised",
     "themeEditor": "Teemaredaktor",
     "themeEditorSubtitle": "Avage brauseris Moonfin teemaredaktor",
     "homeScreen": "Avakuva",

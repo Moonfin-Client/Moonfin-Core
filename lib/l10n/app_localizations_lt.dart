@@ -6513,38 +6513,6 @@ class AppLocalizationsLt extends AppLocalizations {
   String get requestTranscode => 'Prašyti perkoduoti';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Aptikti eilutes, kurias atskleidžia „IAmParadox27“ papildinys „Pagrindinio ekrano skyriai“. Toliau eilutes galima įjungti ir pertvarkyti.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Dar nė vienas Jellyfin serveris nepraneša apie papildinį.';
-
-  @override
-  String get integrationOpenHomeSections => 'Atidarykite pagrindinius skyrius';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Įgalinti, išjungti ir pertvarkyti eilutes';
-
-  @override
-  String get integrationInstalledButDisabled => 'Įdiegta, bet išjungta';
-
-  @override
-  String get integrationNotInstalled => 'Neįdiegta';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7588,9 +7556,6 @@ class AppLocalizationsLt extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Tvarkykite atsisiųstų papildinių temas šiame įrenginyje';
-
-  @override
-  String get homeScreenSectionsTitle => 'Pagrindinio ekrano skyriai';
 
   @override
   String get themeEditor => 'Temos redaktorius';

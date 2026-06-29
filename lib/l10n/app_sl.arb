@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Zapomni si mojo izbiro",
     "playHdr10Fallback": "Predvajajte nadomestni HDR10",
     "requestTranscode": "Zahtevaj prekodiranje",
-    "homeScreenSectionsIntegrationDescription": "Zaznajte vrstice, ki jih razkrije vtičnik »Razdelki domačega zaslona« IAmParadox27. Vrstice je mogoče omogočiti in preurediti spodaj.",
-    "homeScreenSectionsIntegrationNoServers": "Noben strežnik Jellyfin še ne poroča o vtičniku.",
-    "integrationOpenHomeSections": "Odprite domače razdelke",
-    "integrationOpenHomeSectionsSubtitle": "Omogočite, onemogočite in preuredite vrstice",
-    "integrationInstalledButDisabled": "Nameščen, vendar onemogočen",
-    "integrationNotInstalled": "Ni nameščeno",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Delete saved theme",
     "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
-    "homeScreenSectionsTitle": "Home Screen Sections",
     "themeEditor": "Theme Editor",
     "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
     "homeScreen": "Home Screen",

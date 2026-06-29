@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Hãy nhớ sự lựa chọn của tôi",
     "playHdr10Fallback": "Phát dự phòng HDR10",
     "requestTranscode": "Yêu cầu chuyển mã",
-    "homeScreenSectionsIntegrationDescription": "Phát hiện các hàng được hiển thị bởi plugin \"Phần màn hình chính\" của IAmParadox27. Các hàng có thể được kích hoạt và sắp xếp lại bên dưới.",
-    "homeScreenSectionsIntegrationNoServers": "Chưa có máy chủ Jellyfin nào báo cáo plugin.",
-    "integrationOpenHomeSections": "Mở phần trang chủ",
-    "integrationOpenHomeSectionsSubtitle": "Bật, tắt và sắp xếp lại các hàng",
-    "integrationInstalledButDisabled": "Đã cài nhưng bị tắt",
-    "integrationNotInstalled": "Chưa được cài đặt",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Xóa chủ đề đã lưu",
     "savedThemesManageSubtitle": "Quản lý các chủ đề plugin đã tải xuống trên thiết bị này",
-    "homeScreenSectionsTitle": "Phần màn hình chính",
     "themeEditor": "Trình chỉnh sửa chủ đề",
     "themeEditorSubtitle": "Mở Trình chỉnh sửa chủ đề Moonfin trong trình duyệt của bạn",
     "homeScreen": "Màn hình chính",

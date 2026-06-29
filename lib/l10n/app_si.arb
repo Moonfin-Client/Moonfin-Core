@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "මගේ තේරීම මතක තබා ගන්න",
     "playHdr10Fallback": "HDR10 පසුබැසීම වාදනය කරන්න",
     "requestTranscode": "ට්‍රාන්ස්කෝඩ් ඉල්ලන්න",
-    "homeScreenSectionsIntegrationDescription": "IAmParadox27 හි \"Home Screen Sections\" ප්ලගිනය මගින් නිරාවරණය වන පේළි හඳුනා ගන්න. පේළි සක්‍රීය කර පහතින් නැවත ඇණවුම් කළ හැක.",
-    "homeScreenSectionsIntegrationNoServers": "Jellyfin සේවාදායකයන් තවමත් ප්ලගිනය වාර්තා නොකරයි.",
-    "integrationOpenHomeSections": "මුල් පිටුව කොටස් විවෘත කරන්න",
-    "integrationOpenHomeSectionsSubtitle": "පේළි සබල කරන්න, අබල කරන්න, සහ නැවත ඇණවුම් කරන්න",
-    "integrationInstalledButDisabled": "ස්ථාපනය කර ඇති නමුත් අබල කර ඇත",
-    "integrationNotInstalled": "ස්ථාපනය කර නැත",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Delete saved theme",
     "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
-    "homeScreenSectionsTitle": "Home Screen Sections",
     "themeEditor": "Theme Editor",
     "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
     "homeScreen": "Home Screen",

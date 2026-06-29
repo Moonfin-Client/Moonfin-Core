@@ -6504,38 +6504,6 @@ class AppLocalizationsEt extends AppLocalizations {
   String get requestTranscode => 'Küsi transkodeerimist';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Tuvastage IAmParadox27 pistikprogrammi \"Home Screen Sections\" paljastatud read. Ridu saab allpool lubada ja ümber järjestada.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Ükski Jellyfini server pole pistikprogrammist veel teatanud.';
-
-  @override
-  String get integrationOpenHomeSections => 'Avage jaotised Avaleht';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Lubage, keelake ja järjestage ridu ümber';
-
-  @override
-  String get integrationInstalledButDisabled => 'Installitud, kuid keelatud';
-
-  @override
-  String get integrationNotInstalled => 'Pole installitud';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7573,9 +7541,6 @@ class AppLocalizationsEt extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Hallake selles seadmes allalaaditud pistikprogrammide teemasid';
-
-  @override
-  String get homeScreenSectionsTitle => 'Avakuva jaotised';
 
   @override
   String get themeEditor => 'Teemaredaktor';

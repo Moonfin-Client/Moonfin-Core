@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "আমার পছন্দ মনে রাখবেন",
     "playHdr10Fallback": "HDR10 ফলব্যাক চালান",
     "requestTranscode": "ট্রান্সকোড অনুরোধ করুন",
-    "homeScreenSectionsIntegrationDescription": "IAmParadox27 এর \"হোম স্ক্রীন সেকশনস\" প্লাগইন দ্বারা উন্মুক্ত সারিগুলি সনাক্ত করুন৷ সারি সক্রিয় এবং নীচে পুনঃক্রম করা যেতে পারে.",
-    "homeScreenSectionsIntegrationNoServers": "কোন Jellyfin সার্ভার এখনো প্লাগইন রিপোর্ট করছে।",
-    "integrationOpenHomeSections": "হোম বিভাগ খুলুন",
-    "integrationOpenHomeSectionsSubtitle": "সারিগুলিকে সক্ষম করুন, অক্ষম করুন এবং পুনরায় সাজান৷",
-    "integrationInstalledButDisabled": "ইনস্টল করা কিন্তু নিষ্ক্রিয়",
-    "integrationNotInstalled": "ইনস্টল করা হয়নি",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "সংরক্ষিত থিম মুছুন",
     "savedThemesManageSubtitle": "এই ডিভাইসে ডাউনলোড করা প্লাগইন থিম পরিচালনা করুন",
-    "homeScreenSectionsTitle": "হোম স্ক্রীন বিভাগ",
     "themeEditor": "থিম সম্পাদক",
     "themeEditorSubtitle": "আপনার ব্রাউজারে Moonfin থিম এডিটর খুলুন",
     "homeScreen": "হোম স্ক্রীন",

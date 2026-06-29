@@ -6519,39 +6519,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get requestTranscode => 'Pyydä transkoodausta';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Tunnista IAmParadox27:n \"Home Screen Sections\" -laajennuksen paljastamat rivit. Rivit voidaan ottaa käyttöön ja järjestää uudelleen alla.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Yksikään Jellyfin-palvelin ei ole vielä ilmoittanut laajennuksesta.';
-
-  @override
-  String get integrationOpenHomeSections => 'Avaa Koti-osiot';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Ota rivejä käyttöön, poista se käytöstä ja järjestä uudelleen';
-
-  @override
-  String get integrationInstalledButDisabled =>
-      'Asennettu mutta poistettu käytöstä';
-
-  @override
-  String get integrationNotInstalled => 'Ei asennettu';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7586,9 +7553,6 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Hallinnoi ladattuja laajennusteemoja tällä laitteella';
-
-  @override
-  String get homeScreenSectionsTitle => 'Aloitusnäytön osiot';
 
   @override
   String get themeEditor => 'Teeman editori';

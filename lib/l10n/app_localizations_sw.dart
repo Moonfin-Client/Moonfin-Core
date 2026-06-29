@@ -6540,38 +6540,6 @@ class AppLocalizationsSw extends AppLocalizations {
   String get requestTranscode => 'Omba transcode';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Tambua safu mlalo zilizofichuliwa na programu-jalizi ya \"Sehemu za Skrini ya Nyumbani\" ya IAmParadox27. Safu mlalo zinaweza kuwashwa na kupangwa upya hapa chini.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Bado hakuna seva za Jellyfin zinazoripoti programu-jalizi.';
-
-  @override
-  String get integrationOpenHomeSections => 'Fungua Sehemu za Nyumbani';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Washa, zima na upange upya safu mlalo';
-
-  @override
-  String get integrationInstalledButDisabled => 'Imesakinishwa lakini imezimwa';
-
-  @override
-  String get integrationNotInstalled => 'Haijasakinishwa';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7614,9 +7582,6 @@ class AppLocalizationsSw extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';

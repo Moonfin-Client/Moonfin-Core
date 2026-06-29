@@ -6507,38 +6507,6 @@ class AppLocalizationsUg extends AppLocalizations {
   String get requestTranscode => 'كودنى تەلەپ قىلىڭ';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'IAmParadox27 نىڭ «ئائىلە ئېكران بۆلەكلىرى» قىستۇرمىسى تەرىپىدىن ئاشكارلانغان قۇرلارنى ئېنىقلاڭ. قۇرلارنى قوزغىتىپ تۆۋەندە رەتلىگىلى بولىدۇ.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'قىستۇرمىنى دوكلات قىلىدىغان Jellyfin مۇلازىمېتىرلىرى يوق.';
-
-  @override
-  String get integrationOpenHomeSections => 'ئۆي بۆلەكلىرىنى ئېچىڭ';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'قۇرلارنى قوزغىتىش ، چەكلەش ۋە رەتلەش';
-
-  @override
-  String get integrationInstalledButDisabled => 'قاچىلانغان ئەمما چەكلەنگەن';
-
-  @override
-  String get integrationNotInstalled => 'قاچىلانمىدى';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7569,9 +7537,6 @@ class AppLocalizationsUg extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';

@@ -6555,38 +6555,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get requestTranscode => 'Solicitar transcodificación';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Detecte filas expuestas por el complemento \"Secciones de pantalla de inicio\" de IAmParadox27. Las filas se pueden habilitar y reordenar a continuación.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Aún no hay servidores Jellyfin que informen sobre el complemento.';
-
-  @override
-  String get integrationOpenHomeSections => 'Abrir secciones de inicio';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Activar, desactivar y reordenar filas';
-
-  @override
-  String get integrationInstalledButDisabled => 'Instalado pero deshabilitado';
-
-  @override
-  String get integrationNotInstalled => 'No instalado';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# secciones',
-      one: '# seccion',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7634,9 +7602,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Administrar temas de complementos descargados en este dispositivo';
-
-  @override
-  String get homeScreenSectionsTitle => 'Secciones de la pantalla de inicio';
 
   @override
   String get themeEditor => 'Editor de temas';
@@ -15109,38 +15074,6 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   String get requestTranscode => 'Solicitar transcodificación';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Detecte filas expuestas por el complemento \"Secciones de pantalla de inicio\" de IAmParadox27. Las filas se pueden habilitar y reordenar a continuación.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Aún no hay servidores Jellyfin que informen sobre el complemento.';
-
-  @override
-  String get integrationOpenHomeSections => 'Abrir secciones de inicio';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Activar, desactivar y reordenar filas';
-
-  @override
-  String get integrationInstalledButDisabled => 'Instalado pero deshabilitado';
-
-  @override
-  String get integrationNotInstalled => 'No instalado';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# secciones',
-      one: '# seccion',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -16190,9 +16123,6 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   @override
   String get savedThemesManageSubtitle =>
       'Administrar temas de complementos descargados en este dispositivo';
-
-  @override
-  String get homeScreenSectionsTitle => 'Secciones de la pantalla de inicio';
 
   @override
   String get themeEditor => 'Editor de temas';
@@ -23627,38 +23557,6 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   String get requestTranscode => 'Solicitar transcodificación';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Detecte filas expuestas por el complemento \"Secciones de pantalla de inicio\" de IAmParadox27. Las filas se pueden habilitar y reordenar a continuación.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Aún no hay servidores Jellyfin que informen sobre el complemento.';
-
-  @override
-  String get integrationOpenHomeSections => 'Abrir secciones de inicio';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Activar, desactivar y reordenar filas';
-
-  @override
-  String get integrationInstalledButDisabled => 'Instalado pero deshabilitado';
-
-  @override
-  String get integrationNotInstalled => 'No instalado';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# secciones',
-      one: '# seccion',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -24708,9 +24606,6 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   @override
   String get savedThemesManageSubtitle =>
       'Administrar temas de complementos descargados en este dispositivo';
-
-  @override
-  String get homeScreenSectionsTitle => 'Secciones de la pantalla de inicio';
 
   @override
   String get themeEditor => 'Editor de temas';
@@ -32145,38 +32040,6 @@ class AppLocalizationsEsDo extends AppLocalizationsEs {
   String get requestTranscode => 'Solicitar transcodificación';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Detecte filas expuestas por el complemento \"Secciones de pantalla de inicio\" de IAmParadox27. Las filas se pueden habilitar y reordenar a continuación.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Aún no hay servidores Jellyfin que informen sobre el complemento.';
-
-  @override
-  String get integrationOpenHomeSections => 'Abrir secciones de inicio';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Activar, desactivar y reordenar filas';
-
-  @override
-  String get integrationInstalledButDisabled => 'Instalado pero deshabilitado';
-
-  @override
-  String get integrationNotInstalled => 'No instalado';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# secciones',
-      one: '# seccion',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -33226,9 +33089,6 @@ class AppLocalizationsEsDo extends AppLocalizationsEs {
   @override
   String get savedThemesManageSubtitle =>
       'Administrar temas de complementos descargados en este dispositivo';
-
-  @override
-  String get homeScreenSectionsTitle => 'Secciones de la pantalla de inicio';
 
   @override
   String get themeEditor => 'Editor de temas';
@@ -40663,38 +40523,6 @@ class AppLocalizationsEsMx extends AppLocalizationsEs {
   String get requestTranscode => 'Solicitar transcodificación';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Detecte filas expuestas por el complemento \"Secciones de pantalla de inicio\" de IAmParadox27. Las filas se pueden habilitar y reordenar a continuación.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Aún no hay servidores Jellyfin que informen sobre el complemento.';
-
-  @override
-  String get integrationOpenHomeSections => 'Abrir secciones de inicio';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Activar, desactivar y reordenar filas';
-
-  @override
-  String get integrationInstalledButDisabled => 'Instalado pero deshabilitado';
-
-  @override
-  String get integrationNotInstalled => 'No instalado';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# secciones',
-      one: '# seccion',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -41744,9 +41572,6 @@ class AppLocalizationsEsMx extends AppLocalizationsEs {
   @override
   String get savedThemesManageSubtitle =>
       'Administrar temas de complementos descargados en este dispositivo';
-
-  @override
-  String get homeScreenSectionsTitle => 'Secciones de la pantalla de inicio';
 
   @override
   String get themeEditor => 'Editor de temas';

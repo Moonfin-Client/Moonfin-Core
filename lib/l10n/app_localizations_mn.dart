@@ -6517,39 +6517,6 @@ class AppLocalizationsMn extends AppLocalizations {
   String get requestTranscode => 'Код хувиргах хүсэлт гаргах';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'IAmParadox27-ийн \"Нүүр дэлгэцийн хэсгүүд\" залгаасаас илэрсэн мөрүүдийг илрүүлэх. Мөрүүдийг идэвхжүүлж, доор эрэмбэлж болно.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Одоогоор залгаасын талаар мэдээлсэн Jellyfin сервер алга.';
-
-  @override
-  String get integrationOpenHomeSections => 'Нүүр хуудасны хэсгийг нээнэ үү';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Мөрүүдийг идэвхжүүлэх, идэвхгүй болгох, дахин эрэмбэлэх';
-
-  @override
-  String get integrationInstalledButDisabled =>
-      'Суулгасан боловч идэвхгүй болсон';
-
-  @override
-  String get integrationNotInstalled => 'Суулгаагүй байна';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7588,9 +7555,6 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Татаж авсан залгаасын загваруудыг энэ төхөөрөмж дээр удирдаарай';
-
-  @override
-  String get homeScreenSectionsTitle => 'Үндсэн дэлгэцийн хэсгүүд';
 
   @override
   String get themeEditor => 'Сэдвийн редактор';

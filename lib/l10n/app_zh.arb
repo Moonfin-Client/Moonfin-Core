@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "记住我的选择",
     "playHdr10Fallback": "以 HDR10 兼容模式播放",
     "requestTranscode": "请求转码",
-    "homeScreenSectionsIntegrationDescription": "检测 IAmParadox27 的“Home Screen Sections”插件提供的栏目。可在下方启用并重新排序。",
-    "homeScreenSectionsIntegrationNoServers": "还没有 Jellyfin 服务器上报此插件。",
-    "integrationOpenHomeSections": "打开首页栏目",
-    "integrationOpenHomeSectionsSubtitle": "启用、禁用和重新排序栏目",
-    "integrationInstalledButDisabled": "已安装但已禁用",
-    "integrationNotInstalled": "未安装",
-    "integrationSectionsCount": "{count, plural, one {# 个栏目} other {# 个栏目}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {已发现 # 个栏目} other {已发现 # 个栏目}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "移除已保存主题",
     "savedThemesManageSubtitle": "管理此设备上下载的插件主题",
-    "homeScreenSectionsTitle": "首页栏目",
     "themeEditor": "主题编辑器",
     "themeEditorSubtitle": "在浏览器中打开 Moonfin 主题编辑器",
     "homeScreen": "主屏幕",

@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Менің таңдауымды есте сақтаңыз",
     "playHdr10Fallback": "HDR10 нұсқасын ойнату",
     "requestTranscode": "Транскодты сұрау",
-    "homeScreenSectionsIntegrationDescription": "IAmParadox27 \"Негізгі экран бөлімдері\" плагині арқылы ашылған жолдарды анықтау. Төменде жолдарды қосуға және ретін өзгертуге болады.",
-    "homeScreenSectionsIntegrationNoServers": "Плагин туралы әлі ешқандай Jellyfin серверлері есеп бермейді.",
-    "integrationOpenHomeSections": "Негізгі бөлімдерді ашыңыз",
-    "integrationOpenHomeSectionsSubtitle": "Жолдарды қосу, өшіру және ретін өзгерту",
-    "integrationInstalledButDisabled": "Орнатылған, бірақ өшірілген",
-    "integrationNotInstalled": "Орнатылмаған",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Delete saved theme",
     "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
-    "homeScreenSectionsTitle": "Home Screen Sections",
     "themeEditor": "Theme Editor",
     "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
     "homeScreen": "Home Screen",

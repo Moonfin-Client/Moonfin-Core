@@ -6570,39 +6570,6 @@ class AppLocalizationsMl extends AppLocalizations {
   String get requestTranscode => 'ട്രാൻസ്കോഡ് അഭ്യർത്ഥിക്കുക';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'IAmParadox27-ൻ്റെ \"ഹോം സ്‌ക്രീൻ സെക്ഷൻസ്\" പ്ലഗിൻ മുഖേന തുറന്നുകാട്ടപ്പെട്ട വരികൾ കണ്ടെത്തുക. വരികൾ പ്രവർത്തനക്ഷമമാക്കാനും ചുവടെ പുനഃക്രമീകരിക്കാനും കഴിയും.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Jellyfin സെർവറുകളൊന്നും ഇതുവരെ പ്ലഗിൻ റിപ്പോർട്ട് ചെയ്യുന്നില്ല.';
-
-  @override
-  String get integrationOpenHomeSections => 'ഹോം സെക്ഷനുകൾ തുറക്കുക';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'വരികൾ പ്രവർത്തനക്ഷമമാക്കുക, പ്രവർത്തനരഹിതമാക്കുക, പുനഃക്രമീകരിക്കുക';
-
-  @override
-  String get integrationInstalledButDisabled =>
-      'ഇൻസ്റ്റാൾ ചെയ്‌തെങ്കിലും പ്രവർത്തനരഹിതമാക്കി';
-
-  @override
-  String get integrationNotInstalled => 'ഇൻസ്റ്റാൾ ചെയ്തിട്ടില്ല';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7654,9 +7621,6 @@ class AppLocalizationsMl extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'ഈ ഉപകരണത്തിൽ ഡൗൺലോഡ് ചെയ്‌ത പ്ലഗിൻ തീമുകൾ നിയന്ത്രിക്കുക';
-
-  @override
-  String get homeScreenSectionsTitle => 'ഹോം സ്‌ക്രീൻ വിഭാഗങ്ങൾ';
 
   @override
   String get themeEditor => 'തീം എഡിറ്റർ';

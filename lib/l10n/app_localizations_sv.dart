@@ -6504,38 +6504,6 @@ class AppLocalizationsSv extends AppLocalizations {
   String get requestTranscode => 'Begär omkodning';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Upptäck rader exponerade av IAmParadox27:s \"Home Screen Sections\"-plugin. Rader kan aktiveras och omordnas nedan.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Inga Jellyfin-servrar rapporterar plugin-programmet ännu.';
-
-  @override
-  String get integrationOpenHomeSections => 'Öppna Home Sektioner';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Aktivera, inaktivera och ändra ordning på rader';
-
-  @override
-  String get integrationInstalledButDisabled => 'Installerad men inaktiverad';
-
-  @override
-  String get integrationNotInstalled => 'Ej installerad';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7573,9 +7541,6 @@ class AppLocalizationsSv extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';

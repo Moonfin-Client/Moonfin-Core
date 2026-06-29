@@ -6491,38 +6491,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get requestTranscode => 'ট্রান্সকোড অনুরোধ করুন';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'IAmParadox27 এর \"হোম স্ক্রীন সেকশনস\" প্লাগইন দ্বারা উন্মুক্ত সারিগুলি সনাক্ত করুন৷ সারি সক্রিয় এবং নীচে পুনঃক্রম করা যেতে পারে.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'কোন Jellyfin সার্ভার এখনো প্লাগইন রিপোর্ট করছে।';
-
-  @override
-  String get integrationOpenHomeSections => 'হোম বিভাগ খুলুন';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'সারিগুলিকে সক্ষম করুন, অক্ষম করুন এবং পুনরায় সাজান৷';
-
-  @override
-  String get integrationInstalledButDisabled => 'ইনস্টল করা কিন্তু নিষ্ক্রিয়';
-
-  @override
-  String get integrationNotInstalled => 'ইনস্টল করা হয়নি';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7554,9 +7522,6 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'এই ডিভাইসে ডাউনলোড করা প্লাগইন থিম পরিচালনা করুন';
-
-  @override
-  String get homeScreenSectionsTitle => 'হোম স্ক্রীন বিভাগ';
 
   @override
   String get themeEditor => 'থিম সম্পাদক';

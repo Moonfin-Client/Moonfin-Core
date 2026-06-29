@@ -6550,38 +6550,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get requestTranscode => 'Átkódolás kérése';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Az IAmParadox27 „Home Screen Sections” beépülő modulja által közzétett sorok észlelése. A sorokat alább engedélyezheti és átrendezheti.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Még nincs Jellyfin szerver, amely jelentené a beépülő modult.';
-
-  @override
-  String get integrationOpenHomeSections => 'Nyissa meg a Kezdőlap szakaszokat';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'A sorok engedélyezése, letiltása és átrendezése';
-
-  @override
-  String get integrationInstalledButDisabled => 'Telepítve, de letiltva';
-
-  @override
-  String get integrationNotInstalled => 'Nincs telepítve';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7626,9 +7594,6 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';

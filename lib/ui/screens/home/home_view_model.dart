@@ -775,83 +775,11 @@ class HomeViewModel extends ChangeNotifier {
     return _placeholderForSection(cfg.type);
   }
 
-  /// Maps a Home Screen Sections plugin section name to the equivalent
-  /// built-in [HomeSectionType] when one exists. Used to suppress duplicate
-  /// rows when both the native section and its plugin counterpart are enabled.
-  static HomeSectionType? _builtinForPluginSection(String? section) {
-    if (section == null) return null;
-    switch (section) {
-      case 'ContinueWatching':
-        return HomeSectionType.resume;
-      case 'ContinueListening':
-      case 'ResumeAudio':
-        return HomeSectionType.resumeAudio;
-      case 'ContinueReading':
-      case 'ResumeBook':
-        return HomeSectionType.resumeBook;
-      case 'NextUp':
-        return HomeSectionType.nextUp;
-      case 'LiveTv':
-      case 'LiveTV':
-        return HomeSectionType.liveTv;
-      case 'MyMedia':
-        return HomeSectionType.libraryTilesSmall;
-      case 'MyMediaSmall':
-        return HomeSectionType.libraryButtons;
-      case 'LatestMovies':
-      case 'LatestShows':
-      case 'LatestMedia':
-        return HomeSectionType.latestMedia;
-      case 'RecentlyReleased':
-      case 'RecentlyReleasedMovies':
-      case 'RecentlyReleasedEpisodes':
-        return HomeSectionType.recentlyReleased;
-      case 'Playlists':
-        return HomeSectionType.playlists;
-      case 'FavoriteMovies':
-        return HomeSectionType.favoriteMovies;
-      case 'FavoriteSeries':
-        return HomeSectionType.favoriteSeries;
-      case 'FavoriteEpisodes':
-        return HomeSectionType.favoriteEpisodes;
-      case 'FavoritePeople':
-        return HomeSectionType.favoritePeople;
-      case 'FavoriteArtists':
-        return HomeSectionType.favoriteArtists;
-      case 'FavoriteMusicVideos':
-        return HomeSectionType.favoriteMusicVideos;
-      case 'FavoriteAlbums':
-        return HomeSectionType.favoriteAlbums;
-      case 'FavoriteSongs':
-        return HomeSectionType.favoriteSongs;
-      case 'Collections':
-        return HomeSectionType.collections;
-      case 'Genres':
-        return HomeSectionType.genres;
-      case 'ActiveRecordings':
-        return HomeSectionType.activeRecordings;
-      default:
-        return null;
-    }
-  }
-
   static Set<String> _duplicateKeysForConfig(HomeSectionConfig cfg) {
     if (cfg.isBuiltin) {
       return _duplicateKeysForBuiltin(cfg.type);
     }
-
-    switch (cfg.pluginSource) {
-      case HomeSectionPluginSource.collections:
-      case HomeSectionPluginSource.genres:
-      case HomeSectionPluginSource.playlists:
-      case HomeSectionPluginSource.custom:
-        return const <String>{};
-      case HomeSectionPluginSource.hss:
-        final builtin = _builtinForPluginSection(cfg.pluginSection);
-        return builtin == null
-            ? const <String>{}
-            : _duplicateKeysForBuiltin(builtin);
-    }
+    return const <String>{};
   }
 
   static Set<String> _duplicateKeysForBuiltin(HomeSectionType type) {

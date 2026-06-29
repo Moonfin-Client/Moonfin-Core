@@ -6501,38 +6501,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get requestTranscode => 'Požádat o překódování';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Detekce řádků vystavených pluginem \"Sekce domovské obrazovky\" IAmParadox27. Řádky lze povolit a změnit jejich pořadí níže.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Plugin zatím nehlásí žádné servery Jellyfin.';
-
-  @override
-  String get integrationOpenHomeSections => 'Otevřete domovské sekce';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Povolit, zakázat a změnit pořadí řádků';
-
-  @override
-  String get integrationInstalledButDisabled => 'Instalováno, ale vypnuto';
-
-  @override
-  String get integrationNotInstalled => 'Není nainstalováno';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7569,9 +7537,6 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Spravujte stažená témata pluginů na tomto zařízení';
-
-  @override
-  String get homeScreenSectionsTitle => 'Sekce domovské obrazovky';
 
   @override
   String get themeEditor => 'Editor motivů';

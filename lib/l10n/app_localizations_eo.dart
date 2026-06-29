@@ -6482,38 +6482,6 @@ class AppLocalizationsEo extends AppLocalizations {
   String get requestTranscode => 'Petu transkodon';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Detektu vicojn elmontritajn per la kromaĵo \"Hejkranaj Sekcioj\" de IAmParadox27. Vicoj povas esti ebligitaj kaj reordigeblaj sube.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Ankoraŭ neniuj Jellyfin-serviloj raportantaj la kromaĵon.';
-
-  @override
-  String get integrationOpenHomeSections => 'Malfermu Hejmajn Sekciojn';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Ebligu, malŝaltu kaj reordigu vicojn';
-
-  @override
-  String get integrationInstalledButDisabled => 'Instalita sed malŝaltita';
-
-  @override
-  String get integrationNotInstalled => 'Ne instalita';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7548,9 +7516,6 @@ class AppLocalizationsEo extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Administru elŝutitajn kromtemojn sur ĉi tiu aparato';
-
-  @override
-  String get homeScreenSectionsTitle => 'Ĉefekranaj Sekcioj';
 
   @override
   String get themeEditor => 'Temo-Redaktilo';

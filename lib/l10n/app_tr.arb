@@ -6522,21 +6522,6 @@
     "rememberMyChoice": "Seçimimi hatırla",
     "playHdr10Fallback": "HDR10 yedeğini oynat",
     "requestTranscode": "Kod dönüştürme isteği",
-    "homeScreenSectionsIntegrationDescription": "IAmParadox27 tarafından geliştirilen \"Home Screen Sections\" eklentisinin sunduğu satırları algıla. Satırlar aşağıdan etkinleştirilebilir ve yeniden sıralanabilir.",
-    "homeScreenSectionsIntegrationNoServers": "Henüz bu eklentiyi bildiren bir Jellyfin sunucusu olmadı.",
-    "integrationOpenHomeSections": "Ana Sayfa Bölümlerini Aç",
-    "integrationOpenHomeSectionsSubtitle": "Satırları etkinleştirme, devre dışı bırakma ve yeniden sıralama",
-    "integrationInstalledButDisabled": "Yüklendi ancak devre dışı bırakıldı",
-    "integrationNotInstalled": "Kurulu değil",
-    "integrationSectionsCount": "{count, plural, one {# bölüm} other {# bölüm}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# satır keşfedildi} other {# satır keşfedildi}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Kayıtlı temayı sil",
     "savedThemesManageSubtitle": "Bu cihazdaki indirilen eklenti temalarını yönetin",
-    "homeScreenSectionsTitle": "Home Screen Sections",
     "themeEditor": "Tema Editörü",
     "themeEditorSubtitle": "Moonfin Tema Editörünü tarayıcınızda açın",
     "homeScreen": "Ana Sayfa",

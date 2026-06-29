@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Ingat pilihan saya",
     "playHdr10Fallback": "Putar fallback HDR10",
     "requestTranscode": "Minta transcode",
-    "homeScreenSectionsIntegrationDescription": "Deteksi baris yang diekspos oleh plugin \"Home Screen Sections\" milik IAmParadox27. Baris dapat diaktifkan dan diatur ulang urutannya di bawah.",
-    "homeScreenSectionsIntegrationNoServers": "Belum ada server Jellyfin yang melaporkan plugin tersebut.",
-    "integrationOpenHomeSections": "Buka Home Sections",
-    "integrationOpenHomeSectionsSubtitle": "Aktifkan, nonaktifkan, dan atur ulang urutan baris",
-    "integrationInstalledButDisabled": "Terinstal tetapi dinonaktifkan",
-    "integrationNotInstalled": "Tidak terinstal",
-    "integrationSectionsCount": "{count, plural, one {# bagian} other {# bagian}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# baris ditemukan} other {# baris ditemukan}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Hapus tema tersimpan",
     "savedThemesManageSubtitle": "Kelola tema plugin yang diunduh pada perangkat ini",
-    "homeScreenSectionsTitle": "Bagian Layar Beranda",
     "themeEditor": "Editor Tema",
     "themeEditorSubtitle": "Buka Editor Tema Moonfin di browser Anda",
     "homeScreen": "Layar Beranda",

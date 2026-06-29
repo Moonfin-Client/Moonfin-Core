@@ -6460,38 +6460,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get requestTranscode => 'ขอแปลงรหัส';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'ตรวจหาแถวที่ถูกเปิดเผยโดยปลั๊กอิน \"ส่วนหน้าจอหลัก\" ของ IAmParadox27 สามารถเปิดใช้งานและเรียงลำดับแถวใหม่ได้ด้านล่าง';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'ยังไม่มีเซิร์ฟเวอร์ Jellyfin รายงานปลั๊กอิน';
-
-  @override
-  String get integrationOpenHomeSections => 'เปิดส่วนหน้าแรก';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'เปิดใช้งาน ปิดใช้งาน และเรียงลำดับแถวใหม่';
-
-  @override
-  String get integrationInstalledButDisabled => 'ติดตั้งแล้ว แต่ปิดการใช้งาน';
-
-  @override
-  String get integrationNotInstalled => 'ไม่ได้ติดตั้ง';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7509,9 +7477,6 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'จัดการธีมปลั๊กอินที่ดาวน์โหลดบนอุปกรณ์นี้';
-
-  @override
-  String get homeScreenSectionsTitle => 'ส่วนหน้าจอหลัก';
 
   @override
   String get themeEditor => 'ตัวแก้ไขธีม';

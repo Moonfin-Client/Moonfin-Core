@@ -1143,7 +1143,7 @@ class PluginSyncService extends ChangeNotifier {
       if (homeSectionsRaw is List) {
         final parsed = <HomeSectionConfig>[
           for (final e in homeSectionsRaw)
-            if (e is Map)
+            if (e is Map && HomeSectionConfig.isSupportedJson(Map<String, dynamic>.from(e)))
               HomeSectionConfig.fromJson(Map<String, dynamic>.from(e)),
         ];
         if (parsed.isNotEmpty) {

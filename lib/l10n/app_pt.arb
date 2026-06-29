@@ -6522,21 +6522,6 @@
     "rememberMyChoice": "Lembre-se da minha escolha",
     "playHdr10Fallback": "Reproduzir substituto HDR10",
     "requestTranscode": "Solicitar transcodificação",
-    "homeScreenSectionsIntegrationDescription": "Detecte linhas expostas pelo plugin \"Home Screen Sections\" do IAmParadox27. As linhas podem ser habilitadas e reordenadas abaixo.",
-    "homeScreenSectionsIntegrationNoServers": "Nenhum servidor Jellyfin reportando o plugin ainda.",
-    "integrationOpenHomeSections": "Abrir seções iniciais",
-    "integrationOpenHomeSectionsSubtitle": "Ativar, desativar e reordenar linhas",
-    "integrationInstalledButDisabled": "Instalado, mas desativado",
-    "integrationNotInstalled": "Não instalado",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Excluir tema salvo",
     "savedThemesManageSubtitle": "Gerenciar temas de plug-ins baixados neste dispositivo",
-    "homeScreenSectionsTitle": "Seções da tela inicial",
     "themeEditor": "Editor de Tema",
     "themeEditorSubtitle": "Abra o Editor de Tema Moonfin em seu navegador",
     "homeScreen": "Tela inicial",

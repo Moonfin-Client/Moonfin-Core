@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Husk mit valg",
     "playHdr10Fallback": "Afspil HDR10 fallback",
     "requestTranscode": "Anmod om omkodning",
-    "homeScreenSectionsIntegrationDescription": "Registrer rækker afsløret af IAmParadox27's \"Home Screen Sections\" plugin. Rækker kan aktiveres og omarrangeres nedenfor.",
-    "homeScreenSectionsIntegrationNoServers": "Ingen Jellyfin-servere rapporterer pluginnet endnu.",
-    "integrationOpenHomeSections": "Åbn Home Sektioner",
-    "integrationOpenHomeSectionsSubtitle": "Aktiver, deaktiver og omarranger rækker",
-    "integrationInstalledButDisabled": "Installeret men deaktiveret",
-    "integrationNotInstalled": "Ikke installeret",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Slet gemt tema",
     "savedThemesManageSubtitle": "Administrer downloadede plugin-temaer på denne enhed",
-    "homeScreenSectionsTitle": "Sektioner på startskærmen",
     "themeEditor": "Tema redaktør",
     "themeEditorSubtitle": "Åbn Moonfin Theme Editor i din browser",
     "homeScreen": "Startskærm",

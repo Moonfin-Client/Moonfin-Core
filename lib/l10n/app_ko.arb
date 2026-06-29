@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "내 선택을 기억해",
     "playHdr10Fallback": "HDR10 대체 재생",
     "requestTranscode": "트랜스코드 요청",
-    "homeScreenSectionsIntegrationDescription": "IAmParadox27의 \"홈 화면 섹션\" 플러그인에 의해 노출된 행을 감지합니다. 아래에서 행을 활성화하고 재정렬할 수 있습니다.",
-    "homeScreenSectionsIntegrationNoServers": "아직 플러그인을 보고하는 Jellyfin 서버가 없습니다.",
-    "integrationOpenHomeSections": "홈 섹션 열기",
-    "integrationOpenHomeSectionsSubtitle": "행 활성화, 비활성화 및 재정렬",
-    "integrationInstalledButDisabled": "설치되었지만 비활성화됨",
-    "integrationNotInstalled": "설치되지 않음",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Delete saved theme",
     "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
-    "homeScreenSectionsTitle": "Home Screen Sections",
     "themeEditor": "Theme Editor",
     "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
     "homeScreen": "Home Screen",

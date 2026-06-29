@@ -6522,21 +6522,6 @@
     "rememberMyChoice": "Erinnere dich an meine Wahl",
     "playHdr10Fallback": "Spielen Sie HDR10-Fallback",
     "requestTranscode": "Transkodierung anfordern",
-    "homeScreenSectionsIntegrationDescription": "Erkennen Sie Zeilen, die durch das „Home Screen Sections“-Plugin von IAmParadox27 verfügbar gemacht werden. Zeilen können unten aktiviert und neu angeordnet werden.",
-    "homeScreenSectionsIntegrationNoServers": "Bisher haben keine Jellyfin-Server das Plugin gemeldet.",
-    "integrationOpenHomeSections": "Öffnen Sie die Home-Bereiche",
-    "integrationOpenHomeSectionsSubtitle": "Zeilen aktivieren, deaktivieren und neu anordnen",
-    "integrationInstalledButDisabled": "Installiert, aber deaktiviert",
-    "integrationNotInstalled": "Nicht installiert",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Gespeichertes Thema löschen",
     "savedThemesManageSubtitle": "Verwalten Sie heruntergeladene Plugin-Themes auf diesem Gerät",
-    "homeScreenSectionsTitle": "Abschnitte des Startbildschirms",
     "themeEditor": "Theme-Editor",
     "themeEditorSubtitle": "Öffnen Sie den Moonfin Theme-Editor in Ihrem Browser",
     "homeScreen": "Startbildschirm",

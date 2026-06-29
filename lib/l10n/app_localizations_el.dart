@@ -6588,39 +6588,6 @@ class AppLocalizationsEl extends AppLocalizations {
   String get requestTranscode => 'Ζητήστε διακωδικοποίηση';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Εντοπίστε σειρές που εκτίθενται από την προσθήκη \"Ενότητες αρχικής οθόνης\" του IAmParadox27. Οι σειρές μπορούν να ενεργοποιηθούν και να αναδιαταχθούν παρακάτω.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Δεν υπάρχουν ακόμη διακομιστές Jellyfin που να αναφέρουν την προσθήκη.';
-
-  @override
-  String get integrationOpenHomeSections => 'Ανοίξτε τις Αρχικές Ενότητες';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Ενεργοποίηση, απενεργοποίηση και αναδιάταξη σειρών';
-
-  @override
-  String get integrationInstalledButDisabled =>
-      'Εγκατεστημένο αλλά απενεργοποιημένο';
-
-  @override
-  String get integrationNotInstalled => 'Δεν έχει εγκατασταθεί';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7674,9 +7641,6 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Διαχειριστείτε τα ληφθέντα θέματα προσθηκών σε αυτήν τη συσκευή';
-
-  @override
-  String get homeScreenSectionsTitle => 'Ενότητες αρχικής οθόνης';
 
   @override
   String get themeEditor => 'Επεξεργαστής θεμάτων';

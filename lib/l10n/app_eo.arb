@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Memoru mian elekton",
     "playHdr10Fallback": "Ludu HDR10-riparon",
     "requestTranscode": "Petu transkodon",
-    "homeScreenSectionsIntegrationDescription": "Detektu vicojn elmontritajn per la kromaĵo \"Hejkranaj Sekcioj\" de IAmParadox27. Vicoj povas esti ebligitaj kaj reordigeblaj sube.",
-    "homeScreenSectionsIntegrationNoServers": "Ankoraŭ neniuj Jellyfin-serviloj raportantaj la kromaĵon.",
-    "integrationOpenHomeSections": "Malfermu Hejmajn Sekciojn",
-    "integrationOpenHomeSectionsSubtitle": "Ebligu, malŝaltu kaj reordigu vicojn",
-    "integrationInstalledButDisabled": "Instalita sed malŝaltita",
-    "integrationNotInstalled": "Ne instalita",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Forigu konservitan temon",
     "savedThemesManageSubtitle": "Administru elŝutitajn kromtemojn sur ĉi tiu aparato",
-    "homeScreenSectionsTitle": "Ĉefekranaj Sekcioj",
     "themeEditor": "Temo-Redaktilo",
     "themeEditorSubtitle": "Malfermu la Moonfin Temo-Redaktilon en via retumilo",
     "homeScreen": "Hejma Ekrano",

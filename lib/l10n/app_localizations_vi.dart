@@ -6505,38 +6505,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get requestTranscode => 'Yêu cầu chuyển mã';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Phát hiện các hàng được hiển thị bởi plugin \"Phần màn hình chính\" của IAmParadox27. Các hàng có thể được kích hoạt và sắp xếp lại bên dưới.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Chưa có máy chủ Jellyfin nào báo cáo plugin.';
-
-  @override
-  String get integrationOpenHomeSections => 'Mở phần trang chủ';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Bật, tắt và sắp xếp lại các hàng';
-
-  @override
-  String get integrationInstalledButDisabled => 'Đã cài nhưng bị tắt';
-
-  @override
-  String get integrationNotInstalled => 'Chưa được cài đặt';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7568,9 +7536,6 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Quản lý các chủ đề plugin đã tải xuống trên thiết bị này';
-
-  @override
-  String get homeScreenSectionsTitle => 'Phần màn hình chính';
 
   @override
   String get themeEditor => 'Trình chỉnh sửa chủ đề';

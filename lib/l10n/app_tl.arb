@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Tandaan ang aking pinili",
     "playHdr10Fallback": "Maglaro ng HDR10 fallback",
     "requestTranscode": "Humiling ng transcode",
-    "homeScreenSectionsIntegrationDescription": "I-detect ang mga row na inilantad ng plugin na \"Home Screen Sections\" ng IAmParadox27. Maaaring paganahin at muling ayusin ang mga hilera sa ibaba.",
-    "homeScreenSectionsIntegrationNoServers": "Wala pang mga server ng Jellyfin na nag-uulat ng plugin.",
-    "integrationOpenHomeSections": "Buksan ang Mga Seksyon ng Tahanan",
-    "integrationOpenHomeSectionsSubtitle": "Paganahin, huwag paganahin, at muling ayusin ang mga hilera",
-    "integrationInstalledButDisabled": "Naka-install ngunit hindi pinagana",
-    "integrationNotInstalled": "Hindi naka-install",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Delete saved theme",
     "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
-    "homeScreenSectionsTitle": "Home Screen Sections",
     "themeEditor": "Theme Editor",
     "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
     "homeScreen": "Home Screen",

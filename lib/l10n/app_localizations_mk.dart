@@ -6538,38 +6538,6 @@ class AppLocalizationsMk extends AppLocalizations {
   String get requestTranscode => 'Побарајте транскод';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Откријте ги редовите изложени од приклучокот „Секции на почетниот екран“ на IAmParadox27. Редовите може да се овозможат и повторно да се подредат подолу.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Сè уште нема Jellyfin сервери кои го пријавуваат приклучокот.';
-
-  @override
-  String get integrationOpenHomeSections => 'Отворете ги почетните делови';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Овозможете, оневозможете и прередете ги редовите';
-
-  @override
-  String get integrationInstalledButDisabled => 'Инсталиран, но оневозможен';
-
-  @override
-  String get integrationNotInstalled => 'Не е инсталиран';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7612,9 +7580,6 @@ class AppLocalizationsMk extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';

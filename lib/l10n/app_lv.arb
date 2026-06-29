@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Atcerieties manu izvēli",
     "playHdr10Fallback": "Atskaņojiet HDR10 atkāpšanos",
     "requestTranscode": "Pieprasīt pārkodēšanu",
-    "homeScreenSectionsIntegrationDescription": "Noteikt rindas, ko atklāj IAmParadox27 spraudnis Home Screen Sections. Rindas var iespējot un pārkārtot tālāk.",
-    "homeScreenSectionsIntegrationNoServers": "Pagaidām neviens Jellyfin serveris neziņo par spraudni.",
-    "integrationOpenHomeSections": "Atveriet sākuma sadaļas",
-    "integrationOpenHomeSectionsSubtitle": "Iespējot, atspējot un pārkārtot rindas",
-    "integrationInstalledButDisabled": "Uzstādīts, bet atspējots",
-    "integrationNotInstalled": "Nav instalēts",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Dzēst saglabāto motīvu",
     "savedThemesManageSubtitle": "Pārvaldiet šajā ierīcē lejupielādētos spraudņu motīvus",
-    "homeScreenSectionsTitle": "Sākuma ekrāna sadaļas",
     "themeEditor": "Tēmas redaktors",
     "themeEditorSubtitle": "Pārlūkprogrammā atveriet Moonfin motīvu redaktoru",
     "homeScreen": "Sākuma ekrāns",

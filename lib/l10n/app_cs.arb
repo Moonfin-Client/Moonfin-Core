@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Zapamatuj si mou volbu",
     "playHdr10Fallback": "Přehrajte záložní verzi HDR10",
     "requestTranscode": "Požádat o překódování",
-    "homeScreenSectionsIntegrationDescription": "Detekce řádků vystavených pluginem \"Sekce domovské obrazovky\" IAmParadox27. Řádky lze povolit a změnit jejich pořadí níže.",
-    "homeScreenSectionsIntegrationNoServers": "Plugin zatím nehlásí žádné servery Jellyfin.",
-    "integrationOpenHomeSections": "Otevřete domovské sekce",
-    "integrationOpenHomeSectionsSubtitle": "Povolit, zakázat a změnit pořadí řádků",
-    "integrationInstalledButDisabled": "Instalováno, ale vypnuto",
-    "integrationNotInstalled": "Není nainstalováno",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Smazat uložené téma",
     "savedThemesManageSubtitle": "Spravujte stažená témata pluginů na tomto zařízení",
-    "homeScreenSectionsTitle": "Sekce domovské obrazovky",
     "themeEditor": "Editor motivů",
     "themeEditorSubtitle": "Otevřete ve svém prohlížeči editor motivů Moonfin",
     "homeScreen": "Domovská obrazovka",

@@ -6306,36 +6306,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get requestTranscode => '请求转码';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      '检测 IAmParadox27 的“Home Screen Sections”插件提供的栏目。可在下方启用并重新排序。';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers => '还没有 Jellyfin 服务器上报此插件。';
-
-  @override
-  String get integrationOpenHomeSections => '打开首页栏目';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle => '启用、禁用和重新排序栏目';
-
-  @override
-  String get integrationInstalledButDisabled => '已安装但已禁用';
-
-  @override
-  String get integrationNotInstalled => '未安装';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# 个栏目',
-      one: '# 个栏目',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7307,9 +7277,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get savedThemesManageSubtitle => '管理此设备上下载的插件主题';
-
-  @override
-  String get homeScreenSectionsTitle => '首页栏目';
 
   @override
   String get themeEditor => '主题编辑器';
@@ -14457,37 +14424,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get requestTranscode => '請求轉碼';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      '偵測 IAmParadox27 的「主螢幕部分」外掛程式暴露的行。可以在下面啟用行並重新排序。';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      '尚無 Jellyfin 伺服器報告該外掛程式。';
-
-  @override
-  String get integrationOpenHomeSections => '開放主頁部分';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle => '啟用、停用和重新排序行';
-
-  @override
-  String get integrationInstalledButDisabled => '已安裝但已停用';
-
-  @override
-  String get integrationNotInstalled => '未安裝';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -15465,9 +15401,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';

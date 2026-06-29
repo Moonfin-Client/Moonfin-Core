@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Recordeu la meva elecció",
     "playHdr10Fallback": "Reprodueix HDR10 alternativa",
     "requestTranscode": "Sol·licita la transcodificació",
-    "homeScreenSectionsIntegrationDescription": "Detecteu les files exposades pel connector \"Seccions de la pantalla d'inici\" d'IAmParadox27. Les files es poden activar i reordenar a continuació.",
-    "homeScreenSectionsIntegrationNoServers": "Encara no hi ha cap servidor Jellyfin que informi del connector.",
-    "integrationOpenHomeSections": "Obriu les seccions d'inici",
-    "integrationOpenHomeSectionsSubtitle": "Activa, desactiva i reordena les files",
-    "integrationInstalledButDisabled": "Instal·lat però desactivat",
-    "integrationNotInstalled": "No instal·lat",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Suprimeix el tema desat",
     "savedThemesManageSubtitle": "Gestiona els temes de connectors baixats en aquest dispositiu",
-    "homeScreenSectionsTitle": "Seccions de la pantalla d'inici",
     "themeEditor": "Editor de temes",
     "themeEditorSubtitle": "Obriu l'editor de temes Moonfin al vostre navegador",
     "homeScreen": "Pantalla d'inici",

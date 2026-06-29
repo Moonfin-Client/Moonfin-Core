@@ -6537,38 +6537,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get requestTranscode => 'Запросить перекодирование';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Обнаружение строк, предоставляемых плагином IAmParadox27 «Разделы главного экрана». Строки можно включить и изменить порядок ниже.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Ни один сервер Jellyfin пока не сообщил о плагине.';
-
-  @override
-  String get integrationOpenHomeSections => 'Открытые домашние разделы';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Включение, отключение и изменение порядка строк';
-
-  @override
-  String get integrationInstalledButDisabled => 'Установлено, но отключено';
-
-  @override
-  String get integrationNotInstalled => 'Не установлено';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7613,9 +7581,6 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';

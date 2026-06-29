@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Запам'ятай мій вибір",
     "playHdr10Fallback": "Відтворити HDR10 запасний варіант",
     "requestTranscode": "Запит на перекодування",
-    "homeScreenSectionsIntegrationDescription": "Виявлення рядків, відкритих плагіном IAmParadox27 «Розділи головного екрана». Нижче можна ввімкнути та змінити порядок рядків.",
-    "homeScreenSectionsIntegrationNoServers": "Жоден сервер Jellyfin не повідомляє про плагін.",
-    "integrationOpenHomeSections": "Відкрийте головні розділи",
-    "integrationOpenHomeSectionsSubtitle": "Увімкнути, вимкнути та змінити порядок рядків",
-    "integrationInstalledButDisabled": "Встановлено, але вимкнено",
-    "integrationNotInstalled": "Не встановлено",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Видалити збережену тему",
     "savedThemesManageSubtitle": "Керуйте завантаженими темами плагінів на цьому пристрої",
-    "homeScreenSectionsTitle": "Розділи головного екрана",
     "themeEditor": "Редактор тем",
     "themeEditorSubtitle": "Відкрийте редактор тем Moonfin у своєму браузері",
     "homeScreen": "Головний екран",

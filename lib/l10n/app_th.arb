@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "จำตัวเลือกของฉันไว้",
     "playHdr10Fallback": "เล่นทางเลือก HDR10",
     "requestTranscode": "ขอแปลงรหัส",
-    "homeScreenSectionsIntegrationDescription": "ตรวจหาแถวที่ถูกเปิดเผยโดยปลั๊กอิน \"ส่วนหน้าจอหลัก\" ของ IAmParadox27 สามารถเปิดใช้งานและเรียงลำดับแถวใหม่ได้ด้านล่าง",
-    "homeScreenSectionsIntegrationNoServers": "ยังไม่มีเซิร์ฟเวอร์ Jellyfin รายงานปลั๊กอิน",
-    "integrationOpenHomeSections": "เปิดส่วนหน้าแรก",
-    "integrationOpenHomeSectionsSubtitle": "เปิดใช้งาน ปิดใช้งาน และเรียงลำดับแถวใหม่",
-    "integrationInstalledButDisabled": "ติดตั้งแล้ว แต่ปิดการใช้งาน",
-    "integrationNotInstalled": "ไม่ได้ติดตั้ง",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "ลบธีมที่บันทึกไว้",
     "savedThemesManageSubtitle": "จัดการธีมปลั๊กอินที่ดาวน์โหลดบนอุปกรณ์นี้",
-    "homeScreenSectionsTitle": "ส่วนหน้าจอหลัก",
     "themeEditor": "ตัวแก้ไขธีม",
     "themeEditorSubtitle": "เปิด Moonfin Theme Editor ในเบราว์เซอร์ของคุณ",
     "homeScreen": "หน้าจอหลัก",

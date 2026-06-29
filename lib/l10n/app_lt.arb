@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Prisimink mano pasirinkimą",
     "playHdr10Fallback": "Leiskite atsarginę HDR10 versiją",
     "requestTranscode": "Prašyti perkoduoti",
-    "homeScreenSectionsIntegrationDescription": "Aptikti eilutes, kurias atskleidžia „IAmParadox27“ papildinys „Pagrindinio ekrano skyriai“. Toliau eilutes galima įjungti ir pertvarkyti.",
-    "homeScreenSectionsIntegrationNoServers": "Dar nė vienas Jellyfin serveris nepraneša apie papildinį.",
-    "integrationOpenHomeSections": "Atidarykite pagrindinius skyrius",
-    "integrationOpenHomeSectionsSubtitle": "Įgalinti, išjungti ir pertvarkyti eilutes",
-    "integrationInstalledButDisabled": "Įdiegta, bet išjungta",
-    "integrationNotInstalled": "Neįdiegta",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Ištrinti išsaugotą temą",
     "savedThemesManageSubtitle": "Tvarkykite atsisiųstų papildinių temas šiame įrenginyje",
-    "homeScreenSectionsTitle": "Pagrindinio ekrano skyriai",
     "themeEditor": "Temos redaktorius",
     "themeEditorSubtitle": "Naršyklėje atidarykite Moonfin temų rengyklę",
     "homeScreen": "Pagrindinis ekranas",

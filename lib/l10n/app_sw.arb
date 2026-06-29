@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Kumbuka chaguo langu",
     "playHdr10Fallback": "Cheza njia mbadala ya HDR10",
     "requestTranscode": "Omba transcode",
-    "homeScreenSectionsIntegrationDescription": "Tambua safu mlalo zilizofichuliwa na programu-jalizi ya \"Sehemu za Skrini ya Nyumbani\" ya IAmParadox27. Safu mlalo zinaweza kuwashwa na kupangwa upya hapa chini.",
-    "homeScreenSectionsIntegrationNoServers": "Bado hakuna seva za Jellyfin zinazoripoti programu-jalizi.",
-    "integrationOpenHomeSections": "Fungua Sehemu za Nyumbani",
-    "integrationOpenHomeSectionsSubtitle": "Washa, zima na upange upya safu mlalo",
-    "integrationInstalledButDisabled": "Imesakinishwa lakini imezimwa",
-    "integrationNotInstalled": "Haijasakinishwa",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Delete saved theme",
     "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
-    "homeScreenSectionsTitle": "Home Screen Sections",
     "themeEditor": "Theme Editor",
     "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
     "homeScreen": "Home Screen",

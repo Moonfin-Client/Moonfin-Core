@@ -6309,37 +6309,6 @@ class AppLocalizationsYue extends AppLocalizations {
   String get requestTranscode => '請求轉碼';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      '偵測 IAmParadox27 的「主螢幕部分」外掛程式暴露的行。可以在下面啟用行並重新排序。';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      '尚無 Jellyfin 伺服器報告該外掛程式。';
-
-  @override
-  String get integrationOpenHomeSections => '開放主頁部分';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle => '啟用、停用和重新排序行';
-
-  @override
-  String get integrationInstalledButDisabled => '已安裝但已停用';
-
-  @override
-  String get integrationNotInstalled => '未安裝';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7317,9 +7286,6 @@ class AppLocalizationsYue extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';
@@ -14501,36 +14467,6 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   String get requestTranscode => '请求转码';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      '检测 IAmParadox27 的“主屏幕部分”插件暴露的行。可以在下面启用行并重新排序。';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers => '尚无 Jellyfin 服务器报告该插件。';
-
-  @override
-  String get integrationOpenHomeSections => '开放主页部分';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle => '启用、禁用和重新排序行';
-
-  @override
-  String get integrationInstalledButDisabled => '已安装但已禁用';
-
-  @override
-  String get integrationNotInstalled => '未安装';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -15509,9 +15445,6 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';
@@ -22666,37 +22599,6 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
   String get requestTranscode => '請求轉碼';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      '偵測 IAmParadox27 的「主螢幕部分」外掛程式暴露的行。可以在下面啟用行並重新排序。';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      '尚無 Jellyfin 伺服器報告該外掛程式。';
-
-  @override
-  String get integrationOpenHomeSections => '開放主頁部分';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle => '啟用、停用和重新排序行';
-
-  @override
-  String get integrationInstalledButDisabled => '已安裝但已停用';
-
-  @override
-  String get integrationNotInstalled => '未安裝';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -23674,9 +23576,6 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';

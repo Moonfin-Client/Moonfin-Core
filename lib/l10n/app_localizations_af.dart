@@ -6501,39 +6501,6 @@ class AppLocalizationsAf extends AppLocalizations {
   String get requestTranscode => 'Versoek transkodeer';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Bespeur rye wat blootgestel is deur IAmParadox27 se \"Tuisskermafdelings\"-inprop. Rye kan hieronder geaktiveer en herrangskik word.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Geen Jellyfin-bedieners wat die inprop nog rapporteer nie.';
-
-  @override
-  String get integrationOpenHomeSections => 'Maak Tuisafdelings oop';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Aktiveer, deaktiveer en herrangskik rye';
-
-  @override
-  String get integrationInstalledButDisabled =>
-      'Geïnstalleer maar gedeaktiveer';
-
-  @override
-  String get integrationNotInstalled => 'Nie geïnstalleer nie';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7566,9 +7533,6 @@ class AppLocalizationsAf extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Bestuur afgelaaide inprop-temas op hierdie toestel';
-
-  @override
-  String get homeScreenSectionsTitle => 'Tuisskerm-afdelings';
 
   @override
   String get themeEditor => 'Tema Editor';

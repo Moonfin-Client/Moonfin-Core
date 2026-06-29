@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "ನನ್ನ ಆಯ್ಕೆಯನ್ನು ನೆನಪಿಡಿ",
     "playHdr10Fallback": "HDR10 ಫಾಲ್ಬ್ಯಾಕ್ ಅನ್ನು ಪ್ಲೇ ಮಾಡಿ",
     "requestTranscode": "ಟ್ರಾನ್ಸ್‌ಕೋಡ್ ಅನ್ನು ವಿನಂತಿಸಿ",
-    "homeScreenSectionsIntegrationDescription": "IAmParadox27 ನ \"ಹೋಮ್ ಸ್ಕ್ರೀನ್ ಸೆಕ್ಷನ್ಸ್\" ಪ್ಲಗಿನ್ ಮೂಲಕ ತೆರೆದಿರುವ ಸಾಲುಗಳನ್ನು ಪತ್ತೆ ಮಾಡಿ. ಸಾಲುಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಬಹುದು ಮತ್ತು ಕೆಳಗೆ ಮರುಕ್ರಮಗೊಳಿಸಬಹುದು.",
-    "homeScreenSectionsIntegrationNoServers": "ಯಾವುದೇ Jellyfin ಸರ್ವರ್‌ಗಳು ಇನ್ನೂ ಪ್ಲಗಿನ್ ಅನ್ನು ವರದಿ ಮಾಡುತ್ತಿಲ್ಲ.",
-    "integrationOpenHomeSections": "ಹೋಮ್ ವಿಭಾಗಗಳನ್ನು ತೆರೆಯಿರಿ",
-    "integrationOpenHomeSectionsSubtitle": "ಸಾಲುಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ, ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ ಮತ್ತು ಮರುಕ್ರಮಗೊಳಿಸಿ",
-    "integrationInstalledButDisabled": "ಸ್ಥಾಪಿಸಲಾಗಿದೆ ಆದರೆ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ",
-    "integrationNotInstalled": "ಸ್ಥಾಪಿಸಲಾಗಿಲ್ಲ",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Delete saved theme",
     "savedThemesManageSubtitle": "Manage downloaded plugin themes on this device",
-    "homeScreenSectionsTitle": "Home Screen Sections",
     "themeEditor": "Theme Editor",
     "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
     "homeScreen": "Home Screen",

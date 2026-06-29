@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Запомні мой выбар",
     "playHdr10Fallback": "Гуляць HDR10 запасны",
     "requestTranscode": "Запытаць перакадзіраванне",
-    "homeScreenSectionsIntegrationDescription": "Выяўляйце радкі, адкрытыя плагінам IAmParadox27 \"Раздзелы галоўнага экрана\". Радкі можна ўключыць і змяніць парадак ніжэй.",
-    "homeScreenSectionsIntegrationNoServers": "Пакуль няма сервераў Jellyfin, якія паведамляюць пра плагін.",
-    "integrationOpenHomeSections": "Адкрыйце хатнія раздзелы",
-    "integrationOpenHomeSectionsSubtitle": "Уключыць, адключыць і змяніць парадак радкоў",
-    "integrationInstalledButDisabled": "Усталяваны, але адключаны",
-    "integrationNotInstalled": "Не ўстаноўлены",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Выдаліць захаваную тэму",
     "savedThemesManageSubtitle": "Кіруйце спампаванымі тэмамі плагінаў на гэтай прыладзе",
-    "homeScreenSectionsTitle": "Раздзелы галоўнага экрана",
     "themeEditor": "Рэдактар ​​тэм",
     "themeEditorSubtitle": "Адкрыйце рэдактар ​​тэм Moonfin у сваім браўзеры",
     "homeScreen": "Галоўны экран",

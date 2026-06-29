@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "تذكر خياري",
     "playHdr10Fallback": "تشغيل HDR10 احتياطي",
     "requestTranscode": "طلب تحويل الرمز",
-    "homeScreenSectionsIntegrationDescription": "اكتشف الصفوف المكشوفة بواسطة البرنامج المساعد \"أقسام الشاشة الرئيسية\" الخاص بـ IAmParadox27. يمكن تمكين الصفوف وإعادة ترتيبها أدناه.",
-    "homeScreenSectionsIntegrationNoServers": "لا توجد خوادم Jellyfin تقوم بالإبلاغ عن المكون الإضافي حتى الآن.",
-    "integrationOpenHomeSections": "فتح الأقسام الرئيسية",
-    "integrationOpenHomeSectionsSubtitle": "تمكين الصفوف وتعطيلها وإعادة ترتيبها",
-    "integrationInstalledButDisabled": "تم التثبيت ولكنه معطل",
-    "integrationNotInstalled": "غير مثبت",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "حذف الموضوع المحفوظ",
     "savedThemesManageSubtitle": "إدارة سمات المكونات الإضافية التي تم تنزيلها على هذا الجهاز",
-    "homeScreenSectionsTitle": "أقسام الشاشة الرئيسية",
     "themeEditor": "محرر الموضوع",
     "themeEditorSubtitle": "افتح Moonfin محرر السمات في متصفحك",
     "homeScreen": "الشاشة الرئيسية",

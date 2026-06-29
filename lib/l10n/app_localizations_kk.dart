@@ -6527,38 +6527,6 @@ class AppLocalizationsKk extends AppLocalizations {
   String get requestTranscode => 'Транскодты сұрау';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'IAmParadox27 \"Негізгі экран бөлімдері\" плагині арқылы ашылған жолдарды анықтау. Төменде жолдарды қосуға және ретін өзгертуге болады.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Плагин туралы әлі ешқандай Jellyfin серверлері есеп бермейді.';
-
-  @override
-  String get integrationOpenHomeSections => 'Негізгі бөлімдерді ашыңыз';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Жолдарды қосу, өшіру және ретін өзгерту';
-
-  @override
-  String get integrationInstalledButDisabled => 'Орнатылған, бірақ өшірілген';
-
-  @override
-  String get integrationNotInstalled => 'Орнатылмаған';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7594,9 +7562,6 @@ class AppLocalizationsKk extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';

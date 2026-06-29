@@ -6513,39 +6513,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get requestTranscode => 'Kod dönüştürme isteği';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'IAmParadox27 tarafından geliştirilen \"Home Screen Sections\" eklentisinin sunduğu satırları algıla. Satırlar aşağıdan etkinleştirilebilir ve yeniden sıralanabilir.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Henüz bu eklentiyi bildiren bir Jellyfin sunucusu olmadı.';
-
-  @override
-  String get integrationOpenHomeSections => 'Ana Sayfa Bölümlerini Aç';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Satırları etkinleştirme, devre dışı bırakma ve yeniden sıralama';
-
-  @override
-  String get integrationInstalledButDisabled =>
-      'Yüklendi ancak devre dışı bırakıldı';
-
-  @override
-  String get integrationNotInstalled => 'Kurulu değil';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# bölüm',
-      one: '# bölüm',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7585,9 +7552,6 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Bu cihazdaki indirilen eklenti temalarını yönetin';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Tema Editörü';

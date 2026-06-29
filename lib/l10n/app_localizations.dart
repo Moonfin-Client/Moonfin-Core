@@ -11644,48 +11644,6 @@ abstract class AppLocalizations {
   /// **'Request transcode'**
   String get requestTranscode;
 
-  /// No description provided for @homeScreenSectionsIntegrationDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Detect rows exposed by IAmParadox27\'s \"Home Screen Sections\" plugin. Rows can be enabled and reordered below.'**
-  String get homeScreenSectionsIntegrationDescription;
-
-  /// No description provided for @homeScreenSectionsIntegrationNoServers.
-  ///
-  /// In en, this message translates to:
-  /// **'No Jellyfin servers reporting the plugin yet.'**
-  String get homeScreenSectionsIntegrationNoServers;
-
-  /// No description provided for @integrationOpenHomeSections.
-  ///
-  /// In en, this message translates to:
-  /// **'Open Home Sections'**
-  String get integrationOpenHomeSections;
-
-  /// No description provided for @integrationOpenHomeSectionsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Enable, disable, and reorder rows'**
-  String get integrationOpenHomeSectionsSubtitle;
-
-  /// No description provided for @integrationInstalledButDisabled.
-  ///
-  /// In en, this message translates to:
-  /// **'Installed but disabled'**
-  String get integrationInstalledButDisabled;
-
-  /// No description provided for @integrationNotInstalled.
-  ///
-  /// In en, this message translates to:
-  /// **'Not installed'**
-  String get integrationNotInstalled;
-
-  /// Plural label for number of sections discovered in integration status
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, one {# section} other {# sections}}'**
-  String integrationSectionsCount(int count);
-
   /// Plural label for number of rows discovered in integration status
   ///
   /// In en, this message translates to:
@@ -13485,12 +13443,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage downloaded plugin themes on this device'**
   String get savedThemesManageSubtitle;
-
-  /// No description provided for @homeScreenSectionsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Home Screen Sections'**
-  String get homeScreenSectionsTitle;
 
   /// No description provided for @themeEditor.
   ///

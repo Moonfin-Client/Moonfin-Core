@@ -6464,38 +6464,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestTranscode => 'Request transcode';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Detect rows exposed by IAmParadox27\'s \"Home Screen Sections\" plugin. Rows can be enabled and reordered below.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'No Jellyfin servers reporting the plugin yet.';
-
-  @override
-  String get integrationOpenHomeSections => 'Open Home Sections';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Enable, disable, and reorder rows';
-
-  @override
-  String get integrationInstalledButDisabled => 'Installed but disabled';
-
-  @override
-  String get integrationNotInstalled => 'Not installed';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7524,9 +7492,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';
@@ -14864,38 +14829,6 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String get requestTranscode => 'Request transcode';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Detect rows exposed by IAmParadox27\'s \"Home Screen Sections\" plugin. Rows can be enabled and reordered below.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'No Jellyfin servers reporting the plugin yet.';
-
-  @override
-  String get integrationOpenHomeSections => 'Open Home Sections';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Enable, disable, and reorder rows';
-
-  @override
-  String get integrationInstalledButDisabled => 'Installed but disabled';
-
-  @override
-  String get integrationNotInstalled => 'Not installed';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -15924,9 +15857,6 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';

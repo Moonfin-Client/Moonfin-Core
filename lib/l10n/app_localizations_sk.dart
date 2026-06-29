@@ -6522,38 +6522,6 @@ class AppLocalizationsSk extends AppLocalizations {
   String get requestTranscode => 'Vyžiadať prekódovanie';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Zistiť riadky odhalené zásuvným modulom „Sekcie domovskej obrazovky“ IAmParadox27. Nižšie je možné povoliť a zmeniť poradie riadkov.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Doplnok zatiaľ nenahlásili žiadne servery Jellyfin.';
-
-  @override
-  String get integrationOpenHomeSections => 'Otvorte sekcie Domov';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Povoliť, zakázať a zmeniť poradie riadkov';
-
-  @override
-  String get integrationInstalledButDisabled => 'Nainštalované, ale vypnuté';
-
-  @override
-  String get integrationNotInstalled => 'Nie je nainštalované';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7594,9 +7562,6 @@ class AppLocalizationsSk extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';

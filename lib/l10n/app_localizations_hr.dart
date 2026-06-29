@@ -6511,38 +6511,6 @@ class AppLocalizationsHr extends AppLocalizations {
   String get requestTranscode => 'Zahtjev za prekodiranje';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Otkrijte retke koje otkriva IAmParadox27 dodatak \"Odjeljci početnog zaslona\". Redovi se mogu omogućiti i promijeniti redoslijed ispod.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Još nijedan Jellyfin poslužitelj nije prijavio dodatak.';
-
-  @override
-  String get integrationOpenHomeSections => 'Otvorite početne odjeljke';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Omogućite, onemogućite i promijenite redoslijed redaka';
-
-  @override
-  String get integrationInstalledButDisabled => 'Instalirano, ali onemogućeno';
-
-  @override
-  String get integrationNotInstalled => 'Nije instaliran';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7583,9 +7551,6 @@ class AppLocalizationsHr extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';

@@ -6531,39 +6531,6 @@ class AppLocalizationsTe extends AppLocalizations {
   String get requestTranscode => 'ట్రాన్స్‌కోడ్‌ని అభ్యర్థించండి';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'IAmParadox27 యొక్క \"హోమ్ స్క్రీన్ విభాగాలు\" ప్లగ్ఇన్ ద్వారా బహిర్గతమయ్యే అడ్డు వరుసలను గుర్తించండి. అడ్డు వరుసలను ప్రారంభించవచ్చు మరియు దిగువ క్రమం చేయవచ్చు.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'ఇంకా Jellyfin సర్వర్‌లు ప్లగిన్‌ను నివేదించలేదు.';
-
-  @override
-  String get integrationOpenHomeSections => 'హోమ్ విభాగాలను తెరవండి';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'అడ్డు వరుసలను ప్రారంభించండి, నిలిపివేయండి మరియు క్రమాన్ని మార్చండి';
-
-  @override
-  String get integrationInstalledButDisabled =>
-      'ఇన్‌స్టాల్ చేయబడింది కానీ నిలిపివేయబడింది';
-
-  @override
-  String get integrationNotInstalled => 'ఇన్‌స్టాల్ చేయలేదు';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7609,9 +7576,6 @@ class AppLocalizationsTe extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'ఈ పరికరంలో డౌన్‌లోడ్ చేయబడిన ప్లగిన్ థీమ్‌లను నిర్వహించండి';
-
-  @override
-  String get homeScreenSectionsTitle => 'హోమ్ స్క్రీన్ విభాగాలు';
 
   @override
   String get themeEditor => 'థీమ్ ఎడిటర్';

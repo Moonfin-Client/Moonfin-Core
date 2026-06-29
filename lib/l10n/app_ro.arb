@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "Ține minte alegerea mea",
     "playHdr10Fallback": "Redați HDR10 alternativ",
     "requestTranscode": "Solicitați transcodare",
-    "homeScreenSectionsIntegrationDescription": "Detectați rândurile expuse de pluginul „Secțiuni ecran de pornire” de la IAmParadox27. Rândurile pot fi activate și reordonate mai jos.",
-    "homeScreenSectionsIntegrationNoServers": "Niciun server Jellyfin nu raportează încă pluginul.",
-    "integrationOpenHomeSections": "Deschideți secțiunile de pornire",
-    "integrationOpenHomeSectionsSubtitle": "Activați, dezactivați și reordonați rândurile",
-    "integrationInstalledButDisabled": "Instalat dar dezactivat",
-    "integrationNotInstalled": "Nu este instalat",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "Ștergeți tema salvată",
     "savedThemesManageSubtitle": "Gestionați temele de plugin descărcate pe acest dispozitiv",
-    "homeScreenSectionsTitle": "Secțiunile ecranului de pornire",
     "themeEditor": "Theme Editor",
     "themeEditorSubtitle": "Open the Moonfin Theme Editor in your browser",
     "homeScreen": "Home Screen",

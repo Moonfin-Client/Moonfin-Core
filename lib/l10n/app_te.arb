@@ -6267,21 +6267,6 @@
     "rememberMyChoice": "నా ఎంపికను గుర్తుంచుకో",
     "playHdr10Fallback": "HDR10 ఫాల్‌బ్యాక్‌ని ప్లే చేయండి",
     "requestTranscode": "ట్రాన్స్‌కోడ్‌ని అభ్యర్థించండి",
-    "homeScreenSectionsIntegrationDescription": "IAmParadox27 యొక్క \"హోమ్ స్క్రీన్ విభాగాలు\" ప్లగ్ఇన్ ద్వారా బహిర్గతమయ్యే అడ్డు వరుసలను గుర్తించండి. అడ్డు వరుసలను ప్రారంభించవచ్చు మరియు దిగువ క్రమం చేయవచ్చు.",
-    "homeScreenSectionsIntegrationNoServers": "ఇంకా Jellyfin సర్వర్‌లు ప్లగిన్‌ను నివేదించలేదు.",
-    "integrationOpenHomeSections": "హోమ్ విభాగాలను తెరవండి",
-    "integrationOpenHomeSectionsSubtitle": "అడ్డు వరుసలను ప్రారంభించండి, నిలిపివేయండి మరియు క్రమాన్ని మార్చండి",
-    "integrationInstalledButDisabled": "ఇన్‌స్టాల్ చేయబడింది కానీ నిలిపివేయబడింది",
-    "integrationNotInstalled": "ఇన్‌స్టాల్ చేయలేదు",
-    "integrationSectionsCount": "{count, plural, one {# section} other {# sections}}",
-    "@integrationSectionsCount": {
-        "description": "Plural label for number of sections discovered in integration status",
-        "placeholders": {
-            "count": {
-                "type": "int"
-            }
-        }
-    },
     "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
@@ -7091,7 +7076,6 @@
     },
     "savedThemesDeleteTooltip": "సేవ్ చేసిన థీమ్‌ను తొలగించండి",
     "savedThemesManageSubtitle": "ఈ పరికరంలో డౌన్‌లోడ్ చేయబడిన ప్లగిన్ థీమ్‌లను నిర్వహించండి",
-    "homeScreenSectionsTitle": "హోమ్ స్క్రీన్ విభాగాలు",
     "themeEditor": "థీమ్ ఎడిటర్",
     "themeEditorSubtitle": "మీ బ్రౌజర్‌లో Moonfin థీమ్ ఎడిటర్‌ను తెరవండి",
     "homeScreen": "హోమ్ స్క్రీన్",

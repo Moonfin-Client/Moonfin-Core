@@ -6515,38 +6515,6 @@ class AppLocalizationsSr extends AppLocalizations {
   String get requestTranscode => 'Захтевај транскодирање';
 
   @override
-  String get homeScreenSectionsIntegrationDescription =>
-      'Откријте редове изложене ИАмПарадок27 додатку „Секције почетног екрана“. Редови се могу омогућити и преуредити у наставку.';
-
-  @override
-  String get homeScreenSectionsIntegrationNoServers =>
-      'Још нема __АРБ_ТЕРМ_0__ сервера који пријављују додатак.';
-
-  @override
-  String get integrationOpenHomeSections => 'Отворите Хоме Сецтионс';
-
-  @override
-  String get integrationOpenHomeSectionsSubtitle =>
-      'Омогућите, онемогућите и промените редослед редова';
-
-  @override
-  String get integrationInstalledButDisabled => 'Инсталиран али онемогућен';
-
-  @override
-  String get integrationNotInstalled => 'Није инсталирано';
-
-  @override
-  String integrationSectionsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '# sections',
-      one: '# section',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String integrationRowsDiscoveredCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -7587,9 +7555,6 @@ class AppLocalizationsSr extends AppLocalizations {
   @override
   String get savedThemesManageSubtitle =>
       'Manage downloaded plugin themes on this device';
-
-  @override
-  String get homeScreenSectionsTitle => 'Home Screen Sections';
 
   @override
   String get themeEditor => 'Theme Editor';
