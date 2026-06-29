@@ -2026,7 +2026,7 @@ class RowDataSource {
                 .map((e) => e is Map ? Map<String, dynamic>.from(e) : null)
                 .whereType<Map<String, dynamic>>()
                 .toList();
-            _recommendationCache[cacheKey] = items;
+            _cacheRecommendations(cacheKey, items);
             for (final item in items) {
               final id = item['Id']?.toString() ?? '';
               if (id.isNotEmpty) candidatesMap[id] = item;
