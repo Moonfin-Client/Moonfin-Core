@@ -1521,7 +1521,7 @@ class RowDataSource {
 
           final aggregatedItems = items.map((item) {
             return AggregatedItem(
-              id: item.imdbId,
+              id: item.imdbId.isNotEmpty ? item.imdbId : item.tmdbId,
               serverId: 'seerr',
               rawData: {
                 'Name': item.title,
@@ -1533,6 +1533,10 @@ class RowDataSource {
                 'SeerrMediaType': item.type == 'Series' ? 'tv' : 'movie',
                 'UserRating': item.userRating ?? '',
                 'ShowUserRatings': showUserRatings,
+                'ProviderIds': {
+                  if (item.imdbId.isNotEmpty) 'Imdb': item.imdbId,
+                  if (item.tmdbId.isNotEmpty) 'Tmdb': item.tmdbId,
+                },
               },
             );
           }).toList();
