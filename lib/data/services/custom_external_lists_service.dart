@@ -190,7 +190,8 @@ class CustomExternalListsService {
 
         if (imdbId.isNotEmpty || tmdbId.isNotEmpty) {
           items.add(ImdbExternalListItem(
-            imdbId: imdbId.isNotEmpty ? imdbId : tmdbId,
+            imdbId: imdbId,
+            tmdbId: tmdbId,
             title: title,
             posterUrl: posterUrl,
             backdropUrl: backdropUrl,
