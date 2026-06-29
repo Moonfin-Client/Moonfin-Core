@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, listEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -609,6 +609,7 @@ class _ContentRowsState extends State<_ContentRows>
   final Map<String, String?> _rowImageUrlCache = {};
   final Map<String, String> _dynamicBackdrops = {};
   final Set<String> _fetchingBackdrops = {};
+  final Map<int, double> _staticRowHeightCache = {};
   int? _activeFocusedRowIndex;
   Timer? _previewDelayTimer;
   Timer? _previewStopTimer;
@@ -670,6 +671,19 @@ class _ContentRowsState extends State<_ContentRows>
     final player = _previewPlayer;
     if (player == null || _activePreviewKey == null) return;
     unawaited(player.setVolume(100.0));
+  }
+
+  @override
+  void didUpdateWidget(covariant _ContentRows oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final rowsChanged = !listEquals(oldWidget.viewModel.rows, widget.viewModel.rows);
+    if (rowsChanged || oldWidget.prefs != widget.prefs) {
+      _invalidateStaticRowHeightCache();
+    }
+  }
+
+  void _invalidateStaticRowHeightCache() {
+    _staticRowHeightCache.clear();
   }
 
   int? _focusedRowIndex(FocusNode? node) {
@@ -1995,6 +2009,11 @@ class _ContentRowsState extends State<_ContentRows>
     final row = rowIndex < widget.viewModel.rows.length ? widget.viewModel.rows[rowIndex] : null;
     if (row == null) return 0.0;
 
+    final cached = _staticRowHeightCache[rowIndex];
+    if (cached != null) {
+      return cached;
+    }
+
     final prefs = widget.prefs;
     final posterSize =
         (_isHomeRowsStyleV2() &&
@@ -2058,7 +2077,9 @@ class _ContentRowsState extends State<_ContentRows>
     final subtitleHeight = hasSubtitle ? (18.0 * metadataScale) : 0.0;
     final headerHeight = headerPaddingTop + headerPaddingBottom + titleHeight + subtitleHeight;
 
-    return childHeight + headerHeight;
+    final totalHeight = childHeight + headerHeight;
+    _staticRowHeightCache[rowIndex] = totalHeight;
+    return totalHeight;
   }
 
   double _tvTargetTopForRow(int rowIndex) {
