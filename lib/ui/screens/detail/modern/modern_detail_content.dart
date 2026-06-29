@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:playback_core/playback_core.dart';
+import 'package:server_core/server_core.dart';
 
 import '../../../../data/models/aggregated_item.dart';
 import '../../../../data/viewmodels/item_detail_view_model.dart';
@@ -14,12 +15,12 @@ import '../../../navigation/destinations.dart';
 import '../../../widgets/logo_view.dart';
 import '../../../widgets/media_card.dart';
 import '../../../widgets/rating_display.dart';
+import '../../../widgets/focus/focusable_wrapper.dart';
 import '../../../widgets/top_toolbar.dart';
 import '../item_detail_screen.dart'
     show
         DetailActionButtons,
         DetailCastRow,
-        DetailMetadataRow,
         DetailMetadataSection,
         DetailFeaturesRow,
         DetailEpisodeCard,
@@ -68,6 +69,65 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   final Map<String, FocusNode> _trackFocusNodes = {};
   final List<FocusNode> _tabFocusNodes = [];
   final FocusNode _upNextFocusNode = FocusNode(debugLabel: 'modernUpNext');
+
+  PlaybackInfoResult? _playbackInfo;
+  bool _loadingPlaybackInfo = false;
+  String? _loadedPlaybackInfoItemId;
+
+  Future<void> _loadPlaybackInfo(AggregatedItem item) async {
+    if (_loadingPlaybackInfo) return;
+    if (_playbackInfo != null && _loadedPlaybackInfoItemId == item.id) return;
+    
+    _loadingPlaybackInfo = true;
+    _loadedPlaybackInfoItemId = item.id;
+    // Delay state change slightly to prevent setstate during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) setState(() {});
+    });
+
+    try {
+      final client = GetIt.instance<MediaServerClient>();
+      final manager = GetIt.instance<PlaybackManager>();
+      
+      final backend = manager.backend;
+      final profile = backend?.getDeviceProfile() ?? {};
+      final bitrate = profile['MaxStreamingBitrate'] as int?;
+
+      final mediaSource = selectedMediaSourceForItem(item, widget.selectedMediaSourceId);
+      final mediaSourceId = mediaSource?['Id']?.toString();
+
+      final request = PlaybackInfoRequest(
+        itemId: item.id,
+        mediaSourceId: mediaSourceId,
+        deviceProfile: profile,
+        maxStreamingBitrate: bitrate,
+        enableDirectPlay: true,
+        enableDirectStream: true,
+        enableTranscoding: true,
+      );
+
+      final rawInfo = await client.playbackApi.getPlaybackInfo(
+        item.id,
+        requestBody: request.toJson(),
+        userId: client.userId,
+      );
+
+      final parsed = PlaybackInfoResult.fromJson(rawInfo);
+      if (mounted) {
+        setState(() {
+          _playbackInfo = parsed;
+          _loadingPlaybackInfo = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _loadingPlaybackInfo = false;
+          _playbackInfo = null;
+        });
+      }
+    }
+  }
 
   ItemDetailViewModel get _vm => widget.viewModel;
 
@@ -126,9 +186,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   List<_ModernTab> _tabsFor(AggregatedItem item, AppLocalizations l10n) {
     final hasCast = _vm.actors.isNotEmpty;
+    final hasCrew = _vm.directors.isNotEmpty || _vm.writers.isNotEmpty;
+    final hasStudios = item.studios.isNotEmpty;
     final hasSimilar = _vm.similar.isNotEmpty;
     final hasFeatures = _vm.features.isNotEmpty;
+
     final cast = _ModernTab(l10n.cast, _castTab);
+    final crew = _ModernTab(l10n.crewSection, _crewTab);
+    final studios = _ModernTab(l10n.studios, _studiosTab);
     final details = _ModernTab(l10n.details, _detailsTab);
     final similar = _ModernTab(l10n.similar, (_, _) => _itemGrid(_vm.similar));
 
@@ -138,6 +203,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (_vm.seasons.isNotEmpty) _ModernTab(l10n.seasons, _seasonsTab),
           _ModernTab(l10n.episodes, _seriesEpisodesTab),
           if (hasCast) cast,
+          if (hasCrew) crew,
+          if (hasStudios) studios,
           details,
           if (hasSimilar) similar,
         ];
@@ -146,6 +213,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (_vm.episodes.isNotEmpty)
             _ModernTab(l10n.episodes, _episodeListTab),
           if (hasCast) cast,
+          if (hasCrew) crew,
+          if (hasStudios) studios,
           details,
         ];
       case 'Episode':
@@ -153,6 +222,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (_vm.episodes.isNotEmpty)
             _ModernTab(l10n.episodes, _episodeListTab),
           if (hasCast) cast,
+          if (hasCrew) crew,
+          if (hasStudios) studios,
           details,
           if (hasSimilar) similar,
         ];
@@ -182,11 +253,15 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (_vm.collectionItems.isNotEmpty)
             _ModernTab(l10n.items, (_, _) => _itemGrid(_vm.collectionItems)),
           if (hasCast) cast,
+          if (hasCrew) crew,
+          if (hasStudios) studios,
           details,
         ];
       default:
         return [
           if (hasCast) cast,
+          if (hasCrew) crew,
+          if (hasStudios) studios,
           details,
           if (hasFeatures) _ModernTab(l10n.extras, _extrasTab),
           if (hasSimilar) similar,
@@ -325,6 +400,124 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         ),
       );
 
+  Widget _crewTab(BuildContext context, AggregatedItem item) {
+    final l10n = AppLocalizations.of(context);
+    final directors = _vm.directors.map((d) => {
+      ...d,
+      'Role': d['Role'] ?? l10n.director,
+    }).toList();
+    final writers = _vm.writers.map((w) => {
+      ...w,
+      'Role': w['Role'] ?? l10n.writer,
+    }).toList();
+    final crew = [...directors, ...writers];
+
+    return SizedBox(
+      height: 200,
+      child: DetailCastRow(
+        people: crew,
+        imageApi: _vm.imageApi,
+        serverId: item.serverId,
+      ),
+    );
+  }
+
+  Widget _studiosTab(BuildContext context, AggregatedItem item) {
+    final studios = item.studios;
+    if (studios.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final isMobile = _landscape == false;
+    final desktopScale = widget.prefs.get(UserPreferences.desktopUiScale).scaleFactor;
+    final cardWidth = isMobile ? 120.0 : 160.0 * desktopScale;
+    final cardHeight = isMobile ? 80.0 : 100.0 * desktopScale;
+
+    return SizedBox(
+      height: cardHeight + 20,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
+        itemCount: studios.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 16),
+        itemBuilder: (context, index) {
+          final studio = studios[index];
+          final name = studio['Name']?.toString() ?? '';
+          final studioId = studio['Id']?.toString();
+
+          final imageUrl = studioId != null
+              ? _vm.imageApi.getPrimaryImageUrl(
+                  studioId,
+                  maxHeight: isMobile ? 100 : (160 * desktopScale).round(),
+                )
+              : null;
+
+          return FocusableWrapper(
+            onSelect: name.isNotEmpty
+                ? () => context.push(Destinations.searchWith('studio:$name'))
+                : null,
+            borderRadius: 12,
+            child: Container(
+              width: cardWidth,
+              height: cardHeight,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.white.withValues(alpha: 0.05),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  width: 1,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Center(
+                  child: imageUrl != null
+                      ? CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          fit: BoxFit.contain,
+                          placeholder: (context, url) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              name,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white70,
+                                  ),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              name,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white70,
+                                  ),
+                            ),
+                          ),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            name,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white70,
+                                ),
+                          ),
+                        ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _extrasTab(BuildContext context, AggregatedItem item) => SizedBox(
         height: 200,
         child: DetailFeaturesRow(
@@ -335,19 +528,310 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       );
 
   Widget _detailsTab(BuildContext context, AggregatedItem item) {
+    final mediaSource = selectedMediaSourceForItem(item, widget.selectedMediaSourceId);
+    final isPlayable = item.type != 'Series' && item.type != 'Season' && item.type != 'Person';
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DetailMetadataRow(
-          item: item,
-          selectedMediaSource:
-              selectedMediaSourceForItem(item, widget.selectedMediaSourceId),
-          technicalOnly: true,
-        ),
-        const SizedBox(height: 20),
+        if (isPlayable && mediaSource != null) ...[
+          _buildFileInformation(context, item, mediaSource),
+          const Divider(color: Colors.white10, height: 40, thickness: 1),
+        ],
         DetailMetadataSection(viewModel: _vm),
       ],
     );
+  }
+
+  Widget _buildFileInformation(
+    BuildContext context,
+    AggregatedItem item,
+    Map<String, dynamic> mediaSource,
+  ) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+
+    // File name and Size
+    final sizeBytes = mediaSource['Size'] as int? ?? 0;
+    final String formattedSize;
+    if (sizeBytes > 0) {
+      final double mb = sizeBytes / (1024 * 1024);
+      if (mb > 999) {
+        formattedSize = '${(mb / 1024).toStringAsFixed(2)} GB';
+      } else {
+        formattedSize = '${mb.toStringAsFixed(0)} MB';
+      }
+    } else {
+      formattedSize = 'Unknown Size';
+    }
+
+    final String path = mediaSource['Path'] as String? ?? '';
+    final String fileName = path.split('/').last.split('\\').last;
+    final String container = mediaSource['Container']?.toString().toUpperCase() ?? 'Unknown';
+
+    // Parse streams
+    final List<Map<String, dynamic>> rawStreams = (mediaSource['MediaStreams'] as List?)
+            ?.whereType<Map>()
+            .map((e) => e.cast<String, dynamic>())
+            .toList() ??
+        [];
+
+    final videoStreams = rawStreams.where((s) => s['Type'] == 'Video').toList();
+    final audioStreams = rawStreams.where((s) => s['Type'] == 'Audio').toList();
+    final subtitleStreams = rawStreams.where((s) => s['Type'] == 'Subtitle').toList();
+
+    // Video "Greatest Hits"
+    final List<String> videoDetails = [];
+    if (videoStreams.isNotEmpty) {
+      final v = videoStreams.first;
+      final codec = v['Codec']?.toString().toUpperCase() ?? 'Unknown Codec';
+      final profile = v['Profile']?.toString();
+      final width = v['Width']?.toString();
+      final height = v['Height']?.toString();
+      final frameRate = v['RealFrameRate'] ?? v['AverageFrameRate'];
+      final bitDepth = v['BitDepth'] as int?;
+      final videoRange = v['VideoRange']?.toString();
+      final videoRangeType = v['VideoRangeType']?.toString();
+
+      var videoStr = codec;
+      if (profile != null && profile.isNotEmpty) videoStr += ' ($profile)';
+      videoDetails.add(videoStr);
+
+      if (width != null && height != null) {
+        videoDetails.add('$width x $height');
+      }
+
+      if (frameRate != null) {
+        final fr = double.tryParse(frameRate.toString());
+        if (fr != null) {
+          videoDetails.add('${fr.toStringAsFixed(3)} fps');
+        }
+      }
+
+      if (bitDepth != null) {
+        videoDetails.add('$bitDepth-bit');
+      }
+
+      if (videoRange != null && videoRange.isNotEmpty) {
+        var rangeStr = videoRange;
+        if (videoRangeType != null && videoRangeType.isNotEmpty) {
+          rangeStr += ' ($videoRangeType)';
+        }
+        videoDetails.add(rangeStr);
+      }
+    }
+
+    String formatLang(String? code) {
+      if (code == null || code.isEmpty) return 'Unknown';
+      return code.toUpperCase();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'File Information',
+          style: textTheme.titleMedium?.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // File name details card
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.04),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.white10),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                fileName,
+                style: textTheme.bodyLarge?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Size: $formattedSize  •  Format: $container',
+                style: textTheme.bodySmall?.copyWith(color: Colors.white70),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        if (videoDetails.isNotEmpty) ...[
+          _buildInfoRow('Video', videoDetails.join('  •  '), textTheme),
+          const SizedBox(height: 10),
+        ],
+
+        if (audioStreams.isNotEmpty) ...[
+          _buildInfoRow(
+            'Audio',
+            audioStreams.map((a) {
+              final title = a['DisplayTitle'] ?? a['Codec']?.toString().toUpperCase();
+              final lang = formatLang(a['Language']);
+              final isDefault = a['IsDefault'] == true ? ' [Default]' : '';
+              return '$title ($lang)$isDefault';
+            }).join('\n'),
+            textTheme,
+          ),
+          const SizedBox(height: 10),
+        ],
+
+        if (subtitleStreams.isNotEmpty) ...[
+          _buildInfoRow(
+            'Subtitles',
+            subtitleStreams.map((s) {
+              final title = s['DisplayTitle'] ?? s['Codec']?.toString().toUpperCase();
+              final lang = formatLang(s['Language']);
+              final isDefault = s['IsDefault'] == true ? ' [Default]' : '';
+              final isForced = s['IsForced'] == true ? ' [Forced]' : '';
+              return '$title ($lang)$isDefault$isForced';
+            }).join('\n'),
+            textTheme,
+          ),
+          const SizedBox(height: 10),
+        ],
+
+        const SizedBox(height: 12),
+        _buildDirectPlaySection(context, item, textTheme),
+      ],
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value, TextTheme textTheme) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 90,
+          child: Text(
+            label,
+            style: textTheme.bodyMedium?.copyWith(
+              color: Colors.white54,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: textTheme.bodyMedium?.copyWith(
+              color: Colors.white.withValues(alpha: 0.9),
+              height: 1.3,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDirectPlaySection(BuildContext context, AggregatedItem item, TextTheme textTheme) {
+    if (_loadingPlaybackInfo) {
+      return Row(
+        children: [
+          const SizedBox(
+            width: 14,
+            height: 14,
+            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white70),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Checking Direct Play capability...',
+            style: textTheme.bodySmall?.copyWith(color: Colors.white54),
+          ),
+        ],
+      );
+    }
+
+    if (_playbackInfo == null) {
+      return const SizedBox.shrink();
+    }
+
+    if (_playbackInfo!.mediaSources.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final source = _playbackInfo!.mediaSources.firstWhere(
+      (s) => s.id == widget.selectedMediaSourceId || widget.selectedMediaSourceId == null,
+      orElse: () => _playbackInfo!.mediaSources.first,
+    );
+
+    final canDirectPlay = source.supportsDirectPlay;
+    final reasons = source.transcodingReasons;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Direct Play Capability: ',
+              style: textTheme.bodyMedium?.copyWith(
+                color: Colors.white54,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Text(
+              canDirectPlay ? 'Yes' : 'No',
+              style: textTheme.bodyMedium?.copyWith(
+                color: canDirectPlay ? const Color(0xFF2E7D32) : const Color(0xFFD32F2F),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        if (!canDirectPlay && reasons.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.only(left: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: reasons.map((r) {
+                final readable = _formatTranscodeReason(r);
+                return Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    '• $readable',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: Colors.white70,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  String _formatTranscodeReason(String reason) {
+    return switch (reason) {
+      'ContainerNotSupported' => 'Container format is not supported by the player.',
+      'VideoCodecNotSupported' => 'Video codec is not supported.',
+      'AudioCodecNotSupported' => 'Audio codec is not supported.',
+      'SubtitleCodecNotSupported' => 'Subtitle format is not supported (requires burning).',
+      'AudioProfileNotSupported' => 'Audio profile is not supported.',
+      'VideoProfileNotSupported' => 'Video profile is not supported.',
+      'VideoLevelNotSupported' => 'Video level is not supported.',
+      'VideoResolutionNotSupported' => 'Video resolution is not supported by this device.',
+      'VideoBitDepthNotSupported' => 'Video bit depth is not supported.',
+      'VideoFramerateNotSupported' => 'Video framerate is not supported.',
+      'ContainerBitrateExceedsLimit' => 'File bitrate exceeds player streaming limit.',
+      'VideoBitrateExceedsLimit' => 'Video bitrate exceeds streaming limit.',
+      'AudioBitrateExceedsLimit' => 'Audio bitrate exceeds streaming limit.',
+      'AudioChannelsNotSupported' => 'Number of audio channels is not supported.',
+      _ => reason,
+    };
   }
 
   Widget _itemGrid(List<AggregatedItem> items) {
@@ -754,6 +1238,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
     final tabs = _tabsFor(item, l10n);
     if (_selectedTab >= tabs.length) _selectedTab = 0;
+
+    if (tabs.isNotEmpty && _selectedTab < tabs.length && tabs[_selectedTab].label == l10n.details) {
+      final isPlayable = item.type != 'Series' && item.type != 'Season' && item.type != 'Person';
+      if (isPlayable) {
+        _loadPlaybackInfo(item);
+      }
+    }
+
     final tabContent = tabs.isEmpty
         ? const SizedBox.shrink()
         : tabs[_selectedTab].builder(context, item);

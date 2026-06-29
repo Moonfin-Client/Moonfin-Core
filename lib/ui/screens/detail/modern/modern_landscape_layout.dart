@@ -58,7 +58,7 @@ class ModernLandscapeLayout extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(40, 0, 40, 8),
+                  padding: const EdgeInsets.fromLTRB(40, 24, 40, 8),
                   child: tabBar,
                 ),
                 Padding(

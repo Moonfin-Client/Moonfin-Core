@@ -49,7 +49,7 @@ class ModernPortraitLayout extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                     child: upNext!,
                   ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: tabBar,

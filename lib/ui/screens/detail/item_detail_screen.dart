@@ -8491,7 +8491,11 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     required bool showHighlight,
     required Color focusColor,
     required Color iconColor,
+    required Color labelColor,
   }) {
+    final isExpanded = showHighlight;
+    final double height = widget.isPrimary ? (isMobile ? 50.0 : 54.0) : (isMobile ? 48.0 : 52.0);
+
     if (widget.isPrimary) {
       const fg = Color(0xFF101417);
       // Portrait spans the primary Play full width (circular secondary actions
@@ -8503,42 +8507,63 @@ class _DetailActionButtonState extends State<_DetailActionButton>
       // NOTE: only set `alignment` when full-width. A Container with an
       // alignment expands to fill the parent's bounded width, which would make
       // the pill stretch even in landscape.
-      final pill = Container(
-        height: isMobile ? 50 : 54,
-        alignment: fullWidth ? Alignment.center : null,
-        padding: const EdgeInsets.symmetric(horizontal: 22),
+      final double width = fullWidth 
+          ? double.infinity 
+          : (isExpanded ? (isMobile ? 120.0 : 140.0) : height);
+
+      final pill = AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeOut,
+        height: height,
+        width: fullWidth ? null : width,
+        padding: EdgeInsets.symmetric(horizontal: isExpanded || fullWidth ? 16 : 0),
+        alignment: Alignment.center,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(height / 2),
           border: showHighlight
               ? Border.all(color: focusColor, width: 3)
               : null,
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AdaptiveIcon(widget.icon ?? Icons.play_arrow, color: fg, size: 24),
-            const SizedBox(width: 10),
-            Text(
-              widget.label,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: fg,
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-          ],
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const NeverScrollableScrollPhysics(),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AdaptiveIcon(widget.icon ?? Icons.play_arrow, color: fg, size: 24),
+              if (isExpanded || fullWidth) ...[
+                const SizedBox(width: 8),
+                Text(
+                  widget.label,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: fg,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ],
+            ],
+          ),
         ),
       );
       return fullWidth ? SizedBox(width: double.infinity, child: pill) : pill;
     }
 
-    final diameter = isMobile ? 48.0 : 52.0;
-    final circle = Container(
-      width: diameter,
-      height: diameter,
+    final double minWidth = height;
+    final double maxWidth = isExpanded ? 180.0 : height;
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      curve: Curves.easeOut,
+      height: height,
+      constraints: BoxConstraints(
+        minWidth: minWidth,
+        maxWidth: maxWidth,
+      ),
+      padding: EdgeInsets.symmetric(horizontal: isExpanded ? 14 : 0),
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        borderRadius: BorderRadius.circular(height / 2),
         color: showHighlight
             ? AppColorScheme.buttonFocused
             : (widget.isActive
@@ -8552,29 +8577,34 @@ class _DetailActionButtonState extends State<_DetailActionButton>
           width: showHighlight ? 2.5 : 1.5,
         ),
       ),
-      child: widget.iconBuilder != null
-          ? widget.iconBuilder!(24, iconColor)
-          : AdaptiveIcon(widget.icon!, color: iconColor, size: 24),
-    );
-    if (!isMobile) return circle;
-    return SizedBox(
-      width: 76,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          circle,
-          const SizedBox(height: 6),
-          Text(
-            widget.label,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: AppColorScheme.onSurface.withValues(alpha: 0.85),
-                  fontWeight: FontWeight.w600,
-                ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: height - 4, // keep icon centered when collapsed
+              child: widget.iconBuilder != null
+                  ? widget.iconBuilder!(24, iconColor)
+                  : AdaptiveIcon(widget.icon!, color: iconColor, size: 24),
+            ),
+            if (isExpanded) ...[
+              const SizedBox(width: 6),
+              Text(
+                widget.label,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: labelColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -8773,6 +8803,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                   showHighlight: showHighlight,
                   focusColor: focusColor,
                   iconColor: iconColor,
+                  labelColor: labelColor,
                 )
               : SizedBox(
                   width: isMobile ? 80 : 108 * desktopScale,

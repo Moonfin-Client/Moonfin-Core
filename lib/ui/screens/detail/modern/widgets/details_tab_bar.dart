@@ -38,7 +38,7 @@ class DetailsTabBar extends StatelessWidget {
               child: FocusableWrapper(
                 focusNode: focusNodeFor(i),
                 disableScale: true,
-                useBackgroundFocus: true,
+                useBackgroundFocus: false,
                 borderRadius: 8,
                 onSelect: () => onSelect(i),
                 onNavigateLeft: () {
