@@ -1421,6 +1421,7 @@ class RowDataSource {
     required String serverId,
     String? additionalData,
     HomeSectionPluginSource pluginSource = HomeSectionPluginSource.collections,
+    bool forceRefresh = false,
   }) async {
     switch (pluginSource) {
       case HomeSectionPluginSource.collections:
@@ -1526,9 +1527,14 @@ class RowDataSource {
             pluginDisplayText: title,
             pluginSource: pluginSource,
           );
-          var items = await customService.loadCustomRowFromCache(config);
-          if (items.isEmpty) {
-            items = await customService.fetchCustomRow(config);
+          List<ImdbExternalListItem> items;
+          if (forceRefresh) {
+            items = await customService.fetchCustomRow(config, forceRefresh: true);
+          } else {
+            items = await customService.loadCustomRowFromCache(config);
+            if (items.isEmpty) {
+              items = await customService.fetchCustomRow(config);
+            }
           }
           Map<String, dynamic> rowConfig = {};
           try {

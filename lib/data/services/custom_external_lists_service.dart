@@ -99,7 +99,7 @@ class CustomExternalListsService {
     }
   }
 
-  Future<List<ImdbExternalListItem>> fetchCustomRow(HomeSectionConfig config) async {
+  Future<List<ImdbExternalListItem>> fetchCustomRow(HomeSectionConfig config, {bool forceRefresh = false}) async {
     final sectionId = config.pluginSection;
     if (sectionId == null || sectionId.isEmpty) return [];
 
@@ -117,6 +117,10 @@ class CustomExternalListsService {
     final source = rowConfig['source'] as String?;
     final type = rowConfig['type'] as String?;
     final params = rowConfig['params'] as Map<String, dynamic>? ?? {};
+    final modifiableParams = Map<String, dynamic>.from(params);
+    if (forceRefresh) {
+      modifiableParams['_nocache'] = DateTime.now().millisecondsSinceEpoch.toString();
+    }
 
     if (source == null || type == null) return [];
 
@@ -138,7 +142,7 @@ class CustomExternalListsService {
       return loadCustomRowFromCache(config);
     }
 
-    final paramsJson = jsonEncode(params);
+    final paramsJson = jsonEncode(modifiableParams);
     final url = '$baseUrl/Moonfin/CustomRows/Items';
 
     try {
@@ -148,9 +152,21 @@ class CustomExternalListsService {
           'source': source,
           'type': type,
           'params': paramsJson,
+          if (forceRefresh) ...{
+            'refresh': 'true',
+            'nocache': 'true',
+            '_': DateTime.now().millisecondsSinceEpoch.toString(),
+          },
         },
         options: Options(
-          headers: {'Authorization': 'MediaBrowser Token="$token"'},
+          headers: {
+            'Authorization': 'MediaBrowser Token="$token"',
+            if (forceRefresh) ...{
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0',
+            },
+          },
         ),
       );
 

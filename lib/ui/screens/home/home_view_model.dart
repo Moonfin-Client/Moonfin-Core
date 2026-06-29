@@ -706,6 +706,7 @@ class HomeViewModel extends ChangeNotifier {
         serverId: cfg.serverId ?? _serverId,
         additionalData: cfg.pluginAdditionalData,
         pluginSource: cfg.pluginSource,
+        forceRefresh: forceRefresh,
       );
       return [row];
     }

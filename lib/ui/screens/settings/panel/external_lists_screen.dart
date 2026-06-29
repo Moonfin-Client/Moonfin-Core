@@ -109,7 +109,7 @@ class _ExternalListsScreenState extends State<_ExternalListsScreen> {
         if (config.pluginSource == HomeSectionPluginSource.custom && config.enabled) {
           futures.add(() async {
             try {
-              final items = await customService.fetchCustomRow(config);
+              final items = await customService.fetchCustomRow(config, forceRefresh: true);
               if (items.isNotEmpty) {
                 await customService.saveCustomRowToCache(config, items);
               }
@@ -1302,12 +1302,16 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
   final _mdblistListNameFocusNode = FocusNode(debugLabel: 'mdblist_list_field');
   final _sortByFocusNode = FocusNode(debugLabel: 'custom_row_sort_by_field');
   final _sortOrderFocusNode = FocusNode(debugLabel: 'custom_row_sort_order_field');
+  final _sourceFocusNode = FocusNode(debugLabel: 'custom_row_source_field');
+  final _typeFocusNode = FocusNode(debugLabel: 'custom_row_type_field');
+  final _showUserRatingsFocusNode = FocusNode(debugLabel: 'custom_row_show_user_ratings');
 
   final _syncService = GetIt.instance<PluginSyncService>();
 
   @override
   void initState() {
     super.initState();
+    CustomTVTextField.isKeyboardVisibleNotifier.value = false;
     if (widget.existing != null) {
       _nameController.text = widget.existing!.pluginDisplayText ?? '';
       Map<String, dynamic> rowConfig = {};
@@ -1354,6 +1358,7 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
 
   @override
   void dispose() {
+    CustomTVTextField.isKeyboardVisibleNotifier.value = false;
     _nameController.dispose();
     _letterboxdUsernameController.dispose();
     _tmdbIdController.dispose();
@@ -1367,6 +1372,9 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
     _mdblistListNameFocusNode.dispose();
     _sortByFocusNode.dispose();
     _sortOrderFocusNode.dispose();
+    _sourceFocusNode.dispose();
+    _typeFocusNode.dispose();
+    _showUserRatingsFocusNode.dispose();
 
     super.dispose();
   }
@@ -1643,13 +1651,45 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
           if (didPop) return;
           _maybeExit();
         },
-        child: AlertDialog(
-            backgroundColor: Colors.grey[900],
-            title: Text(
-              widget.existing != null ? 'Edit Custom Home Row' : 'Add Custom Home Row',
-              style: const TextStyle(color: Colors.white),
-            ),
-            content: Form(
+        child: Align(
+          alignment: PlatformDetection.isTV ? const Alignment(0, -0.8) : Alignment.center,
+          child: ValueListenableBuilder<bool>(
+            valueListenable: CustomTVTextField.isKeyboardVisibleNotifier,
+            builder: (context, isKeyboardVisible, child) {
+              return AlertDialog(
+                backgroundColor: Colors.grey[900],
+                insetPadding: PlatformDetection.isTV
+                    ? EdgeInsets.fromLTRB(40, 24, 40, isKeyboardVisible ? 280 : 24)
+                    : const EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0),
+                title: Text(
+                  widget.existing != null ? 'Edit Custom Home Row' : 'Add Custom Home Row',
+                  style: const TextStyle(color: Colors.white),
+                ),
+                content: child!,
+                actions: _isValidating
+                    ? [
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        )
+                      ]
+                    : [
+                        TextButton(
+                          onPressed: () => _dismiss(false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: _save,
+                          child: const Text('Save'),
+                        ),
+                      ],
+              );
+            },
+            child: Form(
               key: _formKey,
               child: AbsorbPointer(
                 absorbing: _isValidating,
@@ -1660,219 +1700,357 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
                   mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Source', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                  const SizedBox(height: 4),
-                  Theme(
-                    data: Theme.of(context).copyWith(canvasColor: Colors.grey[900]),
-                    child: DropdownButtonFormField<String>(
-                      value: _source,
-                      dropdownColor: Colors.grey[900],
-                      style: const TextStyle(color: Colors.white, fontSize: 14),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.black26,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                      ),
-                      items: const [
-                        DropdownMenuItem(value: 'tmdb', child: Text('TMDB')),
-                        DropdownMenuItem(value: 'letterboxd', child: Text('Letterboxd')),
-                        DropdownMenuItem(value: 'mdblist', child: Text('MDBList')),
-                      ],
-                      onChanged: (val) {
-                        if (val != null) {
-                          setState(() {
-                            _source = val;
-                            _type = _getTypesForSource(val).first;
-                          });
-                        }
-                      },
-                    ),
-                  ),
-                    if (typeOptions.length > 1) ...[
-                      const SizedBox(height: 16),
-                      const Text('Type', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                      const SizedBox(height: 4),
-                      Theme(
-                        data: Theme.of(context).copyWith(canvasColor: Colors.grey[900]),
-                        child: DropdownButtonFormField<String>(
-                          value: _type,
-                          dropdownColor: Colors.grey[900],
-                          style: const TextStyle(color: Colors.white, fontSize: 14),
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.black26,
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                          ),
-                          items: typeOptions.map((t) {
-                            return DropdownMenuItem(value: t, child: Text(_getTypeLabel(t)));
-                          }).toList(),
-                          onChanged: (val) {
-                            if (val != null) {
-                              setState(() {
-                                _type = val;
-                              });
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  const SizedBox(height: 16),
-
-                  // Source + Type specific parameters
-
-                  if (_source == 'letterboxd') ...[
-                    const Text('Letterboxd Username', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                    const SizedBox(height: 4),
-                    _SettingsTextField(
-                      controller: _letterboxdUsernameController,
-                      hint: 'Username',
-                      focusNode: _letterboxdUsernameFocusNode,
-                    ),
-                    if (tmdbApiKey.isEmpty) ...[
-                      const SizedBox(height: 12),
-                      const Text(
-                        'WARNING: TMDB API Key must be configured in settings to resolve Letterboxd list items.',
-                        style: TextStyle(color: Colors.orangeAccent, fontSize: 11, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ],
-
-                  if (_source == 'tmdb') ...[
-                    Text(_type == 'movie_collection' ? 'TMDB Collection ID or URL' : 'TMDB List ID or URL', style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                    const SizedBox(height: 4),
-                    _SettingsTextField(
-                      controller: _tmdbIdController,
-                      hint: _type == 'movie_collection'
-                          ? '12345 OR https://www.themoviedb.org/collection/12345'
-                          : '12345 OR https://www.themoviedb.org/list/12345',
-                      focusNode: _tmdbIdFocusNode,
-                    ),
-                    if (tmdbApiKey.isEmpty) ...[
-                      const SizedBox(height: 12),
-                      const Text(
-                        'WARNING: TMDB API Key must be configured in settings to fetch TMDB lists.',
-                        style: TextStyle(color: Colors.orangeAccent, fontSize: 11, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ],
-
-                  if (_source == 'mdblist') ...[
-                    if (_type == 'list_url') ...[
-                      const Text('MDBList URL', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                      const SizedBox(height: 4),
-                      _SettingsTextField(
-                        controller: _mdblistListNameController,
-                        hint: 'e.g. https://mdblist.com/lists/username/list-slug',
-                        focusNode: _mdblistListNameFocusNode,
-                      ),
-                    ] else ...[
-                      const Text('MDBList Username', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                      const SizedBox(height: 4),
-                      _SettingsTextField(
-                        controller: _mdblistUsernameController,
-                        hint: 'Username',
-                        focusNode: _mdblistUsernameFocusNode,
-                      ),
-                      const SizedBox(height: 16),
-                      const Text('List Name (slug)', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                      const SizedBox(height: 4),
-                      _SettingsTextField(
-                        controller: _mdblistListNameController,
-                        hint: 'list-name-slug',
-                        focusNode: _mdblistListNameFocusNode,
-                      ),
-                    ],
-                    if (mdblistApiKey.isEmpty) ...[
-                      const SizedBox(height: 12),
-                      const Text(
-                        'WARNING: MDBList API Key must be configured in settings to fetch MDBList lists.',
-                        style: TextStyle(color: Colors.orangeAccent, fontSize: 11, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ],
-
-                  const SizedBox(height: 16),
-                  const Text('Sort By', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                  const SizedBox(height: 4),
-                  Theme(
-                    data: Theme.of(context).copyWith(canvasColor: Colors.grey[900]),
-                    child: DropdownButtonFormField<String>(
-                      value: _sortBy,
-                      focusNode: _sortByFocusNode,
-                      dropdownColor: Colors.grey[900],
-                      style: const TextStyle(color: Colors.white, fontSize: 14),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.black26,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                      ),
-                      items: const [
-                        DropdownMenuItem(value: 'none', child: Text('Default (When Added)')),
-                        DropdownMenuItem(value: 'title', child: Text('Film Name')),
-                        DropdownMenuItem(value: 'popularity', child: Text('Film Popularity')),
-                        DropdownMenuItem(value: 'year', child: Text('Release Date')),
-                        DropdownMenuItem(value: 'rating', child: Text('Average Rating')),
-                        DropdownMenuItem(value: 'shuffle', child: Text('Shuffle')),
-                      ],
-                      onChanged: (val) {
-                        if (val != null) {
-                          setState(() {
-                            _sortBy = val;
-                            if (val == 'title') {
-                              _sortOrder = 'asc';
-                            } else {
-                              _sortOrder = 'desc';
-                            }
-                          });
-                        }
-                      },
-                    ),
-                  ),
-                  if (_sortBy != 'none' && _sortBy != 'shuffle') ...[
-                    const SizedBox(height: 16),
-                    const Text('Sort Order', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                    const SizedBox(height: 4),
-                    Theme(
-                      data: Theme.of(context).copyWith(canvasColor: Colors.grey[900]),
-                      child: DropdownButtonFormField<String>(
-                        value: _sortOrder,
-                        focusNode: _sortOrderFocusNode,
-                        dropdownColor: Colors.grey[900],
-                        style: const TextStyle(color: Colors.white, fontSize: 14),
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.black26,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                        ),
-                        items: _sortBy == 'title'
-                            ? const [
-                                DropdownMenuItem(value: 'asc', child: Text('A to Z')),
-                                DropdownMenuItem(value: 'desc', child: Text('Z to A')),
-                              ]
-                            : (_sortBy == 'year'
-                                ? const [
-                                    DropdownMenuItem(value: 'desc', child: Text('Newest First')),
-                                    DropdownMenuItem(value: 'asc', child: Text('Earliest First')),
-                                  ]
-                                : (_sortBy == 'popularity'
-                                    ? const [
-                                        DropdownMenuItem(value: 'desc', child: Text('Most Popular First')),
-                                        DropdownMenuItem(value: 'asc', child: Text('Least Popular First')),
-                                      ]
-                                    : const [
-                                        DropdownMenuItem(value: 'desc', child: Text('Highest First')),
-                                        DropdownMenuItem(value: 'asc', child: Text('Lowest First')),
-                                      ])),
-                        onChanged: (val) {
-                          if (val != null) {
-                            setState(() {
-                              _sortOrder = val;
-                            });
-                          }
-                        },
-                      ),
-                    ),
-                  ],
+                   const Text('Source', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                   const SizedBox(height: 4),
+                   ListenableBuilder(
+                     listenable: _sourceFocusNode,
+                     builder: (context, child) {
+                       final hasFocus = _sourceFocusNode.hasFocus;
+                       return Theme(
+                         data: Theme.of(context).copyWith(
+                           canvasColor: Colors.grey[900],
+                           focusColor: AppColorScheme.accent.withValues(alpha: 0.25),
+                         ),
+                         child: DropdownButtonFormField<String>(
+                           value: _source,
+                           focusNode: _sourceFocusNode,
+                           dropdownColor: Colors.grey[900],
+                           style: const TextStyle(color: Colors.white, fontSize: 14),
+                           decoration: InputDecoration(
+                             filled: true,
+                             fillColor: hasFocus ? AppColorScheme.buttonFocused : Colors.black26,
+                             border: OutlineInputBorder(
+                               borderRadius: BorderRadius.circular(8),
+                               borderSide: BorderSide(
+                                 color: hasFocus
+                                     ? AppColorScheme.accent.withValues(alpha: 0.72)
+                                     : Colors.transparent,
+                                 width: 1.0,
+                               ),
+                             ),
+                             enabledBorder: OutlineInputBorder(
+                               borderRadius: BorderRadius.circular(8),
+                               borderSide: BorderSide(
+                                 color: hasFocus
+                                     ? AppColorScheme.accent.withValues(alpha: 0.72)
+                                     : Colors.transparent,
+                                 width: 1.0,
+                               ),
+                             ),
+                             focusedBorder: OutlineInputBorder(
+                               borderRadius: BorderRadius.circular(8),
+                               borderSide: BorderSide(
+                                 color: AppColorScheme.accent.withValues(alpha: 0.72),
+                                 width: 1.5,
+                               ),
+                             ),
+                             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                           ),
+                           items: const [
+                             DropdownMenuItem(value: 'tmdb', child: Text('TMDB')),
+                             DropdownMenuItem(value: 'letterboxd', child: Text('Letterboxd')),
+                             DropdownMenuItem(value: 'mdblist', child: Text('MDBList')),
+                           ],
+                           onChanged: (val) {
+                             if (val != null) {
+                               setState(() {
+                                 _source = val;
+                                 _type = _getTypesForSource(val).first;
+                               });
+                             }
+                           },
+                         ),
+                       );
+                     },
+                   ),
+                     if (typeOptions.length > 1) ...[
+                       const SizedBox(height: 16),
+                       const Text('Type', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                       const SizedBox(height: 4),
+                       ListenableBuilder(
+                         listenable: _typeFocusNode,
+                         builder: (context, child) {
+                           final hasFocus = _typeFocusNode.hasFocus;
+                           return Theme(
+                             data: Theme.of(context).copyWith(
+                               canvasColor: Colors.grey[900],
+                               focusColor: AppColorScheme.accent.withValues(alpha: 0.25),
+                             ),
+                             child: DropdownButtonFormField<String>(
+                               value: _type,
+                               focusNode: _typeFocusNode,
+                               dropdownColor: Colors.grey[900],
+                               style: const TextStyle(color: Colors.white, fontSize: 14),
+                               decoration: InputDecoration(
+                                 filled: true,
+                                 fillColor: hasFocus ? AppColorScheme.buttonFocused : Colors.black26,
+                                 border: OutlineInputBorder(
+                                   borderRadius: BorderRadius.circular(8),
+                                   borderSide: BorderSide(
+                                     color: hasFocus
+                                         ? AppColorScheme.accent.withValues(alpha: 0.72)
+                                         : Colors.transparent,
+                                     width: 1.0,
+                                   ),
+                                 ),
+                                 enabledBorder: OutlineInputBorder(
+                                   borderRadius: BorderRadius.circular(8),
+                                   borderSide: BorderSide(
+                                     color: hasFocus
+                                         ? AppColorScheme.accent.withValues(alpha: 0.72)
+                                         : Colors.transparent,
+                                     width: 1.0,
+                                   ),
+                                 ),
+                                 focusedBorder: OutlineInputBorder(
+                                   borderRadius: BorderRadius.circular(8),
+                                   borderSide: BorderSide(
+                                     color: AppColorScheme.accent.withValues(alpha: 0.72),
+                                     width: 1.5,
+                                   ),
+                                 ),
+                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                               ),
+                               items: typeOptions.map((t) {
+                                 return DropdownMenuItem(value: t, child: Text(_getTypeLabel(t)));
+                               }).toList(),
+                               onChanged: (val) {
+                                 if (val != null) {
+                                   setState(() {
+                                     _type = val;
+                                   });
+                                 }
+                               },
+                             ),
+                           );
+                         },
+                       ),
+                     ],
+                   const SizedBox(height: 16),
+ 
+                   // Source + Type specific parameters
+ 
+                   if (_source == 'letterboxd') ...[
+                     const Text('Letterboxd Username', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                     const SizedBox(height: 4),
+                     _SettingsTextField(
+                       controller: _letterboxdUsernameController,
+                       hint: 'Username',
+                       focusNode: _letterboxdUsernameFocusNode,
+                     ),
+                     if (tmdbApiKey.isEmpty) ...[
+                       const SizedBox(height: 12),
+                       const Text(
+                         'WARNING: TMDB API Key must be configured in settings to resolve Letterboxd list items.',
+                         style: TextStyle(color: Colors.orangeAccent, fontSize: 11, fontWeight: FontWeight.bold),
+                       ),
+                     ],
+                   ],
+ 
+                   if (_source == 'tmdb') ...[
+                     Text(_type == 'movie_collection' ? 'TMDB Collection ID or URL' : 'TMDB List ID or URL', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                     const SizedBox(height: 4),
+                     _SettingsTextField(
+                       controller: _tmdbIdController,
+                       hint: _type == 'movie_collection'
+                           ? '12345 OR https://www.themoviedb.org/collection/12345'
+                           : '12345 OR https://www.themoviedb.org/list/12345',
+                       focusNode: _tmdbIdFocusNode,
+                     ),
+                     if (tmdbApiKey.isEmpty) ...[
+                       const SizedBox(height: 12),
+                       const Text(
+                         'WARNING: TMDB API Key must be configured in settings to fetch TMDB lists.',
+                         style: TextStyle(color: Colors.orangeAccent, fontSize: 11, fontWeight: FontWeight.bold),
+                       ),
+                     ],
+                   ],
+ 
+                   if (_source == 'mdblist') ...[
+                     if (_type == 'list_url') ...[
+                       const Text('MDBList URL', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                       const SizedBox(height: 4),
+                       _SettingsTextField(
+                         controller: _mdblistListNameController,
+                         hint: 'e.g. https://mdblist.com/lists/username/list-slug',
+                         focusNode: _mdblistListNameFocusNode,
+                       ),
+                     ] else ...[
+                       const Text('MDBList Username', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                       const SizedBox(height: 4),
+                       _SettingsTextField(
+                         controller: _mdblistUsernameController,
+                         hint: 'Username',
+                         focusNode: _mdblistUsernameFocusNode,
+                       ),
+                       const SizedBox(height: 16),
+                       const Text('List Name (slug)', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                       const SizedBox(height: 4),
+                       _SettingsTextField(
+                         controller: _mdblistListNameController,
+                         hint: 'list-name-slug',
+                         focusNode: _mdblistListNameFocusNode,
+                       ),
+                     ],
+                     if (mdblistApiKey.isEmpty) ...[
+                       const SizedBox(height: 12),
+                       const Text(
+                         'WARNING: MDBList API Key must be configured in settings to fetch MDBList lists.',
+                         style: TextStyle(color: Colors.orangeAccent, fontSize: 11, fontWeight: FontWeight.bold),
+                       ),
+                     ],
+                   ],
+ 
+                   const SizedBox(height: 16),
+                   const Text('Sort By', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                   const SizedBox(height: 4),
+                   ListenableBuilder(
+                     listenable: _sortByFocusNode,
+                     builder: (context, child) {
+                       final hasFocus = _sortByFocusNode.hasFocus;
+                       return Theme(
+                         data: Theme.of(context).copyWith(
+                           canvasColor: Colors.grey[900],
+                           focusColor: AppColorScheme.accent.withValues(alpha: 0.25),
+                         ),
+                         child: DropdownButtonFormField<String>(
+                           value: _sortBy,
+                           focusNode: _sortByFocusNode,
+                           dropdownColor: Colors.grey[900],
+                           style: const TextStyle(color: Colors.white, fontSize: 14),
+                           decoration: InputDecoration(
+                             filled: true,
+                             fillColor: hasFocus ? AppColorScheme.buttonFocused : Colors.black26,
+                             border: OutlineInputBorder(
+                               borderRadius: BorderRadius.circular(8),
+                               borderSide: BorderSide(
+                                 color: hasFocus
+                                     ? AppColorScheme.accent.withValues(alpha: 0.72)
+                                     : Colors.transparent,
+                                 width: 1.0,
+                               ),
+                             ),
+                             enabledBorder: OutlineInputBorder(
+                               borderRadius: BorderRadius.circular(8),
+                               borderSide: BorderSide(
+                                 color: hasFocus
+                                     ? AppColorScheme.accent.withValues(alpha: 0.72)
+                                     : Colors.transparent,
+                                 width: 1.0,
+                               ),
+                             ),
+                             focusedBorder: OutlineInputBorder(
+                               borderRadius: BorderRadius.circular(8),
+                               borderSide: BorderSide(
+                                 color: AppColorScheme.accent.withValues(alpha: 0.72),
+                                 width: 1.5,
+                               ),
+                             ),
+                             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                           ),
+                           items: const [
+                             DropdownMenuItem(value: 'none', child: Text('Default (When Added)')),
+                             DropdownMenuItem(value: 'title', child: Text('Film Name')),
+                             DropdownMenuItem(value: 'popularity', child: Text('Film Popularity')),
+                             DropdownMenuItem(value: 'year', child: Text('Release Date')),
+                             DropdownMenuItem(value: 'rating', child: Text('Average Rating')),
+                             DropdownMenuItem(value: 'shuffle', child: Text('Shuffle')),
+                           ],
+                           onChanged: (val) {
+                             if (val != null) {
+                               setState(() {
+                                 _sortBy = val;
+                                 if (val == 'title') {
+                                   _sortOrder = 'asc';
+                                 } else {
+                                   _sortOrder = 'desc';
+                                 }
+                               });
+                             }
+                           },
+                         ),
+                       );
+                     },
+                   ),
+                   if (_sortBy != 'none' && _sortBy != 'shuffle') ...[
+                     const SizedBox(height: 16),
+                     const Text('Sort Order', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                     const SizedBox(height: 4),
+                     ListenableBuilder(
+                       listenable: _sortOrderFocusNode,
+                       builder: (context, child) {
+                         final hasFocus = _sortOrderFocusNode.hasFocus;
+                         return Theme(
+                           data: Theme.of(context).copyWith(
+                             canvasColor: Colors.grey[900],
+                             focusColor: AppColorScheme.accent.withValues(alpha: 0.25),
+                           ),
+                           child: DropdownButtonFormField<String>(
+                             value: _sortOrder,
+                             focusNode: _sortOrderFocusNode,
+                             dropdownColor: Colors.grey[900],
+                             style: const TextStyle(color: Colors.white, fontSize: 14),
+                             decoration: InputDecoration(
+                               filled: true,
+                               fillColor: hasFocus ? AppColorScheme.buttonFocused : Colors.black26,
+                               border: OutlineInputBorder(
+                                 borderRadius: BorderRadius.circular(8),
+                                 borderSide: BorderSide(
+                                   color: hasFocus
+                                       ? AppColorScheme.accent.withValues(alpha: 0.72)
+                                       : Colors.transparent,
+                                   width: 1.0,
+                                 ),
+                               ),
+                               enabledBorder: OutlineInputBorder(
+                                 borderRadius: BorderRadius.circular(8),
+                                 borderSide: BorderSide(
+                                   color: hasFocus
+                                       ? AppColorScheme.accent.withValues(alpha: 0.72)
+                                       : Colors.transparent,
+                                   width: 1.0,
+                                 ),
+                               ),
+                               focusedBorder: OutlineInputBorder(
+                                 borderRadius: BorderRadius.circular(8),
+                                 borderSide: BorderSide(
+                                   color: AppColorScheme.accent.withValues(alpha: 0.72),
+                                   width: 1.5,
+                                 ),
+                               ),
+                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                             ),
+                             items: _sortBy == 'title'
+                                 ? const [
+                                     DropdownMenuItem(value: 'asc', child: Text('A to Z')),
+                                     DropdownMenuItem(value: 'desc', child: Text('Z to A')),
+                                   ]
+                                 : (_sortBy == 'year'
+                                     ? const [
+                                         DropdownMenuItem(value: 'desc', child: Text('Newest First')),
+                                         DropdownMenuItem(value: 'asc', child: Text('Earliest First')),
+                                       ]
+                                     : (_sortBy == 'popularity'
+                                         ? const [
+                                             DropdownMenuItem(value: 'desc', child: Text('Most Popular First')),
+                                             DropdownMenuItem(value: 'asc', child: Text('Least Popular First')),
+                                           ]
+                                         : const [
+                                             DropdownMenuItem(value: 'desc', child: Text('Highest First')),
+                                             DropdownMenuItem(value: 'asc', child: Text('Lowest First')),
+                                           ])),
+                             onChanged: (val) {
+                               if (val != null) {
+                                 setState(() {
+                                   _sortOrder = val;
+                                 });
+                               }
+                             },
+                           ),
+                         );
+                       },
+                     ),
+                   ],
 
                   (() {
                     final isUserRatingRelevant = _source == 'letterboxd';
@@ -1882,17 +2060,28 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 16),
-                          SwitchListTile.adaptive(
-                            contentPadding: EdgeInsets.zero,
-                            title: const Text(
-                              'Show User Ratings?',
-                              style: TextStyle(color: Colors.white, fontSize: 14),
-                            ),
-                            value: _showUserRatings,
-                            onChanged: (val) {
-                              setState(() {
-                                _showUserRatings = val;
-                              });
+                          TvFocusHighlight(
+                            enabled: true,
+                            builder: (context, focused) {
+                              return SwitchListTile.adaptive(
+                                focusNode: _showUserRatingsFocusNode,
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                                title: Text(
+                                  'Show User Ratings?',
+                                  style: TextStyle(
+                                    color: focused
+                                        ? AppColors.black.withValues(alpha: 0.87)
+                                        : Colors.white,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                value: _showUserRatings,
+                                onChanged: (val) {
+                                  setState(() {
+                                    _showUserRatings = val;
+                                  });
+                                },
+                              );
                             },
                           ),
                         ],
@@ -1915,31 +2104,11 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
           ),
         ),
       ),
-      actions: _isValidating
-            ? [
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                )
-              ]
-            : [
-                TextButton(
-                  onPressed: () => _dismiss(false),
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: _save,
-                  child: const Text('Save'),
-                ),
-              ],
-      ),
     ),
-  );
-}
+  ),
+),
+);
+  }
 }
 
 class _SettingsTextField extends StatefulWidget {
@@ -1961,19 +2130,110 @@ class _SettingsTextFieldState extends State<_SettingsTextField> {
   final _tvFieldKey = GlobalKey<CustomTVTextFieldState>();
 
   @override
+  void initState() {
+    super.initState();
+    widget.focusNode.addListener(_onFocusChange);
+    CustomTVTextField.isKeyboardVisibleNotifier.addListener(_onKeyboardVisibilityChange);
+  }
+
+  @override
+  void dispose() {
+    widget.focusNode.removeListener(_onFocusChange);
+    CustomTVTextField.isKeyboardVisibleNotifier.removeListener(_onKeyboardVisibilityChange);
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (widget.focusNode.hasFocus) {
+      _ensureVisible();
+    }
+  }
+
+  void _onKeyboardVisibilityChange() {
+    if (widget.focusNode.hasFocus && CustomTVTextField.isKeyboardVisibleNotifier.value) {
+      _ensureVisible();
+    }
+  }
+
+  void _ensureVisible() {
+    Future.delayed(const Duration(milliseconds: 150), () {
+      if (!mounted) return;
+      try {
+        Scrollable.ensureVisible(
+          context,
+          duration: const Duration(milliseconds: 300),
+          alignment: 0.5,
+          curve: Curves.easeInOut,
+        );
+      } catch (_) {}
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isTV = PlatformDetection.isTV;
     if (isTV) {
       return Focus(
         focusNode: widget.focusNode,
+        onKeyEvent: (node, event) {
+          if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+            return KeyEventResult.ignored;
+          }
+          final isKeyboardVisible = _tvFieldKey.currentState?.isKeyboardVisible ?? false;
+          if (event.logicalKey.isBackKey) {
+            if (isKeyboardVisible) {
+              _tvFieldKey.currentState?.closeKeyboard();
+              widget.focusNode.requestFocus();
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          }
+          if (event.logicalKey == LogicalKeyboardKey.enter ||
+              event.logicalKey == LogicalKeyboardKey.select) {
+            if (!isKeyboardVisible) {
+              _tvFieldKey.currentState?.openKeyboard();
+              return KeyEventResult.handled;
+            }
+          }
+          if (!isKeyboardVisible) {
+            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+              FocusScope.of(context).nextFocus();
+              return KeyEventResult.handled;
+            }
+            if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+              FocusScope.of(context).previousFocus();
+              return KeyEventResult.handled;
+            }
+          }
+          return KeyEventResult.ignored;
+        },
         child: ListenableBuilder(
           listenable: widget.focusNode,
           builder: (_, _) {
+            final focused = widget.focusNode.hasFocus;
             return CustomTVTextField(
               key: _tvFieldKey,
               controller: widget.controller,
-              isFocused: widget.focusNode.hasFocus,
+              isFocused: focused,
               hint: widget.hint,
+              preferSystemIme: GetIt.instance<UserPreferences>().get(
+                UserPreferences.preferSystemImeKeyboard,
+              ),
+              filled: true,
+              fillColor: focused
+                  ? AppColorScheme.buttonFocused
+                  : Colors.black26,
+              borderRadius: 8,
+              borderColor: focused
+                  ? AppColorScheme.accent.withValues(alpha: 0.72)
+                  : Colors.transparent,
+              focusedBorderColor: AppColorScheme.accent,
+              hintStyle: TextStyle(
+                color: AppColorScheme.onSurface.withValues(alpha: 0.4),
+              ),
+              onFieldSubmitted: (_) {
+                widget.focusNode.requestFocus();
+              },
             );
           },
         ),

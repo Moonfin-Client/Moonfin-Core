@@ -178,6 +178,7 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
     _initAnimation();
     widget.controller.addListener(_onTextChanged);
     _systemInputFocusNode.addListener(_onSystemInputFocusChanged);
+    _systemInputFocusNode.canRequestFocus = false;
   }
 
   void _onTextChanged() {
@@ -311,6 +312,8 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
       _keyboardController.hide(false);
     }
 
+    _systemInputFocusNode.canRequestFocus = true;
+
     if (!_useSystemImeSession) {
       setState(() {
         _useSystemImeSession = true;
@@ -328,6 +331,16 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
       _useSystemImeSession = false;
     });
     _notifyVisibilityChanged();
+
+    _systemInputFocusNode.unfocus();
+    _systemInputFocusNode.canRequestFocus = false;
+
+    try {
+      final parentFocus = Focus.of(context);
+      if (parentFocus.canRequestFocus) {
+        parentFocus.requestFocus();
+      }
+    } catch (_) {}
   }
 
   void _requestSystemInputFocus() {
@@ -375,6 +388,9 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
       ),
     ).whenComplete(() {
       _isOverlayOpen.value = false;
+      if (_keyboardController.isVisible) {
+        _keyboardController.hide(false);
+      }
 
       final focusToRestore = _focusToRestoreAfterOverlay;
       _focusToRestoreAfterOverlay = null;
@@ -420,27 +436,30 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: IgnorePointer(
-                      ignoring: !_isSystemImeActive,
-                      child: Opacity(
-                        opacity: _isSystemImeActive ? 0.01 : 0.0,
-                        child: TextField(
-                          controller: widget.controller,
-                          focusNode: _systemInputFocusNode,
-                          readOnly: !_isSystemImeActive,
-                          showCursor: _isSystemImeActive,
-                          keyboardType: _systemKeyboardType(),
-                          textInputAction: TextInputAction.done,
-                          obscureText: widget.obscureText,
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: EdgeInsets.zero,
+                    child: ExcludeFocus(
+                      excluding: !_isSystemImeActive,
+                      child: IgnorePointer(
+                        ignoring: !_isSystemImeActive,
+                        child: Opacity(
+                          opacity: _isSystemImeActive ? 0.01 : 0.0,
+                          child: TextField(
+                            controller: widget.controller,
+                            focusNode: _systemInputFocusNode,
+                            readOnly: !_isSystemImeActive,
+                            showCursor: _isSystemImeActive,
+                            keyboardType: _systemKeyboardType(),
+                            textInputAction: TextInputAction.done,
+                            obscureText: widget.obscureText,
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            onSubmitted: (value) {
+                              widget.onFieldSubmitted?.call(value);
+                              _deactivateSystemIme();
+                            },
                           ),
-                          onSubmitted: (value) {
-                            widget.onFieldSubmitted?.call(value);
-                            _deactivateSystemIme();
-                          },
                         ),
                       ),
                     ),
@@ -453,6 +472,7 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
                           widget.isFocused ||
                           _keyboardController.isVisible ||
                           _isSystemImeActive,
+                      showCursor: _keyboardController.isVisible || _isSystemImeActive,
                       blinkAnimation: _blinkAnimation,
                       hasError: error != null,
                       scrollController: _scrollController,
@@ -487,6 +507,7 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
 class _FieldDisplay extends StatelessWidget {
   final CustomTVTextField widget;
   final bool hasFocus;
+  final bool showCursor;
   final Animation<double> blinkAnimation;
   final bool hasError;
   final ScrollController scrollController;
@@ -494,6 +515,7 @@ class _FieldDisplay extends StatelessWidget {
   const _FieldDisplay({
     required this.widget,
     required this.hasFocus,
+    required this.showCursor,
     required this.blinkAnimation,
     required this.scrollController,
     this.hasError = false,
@@ -573,7 +595,7 @@ class _FieldDisplay extends StatelessWidget {
                     WidgetSpan(
                       alignment: PlaceholderAlignment.middle,
                       child: Visibility(
-                        visible: hasFocus,
+                        visible: showCursor,
                         maintainSize: true,
                         maintainAnimation: true,
                         maintainState: true,
