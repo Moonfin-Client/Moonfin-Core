@@ -1,20 +1,33 @@
 import 'package:flutter/foundation.dart';
 
-final ValueNotifier<int> homeRefreshBus = ValueNotifier<int>(0);
-bool _pendingHomeRefresh = false;
+final homeRefreshBus = HomeRefreshBus();
 
-void requestHomeRefresh() {
-  homeRefreshBus.value = homeRefreshBus.value + 1;
-}
+class HomeRefreshBus extends ValueNotifier<int> {
+  HomeRefreshBus() : super(0);
 
-void requestHomeRefreshAfterNavigation() {
-  _pendingHomeRefresh = true;
-}
+  bool _pendingRefresh = false;
 
-bool consumePendingHomeRefresh() {
-  if (!_pendingHomeRefresh) {
-    return false;
+  void request() {
+    value = value + 1;
   }
-  _pendingHomeRefresh = false;
-  return true;
+
+  void requestAfterNavigation() {
+    _pendingRefresh = true;
+  }
+
+  void requestNowOrAfterNavigation() {
+    if (hasListeners) {
+      request();
+    } else {
+      requestAfterNavigation();
+    }
+  }
+
+  bool consumePending() {
+    if (!_pendingRefresh) {
+      return false;
+    }
+    _pendingRefresh = false;
+    return true;
+  }
 }

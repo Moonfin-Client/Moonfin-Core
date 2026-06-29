@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import '../../ui/navigation/app_router.dart';
 import '../../ui/navigation/destinations.dart';
+import '../../ui/navigation/home_refresh_bus.dart';
 
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
@@ -272,11 +273,14 @@ class SessionRepository {
 
     await _pluginSyncService.syncOnLogin(client, serverId: serverId);
 
-    await _pluginSyncService.configureSeerr(
+    final seerrAvailable = await _pluginSyncService.configureSeerr(
       client,
       username: username ?? user.name,
       password: password,
     );
+    if (seerrAvailable) {
+      homeRefreshBus.requestNowOrAfterNavigation();
+    }
   }
 
   Future<void> destroyCurrentSession() async {

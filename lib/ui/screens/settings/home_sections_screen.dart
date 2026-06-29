@@ -13,8 +13,6 @@ import '../../../data/utils/playlist_utils.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
-import '../../../preference/seerr_preferences.dart';
-import '../../../preference/seerr_row_config.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
 import '../../widgets/overlay_sheet.dart';
@@ -516,12 +514,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     }
   }
 
-  bool _isAnySeerrSectionEnabled() {
-    final seerrPrefs = GetIt.instance<SeerrPreferences>();
-    return seerrPrefs.rowsConfig.any((r) => r.enabled);
-  }
-
-
   bool _isAnyTmdbSectionEnabled() {
     return _prefs.get(UserPreferences.tmdbPopularMoviesEnabled) ||
         _prefs.get(UserPreferences.tmdbTopRatedMoviesEnabled) ||
@@ -537,30 +529,6 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         _prefs.get(UserPreferences.tmdbTrendingTvWeeklyEnabled) ||
         _prefs.get(UserPreferences.tmdbTrendingAllWeeklyEnabled);
   }
-
-  bool _isSeerrRowEnabled(HomeSectionType type) {
-    final seerrPrefs = GetIt.instance<SeerrPreferences>();
-    final seerrType = switch (type) {
-      HomeSectionType.seerrRecentRequests => SeerrRowType.recentRequests,
-      HomeSectionType.seerrRecentlyAdded => SeerrRowType.recentlyAdded,
-      HomeSectionType.seerrTrending => SeerrRowType.trending,
-      HomeSectionType.seerrPopularMovies => SeerrRowType.popularMovies,
-      HomeSectionType.seerrMovieGenres => SeerrRowType.movieGenres,
-      HomeSectionType.seerrUpcomingMovies => SeerrRowType.upcomingMovies,
-      HomeSectionType.seerrStudios => SeerrRowType.studios,
-      HomeSectionType.seerrPopularSeries => SeerrRowType.popularSeries,
-      HomeSectionType.seerrSeriesGenres => SeerrRowType.seriesGenres,
-      HomeSectionType.seerrUpcomingSeries => SeerrRowType.upcomingSeries,
-      HomeSectionType.seerrNetworks => SeerrRowType.networks,
-      _ => null,
-    };
-    if (seerrType == null) return false;
-    return seerrPrefs.rowsConfig.firstWhere(
-      (r) => r.type == seerrType,
-      orElse: () => SeerrRowConfig(type: seerrType, enabled: false),
-    ).enabled;
-  }
-
 
   bool _isTmdbRowEnabled(HomeSectionType type) {
     final prefKey = switch (type) {
@@ -607,9 +575,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     );
     final showGenresRows = _prefs.get(UserPreferences.displayGenresRows);
     final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
-    final showSeerrRows =
-        _isAnySeerrSectionEnabled() &&
-        GetIt.instance<PluginSyncService>().seerrAvailable;
+    final showSeerrRows = GetIt.instance<PluginSyncService>().seerrAvailable;
     final showTmdbRows = _isAnyTmdbSectionEnabled();
 
     final hiddenByFavorites =
@@ -629,8 +595,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         ((section.isBuiltin && _isPlaylistsSectionType(section.type)) ||
             (section.isPluginDynamic &&
                 section.pluginSource == HomeSectionPluginSource.playlists));
-    final hiddenBySeerr = _isSeerrSectionType(section.type) &&
-        (!showSeerrRows || !_isSeerrRowEnabled(section.type));
+    final hiddenBySeerr =
+        _isSeerrSectionType(section.type) && !showSeerrRows;
     final hiddenByTmdb = _isTmdbSectionType(section.type) &&
         (!showTmdbRows || !_isTmdbRowEnabled(section.type));
 

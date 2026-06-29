@@ -807,11 +807,11 @@ class _LeftSidebarState extends State<LeftSidebar> {
                   onPressed: () {
                     _onNavigate();
                     if (_isActive(Destinations.home)) {
-                      requestHomeRefresh();
+                      homeRefreshBus.request();
                       _exitSidebarToContent();
                       return;
                     }
-                    requestHomeRefreshAfterNavigation();
+                    homeRefreshBus.requestAfterNavigation();
                     _markNavigationAwayFromSidebar();
                     context.go(Destinations.home);
                   },

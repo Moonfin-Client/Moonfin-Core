@@ -841,10 +841,10 @@ class _TopToolbarState extends State<TopToolbar> {
                     },
                     onPressed: () {
                       if (_isActive(Destinations.home)) {
-                        requestHomeRefresh();
+                        homeRefreshBus.request();
                         return;
                       }
-                      requestHomeRefreshAfterNavigation();
+                      homeRefreshBus.requestAfterNavigation();
                       context.go(Destinations.home);
                     },
                   ),

@@ -97,7 +97,7 @@ class _LibraryVisibilityScreenState extends State<LibraryVisibilityScreen> {
     _saveQueue = _saveQueue.then((_) async {
       try {
         await _viewsRepo.updateUserConfiguration(updated);
-        requestHomeRefreshAfterNavigation();
+        homeRefreshBus.requestAfterNavigation();
       } catch (_) {
         if (!mounted || opId != _lastQueuedOpId) return;
         setState(() => _config = config);

@@ -149,10 +149,10 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
         isActive: _isActive(Destinations.home),
         onTap: () {
           if (_isActive(Destinations.home)) {
-            requestHomeRefresh();
+            homeRefreshBus.request();
             return;
           }
-          requestHomeRefreshAfterNavigation();
+          homeRefreshBus.requestAfterNavigation();
           context.go(Destinations.home);
         },
       ),

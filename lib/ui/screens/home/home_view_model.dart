@@ -117,13 +117,6 @@ class HomeViewModel extends ChangeNotifier {
         type == HomeSectionType.seerrNetworks;
   }
 
-
-
-  bool _isAnySeerrSectionEnabled() {
-    final seerrPrefs = GetIt.instance<SeerrPreferences>();
-    return seerrPrefs.rowsConfig.any((r) => r.enabled);
-  }
-
   static bool _isTmdbSectionType(HomeSectionType type) {
     return type == HomeSectionType.tmdbPopularMovies ||
         type == HomeSectionType.tmdbTopRatedMovies ||
@@ -282,9 +275,7 @@ class HomeViewModel extends ChangeNotifier {
         UserPreferences.displayPlaylistsRows,
       );
       final showAudioRows = _prefs.get(UserPreferences.displayAudioRows);
-      final showSeerrRows =
-          _isAnySeerrSectionEnabled() &&
-          GetIt.instance<PluginSyncService>().seerrAvailable;
+      final showSeerrRows = GetIt.instance<PluginSyncService>().seerrAvailable;
       final showTmdbRows = _isAnyTmdbSectionEnabled();
       final showSinceYouWatched = _prefs.get(UserPreferences.displaySinceYouWatchedRows);
       final sinceYouWatchedNum = _prefs.get(UserPreferences.sinceYouWatchedNumRows).value;

@@ -491,15 +491,15 @@ class PluginSyncService extends ChangeNotifier {
     }
   }
 
-  Future<void> configureSeerr(
+  Future<bool> configureSeerr(
     MediaServerClient client, {
     String? username,
     String? password,
   }) async {
-    if (!_pluginAvailable) return;
+    if (!_pluginAvailable) return false;
 
     final token = client.accessToken;
-    if (token == null || token.isEmpty) return;
+    if (token == null || token.isEmpty) return false;
 
     try {
       final seerrRepo = await GetIt.instance.getAsync<SeerrRepository>();
@@ -509,7 +509,11 @@ class PluginSyncService extends ChangeNotifier {
         username: username,
         password: password,
       );
-    } catch (_) {}
+      await _refreshAvailabilityStatus(client);
+      return seerrRepo.isAvailable;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> pushSettings(MediaServerClient client) async {
