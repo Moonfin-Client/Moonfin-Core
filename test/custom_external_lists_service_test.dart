@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:moonfin/preference/home_section_config.dart';
-import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin/data/services/custom_external_lists_service.dart';
 
 void main() {
@@ -62,15 +61,13 @@ void main() {
   });
 
   group('CustomExternalLists sorting logic', () {
-    late UserPreferences prefs;
     late CustomExternalListsService service;
 
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
       final store = PreferenceStore();
       await store.init();
-      prefs = UserPreferences(store);
-      service = CustomExternalListsService(prefs);
+      service = CustomExternalListsService();
     });
 
     final mockItems = [

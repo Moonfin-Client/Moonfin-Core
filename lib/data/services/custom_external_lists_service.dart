@@ -6,7 +6,6 @@ import 'package:get_it/get_it.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:server_core/server_core.dart';
 import '../../preference/home_section_config.dart';
-import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
 
 class ImdbExternalListItem {
