@@ -2039,7 +2039,7 @@ class RowDataSource {
       if (tags.isNotEmpty) {
         futures.add(() async {
           try {
-            final cacheKey = 'tags:${candidateItemTypes.join(",")}:${tags.join(",")}';
+            final cacheKey = '$serverId:tags:${candidateItemTypes.join(",")}:${tags.join(",")}';
             if (_recommendationCache.containsKey(cacheKey)) {
               final cached = _recommendationCache[cacheKey]!;
               for (final item in cached) {
