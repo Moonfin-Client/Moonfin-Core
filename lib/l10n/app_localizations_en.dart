@@ -3392,15 +3392,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get discoverRows => 'Discover Rows';
+  String get discoverRows => 'Seerr Discovery Page';
 
   @override
   String get discoverRowsDescriptionPlugin =>
-      'Drag to reorder. Enable or disable rows. Enabled row order syncs with the Moonfin plugin.';
+      'Enable rows to see on Seerr mainpage. Drag to reorder. Custom order syncs with Moonbase.';
 
   @override
   String get discoverRowsDescription =>
-      'Drag to reorder. Enable or disable rows.';
+      'Enable rows to see on Seerr mainpage. Drag to reorder. Custom order syncs with Moonbase.';
 
   @override
   String get enabled => 'Enabled';
@@ -3505,7 +3505,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Navbar style, toolbar buttons, appearance';
 
   @override
-  String get reorderToggleHomeRows => 'Reorder and toggle home rows';
+  String get reorderToggleHomeRows =>
+      'Reorder and toggle both library and external-based home rows';
 
   @override
   String get featuredContentAppearance => 'Featured content, appearance';
@@ -7560,7 +7561,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeRowTogglesSubtitle =>
-      'Enable or disable different home row categories';
+      'Enable or disable library-based home row categories';
 
   @override
   String get homeRowTogglesDescription =>
@@ -8386,7 +8387,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.';
 
   @override
-  String get externalLists => 'External Lists';
+  String get externalLists => 'External Home Row Lists';
 
   @override
   String get enableImdb => 'IMDb External Lists';

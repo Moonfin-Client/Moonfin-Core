@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart' show CupertinoSlider;
 import 'package:flutter/foundation.dart';
@@ -14,6 +16,7 @@ import 'package:server_core/server_core.dart' hide ImageType;
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../data/services/plugin_sync_service.dart';
+import '../../../data/services/custom_external_lists_service.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../di/providers.dart';
 import '../../../util/idiom/app_ui_idiom.dart';

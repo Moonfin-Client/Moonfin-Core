@@ -141,19 +141,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsAppearanceTheme => 'Thème de l\'application';
 
   @override
-  String get interfaceStyle => '';
+  String get interfaceStyle => 'Style d\'interface';
 
   @override
-  String get interfaceStyleSubtitle => '';
+  String get interfaceStyleSubtitle =>
+      'Automatique utilise l\'apparence native sur les appareils Apple. Choisissez Apple pour la forcer, ou Material pour l\'apparence standard.';
 
   @override
-  String get interfaceStyleAutomatic => '';
+  String get interfaceStyleAutomatic => 'Automatique';
 
   @override
-  String get interfaceStyleApple => '';
+  String get interfaceStyleApple => 'Apple';
 
   @override
-  String get interfaceStyleMaterial => '';
+  String get interfaceStyleMaterial => 'Material';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
@@ -2208,22 +2209,25 @@ class AppLocalizationsFr extends AppLocalizations {
   String get defaultAudioLanguage => 'Langue audio par défaut';
 
   @override
-  String get fallbackAudioLanguage => '';
+  String get fallbackAudioLanguage => 'Langue audio secondaire';
 
   @override
-  String get preferDefaultAudioTrack => '';
+  String get preferDefaultAudioTrack => 'Préférer la piste audio par défaut';
 
   @override
-  String get preferDefaultAudioTrackDescription => '';
+  String get preferDefaultAudioTrackDescription =>
+      'Préférer la piste audio originale au doublage.';
 
   @override
-  String get preferAudioDescription => '';
+  String get preferAudioDescription =>
+      'Préférer les pistes d\'audiodescription';
 
   @override
-  String get preferAudioDescriptionDescription => '';
+  String get preferAudioDescriptionDescription =>
+      'Préférer les pistes d\'audiodescription aux pistes normales.';
 
   @override
-  String get transcodingAudio => '';
+  String get transcodingAudio => 'Transcodage (audio)';
 
   @override
   String get autoServerDefault => 'Auto (par défaut du serveur)';
@@ -2633,40 +2637,45 @@ class AppLocalizationsFr extends AppLocalizations {
       'Personnaliser l\'apparence des sous-titres';
 
   @override
-  String get subtitleMode => '';
+  String get subtitleMode => 'Sélection des sous-titres';
 
   @override
-  String get subtitleModeFlagged => '';
+  String get subtitleModeFlagged => 'Par défaut';
 
   @override
-  String get subtitleModeAlways => '';
+  String get subtitleModeAlways => 'Toujours';
 
   @override
-  String get subtitleModeForeign => '';
+  String get subtitleModeForeign => 'Langue étrangère';
 
   @override
-  String get subtitleModeForced => '';
+  String get subtitleModeForced => 'Forcés';
 
   @override
-  String get subtitleModeFlaggedDescription => '';
+  String get subtitleModeFlaggedDescription =>
+      'Lit les pistes définies comme « par défaut » ou « forcées » dans les métadonnées du fichier.';
 
   @override
-  String get subtitleModeAlwaysDescription => '';
+  String get subtitleModeAlwaysDescription =>
+      'Charge et affiche automatiquement les sous-titres à chaque démarrage d\'une vidéo.';
 
   @override
-  String get subtitleModeForeignDescription => '';
+  String get subtitleModeForeignDescription =>
+      'Active automatiquement les sous-titres si la piste audio par défaut est dans une langue étrangère.';
 
   @override
-  String get subtitleModeForcedDescription => '';
+  String get subtitleModeForcedDescription =>
+      'Ne charge que les sous-titres explicitement marqués comme « forcés » dans les métadonnées.';
 
   @override
-  String get subtitleModeNoneDescription => '';
+  String get subtitleModeNoneDescription =>
+      'Désactive complètement le chargement automatique des sous-titres.';
 
   @override
-  String get fallbackSubtitleLanguage => '';
+  String get fallbackSubtitleLanguage => 'Langue de sous-titres secondaire';
 
   @override
-  String get subtitleStream => '';
+  String get subtitleStream => 'Piste de sous-titres';
 
   @override
   String get subtitlePreviewText =>
@@ -2944,16 +2953,19 @@ class AppLocalizationsFr extends AppLocalizations {
       'Afficher l’option de navigation par dossiers';
 
   @override
-  String get groupItemsIntoCollections => '';
+  String get groupItemsIntoCollections =>
+      'Regrouper les éléments en collections';
 
   @override
-  String get hideCollectionAssociatedItems => '';
+  String get hideCollectionAssociatedItems =>
+      'Masquer les éléments appartenant à une collection lors de la navigation dans les bibliothèques';
 
   @override
-  String get groupItemsIntoCollectionsDialogTitle => '';
+  String get groupItemsIntoCollectionsDialogTitle => 'À propos du regroupement';
 
   @override
-  String get groupItemsIntoCollectionsDialogMessage => '';
+  String get groupItemsIntoCollectionsDialogMessage =>
+      'Pour utiliser ce réglage, assurez-vous que les options « Regrouper les films en collections » et/ou « Regrouper les séries en collections » sont activées dans les réglages d\'affichage de votre bibliothèque, sur votre serveur Jellyfin ou Emby.';
 
   @override
   String get libraryVisibility => 'Visibilité des bibliothèques';
@@ -2966,7 +2978,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get showInNavigation => 'Afficher dans la navigation';
 
   @override
-  String get showInLatestMedia => 'Afficher dans ajouts récents';
+  String get showInLatestMedia =>
+      'Afficher dans les médias récemment ajoutés ou sortis';
 
   @override
   String get sourceLibraries => 'Bibliothèques sources';
@@ -3087,7 +3100,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Activer l’audio pour les aperçus de bandes-annonces et d’épisodes';
 
   @override
-  String get latestMedia => 'Derniers médias';
+  String get latestMedia => 'Médias récemment ajoutés';
 
   @override
   String get recentlyReleased => 'Récemment sortis';
@@ -7514,7 +7527,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String recentlyReleasedLibraryName(String libraryName) {
-    return '';
+    return '$libraryName, sorties récentes';
   }
 
   @override
@@ -8080,7 +8093,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get appearancesSeerr => 'Apparitions (Seerr)';
 
   @override
-  String get crewContributionsSeerr => '';
+  String get crewContributionsSeerr => 'Contributions techniques (Seerr)';
 
   @override
   String get watchWithGroup => 'Regarder en groupe';
@@ -8490,54 +8503,58 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sources => 'Sources';
 
   @override
-  String get subtitlePreferences => '';
+  String get subtitlePreferences => 'Préférences de sous-titres';
 
   @override
-  String get subtitlePreferencesDescription => '';
+  String get subtitlePreferencesDescription =>
+      'Modifier les modes de sous-titres, les langues par défaut, l\'apparence et les options de rendu.';
 
   @override
-  String get subtitleRendering => '';
+  String get subtitleRendering => 'Rendu des sous-titres';
 
   @override
-  String get displayOptions => '';
+  String get displayOptions => 'Options d\'affichage';
 
   @override
-  String get releaseDateAscending => '';
+  String get releaseDateAscending => 'Date de sortie (croissant)';
 
   @override
-  String get releaseDateDescending => '';
+  String get releaseDateDescending => 'Date de sortie (décroissant)';
 
   @override
-  String get groupContributions => '';
+  String get groupContributions => 'Regrouper les contributions';
 
   @override
-  String get groupMultipleRoles => '';
+  String get groupMultipleRoles => 'Regrouper les rôles d\'une même personne';
 
   @override
-  String get libraryWriteAccessWarningTitle => '';
+  String get libraryWriteAccessWarningTitle =>
+      'Avertissement d\'accès en écriture à la bibliothèque';
 
   @override
-  String get libraryWriteAccessHowToFix => '';
+  String get libraryWriteAccessHowToFix => 'Comment résoudre ce problème :';
 
   @override
-  String get libraryWriteAccessFixSteps => '';
+  String get libraryWriteAccessFixSteps =>
+      '1. Accordez les permissions d\'écriture à l\'utilisateur du service Jellyfin (par exemple, jellyfin ou le PUID/PGID Docker) sur les dossiers de votre bibliothèque multimédia, côté serveur.\n\n2. Ou, dans le tableau de bord Jellyfin → Bibliothèques, modifiez cette bibliothèque et désactivez « Enregistrer les illustrations dans les dossiers multimédias » pour stocker les visuels dans la base de données interne de Jellyfin.';
 
   @override
-  String get dismiss => '';
+  String get dismiss => 'Ignorer';
 
   @override
   String libraryWriteAccessProactiveBody(
     String libraryName,
     String failedPath,
   ) {
-    return '';
+    return 'Votre bibliothèque $libraryName est configurée pour enregistrer les visuels directement dans les dossiers multimédias (l\'option « Enregistrer les illustrations dans les dossiers multimédias » est activée). Cependant, Jellyfin a testé l\'accès en écriture et n\'a pas la permission d\'écrire dans ce répertoire :\n\n$failedPath';
   }
 
   @override
-  String get libraryWriteAccessReactiveBody => '';
+  String get libraryWriteAccessReactiveBody =>
+      'Il semble que Jellyfin n\'ait pas réussi à mettre à jour le visuel. Votre bibliothèque est configurée pour enregistrer les visuels directement dans les dossiers multimédias (l\'option « Enregistrer les illustrations dans les dossiers multimédias » est activée). Cette erreur survient généralement lorsque le serveur Jellyfin n\'a pas la permission d\'écrire dans vos répertoires multimédias.';
 
   @override
-  String get externalLists => 'External Lists';
+  String get externalLists => 'External Home Row Lists';
 
   @override
   String get enableImdb => 'IMDb External Lists';

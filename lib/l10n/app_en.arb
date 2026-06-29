@@ -4676,7 +4676,7 @@
       }
     }
   },
-  "discoverRows": "Seerr Homepage",
+  "discoverRows": "Seerr Discovery Page",
   "@discoverRows": {
     "description": "Section title for discover rows"
   },

@@ -8443,7 +8443,7 @@ class AppLocalizationsCy extends AppLocalizations {
   String get libraryWriteAccessReactiveBody => '';
 
   @override
-  String get externalLists => 'External Lists';
+  String get externalLists => 'External Home Row Lists';
 
   @override
   String get enableImdb => 'IMDb External Lists';

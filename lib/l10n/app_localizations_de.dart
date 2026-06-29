@@ -426,25 +426,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String minutesAgo(int count) {
-    return 'Vor ${count}m';
+    return 'Vor $count Minute(n)';
   }
 
   @override
   String hoursAgo(int count) {
-    return 'Vor ${count}h';
+    return 'Vor $count Stunde(n)';
   }
 
   @override
   String daysAgo(int count) {
-    return 'Vor ${count}d';
+    return 'Vor $count Tag(en)';
   }
 
   @override
-  String get discoverySubjects => 'Entdecken-Themen';
+  String get discoverySubjects => 'Themen zum Entdecken';
 
   @override
   String get pickDiscoverySubjects =>
-      'Wähle aus, welche Themen-Feeds in Entdecken angezeigt werden.';
+      'Wähle aus, welche Themen-Feeds in \"Entdecken\" angezeigt werden.';
 
   @override
   String get apply => 'Anwenden';
@@ -453,14 +453,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get openLink => 'Link öffnen';
 
   @override
-  String get scanWithYourPhone => 'Scannen Sie mit Ihrem Telefon';
+  String get scanWithYourPhone => 'Scanne mit dem Mobiltelefon';
 
   @override
   String get audiobookGenres => 'Hörbuch-Genres';
 
   @override
   String get pickAudiobookGenres =>
-      'Wähle aus, welche Genres in Hörbuch-Entdecken angezeigt werden.';
+      'Wähle aus, welche Genres in \"Hörbücher entdecken\" angezeigt werden.';
 
   @override
   String get discoverAudiobooks => 'Hörbücher entdecken';
@@ -502,13 +502,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get failedToLoadLibrary => 'Bibliothek konnte nicht geladen werden';
 
   @override
-  String get popularNow => 'Jetzt beliebt';
+  String get popularNow => 'Aktuell beliebt';
 
   @override
-  String get savedForLater => 'Für später gespeichert';
+  String get savedForLater => 'Für später vorgemerkt';
 
   @override
-  String get topListens => 'Am meisten gehört';
+  String get topListens => 'Viel gehört';
 
   @override
   String get unreadDiscoveries => 'Ungelesene Entdeckungen';
@@ -533,11 +533,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get jumpBackNarration =>
-      'Springe zurück in die Erzählung, ohne deine Stelle suchen zu müssen.';
+      'Setze das Anhören fort, ohne lange suchen zu müssen, wo.';
 
   @override
   String get unreadBooksReady =>
-      'Ungelesene Bücher, bereit für die nächste ruhige Stunde.';
+      'Ungelesene Bücher, verfügbar für die nächste ruhige Gelegenheit.';
 
   @override
   String get quickAccessFavorites =>
@@ -547,15 +547,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get searchAudiobooks => 'Hörbücher suchen';
 
   @override
-  String get searchYourLibrary => 'Deine Bibliothek durchsuchen';
+  String get searchYourLibrary => 'Die Bibliothek durchsuchen';
 
   @override
   String get pickUpStory =>
-      'Setze die Geschichte dort fort, wo du aufgehört hast';
+      'Setze mit der Handlung fort, wo du zuletzt aufgehört hast';
 
   @override
   String get savedPlacesChapters =>
-      'Deine gespeicherten Stellen und unvollständigen Kapitel';
+      'Deine gespeicherten Stellen und nicht beendete Kapitel';
 
   @override
   String authorsCount(int count) {
@@ -569,24 +569,24 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String percentCompleted(int percent) {
-    return '$percent% abgeschlossen';
+    return 'Zu $percent% beendet';
   }
 
   @override
   String get readyWhenYouAre => 'Bereit, wenn du es bist';
 
   @override
-  String get details => 'Einzelheiten';
+  String get details => 'Details';
 
   @override
-  String get listeningRoom => 'Hörzimmer';
+  String get listeningRoom => 'Hörbücher';
 
   @override
   String get bookmarksAndProgress => 'Lesezeichen & Fortschritt';
 
   @override
   String titlesArrangedForBrowsing(int count) {
-    return '$count Titel so angeordnet, dass sie zuerst gelesen werden können.';
+    return '$count Titel für Durchsuchen mit Fokus aufs Lesen angeordnet.';
   }
 
   @override
@@ -613,18 +613,18 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noBookmarkedItems =>
-      'Noch keine mit Lesezeichen versehenen Einträge';
+      'Noch keine mit Lesezeichen versehenen Inhalte';
 
   @override
   String get nothingMatchesSection =>
-      'Nichts passt zu diesem Bereich. Versuche einen anderen Tab oder komme nach der Bibliothekssynchronisierung zurück.';
+      'Keine zu diesem Bereich passenden Inhalte gefunden; wechsle zu einen anderen Tab oder warte ggf. auf Synchronisierung der Bibliothek.';
 
   @override
   String get audiobooks => 'Hörbücher';
 
   @override
   String noLabelFound(String label) {
-    return 'Kein $label gefunden';
+    return 'Nichts ($label) gefunden';
   }
 
   @override
@@ -643,13 +643,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get readStatus => 'Gelesen';
 
   @override
-  String get watched => 'Gesehen';
+  String get watched => 'Angesehen';
 
   @override
   String get unread => 'Ungelesen';
 
   @override
-  String get unwatched => 'Nicht gesehen';
+  String get unwatched => 'Nicht angesehen';
 
   @override
   String get seriesStatus => 'Serienstatus';
@@ -664,17 +664,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get author => 'Autor';
 
   @override
-  String get unknownAuthor => 'Unbekannter Autor';
+  String get unknownAuthor => 'Autor unbekannt';
 
   @override
-  String get uncategorized => 'Unkategorisiert';
+  String get uncategorized => 'Nicht kategorisiert';
 
   @override
   String get overview => 'Übersicht';
 
   @override
   String get noLibrivoxDescription =>
-      'Für diesen Titel ist noch keine Beschreibung von LibriVox vorhanden.';
+      'Für diesen Titel ist keine Beschreibung von LibriVox verfügbar.';
 
   @override
   String get readers => 'Vorleser';
@@ -686,13 +686,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get librivoxPage => 'LibriVox-Seite';
 
   @override
-  String get internetArchive => 'Internetarchiv';
+  String get internetArchive => 'Internet Archive';
 
   @override
   String get rssFeed => 'RSS-Feed';
 
   @override
-  String get downloadZip => 'ZIP herunterladen';
+  String get downloadZip => 'ZIP-Datei herunterladen';
 
   @override
   String sectionCountLabel(int count) {
@@ -701,12 +701,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String firstPublished(int year) {
-    return 'Erstveröffentlichung $year';
+    return 'Erstveröffentlichung: $year';
   }
 
   @override
   String get noOpenLibraryOverview =>
-      'Für diesen Titel ist noch keine Übersicht von Open Library verfügbar.';
+      'Für diesen Titel ist keine Übersicht von Open Library verfügbar.';
 
   @override
   String get subjects => 'Themen';
@@ -736,8 +736,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count audiobooks',
-      one: '1 audiobook',
+      other: '$count Hörbücher',
+      one: '1 Hörbuch',
     );
     return '$_temp0';
   }
@@ -746,7 +746,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get trackList => 'Titelliste';
 
   @override
-  String get itemListPlaceholder => 'Die Elementliste wird hier angezeigt';
+  String get itemListPlaceholder => 'Die Liste der Inhalte wird hier angezeigt';
 
   @override
   String get favoriteTracksPlaceholder =>
@@ -762,7 +762,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get save => 'Speichern';
 
   @override
-  String get moreLikeThis => 'Mehr davon';
+  String get moreLikeThis => 'Mehr ähnliche Inhalte';
 
   @override
   String get castAndCrew => 'Besetzung & Crew';
@@ -774,7 +774,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get episodes => 'Episoden';
 
   @override
-  String get nextUp => 'Als Nächstes';
+  String get nextUp => 'Nächste Folge';
 
   @override
   String get seasons => 'Staffeln';
@@ -808,33 +808,33 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String discNumber(int number) {
-    return 'Disc $number';
+    return 'Platte $number';
   }
 
   @override
   String get biography => 'Biografie';
 
   @override
-  String get authorDetails => 'Autordetails';
+  String get authorDetails => 'Details zum Autor';
 
   @override
   String get noOverviewAvailable =>
-      'Für diesen Titel ist noch keine Übersicht verfügbar.';
+      'Für diesen Titel ist keine Übersicht verfügbar.';
 
   @override
   String get noBiographyAvailable =>
       'Für diesen Autor ist keine Biografie verfügbar.';
 
   @override
-  String get noBooksFound => 'Keine Bücher für diesen Autor gefunden.';
+  String get noBooksFound => 'Keine Bücher von diesem Autor gefunden.';
 
   @override
   String get unableToLoadAuthorDetails =>
-      'Autordetails konnten gerade nicht geladen werden.';
+      'Details zum Autor konnten nicht geladen werden.';
 
   @override
   String published(int year) {
-    return 'Veröffentlicht $year';
+    return 'Veröffentlichung: $year';
   }
 
   @override
@@ -845,8 +845,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Seasons',
-      one: '1 Season',
+      other: '$count Staffeln',
+      one: '1 Staffel',
     );
     return '$_temp0';
   }
@@ -858,7 +858,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String endsIn(String time) {
-    return '';
+    return 'verbleibend: $time';
   }
 
   @override
@@ -872,17 +872,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String resumeFrom(String position) {
-    return 'Fortsetzen von $position';
+    return 'Fortsetzen bei $position';
   }
 
   @override
   String get play => 'Abspielen';
 
   @override
-  String get startOver => 'Von vorn beginnen';
+  String get startOver => 'Am Anfang beginnen';
 
   @override
-  String get restart => 'Neustart';
+  String get restart => 'Neu starten';
 
   @override
   String get readOffline => 'Offline lesen';
@@ -900,19 +900,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get version => 'Version';
 
   @override
-  String get cast => 'Besetzung';
+  String get cast => 'Abspielen auf';
 
   @override
   String get trailer => 'Trailer';
 
   @override
-  String get finished => 'Abgeschlossen';
+  String get finished => 'Durchgelesen';
 
   @override
   String get favorited => 'Favorisiert';
 
   @override
-  String get favorite => 'Favorit';
+  String get favorite => 'Favorisieren';
 
   @override
   String get playlist => 'Wiedergabeliste';
@@ -927,22 +927,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get download => 'Herunterladen';
 
   @override
-  String get deleteDownloaded => 'Download löschen';
+  String get deleteDownloaded => 'Heruntergeladene löschen';
 
   @override
-  String get goToSeries => 'Zur Serie';
+  String get goToSeries => 'Zur gesamten Serie';
 
   @override
   String get editMetadata => 'Metadaten bearbeiten';
 
   @override
-  String get less => 'Weniger';
+  String get less => 'Weniger anzeigen';
 
   @override
-  String get more => 'Mehr';
+  String get more => 'Mehr anzeigen';
 
   @override
-  String get deleteItem => 'Element löschen';
+  String get deleteItem => 'Inhalt löschen';
 
   @override
   String get deletePlaylist => 'Wiedergabeliste löschen';
@@ -952,14 +952,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Diese Wiedergabeliste vom Server löschen?';
 
   @override
-  String get deleteItemMessage => 'Dieses Element vom Server löschen?';
+  String get deleteItemMessage => 'Diesen Inhalt vom Server löschen?';
 
   @override
   String get failedToDeletePlaylist =>
       'Wiedergabeliste konnte nicht gelöscht werden';
 
   @override
-  String get failedToDeleteItem => 'Element konnte nicht gelöscht werden';
+  String get failedToDeleteItem => 'Inhalt konnte nicht gelöscht werden';
 
   @override
   String get renamePlaylist => 'Wiedergabeliste umbenennen';
@@ -972,7 +972,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String deleteDownloadedTracksMessage(String title) {
-    return 'Heruntergeladene Titel für „$title“ löschen?';
+    return 'Heruntergeladene Titel für Album \"$title\" löschen?';
   }
 
   @override
@@ -987,17 +987,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String noItemsLoaded(String itemLabel) {
-    return 'Kein $itemLabel geladen';
+    return '$itemLabel nicht geladen';
   }
 
   @override
   String downloadingTitle(String title, int count) {
-    return '$title ($count Elemente werden heruntergeladen)...';
+    return '$title ($count Inhalte) wird heruntergeladen...';
   }
 
   @override
   String deleteConfirmMessage(String name) {
-    return 'Sind Sie sicher, dass Sie „$name“ vom Server löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.';
+    return 'Soll \"$name\" wirklich vom Server gelöscht werden? Diese Aktion kann nicht rückgängig gemacht werden.';
   }
 
   @override
@@ -8487,7 +8487,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get libraryWriteAccessReactiveBody => '';
 
   @override
-  String get externalLists => 'External Lists';
+  String get externalLists => 'External Home Row Lists';
 
   @override
   String get enableImdb => 'IMDb External Lists';

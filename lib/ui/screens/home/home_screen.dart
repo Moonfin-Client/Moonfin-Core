@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui' as ui;
 
+import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -29,6 +31,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../playback/appletv_preview_player.dart';
 import '../../../playback/inline_preview_engine.dart';
 import '../../../playback/media3_player_backend.dart';
+import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../widgets/exit_confirmation_dialog.dart';
@@ -2001,8 +2004,10 @@ class _ContentRowsState extends State<_ContentRows>
       childHeight = maxCardHeight + (10 * metadataScale);
     }
 
-    final isSeerrRow = row.id.startsWith('seerr_');
-    final hasSubtitle = isSeerrRow && (row.rowType != HomeRowType.liveTv && row.rowType != HomeRowType.libraryTilesSmall);
+    final subtitle = _rowSubtitle(row, AppLocalizations.of(context)!);
+    final hasSubtitle = subtitle != null &&
+        (row.rowType != HomeRowType.liveTv &&
+            row.rowType != HomeRowType.libraryTilesSmall);
     final headerPaddingTop = isRowsV2 ? 6.0 : 16.0;
     final headerPaddingBottom = isRowsV2 ? 1.0 : 8.0;
     final titleHeight = 20.0 * metadataScale;
@@ -2964,6 +2969,44 @@ class _ContentRowsState extends State<_ContentRows>
     );
   }
 
+  String? _rowSubtitle(HomeRow row, AppLocalizations l10n) {
+    if (row.id == 'merged_calendar' || row.id == 'radarr_calendar' || row.id == 'sonarr_calendar') {
+      return 'Radarr and Sonarr Calendars';
+    }
+    if (row.id.startsWith('seerr_')) return l10n.seerrDiscoveryRows;
+    if (row.id.startsWith('tmdb_')) return 'TMDB Lists';
+
+    final config = widget.prefs.homeSectionsConfig.firstWhereOrNull((c) => c.stableId == row.id);
+    if (config != null && config.pluginSource == HomeSectionPluginSource.custom) {
+      Map<String, dynamic> rowConfig = {};
+      try {
+        rowConfig = jsonDecode(config.pluginAdditionalData ?? '{}') as Map<String, dynamic>;
+      } catch (_) {}
+      final source = rowConfig['source'] as String? ?? 'imdb';
+      final type = rowConfig['type'] as String? ?? 'user_list';
+      final sourceLabel = switch (source) {
+        'imdb' => 'IMDb',
+        'tmdb' => 'TMDB',
+        'letterboxd' => 'Letterboxd',
+        'mdblist' => 'MDBList',
+        _ => source.toUpperCase(),
+      };
+      final typeLabel = switch (type) {
+        'user_list' => source == 'tmdb'
+            ? 'List'
+            : (source == 'mdblist' ? '' : 'List from URL'),
+        'user_diary' => 'Diary',
+        'watchlist' => 'Watchlist',
+        'films' => 'Complete Films',
+        'awards_events' => 'Awards/Events',
+        'movie_collection' => 'Collection',
+        _ => type,
+      };
+      return '$sourceLabel $typeLabel'.trim();
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final rows = widget.viewModel.rows;
@@ -3579,14 +3622,15 @@ class _ContentRowsState extends State<_ContentRows>
           (46 * metadataScale);
     }
 
-    final isSeerrRow = row.id.startsWith('seerr_');
+    final subtitle = _rowSubtitle(row, l10n);
+    final hasSubtitle = subtitle != null;
     return _buildTitledRow(
       key: _rowContainerKey(rowIndex),
       title: _localizedRowTitle(row, l10n),
-      subtitle: isSeerrRow ? l10n.seerrDiscoveryRows : null,
+      subtitle: subtitle,
       rowIndex: rowIndex,
       hasItems: row.items.isNotEmpty,
-      height: maxCardHeight + (10 * metadataScale) + (isSeerrRow ? 18.0 : 0.0),
+      height: maxCardHeight + (10 * metadataScale) + (hasSubtitle ? 18.0 : 0.0),
       child: LockedFocusRow<AggregatedItem>(
         key: _rowKey(rowIndex),
         items: row.items,
@@ -3805,12 +3849,18 @@ class _ContentRowsState extends State<_ContentRows>
             }
           } else {
             cardTitle = item.name;
-            cardSubtitle = (canUseExpandedV2Card &&
-                    row.id != 'radarr_calendar' &&
-                    row.id != 'sonarr_calendar' &&
-                    row.id != 'merged_calendar')
-                ? _v2MetadataLine(item)
-                : item.subtitle;
+            final showUserRatings = item.rawData['ShowUserRatings'] == true;
+            final userRating = item.rawData['UserRating'] as String? ?? '';
+            if (showUserRatings && userRating.isNotEmpty) {
+              cardSubtitle = userRating;
+            } else {
+              cardSubtitle = (canUseExpandedV2Card &&
+                      row.id != 'radarr_calendar' &&
+                      row.id != 'sonarr_calendar' &&
+                      row.id != 'merged_calendar')
+                  ? _v2MetadataLine(item)
+                  : item.subtitle;
+            }
             cardSubtitleWidget = null;
           }
 
@@ -4460,14 +4510,19 @@ class _ContentRowsState extends State<_ContentRows>
       return prefs.get(UserPreferences.homeRowsUniversalImageType);
     }
 
-    final sectionType = _sectionTypeForRow(row);
+    final sectionType = _sectionTypeForRow(row, prefs);
     if (sectionType == null) {
       return ImageType.poster;
     }
     return prefs.get(UserPreferences.homeRowImageType(sectionType));
   }
 
-  static HomeSectionType? _sectionTypeForRow(HomeRow row) {
+  static HomeSectionType? _sectionTypeForRow(HomeRow row, UserPreferences prefs) {
+    final config = prefs.homeSectionsConfig.firstWhereOrNull((c) => c.stableId == row.id);
+    if (config != null) {
+      return config.type;
+    }
+
     return switch (row.rowType) {
       HomeRowType.resume => HomeSectionType.resume,
       HomeRowType.nextUp => HomeSectionType.nextUp,

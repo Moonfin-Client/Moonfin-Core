@@ -60,13 +60,14 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
                 onTap: () =>
                     context.pushSettingsScreen(const SeerrConfigScreen()),
               ),
-              _TvSettingsListTile(
-                leading: const Icon(Icons.list_alt),
-                title: Text(l10n.externalLists),
-                subtitle: const Text('Configure external lists for display on the Home Screen.'),
-                onTap: () =>
-                    context.pushSettingsScreen(const _ExternalListsScreen()),
-              ),
+              if (GetIt.instance<PluginSyncService>().seerrAvailable)
+                _TvSettingsListTile(
+                  leading: const Icon(Icons.list_alt),
+                  title: Text(l10n.externalLists),
+                  subtitle: const Text('Configure external lists for display on the Home Screen.'),
+                  onTap: () =>
+                      context.pushSettingsScreen(const _ExternalListsScreen()),
+                ),
               _TvSettingsListTile(
                 leading: Image.asset(
                   'assets/icons/hss.png',

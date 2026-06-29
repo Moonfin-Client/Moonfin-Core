@@ -6241,7 +6241,7 @@ abstract class AppLocalizations {
   /// Section title for discover rows
   ///
   /// In en, this message translates to:
-  /// **'Seerr Homepage'**
+  /// **'Seerr Discovery Page'**
   String get discoverRows;
 
   /// Description for discover rows with plugin

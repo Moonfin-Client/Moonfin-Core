@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,9 +11,11 @@ import '../../../data/models/aggregated_item.dart';
 import '../../../data/utils/playlist_utils.dart';
 import '../../../data/services/home_screen_sections_service.dart';
 import '../../../data/services/plugin_sync_service.dart';
+import 'package:jellyfin_preference/jellyfin_preference.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/seerr_preferences.dart';
+import '../../../preference/seerr_row_config.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
 import '../../widgets/overlay_sheet.dart';
@@ -472,6 +475,114 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     return seerrPrefs.rowsConfig.any((r) => r.enabled);
   }
 
+  bool _isAnyImdbSectionEnabled() {
+    return _prefs.get(UserPreferences.imdbTop250MoviesEnabled) ||
+        _prefs.get(UserPreferences.imdbTop250TvShowsEnabled) ||
+        _prefs.get(UserPreferences.imdbMostPopularMoviesEnabled) ||
+        _prefs.get(UserPreferences.imdbMostPopularTvShowsEnabled) ||
+        _prefs.get(UserPreferences.imdbLowestRatedMoviesEnabled) ||
+        _prefs.get(UserPreferences.imdbTopEnglishMoviesEnabled);
+  }
+
+  bool _isAnyTmdbSectionEnabled() {
+    return _prefs.get(UserPreferences.tmdbPopularMoviesEnabled) ||
+        _prefs.get(UserPreferences.tmdbTopRatedMoviesEnabled) ||
+        _prefs.get(UserPreferences.tmdbNowPlayingMoviesEnabled) ||
+        _prefs.get(UserPreferences.tmdbUpcomingMoviesEnabled) ||
+        _prefs.get(UserPreferences.tmdbPopularTvEnabled) ||
+        _prefs.get(UserPreferences.tmdbTopRatedTvEnabled) ||
+        _prefs.get(UserPreferences.tmdbAiringTodayTvEnabled) ||
+        _prefs.get(UserPreferences.tmdbOnTheAirTvEnabled) ||
+        _prefs.get(UserPreferences.tmdbTrendingMovieDailyEnabled) ||
+        _prefs.get(UserPreferences.tmdbTrendingMovieWeeklyEnabled) ||
+        _prefs.get(UserPreferences.tmdbTrendingTvDailyEnabled) ||
+        _prefs.get(UserPreferences.tmdbTrendingTvWeeklyEnabled) ||
+        _prefs.get(UserPreferences.tmdbTrendingAllWeeklyEnabled);
+  }
+
+  bool _isSeerrRowEnabled(HomeSectionType type) {
+    final seerrPrefs = GetIt.instance<SeerrPreferences>();
+    final seerrType = switch (type) {
+      HomeSectionType.seerrRecentRequests => SeerrRowType.recentRequests,
+      HomeSectionType.seerrRecentlyAdded => SeerrRowType.recentlyAdded,
+      HomeSectionType.seerrTrending => SeerrRowType.trending,
+      HomeSectionType.seerrPopularMovies => SeerrRowType.popularMovies,
+      HomeSectionType.seerrMovieGenres => SeerrRowType.movieGenres,
+      HomeSectionType.seerrUpcomingMovies => SeerrRowType.upcomingMovies,
+      HomeSectionType.seerrStudios => SeerrRowType.studios,
+      HomeSectionType.seerrPopularSeries => SeerrRowType.popularSeries,
+      HomeSectionType.seerrSeriesGenres => SeerrRowType.seriesGenres,
+      HomeSectionType.seerrUpcomingSeries => SeerrRowType.upcomingSeries,
+      HomeSectionType.seerrNetworks => SeerrRowType.networks,
+      _ => null,
+    };
+    if (seerrType == null) return false;
+    return seerrPrefs.rowsConfig.firstWhere(
+      (r) => r.type == seerrType,
+      orElse: () => SeerrRowConfig(type: seerrType, enabled: false),
+    ).enabled;
+  }
+
+  bool _isImdbRowEnabled(HomeSectionType type) {
+    final prefKey = switch (type) {
+      HomeSectionType.imdbTop250Movies => UserPreferences.imdbTop250MoviesEnabled,
+      HomeSectionType.imdbTop250TvShows => UserPreferences.imdbTop250TvShowsEnabled,
+      HomeSectionType.imdbMostPopularMovies => UserPreferences.imdbMostPopularMoviesEnabled,
+      HomeSectionType.imdbMostPopularTvShows => UserPreferences.imdbMostPopularTvShowsEnabled,
+      HomeSectionType.imdbLowestRatedMovies => UserPreferences.imdbLowestRatedMoviesEnabled,
+      HomeSectionType.imdbTopEnglishMovies => UserPreferences.imdbTopEnglishMoviesEnabled,
+      _ => null,
+    };
+    if (prefKey == null) return false;
+    return _prefs.get(prefKey);
+  }
+
+  bool _isTmdbRowEnabled(HomeSectionType type) {
+    final prefKey = switch (type) {
+      HomeSectionType.tmdbPopularMovies => UserPreferences.tmdbPopularMoviesEnabled,
+      HomeSectionType.tmdbTopRatedMovies => UserPreferences.tmdbTopRatedMoviesEnabled,
+      HomeSectionType.tmdbNowPlayingMovies => UserPreferences.tmdbNowPlayingMoviesEnabled,
+      HomeSectionType.tmdbUpcomingMovies => UserPreferences.tmdbUpcomingMoviesEnabled,
+      HomeSectionType.tmdbPopularTv => UserPreferences.tmdbPopularTvEnabled,
+      HomeSectionType.tmdbTopRatedTv => UserPreferences.tmdbTopRatedTvEnabled,
+      HomeSectionType.tmdbAiringTodayTv => UserPreferences.tmdbAiringTodayTvEnabled,
+      HomeSectionType.tmdbOnTheAirTv => UserPreferences.tmdbOnTheAirTvEnabled,
+      HomeSectionType.tmdbTrendingMovieDaily => UserPreferences.tmdbTrendingMovieDailyEnabled,
+      HomeSectionType.tmdbTrendingMovieWeekly => UserPreferences.tmdbTrendingMovieWeeklyEnabled,
+      HomeSectionType.tmdbTrendingTvDaily => UserPreferences.tmdbTrendingTvDailyEnabled,
+      HomeSectionType.tmdbTrendingTvWeekly => UserPreferences.tmdbTrendingTvWeeklyEnabled,
+      HomeSectionType.tmdbTrendingAllWeekly => UserPreferences.tmdbTrendingAllWeeklyEnabled,
+      _ => null,
+    };
+    if (prefKey == null) return false;
+    return _prefs.get(prefKey);
+  }
+
+  bool _isImdbSectionType(HomeSectionType type) {
+    return type == HomeSectionType.imdbTop250Movies ||
+        type == HomeSectionType.imdbTop250TvShows ||
+        type == HomeSectionType.imdbMostPopularMovies ||
+        type == HomeSectionType.imdbMostPopularTvShows ||
+        type == HomeSectionType.imdbLowestRatedMovies ||
+        type == HomeSectionType.imdbTopEnglishMovies;
+  }
+
+  bool _isTmdbSectionType(HomeSectionType type) {
+    return type == HomeSectionType.tmdbPopularMovies ||
+        type == HomeSectionType.tmdbTopRatedMovies ||
+        type == HomeSectionType.tmdbNowPlayingMovies ||
+        type == HomeSectionType.tmdbUpcomingMovies ||
+        type == HomeSectionType.tmdbPopularTv ||
+        type == HomeSectionType.tmdbTopRatedTv ||
+        type == HomeSectionType.tmdbAiringTodayTv ||
+        type == HomeSectionType.tmdbOnTheAirTv ||
+        type == HomeSectionType.tmdbTrendingMovieDaily ||
+        type == HomeSectionType.tmdbTrendingMovieWeekly ||
+        type == HomeSectionType.tmdbTrendingTvDaily ||
+        type == HomeSectionType.tmdbTrendingTvWeekly ||
+        type == HomeSectionType.tmdbTrendingAllWeekly;
+  }
+
   bool _isHiddenByRowVisibilityGates(HomeSectionConfig section) {
     final showFavoritesRows = _prefs.get(UserPreferences.displayFavoritesRows);
     final showCollectionsRows = _prefs.get(
@@ -482,6 +593,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     final showSeerrRows =
         _isAnySeerrSectionEnabled() &&
         GetIt.instance<PluginSyncService>().seerrAvailable;
+    final showImdbRows = _isAnyImdbSectionEnabled();
+    final showTmdbRows = _isAnyTmdbSectionEnabled();
 
     final hiddenByFavorites =
         !showFavoritesRows && _isFavoriteSectionType(section.type);
@@ -500,7 +613,13 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         ((section.isBuiltin && _isPlaylistsSectionType(section.type)) ||
             (section.isPluginDynamic &&
                 section.pluginSource == HomeSectionPluginSource.playlists));
-    final hiddenBySeerr = !showSeerrRows && _isSeerrSectionType(section.type);
+    final hiddenBySeerr = _isSeerrSectionType(section.type) &&
+        (!showSeerrRows || !_isSeerrRowEnabled(section.type));
+    final hiddenByImdb = _isImdbSectionType(section.type) &&
+        (!showImdbRows || !_isImdbRowEnabled(section.type));
+    final hiddenByTmdb = _isTmdbSectionType(section.type) &&
+        (!showTmdbRows || !_isTmdbRowEnabled(section.type));
+
     final showAudioRows = _prefs.get(UserPreferences.displayAudioRows);
     final hiddenByAudio = !showAudioRows && _isAudioSectionType(section.type);
     return hiddenByFavorites ||
@@ -508,6 +627,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         hiddenByGenres ||
         hiddenByPlaylists ||
         hiddenBySeerr ||
+        hiddenByImdb ||
+        hiddenByTmdb ||
         hiddenByAudio;
   }
 
@@ -1098,7 +1219,36 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     }
   }
 
+  void _syncIndividualPreferences() {
+    Preference<bool>? mapToExternalPref(HomeSectionType type) {
+      return switch (type) {
+        HomeSectionType.tmdbPopularMovies => UserPreferences.tmdbPopularMoviesEnabled,
+        HomeSectionType.tmdbTopRatedMovies => UserPreferences.tmdbTopRatedMoviesEnabled,
+        HomeSectionType.tmdbNowPlayingMovies => UserPreferences.tmdbNowPlayingMoviesEnabled,
+        HomeSectionType.tmdbUpcomingMovies => UserPreferences.tmdbUpcomingMoviesEnabled,
+        HomeSectionType.tmdbPopularTv => UserPreferences.tmdbPopularTvEnabled,
+        HomeSectionType.tmdbTopRatedTv => UserPreferences.tmdbTopRatedTvEnabled,
+        HomeSectionType.tmdbAiringTodayTv => UserPreferences.tmdbAiringTodayTvEnabled,
+        HomeSectionType.tmdbOnTheAirTv => UserPreferences.tmdbOnTheAirTvEnabled,
+        HomeSectionType.tmdbTrendingMovieDaily => UserPreferences.tmdbTrendingMovieDailyEnabled,
+        HomeSectionType.tmdbTrendingMovieWeekly => UserPreferences.tmdbTrendingMovieWeeklyEnabled,
+        HomeSectionType.tmdbTrendingTvDaily => UserPreferences.tmdbTrendingTvDailyEnabled,
+        HomeSectionType.tmdbTrendingTvWeekly => UserPreferences.tmdbTrendingTvWeeklyEnabled,
+        HomeSectionType.tmdbTrendingAllWeekly => UserPreferences.tmdbTrendingAllWeeklyEnabled,
+        _ => null,
+      };
+    }
+
+    for (final section in _sections) {
+      final prefKey = mapToExternalPref(section.type);
+      if (prefKey != null && _prefs.get(prefKey) != section.enabled) {
+        _prefs.set(prefKey, section.enabled);
+      }
+    }
+  }
+
   void _save() {
+    _syncIndividualPreferences();
     _persistSections(pushSync: true);
   }
 
@@ -1151,7 +1301,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
           ? cfg.pluginDisplayText!
           : (cfg.pluginSection ?? l10n.none);
     }
-    return _labelForType(cfg.type, l10n);
+    String label = _labelForType(cfg.type, l10n);
+    if (_isImdbSectionType(cfg.type)) {
+      label = label.replaceAll('IMDb ', '').replaceAll('IMDb', '').trim();
+    }
+    return label;
   }
 
   String _labelForType(HomeSectionType type, AppLocalizations l10n) =>
@@ -1485,7 +1639,27 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                                           .withValues(alpha: 0.7),
                                     ),
                                   )
-                                : null)),
+                                : (_isImdbSectionType(section.type)
+                                      ? Text(
+                                          'IMDb Lists',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontFamily: kCleanSettingsFontFamily,
+                                            color: AppColorScheme.onSurface
+                                                .withValues(alpha: 0.7),
+                                          ),
+                                        )
+                                      : (_isTmdbSectionType(section.type)
+                                            ? Text(
+                                                'TMDB Lists',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontFamily: kCleanSettingsFontFamily,
+                                                  color: AppColorScheme.onSurface
+                                                      .withValues(alpha: 0.7),
+                                                ),
+                                              )
+                                            : null)))),
                 onTap: isEmpty
                     ? null
                     : () {
@@ -1540,7 +1714,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                     ? 'Audio row'
                     : (_isSeerrSectionType(section.type)
                           ? 'Seerr Discovery Rows'
-                          : null)),
+                          : (_isImdbSectionType(section.type)
+                                ? 'IMDb Lists'
+                                : (_isTmdbSectionType(section.type)
+                                      ? 'TMDB Lists'
+                                      : null)))),
           enabled: section.enabled,
           isFirst: visibleIndex == 0,
           isLast: visibleIndex == visibleIndices.length - 1,
@@ -1576,6 +1754,30 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       HomeSectionPluginSource.genres => 'Genres row',
       HomeSectionPluginSource.playlists => 'Playlists row',
       HomeSectionPluginSource.hss => 'Home Screen Sections plugin',
+      HomeSectionPluginSource.custom => (() {
+          Map<String, dynamic> rowConfig = {};
+          try {
+            rowConfig = jsonDecode(section.pluginAdditionalData ?? '{}') as Map<String, dynamic>;
+          } catch (_) {}
+          final source = rowConfig['source'] as String? ?? 'imdb';
+          final type = rowConfig['type'] as String? ?? 'user_list';
+          final sourceLabel = switch (source) {
+            'imdb' => 'IMDb',
+            'tmdb' => 'TMDB',
+            'letterboxd' => 'Letterboxd',
+            'mdblist' => 'MDBList',
+            _ => source.toUpperCase(),
+          };
+          final typeLabel = switch (type) {
+            'user_list' => 'Custom List',
+            'watchlist' => 'Watchlist',
+            'films' => 'Films',
+            'awards_events' => 'Awards/Events',
+            'movie_collection' => 'Movie Collection',
+            _ => type,
+          };
+          return '$sourceLabel $typeLabel';
+        })(),
     };
   }
 }
