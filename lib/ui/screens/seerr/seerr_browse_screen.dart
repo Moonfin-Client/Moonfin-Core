@@ -101,7 +101,24 @@ class _SeerrBrowseScreenState extends State<SeerrBrowseScreen> {
   }
 
   void _onChanged() {
-    if (mounted) setState(() {});
+    if (mounted) {
+      setState(() {});
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final vm = _vm;
+        if (vm == null ||
+            vm.state.isLoading ||
+            vm.state.isLoadingMore ||
+            !vm.state.canLoadMore) {
+          return;
+        }
+        if (!_scrollController.hasClients) return;
+        final pos = _scrollController.position;
+        if (pos.maxScrollExtent <= 0) {
+          vm.loadMore();
+        }
+      });
+    }
   }
 
   @override
@@ -244,10 +261,14 @@ class _SeerrBrowseScreenState extends State<SeerrBrowseScreen> {
                     focusColor: resolvedFocusColor,
                     cardFocusExpansion: cardExpansion,
                     suppressFocusGlow: suppressFocusGlow,
-                    onFocus:
-                        isMobile
-                            ? null
-                            : () => setState(() => _focusedItem = item),
+                    onFocus: isMobile
+                        ? null
+                        : () {
+                            setState(() => _focusedItem = item);
+                            if (index >= s.items.length - 8) {
+                              _vm?.loadMore();
+                            }
+                          },
                     onHoverStart:
                         isMobile
                             ? null
