@@ -23,6 +23,7 @@ import '../../../widgets/logo_view.dart';
 import '../../../widgets/media_card.dart';
 import '../../../widgets/rating_display.dart';
 import '../../../widgets/focus/focusable_wrapper.dart';
+import '../../../widgets/focus/focusable_toolbar_button.dart';
 import '../../../widgets/navigation_layout.dart';
 import '../../../widgets/top_toolbar.dart';
 import '../../../../data/repositories/seerr_repository.dart';
