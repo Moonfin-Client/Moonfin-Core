@@ -248,7 +248,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     _themeMusicService.unregisterDetailScreen(this);
     _backgroundSub?.cancel();
     _focusedBackdropDebounce?.cancel();
-    _backgroundService.clearBackgrounds();
+    if (_backgroundService.currentUrl == _backdropUrl) {
+      _backgroundService.clearBackgrounds();
+    }
     _viewModel.removeListener(_onChanged);
     _prefs.removeListener(_onPrefsChanged);
     try {
@@ -5401,10 +5403,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final l10n = AppLocalizations.of(context);
 
     if (item.type == 'Person') {
-      final hasSeerrButton = item.tmdbId != null &&
-          item.tmdbId!.isNotEmpty &&
-          GetIt.instance<PluginSyncService>().seerrAvailable;
-
       final normalizedPrimaryButtons = [
         _DetailActionButton(
           label: item.isFavorite ? l10n.favorited : l10n.favorite,
@@ -5438,27 +5436,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           onArrowLeft: () {
             (widget.tvPlayFocusNode ?? _primaryFocusNode(0)).requestFocus();
           },
-          onArrowRight: hasSeerrButton
-              ? () {
-                  _primaryFocusNode(2).requestFocus();
-                }
-              : (widget.onArrowRightAtEnd ?? () {}),
+          onArrowRight: widget.onArrowRightAtEnd ?? () {},
         ),
-        if (hasSeerrButton)
-          _DetailActionButton(
-            label: l10n.seerr,
-            iconBuilder: (size, color) => SeerrIcon(size: size, color: color),
-            focusNode: _primaryFocusNode(2),
-            onPressed: () {
-              context.push(Destinations.seerrPerson(item.tmdbId!));
-            },
-            onArrowUp: NavigationLayout.focusNavbarNotifier.value != null || widget.upTarget != null ? _focusUpTarget : null,
-            onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
-            onArrowLeft: () {
-              _primaryFocusNode(1).requestFocus();
-            },
-            onArrowRight: widget.onArrowRightAtEnd ?? () {},
-          ),
       ];
 
       return Align(
@@ -8930,7 +8909,8 @@ class _DetailActionButtonState extends State<_DetailActionButton>
         : (isMobile ? 48.0 : 52.0);
 
     if (widget.isPrimary) {
-      const fg = Color(0xFF101417);
+      final fg = showHighlight ? AppColorScheme.onButtonFocused : Colors.white;
+      final heartColor = (widget.icon == Icons.favorite && widget.isActive) ? const Color(0xFFE50914) : fg;
       // Portrait spans the primary Play full width (circular secondary actions
       // wrap beneath); landscape keeps it content-width, inline with them.
       final fullWidth = context
@@ -8943,30 +8923,32 @@ class _DetailActionButtonState extends State<_DetailActionButton>
           ? double.infinity 
           : (isExpanded ? null : height);
  
-      final pill = AnimatedContainer(
+      final pill = AnimatedSize(
         duration: const Duration(milliseconds: 150),
         curve: Curves.easeOut,
-        height: height,
-        width: fullWidth ? null : width,
-        padding: EdgeInsets.symmetric(horizontal: isExpanded || fullWidth ? 16 : 0),
-        alignment: fullWidth ? Alignment.center : null,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(height / 2),
-          border: Border.all(
-            color: showHighlight ? focusColor : Colors.transparent,
-            width: 3,
+        child: Container(
+          height: height,
+          width: fullWidth ? null : width,
+          padding: EdgeInsets.symmetric(horizontal: isExpanded || fullWidth ? 16 : 0),
+          alignment: fullWidth ? Alignment.center : null,
+          decoration: BoxDecoration(
+            color: showHighlight
+                ? AppColorScheme.buttonFocused
+                : Colors.white.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(height / 2),
+            border: Border.all(
+              color: showHighlight ? focusColor : Colors.transparent,
+              width: 3,
+            ),
           ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AdaptiveIcon(widget.icon ?? Icons.play_arrow, color: fg, size: 24),
-            if (isExpanded || fullWidth) ...[
-              const SizedBox(width: 6),
-              Flexible(
-                child: widget.label.contains('\n')
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AdaptiveIcon(widget.icon ?? Icons.play_arrow, color: heartColor, size: 24),
+              if (isExpanded || fullWidth) ...[
+                const SizedBox(width: 6),
+                widget.label.contains('\n')
                     ? Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -8994,7 +8976,6 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                     : Text(
                         widget.label,
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                               color: fg,
                               fontWeight: FontWeight.bold,
@@ -9002,16 +8983,16 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                               height: 1.1,
                             ),
                       ),
-              ),
+              ],
             ],
-          ],
+          ),
         ),
       );
       return fullWidth ? SizedBox(width: double.infinity, child: pill) : pill;
     }
 
     final double minWidth = height;
-    final double maxWidth = isExpanded ? 180.0 : height;
+    final double maxWidth = isExpanded ? 200.0 : height;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
@@ -9021,7 +9002,10 @@ class _DetailActionButtonState extends State<_DetailActionButton>
         minWidth: minWidth,
         maxWidth: maxWidth,
       ),
-      padding: EdgeInsets.symmetric(horizontal: isExpanded ? 14 : 0),
+      padding: EdgeInsets.only(
+        left: isExpanded ? 6 : 0,
+        right: isExpanded ? 16 : 0,
+      ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(height / 2),
         color: showHighlight
@@ -9046,17 +9030,27 @@ class _DetailActionButtonState extends State<_DetailActionButton>
           children: [
             SizedBox(
               width: height - 4, // keep icon centered when collapsed
-              child: widget.iconBuilder != null
-                  ? widget.iconBuilder!(24, iconColor)
-                  : AdaptiveIcon(widget.icon!, color: iconColor, size: 24),
+              child: Center(
+                child: widget.iconBuilder != null
+                    ? widget.iconBuilder!(36, iconColor)
+                    : AdaptiveIcon(
+                        widget.icon!,
+                        color: (widget.icon == Icons.favorite && widget.isActive)
+                            ? const Color(0xFFE50914)
+                            : iconColor,
+                        size: 24,
+                      ),
+              ),
             ),
             if (isExpanded) ...[
               const SizedBox(width: 6),
               Text(
                 widget.label,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: labelColor,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      height: 1.1,
                     ),
                 textAlign: TextAlign.center,
                 maxLines: 1,
@@ -11830,63 +11824,49 @@ class _ExpandableBiographyState extends State<ExpandableBiography> {
             onTap: canToggle
                 ? () => setState(() => _expanded = !_expanded)
                 : null,
-            child: AnimatedContainer(
+            child: AnimatedSize(
               duration: const Duration(milliseconds: 150),
-              constraints: (canToggle && _expanded)
-                  ? const BoxConstraints(maxHeight: 220.0)
-                  : const BoxConstraints(),
-              padding: canToggle
-                  ? const EdgeInsets.all(12)
-                  : EdgeInsets.zero,
-              decoration: canToggle
-                  ? BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
+              curve: Curves.easeOut,
+              child: Container(
+                constraints: (canToggle && _expanded)
+                    ? const BoxConstraints(maxHeight: 220.0)
+                    : const BoxConstraints(),
+                padding: canToggle
+                    ? const EdgeInsets.all(12)
+                    : EdgeInsets.zero,
+                decoration: canToggle
+                    ? BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: _focused
+                              ? (isNeon ? AppColorScheme.accent : focusColor)
+                              : Colors.white.withValues(alpha: 0.08),
+                          width: _focused ? 1.5 : 1.0,
+                        ),
                         color: _focused
-                            ? (isNeon ? AppColorScheme.accent : focusColor)
-                            : Colors.white.withValues(alpha: 0.08),
-                        width: _focused ? 1.5 : 1.0,
-                      ),
-                      color: _focused
-                          ? (isNeon
-                              ? AppColorScheme.accent.withValues(alpha: 0.04)
-                              : focusColor.withValues(alpha: 0.04))
-                          : Colors.white.withValues(alpha: 0.02),
-                    )
-                  : const BoxDecoration(),
-              child: _expanded
-                  ? Scrollbar(
-                      controller: _scrollbarController,
-                      thumbVisibility: _focused,
-                      child: NotificationListener<ScrollNotification>(
+                            ? (isNeon
+                                ? AppColorScheme.accent.withValues(alpha: 0.04)
+                                : focusColor.withValues(alpha: 0.04))
+                            : Colors.white.withValues(alpha: 0.02),
+                      )
+                    : const BoxDecoration(),
+                child: _expanded
+                    ? NotificationListener<ScrollNotification>(
                         onNotification: (notification) => true, // Stop bubbling
                         child: SingleChildScrollView(
                           controller: _scrollbarController,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AnimatedCrossFade(
-                                firstChild: Text(
-                                  widget.text,
-                                  style: style,
-                                  maxLines: 4,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: widget.textAlign,
-                                ),
-                                secondChild: Text(
-                                  widget.text,
-                                  style: style,
-                                  textAlign: widget.textAlign,
-                                ),
-                                crossFadeState: _expanded
-                                    ? CrossFadeState.showSecond
-                                    : CrossFadeState.showFirst,
-                                duration: const Duration(milliseconds: 300),
+                              Text(
+                                widget.text,
+                                style: style,
+                                textAlign: widget.textAlign,
                               ),
                               if (canToggle) ...[
                                 const SizedBox(height: 8),
                                 Text(
-                                  _expanded ? l10n.showLess : l10n.readMore,
+                                  l10n.showLess,
                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: AppColorScheme.accent,
                                     fontWeight: FontWeight.w600,
@@ -11896,42 +11876,31 @@ class _ExpandableBiographyState extends State<ExpandableBiography> {
                             ],
                           ),
                         ),
-                      ),
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        AnimatedCrossFade(
-                          firstChild: Text(
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
                             widget.text,
                             style: style,
                             maxLines: 4,
                             overflow: TextOverflow.ellipsis,
                             textAlign: widget.textAlign,
                           ),
-                          secondChild: Text(
-                            widget.text,
-                            style: style,
-                            textAlign: widget.textAlign,
-                          ),
-                          crossFadeState: _expanded
-                              ? CrossFadeState.showSecond
-                              : CrossFadeState.showFirst,
-                          duration: const Duration(milliseconds: 300),
-                        ),
-                        if (canToggle) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            _expanded ? l10n.showLess : l10n.readMore,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColorScheme.accent,
-                              fontWeight: FontWeight.w600,
+                          if (canToggle) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              l10n.readMore,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppColorScheme.accent,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
+                          ],
                         ],
-                      ],
-                    ),
+                      ),
+              ),
             ),
           ),
         );

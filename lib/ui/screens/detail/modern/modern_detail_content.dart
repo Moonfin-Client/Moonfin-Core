@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:math' show Random;
+import 'dart:ui' show ImageFilter;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -123,6 +125,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   int? _loadedSubtitleIndex;
   List<SeerrDiscoverItem>? _seerrAppearances;
   List<SeerrDiscoverItem>? _seerrCrewCredits;
+  String? _randomBackdropUrl;
 
   PlaybackInfoResult? _playbackInfo;
   bool _loadingPlaybackInfo = false;
@@ -189,6 +192,31 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           _playbackInfo = null;
         });
       }
+    }
+  }
+
+  void _selectRandomBackdrop() {
+    final item = _vm.item;
+    if (item == null || item.type != 'Person') return;
+    final candidates = <String>[];
+
+    // 1. Local Jellyfin items
+    for (final f in _vm.filmographyMovies) {
+      if (f.backdropImageTags.isNotEmpty) {
+        candidates.add(_vm.imageApi.getBackdropImageUrl(f.id, tag: f.backdropImageTags.first));
+      }
+    }
+    for (final f in _vm.filmographySeries) {
+      if (f.backdropImageTags.isNotEmpty) {
+        candidates.add(_vm.imageApi.getBackdropImageUrl(f.id, tag: f.backdropImageTags.first));
+      }
+    }
+
+    if (candidates.isNotEmpty) {
+      final randIndex = Random().nextInt(candidates.length);
+      setState(() {
+        _randomBackdropUrl = candidates[randIndex];
+      });
     }
   }
 
@@ -409,7 +437,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       NavigationLayout.focusDetailsPlayButtonNotifier.value = widget.initialFocusNode;
     }
     _loadSeriesLogo();
-    _loadSeerrAppearances();
+    _loadSeerrAppearances().then((_) {
+      if (mounted) _selectRandomBackdrop();
+    });
   }
 
   @override
@@ -421,7 +451,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       });
       NavigationLayout.focusDetailsPlayButtonNotifier.value = widget.initialFocusNode;
     }
-    _loadSeerrAppearances();
+    _loadSeerrAppearances().then((_) {
+      if (mounted) _selectRandomBackdrop();
+    });
   }
 
   void _onScroll() {
@@ -441,7 +473,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     if (mounted) {
       setState(() {});
       _loadSeriesLogo();
-      _loadSeerrAppearances();
+      _loadSeerrAppearances().then((_) {
+        if (mounted) _selectRandomBackdrop();
+      });
     }
   }
 
@@ -2098,7 +2132,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             const SizedBox(height: 24),
             ConstrainedBox(
               constraints: BoxConstraints(
-                maxWidth: _landscape ? 580 : double.infinity,
+                maxWidth: _landscape ? 670.0 : double.infinity,
               ),
               child: ExpandableBiography(
                 text: overview,
@@ -2552,7 +2586,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   Widget _buildBackdrop(bool landscape) {
     final base = AppColorScheme.background;
     final item = _vm.item;
-    final url = widget.backdropUrl ?? (item?.type == 'Person' ? _imageUrl(item!) : null);
+    final url = widget.backdropUrl ?? (item?.type == 'Person' ? (_randomBackdropUrl ?? _imageUrl(item!)) : null);
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -2566,7 +2600,20 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             fadeInDuration: const Duration(milliseconds: 250),
             errorWidget: (context, url, error) => const SizedBox.shrink(),
           ),
-          ColoredBox(color: Colors.black.withValues(alpha: 0.40)),
+          if (item?.type == 'Person' && _randomBackdropUrl == null)
+            Positioned.fill(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                child: Container(
+                  color: Colors.black.withValues(alpha: 0.2),
+                ),
+              ),
+            ),
+          ColoredBox(
+            color: Colors.black.withValues(
+              alpha: item?.type == 'Person' ? 0.20 : 0.40,
+            ),
+          ),
         ],
         if (landscape) ...[
           DecoratedBox(
@@ -2656,8 +2703,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     if (index >= 0) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_scrollController.hasClients) {
+          final desktopScale = _desktopUiScale(prefs: widget.prefs);
           _scrollController.animateTo(
-            220.0,
+            260.0 * desktopScale,
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
           );
@@ -2941,13 +2989,9 @@ class _DetailsContainerState extends State<_DetailsContainer> with FocusStateMix
         ),
         padding: const EdgeInsets.all(16),
         child: widget.isScrollable
-            ? Scrollbar(
+            ? SingleChildScrollView(
                 controller: _scrollController,
-                thumbVisibility: showFocusBorder,
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  child: widget.child,
-                ),
+                child: widget.child,
               )
             : widget.child,
       ),
