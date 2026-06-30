@@ -434,9 +434,9 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   Future<void> _loadCollectionItems() async {
     try {
+      // No sortBy: keep the collection's native order instead of forcing alphabetical s
       final data = await _client.itemsApi.getItems(
         parentId: itemId,
-        sortBy: 'SortName',
         fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
       );
       final items = (data['Items'] as List?) ?? [];
