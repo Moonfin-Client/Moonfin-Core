@@ -510,7 +510,7 @@ class PluginSyncService extends ChangeNotifier {
         password: password,
       );
       await _refreshAvailabilityStatus(client);
-      return seerrRepo.isAvailable;
+      return seerrAvailable;
     } catch (_) {
       return false;
     }
