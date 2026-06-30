@@ -22,6 +22,9 @@ import '../../../widgets/rating_display.dart';
 import '../../../widgets/focus/focusable_wrapper.dart';
 import '../../../widgets/navigation_layout.dart';
 import '../../../widgets/top_toolbar.dart';
+import '../../../../data/repositories/seerr_repository.dart';
+import '../../../../data/services/seerr/seerr_api_models.dart';
+import '../../../../data/services/plugin_sync_service.dart';
 import '../item_detail_screen.dart'
     show
         DetailActionButtons,
@@ -31,7 +34,11 @@ import '../item_detail_screen.dart'
         DetailEpisodeCard,
         DetailTrackList,
         ExpandableBiography,
-        selectedMediaSourceForItem;
+        selectedMediaSourceForItem,
+        PersonDates,
+        FilmographyRow,
+        SeerrAppearancesRow,
+        SeerrCrewCreditsRow;
 import 'modern_landscape_layout.dart';
 import 'modern_portrait_layout.dart';
 import 'widgets/details_tab_bar.dart';
@@ -102,6 +109,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   final FocusNode _seasonsFirstFocusNode = FocusNode(debugLabel: 'seasonsFirst');
   final FocusNode _episodesFirstFocusNode = FocusNode(debugLabel: 'episodesFirst');
   final FocusNode _overviewFocusNode = FocusNode(debugLabel: 'overview');
+  final FocusNode _personMoviesFirstFocusNode = FocusNode(debugLabel: 'personMoviesFirst');
+  final FocusNode _personSeriesFirstFocusNode = FocusNode(debugLabel: 'personSeriesFirst');
+  final FocusNode _personSeerrAppearancesFirstFocusNode = FocusNode(debugLabel: 'personSeerrAppearancesFirst');
+  final FocusNode _personSeerrCrewCreditsFirstFocusNode = FocusNode(debugLabel: 'personSeerrCrewCreditsFirst');
   late final ScrollController _scrollController = ScrollController();
   String? _seriesLogoTag;
   String? _seriesLogoId;
@@ -110,6 +121,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   bool _subtitlesExpanded = false;
   int? _loadedAudioIndex;
   int? _loadedSubtitleIndex;
+  List<SeerrDiscoverItem>? _seerrAppearances;
+  List<SeerrDiscoverItem>? _seerrCrewCredits;
 
   PlaybackInfoResult? _playbackInfo;
   bool _loadingPlaybackInfo = false;
@@ -179,6 +192,177 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     }
   }
 
+  Future<void> _loadSeerrAppearances() async {
+    final item = _vm.item;
+    if (item == null || item.type != 'Person') return;
+    final tmdbId = item.tmdbId;
+    if (tmdbId == null || tmdbId.isEmpty) return;
+    if (!GetIt.instance<PluginSyncService>().seerrAvailable) {
+      return;
+    }
+
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      await repo.ensureInitialized();
+      final personId = int.tryParse(tmdbId);
+      if (personId != null) {
+        final credits = await repo.getPersonCombinedCredits(personId);
+        const excludedJobs = {'thanks', 'special thanks'};
+        final castWithPosters =
+            credits.cast.where((i) => i.posterPath != null).toList()
+              ..sort((a, b) => a.displayTitle.compareTo(b.displayTitle));
+        final crewWithPosters = credits.crew
+            .where(
+              (i) =>
+                  i.posterPath != null &&
+                  !excludedJobs.contains(i.job?.toLowerCase()),
+            )
+            .toList()
+          ..sort((a, b) => a.displayTitle.compareTo(b.displayTitle));
+        if (mounted) {
+          setState(() {
+            _seerrAppearances = castWithPosters;
+            _seerrCrewCredits = crewWithPosters;
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading Seerr appearances: $e');
+    }
+  }
+
+  List<AggregatedItem> _sortJellyfinItems(List<AggregatedItem> list) {
+    final sortOpt = widget.prefs.get(UserPreferences.personPageSortOption);
+    final sorted = List<AggregatedItem>.from(list);
+    if (sortOpt == 'alphabetical') {
+      sorted.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    } else {
+      final asc = sortOpt == 'releaseDateAsc';
+      sorted.sort((a, b) {
+        final dateA = a.premiereDate ?? (a.productionYear != null ? DateTime(a.productionYear!) : null);
+        final dateB = b.premiereDate ?? (b.productionYear != null ? DateTime(b.productionYear!) : null);
+        if (dateA == null && dateB == null) {
+          return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+        }
+        if (dateA == null) return 1;
+        if (dateB == null) return -1;
+        final comp = dateA.compareTo(dateB);
+        return asc ? comp : -comp;
+      });
+    }
+    return sorted;
+  }
+
+  List<SeerrDiscoverItem> _groupSeerrItems(List<SeerrDiscoverItem> list, bool isCrew) {
+    final groupOpt = widget.prefs.get(UserPreferences.personPageGroupItems);
+    if (!groupOpt) return list;
+    final grouped = <int, List<SeerrDiscoverItem>>{};
+    for (final item in list) {
+      grouped.putIfAbsent(item.id, () => []).add(item);
+    }
+
+    final result = <SeerrDiscoverItem>[];
+    for (final entries in grouped.values) {
+      final first = entries.first;
+      if (entries.length == 1) {
+        result.add(first);
+        continue;
+      }
+
+      if (isCrew) {
+        final jobs = entries
+            .map((e) => e.job ?? e.department)
+            .where((j) => j != null && j.isNotEmpty)
+            .map((j) => j!)
+            .toSet();
+        final combinedJobs = jobs.join(', ');
+        result.add(SeerrDiscoverItem(
+          id: first.id,
+          mediaType: first.mediaType,
+          title: first.title,
+          name: first.name,
+          originalTitle: first.originalTitle,
+          originalName: first.originalName,
+          posterPath: first.posterPath,
+          backdropPath: first.backdropPath,
+          overview: first.overview,
+          releaseDate: first.releaseDate,
+          firstAirDate: first.firstAirDate,
+          originalLanguage: first.originalLanguage,
+          genreIds: first.genreIds,
+          voteAverage: first.voteAverage,
+          voteCount: first.voteCount,
+          popularity: first.popularity,
+          adult: first.adult,
+          mediaInfo: first.mediaInfo,
+          character: first.character,
+          job: combinedJobs.isNotEmpty ? combinedJobs : null,
+          department: first.department,
+        ));
+      } else {
+        final characters = entries
+            .map((e) => e.character)
+            .where((c) => c != null && c.isNotEmpty)
+            .map((c) => c!)
+            .toSet();
+        final combinedCharacters = characters.join(', ');
+        result.add(SeerrDiscoverItem(
+          id: first.id,
+          mediaType: first.mediaType,
+          title: first.title,
+          name: first.name,
+          originalTitle: first.originalTitle,
+          originalName: first.originalName,
+          posterPath: first.posterPath,
+          backdropPath: first.backdropPath,
+          overview: first.overview,
+          releaseDate: first.releaseDate,
+          firstAirDate: first.firstAirDate,
+          originalLanguage: first.originalLanguage,
+          genreIds: first.genreIds,
+          voteAverage: first.voteAverage,
+          voteCount: first.voteCount,
+          popularity: first.popularity,
+          adult: first.adult,
+          mediaInfo: first.mediaInfo,
+          character: combinedCharacters.isNotEmpty ? combinedCharacters : null,
+          job: first.job,
+          department: first.department,
+        ));
+      }
+    }
+    return result;
+  }
+
+  List<SeerrDiscoverItem> _sortSeerrItems(List<SeerrDiscoverItem> list) {
+    final sortOpt = widget.prefs.get(UserPreferences.personPageSortOption);
+    final sorted = List<SeerrDiscoverItem>.from(list);
+    if (sortOpt == 'alphabetical') {
+      sorted.sort((a, b) => a.displayTitle.toLowerCase().compareTo(b.displayTitle.toLowerCase()));
+    } else {
+      final asc = sortOpt == 'releaseDateAsc';
+      sorted.sort((a, b) {
+        final dateStrA = a.releaseDate ?? a.firstAirDate;
+        final dateStrB = b.releaseDate ?? b.firstAirDate;
+        if (dateStrA == null && dateStrB == null) {
+          return a.displayTitle.toLowerCase().compareTo(b.displayTitle.toLowerCase());
+        }
+        if (dateStrA == null) return 1;
+        if (dateStrB == null) return -1;
+        final dateA = DateTime.tryParse(dateStrA);
+        final dateB = DateTime.tryParse(dateStrB);
+        if (dateA == null && dateB == null) {
+          return dateStrA.compareTo(dateStrB);
+        }
+        if (dateA == null) return 1;
+        if (dateB == null) return -1;
+        final comp = dateA.compareTo(dateB);
+        return asc ? comp : -comp;
+      });
+    }
+    return sorted;
+  }
+
   ItemDetailViewModel get _vm => widget.viewModel;
 
   @override
@@ -206,6 +390,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _similarFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _seasonsFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _episodesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
+    _personMoviesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
+    _personSeriesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
+    _personSeerrAppearancesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
+    _personSeerrCrewCreditsFirstFocusNode.onKeyEvent = leftToSidebarHandler;
 
     _vm.addListener(_onViewModelChanged);
     _scrollController.addListener(_onScroll);
@@ -221,6 +409,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       NavigationLayout.focusDetailsPlayButtonNotifier.value = widget.initialFocusNode;
     }
     _loadSeriesLogo();
+    _loadSeerrAppearances();
   }
 
   @override
@@ -232,6 +421,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       });
       NavigationLayout.focusDetailsPlayButtonNotifier.value = widget.initialFocusNode;
     }
+    _loadSeerrAppearances();
   }
 
   void _onScroll() {
@@ -251,6 +441,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     if (mounted) {
       setState(() {});
       _loadSeriesLogo();
+      _loadSeerrAppearances();
     }
   }
 
@@ -281,6 +472,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _seasonsFirstFocusNode.dispose();
     _episodesFirstFocusNode.dispose();
     _overviewFocusNode.dispose();
+    _personMoviesFirstFocusNode.dispose();
+    _personSeriesFirstFocusNode.dispose();
+    _personSeerrAppearancesFirstFocusNode.dispose();
+    _personSeerrCrewCreditsFirstFocusNode.dispose();
     super.dispose();
   }
 
@@ -345,6 +540,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         if (_seasonsFirstFocusNode.canRequestFocus) _seasonsFirstFocusNode.requestFocus();
       } else if (label == l10n.episodes) {
         if (_episodesFirstFocusNode.canRequestFocus) _episodesFirstFocusNode.requestFocus();
+      } else if (label == l10n.movies) {
+        if (_personMoviesFirstFocusNode.canRequestFocus) _personMoviesFirstFocusNode.requestFocus();
+      } else if (label == l10n.series) {
+        if (_personSeriesFirstFocusNode.canRequestFocus) _personSeriesFirstFocusNode.requestFocus();
+      } else if (label == l10n.appearancesSeerr) {
+        if (_personSeerrAppearancesFirstFocusNode.canRequestFocus) _personSeerrAppearancesFirstFocusNode.requestFocus();
+      } else if (label == l10n.crewContributionsSeerr) {
+        if (_personSeerrCrewCreditsFirstFocusNode.canRequestFocus) _personSeerrCrewCreditsFirstFocusNode.requestFocus();
       }
     }
   }
@@ -423,10 +626,24 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (hasSimilar) similar,
         ];
       case 'Person':
+        final movies = _sortJellyfinItems(_vm.filmographyMovies);
+        final series = _sortJellyfinItems(_vm.filmographySeries);
+        final hasSeerrAppearances = _seerrAppearances != null && _seerrAppearances!.isNotEmpty;
+        final hasSeerrCrewCredits = _seerrCrewCredits != null && _seerrCrewCredits!.isNotEmpty;
+        final sortedSeerrAppearances = hasSeerrAppearances ? _sortSeerrItems(_groupSeerrItems(_seerrAppearances!, false)) : const <SeerrDiscoverItem>[];
+        final sortedSeerrCrewCredits = hasSeerrCrewCredits ? _sortSeerrItems(_groupSeerrItems(_seerrCrewCredits!, true)) : const <SeerrDiscoverItem>[];
+
         return [
-          if (_vm.filmography.isNotEmpty)
-            _ModernTab(l10n.appearances, (_, _) => _itemGrid(_vm.filmography)),
-          details,
+          if (movies.isNotEmpty)
+            _ModernTab(l10n.movies, (context, item) => _moviesTab(context, movies)),
+          if (series.isNotEmpty)
+            _ModernTab(l10n.series, (context, item) => _seriesTab(context, series)),
+          if (sortedSeerrAppearances.isNotEmpty)
+            _ModernTab(l10n.appearancesSeerr, (context, item) => _seerrAppearancesTab(context, sortedSeerrAppearances)),
+          if (sortedSeerrCrewCredits.isNotEmpty)
+            _ModernTab(l10n.crewContributionsSeerr, (context, item) => _seerrCrewCreditsTab(context, sortedSeerrCrewCredits)),
+          if (movies.isEmpty && series.isEmpty && sortedSeerrAppearances.isEmpty && sortedSeerrCrewCredits.isEmpty && _vm.filmography.isNotEmpty)
+            _ModernTab(l10n.appearances, (_, _) => _itemGrid(_sortJellyfinItems(_vm.filmography))),
         ];
       case 'BoxSet':
         return [
@@ -668,6 +885,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               });
             },
             borderRadius: 8,
+            suppressFocusGlow: true,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(
@@ -975,6 +1193,108 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             },
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _moviesTab(BuildContext context, List<AggregatedItem> movies) {
+    return Focus(
+      canRequestFocus: false,
+      onFocusChange: (focused) {
+        if (focused && mounted) {
+          widget.onToggleNavbar?.call(false);
+        } else if (!focused && mounted) {
+          widget.onToggleNavbar?.call(true);
+        }
+      },
+      child: FilmographyRow(
+        items: movies,
+        imageApi: _vm.imageApi,
+        prefs: widget.prefs,
+        firstFocusNode: _personMoviesFirstFocusNode,
+        onItemKeyEvent: (index, event) {
+          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            _focusSelectedTab();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+      ),
+    );
+  }
+
+  Widget _seriesTab(BuildContext context, List<AggregatedItem> series) {
+    return Focus(
+      canRequestFocus: false,
+      onFocusChange: (focused) {
+        if (focused && mounted) {
+          widget.onToggleNavbar?.call(false);
+        } else if (!focused && mounted) {
+          widget.onToggleNavbar?.call(true);
+        }
+      },
+      child: FilmographyRow(
+        items: series,
+        imageApi: _vm.imageApi,
+        prefs: widget.prefs,
+        firstFocusNode: _personSeriesFirstFocusNode,
+        onItemKeyEvent: (index, event) {
+          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            _focusSelectedTab();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+      ),
+    );
+  }
+
+  Widget _seerrAppearancesTab(BuildContext context, List<SeerrDiscoverItem> items) {
+    return Focus(
+      canRequestFocus: false,
+      onFocusChange: (focused) {
+        if (focused && mounted) {
+          widget.onToggleNavbar?.call(false);
+        } else if (!focused && mounted) {
+          widget.onToggleNavbar?.call(true);
+        }
+      },
+      child: SeerrAppearancesRow(
+        items: items,
+        prefs: widget.prefs,
+        firstFocusNode: _personSeerrAppearancesFirstFocusNode,
+        onItemKeyEvent: (index, event) {
+          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            _focusSelectedTab();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
+      ),
+    );
+  }
+
+  Widget _seerrCrewCreditsTab(BuildContext context, List<SeerrDiscoverItem> items) {
+    return Focus(
+      canRequestFocus: false,
+      onFocusChange: (focused) {
+        if (focused && mounted) {
+          widget.onToggleNavbar?.call(false);
+        } else if (!focused && mounted) {
+          widget.onToggleNavbar?.call(true);
+        }
+      },
+      child: SeerrCrewCreditsRow(
+        items: items,
+        prefs: widget.prefs,
+        firstFocusNode: _personSeerrCrewCreditsFirstFocusNode,
+        onItemKeyEvent: (index, event) {
+          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            _focusSelectedTab();
+            return KeyEventResult.handled;
+          }
+          return KeyEventResult.ignored;
+        },
       ),
     );
   }
@@ -1713,6 +2033,133 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final desktopScale = _desktopUiScale(prefs: widget.prefs);
     final logoScaleFactor = desktopScale > 1.1 ? 0.70 : 1.0;
 
+    if (item.type == 'Person') {
+      final profileUrl = _imageUrl(item);
+      final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+      final focusColor = Color(widget.prefs.get(UserPreferences.focusColor).colorValue);
+      final profileBorderColor = isNeon ? const Color(0xFFFF2E92) : focusColor;
+
+
+      final avatar = Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: profileBorderColor, width: 3.0),
+        ),
+        child: CircleAvatar(
+          radius: 60.0,
+          backgroundColor: Colors.white.withValues(alpha: 0.1),
+          backgroundImage: profileUrl != null
+              ? CachedNetworkImageProvider(profileUrl)
+              : null,
+          child: profileUrl == null
+              ? const Icon(Icons.person, color: Colors.white54, size: 48)
+              : null,
+        ),
+      );
+
+      final personInfo = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            item.name,
+            style: textTheme.displaySmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8),
+          PersonDates(item: item),
+          if (item.productionLocations.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              item.productionLocations.first,
+              style: textTheme.bodyMedium?.copyWith(
+                color: Colors.white.withValues(alpha: 0.7),
+              ),
+            ),
+          ],
+        ],
+      );
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: hasUpNext ? MainAxisSize.max : MainAxisSize.min,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              avatar,
+              const SizedBox(width: 24),
+              Expanded(child: personInfo),
+            ],
+          ),
+          if (overview != null && overview.isNotEmpty) ...[
+            const SizedBox(height: 24),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: _landscape ? 580 : double.infinity,
+              ),
+              child: ExpandableBiography(
+                text: overview,
+                toggleFocusNode: _overviewFocusNode,
+                onArrowDown: () {
+                  widget.initialFocusNode?.requestFocus();
+                },
+                onArrowUp: () {
+                  NavigationLayout.focusNavbarNotifier.value?.call();
+                },
+                onArrowLeft: () {
+                  final navbarPosition = widget.prefs.get(UserPreferences.navbarPosition);
+                  if (navbarPosition == NavbarPosition.left) {
+                    NavigationLayout.focusNavbarNotifier.value?.call();
+                  }
+                },
+                onCollapse: widget.onCollapseBiography,
+                style: textTheme.bodyMedium?.copyWith(
+                  height: 1.45,
+                  color: AppColorScheme.onSurface.withValues(alpha: 0.85),
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: 24),
+          Focus(
+            canRequestFocus: false,
+            skipTraversal: true,
+            onFocusChange: (focused) {
+              if (focused) {
+                widget.onToggleNavbar?.call(true);
+                if (_scrollController.hasClients) {
+                  _scrollController.animateTo(
+                    0.0,
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                  );
+                }
+              }
+            },
+            child: DetailActionButtons(
+              viewModel: _vm,
+              itemId: item.id,
+              selectedMediaSourceId: widget.selectedMediaSourceId,
+              onSelectedMediaSourceChanged: widget.onSelectedMediaSourceChanged,
+              tvPlayFocusNode: widget.initialFocusNode,
+              downTarget: _tabNode(_selectedTab >= 0 ? _selectedTab : 0),
+              upTarget: _overviewFocusNode,
+              autoPlay: widget.autoPlay,
+              modernStyle: true,
+              fullWidthPrimary: !_landscape,
+              maxVisibleButtonsOverride: _actionButtonCap(context, item),
+              onArrowRightAtEnd: _landscape ? _focusRightOfActions : null,
+              actionRowRightFocusNode: _actionRowRightFocusNode,
+              onFocusExtra: (_) {},
+            ),
+          ),
+        ],
+      );
+    }
+
     final Column childrenCol = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: hasUpNext ? MainAxisSize.max : MainAxisSize.min,
@@ -2104,7 +2551,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   /// subtle edge vignette. In portrait it fades from the top into the content.
   Widget _buildBackdrop(bool landscape) {
     final base = AppColorScheme.background;
-    final url = widget.backdropUrl;
+    final item = _vm.item;
+    final url = widget.backdropUrl ?? (item?.type == 'Person' ? _imageUrl(item!) : null);
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -2226,6 +2674,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               _crewFirstFocusNode.requestFocus();
             } else if (label == l10n.studios) {
               _studiosFirstFocusNode.requestFocus();
+            } else if (label == l10n.movies) {
+              _personMoviesFirstFocusNode.requestFocus();
+            } else if (label == l10n.series) {
+              _personSeriesFirstFocusNode.requestFocus();
+            } else if (label == l10n.appearancesSeerr) {
+              _personSeerrAppearancesFirstFocusNode.requestFocus();
+            } else if (label == l10n.crewContributionsSeerr) {
+              _personSeerrCrewCreditsFirstFocusNode.requestFocus();
             }
           }
         }

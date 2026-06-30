@@ -26,6 +26,7 @@ import '../../../data/services/book_reader_service.dart';
 import '../../../data/services/theme_music_service.dart';
 import '../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../data/services/plugin_sync_service.dart';
+import '../../navigation/route_lifecycle_observer.dart';
 import 'modern/modern_detail_content.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
@@ -150,7 +151,7 @@ class ItemDetailScreen extends StatefulWidget {
 }
 
 class _ItemDetailScreenState extends State<ItemDetailScreen>
-    with WidgetsBindingObserver {
+    with WidgetsBindingObserver, RouteAware {
   late final ItemDetailViewModel _viewModel;
   final _backgroundService = GetIt.instance<BackgroundService>();
   final _themeMusicService = GetIt.instance<ThemeMusicService>();
@@ -204,6 +205,26 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeLifecycleObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    final item = _viewModel.item;
+    if (item != null) {
+      _backgroundService.setBackground(item, context: BlurContext.details);
+      final nextUrl = _backgroundService.currentUrl;
+      if (nextUrl != _backdropUrl) {
+        setState(() => _backdropUrl = nextUrl);
+      }
+    }
+    _resumeThemeMusicIfEligible();
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.hidden ||
@@ -222,6 +243,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
 
   @override
   void dispose() {
+    routeLifecycleObserver.unsubscribe(this);
     WidgetsBinding.instance.removeObserver(this);
     _themeMusicService.unregisterDetailScreen(this);
     _backgroundSub?.cancel();
@@ -1008,7 +1030,7 @@ class _DetailContentState extends State<_DetailContent> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
-          _PersonDatesVertical(item: item),
+          PersonDatesVertical(item: item),
           if (item.productionLocations.isNotEmpty) ...[
             const SizedBox(height: 6),
             Text(
@@ -2421,7 +2443,7 @@ class _DetailContentState extends State<_DetailContent> {
 
     return [
       if (!useSplit) ...[
-        _PersonHeader(item: item, imageApi: viewModel.imageApi),
+        PersonHeader(item: item, imageApi: viewModel.imageApi),
         const SizedBox(height: 12),
       ],
       if (hasBio) ...[
@@ -2552,7 +2574,7 @@ class _DetailContentState extends State<_DetailContent> {
         const SizedBox(height: 32),
         HorizontalScrollSection(
           title: l10n.movies,
-          builder: (_, ctrl) => _FilmographyRow(
+          builder: (_, ctrl) => FilmographyRow(
             items: movies,
             imageApi: viewModel.imageApi,
             prefs: prefs,
@@ -2580,7 +2602,7 @@ class _DetailContentState extends State<_DetailContent> {
         const SizedBox(height: 32),
         HorizontalScrollSection(
           title: l10n.series,
-          builder: (_, ctrl) => _FilmographyRow(
+          builder: (_, ctrl) => FilmographyRow(
             items: series,
             imageApi: viewModel.imageApi,
             prefs: prefs,
@@ -2607,7 +2629,7 @@ class _DetailContentState extends State<_DetailContent> {
         const SizedBox(height: 32),
         HorizontalScrollSection(
           title: l10n.guestAppearances,
-          builder: (_, ctrl) => _FilmographyRow(
+          builder: (_, ctrl) => FilmographyRow(
             items: guestAppearances,
             imageApi: viewModel.imageApi,
             prefs: prefs,
@@ -2630,7 +2652,7 @@ class _DetailContentState extends State<_DetailContent> {
         const SizedBox(height: 32),
         HorizontalScrollSection(
           title: l10n.musicVideos,
-          builder: (_, ctrl) => _FilmographyRow(
+          builder: (_, ctrl) => FilmographyRow(
             items: musicVideos,
             imageApi: viewModel.imageApi,
             prefs: prefs,
@@ -2658,7 +2680,7 @@ class _DetailContentState extends State<_DetailContent> {
         const SizedBox(height: 32),
         HorizontalScrollSection(
           title: l10n.crewContributionsSeerr,
-          builder: (_, ctrl) => _SeerrCrewCreditsRow(
+          builder: (_, ctrl) => SeerrCrewCreditsRow(
             items: seerrCrewCredits,
             prefs: prefs,
             scrollController: _trackSectionScrollController(
@@ -2685,7 +2707,7 @@ class _DetailContentState extends State<_DetailContent> {
         const SizedBox(height: 32),
         HorizontalScrollSection(
           title: l10n.appearancesSeerr,
-          builder: (_, ctrl) => _SeerrAppearancesRow(
+          builder: (_, ctrl) => SeerrAppearancesRow(
             items: seerrAppearances,
             prefs: prefs,
             scrollController: _trackSectionScrollController(
@@ -5376,6 +5398,81 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   @override
   Widget build(BuildContext context) {
     final item = viewModel.item!;
+    final l10n = AppLocalizations.of(context);
+
+    if (item.type == 'Person') {
+      final hasSeerrButton = item.tmdbId != null &&
+          item.tmdbId!.isNotEmpty &&
+          GetIt.instance<PluginSyncService>().seerrAvailable;
+
+      final normalizedPrimaryButtons = [
+        _DetailActionButton(
+          label: item.isFavorite ? l10n.favorited : l10n.favorite,
+          icon: Icons.favorite,
+          isPrimary: true,
+          focusNode: widget.tvPlayFocusNode ?? _primaryFocusNode(0),
+          autofocus: PlatformDetection.isTV,
+          onPressed: viewModel.toggleFavorite,
+          isActive: item.isFavorite,
+          activeColor: const Color(0xFFFF4757),
+          onArrowUp: NavigationLayout.focusNavbarNotifier.value != null || widget.upTarget != null ? _focusUpTarget : null,
+          onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
+          onArrowLeft: _focusSidebar,
+          onArrowRight: () {
+            _primaryFocusNode(1).requestFocus();
+          },
+        ),
+        _DetailActionButton(
+          label: l10n.display,
+          icon: Icons.tune,
+          focusNode: _primaryFocusNode(1),
+          onPressed: () {
+            showFocusRestoringDialog(
+              context: context,
+              useRootNavigator: false,
+              builder: (_) => PersonDisplaySettingsDialog(prefs: GetIt.instance<UserPreferences>()),
+            );
+          },
+          onArrowUp: NavigationLayout.focusNavbarNotifier.value != null || widget.upTarget != null ? _focusUpTarget : null,
+          onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
+          onArrowLeft: () {
+            (widget.tvPlayFocusNode ?? _primaryFocusNode(0)).requestFocus();
+          },
+          onArrowRight: hasSeerrButton
+              ? () {
+                  _primaryFocusNode(2).requestFocus();
+                }
+              : (widget.onArrowRightAtEnd ?? () {}),
+        ),
+        if (hasSeerrButton)
+          _DetailActionButton(
+            label: l10n.seerr,
+            iconBuilder: (size, color) => SeerrIcon(size: size, color: color),
+            focusNode: _primaryFocusNode(2),
+            onPressed: () {
+              context.push(Destinations.seerrPerson(item.tmdbId!));
+            },
+            onArrowUp: NavigationLayout.focusNavbarNotifier.value != null || widget.upTarget != null ? _focusUpTarget : null,
+            onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
+            onArrowLeft: () {
+              _primaryFocusNode(1).requestFocus();
+            },
+            onArrowRight: widget.onArrowRightAtEnd ?? () {},
+          ),
+      ];
+
+      return Align(
+        alignment: widget.modernStyle ? Alignment.centerLeft : Alignment.center,
+        child: Wrap(
+          spacing: widget.modernStyle ? 12.0 : 8.0,
+          runSpacing: 12.0,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          alignment: widget.modernStyle ? WrapAlignment.start : WrapAlignment.center,
+          children: normalizedPrimaryButtons,
+        ),
+      );
+    }
+
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final isPhoto = item.type == 'Photo';
     final isBook = _isReadableBookItem(item);
@@ -5443,7 +5540,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         subtitleStreams.isEmpty && canDownloadRemoteSubtitles
         ? Icons.download_rounded
         : Icons.subtitles;
-    final l10n = AppLocalizations.of(context);
+
     final canShowDownloadActions =
         _isDownloadable(item.type) &&
         _canUserDownload() &&
@@ -11304,11 +11401,11 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard> with FocusStateMix
   }
 }
 
-class _PersonHeader extends StatelessWidget {
+class PersonHeader extends StatelessWidget {
   final AggregatedItem item;
   final ImageApi imageApi;
 
-  const _PersonHeader({required this.item, required this.imageApi});
+  const PersonHeader({required this.item, required this.imageApi});
 
   @override
   Widget build(BuildContext context) {
@@ -11360,7 +11457,7 @@ class _PersonHeader extends StatelessWidget {
           textAlign: isMobile ? TextAlign.center : TextAlign.start,
         ),
         const SizedBox(height: 8),
-        _PersonDates(item: item),
+        PersonDates(item: item),
         if (item.productionLocations.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 4),
@@ -11391,10 +11488,10 @@ class _PersonHeader extends StatelessWidget {
   }
 }
 
-class _PersonDates extends StatelessWidget {
+class PersonDates extends StatelessWidget {
   final AggregatedItem item;
 
-  const _PersonDates({required this.item});
+  const PersonDates({required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -11451,10 +11548,10 @@ class _PersonDates extends StatelessWidget {
   }
 }
 
-class _PersonDatesVertical extends StatelessWidget {
+class PersonDatesVertical extends StatelessWidget {
   final AggregatedItem item;
 
-  const _PersonDatesVertical({required this.item});
+  const PersonDatesVertical({required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -11842,7 +11939,7 @@ class _ExpandableBiographyState extends State<ExpandableBiography> {
   }
 }
 
-class _FilmographyRow extends StatelessWidget {
+class FilmographyRow extends StatelessWidget {
   final List<AggregatedItem> items;
   final ImageApi imageApi;
   final UserPreferences prefs;
@@ -11851,7 +11948,7 @@ class _FilmographyRow extends StatelessWidget {
   final KeyEventResult Function(int index, KeyEvent event)? onItemKeyEvent;
   final void Function(AggregatedItem item)? onItemLongPress;
 
-  const _FilmographyRow({
+  const FilmographyRow({
     required this.items,
     required this.imageApi,
     required this.prefs,
@@ -11958,14 +12055,14 @@ class _FilmographyRow extends StatelessWidget {
   }
 }
 
-class _SeerrAppearancesRow extends StatelessWidget {
+class SeerrAppearancesRow extends StatelessWidget {
   final List<SeerrDiscoverItem> items;
   final UserPreferences prefs;
   final ScrollController? scrollController;
   final FocusNode? firstFocusNode;
   final KeyEventResult Function(int index, KeyEvent event)? onItemKeyEvent;
 
-  const _SeerrAppearancesRow({
+  const SeerrAppearancesRow({
     required this.items,
     required this.prefs,
     this.scrollController,
@@ -12041,14 +12138,14 @@ class _SeerrAppearancesRow extends StatelessWidget {
   }
 }
 
-class _SeerrCrewCreditsRow extends StatelessWidget {
+class SeerrCrewCreditsRow extends StatelessWidget {
   final List<SeerrDiscoverItem> items;
   final UserPreferences prefs;
   final ScrollController? scrollController;
   final FocusNode? firstFocusNode;
   final KeyEventResult Function(int index, KeyEvent event)? onItemKeyEvent;
 
-  const _SeerrCrewCreditsRow({
+  const SeerrCrewCreditsRow({
     required this.items,
     required this.prefs,
     this.scrollController,
@@ -13509,3 +13606,7 @@ class _PersonDisplaySettingsDialogState
     );
   }
 }
+
+typedef DetailActionButton = _DetailActionButton;
+typedef PersonDisplaySettingsDialog = _PersonDisplaySettingsDialog;
+
