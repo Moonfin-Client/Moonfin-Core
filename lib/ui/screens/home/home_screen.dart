@@ -104,7 +104,7 @@ class _HomeShellState extends State<_HomeShell>
   Timer? _hoverPauseTimer;
   StreamSubscription<String?>? _backgroundSub;
   final ValueNotifier<bool> _isHoverPausedNotifier = ValueNotifier(false);
-  bool _isScrolledToTop = true;
+  final ValueNotifier<bool> _isScrolledToTopNotifier = ValueNotifier(true);
   String _lastSectionsJson = '';
   Type? _lastMediaBarStateRuntime;
   int _lastMediaBarItemCount = 0;
@@ -185,6 +185,7 @@ class _HomeShellState extends State<_HomeShell>
     _backgroundSub?.cancel();
     _selectedItemNotifier.dispose();
     _isHoverPausedNotifier.dispose();
+    _isScrolledToTopNotifier.dispose();
     _viewModel.mediaBarViewModel.removeListener(_onMediaBarStateChanged);
     _viewModel.removeListener(_onViewModelChanged);
     _pluginSyncService.removeListener(_onPluginSyncChanged);
@@ -415,9 +416,10 @@ class _HomeShellState extends State<_HomeShell>
                   selectedItemNotifier: _selectedItemNotifier,
                   onItemSelected: onItemSelected,
                   isHoverPausedNotifier: _isHoverPausedNotifier,
+                  isScrolledToTopNotifier: _isScrolledToTopNotifier,
                   onScrolledToTopChanged: (atTop) {
-                    if (atTop != _isScrolledToTop) {
-                      setState(() => _isScrolledToTop = atTop);
+                    if (atTop != _isScrolledToTopNotifier.value) {
+                      _isScrolledToTopNotifier.value = atTop;
                     }
                   },
                 ),
@@ -560,6 +562,7 @@ class _ContentRows extends StatefulWidget {
   final ValueNotifier<AggregatedItem?> selectedItemNotifier;
   final ValueChanged<AggregatedItem?> onItemSelected;
   final ValueNotifier<bool> isHoverPausedNotifier;
+  final ValueNotifier<bool> isScrolledToTopNotifier;
   final ValueChanged<bool>? onScrolledToTopChanged;
 
   const _ContentRows({
@@ -569,6 +572,7 @@ class _ContentRows extends StatefulWidget {
     required this.selectedItemNotifier,
     required this.onItemSelected,
     required this.isHoverPausedNotifier,
+    required this.isScrolledToTopNotifier,
     this.onScrolledToTopChanged,
   });
 
@@ -634,7 +638,7 @@ class _ContentRowsState extends State<_ContentRows>
   bool _previewUsingAppleTv = false;
   final ValueNotifier<double> _scrollOffsetNotifier = ValueNotifier<double>(0);
   double _previewStartScrollOffset = 0;
-  bool _isScrolledToTop = true;
+  bool get _isScrolledToTop => widget.isScrolledToTopNotifier.value;
   bool _isActivelyScrolling = false;
   Timer? _scrollIdleTimer;
   double _lastActiveRowOffsetUpdate = 0;
@@ -2537,7 +2541,6 @@ class _ContentRowsState extends State<_ContentRows>
     final atTop = offset <= 0;
     final topStateChanged = atTop != _isScrolledToTop;
     if (topStateChanged) {
-      _isScrolledToTop = atTop;
       widget.onScrolledToTopChanged?.call(atTop);
     }
 
@@ -3302,62 +3305,67 @@ class _ContentRowsState extends State<_ContentRows>
                       return ValueListenableBuilder<bool>(
                         valueListenable: widget.isHoverPausedNotifier,
                         builder: (context, isHoverPaused, _) {
-                          final barPaused = isHoverPaused ||
-                              !_isScrolledToTop ||
-                              _isActivelyScrolling ||
-                              _chromeAudioActive;
+                          return ValueListenableBuilder<bool>(
+                            valueListenable: widget.isScrolledToTopNotifier,
+                            builder: (context, isScrolledToTop, _) {
+                              final barPaused = isHoverPaused ||
+                                  !isScrolledToTop ||
+                                  _isActivelyScrolling ||
+                                  _chromeAudioActive;
 
-                          return AnimatedOpacity(
-                            duration: _mediaBarFadeDuration,
-                            curve: Curves.easeInOutCubic,
-                            opacity: _mediaBarVisible ? 1.0 : 0.0,
-                            child: IgnorePointer(
-                              ignoring: !_mediaBarVisible,
-                              child: bannerMode
-                                  ? BannerMediaBar(
-                                      viewModel: widget.mediaBarViewModel,
-                                      prefs: prefs,
-                                      height: mediaBarHeight,
-                                      externallyPaused:
-                                          barPaused ||
-                                          !_mediaBarVisible ||
-                                          _activePreviewKey != null,
-                                      focusNode: _mediaBarFocusNode,
-                                      onNavigateDown: _moveFocusFromMediaBarToRows,
-                                      onNavigateUp: _navigateFromMediaBarToNavbar,
-                                      onNavigateLeft: navbarIsLeft
-                                          ? _navigateFromMediaBarToNavbar
-                                          : null,
-                                      onOpen: (item) => context.push(
-                                        Destinations.item(
-                                          item.itemId,
-                                          serverId: item.serverId,
+                              return AnimatedOpacity(
+                                duration: _mediaBarFadeDuration,
+                                curve: Curves.easeInOutCubic,
+                                opacity: _mediaBarVisible ? 1.0 : 0.0,
+                                child: IgnorePointer(
+                                  ignoring: !_mediaBarVisible,
+                                  child: bannerMode
+                                      ? BannerMediaBar(
+                                          viewModel: widget.mediaBarViewModel,
+                                          prefs: prefs,
+                                          height: mediaBarHeight,
+                                          externallyPaused:
+                                              barPaused ||
+                                              !_mediaBarVisible ||
+                                              _activePreviewKey != null,
+                                          focusNode: _mediaBarFocusNode,
+                                          onNavigateDown: _moveFocusFromMediaBarToRows,
+                                          onNavigateUp: _navigateFromMediaBarToNavbar,
+                                          onNavigateLeft: navbarIsLeft
+                                              ? _navigateFromMediaBarToNavbar
+                                              : null,
+                                          onOpen: (item) => context.push(
+                                            Destinations.item(
+                                              item.itemId,
+                                              serverId: item.serverId,
+                                            ),
+                                          ),
+                                          onPlay: (item) => context.push(
+                                            Destinations.item(
+                                              item.itemId,
+                                              serverId: item.serverId,
+                                              autoPlay: true,
+                                            ),
+                                          ),
+                                        )
+                                      : MediaBar(
+                                          viewModel: widget.mediaBarViewModel,
+                                          prefs: prefs,
+                                          externallyPaused:
+                                              barPaused ||
+                                              !_mediaBarVisible ||
+                                              _activePreviewKey != null,
+                                          height: mediaBarHeight,
+                                          onNavigateDown: _moveFocusFromMediaBarToRows,
+                                          onNavigateUp: _navigateFromMediaBarToNavbar,
+                                          onNavigateLeft: navbarIsLeft
+                                              ? _navigateFromMediaBarToNavbar
+                                              : null,
+                                          focusNode: _mediaBarFocusNode,
                                         ),
-                                      ),
-                                      onPlay: (item) => context.push(
-                                        Destinations.item(
-                                          item.itemId,
-                                          serverId: item.serverId,
-                                          autoPlay: true,
-                                        ),
-                                      ),
-                                    )
-                                  : MediaBar(
-                                      viewModel: widget.mediaBarViewModel,
-                                      prefs: prefs,
-                                      externallyPaused:
-                                          barPaused ||
-                                          !_mediaBarVisible ||
-                                          _activePreviewKey != null,
-                                      height: mediaBarHeight,
-                                      onNavigateDown: _moveFocusFromMediaBarToRows,
-                                      onNavigateUp: _navigateFromMediaBarToNavbar,
-                                      onNavigateLeft: navbarIsLeft
-                                          ? _navigateFromMediaBarToNavbar
-                                          : null,
-                                      focusNode: _mediaBarFocusNode,
-                                    ),
-                            ),
+                                ),
+                              );
+                            },
                           );
                         },
                       );
