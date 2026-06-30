@@ -633,7 +633,6 @@ class _ContentRowsState extends State<_ContentRows>
   StreamSubscription<void>? _appleTvPreviewCompletedSub;
   int _previewRequestId = 0;
   bool _mainPlaybackActive = false;
-  bool _previewReady = false;
   bool _previewUsingMedia3 = false;
   bool _previewUsingAppleTv = false;
   final ValueNotifier<double> _scrollOffsetNotifier = ValueNotifier<double>(0);
@@ -643,7 +642,6 @@ class _ContentRowsState extends State<_ContentRows>
   Timer? _scrollIdleTimer;
   double _lastActiveRowOffsetUpdate = 0;
   bool _infoRevealed = false;
-  bool _mediaBarVisible = true;
   bool _initialFocusResolved = false;
   bool _hasEverFocusedHomeContent = false;
   String? _lastObservedPath;
@@ -653,10 +651,47 @@ class _ContentRowsState extends State<_ContentRows>
   DateTime? _lastMouseWheelTime;
   DateTime? _lastVerticalNavAt;
   bool _verticalNavInFlight = false;
-  bool _chromeFocusActive = false;
-  bool _chromeAudioActive = false;
   bool _windowHasFocus = true;
   bool _holdMediaBarWhileSidebarFocused = false;
+
+  final ValueNotifier<String?> _activePreviewKeyNotifier = ValueNotifier(null);
+  String? get _activePreviewKey => _activePreviewKeyNotifier.value;
+  set _activePreviewKey(String? value) {
+    if (_activePreviewKeyNotifier.value != value) {
+      _activePreviewKeyNotifier.value = value;
+    }
+  }
+
+  final ValueNotifier<bool> _previewReadyNotifier = ValueNotifier(false);
+  bool get _previewReady => _previewReadyNotifier.value;
+  set _previewReady(bool value) {
+    if (_previewReadyNotifier.value != value) {
+      _previewReadyNotifier.value = value;
+    }
+  }
+
+  final ValueNotifier<bool> _mediaBarVisibleNotifier = ValueNotifier(true);
+  bool get _mediaBarVisible => _mediaBarVisibleNotifier.value;
+  set _mediaBarVisible(bool value) {
+    if (_mediaBarVisibleNotifier.value != value) {
+      _mediaBarVisibleNotifier.value = value;
+    }
+  }
+
+  final ValueNotifier<bool> _chromeFocusActiveNotifier = ValueNotifier(false);
+  bool get _chromeFocusActive => _chromeFocusActiveNotifier.value;
+  set _chromeFocusActive(bool value) {
+    if (_chromeFocusActiveNotifier.value != value) {
+      _chromeFocusActiveNotifier.value = value;
+    }
+  }
+
+  final ValueNotifier<bool> _chromeAudioActiveNotifier = ValueNotifier(false);
+  set _chromeAudioActive(bool value) {
+    if (_chromeAudioActiveNotifier.value != value) {
+      _chromeAudioActiveNotifier.value = value;
+    }
+  }
 
   double get _scrollOffset => _scrollOffsetNotifier.value;
   set _scrollOffset(double value) {
@@ -668,7 +703,6 @@ class _ContentRowsState extends State<_ContentRows>
   bool _wasSidebarFocused = false;
   VoidCallback? _previousFocusContentFromNavbarCallback;
   FocusNode? _lastGlobalPrimaryFocus;
-  String? _activePreviewKey;
   String? _mobilePressedV2Key;
   String? _mouseHoveredV2Key;
   final Set<String> _v2FocusPrefetchedUrls = <String>{};
@@ -786,15 +820,13 @@ class _ContentRowsState extends State<_ContentRows>
               (_verticalNavInFlight && _mediaBarVisible) ||
               (!onSidebar && _activeFocusedRowIndex == null);
     final chromeChanged =
-        _chromeFocusActive != chromeFocusActive ||
-        _chromeAudioActive != chromeAudioActive;
+        _chromeFocusActiveNotifier.value != chromeFocusActive ||
+        _chromeAudioActiveNotifier.value != chromeAudioActive;
 
-    if (_mediaBarVisible != nextMediaBarVisible || chromeChanged) {
-      setState(() {
-        _mediaBarVisible = nextMediaBarVisible;
-        _chromeFocusActive = chromeFocusActive;
-        _chromeAudioActive = chromeAudioActive;
-      });
+    if (_mediaBarVisibleNotifier.value != nextMediaBarVisible || chromeChanged) {
+      _mediaBarVisible = nextMediaBarVisible;
+      _chromeFocusActive = chromeFocusActive;
+      _chromeAudioActive = chromeAudioActive;
     }
 
     if (wasOnSidebar && !onSidebar && _activeFocusedRowIndex != null) {
@@ -941,6 +973,11 @@ class _ContentRowsState extends State<_ContentRows>
     _scrollOffsetNotifier.dispose();
     _activeFocusedRowNotifier.dispose();
     _v2AdditionalRatingsNotifier.dispose();
+    _mediaBarVisibleNotifier.dispose();
+    _chromeFocusActiveNotifier.dispose();
+    _chromeAudioActiveNotifier.dispose();
+    _activePreviewKeyNotifier.dispose();
+    _previewReadyNotifier.dispose();
     if (identical(
       NavigationLayout.focusContentFromNavbarNotifier.value,
       _focusContentFromNavbar,
@@ -1129,10 +1166,8 @@ class _ContentRowsState extends State<_ContentRows>
         return;
       }
       _previewStartScrollOffset = _scrollController.offset;
-      setState(() {
-        _activePreviewKey = previewKey;
-        _previewReady = false;
-      });
+      _activePreviewKey = previewKey;
+      _previewReady = false;
       await _startSharedPreview(item, previewKey);
     });
     _previewDelayTimer = thisTimer;
@@ -1188,15 +1223,8 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     if (_activePreviewKey != null || _previewReady) {
-      if (updateUi && mounted) {
-        setState(() {
-          _activePreviewKey = null;
-          _previewReady = false;
-        });
-      } else {
-        _activePreviewKey = null;
-        _previewReady = false;
-      }
+      _activePreviewKey = null;
+      _previewReady = false;
     }
     _themeMusicService.setExternalAudioActive(false);
   }
@@ -1330,7 +1358,7 @@ class _ContentRowsState extends State<_ContentRows>
       });
 
       if (_isPreviewRequestActive(requestId, previewKey)) {
-        setState(() => _previewReady = true);
+        _previewReady = true;
       }
     } catch (_) {
       if (_isPreviewRequestActive(requestId, previewKey)) {
@@ -1901,7 +1929,7 @@ class _ContentRowsState extends State<_ContentRows>
     _forceRevealOnNextRowFocusFromMediaBar = true;
     final isBanner = _isBannerMode();
     if (mounted && _mediaBarVisible && !isBanner) {
-      setState(() => _mediaBarVisible = false);
+      _mediaBarVisible = false;
     }
     if (!isBanner && _scrollController.hasClients) {
       final offsetAdjustment = _isBookshelfMode() ? (_overlayBottom + 8) : 0.0;
@@ -3303,69 +3331,79 @@ class _ContentRowsState extends State<_ContentRows>
                   itemBuilder: (context, index) {
                     if (includeMediaBar && index == 0) {
                       return ValueListenableBuilder<bool>(
-                        valueListenable: widget.isHoverPausedNotifier,
-                        builder: (context, isHoverPaused, _) {
-                          return ValueListenableBuilder<bool>(
-                            valueListenable: widget.isScrolledToTopNotifier,
-                            builder: (context, isScrolledToTop, _) {
-                              final barPaused = isHoverPaused ||
-                                  !isScrolledToTop ||
-                                  _isActivelyScrolling ||
-                                  _chromeAudioActive;
+                        valueListenable: _mediaBarVisibleNotifier,
+                        builder: (context, mediaBarVisible, _) {
+                          return AnimatedOpacity(
+                            duration: _mediaBarFadeDuration,
+                            curve: Curves.easeInOutCubic,
+                            opacity: mediaBarVisible ? 1.0 : 0.0,
+                            child: IgnorePointer(
+                              ignoring: !mediaBarVisible,
+                              child: ValueListenableBuilder<bool>(
+                                valueListenable: widget.isHoverPausedNotifier,
+                                builder: (context, isHoverPaused, _) {
+                                  return ValueListenableBuilder<bool>(
+                                    valueListenable: widget.isScrolledToTopNotifier,
+                                    builder: (context, isScrolledToTop, _) {
+                                      return ValueListenableBuilder<bool>(
+                                        valueListenable: _chromeAudioActiveNotifier,
+                                        builder: (context, chromeAudioActive, _) {
+                                          final barPaused = isHoverPaused ||
+                                              !isScrolledToTop ||
+                                              _isActivelyScrolling ||
+                                              chromeAudioActive;
 
-                              return AnimatedOpacity(
-                                duration: _mediaBarFadeDuration,
-                                curve: Curves.easeInOutCubic,
-                                opacity: _mediaBarVisible ? 1.0 : 0.0,
-                                child: IgnorePointer(
-                                  ignoring: !_mediaBarVisible,
-                                  child: bannerMode
-                                      ? BannerMediaBar(
-                                          viewModel: widget.mediaBarViewModel,
-                                          prefs: prefs,
-                                          height: mediaBarHeight,
-                                          externallyPaused:
-                                              barPaused ||
-                                              !_mediaBarVisible ||
-                                              _activePreviewKey != null,
-                                          focusNode: _mediaBarFocusNode,
-                                          onNavigateDown: _moveFocusFromMediaBarToRows,
-                                          onNavigateUp: _navigateFromMediaBarToNavbar,
-                                          onNavigateLeft: navbarIsLeft
-                                              ? _navigateFromMediaBarToNavbar
-                                              : null,
-                                          onOpen: (item) => context.push(
-                                            Destinations.item(
-                                              item.itemId,
-                                              serverId: item.serverId,
-                                            ),
-                                          ),
-                                          onPlay: (item) => context.push(
-                                            Destinations.item(
-                                              item.itemId,
-                                              serverId: item.serverId,
-                                              autoPlay: true,
-                                            ),
-                                          ),
-                                        )
-                                      : MediaBar(
-                                          viewModel: widget.mediaBarViewModel,
-                                          prefs: prefs,
-                                          externallyPaused:
-                                              barPaused ||
-                                              !_mediaBarVisible ||
-                                              _activePreviewKey != null,
-                                          height: mediaBarHeight,
-                                          onNavigateDown: _moveFocusFromMediaBarToRows,
-                                          onNavigateUp: _navigateFromMediaBarToNavbar,
-                                          onNavigateLeft: navbarIsLeft
-                                              ? _navigateFromMediaBarToNavbar
-                                              : null,
-                                          focusNode: _mediaBarFocusNode,
-                                        ),
-                                ),
-                              );
-                            },
+                                          return bannerMode
+                                              ? BannerMediaBar(
+                                                  viewModel: widget.mediaBarViewModel,
+                                                  prefs: prefs,
+                                                  height: mediaBarHeight,
+                                                  externallyPaused:
+                                                      barPaused ||
+                                                      !mediaBarVisible ||
+                                                      _activePreviewKey != null,
+                                                  focusNode: _mediaBarFocusNode,
+                                                  onNavigateDown: _moveFocusFromMediaBarToRows,
+                                                  onNavigateUp: _navigateFromMediaBarToNavbar,
+                                                  onNavigateLeft: navbarIsLeft
+                                                      ? _navigateFromMediaBarToNavbar
+                                                      : null,
+                                                  onOpen: (item) => context.push(
+                                                    Destinations.item(
+                                                      item.itemId,
+                                                      serverId: item.serverId,
+                                                    ),
+                                                  ),
+                                                  onPlay: (item) => context.push(
+                                                    Destinations.item(
+                                                      item.itemId,
+                                                      serverId: item.serverId,
+                                                      autoPlay: true,
+                                                    ),
+                                                  ),
+                                                )
+                                              : MediaBar(
+                                                  viewModel: widget.mediaBarViewModel,
+                                                  prefs: prefs,
+                                                  externallyPaused:
+                                                      barPaused ||
+                                                      !mediaBarVisible ||
+                                                      _activePreviewKey != null,
+                                                  height: mediaBarHeight,
+                                                  onNavigateDown: _moveFocusFromMediaBarToRows,
+                                                  onNavigateUp: _navigateFromMediaBarToNavbar,
+                                                  onNavigateLeft: navbarIsLeft
+                                                      ? _navigateFromMediaBarToNavbar
+                                                      : null,
+                                                  focusNode: _mediaBarFocusNode,
+                                                );
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
                           );
                         },
                       );
@@ -3939,31 +3977,35 @@ class _ContentRowsState extends State<_ContentRows>
 
           final canPreview = _supportsEpisodePreview(item);
 
-          final showPreviewVideo =
-              _activePreviewKey == previewKey && _previewReady;
+          return ValueListenableBuilder<String?>(
+            valueListenable: _activePreviewKeyNotifier,
+            builder: (context, activePreviewKey, _) {
+              return ValueListenableBuilder<bool>(
+                valueListenable: _previewReadyNotifier,
+                builder: (context, previewReady, _) {
+                  final showPreviewVideo = activePreviewKey == previewKey && previewReady;
 
-          void navigateToItem() {
-            if (row.rowType == HomeRowType.libraryTiles) {
-              _navigateToLibrary(context, item);
-            } else if (row.rowType == HomeRowType.genres &&
-                row.id == 'genres') {
-              context.push(Destinations.genre(item.name, genreId: item.id));
-            } else if (item.serverId == 'seerr') {
-              _navigateToSeerrItem(context, item);
-            } else {
-              context.push(
-                Destinations.itemOrPhoto(
-                  item.id,
-                  serverId: item.serverId,
-                  type: item.type,
-                ),
-              );
-            }
-          }
+                  void navigateToItem() {
+                    if (row.rowType == HomeRowType.libraryTiles) {
+                      _navigateToLibrary(context, item);
+                    } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
+                      context.push(Destinations.genre(item.name, genreId: item.id));
+                    } else if (item.serverId == 'seerr') {
+                      _navigateToSeerrItem(context, item);
+                    } else {
+                      context.push(
+                        Destinations.itemOrPhoto(
+                          item.id,
+                          serverId: item.serverId,
+                          type: item.type,
+                        ),
+                      );
+                    }
+                  }
 
-          final String cardTitle;
-          final String? cardSubtitle;
-          final Widget? cardSubtitleWidget;
+                  final String cardTitle;
+                  final String? cardSubtitle;
+                  final Widget? cardSubtitleWidget;
 
           if (isRowsV2 && item.type == 'Episode') {
             final s = item.parentIndexNumber;
@@ -4030,140 +4072,140 @@ class _ContentRowsState extends State<_ContentRows>
             cardSubtitleWidget = null;
           }
 
-          final card = MediaCard(
-            title: cardTitle,
-            subtitle: cardSubtitle,
-            subtitleWidget: cardSubtitleWidget,
-            imageUrl: imageUrl,
-            width: width,
-            aspectRatio: ar,
-            isFavorite: item.isFavorite,
-            isPlayed: item.isPlayed,
-            unplayedCount: item.unplayedItemCount,
-            playedPercentage: item.playedPercentage,
-            watchedBehavior: watchedBehavior,
-            itemType: item.type,
-            seerrMediaType: item.seerrMediaType,
-            seerrStatus: item.seerrStatus,
-            focusColor:
-                (row.rowType == HomeRowType.genres && row.id == 'genres')
-                ? ThemeRegistry.active.borders.focusBorder.color
-                : focusColor,
-            cardFocusExpansion: isRowsV2
-                ? false
-                : cardExpansion && !showPreviewVideo,
-            externalIsFocused: effectiveV2Focused,
-            suppressImageFocusBorder: showPreviewVideo,
-            suppressFocusGlow: suppressFocusGlow,
-            onHoverStart: () {
-              unawaited(_revealAndScrollToPinnedInfo());
-              widget.onItemSelected(item);
-              if (isRowsV2) {
-                if (_mouseHoveredV2Key != previewKey) {
-                  setState(() => _mouseHoveredV2Key = previewKey);
-                }
-                if (!row.isAudio) {
-                  _primeV2FocusedRatings(item);
-                }
-              }
-              if (!PlatformDetection.useMobileUi && canPreview) {
-                _schedulePreview(item, delay: _previewStartDelay);
-              } else {
-                _finishSharedPreview();
-              }
-            },
-            onHoverEnd: () {
-              if (isRowsV2) {
-                if (_mouseHoveredV2Key == previewKey) {
-                  setState(() => _mouseHoveredV2Key = null);
-                }
-                _finishSharedPreview();
-              } else {
-                _stopPreviewFor(item);
-              }
-            },
-            onLongPress: () => showContextMenu(
-              context,
-              item,
-              onChanged: () => setState(() {}),
-            ),
-            onTap: () {
-              if (isV2MobileTouch) {
-                if (_mobilePressedV2Key == previewKey) {
-                  setState(() => _mobilePressedV2Key = null);
-                  _finishSharedPreview(releaseResources: true);
-                  navigateToItem();
-                } else {
-                  setState(() {
-                    _mobilePressedV2Key = previewKey;
-                    _mouseHoveredV2Key = null;
-                  });
-                  widget.onItemSelected(item);
-                  _primeV2FocusedRatings(item);
-                }
-                return;
-              }
+                  final card = MediaCard(
+                    title: cardTitle,
+                    subtitle: cardSubtitle,
+                    subtitleWidget: cardSubtitleWidget,
+                    imageUrl: imageUrl,
+                    width: width,
+                    aspectRatio: ar,
+                    isFavorite: item.isFavorite,
+                    isPlayed: item.isPlayed,
+                    unplayedCount: item.unplayedItemCount,
+                    playedPercentage: item.playedPercentage,
+                    watchedBehavior: watchedBehavior,
+                    itemType: item.type,
+                    seerrMediaType: item.seerrMediaType,
+                    seerrStatus: item.seerrStatus,
+                    focusColor: (row.rowType == HomeRowType.genres && row.id == 'genres')
+                        ? ThemeRegistry.active.borders.focusBorder.color
+                        : focusColor,
+                    cardFocusExpansion: isRowsV2 ? false : cardExpansion && !showPreviewVideo,
+                    externalIsFocused: effectiveV2Focused,
+                    suppressImageFocusBorder: showPreviewVideo,
+                    suppressFocusGlow: suppressFocusGlow,
+                    onHoverStart: () {
+                      unawaited(_revealAndScrollToPinnedInfo());
+                      widget.onItemSelected(item);
+                      if (isRowsV2) {
+                        if (_mouseHoveredV2Key != previewKey) {
+                          setState(() => _mouseHoveredV2Key = previewKey);
+                        }
+                        if (!row.isAudio) {
+                          _primeV2FocusedRatings(item);
+                        }
+                      }
+                      if (!PlatformDetection.useMobileUi && canPreview) {
+                        _schedulePreview(item, delay: _previewStartDelay);
+                      } else {
+                        _finishSharedPreview();
+                      }
+                    },
+                    onHoverEnd: () {
+                      if (isRowsV2) {
+                        if (_mouseHoveredV2Key == previewKey) {
+                          setState(() => _mouseHoveredV2Key = null);
+                        }
+                        _finishSharedPreview();
+                      } else {
+                        _stopPreviewFor(item);
+                      }
+                    },
+                    onLongPress: () => showContextMenu(
+                      context,
+                      item,
+                      onChanged: () => setState(() {}),
+                    ),
+                    onTap: () {
+                      if (isV2MobileTouch) {
+                        if (_mobilePressedV2Key == previewKey) {
+                          setState(() => _mobilePressedV2Key = null);
+                          _finishSharedPreview(releaseResources: true);
+                          navigateToItem();
+                        } else {
+                          setState(() {
+                            _mobilePressedV2Key = previewKey;
+                            _mouseHoveredV2Key = null;
+                          });
+                          widget.onItemSelected(item);
+                          _primeV2FocusedRatings(item);
+                        }
+                        return;
+                      }
 
-              if (isRowsV2 &&
-                  (_mobilePressedV2Key != null || _mouseHoveredV2Key != null)) {
-                setState(() {
-                  _mobilePressedV2Key = null;
-                  _mouseHoveredV2Key = null;
-                });
-              }
-              _finishSharedPreview(releaseResources: true);
-              navigateToItem();
+                      if (isRowsV2 && (_mobilePressedV2Key != null || _mouseHoveredV2Key != null)) {
+                        setState(() {
+                          _mobilePressedV2Key = null;
+                          _mouseHoveredV2Key = null;
+                        });
+                      }
+                      _finishSharedPreview(releaseResources: true);
+                      navigateToItem();
+                    },
+                  );
+
+                  final previewWrappedCard = !canPreview
+                      ? card
+                      : _PreviewCardShell(
+                          card: card,
+                          width: width,
+                          aspectRatio: ar,
+                          showVideo: showPreviewVideo,
+                          useMedia3: showPreviewVideo && _previewUsingMedia3,
+                          controller: _previewController,
+                          appleTvTextureId: showPreviewVideo && _previewUsingAppleTv
+                              ? _appleTvPreviewPlayer?.textureId
+                              : null,
+                          isFocused: isFocused,
+                          focusColor: focusColor,
+                        );
+
+                  if (isRowsV2) {
+                    final showExtendedSection = effectiveV2Focused;
+                    final extendedSection = showExtendedSection
+                        ? _buildV2ExtendedSection(
+                            ctx,
+                            item,
+                            previewKey,
+                            cardWidth: width,
+                            extendedWidth: v2ExtendedWidth,
+                            isAudioRow: row.isAudio,
+                          )
+                        : null;
+                    return AnimatedSize(
+                      duration: const Duration(milliseconds: 150),
+                      curve: Curves.easeInOutCubic,
+                      alignment: Alignment.topLeft,
+                      clipBehavior: Clip.none,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          previewWrappedCard,
+                          if (extendedSection != null) ...[
+                            const SizedBox(height: 4),
+                            extendedSection,
+                          ],
+                        ],
+                      ),
+                    );
+                  }
+
+                  return previewWrappedCard;
+                },
+              );
             },
           );
-
-          final previewWrappedCard = !canPreview
-              ? card
-              : _PreviewCardShell(
-                  card: card,
-                  width: width,
-                  aspectRatio: ar,
-                  showVideo: showPreviewVideo,
-                  useMedia3: showPreviewVideo && _previewUsingMedia3,
-                  controller: _previewController,
-                  appleTvTextureId: showPreviewVideo && _previewUsingAppleTv
-                      ? _appleTvPreviewPlayer?.textureId
-                      : null,
-                  isFocused: isFocused,
-                  focusColor: focusColor,
-                );
-
-          if (isRowsV2) {
-            final showExtendedSection = effectiveV2Focused;
-            final extendedSection = showExtendedSection
-                ? _buildV2ExtendedSection(
-                    ctx,
-                    item,
-                    previewKey,
-                    cardWidth: width,
-                    extendedWidth: v2ExtendedWidth,
-                    isAudioRow: row.isAudio,
-                  )
-                : null;
-            return AnimatedSize(
-              duration: const Duration(milliseconds: 150),
-              curve: Curves.easeInOutCubic,
-              alignment: Alignment.topLeft,
-              clipBehavior: Clip.none,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  previewWrappedCard,
-                  if (extendedSection != null) ...[
-                    const SizedBox(height: 4),
-                    extendedSection,
-                  ],
-                ],
-              ),
-            );
-          }
-
-          return previewWrappedCard;
         },
       ),
     ),
