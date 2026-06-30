@@ -128,28 +128,34 @@ class _DetailsTabItemState extends State<_DetailsTabItem> {
     return Focus(
       focusNode: widget.focusNode,
       onKeyEvent: (node, event) {
-        if (event is KeyDownEvent) {
-          if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-            if (widget.onNavigateDown != null) {
-              widget.onNavigateDown!();
-              return KeyEventResult.handled;
-            }
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            if (widget.onNavigateUp != null) {
-              widget.onNavigateUp!();
-              return KeyEventResult.handled;
-            }
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-            widget.onNavigateLeft();
-            return KeyEventResult.handled;
-          } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-            widget.onNavigateRight();
-            return KeyEventResult.handled;
-          } else if (event.logicalKey == LogicalKeyboardKey.enter ||
-              event.logicalKey == LogicalKeyboardKey.select) {
-            widget.onSelect();
-            return KeyEventResult.handled;
+        final isDownOrRepeat = event is KeyDownEvent || event is KeyRepeatEvent;
+        
+        if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          if (isDownOrRepeat && widget.onNavigateDown != null) {
+            widget.onNavigateDown!();
           }
+          return KeyEventResult.handled;
+        } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          if (isDownOrRepeat && widget.onNavigateUp != null) {
+            widget.onNavigateUp!();
+          }
+          return KeyEventResult.handled;
+        } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+          if (isDownOrRepeat) {
+            widget.onNavigateLeft();
+          }
+          return KeyEventResult.handled;
+        } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+          if (isDownOrRepeat) {
+            widget.onNavigateRight();
+          }
+          return KeyEventResult.handled;
+        } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+            event.logicalKey == LogicalKeyboardKey.select) {
+          if (isDownOrRepeat) {
+            widget.onSelect();
+          }
+          return KeyEventResult.handled;
         }
         return KeyEventResult.ignored;
       },

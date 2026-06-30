@@ -602,44 +602,42 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       if (tabIndex >= 0 && tabIndex < tabs.length) {
         final label = tabs[tabIndex].label;
         if (label == l10n.cast) {
-          if (_castFirstFocusNode.canRequestFocus) _castFirstFocusNode.requestFocus();
+          _castFirstFocusNode.requestFocus();
         } else if (label == l10n.crewSection) {
-          if (_crewFirstFocusNode.canRequestFocus) _crewFirstFocusNode.requestFocus();
+          _crewFirstFocusNode.requestFocus();
         } else if (label == l10n.studios) {
-          if (_studiosFirstFocusNode.canRequestFocus) _studiosFirstFocusNode.requestFocus();
+          _studiosFirstFocusNode.requestFocus();
         } else if (label == l10n.chapters) {
-          if (_chaptersFirstFocusNode.canRequestFocus) _chaptersFirstFocusNode.requestFocus();
+          _chaptersFirstFocusNode.requestFocus();
         } else if (label == l10n.details) {
-          if (_detailsTabFocusNode.canRequestFocus) _detailsTabFocusNode.requestFocus();
+          _detailsTabFocusNode.requestFocus();
         } else if (label == l10n.similar) {
-          if (_similarFirstFocusNode.canRequestFocus) _similarFirstFocusNode.requestFocus();
+          _similarFirstFocusNode.requestFocus();
         } else if (label == l10n.seasons) {
-          if (_seasonsFirstFocusNode.canRequestFocus) _seasonsFirstFocusNode.requestFocus();
+          _seasonsFirstFocusNode.requestFocus();
         } else if (label == l10n.episodes) {
-          if (_episodesFirstFocusNode.canRequestFocus) _episodesFirstFocusNode.requestFocus();
+          _episodesFirstFocusNode.requestFocus();
         } else if (label == l10n.movies) {
           if (_vm.item?.type == 'BoxSet') {
-            if (_moviesFirstFocusNode.canRequestFocus) _moviesFirstFocusNode.requestFocus();
+            _moviesFirstFocusNode.requestFocus();
           } else {
-            if (_personMoviesFirstFocusNode.canRequestFocus) _personMoviesFirstFocusNode.requestFocus();
+            _personMoviesFirstFocusNode.requestFocus();
           }
         } else if (label == l10n.series) {
           if (_vm.item?.type == 'BoxSet') {
-            if (_seriesFirstFocusNode.canRequestFocus) _seriesFirstFocusNode.requestFocus();
+            _seriesFirstFocusNode.requestFocus();
           } else {
-            if (_personSeriesFirstFocusNode.canRequestFocus) _personSeriesFirstFocusNode.requestFocus();
+            _personSeriesFirstFocusNode.requestFocus();
           }
         } else if (label == l10n.appearancesSeerr) {
-          if (_personSeerrAppearancesFirstFocusNode.canRequestFocus) _personSeerrAppearancesFirstFocusNode.requestFocus();
+          _personSeerrAppearancesFirstFocusNode.requestFocus();
         } else if (label == l10n.crewContributionsSeerr) {
-          if (_personSeerrCrewCreditsFirstFocusNode.canRequestFocus) _personSeerrCrewCreditsFirstFocusNode.requestFocus();
+          _personSeerrCrewCreditsFirstFocusNode.requestFocus();
         } else if (label == l10n.albums || label == l10n.items || label == l10n.appearances) {
-          if (_gridFirstFocusNode.canRequestFocus) _gridFirstFocusNode.requestFocus();
+          _gridFirstFocusNode.requestFocus();
         } else if (label == l10n.playlist) {
           if (_vm.item?.type == 'BoxSet' && _vm.playlistItems.isNotEmpty) {
-            if (_collectionSortFocusNode.canRequestFocus) {
-              _collectionSortFocusNode.requestFocus();
-            }
+            _collectionSortFocusNode.requestFocus();
           }
         }
       }
@@ -1834,8 +1832,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       if (_vm.nextUp != null) {
         return _vm.nextUp;
       }
-      if (_vm.episodes.isNotEmpty) {
-        return _vm.episodes.first;
+      if (_vm.seriesEpisodes.isNotEmpty) {
+        try {
+          return _vm.seriesEpisodes.firstWhere((e) => !e.isPlayed);
+        } catch (_) {
+          return _vm.seriesEpisodes.first;
+        }
       }
     } else if (item.type == 'Season') {
       if (_vm.episodes.isNotEmpty) {
@@ -3961,7 +3963,7 @@ class _DetailsContainerState extends State<_DetailsContainer> with FocusStateMix
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
-        height: 460,
+        constraints: const BoxConstraints(maxHeight: 400),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
