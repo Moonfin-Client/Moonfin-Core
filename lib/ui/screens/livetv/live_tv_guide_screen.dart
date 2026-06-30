@@ -48,12 +48,42 @@ class LiveTvGuideScreen extends StatefulWidget {
   final GuideChannel? currentChannel;
   final ValueListenable<int?>? appleTvTextureId;
 
+  /// When true the guide is embedded inside another screen's widget tree (the
+  /// in-player Live TV overlay in this case) rather than pushed as its own route.
+  /// In this mode the [Scaffold]/[SafeArea] chrome is dropped, the mini-player 
+  /// frame is transparent (the host draws the real video behind it), and channel
+  /// selection / close are reported via [onChannelSelected] / [onClose] instead
+  /// of [Navigator] pops.
+  final bool embedded;
+
+  /// Called with the selected channel id instead of `Navigator.pop(channelId)`
+  /// when [embedded]. Required for the in-player overlay; null on the standalone
+  /// route (where the pop result is used).
+  final ValueChanged<String>? onChannelSelected;
+
+  /// Called when the user dismisses the embedded guide (activates the
+  /// mini-player frame) instead of `Navigator.pop()`.
+  final VoidCallback? onClose;
+
   const LiveTvGuideScreen({
     super.key,
     this.miniPlayerMode = false,
     this.currentChannel,
     this.appleTvTextureId,
+    this.embedded = false,
+    this.onChannelSelected,
+    this.onClose,
   });
+
+  /// Geometry of the mini-player video box in [embedded] mode, in the host
+  /// overlay's coordinate space. Single source of truth shared with the host
+  /// player so the real video surface it draws lines up with this frame:
+  /// content padding (top [_contentTopInset]=20 / left [_contentLeftInset]=24)
+  /// plus the program-info header container padding (top 12 / left 16).
+  static const double miniPlayerVideoLeft = 24 + 16;
+  static const double miniPlayerVideoTop = 20 + 12;
+  static const double miniPlayerVideoWidth = _kMiniPlayerWidth;
+  static const double miniPlayerVideoHeight = _kMiniPlayerHeight;
 
   @override
   State<LiveTvGuideScreen> createState() => _LiveTvGuideScreenState();
@@ -363,6 +393,37 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
       RequestInitialFocus(child: _buildContent(context));
 
   Widget _buildContent(BuildContext context) {
+    final body = LayoutBuilder(
+      builder: (context, constraints) {
+        final hours = _guideHoursForWidth(
+          constraints.maxWidth - _contentLeftInset(),
+        );
+        if (hours != _lastComputedHours && _vm.state == GuideState.ready) {
+          _lastComputedHours = hours;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _vm.setWindowHours(hours);
+          });
+        }
+        final landscape = widget.miniPlayerMode ||
+            PlatformDetection.isTV ||
+            PlatformDetection.useDesktopUi ||
+            constraints.maxWidth >= constraints.maxHeight;
+        return Padding(
+          padding: EdgeInsets.only(
+            top: _contentTopInset(),
+            left: landscape ? _contentLeftInset() : 8,
+            right: landscape ? 24 : 8,
+            bottom: 16,
+          ),
+          child: landscape ? _buildLandscape() : _buildMobile(),
+        );
+      },
+    );
+
+    if (widget.embedded) {
+      return body;
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -370,32 +431,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
         top: !PlatformDetection.isAppleTV,
         right: !PlatformDetection.isAppleTV,
         bottom: !PlatformDetection.isAppleTV,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final hours = _guideHoursForWidth(
-              constraints.maxWidth - _contentLeftInset(),
-            );
-            if (hours != _lastComputedHours && _vm.state == GuideState.ready) {
-              _lastComputedHours = hours;
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) _vm.setWindowHours(hours);
-              });
-            }
-            final landscape = widget.miniPlayerMode ||
-                PlatformDetection.isTV ||
-                PlatformDetection.useDesktopUi ||
-                constraints.maxWidth >= constraints.maxHeight;
-            return Padding(
-              padding: EdgeInsets.only(
-                top: _contentTopInset(),
-                left: landscape ? _contentLeftInset() : 8,
-                right: landscape ? 24 : 8,
-                bottom: 16,
-              ),
-              child: landscape ? _buildLandscape() : _buildMobile(),
-            );
-          },
-        ),
+        child: body,
       ),
     );
   }
@@ -752,8 +788,11 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
       channelNumber: currentChannel?.number,
       programTitle: currentProgram?.name,
       showLiveVideo: true,
+      transparentPreview: widget.embedded,
       appleTvTextureId: widget.appleTvTextureId,
-      onActivate: () => Navigator.of(context).pop(),
+      onActivate: widget.embedded && widget.onClose != null
+          ? widget.onClose!
+          : () => Navigator.of(context).pop(),
       focusNode: _miniPlayerFocusNode,
       onKeyEvent: (_, event) {
         if (!event.isActionable) return KeyEventResult.ignored;
@@ -1055,6 +1094,10 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
   }
 
   void _watchChannel(String channelId) {
+    if (widget.embedded && widget.onChannelSelected != null) {
+      widget.onChannelSelected!(channelId);
+      return;
+    }
     if (widget.miniPlayerMode) {
       Navigator.of(context).pop(channelId);
       return;

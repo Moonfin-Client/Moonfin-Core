@@ -62,7 +62,7 @@ class AboutScreen extends StatelessWidget {
               title: Text(l10n.sourceCode),
               subtitle: Text(l10n.sourceCodeUrl),
               onTap: () => launchUrl(
-                Uri.parse('https://github.com/Moonfin-Client/Mobile-Desktop'),
+                Uri.parse('https://github.com/Moonfin-Client/Moonfin-Core'),
               ),
             ),
             if (AppDistribution.supportsInAppUpdates) ...[

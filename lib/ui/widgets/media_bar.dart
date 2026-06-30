@@ -1316,6 +1316,8 @@ class _MediaBarState extends State<MediaBar>
   }
 
   bool _supportsEmbeddedYouTubePreview() {
+    // Prefer the iframe on every WebView platform (Android incl. TV); when no
+    // WebView is available it reports unavailable and Media3 is the fallback.
     return _embeddedYouTubeAvailable &&
         (PlatformDetection.isWeb ||
             PlatformDetection.isAndroid ||

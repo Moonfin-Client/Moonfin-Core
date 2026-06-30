@@ -3478,8 +3478,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get sourceCode => 'Kod źródłowy';
 
   @override
-  String get sourceCodeUrl =>
-      'https://github.com/Moonfin-Client/Mobile-Desktop';
+  String get sourceCodeUrl => 'https://github.com/Moonfin-Client/Moonfin-Core';
 
   @override
   String get checkForUpdatesNow => 'Sprawdź teraz dostępność aktualizacji';

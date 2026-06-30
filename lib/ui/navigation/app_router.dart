@@ -344,6 +344,8 @@ final appRouter = GoRouter(
     GoRoute(
       path: Destinations.genreBrowse,
       builder: (context, state) {
+        // go_router already decodes path parameters; decoding again crashes on
+        // accented/non-ASCII or '%' genre names ("Comédie" for example).
         final genreName = state.pathParameters['genreName']!;
         final genreId = state.uri.queryParameters['genreId']!;
         final parentId = state.uri.queryParameters['parentId'];
@@ -351,7 +353,7 @@ final appRouter = GoRouter(
         return LibraryBrowseScreen(
           libraryId: parentId ?? '',
           genreId: genreId,
-          genreName: Uri.decodeComponent(genreName),
+          genreName: genreName,
           includeItemTypes: includeType != null ? [includeType] : null,
         );
       },
@@ -620,7 +622,8 @@ final appRouter = GoRouter(
         GoRoute(
           path: Destinations.adminLogsFile,
           builder: (context, state) => AdminLogViewerScreen(
-            fileName: Uri.decodeComponent(state.pathParameters['fileName']!),
+            // go_router already decodes path parameters, no need for a second decode
+            fileName: state.pathParameters['fileName']!,
           ),
         ),
         GoRoute(

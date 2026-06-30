@@ -70,9 +70,9 @@ We may update this privacy policy from time to time. Changes will be posted to t
 ## Contact
 
 If you have questions about this privacy policy, you can open an issue on our GitHub repository:
-https://github.com/Moonfin-Client/Mobile-Desktop/issues
+https://github.com/Moonfin-Client/Moonfin-Core/issues
 
 ## Open Source
 
 Moonfin is open-source software. You can review the complete source code to verify our privacy practices:
-https://github.com/Moonfin-Client/Mobile-Desktop
+https://github.com/Moonfin-Client/Moonfin-Core

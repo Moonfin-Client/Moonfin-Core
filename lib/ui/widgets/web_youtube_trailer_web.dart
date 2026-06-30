@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 import 'dart:ui_web' as ui_web;
@@ -52,6 +53,11 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
   static const int _stateEnded = 0;
   static const int _statePlaying = 1;
 
+  // Rendered at this fixed size and CSS-scaled to the box; YouTube picks quality
+  // from the player's pixel size, so a 1080p stage yields 1080p trailers.
+  static const int _stageWidth = 1920;
+  static const int _stageHeight = 1080;
+
   static final Set<String> _registeredViewTypes = <String>{};
   static final Map<String, _WebYouTubeTrailerState> _owners =
       <String, _WebYouTubeTrailerState>{};
@@ -62,6 +68,8 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
   late final String _viewType;
 
   web.HTMLDivElement? _host;
+  web.HTMLDivElement? _container;
+  web.ResizeObserver? _resizeObserver;
   _YTPlayer? _player;
   Timer? _autoplayTimer;
 
@@ -123,6 +131,8 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
   void dispose() {
     _disposed = true;
     _autoplayTimer?.cancel();
+    _resizeObserver?.disconnect();
+    _resizeObserver = null;
     web.window.removeEventListener('message', _messageListener);
     final player = _player;
     _player = null;
@@ -143,20 +153,51 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
 
   web.HTMLDivElement _buildContainer() {
     final container = web.HTMLDivElement()
+      ..style.position = 'relative'
       ..style.width = '100%'
       ..style.height = '100%'
       ..style.overflow = 'hidden'
       ..style.pointerEvents = widget.ignorePointer ? 'none' : 'auto';
 
+    // Fixed-size stage, CSS-scaled to cover the container (see _applyScale).
     final host = web.HTMLDivElement()
       ..id = '$_viewType-host'
-      ..style.width = '100%'
-      ..style.height = '100%';
+      ..style.position = 'absolute'
+      ..style.top = '0'
+      ..style.left = '0'
+      ..style.width = '${_stageWidth}px'
+      ..style.height = '${_stageHeight}px'
+      ..style.transformOrigin = 'top left';
     container.appendChild(host);
 
     _host = host;
-    WidgetsBinding.instance.addPostFrameCallback((_) => _maybeCreatePlayer());
+    _container = container;
+
+    final observer = web.ResizeObserver(
+      ((JSAny _, JSAny _) => _applyScale()).toJS,
+    );
+    observer.observe(container);
+    _resizeObserver = observer;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _applyScale();
+      _maybeCreatePlayer();
+    });
     return container;
+  }
+
+  // Cover the box with the fixed-size stage (16:9), centered.
+  void _applyScale() {
+    final container = _container;
+    final host = _host;
+    if (container == null || host == null) return;
+    final boxWidth = container.clientWidth.toDouble();
+    final boxHeight = container.clientHeight.toDouble();
+    if (boxWidth <= 0 || boxHeight <= 0) return;
+    final scale = math.max(boxWidth / _stageWidth, boxHeight / _stageHeight);
+    final tx = (boxWidth - _stageWidth * scale) / 2;
+    final ty = (boxHeight - _stageHeight * scale) / 2;
+    host.style.transform = 'translate(${tx}px, ${ty}px) scale($scale)';
   }
 
   static Future<void> _ensureYtApi() {
@@ -227,8 +268,8 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
 
     final options = JSObject();
     options.setProperty('videoId'.toJS, widget.videoId.toJS);
-    options.setProperty('width'.toJS, '100%'.toJS);
-    options.setProperty('height'.toJS, '100%'.toJS);
+    options.setProperty('width'.toJS, '$_stageWidth'.toJS);
+    options.setProperty('height'.toJS, '$_stageHeight'.toJS);
     options.setProperty('playerVars'.toJS, playerVars);
     options.setProperty('events'.toJS, events);
 

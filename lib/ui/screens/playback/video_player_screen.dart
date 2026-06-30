@@ -233,6 +233,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   bool _showVolumeOverlay = false;
   bool _showBrightnessOverlay = false;
   Timer? _volumeOverlayTimer;
+  Timer? _persistVolumeTimer;
   Timer? _brightnessOverlayTimer;
   Timer? _zoomModeToastTimer;
   OverlayEntry? _zoomModeToastOverlay;
@@ -807,6 +808,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       } else {
         _syncMedia3VolumeBoostLevel(resetWhenUnavailable: true);
       }
+      // Re-apply the desktop player volume whenever the backend (re)appears.
+      if (PlatformDetection.isDesktop) {
+        unawaited(backend.setVolume(_playerVolume));
+      }
       if (!mounted) return;
       setState(() {});
     });
@@ -915,6 +920,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     if (_useSystemVolume) {
       _initSystemVolume();
+    } else if (PlatformDetection.isDesktop) {
+      _initDesktopVolume();
     }
   }
 
@@ -942,6 +949,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     _removeZoomModeToastOverlay();
     _skipForwardTimer?.cancel();
     _skipBackwardTimer?.cancel();
+    _persistVolumeTimer?.cancel();
+    if (PlatformDetection.isDesktop) {
+      unawaited(_prefs.set(UserPreferences.playerVolume, _playerVolume));
+    }
     if (_useSystemVolume) {
       _volumeListenerSub?.cancel();
       VolumeController.instance.removeListener();
@@ -3398,9 +3409,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     if (_showNextUp && _nextUpItem != null)
                       NextUpOverlay(
                         nextItem: _nextUpItem!,
-                        isMinimal: _prefs.get(UserPreferences.nextUpBehavior) == NextUpBehavior.minimal,
-                        imageUrl: _nextUpItem!.primaryImageTag != null &&
-                                _prefs.get(UserPreferences.nextUpBehavior) != NextUpBehavior.minimal
+                        isMinimal:
+                            _prefs.get(UserPreferences.nextUpBehavior) ==
+                            NextUpBehavior.minimal,
+                        imageUrl:
+                            _nextUpItem!.primaryImageTag != null &&
+                                _prefs.get(UserPreferences.nextUpBehavior) !=
+                                    NextUpBehavior.minimal
                             ? _clientForItem(
                                 _nextUpItem!,
                               ).imageApi.getPrimaryImageUrl(
@@ -4938,8 +4953,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     await backend.setVolumeBoostLevel(clampedLevel);
   }
 
-  bool get _useSystemVolume =>
-      PlatformDetection.isMobile || PlatformDetection.isDesktop;
+  // Desktop drives the player's own (mpv) volume, independent of the OS volume
+  // like mpv/vlc; only mobile attenuates the system volume.
+  bool get _useSystemVolume => PlatformDetection.isMobile;
 
   Future<void> _changeVolumeBy(double delta) async {
     final castKind = _castService.activeKind;
@@ -4981,6 +4997,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final next = (_playerVolume + (delta * 100.0)).clamp(0.0, 100.0);
     _playerVolume = next;
     await backend.setVolume(next);
+    _persistPlayerVolume();
     _showVolumeIndicator();
   }
 
@@ -5071,6 +5088,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         unawaited(_setMedia3VolumeBoostLevel(0));
       }
     }, fetchInitialVolume: true);
+  }
+
+  void _initDesktopVolume() {
+    _playerVolume = _prefs
+        .get(UserPreferences.playerVolume)
+        .clamp(0.0, 100.0)
+        .toDouble();
+    unawaited(_manager.backend?.setVolume(_playerVolume));
+  }
+
+  void _persistPlayerVolume() {
+    if (!PlatformDetection.isDesktop) return;
+    _persistVolumeTimer?.cancel();
+    _persistVolumeTimer = Timer(const Duration(milliseconds: 400), () {
+      unawaited(_prefs.set(UserPreferences.playerVolume, _playerVolume));
+    });
   }
 
   Future<void> _setMobileSystemVolume(
@@ -5248,6 +5281,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             .toDouble();
         _playerVolume = newVolume * 100.0;
         _manager.backend?.setVolume(_playerVolume);
+        _persistPlayerVolume();
       }
       _showVolumeIndicator();
     } else {
@@ -5470,7 +5504,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const AdaptiveIcon(Icons.lock, color: Colors.white70, size: 18),
+                      const AdaptiveIcon(
+                        Icons.lock,
+                        color: Colors.white70,
+                        size: 18,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         AppLocalizations.of(context).longPressToUnlock,
@@ -5607,6 +5645,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     } else {
       setState(() => _playerVolume = clamped * 100.0);
       _manager.backend?.setVolume(_playerVolume);
+      _persistPlayerVolume();
     }
     _showControls();
   }

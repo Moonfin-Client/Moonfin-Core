@@ -3485,8 +3485,7 @@ class AppLocalizationsMk extends AppLocalizations {
   String get sourceCode => 'Изворниот код';
 
   @override
-  String get sourceCodeUrl =>
-      'https://github.com/Moonfin-Client/Mobile-Desktop';
+  String get sourceCodeUrl => 'https://github.com/Moonfin-Client/Moonfin-Core';
 
   @override
   String get checkForUpdatesNow => 'Проверете дали има ажурирања сега';

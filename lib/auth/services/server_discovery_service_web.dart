@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:convert';
 import 'dart:js_interop';
 
 import 'package:dio/dio.dart';
@@ -15,8 +14,6 @@ class ServerDiscoveryService {
   static const _requestTimeout = Duration(milliseconds: 1200);
   static const _maxInFlight = 16;
   static const _commonPorts = <int>[8096, 8920];
-  static const _jellyfinPublicInfoPath = '/System/Info/Public';
-  static const _embyPublicInfoPath = '/emby/System/Info/Public';
   static const _webrtcGatherTimeout = Duration(milliseconds: 2200);
   static const _webrtcPollInterval = Duration(milliseconds: 120);
 
@@ -337,105 +334,26 @@ class ServerDiscoveryService {
   }
 
   Future<DiscoveredServer?> _probeServer(Dio dio, String baseUrl) async {
-    final jellyfinProbe = await _probePublicInfo(
-      dio,
-      baseUrl,
-      _jellyfinPublicInfoPath,
-    );
-    if (jellyfinProbe != null) return jellyfinProbe;
-
-    return _probePublicInfo(
-      dio,
-      baseUrl,
-      _embyPublicInfoPath,
-      typeHint: ServerType.emby,
-    );
-  }
-
-  Future<DiscoveredServer?> _probePublicInfo(
-    Dio dio,
-    String baseUrl,
-    String endpointPath, {
-    ServerType? typeHint,
-  }) async {
-    final requestUrl = '$baseUrl$endpointPath';
-
-    Response<dynamic> response;
+    ServerProbeResult? result;
     try {
-      response = await dio.get<dynamic>(requestUrl);
+      result = await probeServerPublicInfo(dio, baseUrl);
     } catch (_) {
       return null;
     }
+    if (result == null) return null;
 
-    final status = response.statusCode ?? 0;
-    if (status < 200 || status >= 300) {
-      return null;
-    }
-
-    final data = _asStringMap(response.data);
-    if (data == null) {
-      return null;
-    }
-
-    final requestUri = Uri.tryParse(requestUrl);
-    if (requestUri == null) {
-      return null;
-    }
-
-    final productName = _readString(data, const ['ProductName']);
-    final version = _readString(data, const ['Version']);
-    final serverType = _detectServerType(
-      typeHint: typeHint?.name,
-      productName: productName,
-      version: version,
-    );
-
-    final serverAddress = _resolveBaseUrlFromProbe(requestUri, endpointPath);
+    final data = result.info;
+    final address = normalizeServerBaseUrl(result.resolvedBaseUrl);
     final id = _readString(data, const ['Id', 'ServerId']);
     final name = _readString(data, const ['ServerName', 'Name', 'ProductName']);
-    final fallbackName = requestUri.host.isNotEmpty
-        ? requestUri.host
-        : serverAddress;
+    final host = Uri.tryParse(address)?.host ?? '';
+    final fallbackName = host.isNotEmpty ? host : address;
 
     return DiscoveredServer(
-      id: id.isNotEmpty ? id : '$serverType-$serverAddress',
+      id: id.isNotEmpty ? id : '${result.serverType}-$address',
       name: name.isNotEmpty ? name : fallbackName,
-      address: serverAddress,
-      serverType: serverType,
-    );
-  }
-
-  Map<String, dynamic>? _asStringMap(Object? raw) {
-    if (raw == null) return null;
-    if (raw is Map<String, dynamic>) return raw;
-    if (raw is Map) {
-      return raw.map((key, value) => MapEntry(key.toString(), value));
-    }
-    if (raw is String) {
-      try {
-        final decoded = jsonDecode(raw);
-        if (decoded is Map<String, dynamic>) return decoded;
-        if (decoded is Map) {
-          return decoded.map((key, value) => MapEntry(key.toString(), value));
-        }
-      } catch (_) {
-        return null;
-      }
-    }
-    return null;
-  }
-
-  String _resolveBaseUrlFromProbe(Uri requestUri, String endpointPath) {
-    final path = requestUri.path;
-    if (path.endsWith(endpointPath)) {
-      final basePath = path.substring(0, path.length - endpointPath.length);
-      return normalizeServerBaseUrl(
-        '${requestUri.scheme}://${requestUri.authority}$basePath',
-      );
-    }
-
-    return normalizeServerBaseUrl(
-      '${requestUri.scheme}://${requestUri.authority}',
+      address: address,
+      serverType: result.serverType,
     );
   }
 

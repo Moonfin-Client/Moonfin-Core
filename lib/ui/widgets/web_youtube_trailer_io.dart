@@ -1,15 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart'
-  show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 enum _EmbeddedPlayerMode {
-  youtubeIframe,
-  desktopManualIframe,
+  manualIframe,
   unsupported,
 }
 
@@ -44,56 +42,34 @@ class WebYouTubeTrailer extends StatefulWidget {
 }
 
 class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
-  static const _desktopJsChannelName = 'MoonfinYt';
-  static const _desktopBridgeName = '__moonfinYtBridge';
-  static const _desktopOrigin = 'https://www.youtube-nocookie.com';
-  static const _desktopPlayerElementId = 'moonfin-player';
+  static const _jsChannelName = 'MoonfinYt';
+  static const _bridgeName = '__moonfinYtBridge';
+  static const _origin = 'https://www.youtube-nocookie.com';
+  static const _playerElementId = 'moonfin-player';
+  static const _stageElementId = 'moonfin-stage';
+  // Rendered at this fixed size and CSS-scaled to the box; YouTube picks quality
+  // from the player's pixel size, so a 1080p stage yields 1080p trailers.
+  static const _stageWidth = 1920;
+  static const _stageHeight = 1080;
   static const _startupChromeMaskDuration = Duration(milliseconds: 700);
 
-  YoutubePlayerController? _youtubeController;
-  StreamSubscription<YoutubePlayerValue>? _youtubeValueSubscription;
-  WebViewController? _desktopController;
+  WebViewController? _controller;
   Timer? _autoplayTimer;
   Timer? _startupChromeMaskTimer;
 
   bool _playbackStarted = false;
   bool _autoplayFailureReported = false;
   bool _embeddedUnavailableReported = false;
-  bool _autoplayWatchArmed = false;
   bool _startupChromeMaskVisible = false;
-  YoutubeError _lastYoutubeError = YoutubeError.none;
 
   _EmbeddedPlayerMode get _playerMode {
+    // Any platform with a system WebView renders through our own HTML; those
+    // without one (e.g. tvOS) report unsupported so the caller falls back.
     if (WebViewPlatform.instance == null) {
       return _EmbeddedPlayerMode.unsupported;
     }
-
-    return switch (defaultTargetPlatform) {
-      TargetPlatform.android => _EmbeddedPlayerMode.youtubeIframe,
-      TargetPlatform.iOS => _EmbeddedPlayerMode.youtubeIframe,
-      TargetPlatform.macOS => _EmbeddedPlayerMode.youtubeIframe,
-      TargetPlatform.windows => _EmbeddedPlayerMode.desktopManualIframe,
-      TargetPlatform.linux => _EmbeddedPlayerMode.desktopManualIframe,
-      _ => _EmbeddedPlayerMode.unsupported,
-    };
+    return _EmbeddedPlayerMode.manualIframe;
   }
-
-  YoutubePlayerParams get _youtubeParams => YoutubePlayerParams(
-        mute: widget.muted,
-        showControls: widget.showControls,
-        enableCaption: false,
-        enableKeyboard: false,
-      pointerEvents: widget.ignorePointer
-        ? PointerEvents.none
-        : PointerEvents.initial,
-        loop: widget.loop,
-        playsInline: true,
-        showVideoAnnotations: false,
-        strictRelatedVideos: true,
-        privacyEnhancedMode: true,
-        showFullscreenButton: false,
-        origin: _desktopOrigin,
-      );
 
   @override
   void initState() {
@@ -105,8 +81,7 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
   void didUpdateWidget(covariant WebYouTubeTrailer oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    final playerMode = _playerMode;
-    if (playerMode == _EmbeddedPlayerMode.unsupported) {
+    if (_playerMode == _EmbeddedPlayerMode.unsupported) {
       _reportEmbeddedUnavailable();
       return;
     }
@@ -122,51 +97,23 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
 
     _resetPlaybackTracking();
 
-    switch (playerMode) {
-      case _EmbeddedPlayerMode.youtubeIframe:
-        if (controlsChanged || loopChanged) {
-          unawaited(_initializeYoutubeController());
-          return;
-        }
+    final controller = _controller;
+    if (controller == null) {
+      unawaited(_initializeController());
+      return;
+    }
 
-        final controller = _youtubeController;
-        if (controller == null) {
-          unawaited(_initializeYoutubeController());
-          return;
-        }
+    if (controlsChanged || loopChanged) {
+      unawaited(_loadHtml(controller));
+      return;
+    }
 
-        if (videoChanged) {
-          unawaited(controller.loadVideoById(videoId: widget.videoId));
-        }
+    if (videoChanged) {
+      unawaited(_loadVideoById(controller, widget.videoId));
+    }
 
-        if (mutedChanged) {
-          unawaited(widget.muted ? controller.mute() : controller.unMute());
-        }
-        return;
-
-      case _EmbeddedPlayerMode.desktopManualIframe:
-        final controller = _desktopController;
-        if (controller == null) {
-          unawaited(_initializeDesktopController());
-          return;
-        }
-
-        if (controlsChanged || loopChanged) {
-          unawaited(_loadDesktopHtml(controller));
-          return;
-        }
-
-        if (videoChanged) {
-          unawaited(_loadDesktopVideoById(controller, widget.videoId));
-        }
-
-        if (mutedChanged) {
-          unawaited(_setDesktopMuted(controller, widget.muted));
-        }
-        return;
-
-      case _EmbeddedPlayerMode.unsupported:
-        return;
+    if (mutedChanged) {
+      unawaited(_setMuted(controller, widget.muted));
     }
   }
 
@@ -175,29 +122,11 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
     _autoplayTimer?.cancel();
     _startupChromeMaskTimer?.cancel();
 
-    final subscription = _youtubeValueSubscription;
-    if (subscription != null) {
-      unawaited(subscription.cancel());
-    }
-
-    final controller = _youtubeController;
+    final controller = _controller;
     if (controller != null) {
-      // Pause before close so audio stops even if webview teardown lags.
-      unawaited(() async {
-        try {
-          await controller.pauseVideo();
-        } catch (_) {}
-        try {
-          await controller.close();
-        } catch (_) {}
-      }());
-    }
-
-    final desktopController = _desktopController;
-    if (desktopController != null) {
-      _desktopController = null;
+      _controller = null;
       // Otherwise the WebView keeps playing after the widget is gone.
-      unawaited(desktopController.loadRequest(Uri.parse('about:blank')));
+      unawaited(controller.loadRequest(Uri.parse('about:blank')));
     }
 
     super.dispose();
@@ -205,12 +134,8 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
 
   void _initializePlayer() {
     switch (_playerMode) {
-      case _EmbeddedPlayerMode.youtubeIframe:
-        unawaited(_initializeYoutubeController());
-        return;
-
-      case _EmbeddedPlayerMode.desktopManualIframe:
-        unawaited(_initializeDesktopController());
+      case _EmbeddedPlayerMode.manualIframe:
+        unawaited(_initializeController());
         return;
 
       case _EmbeddedPlayerMode.unsupported:
@@ -228,144 +153,85 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
     _playbackStarted = false;
     _autoplayFailureReported = false;
     _embeddedUnavailableReported = false;
-    _autoplayWatchArmed = false;
     _startupChromeMaskVisible = false;
-    _lastYoutubeError = YoutubeError.none;
     _autoplayTimer?.cancel();
     _startupChromeMaskTimer?.cancel();
   }
 
-  Future<void> _disposeYoutubeController() async {
-    final subscription = _youtubeValueSubscription;
-    _youtubeValueSubscription = null;
-    if (subscription != null) {
-      await subscription.cancel();
-    }
-
-    final controller = _youtubeController;
-    _youtubeController = null;
-    if (controller != null) {
-      try {
-        await controller.pauseVideo();
-      } catch (_) {}
-      await controller.close();
-    }
-  }
-
-  Future<void> _initializeYoutubeController() async {
+  Future<void> _initializeController() async {
     try {
-      await _disposeYoutubeController();
+      // iOS/macOS need inline playback with no user-gesture gate for muted
+      // autoplay; otherwise the WebView blocks it and the caller falls back.
+      final PlatformWebViewControllerCreationParams params =
+          WebViewPlatform.instance is WebKitWebViewPlatform
+              ? WebKitWebViewControllerCreationParams(
+                  allowsInlineMediaPlayback: true,
+                  mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
+                )
+              : const PlatformWebViewControllerCreationParams();
 
-      final controller = YoutubePlayerController.fromVideoId(
-        videoId: widget.videoId,
-        params: _youtubeParams,
-        autoPlay: true,
-      );
-
-      _youtubeController = controller;
-      _youtubeValueSubscription = controller.stream.listen(
-        _onYoutubeValue,
-        onError: (error) {
-          _reportEmbeddedUnavailable();
-        },
-      );
-      await ((controller as dynamic).init() as Future<void>);
-      _autoplayWatchArmed = true;
-      _restartAutoplayTimer();
-
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    } catch (error) {
-      _reportEmbeddedUnavailable();
-    }
-  }
-
-  void _onYoutubeValue(YoutubePlayerValue value) {
-    if (!_autoplayWatchArmed) {
-      _autoplayWatchArmed = true;
-      _restartAutoplayTimer();
-    }
-
-    if (value.playerState == PlayerState.playing) {
-      _reportPlaybackStarted();
-    }
-
-    final error = value.error;
-    if (error == YoutubeError.none) {
-      _lastYoutubeError = YoutubeError.none;
-      return;
-    }
-
-    if (error == _lastYoutubeError) {
-      return;
-    }
-
-    _lastYoutubeError = error;
-    _handleYouTubeError(error.code);
-  }
-
-  Future<void> _initializeDesktopController() async {
-    try {
-      final controller = WebViewController.fromPlatformCreationParams(
-        const PlatformWebViewControllerCreationParams(),
-      );
+      final controller = WebViewController.fromPlatformCreationParams(params);
 
       controller
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
         ..addJavaScriptChannel(
-          _desktopJsChannelName,
-          onMessageReceived: _onDesktopJavaScriptMessage,
+          _jsChannelName,
+          onMessageReceived: _onJavaScriptMessage,
         );
 
-      await controller.setBackgroundColor(const Color(0x00000000));
-      _desktopController = controller;
+      // Android blocks autoplay until a user gesture unless disabled here.
+      final platform = controller.platform;
+      if (platform is AndroidWebViewController) {
+        await platform.setMediaPlaybackRequiresUserGesture(false);
+      }
 
-      await _loadDesktopHtml(controller);
+      await controller.setBackgroundColor(const Color(0x00000000));
+      _controller = controller;
+
+      await _loadHtml(controller);
 
       if (!mounted) {
         return;
       }
       setState(() {});
-    } catch (error) {
+    } catch (_) {
       _reportEmbeddedUnavailable();
     }
   }
 
-  Future<void> _loadDesktopHtml(WebViewController controller) async {
-    await controller.loadHtmlString(_desktopPlayerHtml, baseUrl: _desktopOrigin);
+  Future<void> _loadHtml(WebViewController controller) async {
+    await controller.loadHtmlString(_playerHtml, baseUrl: _origin);
     _restartAutoplayTimer();
   }
 
-  Future<void> _loadDesktopVideoById(
+  Future<void> _loadVideoById(
     WebViewController controller,
     String videoId,
   ) async {
     try {
       final encodedVideoId = jsonEncode(videoId);
       await controller.runJavaScript(
-        'window.$_desktopBridgeName?.loadVideoById($encodedVideoId);',
+        'window.$_bridgeName?.loadVideoById($encodedVideoId);',
       );
       _restartAutoplayTimer();
-    } catch (error) {
-      await _loadDesktopHtml(controller);
+    } catch (_) {
+      await _loadHtml(controller);
     }
   }
 
-  Future<void> _setDesktopMuted(WebViewController controller, bool muted) async {
+  Future<void> _setMuted(WebViewController controller, bool muted) async {
     final encodedMuted = muted ? 'true' : 'false';
     try {
       await controller.runJavaScript(
-        'window.$_desktopBridgeName?.setMuted($encodedMuted);',
+        'window.$_bridgeName?.setMuted($encodedMuted);',
       );
-    } catch (error) {
-      await _loadDesktopHtml(controller);
+    } catch (_) {
+      await _loadHtml(controller);
     }
   }
 
-  void _onDesktopJavaScriptMessage(JavaScriptMessage message) {
-    final payload = _decodeDesktopMessage(message.message);
+  void _onJavaScriptMessage(JavaScriptMessage message) {
+    final payload = _decodeMessage(message.message);
     if (payload == null) {
       return;
     }
@@ -379,8 +245,8 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
         return;
 
       case 'StateChange':
-        final stateCode = _parseInt(data);
-        if (stateCode == PlayerState.playing.code) {
+        // 1 == YT.PlayerState.PLAYING
+        if (_parseInt(data) == 1) {
           _reportPlaybackStarted();
         }
         return;
@@ -398,7 +264,7 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
     }
   }
 
-  Map<String, dynamic>? _decodeDesktopMessage(String rawMessage) {
+  Map<String, dynamic>? _decodeMessage(String rawMessage) {
     try {
       final decoded = jsonDecode(rawMessage);
       if (decoded is! Map) {
@@ -468,8 +334,7 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
   }
 
   void _showStartupChromeMask() {
-    if (_playerMode != _EmbeddedPlayerMode.youtubeIframe ||
-        widget.ignorePointer) {
+    if (_playerMode != _EmbeddedPlayerMode.manualIframe || widget.ignorePointer) {
       return;
     }
 
@@ -515,7 +380,7 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
     widget.onEmbeddedUnavailable?.call();
   }
 
-  String get _desktopPlayerHtml {
+  String get _playerHtml {
     final pointerEvents = widget.ignorePointer ? 'none' : 'auto';
     final playerVars = <String, dynamic>{
       'autoplay': 1,
@@ -528,20 +393,23 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
       'loop': widget.loop ? 1 : 0,
       'modestbranding': 1,
       'mute': widget.muted ? 1 : 0,
-      'origin': _desktopOrigin,
-      'widget_referrer': _desktopOrigin,
+      'origin': _origin,
+      'widget_referrer': _origin,
       'playsinline': 1,
       'rel': 0,
       if (widget.loop) 'playlist': widget.videoId,
     };
 
-    final channelName = jsonEncode(_desktopJsChannelName);
-    final bridgeName = jsonEncode(_desktopBridgeName);
-    final playerElementId = jsonEncode(_desktopPlayerElementId);
-    final host = jsonEncode(_desktopOrigin);
+    final channelName = jsonEncode(_jsChannelName);
+    final bridgeName = jsonEncode(_bridgeName);
+    final playerElementId = jsonEncode(_playerElementId);
+    final stageElementId = jsonEncode(_stageElementId);
+    final host = jsonEncode(_origin);
     final initialVideoId = jsonEncode(widget.videoId);
     final pointerEventsJson = jsonEncode(pointerEvents);
     final playerVarsJson = jsonEncode(playerVars);
+    final stageWidth = _stageWidth;
+    final stageHeight = _stageHeight;
 
     return '''
 <!DOCTYPE html>
@@ -557,6 +425,20 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
         margin: 0;
         width: 100%;
         height: 100%;
+        overflow: hidden;
+        background: #000000;
+      }
+      #$_stageElementId {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: ${stageWidth}px;
+        height: ${stageHeight}px;
+        transform-origin: top left;
+      }
+      #$_playerElementId {
+        width: 100%;
+        height: 100%;
       }
     </style>
     <title>Moonfin YouTube Player</title>
@@ -567,9 +449,12 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
   const channelName = $channelName;
   const bridgeName = $bridgeName;
   const playerElementId = $playerElementId;
+  const stageElementId = $stageElementId;
   const host = $host;
   const pointerEvents = $pointerEventsJson;
   const playerVars = $playerVarsJson;
+  const stageWidth = $stageWidth;
+  const stageHeight = $stageHeight;
 
   let player = null;
   let currentVideoId = $initialVideoId;
@@ -612,6 +497,22 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
     applyMute();
   };
 
+  // Cover the box with the fixed-size stage (16:9), centered.
+  const applyScale = () => {
+    const stage = document.getElementById(stageElementId);
+    if (!stage) {
+      return;
+    }
+    const scale = Math.max(
+      window.innerWidth / stageWidth,
+      window.innerHeight / stageHeight
+    );
+    const tx = (window.innerWidth - stageWidth * scale) / 2;
+    const ty = (window.innerHeight - stageHeight * scale) / 2;
+    stage.style.transform =
+        'translate(' + tx + 'px, ' + ty + 'px) scale(' + scale + ')';
+  };
+
   window[bridgeName] = {
     loadVideoById: function(videoId) {
       if (!videoId) {
@@ -635,11 +536,13 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
   document.body.style.width = '100%';
   document.body.style.height = '100%';
 
+  const stageRoot = document.createElement('div');
+  stageRoot.id = stageElementId;
   const playerRoot = document.createElement('div');
   playerRoot.id = playerElementId;
-  playerRoot.style.width = '100%';
-  playerRoot.style.height = '100%';
-  document.body.appendChild(playerRoot);
+  stageRoot.appendChild(playerRoot);
+  document.body.appendChild(stageRoot);
+  applyScale();
 
   const scriptTag = document.createElement('script');
   scriptTag.src = 'https://www.youtube.com/iframe_api';
@@ -655,6 +558,8 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
 
     player = new YT.Player(playerElementId, {
       host: host,
+      width: stageWidth,
+      height: stageHeight,
       videoId: currentVideoId,
       playerVars: playerVars,
       events: {
@@ -681,17 +586,9 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
         }
       }
     });
-
-    if (player) {
-      player.setSize(window.innerWidth, window.innerHeight);
-    }
   };
 
-  window.addEventListener('resize', () => {
-    if (player) {
-      player.setSize(window.innerWidth, window.innerHeight);
-    }
-  });
+  window.addEventListener('resize', applyScale);
 })();
     </script>
   </body>
@@ -702,32 +599,19 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
   @override
   Widget build(BuildContext context) {
     switch (_playerMode) {
-      case _EmbeddedPlayerMode.youtubeIframe:
-        final controller = _youtubeController;
+      case _EmbeddedPlayerMode.manualIframe:
+        final controller = _controller;
         if (controller == null) {
           return const SizedBox.shrink();
         }
 
-        final dynamic wv = (controller as dynamic).webViewController;
-        if (wv is! WebViewController) return const SizedBox.shrink();
+        // The chrome mask only ever shows when the player is interactive, so
+        // skip the wrapping Stack for the muted background preview.
+        final view = WebViewWidget(controller: controller);
         return IgnorePointer(
           ignoring: widget.ignorePointer,
-          child: _buildWithStartupChromeMask(
-            WebViewWidget(
-              controller: wv,
-            ),
-          ),
-        );
-
-      case _EmbeddedPlayerMode.desktopManualIframe:
-        final controller = _desktopController;
-        if (controller == null) {
-          return const SizedBox.shrink();
-        }
-
-        return IgnorePointer(
-          ignoring: widget.ignorePointer,
-          child: WebViewWidget(controller: controller),
+          child:
+              widget.ignorePointer ? view : _buildWithStartupChromeMask(view),
         );
 
       case _EmbeddedPlayerMode.unsupported:

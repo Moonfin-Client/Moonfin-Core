@@ -58,15 +58,22 @@ abstract class MediaStreamResolver {
       final uri = Uri.parse(url);
       final params = Map<String, String>.from(uri.queryParameters);
 
+      // Emby & Jellyfin streaming URLs use PascalCase stream indices. Emby's
+      // query-parameter binding is case-INSENSITIVE, so emitting BOTH
+      // `AudioStreamIndex` and `audioStreamIndex` makes the server merge the two
+      // values into "1,1", which fails integer parsing -> HTTP 500 on the
+      // manifest ("Failed to open" / source error, especially when resuming an
+      // audio-transcoded stream). Emit a single canonical key and strip any
+      // camelCase variant.
       if (audioStreamIndex != null) {
+        params.remove('audioStreamIndex');
         params['AudioStreamIndex'] = '$audioStreamIndex';
-        params['audioStreamIndex'] = '$audioStreamIndex';
       }
 
       if (subtitleStreamIndex != null) {
         if (subtitleStreamIndex >= 0) {
+          params.remove('subtitleStreamIndex');
           params['SubtitleStreamIndex'] = '$subtitleStreamIndex';
-          params['subtitleStreamIndex'] = '$subtitleStreamIndex';
         } else if (subtitleStreamIndex == -1) {
           params.remove('SubtitleStreamIndex');
           params.remove('subtitleStreamIndex');

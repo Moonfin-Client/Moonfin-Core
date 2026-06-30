@@ -27,6 +27,12 @@ class LiveTvMiniPlayer extends StatefulWidget {
   final bool showLiveVideo;
   final ValueListenable<int?>? appleTvTextureId;
 
+  /// When true the preview area is left fully transparent so a video surface
+  /// rendered behind this widget shows through. Used by the in-player Live TV
+  /// guide overlay, which draws the single player surface behind this focusable
+  /// frame instead of duplicating it.
+  final bool transparentPreview;
+
   const LiveTvMiniPlayer({
     super.key,
     this.imageUrl,
@@ -38,6 +44,7 @@ class LiveTvMiniPlayer extends StatefulWidget {
     this.onKeyEvent,
     this.showLiveVideo = false,
     this.appleTvTextureId,
+    this.transparentPreview = false,
   });
 
   @override
@@ -147,7 +154,9 @@ class _LiveTvMiniPlayerState extends State<LiveTvMiniPlayer> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 140),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: _focused ? 0.18 : 0.10),
+            color: widget.transparentPreview
+                ? Colors.transparent
+                : Colors.white.withValues(alpha: _focused ? 0.18 : 0.10),
             borderRadius: BorderRadius.circular(12),
             border: Border.fromBorderSide(
               ThemeRegistry.active.borders.focusBorder.copyWith(
@@ -226,6 +235,9 @@ class _LiveTvMiniPlayerState extends State<LiveTvMiniPlayer> {
   }
 
   Widget _buildPreviewSurface() {
+    if (widget.transparentPreview) {
+      return const SizedBox.expand();
+    }
     if (widget.showLiveVideo) {
       final liveSurface = _buildLiveVideoSurface();
       if (liveSurface != null) {

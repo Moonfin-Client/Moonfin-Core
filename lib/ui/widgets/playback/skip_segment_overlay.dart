@@ -10,6 +10,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
+import '../adaptive/adaptive_glass.dart';
 import '../focus/focus_theme.dart';
 
 class SkipSegmentOverlay extends StatefulWidget {
@@ -102,15 +103,13 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
 
     final int minutes = remainingSec ~/ 60;
     final int seconds = remainingSec % 60;
-    final String timerSuffix;
-    if (showTimer) {
-      final timerText = remainingSec >= 60
-          ? '$minutes:${seconds.toString().padLeft(2, '0')}'
-          : ':${seconds.toString().padLeft(2, '0')}';
-      timerSuffix = ' - ${l10n.endsIn(timerText)}';
-    } else {
-      timerSuffix = '';
-    }
+    final timerText = remainingSec >= 60
+        ? '$minutes:${seconds.toString().padLeft(2, '0')}'
+        : ':${seconds.toString().padLeft(2, '0')}';
+
+    final bool showRing = showProgressBar;
+    final bool numberInRing = showTimer && showRing && remainingSec < 60;
+    final bool showInlineTimer = showTimer && !numberInRing;
 
     return Positioned(
       right: 24,
@@ -135,52 +134,75 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
             children: [
               InkWell(
                 onTap: widget.onSkip,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(_capsuleRadius),
                 child: Container(
-                  width: isDesktop ? 320.0 : 280.0,
-                  clipBehavior: Clip.antiAlias,
                   decoration: FocusTheme.focusDecoration(
                     isFocused: true,
-                    radius: 8,
+                    radius: _capsuleRadius,
                     color: AppColorScheme.accent,
-                    backgroundColor: AppColorScheme.surface.withValues(
-                      alpha: 0.9,
-                    ),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(20, 12, isDesktop ? 44 : 20, 12),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
+                  child: adaptiveGlass(
+                    cornerRadius: _capsuleRadius,
+                    blur: 24,
+                    fallbackColor: AppColorScheme.surface.withValues(alpha: 0.55),
+                    tint: AppColorScheme.surface.withValues(alpha: 0.18),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(20, 10, isDesktop ? 40 : 16, 10),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.skip_next_rounded,
+                            color: AppColorScheme.accent,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 9),
+                          Text(
+                            l10n.skipSegment(widget.segment.type.displayName),
+                            style: TextStyle(
+                              color: AppColorScheme.onSurface,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          if (showInlineTimer) ...[
+                            const SizedBox(width: 8),
                             Text(
-                              '${l10n.skipSegment(widget.segment.type.displayName)}$timerSuffix',
+                              l10n.endsIn(timerText),
                               style: TextStyle(
-                                color: AppColorScheme.onSurface,
-                                fontSize: 15,
+                                color: AppColorScheme.onSurface.withValues(alpha: 0.5),
+                                fontSize: 14,
                                 fontWeight: FontWeight.w600,
+                                fontFeatures: const [FontFeature.tabularFigures()],
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Icon(
-                              Icons.skip_next_rounded,
-                              color: AppColorScheme.accent,
-                              size: 22,
+                          ],
+                          if (showRing) ...[
+                            const SizedBox(width: 13),
+                            _CountdownRing(
+                              progress: progress,
+                              center: numberInRing
+                                  ? Text(
+                                      '$remainingSec',
+                                      style: TextStyle(
+                                        color: AppColorScheme.onSurface,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        fontFeatures: const [
+                                          FontFeature.tabularFigures()
+                                        ],
+                                      ),
+                                    )
+                                  : Icon(
+                                      Icons.skip_next_rounded,
+                                      color: AppColorScheme.accent,
+                                      size: 15,
+                                    ),
                             ),
                           ],
-                        ),
+                        ],
                       ),
-                      if (showProgressBar)
-                        LinearProgressIndicator(
-                          value: progress,
-                          backgroundColor: Colors.transparent,
-                          color: AppColorScheme.accent,
-                          minHeight: 6,
-                        ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -211,3 +233,34 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
     );
   }
 }
+
+class _CountdownRing extends StatelessWidget {
+  const _CountdownRing({required this.progress, this.center});
+
+  final double progress;
+  final Widget? center;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 36,
+      height: 36,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          SizedBox.expand(
+            child: CircularProgressIndicator(
+              value: progress.clamp(0.0, 1.0),
+              strokeWidth: 3,
+              backgroundColor: AppColorScheme.onSurface.withValues(alpha: 0.16),
+              valueColor: AlwaysStoppedAnimation<Color>(AppColorScheme.accent),
+            ),
+          ),
+          ?center,
+        ],
+      ),
+    );
+  }
+}
+
+const double _capsuleRadius = 28;

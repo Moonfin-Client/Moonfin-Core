@@ -364,82 +364,94 @@ class _FavoritesScreenState extends State<FavoritesScreen> with GridFocusNodeMix
             ),
             contentSpacing: 0,
             showControls: !isMobile && PlatformDetection.useDesktopUi,
-            builder: (context, scrollController) => LockedFocusRow<AggregatedItem>(
-              key: _rowKeys[type],
-              items: items,
-              hubKey: 'favorites_row_${type.name}',
-              controller: scrollController,
-              height: rowHeight,
-              itemExtent: imageH * ar,
-              itemSpacing: 12 * desktopScale,
-              padding: EdgeInsets.fromLTRB(
-                20 * desktopScale,
-                5 * desktopScale,
-                20 * desktopScale,
-                5 * desktopScale,
-              ),
-              onIndexChanged: (index, item) {
-                _onItemFocused(item);
-                if (index >= items.length - 8) {
+            builder: (context, scrollController) => NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                // Page in more when a horizontal scroll gets within 600px of the end.
+                if (notification.metrics.axis == Axis.horizontal &&
+                    notification.metrics.maxScrollExtent -
+                            notification.metrics.pixels <
+                        600) {
                   _vm.loadMoreForType(type);
                 }
+                return false;
               },
-              onVerticalNavigation: (isUp) {
-                return _onRowVerticalNavigation(visibleTypes, type, isUp);
-              },
-              onLongPress: (index, item) => showContextMenu(
-                context,
-                item,
-                onChanged: () => setState(() {}),
-              ),
-              onTap: (index, item) => context.push(
-                Destinations.itemOrPhoto(
-                  item.id,
-                  serverId: item.serverId,
-                  type: item.type,
+              child: LockedFocusRow<AggregatedItem>(
+                key: _rowKeys[type],
+                items: items,
+                hubKey: 'favorites_row_${type.name}',
+                controller: scrollController,
+                height: rowHeight,
+                itemExtent: imageH * ar,
+                itemSpacing: 12 * desktopScale,
+                padding: EdgeInsets.fromLTRB(
+                  20 * desktopScale,
+                  5 * desktopScale,
+                  20 * desktopScale,
+                  5 * desktopScale,
                 ),
-              ),
-              itemBuilder: (context, item, index, isFocused) {
-                final width = imageH * ar;
-                return MediaCard(
-                  title: item.name,
-                  subtitle: _cardSubtitle(item),
-                  imageUrl: _imageUrl(
-                    item,
-                    maxWidth: width.toInt(),
-                    maxHeight: imageH.toInt(),
+                onIndexChanged: (index, item) {
+                  _onItemFocused(item);
+                  if (index >= items.length - 8) {
+                    _vm.loadMoreForType(type);
+                  }
+                },
+                onVerticalNavigation: (isUp) {
+                  return _onRowVerticalNavigation(visibleTypes, type, isUp);
+                },
+                onLongPress: (index, item) => showContextMenu(
+                  context,
+                  item,
+                  onChanged: () => setState(() {}),
+                ),
+                onTap: (index, item) => context.push(
+                  Destinations.itemOrPhoto(
+                    item.id,
+                    serverId: item.serverId,
+                    type: item.type,
                   ),
-                  width: width,
-                  aspectRatio: ar,
-                  isFavorite: item.isFavorite,
-                  isPlayed: item.isPlayed,
-                  unplayedCount: item.unplayedItemCount,
-                  playedPercentage: item.playedPercentage,
-                  watchedBehavior: watchedBehavior,
-                  itemType: item.type,
-                  focusColor: focusColor,
-                  cardFocusExpansion: cardFocusExpansion,
-                  suppressFocusGlow: suppressFocusGlow,
-                  externalIsFocused: isFocused,
-                  onFocus: isMobile
-                      ? null
-                      : () {
-                          _onItemFocused(item);
-                          if (isTopRow && PlatformDetection.isTV) {
-                            _snapRowsToTop();
-                          }
-                        },
-                  onHoverStart: isMobile ? null : () => _onItemFocused(item),
-                  onHoverEnd: isMobile ? null : () => _vm.setFocusedItem(null),
-                  onTap: () => context.push(
-                    Destinations.itemOrPhoto(
-                      item.id,
-                      serverId: item.serverId,
-                      type: item.type,
+                ),
+                itemBuilder: (context, item, index, isFocused) {
+                  final width = imageH * ar;
+                  return MediaCard(
+                    title: item.name,
+                    subtitle: _cardSubtitle(item),
+                    imageUrl: _imageUrl(
+                      item,
+                      maxWidth: width.toInt(),
+                      maxHeight: imageH.toInt(),
                     ),
-                  ),
-                );
-              },
+                    width: width,
+                    aspectRatio: ar,
+                    isFavorite: item.isFavorite,
+                    isPlayed: item.isPlayed,
+                    unplayedCount: item.unplayedItemCount,
+                    playedPercentage: item.playedPercentage,
+                    watchedBehavior: watchedBehavior,
+                    itemType: item.type,
+                    focusColor: focusColor,
+                    cardFocusExpansion: cardFocusExpansion,
+                    suppressFocusGlow: suppressFocusGlow,
+                    externalIsFocused: isFocused,
+                    onFocus: isMobile
+                        ? null
+                        : () {
+                            _onItemFocused(item);
+                            if (isTopRow && PlatformDetection.isTV) {
+                              _snapRowsToTop();
+                            }
+                          },
+                    onHoverStart: isMobile ? null : () => _onItemFocused(item),
+                    onHoverEnd: isMobile ? null : () => _vm.setFocusedItem(null),
+                    onTap: () => context.push(
+                      Destinations.itemOrPhoto(
+                        item.id,
+                        serverId: item.serverId,
+                        type: item.type,
+                      ),
+                    ),
+                  );
+                },
+              ), 
             ),
           ),
         ),

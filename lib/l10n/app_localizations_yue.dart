@@ -3373,8 +3373,7 @@ class AppLocalizationsYue extends AppLocalizations {
   String get sourceCode => '原始碼';
 
   @override
-  String get sourceCodeUrl =>
-      'https://github.com/Moonfin-Client/Mobile-Desktop';
+  String get sourceCodeUrl => 'https://github.com/Moonfin-Client/Moonfin-Core';
 
   @override
   String get checkForUpdatesNow => '立即檢查更新';
@@ -11506,8 +11505,7 @@ class AppLocalizationsYueCn extends AppLocalizationsYue {
   String get sourceCode => '源代码';
 
   @override
-  String get sourceCodeUrl =>
-      'https://github.com/Moonfin-Client/Mobile-Desktop';
+  String get sourceCodeUrl => 'https://github.com/Moonfin-Client/Moonfin-Core';
 
   @override
   String get checkForUpdatesNow => '立即检查更新';
@@ -19638,8 +19636,7 @@ class AppLocalizationsYueHk extends AppLocalizationsYue {
   String get sourceCode => '原始碼';
 
   @override
-  String get sourceCodeUrl =>
-      'https://github.com/Moonfin-Client/Mobile-Desktop';
+  String get sourceCodeUrl => 'https://github.com/Moonfin-Client/Moonfin-Core';
 
   @override
   String get checkForUpdatesNow => '立即檢查更新';

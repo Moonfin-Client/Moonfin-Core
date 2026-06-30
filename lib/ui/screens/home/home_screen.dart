@@ -1936,10 +1936,21 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   ScrollController _rowHorizontalController(int rowIndex) {
-    return _rowHorizontalControllers.putIfAbsent(
-      rowIndex,
-      () => ScrollController(),
-    );
+    return _rowHorizontalControllers.putIfAbsent(rowIndex, () {
+      final controller = ScrollController();
+      controller.addListener(() => _onRowScrolled(rowIndex, controller));
+      return controller;
+    });
+  }
+
+  void _onRowScrolled(int rowIndex, ScrollController controller) {
+    if (!controller.hasClients) return;
+    const loadMoreTriggerDistance = 600.0;
+    final remaining =
+        controller.position.maxScrollExtent - controller.offset;
+    if (remaining <= loadMoreTriggerDistance) {
+      widget.viewModel.loadMoreForRow(rowIndex);
+    }
   }
 
   void _scrollHomeRowHorizontal(int rowIndex, double delta) {

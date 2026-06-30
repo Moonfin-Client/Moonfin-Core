@@ -66,6 +66,17 @@ class _OfflineDownloadsScreenState extends State<_OfflineDownloadsScreen> {
                   icon: Icons.folder_open,
                   hintText: l10n.settingsEnterDownloadFolderPath,
                   pickPath: () async {
+                    // macOS is sandboxed: pick natively and store a
+                    // security-scoped bookmark so the folder stays writable.
+                    if (PlatformDetection.isMacOS) {
+                      final picked = await MacosDownloadDir.pick();
+                      if (picked == null) return null;
+                      await GetIt.instance<UserPreferences>().set(
+                        UserPreferences.customDownloadPathBookmark,
+                        picked.bookmark,
+                      );
+                      return picked.path;
+                    }
                     String? initialDir;
                     try {
                       initialDir = (await getDownloadsDirectory())?.path;

@@ -6361,7 +6361,7 @@ abstract class AppLocalizations {
   /// Displayed source code repository URL
   ///
   /// In en, this message translates to:
-  /// **'https://github.com/Moonfin-Client/Mobile-Desktop'**
+  /// **'https://github.com/Moonfin-Client/Moonfin-Core'**
   String get sourceCodeUrl;
 
   /// Button to check for updates

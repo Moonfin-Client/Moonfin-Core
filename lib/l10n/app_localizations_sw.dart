@@ -3490,8 +3490,7 @@ class AppLocalizationsSw extends AppLocalizations {
   String get sourceCode => 'Msimbo wa Chanzo';
 
   @override
-  String get sourceCodeUrl =>
-      'https://github.com/Moonfin-Client/Mobile-Desktop';
+  String get sourceCodeUrl => 'https://github.com/Moonfin-Client/Moonfin-Core';
 
   @override
   String get checkForUpdatesNow => 'Angalia Sasisho Sasa';

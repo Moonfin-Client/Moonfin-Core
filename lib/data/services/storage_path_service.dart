@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../preference/user_preferences.dart';
 import '../../util/platform_detection.dart';
+import 'macos_download_dir.dart';
 import 'media_store_service.dart';
 
 class StoragePathService {
@@ -32,12 +33,37 @@ class StoragePathService {
           _cachedRoot = Directory(msPath);
           return _cachedRoot!;
         }
-        final dir = Directory(customPath);
-        if (await _canWrite(dir)) {
-          _cachedRoot = dir;
-          return dir;
+        // macOS is sandboxed: regain write access to the user-picked folder via
+        // its security-scoped bookmark before touching it.
+        if (PlatformDetection.isMacOS) {
+          final bookmark = prefs.get(UserPreferences.customDownloadPathBookmark);
+          if (bookmark.isNotEmpty) {
+            final access = await MacosDownloadDir.startAccess(bookmark);
+            if (access != null) {
+              if (access.refreshedBookmark != null) {
+                await prefs.set(
+                  UserPreferences.customDownloadPathBookmark,
+                  access.refreshedBookmark!,
+                );
+              }
+              final dir = Directory(access.path);
+              if (await _canWrite(dir)) {
+                _cachedRoot = dir;
+                return dir;
+              }
+            }
+          }
+          // Bookmark missing/stale or folder gone: fall back to the default.
+          await prefs.set(UserPreferences.customDownloadPath, '');
+          await prefs.set(UserPreferences.customDownloadPathBookmark, '');
+        } else {
+          final dir = Directory(customPath);
+          if (await _canWrite(dir)) {
+            _cachedRoot = dir;
+            return dir;
+          }
+          await prefs.set(UserPreferences.customDownloadPath, '');
         }
-        await prefs.set(UserPreferences.customDownloadPath, '');
       }
     }
 

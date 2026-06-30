@@ -3465,8 +3465,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get sourceCode => 'මූලාශ්ර කේතය';
 
   @override
-  String get sourceCodeUrl =>
-      'https://github.com/Moonfin-Client/Mobile-Desktop';
+  String get sourceCodeUrl => 'https://github.com/Moonfin-Client/Moonfin-Core';
 
   @override
   String get checkForUpdatesNow => 'දැන් යාවත්කාලීන සඳහා පරීක්ෂා කරන්න';

@@ -3462,8 +3462,7 @@ class AppLocalizationsEo extends AppLocalizations {
   String get sourceCode => 'Fontkodo';
 
   @override
-  String get sourceCodeUrl =>
-      'https://github.com/Moonfin-Client/Mobile-Desktop';
+  String get sourceCodeUrl => 'https://github.com/Moonfin-Client/Moonfin-Core';
 
   @override
   String get checkForUpdatesNow => 'Kontrolu ĝisdatigojn Nun';

@@ -3487,8 +3487,7 @@ class AppLocalizationsBg extends AppLocalizations {
   String get sourceCode => 'Изходен код';
 
   @override
-  String get sourceCodeUrl =>
-      'https://github.com/Moonfin-Client/Mobile-Desktop';
+  String get sourceCodeUrl => 'https://github.com/Moonfin-Client/Moonfin-Core';
 
   @override
   String get checkForUpdatesNow => 'Проверете за актуализации сега';

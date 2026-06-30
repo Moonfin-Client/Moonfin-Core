@@ -28,6 +28,8 @@ import '../../widgets/subtitle_preview.dart';
 import 'live_tv_guide_screen.dart';
 import '../../screensaver/screensaver_controller.dart';
 
+const _kGuideResizeDuration = Duration(milliseconds: 250);
+
 class LiveTvPlayerScreen extends StatefulWidget {
   final List<GuideChannel> channels;
   final int startIndex;
@@ -588,48 +590,22 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
     return 'SDR';
   }
 
+  // Opens the channel guide as an in-player overlay (not a separate route) so
+  // the single existing video surface can be shrunk into the mini-player box
+  // and shown for BOTH the media_kit and Media3 engines. See [_buildVideoSurface].
   Future<void> _showChannelPicker() async {
+    if (_isGuidePickerOpen) return;
     _hideTimer?.cancel();
     _suppressBackNavigation();
-    if (!_isGuidePickerOpen) {
-      setState(() => _isGuidePickerOpen = true);
-    }
-
+    setState(() => _isGuidePickerOpen = true);
     await _applyGuideDisplayMode();
-    if (!mounted) return;
+  }
 
-    String? selectedChannelId;
-    try {
-      selectedChannelId = await Navigator.of(context).push<String>(
-        MaterialPageRoute(
-          builder: (context) => LiveTvGuideScreen(
-            miniPlayerMode: true,
-            currentChannel: _currentChannel,
-          ),
-        ),
-      );
-    } finally {
-      if (mounted) {
-        _applyPlayerDisplayMode();
-      }
-      if (mounted && _isGuidePickerOpen) {
-        setState(() => _isGuidePickerOpen = false);
-      }
-      _suppressBackNavigation();
-    }
-
-    if (!mounted) return;
-
-    if (selectedChannelId != null && selectedChannelId != _currentChannel.id) {
-      final selectedIndex = widget.channels.indexWhere(
-        (channel) => channel.id == selectedChannelId,
-      );
-      if (selectedIndex >= 0) {
-        await _switchChannel(selectedIndex);
-        return;
-      }
-    }
-
+  void _closeGuideOverlay() {
+    if (!_isGuidePickerOpen) return;
+    setState(() => _isGuidePickerOpen = false);
+    _applyPlayerDisplayMode();
+    _suppressBackNavigation();
     if (_infoVisible) {
       _scheduleHide();
       if (PlatformDetection.isTV) {
@@ -638,6 +614,17 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
           _tvChannelsFocus.requestFocus();
         });
       }
+    }
+  }
+
+  Future<void> _onGuideChannelSelected(String channelId) async {
+    _closeGuideOverlay();
+    if (channelId == _currentChannel.id) return;
+    final selectedIndex = widget.channels.indexWhere(
+      (channel) => channel.id == channelId,
+    );
+    if (selectedIndex >= 0) {
+      await _switchChannel(selectedIndex);
     }
   }
 
@@ -725,6 +712,12 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
       return KeyEventResult.ignored;
     }
 
+    // While the in-player guide overlay is open it owns all navigation keys;
+    // let them flow to the embedded guide's focus subtree.
+    if (_isGuidePickerOpen) {
+      return KeyEventResult.ignored;
+    }
+
     switch (event.logicalKey) {
       case LogicalKeyboardKey.arrowUp:
       case LogicalKeyboardKey.arrowDown:
@@ -791,7 +784,11 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
-        if (_isGuidePickerOpen || _isBackNavigationSuppressed) return;
+        if (_isGuidePickerOpen) {
+          _closeGuideOverlay();
+          return;
+        }
+        if (_isBackNavigationSuppressed) return;
         _exitPlayback();
       },
       child: Scaffold(
@@ -821,7 +818,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
                 children: [
                   _buildVideoSurface(),
                   _buildBufferingIndicator(),
-                  if (_infoVisible) ...[
+                  if (_isGuidePickerOpen) _buildGuideOverlay(),
+                  if (_infoVisible && !_isGuidePickerOpen) ...[
                     _buildTopOverlay(),
                     _buildBottomOverlay(),
                   ],
@@ -834,9 +832,34 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
     );
   }
 
+  // Fullscreen normally, or the mini-player box (geometry shared with the guide
+  // overlay) while the in-player guide is open. The surface is only resized,
+  // never recreated, so the Media3 SurfaceView keeps its decoder and frame-rate
+  // matching intact.
+  Rect _videoRect(Size size) {
+    if (_isGuidePickerOpen) {
+      return const Rect.fromLTWH(
+        LiveTvGuideScreen.miniPlayerVideoLeft,
+        LiveTvGuideScreen.miniPlayerVideoTop,
+        LiveTvGuideScreen.miniPlayerVideoWidth,
+        LiveTvGuideScreen.miniPlayerVideoHeight,
+      );
+    }
+    return Rect.fromLTWH(0, 0, size.width, size.height);
+  }
+
   Widget _buildVideoSurface() {
+    return AnimatedPositioned.fromRect(
+      rect: _videoRect(MediaQuery.sizeOf(context)),
+      duration: _kGuideResizeDuration,
+      curve: Curves.easeInOut,
+      child: _buildVideoChild(),
+    );
+  }
+
+  Widget _buildVideoChild() {
     if (PlatformDetection.isTizen) {
-      return _buildTizenVideoSurface();
+      return _buildTizenVideoChild();
     }
 
     final prefersMedia3 =
@@ -844,83 +867,91 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
         PlaybackEnginePreference.media3;
     final prewarmMedia3 = _manager.backend == null && prefersMedia3;
     if (_activeMedia3Backend != null || prewarmMedia3) {
-      return const Positioned.fill(child: Media3VideoView(fill: Colors.black));
+      return const Media3VideoView(fill: Colors.black);
     }
 
     final htmlBackend = _activeHtmlVideoBackend;
     if (htmlBackend != null) {
-      return Positioned.fill(child: htmlBackend.buildView(fit: BoxFit.contain));
+      return htmlBackend.buildView(fit: BoxFit.contain);
     }
 
     final mediaKitBackend = _activeMediaKitBackend ?? _backend;
     if (mediaKitBackend == null) {
-      return const Positioned.fill(child: ColoredBox(color: Colors.black));
+      return const ColoredBox(color: Colors.black);
     }
-    final size = MediaQuery.sizeOf(context);
     if (PlatformDetection.useNativeVideoSurface) {
-      return Positioned.fill(
-        child: NativeVideoView(
-          player: mediaKitBackend.player,
-          fill: Colors.black,
-          videoOutput: 'gpu',
-          hardwareDecodingEnabled: _prefs.get(UserPreferences.hardwareDecoding),
-        ),
+      return NativeVideoView(
+        player: mediaKitBackend.player,
+        fill: Colors.black,
+        videoOutput: 'gpu',
+        hardwareDecodingEnabled: _prefs.get(UserPreferences.hardwareDecoding),
       );
     }
 
     final controller = mediaKitBackend.videoController;
     if (controller == null) {
-      return const Positioned.fill(child: ColoredBox(color: Colors.black));
+      return const ColoredBox(color: Colors.black);
     }
 
-    return Positioned.fill(
-      child: Video(
-        controller: controller,
-        controls: NoVideoControls,
-        width: size.width,
-        height: size.height,
-        fit: BoxFit.contain,
-        fill: Colors.black,
-        pauseUponEnteringBackgroundMode: false,
-        subtitleViewConfiguration: _buildSubtitleConfig(),
-      ),
+    return Video(
+      controller: controller,
+      controls: NoVideoControls,
+      fit: BoxFit.contain,
+      fill: Colors.black,
+      pauseUponEnteringBackgroundMode: false,
+      subtitleViewConfiguration: _buildSubtitleConfig(),
     );
   }
 
-  Widget _buildTizenVideoSurface() {
+  Widget _buildTizenVideoChild() {
     final backend = _manager.backend;
     if (backend is! TizenPlayerBackend) {
-      return const Positioned.fill(child: ColoredBox(color: Colors.black));
+      return const ColoredBox(color: Colors.black);
     }
     final controller = backend.controller;
     if (controller == null || !controller.value.isInitialized) {
-      return const Positioned.fill(child: ColoredBox(color: Colors.black));
+      return const ColoredBox(color: Colors.black);
     }
-    return Positioned.fill(
-      child: ColoredBox(
-        color: Colors.black,
-        child: FittedBox(
-          fit: BoxFit.contain,
-          child: SizedBox(
-            width: controller.value.size.width,
-            height: controller.value.size.height,
-            child: VideoPlayer(controller),
-          ),
+    return ColoredBox(
+      color: Colors.black,
+      child: FittedBox(
+        fit: BoxFit.contain,
+        child: SizedBox(
+          width: controller.value.size.width,
+          height: controller.value.size.height,
+          child: VideoPlayer(controller),
         ),
       ),
     );
   }
 
+  Widget _buildGuideOverlay() {
+    return Positioned.fill(
+      child: LiveTvGuideScreen(
+        embedded: true,
+        miniPlayerMode: true,
+        currentChannel: _currentChannel,
+        onChannelSelected: _onGuideChannelSelected,
+        onClose: _closeGuideOverlay,
+      ),
+    );
+  }
+
   Widget _buildBufferingIndicator() {
-    return StreamBuilder<bool>(
-      stream: _state.bufferingStream,
-      initialData: _state.isBuffering,
-      builder: (context, snap) {
-        if (snap.data != true) return const SizedBox.shrink();
-        return Center(
-          child: CircularProgressIndicator(color: AppColorScheme.accent),
-        );
-      },
+    return AnimatedPositioned.fromRect(
+      rect: _videoRect(MediaQuery.sizeOf(context)),
+      duration: _kGuideResizeDuration,
+      curve: Curves.easeInOut,
+      child: StreamBuilder<bool>(
+        stream: _state.bufferingStream,
+        initialData: _state.isBuffering,
+        builder: (context, snap) {
+          if (snap.data != true) return const SizedBox.shrink();
+          return Center(
+            child: CircularProgressIndicator(color: AppColorScheme.accent),
+          );
+        },
+      ),
     );
   }
 

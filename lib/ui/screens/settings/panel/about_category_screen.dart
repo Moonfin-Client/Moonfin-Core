@@ -41,7 +41,7 @@ class _AboutCategoryScreen extends StatelessWidget {
             subtitle: Text(l10n.sourceCodeUrl),
             onTap: () => showQrOrLaunch(
               context,
-              url: 'https://github.com/Moonfin-Client/Mobile-Desktop',
+              url: 'https://github.com/Moonfin-Client/Moonfin-Core',
               title: l10n.sourceCode,
             ),
           ),
@@ -51,7 +51,7 @@ class _AboutCategoryScreen extends StatelessWidget {
             subtitle: Text(l10n.settingsReportAnIssueSubtitle),
             onTap: () => showQrOrLaunch(
               context,
-              url: 'https://github.com/Moonfin-Client/Mobile-Desktop/issues',
+              url: 'https://github.com/Moonfin-Client/Moonfin-Core/issues',
               title: l10n.settingsReportAnIssue,
             ),
           ),
@@ -89,7 +89,7 @@ class _AboutCategoryScreen extends StatelessWidget {
             onTap: () => showQrOrLaunch(
               context,
               url:
-                  'https://github.com/Moonfin-Client/Mobile-Desktop/blob/main/LICENSE',
+                  'https://github.com/Moonfin-Client/Moonfin-Core/blob/main/LICENSE',
               title: l10n.settingsLicenses,
             ),
           ),
@@ -100,7 +100,7 @@ class _AboutCategoryScreen extends StatelessWidget {
             onTap: () => showQrOrLaunch(
               context,
               url:
-                  'https://github.com/Moonfin-Client/Mobile-Desktop/blob/main/PRIVACY_POLICY.md',
+                  'https://moonfin.io/privacy',
               title: l10n.settingsPrivacyPolicy,
             ),
           ),
