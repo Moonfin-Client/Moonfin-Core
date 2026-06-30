@@ -8949,13 +8949,14 @@ class _DetailActionButtonState extends State<_DetailActionButton>
         height: height,
         width: fullWidth ? null : width,
         padding: EdgeInsets.symmetric(horizontal: isExpanded || fullWidth ? 16 : 0),
-        alignment: Alignment.center,
+        alignment: fullWidth ? Alignment.center : null,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(height / 2),
-          border: showHighlight
-              ? Border.all(color: focusColor, width: 3)
-              : null,
+          border: Border.all(
+            color: showHighlight ? focusColor : Colors.transparent,
+            width: 3,
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
