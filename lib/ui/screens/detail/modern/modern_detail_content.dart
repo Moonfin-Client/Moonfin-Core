@@ -144,6 +144,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   bool _loadingPlaybackInfo = false;
   String? _loadedPlaybackInfoItemId;
 
+  bool _upNextResolvedThisBuild = false;
+  Widget? _upNextCard;
+
   Future<void> _loadPlaybackInfo(AggregatedItem item) async {
     if (_loadingPlaybackInfo) return;
     if (_playbackInfo != null &&
@@ -3555,6 +3558,15 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   }
 
   Widget? _buildUpNext(BuildContext context, AggregatedItem item) {
+    // Queried several times per build but inserted once; build it once.
+    if (!_upNextResolvedThisBuild) {
+      _upNextCard = _computeUpNext(context, item);
+      _upNextResolvedThisBuild = true;
+    }
+    return _upNextCard;
+  }
+
+  Widget? _computeUpNext(BuildContext context, AggregatedItem item) {
     const supported = {'Series', 'Season', 'BoxSet'};
     if (!supported.contains(item.type)) return null;
     final isBoxSet = item.type == 'BoxSet';
@@ -3804,6 +3816,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   Widget build(BuildContext context) {
     final item = _vm.item;
     if (item == null) return const SizedBox.shrink();
+    _upNextResolvedThisBuild = false;
 
     if (item.type == 'Series') {
       _vm.loadAllSeriesEpisodes();

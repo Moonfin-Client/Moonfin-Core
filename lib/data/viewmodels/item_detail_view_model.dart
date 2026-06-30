@@ -92,6 +92,58 @@ class ItemDetailViewModel extends ChangeNotifier {
   List<AggregatedItem> _collectionItems = const [];
   List<AggregatedItem> get collectionItems => _collectionItems;
 
+  // Cached BoxSet cast/crew, rebuilt only when _collectionItems changes.
+  List<AggregatedItem>? _boxSetPeopleSource;
+  List<Map<String, dynamic>> _boxSetDirectors = const [];
+  List<Map<String, dynamic>> _boxSetWriters = const [];
+  List<Map<String, dynamic>> _boxSetActors = const [];
+
+  void _ensureBoxSetPeople() {
+    if (identical(_boxSetPeopleSource, _collectionItems)) return;
+    _boxSetPeopleSource = _collectionItems;
+
+    final directors = <Map<String, dynamic>>[];
+    final writers = <Map<String, dynamic>>[];
+    final actors = <Map<String, dynamic>>[];
+    final dirNames = <String>{};
+    final writNames = <String>{};
+    final actorNames = <String>{};
+
+    for (final child in _collectionItems) {
+      final people = child.rawData['People'] as List?;
+      if (people == null) continue;
+      for (final person in people.cast<Map<String, dynamic>>()) {
+        final name = person['Name'] as String?;
+        if (name == null) continue;
+        switch (person['Type']) {
+          case 'Director':
+            if (dirNames.add(name)) directors.add(person);
+          case 'Writer':
+            if (writNames.add(name)) writers.add(person);
+        }
+      }
+    }
+    for (final child in _collectionItems) {
+      final people = child.rawData['People'] as List?;
+      if (people == null) continue;
+      for (final person in people.cast<Map<String, dynamic>>()) {
+        final type = person['Type'] as String?;
+        if (type != 'Actor' && type != 'GuestStar') continue;
+        final name = person['Name'] as String?;
+        if (name == null ||
+            dirNames.contains(name) ||
+            writNames.contains(name)) {
+          continue;
+        }
+        if (actorNames.add(name)) actors.add(person);
+      }
+    }
+
+    _boxSetDirectors = directors;
+    _boxSetWriters = writers;
+    _boxSetActors = actors;
+  }
+
   List<AggregatedItem> _playlistItems = const [];
   List<AggregatedItem> get playlistItems => _playlistItems;
 
@@ -526,21 +578,32 @@ class ItemDetailViewModel extends ChangeNotifier {
       final items = (data['Items'] as List?) ?? [];
       _collectionItems = _mapItems(items);
       
-      // Flatten to playlist items at lowest level (movies and tv show episodes)
+      // Fetch each series' episodes in parallel. The list is release sorted
+      // below, so fetch order does not affect the result.
       final list = <AggregatedItem>[];
+      final seriesChildren = <AggregatedItem>[];
       for (final item in _collectionItems) {
         if (item.type == 'Series') {
-          try {
-            final epData = await _client.itemsApi.getEpisodes(item.id);
-            final epItems = (epData['Items'] as List?) ?? [];
-            list.addAll(_mapItems(epItems));
-          } catch (_) {}
+          seriesChildren.add(item);
         } else if (item.type == 'Movie' ||
             item.type == 'Audio' ||
             item.type == 'Video' ||
             item.type == 'MusicVideo') {
           list.add(item);
         }
+      }
+      final episodeLists = await Future.wait(
+        seriesChildren.map((series) async {
+          try {
+            final epData = await _client.itemsApi.getEpisodes(series.id);
+            return _mapItems((epData['Items'] as List?) ?? []);
+          } catch (_) {
+            return const <AggregatedItem>[];
+          }
+        }),
+      );
+      for (final episodes in episodeLists) {
+        list.addAll(episodes);
       }
       
       // Default to release order (ascending) sorting
@@ -919,72 +982,24 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   List<Map<String, dynamic>> get directors {
     if (_item?.type == 'BoxSet') {
-      final list = <Map<String, dynamic>>[];
-      final seenNames = <String>{};
-      for (final child in _collectionItems) {
-        final people = child.rawData['People'] as List?;
-        if (people != null) {
-          for (final person in people.cast<Map<String, dynamic>>()) {
-            if (person['Type'] == 'Director') {
-              final name = person['Name'] as String?;
-              if (name != null && !seenNames.contains(name)) {
-                seenNames.add(name);
-                list.add(person);
-              }
-            }
-          }
-        }
-      }
-      return list;
+      _ensureBoxSetPeople();
+      return _boxSetDirectors;
     }
     return _item?.people.where((p) => p['Type'] == 'Director').toList() ?? const [];
   }
 
   List<Map<String, dynamic>> get writers {
     if (_item?.type == 'BoxSet') {
-      final list = <Map<String, dynamic>>[];
-      final seenNames = <String>{};
-      for (final child in _collectionItems) {
-        final people = child.rawData['People'] as List?;
-        if (people != null) {
-          for (final person in people.cast<Map<String, dynamic>>()) {
-            if (person['Type'] == 'Writer') {
-              final name = person['Name'] as String?;
-              if (name != null && !seenNames.contains(name)) {
-                seenNames.add(name);
-                list.add(person);
-              }
-            }
-          }
-        }
-      }
-      return list;
+      _ensureBoxSetPeople();
+      return _boxSetWriters;
     }
     return _item?.people.where((p) => p['Type'] == 'Writer').toList() ?? const [];
   }
 
   List<Map<String, dynamic>> get actors {
     if (_item?.type == 'BoxSet') {
-      final list = <Map<String, dynamic>>[];
-      final seenNames = <String>{};
-      final dirNames = directors.map((d) => d['Name'] as String?).toSet();
-      final writNames = writers.map((w) => w['Name'] as String?).toSet();
-      for (final child in _collectionItems) {
-        final people = child.rawData['People'] as List?;
-        if (people != null) {
-          for (final person in people.cast<Map<String, dynamic>>()) {
-            final type = person['Type'] as String?;
-            if (type == 'Actor' || type == 'GuestStar') {
-              final name = person['Name'] as String?;
-              if (name != null && !seenNames.contains(name) && !dirNames.contains(name) && !writNames.contains(name)) {
-                seenNames.add(name);
-                list.add(person);
-              }
-            }
-          }
-        }
-      }
-      return list;
+      _ensureBoxSetPeople();
+      return _boxSetActors;
     }
     final list = _item?.people ?? const [];
     final dirNames = directors.map((d) => d['Name'] as String?).toSet();
