@@ -978,6 +978,14 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   }
 
   String? _cardSubtitle(AggregatedItem item) {
+    if (item.type == 'Playlist') {
+      final count = item.childCount ?? item.recursiveItemCount;
+      if (count != null) {
+        return AppLocalizations.of(context).itemCountLabel(count);
+      }
+      return null;
+    }
+
     final parts = <String>[];
     if (item.type == 'MusicAlbum') {
       if (item.artists.isNotEmpty) return item.artists.join(', ');
@@ -1358,7 +1366,7 @@ class _MetadataRow extends StatelessWidget {
       );
     }
 
-    if (item.officialRating != null) {
+    if (item.officialRating != null && item.type != 'Playlist') {
       children.add(
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),

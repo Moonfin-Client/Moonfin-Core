@@ -71,6 +71,7 @@ class ModernDetailContent extends StatefulWidget {
   final ValueChanged<bool>? onToggleNavbar;
   final bool actionsExpanded;
   final ValueChanged<bool> onActionsExpandedChanged;
+  final ValueChanged<AggregatedItem>? onBackdropItemFocused;
   final VoidCallback? onCollapseBiography;
 
   const ModernDetailContent({
@@ -80,6 +81,7 @@ class ModernDetailContent extends StatefulWidget {
     this.backdropUrl,
     this.selectedMediaSourceId,
     required this.onSelectedMediaSourceChanged,
+    this.onBackdropItemFocused,
     this.initialFocusNode,
     this.autoPlay = false,
     this.onPlayFromChapter,
@@ -1987,6 +1989,40 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   }
 
   Widget _tracksTab(BuildContext context, AggregatedItem item) {
+    final canManagePlaylistTracks = item.type == 'Playlist' && _vm.canManagePlaylistTracks;
+
+    final listWidget = DetailTrackList(
+      tracks: _vm.tracks,
+      imageApi: _vm.imageApi,
+      isAudiobook: _isAudiobook(item),
+      isPlaylist: item.type == 'Playlist',
+      groupByDisc: item.type == 'MusicAlbum',
+      getFocusNode: (id) =>
+          _trackFocusNodes.putIfAbsent(id, () => FocusNode()),
+      onPlayTrack: (index) => _playTrack(context, index),
+      reorderable: canManagePlaylistTracks,
+      onReorder: canManagePlaylistTracks
+          ? (oldIndex, newIndex) {
+              var target = newIndex;
+              if (target > oldIndex) {
+                target -= 1;
+              }
+              _vm.reorderPlaylistTrack(oldIndex, target);
+            }
+          : null,
+      onRemoveFromPlaylist: canManagePlaylistTracks
+          ? (track) => _vm.removeTrackFromPlaylist(track)
+          : null,
+      onMoveUp: canManagePlaylistTracks
+          ? (index) => _vm.reorderPlaylistTrack(index, index - 1)
+          : null,
+      onMoveDown: canManagePlaylistTracks
+          ? (index) => _vm.reorderPlaylistTrack(index, index + 1)
+          : null,
+      onFirstTrackUp: () => widget.initialFocusNode?.requestFocus(),
+      onTrackFocused: widget.onBackdropItemFocused,
+    );
+
     return Focus(
       canRequestFocus: false,
       onFocusChange: (focused) {
@@ -1997,22 +2033,24 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         }
       },
       onKeyEvent: (node, event) {
+        if (item.type == 'Playlist') {
+          return KeyEventResult.ignored;
+        }
         if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
           _focusSelectedTab();
           return KeyEventResult.handled;
         }
         return KeyEventResult.ignored;
       },
-      child: DetailTrackList(
-        tracks: _vm.tracks,
-        imageApi: _vm.imageApi,
-        isAudiobook: _isAudiobook(item),
-        isPlaylist: item.type == 'Playlist',
-        groupByDisc: item.type == 'MusicAlbum',
-        getFocusNode: (id) =>
-            _trackFocusNodes.putIfAbsent(id, () => FocusNode()),
-        onPlayTrack: (index) => _playTrack(context, index),
-      ),
+      child: item.type == 'Playlist'
+          ? Align(
+              alignment: Alignment.topLeft,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 800),
+                child: listWidget,
+              ),
+            )
+          : listWidget,
     );
   }
 
@@ -2190,6 +2228,123 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               onFocusExtra: (_) {},
             ),
           ),
+        ],
+      );
+    }
+
+    if (item.type == 'Playlist') {
+      final l10n = AppLocalizations.of(context);
+      final coverUrl = _imageUrl(item);
+      final coverImage = Container(
+        width: 180,
+        height: 180,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: const Color(0xFFE8DCCA).withValues(alpha: 0.8),
+            width: 2.0,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.4),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: coverUrl != null
+              ? CachedNetworkImage(
+                  imageUrl: coverUrl,
+                  fit: BoxFit.cover,
+                )
+              : Container(
+                  color: Colors.white.withValues(alpha: 0.05),
+                  child: const Icon(
+                    Icons.playlist_play,
+                    color: Colors.white24,
+                    size: 64,
+                  ),
+                ),
+        ),
+      );
+
+      final playlistInfo = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            item.name,
+            style: textTheme.displaySmall?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              shadows: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
+                  ? [
+                      const Shadow(
+                        color: Color(0xFFFF2E92),
+                        blurRadius: 12,
+                      ),
+                    ]
+                  : null,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            () {
+              final count = _vm.tracks.length;
+              final trackText = l10n.trackCount(count);
+              final genresText = item.genres.join(', ');
+              return genresText.isNotEmpty ? '$trackText • $genresText' : trackText;
+            }(),
+            style: textTheme.bodyMedium?.copyWith(
+              color: Colors.white.withValues(alpha: 0.7),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Focus(
+            canRequestFocus: false,
+            skipTraversal: true,
+            onFocusChange: (focused) {
+              if (focused) {
+                widget.onToggleNavbar?.call(true);
+                if (_scrollController.hasClients) {
+                  _scrollController.animateTo(
+                    0.0,
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeInOut,
+                  );
+                }
+              }
+            },
+            child: DetailActionButtons(
+              viewModel: _vm,
+              itemId: item.id,
+              selectedMediaSourceId: widget.selectedMediaSourceId,
+              onSelectedMediaSourceChanged: widget.onSelectedMediaSourceChanged,
+              tvPlayFocusNode: widget.initialFocusNode,
+              downTarget: _vm.tracks.isNotEmpty
+                  ? _trackFocusNodes.putIfAbsent(_vm.tracks.first.id, () => FocusNode())
+                  : null,
+              upTarget: null,
+              autoPlay: widget.autoPlay,
+              modernStyle: true,
+              fullWidthPrimary: false,
+              maxVisibleButtonsOverride: 10,
+              onArrowRightAtEnd: null,
+              actionRowRightFocusNode: _actionRowRightFocusNode,
+              onFocusExtra: (_) {},
+            ),
+          ),
+        ],
+      );
+
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          coverImage,
+          const SizedBox(width: 28),
+          Expanded(child: playlistInfo),
         ],
       );
     }
@@ -2756,7 +2911,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         MediaQuery.orientationOf(context) == Orientation.landscape;
 
     final tabs = _tabsFor(item, l10n);
-    if (_selectedTab >= tabs.length) {
+    if (item.type == 'Playlist') {
+      _selectedTab = 0;
+    } else if (_selectedTab >= tabs.length) {
       _selectedTab = PlatformDetection.isTV ? -1 : 0;
     }
 
@@ -2791,6 +2948,30 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       onExitUp: () => widget.initialFocusNode?.requestFocus(),
       onNavigateDown: _onTabBarNavigateDown,
     );
+
+    final Widget tabBarWidget;
+    if (item.type == 'Playlist') {
+      tabBarWidget = Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Text(
+          l10n.playlist,
+          style: textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            shadows: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
+                ? [
+                    const Shadow(
+                      color: Color(0xFFFF2E92),
+                      blurRadius: 10,
+                    ),
+                  ]
+                : null,
+          ),
+        ),
+      );
+    } else {
+      tabBarWidget = tabBar;
+    }
 
     final hero = _buildHero(context, item);
     final upNext = _buildUpNext(context, item);
@@ -2848,7 +3029,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             backdrop: backdrop,
             hero: hero,
             upNext: upNext,
-            tabBar: tabBar,
+            tabBar: tabBarWidget,
             tabContent: tabContent,
             topInset: topInset,
             scrollController: _scrollController,
@@ -2858,7 +3039,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             backdrop: backdrop,
             hero: hero,
             upNext: upNext,
-            tabBar: tabBar,
+            tabBar: tabBarWidget,
             tabContent: tabContent,
             topInset: topInset,
           );

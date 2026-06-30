@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -163,6 +164,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   bool _showNavbar = true;
   bool _actionsExpanded = false;
   Timer? _focusedBackdropDebounce;
+  Timer? _backdropCycleTimer;
   String? _lastFocusedBackdropItemId;
   String? _lastDetailBackdropItemId;
   final Map<String, String> _focusedPrimaryBackdropUrlCache =
@@ -248,6 +250,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     _themeMusicService.unregisterDetailScreen(this);
     _backgroundSub?.cancel();
     _focusedBackdropDebounce?.cancel();
+    _backdropCycleTimer?.cancel();
     if (_backgroundService.currentUrl == _backdropUrl) {
       _backgroundService.clearBackgrounds();
     }
@@ -266,12 +269,26 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     setState(() {});
     final item = _viewModel.item;
     if (item != null) {
-      if (_lastDetailBackdropItemId != item.id) {
+      bool needInitialBackdrop = _lastDetailBackdropItemId != item.id;
+      if (item.type == 'Playlist' &&
+          _viewModel.tracks.isNotEmpty &&
+          _lastFocusedBackdropItemId == null) {
+        needInitialBackdrop = true;
+      }
+
+      if (needInitialBackdrop) {
         _lastDetailBackdropItemId = item.id;
         _focusedPrimaryBackdropUrlCache.clear();
-        _lastFocusedBackdropItemId = null;
-        _backgroundService.setBackground(item, context: BlurContext.details);
+
+        final target = (item.type == 'Playlist' && _viewModel.tracks.isNotEmpty)
+            ? _viewModel.tracks.first
+            : item;
+        _backgroundService.setBackground(target, context: BlurContext.details);
         _backdropUrl = _backgroundService.currentUrl;
+
+        if (item.type == 'Playlist' && _viewModel.tracks.isNotEmpty) {
+          _onBackdropItemFocused(_viewModel.tracks.first);
+        }
 
         if (item.mediaSources.isNotEmpty) {
           _selectedMediaSourceId = item.mediaSources.first['Id']?.toString();
@@ -291,9 +308,12 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
 
   void _onBackdropItemFocused(AggregatedItem focusedItem) {
     final itemId = focusedItem.id;
-    if (_lastFocusedBackdropItemId == itemId) return;
+    if (_lastFocusedBackdropItemId == itemId && _backdropCycleTimer != null) return;
     _lastFocusedBackdropItemId = itemId;
     _focusedBackdropDebounce?.cancel();
+    _backdropCycleTimer?.cancel();
+    _backdropCycleTimer = null;
+
     _focusedBackdropDebounce = Timer(const Duration(milliseconds: 80), () {
       if (!mounted || _lastFocusedBackdropItemId != itemId) return;
 
@@ -331,6 +351,31 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       final nextUrl = _backgroundService.currentUrl;
       if (nextUrl != _backdropUrl) {
         setState(() => _backdropUrl = nextUrl);
+      }
+
+      final candidates = <String>[];
+      for (final tag in focusedItem.backdropImageTags) {
+        candidates.add(_viewModel.imageApi.getBackdropImageUrl(focusedItem.id, tag: tag));
+      }
+      if (candidates.isEmpty && focusedItem.parentBackdropItemId != null) {
+        for (final tag in focusedItem.parentBackdropImageTags) {
+          candidates.add(_viewModel.imageApi.getBackdropImageUrl(focusedItem.parentBackdropItemId!, tag: tag));
+        }
+      }
+
+      if (candidates.length > 1) {
+        _backdropCycleTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
+          if (!mounted || _lastFocusedBackdropItemId != itemId) {
+            timer.cancel();
+            return;
+          }
+          final remaining = candidates.where((url) => url != _backdropUrl).toList();
+          final cycleUrl = remaining.isNotEmpty
+              ? remaining[Random().nextInt(remaining.length)]
+              : candidates[Random().nextInt(candidates.length)];
+          _backgroundService.setBackgroundUrl(cycleUrl, context: BlurContext.details);
+          setState(() => _backdropUrl = cycleUrl);
+        });
       }
     });
   }
@@ -371,29 +416,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       canPop: !wasCollapsedRecently,
       child: body,
     );
-    if (isAlbumOrPlaylist && !PlatformDetection.isTV) {
-      body = Stack(
-        children: [
-          Positioned.fill(child: body),
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: IconButton(
-                  icon: const AdaptiveIcon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                  onPressed: () => Navigator.of(context).maybePop(),
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
     return RequestInitialFocus(
       targetNode: node,
       child: Scaffold(backgroundColor: Colors.black, body: body),
@@ -471,6 +493,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
                 initialFocusNode: _ensureInitialFocusNode(),
                 onSelectedMediaSourceChanged: (id) =>
                     setState(() => _selectedMediaSourceId = id),
+                onBackdropItemFocused: _onBackdropItemFocused,
                 autoPlay: widget.autoPlay,
                 onPlayFromChapter: (position) => unawaited(
                   _playFromChapter(context, _viewModel.item!, position, _selectedMediaSourceId),
@@ -5149,7 +5172,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     if (upTarget != null && upTarget.context != null && upTarget.canRequestFocus) {
       upTarget.requestFocus();
     } else if (NavigationLayout.focusNavbarNotifier.value != null) {
-      NavigationLayout.focusNavbarNotifier.value?.call();
+      final isAlbumOrPlaylist = widget.viewModel.item?.type == 'MusicAlbum' ||
+          widget.viewModel.item?.type == 'Playlist';
+      if (!isAlbumOrPlaylist) {
+        NavigationLayout.focusNavbarNotifier.value?.call();
+      }
     } else {
       _focusTarget(widget.upTarget);
     }
@@ -12926,8 +12953,13 @@ class _TrackTileState extends State<_TrackTile> with FocusStateMixin {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final runtime = widget.track.runtime;
+    final isAudio = widget.track.type == 'Audio';
     final runtimeText = runtime != null
-        ? '${runtime.inMinutes}:${(runtime.inSeconds % 60).toString().padLeft(2, '0')}'
+        ? (isAudio
+            ? '${runtime.inMinutes}:${(runtime.inSeconds % 60).toString().padLeft(2, '0')}'
+            : (runtime.inHours > 0
+                ? '${runtime.inHours}h ${runtime.inMinutes.remainder(60)}m'
+                : '${runtime.inMinutes}m'))
         : null;
 
     final trackNumber = widget.isPlaylist

@@ -493,16 +493,16 @@ class _CardImage extends StatelessWidget {
         children: [
           if (showGlow)
             Positioned(
-              top: -1.0,
-              bottom: -1.0,
-              left: -1.0,
-              right: -1.0,
+              top: -3.5,
+              bottom: -3.5,
+              left: -3.5,
+              right: -3.5,
               child: IgnorePointer(
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: isCircular
-                        ? BorderRadius.circular(radius + 1.0)
-                        : borders.cardRadius + BorderRadius.circular(1.0),
+                        ? BorderRadius.circular(radius + 3.5)
+                        : borders.cardRadius + BorderRadius.circular(3.5),
                     boxShadow: borders.focusGlow,
                   ),
                 ),
@@ -591,18 +591,21 @@ class _CardImage extends StatelessWidget {
           ),
           if (showBorder)
             Positioned(
-              top: -1.0,
-              bottom: -1.0,
-              left: -1.0,
-              right: -1.0,
+              top: -3.5,
+              bottom: -3.5,
+              left: -3.5,
+              right: -3.5,
               child: IgnorePointer(
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: isCircular
-                        ? BorderRadius.circular(radius + 1.0)
-                        : borders.cardRadius + BorderRadius.circular(1.0),
+                        ? BorderRadius.circular(radius + 3.5)
+                        : borders.cardRadius + BorderRadius.circular(3.5),
                     border: Border.fromBorderSide(
-                      borders.focusBorder.copyWith(color: borderColor),
+                      borders.focusBorder.copyWith(
+                        color: borderColor,
+                        width: 3.0,
+                      ),
                     ),
                   ),
                 ),
