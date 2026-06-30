@@ -3599,29 +3599,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             curve: Curves.easeInOut,
           );
         }
-
-        if (PlatformDetection.isTV && _vm.item != null) {
-          final l10n = AppLocalizations.of(context);
-          final tabs = _tabsFor(_vm.item!, l10n);
-          if (index < tabs.length) {
-            final label = tabs[index].label;
-            if (label == l10n.cast) {
-              _castFirstFocusNode.requestFocus();
-            } else if (label == l10n.crewSection) {
-              _crewFirstFocusNode.requestFocus();
-            } else if (label == l10n.studios) {
-              _studiosFirstFocusNode.requestFocus();
-            } else if (label == l10n.movies) {
-              _personMoviesFirstFocusNode.requestFocus();
-            } else if (label == l10n.series) {
-              _personSeriesFirstFocusNode.requestFocus();
-            } else if (label == l10n.appearancesSeerr) {
-              _personSeerrAppearancesFirstFocusNode.requestFocus();
-            } else if (label == l10n.crewContributionsSeerr) {
-              _personSeerrCrewCreditsFirstFocusNode.requestFocus();
-            }
-          }
-        }
       });
     }
   }
