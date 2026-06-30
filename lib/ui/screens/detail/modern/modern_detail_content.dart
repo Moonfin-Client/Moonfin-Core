@@ -126,6 +126,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   final FocusNode _personSeriesFirstFocusNode = FocusNode(debugLabel: 'personSeriesFirst');
   final FocusNode _personSeerrAppearancesFirstFocusNode = FocusNode(debugLabel: 'personSeerrAppearancesFirst');
   final FocusNode _personSeerrCrewCreditsFirstFocusNode = FocusNode(debugLabel: 'personSeerrCrewCreditsFirst');
+  final Map<String, FocusNode> _boxSetHeadingFocusNodes = {};
+  final Map<String, FocusNode> _boxSetRowFirstFocusNodes = {};
   late final ScrollController _scrollController = ScrollController();
   String? _seriesLogoTag;
   String? _seriesLogoId;
@@ -548,6 +550,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _personSeriesFirstFocusNode.dispose();
     _personSeerrAppearancesFirstFocusNode.dispose();
     _personSeerrCrewCreditsFirstFocusNode.dispose();
+    for (final node in _boxSetHeadingFocusNodes.values) {
+      node.dispose();
+    }
+    for (final node in _boxSetRowFirstFocusNodes.values) {
+      node.dispose();
+    }
     super.dispose();
   }
 
@@ -1306,14 +1314,53 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       if (childActors.isEmpty) continue;
 
       final isExpanded = _expandedCollectionCastItems.contains(childItem.id);
-      final isFirst = children.isEmpty;
+      
+      final headingNode = i == 0
+          ? _castFirstFocusNode
+          : _boxSetHeadingFocusNodes.putIfAbsent(childItem.id, () => FocusNode(debugLabel: 'heading_cast_${childItem.name}'));
+      final rowFirstNode = _boxSetRowFirstFocusNodes.putIfAbsent(childItem.id, () => FocusNode(debugLabel: 'row_first_cast_${childItem.name}'));
 
       children.add(
         Padding(
           padding: const EdgeInsets.only(bottom: 6),
           child: FocusableWrapper(
-            onNavigateUp: isFirst ? _focusSelectedTab : null,
-            focusNode: isFirst ? _castFirstFocusNode : null,
+            focusNode: headingNode,
+            onNavigateLeft: () {
+              final navbarPosition = widget.prefs.get(UserPreferences.navbarPosition);
+              if (navbarPosition == NavbarPosition.left) {
+                final focusNavbar = NavigationLayout.focusNavbarNotifier.value;
+                if (focusNavbar != null) {
+                  focusNavbar();
+                }
+              }
+            },
+            onNavigateRight: () {}, // Cap on right
+            onNavigateUp: () {
+              if (i == 0) {
+                _focusSelectedTab();
+              } else {
+                final prevItem = sortedItems[i - 1];
+                final prevExpanded = _expandedCollectionCastItems.contains(prevItem.id);
+                if (prevExpanded) {
+                  _boxSetRowFirstFocusNodes[prevItem.id]?.requestFocus();
+                } else {
+                  if (i - 1 == 0) {
+                    _castFirstFocusNode.requestFocus();
+                  } else {
+                    _boxSetHeadingFocusNodes[prevItem.id]?.requestFocus();
+                  }
+                }
+              }
+            },
+            onNavigateDown: () {
+              if (isExpanded) {
+                rowFirstNode.requestFocus();
+              } else if (i < sortedItems.length - 1) {
+                final nextItem = sortedItems[i + 1];
+                final nextNode = _boxSetHeadingFocusNodes.putIfAbsent(nextItem.id, () => FocusNode(debugLabel: 'heading_cast_${nextItem.name}'));
+                nextNode.requestFocus();
+              }
+            },
             onSelect: () {
               setState(() {
                 if (_expandedCollectionCastItems.contains(childItem.id)) {
@@ -1366,7 +1413,38 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 people: childActors,
                 imageApi: _vm.imageApi,
                 serverId: childItem.serverId,
-                onNavigateUp: _focusSelectedTab,
+                firstItemFocusNode: rowFirstNode,
+                onNavigateUp: () {
+                  headingNode.requestFocus();
+                },
+                onItemKeyEvent: (index, event) {
+                  if (event is KeyDownEvent || event is KeyRepeatEvent) {
+                    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                      if (i < sortedItems.length - 1) {
+                        final nextItem = sortedItems[i + 1];
+                        final nextNode = _boxSetHeadingFocusNodes.putIfAbsent(nextItem.id, () => FocusNode(debugLabel: 'heading_cast_${nextItem.name}'));
+                        nextNode.requestFocus();
+                      }
+                      return KeyEventResult.handled;
+                    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                      headingNode.requestFocus();
+                      return KeyEventResult.handled;
+                    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft && index == 0) {
+                      final navbarPosition = widget.prefs.get(UserPreferences.navbarPosition);
+                      if (navbarPosition == NavbarPosition.left) {
+                        final focusNavbar = NavigationLayout.focusNavbarNotifier.value;
+                        if (focusNavbar != null) {
+                          focusNavbar();
+                          return KeyEventResult.handled;
+                        }
+                      }
+                      return KeyEventResult.handled; // Cap on left
+                    } else if (event.logicalKey == LogicalKeyboardKey.arrowRight && index == childActors.length - 1) {
+                      return KeyEventResult.handled; // Cap on right
+                    }
+                  }
+                  return KeyEventResult.ignored;
+                },
               ),
             ),
           ),
@@ -1464,14 +1542,53 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       if (childCrew.isEmpty) continue;
 
       final isExpanded = _expandedCollectionCrewItems.contains(childItem.id);
-      final isFirst = children.isEmpty;
+      
+      final headingNode = i == 0
+          ? _crewFirstFocusNode
+          : _boxSetHeadingFocusNodes.putIfAbsent(childItem.id, () => FocusNode(debugLabel: 'heading_crew_${childItem.name}'));
+      final rowFirstNode = _boxSetRowFirstFocusNodes.putIfAbsent(childItem.id, () => FocusNode(debugLabel: 'row_first_crew_${childItem.name}'));
 
       children.add(
         Padding(
           padding: const EdgeInsets.only(bottom: 6),
           child: FocusableWrapper(
-            onNavigateUp: isFirst ? _focusSelectedTab : null,
-            focusNode: isFirst ? _crewFirstFocusNode : null,
+            focusNode: headingNode,
+            onNavigateLeft: () {
+              final navbarPosition = widget.prefs.get(UserPreferences.navbarPosition);
+              if (navbarPosition == NavbarPosition.left) {
+                final focusNavbar = NavigationLayout.focusNavbarNotifier.value;
+                if (focusNavbar != null) {
+                  focusNavbar();
+                }
+              }
+            },
+            onNavigateRight: () {}, // Cap on right
+            onNavigateUp: () {
+              if (i == 0) {
+                _focusSelectedTab();
+              } else {
+                final prevItem = sortedItems[i - 1];
+                final prevExpanded = _expandedCollectionCrewItems.contains(prevItem.id);
+                if (prevExpanded) {
+                  _boxSetRowFirstFocusNodes[prevItem.id]?.requestFocus();
+                } else {
+                  if (i - 1 == 0) {
+                    _crewFirstFocusNode.requestFocus();
+                  } else {
+                    _boxSetHeadingFocusNodes[prevItem.id]?.requestFocus();
+                  }
+                }
+              }
+            },
+            onNavigateDown: () {
+              if (isExpanded) {
+                rowFirstNode.requestFocus();
+              } else if (i < sortedItems.length - 1) {
+                final nextItem = sortedItems[i + 1];
+                final nextNode = _boxSetHeadingFocusNodes.putIfAbsent(nextItem.id, () => FocusNode(debugLabel: 'heading_crew_${nextItem.name}'));
+                nextNode.requestFocus();
+              }
+            },
             onSelect: () {
               setState(() {
                 if (_expandedCollectionCrewItems.contains(childItem.id)) {
@@ -1524,7 +1641,38 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 people: childCrew,
                 imageApi: _vm.imageApi,
                 serverId: childItem.serverId,
-                onNavigateUp: _focusSelectedTab,
+                firstItemFocusNode: rowFirstNode,
+                onNavigateUp: () {
+                  headingNode.requestFocus();
+                },
+                onItemKeyEvent: (index, event) {
+                  if (event is KeyDownEvent || event is KeyRepeatEvent) {
+                    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                      if (i < sortedItems.length - 1) {
+                        final nextItem = sortedItems[i + 1];
+                        final nextNode = _boxSetHeadingFocusNodes.putIfAbsent(nextItem.id, () => FocusNode(debugLabel: 'heading_crew_${nextItem.name}'));
+                        nextNode.requestFocus();
+                      }
+                      return KeyEventResult.handled;
+                    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                      headingNode.requestFocus();
+                      return KeyEventResult.handled;
+                    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft && index == 0) {
+                      final navbarPosition = widget.prefs.get(UserPreferences.navbarPosition);
+                      if (navbarPosition == NavbarPosition.left) {
+                        final focusNavbar = NavigationLayout.focusNavbarNotifier.value;
+                        if (focusNavbar != null) {
+                          focusNavbar();
+                          return KeyEventResult.handled;
+                        }
+                      }
+                      return KeyEventResult.handled; // Cap on left
+                    } else if (event.logicalKey == LogicalKeyboardKey.arrowRight && index == childCrew.length - 1) {
+                      return KeyEventResult.handled; // Cap on right
+                    }
+                  }
+                  return KeyEventResult.ignored;
+                },
               ),
             ),
           ),
