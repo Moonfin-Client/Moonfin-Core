@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -164,7 +163,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   bool _showNavbar = true;
   bool _actionsExpanded = false;
   Timer? _focusedBackdropDebounce;
-  Timer? _backdropCycleTimer;
   String? _lastFocusedBackdropItemId;
   String? _lastDetailBackdropItemId;
   final Map<String, String> _focusedPrimaryBackdropUrlCache =
@@ -250,7 +248,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     _themeMusicService.unregisterDetailScreen(this);
     _backgroundSub?.cancel();
     _focusedBackdropDebounce?.cancel();
-    _backdropCycleTimer?.cancel();
     if (_backgroundService.currentUrl == _backdropUrl) {
       _backgroundService.clearBackgrounds();
     }
@@ -308,11 +305,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
 
   void _onBackdropItemFocused(AggregatedItem focusedItem) {
     final itemId = focusedItem.id;
-    if (_lastFocusedBackdropItemId == itemId && _backdropCycleTimer != null) return;
+    if (_lastFocusedBackdropItemId == itemId) return;
     _lastFocusedBackdropItemId = itemId;
     _focusedBackdropDebounce?.cancel();
-    _backdropCycleTimer?.cancel();
-    _backdropCycleTimer = null;
 
     _focusedBackdropDebounce = Timer(const Duration(milliseconds: 80), () {
       if (!mounted || _lastFocusedBackdropItemId != itemId) return;
@@ -351,31 +346,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       final nextUrl = _backgroundService.currentUrl;
       if (nextUrl != _backdropUrl) {
         setState(() => _backdropUrl = nextUrl);
-      }
-
-      final candidates = <String>[];
-      for (final tag in focusedItem.backdropImageTags) {
-        candidates.add(_viewModel.imageApi.getBackdropImageUrl(focusedItem.id, tag: tag));
-      }
-      if (candidates.isEmpty && focusedItem.parentBackdropItemId != null) {
-        for (final tag in focusedItem.parentBackdropImageTags) {
-          candidates.add(_viewModel.imageApi.getBackdropImageUrl(focusedItem.parentBackdropItemId!, tag: tag));
-        }
-      }
-
-      if (candidates.length > 1) {
-        _backdropCycleTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
-          if (!mounted || _lastFocusedBackdropItemId != itemId) {
-            timer.cancel();
-            return;
-          }
-          final remaining = candidates.where((url) => url != _backdropUrl).toList();
-          final cycleUrl = remaining.isNotEmpty
-              ? remaining[Random().nextInt(remaining.length)]
-              : candidates[Random().nextInt(candidates.length)];
-          _backgroundService.setBackgroundUrl(cycleUrl, context: BlurContext.details);
-          setState(() => _backdropUrl = cycleUrl);
-        });
       }
     });
   }

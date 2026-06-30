@@ -193,9 +193,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
       final parsed = PlaybackInfoResult.fromJson(rawInfo);
       if (mounted) {
+        // Drop the result if the track selection changed mid-request.
+        final stillCurrent = _loadedAudioIndex == _vm.selectedAudioIndex &&
+            _loadedSubtitleIndex == _vm.selectedSubtitleIndex;
         setState(() {
-          _playbackInfo = parsed;
           _loadingPlaybackInfo = false;
+          if (stillCurrent) _playbackInfo = parsed;
         });
       }
     } catch (_) {
