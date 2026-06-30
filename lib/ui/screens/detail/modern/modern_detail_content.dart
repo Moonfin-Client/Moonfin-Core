@@ -113,6 +113,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   final FocusNode _chaptersFirstFocusNode = FocusNode(debugLabel: 'chaptersFirst');
   final FocusNode _similarFirstFocusNode = FocusNode(debugLabel: 'similarFirst');
   final FocusNode _gridFirstFocusNode = FocusNode(debugLabel: 'gridFirst');
+  final FocusNode _collectionSortFocusNode = FocusNode(debugLabel: 'collectionSort');
   final FocusNode _seasonsFirstFocusNode = FocusNode(debugLabel: 'seasonsFirst');
   final FocusNode _episodesFirstFocusNode = FocusNode(debugLabel: 'episodesFirst');
   final FocusNode _overviewFocusNode = FocusNode(debugLabel: 'overview');
@@ -428,6 +429,24 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _personSeerrAppearancesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _personSeerrCrewCreditsFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _gridFirstFocusNode.onKeyEvent = leftToSidebarHandler;
+    _collectionSortFocusNode.onKeyEvent = (node, event) {
+      if (event is KeyDownEvent) {
+        if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+          if (_vm.playlistItems.isNotEmpty) {
+            final firstTrackId = _vm.playlistItems.first.id;
+            final firstNode = _trackFocusNodes.putIfAbsent(firstTrackId, () => FocusNode());
+            if (firstNode.canRequestFocus) {
+              firstNode.requestFocus();
+              return KeyEventResult.handled;
+            }
+          }
+        } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          _focusSelectedTab();
+          return KeyEventResult.handled;
+        }
+      }
+      return leftToSidebarHandler(node, event);
+    };
 
     _vm.addListener(_onViewModelChanged);
     _scrollController.addListener(_onScroll);
@@ -511,6 +530,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _chaptersFirstFocusNode.dispose();
     _similarFirstFocusNode.dispose();
     _gridFirstFocusNode.dispose();
+    _collectionSortFocusNode.dispose();
     _seasonsFirstFocusNode.dispose();
     _episodesFirstFocusNode.dispose();
     _overviewFocusNode.dispose();
@@ -594,10 +614,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         if (_gridFirstFocusNode.canRequestFocus) _gridFirstFocusNode.requestFocus();
       } else if (label == l10n.playlist) {
         if (_vm.item?.type == 'BoxSet' && _vm.playlistItems.isNotEmpty) {
-          final firstTrackId = _vm.playlistItems.first.id;
-          final firstTrackNode = _trackFocusNodes.putIfAbsent(firstTrackId, () => FocusNode());
-          if (firstTrackNode.canRequestFocus) {
-            firstTrackNode.requestFocus();
+          if (_collectionSortFocusNode.canRequestFocus) {
+            _collectionSortFocusNode.requestFocus();
           }
         }
       } else if (label == l10n.movies) {
@@ -723,7 +741,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                   getFocusNode: (id) =>
                       _trackFocusNodes.putIfAbsent(id, () => FocusNode()),
                   onPlayTrack: (index) => _playPlaylistTrack(context, index),
-                  reorderable: true,
+                  reorderable: _vm.collectionSort == CollectionSortOption.custom,
                   onReorder: (oldIndex, newIndex) {
                     var target = newIndex;
                     if (target > oldIndex) {
@@ -733,7 +751,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                   },
                   onMoveUp: (index) => _vm.reorderCollectionPlaylistItem(index, index - 1),
                   onMoveDown: (index) => _vm.reorderCollectionPlaylistItem(index, index + 1),
-                  onFirstTrackUp: () => widget.initialFocusNode?.requestFocus(),
+                  onFirstTrackUp: () => _collectionSortFocusNode.requestFocus(),
                   onTrackFocused: widget.onBackdropItemFocused,
                 );
 
@@ -753,7 +771,33 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                     alignment: Alignment.topLeft,
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 800),
-                      child: listWidget,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: Row(
+                              children: [
+                                FocusableToolbarButton(
+                                  icon: Icons.sort_rounded,
+                                  focusNode: _collectionSortFocusNode,
+                                  tooltip: 'Reset Sort',
+                                  onTap: () => _showCollectionSortDialog(context),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  'Sort: ${_getCollectionSortLabel(_vm.collectionSort)}',
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: Colors.white70,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          listWidget,
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -2147,6 +2191,99 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     context.push(isAudio ? Destinations.audioPlayer : Destinations.videoPlayer);
   }
 
+  String _getCollectionSortLabel(CollectionSortOption option) {
+    return switch (option) {
+      CollectionSortOption.alphabetical => 'Alphabetical',
+      CollectionSortOption.releaseAscending => 'Release Order (Ascending)',
+      CollectionSortOption.releaseDescending => 'Release Order (Descending)',
+      CollectionSortOption.custom => 'Custom (Drag-and-Drop)',
+    };
+  }
+
+  void _showCollectionSortDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1E1E24),
+          title: Text(
+            'Playlist Sort Options',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: CollectionSortOption.values.map((option) {
+              final active = _vm.collectionSort == option;
+              return Focus(
+                onKeyEvent: (_, event) {
+                  if (isActivateKey(event)) {
+                    _vm.setCollectionSort(option);
+                    Navigator.of(context).pop();
+                    return KeyEventResult.handled;
+                  }
+                  return KeyEventResult.ignored;
+                },
+                child: Builder(
+                  builder: (context) {
+                    final focused = Focus.of(context).hasFocus;
+                    return InkWell(
+                      onTap: () {
+                        _vm.setCollectionSort(option);
+                        Navigator.of(context).pop();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12.0,
+                          horizontal: 16.0,
+                        ),
+                        decoration: BoxDecoration(
+                          color: focused
+                              ? Colors.white12
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              active
+                                  ? Icons.radio_button_checked
+                                  : Icons.radio_button_off,
+                              color: active
+                                  ? AppColorScheme.accent
+                                  : Colors.white54,
+                            ),
+                            const SizedBox(width: 16),
+                            Text(
+                              _getCollectionSortLabel(option),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    color: active
+                                        ? AppColorScheme.accent
+                                        : Colors.white,
+                                    fontWeight: active
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+
   /// In landscape the hero column is ~45% of the width. Size the visible action
   /// count so the Play pill, the circular buttons and the "More" toggle all stay
   /// on a single row (extras expand to a second row beneath). Reserves room for
@@ -2823,7 +2960,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   }
 
   Widget? _buildUpNext(BuildContext context, AggregatedItem item) {
-    const supported = {'Series', 'Season'};
+    const supported = {'Series', 'Season', 'BoxSet'};
     if (!supported.contains(item.type)) return null;
 
     final l10n = AppLocalizations.of(context);
@@ -2841,6 +2978,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         try {
           episode = _vm.episodes.firstWhere((e) => !e.isPlayed);
         } catch (_) {}
+      }
+    } else if (item.type == 'BoxSet') {
+      episode = _vm.nextUp;
+      if (episode != null) {
+        final playedAll = _vm.playlistItems.every((item) => item.rawData['UserData']?['Played'] == true);
+        if (playedAll) {
+          customLabel = 'Rewatch Playlist';
+        }
       }
     } else {
       episode = _vm.nextUp;

@@ -28,6 +28,7 @@ class FocusableToolbarButton extends StatefulWidget {
   final int unfocusedIconAlpha;
   /// Multiplicative scale applied while focused. 1.0 disables scaling.
   final double scaleOnFocus;
+  final FocusNode? focusNode;
 
   const FocusableToolbarButton({
     super.key,
@@ -40,6 +41,7 @@ class FocusableToolbarButton extends StatefulWidget {
     this.accentColor,
     this.unfocusedIconAlpha = 179,
     this.scaleOnFocus = 1.0,
+    this.focusNode,
   });
 
   @override
@@ -83,6 +85,7 @@ class _FocusableToolbarButtonState extends State<FocusableToolbarButton>
       onEnter: (_) => setHovered(true),
       onExit: (_) => setHovered(false),
       child: Focus(
+        focusNode: widget.focusNode,
         onFocusChange: (f) => setFocused(f),
         onKeyEvent: (_, event) {
           if (isActivateKey(event)) {

@@ -11,6 +11,13 @@ import '../repositories/tmdb_repository.dart';
 import '../utils/playlist_utils.dart';
 import '../../util/episode_playability.dart';
 
+enum CollectionSortOption {
+  alphabetical,
+  releaseAscending,
+  releaseDescending,
+  custom,
+}
+
 enum ItemDetailState { loading, ready, error }
 
 class ItemDetailViewModel extends ChangeNotifier {
@@ -86,6 +93,11 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   List<AggregatedItem> _playlistItems = const [];
   List<AggregatedItem> get playlistItems => _playlistItems;
+
+  CollectionSortOption _collectionSort = CollectionSortOption.releaseAscending;
+  CollectionSortOption get collectionSort => _collectionSort;
+
+  List<AggregatedItem> _customPlaylistItems = const [];
 
   String? _parentCollectionName;
   String? get parentCollectionName => _parentCollectionName;
@@ -439,6 +451,49 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
   }
 
+  void setCollectionSort(CollectionSortOption option) {
+    _collectionSort = option;
+    _applyCollectionSort();
+  }
+
+  void _applyCollectionSort() {
+    int releaseSortAscending(AggregatedItem a, AggregatedItem b) {
+      final aDate =
+          a.premiereDate ??
+          (a.productionYear != null ? DateTime(a.productionYear!) : null);
+      final bDate =
+          b.premiereDate ??
+          (b.productionYear != null ? DateTime(b.productionYear!) : null);
+      if (aDate == null && bDate == null) {
+        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      }
+      if (aDate == null) return 1;
+      if (bDate == null) return -1;
+      final byDate = aDate.compareTo(bDate);
+      if (byDate != 0) return byDate;
+      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    }
+
+    switch (_collectionSort) {
+      case CollectionSortOption.alphabetical:
+        _playlistItems = List<AggregatedItem>.from(_playlistItems)
+          ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        break;
+      case CollectionSortOption.releaseAscending:
+        _playlistItems = List<AggregatedItem>.from(_playlistItems)
+          ..sort(releaseSortAscending);
+        break;
+      case CollectionSortOption.releaseDescending:
+        _playlistItems = List<AggregatedItem>.from(_playlistItems)
+          ..sort((a, b) => releaseSortAscending(b, a));
+        break;
+      case CollectionSortOption.custom:
+        _playlistItems = List<AggregatedItem>.from(_customPlaylistItems);
+        break;
+    }
+    notifyListeners();
+  }
+
   Future<void> reorderCollectionPlaylistItem(int oldIndex, int newIndex) async {
     if (oldIndex < 0 || oldIndex >= _playlistItems.length) return;
     if (newIndex < 0 || newIndex >= _playlistItems.length) return;
@@ -447,6 +502,8 @@ class ItemDetailViewModel extends ChangeNotifier {
     final item = reordered.removeAt(oldIndex);
     reordered.insert(newIndex, item);
     _playlistItems = reordered;
+    _customPlaylistItems = reordered;
+    _collectionSort = CollectionSortOption.custom;
     notifyListeners();
   }
 
@@ -455,7 +512,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       // No sortBy: keep the collection's native order instead of forcing alphabetical s
       final data = await _client.itemsApi.getItems(
         parentId: itemId,
-        fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
+        fields: 'PrimaryImageAspectRatio,BasicSyncInfo,People',
       );
       final items = (data['Items'] as List?) ?? [];
       _collectionItems = _mapItems(items);
@@ -476,7 +533,46 @@ class ItemDetailViewModel extends ChangeNotifier {
           list.add(item);
         }
       }
+      
+      // Default to release order (ascending) sorting
+      int releaseSortAscending(AggregatedItem a, AggregatedItem b) {
+        final aDate =
+            a.premiereDate ??
+            (a.productionYear != null ? DateTime(a.productionYear!) : null);
+        final bDate =
+            b.premiereDate ??
+            (b.productionYear != null ? DateTime(b.productionYear!) : null);
+        if (aDate == null && bDate == null) {
+          return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+        }
+        if (aDate == null) return 1;
+        if (bDate == null) return -1;
+        final byDate = aDate.compareTo(bDate);
+        if (byDate != 0) return byDate;
+        return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      }
+      
+      list.sort(releaseSortAscending);
+      
       _playlistItems = list;
+      _customPlaylistItems = List<AggregatedItem>.from(list);
+      _collectionSort = CollectionSortOption.releaseAscending;
+      
+      // Resolve Next Up item
+      if (_playlistItems.isNotEmpty) {
+        final playedAll = _playlistItems.every((item) => item.rawData['UserData']?['Played'] == true);
+        if (playedAll) {
+          _nextUp = _playlistItems.first;
+        } else {
+          _nextUp = _playlistItems.firstWhere(
+            (item) => item.rawData['UserData']?['Played'] != true,
+            orElse: () => _playlistItems.first,
+          );
+        }
+      } else {
+        _nextUp = null;
+      }
+      
       notifyListeners();
     } catch (_) {}
   }
@@ -791,13 +887,75 @@ class ItemDetailViewModel extends ChangeNotifier {
     } catch (_) {}
   }
 
-  List<Map<String, dynamic>> get directors =>
-      _item?.people.where((p) => p['Type'] == 'Director').toList() ?? const [];
+  List<Map<String, dynamic>> get directors {
+    if (_item?.type == 'BoxSet') {
+      final list = <Map<String, dynamic>>[];
+      final seenNames = <String>{};
+      for (final child in _collectionItems) {
+        final people = child.rawData['People'] as List?;
+        if (people != null) {
+          for (final person in people.cast<Map<String, dynamic>>()) {
+            if (person['Type'] == 'Director') {
+              final name = person['Name'] as String?;
+              if (name != null && !seenNames.contains(name)) {
+                seenNames.add(name);
+                list.add(person);
+              }
+            }
+          }
+        }
+      }
+      return list;
+    }
+    return _item?.people.where((p) => p['Type'] == 'Director').toList() ?? const [];
+  }
 
-  List<Map<String, dynamic>> get writers =>
-      _item?.people.where((p) => p['Type'] == 'Writer').toList() ?? const [];
+  List<Map<String, dynamic>> get writers {
+    if (_item?.type == 'BoxSet') {
+      final list = <Map<String, dynamic>>[];
+      final seenNames = <String>{};
+      for (final child in _collectionItems) {
+        final people = child.rawData['People'] as List?;
+        if (people != null) {
+          for (final person in people.cast<Map<String, dynamic>>()) {
+            if (person['Type'] == 'Writer') {
+              final name = person['Name'] as String?;
+              if (name != null && !seenNames.contains(name)) {
+                seenNames.add(name);
+                list.add(person);
+              }
+            }
+          }
+        }
+      }
+      return list;
+    }
+    return _item?.people.where((p) => p['Type'] == 'Writer').toList() ?? const [];
+  }
 
   List<Map<String, dynamic>> get actors {
+    if (_item?.type == 'BoxSet') {
+      final list = <Map<String, dynamic>>[];
+      final seenNames = <String>{};
+      final dirNames = directors.map((d) => d['Name'] as String?).toSet();
+      final writNames = writers.map((w) => w['Name'] as String?).toSet();
+      for (final child in _collectionItems) {
+        final people = child.rawData['People'] as List?;
+        if (people != null) {
+          for (final person in people.cast<Map<String, dynamic>>()) {
+            final type = person['Type'] as String?;
+            if (type == 'Actor' || type == 'GuestStar') {
+              final name = person['Name'] as String?;
+              if (name != null && !seenNames.contains(name) && !dirNames.contains(name) && !writNames.contains(name)) {
+                seenNames.add(name);
+                list.add(person);
+              }
+            }
+          }
+        }
+      }
+      return list;
+    }
     final list = _item?.people ?? const [];
     final dirNames = directors.map((d) => d['Name'] as String?).toSet();
     final writNames = writers.map((w) => w['Name'] as String?).toSet();
