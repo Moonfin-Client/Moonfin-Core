@@ -8414,4 +8414,119 @@ class AppLocalizationsEo extends AppLocalizations {
 
   @override
   String get externalLists => 'External Home Row Lists';
+
+  @override
+  String get replay => 'Replay';
+
+  @override
+  String get fileInformation => 'File Information';
+
+  @override
+  String fileSizeFormat(Object size, Object format) {
+    return 'Size: $size  •  Format: $format';
+  }
+
+  @override
+  String showAllAudioTracks(int count) {
+    return 'Show All ($count) Audio Tracks';
+  }
+
+  @override
+  String showAllSubtitleTracks(int count) {
+    return 'Show All ($count) Subtitle Tracks';
+  }
+
+  @override
+  String get checkingDirectPlay => 'Checking Direct Play capability...';
+
+  @override
+  String get directPlayCapabilityLabel => 'Direct Play Capability: ';
+
+  @override
+  String get forced => 'Forced';
+
+  @override
+  String get transcodeContainerNotSupported =>
+      'Container format is not supported by the player.';
+
+  @override
+  String get transcodeVideoCodecNotSupported => 'Video codec is not supported.';
+
+  @override
+  String get transcodeAudioCodecNotSupported => 'Audio codec is not supported.';
+
+  @override
+  String get transcodeSubtitleCodecNotSupported =>
+      'Subtitle format is not supported (requires burning).';
+
+  @override
+  String get transcodeAudioProfileNotSupported =>
+      'Audio profile is not supported.';
+
+  @override
+  String get transcodeVideoProfileNotSupported =>
+      'Video profile is not supported.';
+
+  @override
+  String get transcodeVideoLevelNotSupported => 'Video level is not supported.';
+
+  @override
+  String get transcodeVideoResolutionNotSupported =>
+      'Video resolution is not supported by this device.';
+
+  @override
+  String get transcodeVideoBitDepthNotSupported =>
+      'Video bit depth is not supported.';
+
+  @override
+  String get transcodeVideoFramerateNotSupported =>
+      'Video framerate is not supported.';
+
+  @override
+  String get transcodeContainerBitrateExceedsLimit =>
+      'File bitrate exceeds player streaming limit.';
+
+  @override
+  String get transcodeVideoBitrateExceedsLimit =>
+      'Video bitrate exceeds streaming limit.';
+
+  @override
+  String get transcodeAudioBitrateExceedsLimit =>
+      'Audio bitrate exceeds streaming limit.';
+
+  @override
+  String get transcodeAudioChannelsNotSupported =>
+      'Number of audio channels is not supported.';
+
+  @override
+  String get sortAlphabetical => 'Alphabetical';
+
+  @override
+  String get sortReleaseAscending => 'Release Order (Ascending)';
+
+  @override
+  String get sortReleaseDescending => 'Release Order (Descending)';
+
+  @override
+  String get sortCustomDragDrop => 'Custom (Drag-and-Drop)';
+
+  @override
+  String get playlistSortOptions => 'Playlist Sort Options';
+
+  @override
+  String get resetSort => 'Reset Sort';
+
+  @override
+  String rewatchSeasonEpisode(int season, int episode) {
+    return 'Rewatch S$season:E$episode';
+  }
+
+  @override
+  String get rewatchPlaylist => 'Rewatch Playlist';
+
+  @override
+  String get noSubtitlesFound => 'No subtitles found.';
+
+  @override
+  String get adminControls => 'Admin Controls';
 }

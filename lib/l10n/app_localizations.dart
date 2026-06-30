@@ -15033,6 +15033,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'External Home Row Lists'**
   String get externalLists;
+
+  /// No description provided for @replay.
+  ///
+  /// In en, this message translates to:
+  /// **'Replay'**
+  String get replay;
+
+  /// No description provided for @fileInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'File Information'**
+  String get fileInformation;
+
+  /// No description provided for @fileSizeFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Size: {size}  •  Format: {format}'**
+  String fileSizeFormat(Object size, Object format);
+
+  /// No description provided for @showAllAudioTracks.
+  ///
+  /// In en, this message translates to:
+  /// **'Show All ({count}) Audio Tracks'**
+  String showAllAudioTracks(int count);
+
+  /// No description provided for @showAllSubtitleTracks.
+  ///
+  /// In en, this message translates to:
+  /// **'Show All ({count}) Subtitle Tracks'**
+  String showAllSubtitleTracks(int count);
+
+  /// No description provided for @checkingDirectPlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking Direct Play capability...'**
+  String get checkingDirectPlay;
+
+  /// No description provided for @directPlayCapabilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct Play Capability: '**
+  String get directPlayCapabilityLabel;
+
+  /// No description provided for @forced.
+  ///
+  /// In en, this message translates to:
+  /// **'Forced'**
+  String get forced;
+
+  /// No description provided for @transcodeContainerNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Container format is not supported by the player.'**
+  String get transcodeContainerNotSupported;
+
+  /// No description provided for @transcodeVideoCodecNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Video codec is not supported.'**
+  String get transcodeVideoCodecNotSupported;
+
+  /// No description provided for @transcodeAudioCodecNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio codec is not supported.'**
+  String get transcodeAudioCodecNotSupported;
+
+  /// No description provided for @transcodeSubtitleCodecNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle format is not supported (requires burning).'**
+  String get transcodeSubtitleCodecNotSupported;
+
+  /// No description provided for @transcodeAudioProfileNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio profile is not supported.'**
+  String get transcodeAudioProfileNotSupported;
+
+  /// No description provided for @transcodeVideoProfileNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Video profile is not supported.'**
+  String get transcodeVideoProfileNotSupported;
+
+  /// No description provided for @transcodeVideoLevelNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Video level is not supported.'**
+  String get transcodeVideoLevelNotSupported;
+
+  /// No description provided for @transcodeVideoResolutionNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Video resolution is not supported by this device.'**
+  String get transcodeVideoResolutionNotSupported;
+
+  /// No description provided for @transcodeVideoBitDepthNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Video bit depth is not supported.'**
+  String get transcodeVideoBitDepthNotSupported;
+
+  /// No description provided for @transcodeVideoFramerateNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Video framerate is not supported.'**
+  String get transcodeVideoFramerateNotSupported;
+
+  /// No description provided for @transcodeContainerBitrateExceedsLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'File bitrate exceeds player streaming limit.'**
+  String get transcodeContainerBitrateExceedsLimit;
+
+  /// No description provided for @transcodeVideoBitrateExceedsLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Video bitrate exceeds streaming limit.'**
+  String get transcodeVideoBitrateExceedsLimit;
+
+  /// No description provided for @transcodeAudioBitrateExceedsLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio bitrate exceeds streaming limit.'**
+  String get transcodeAudioBitrateExceedsLimit;
+
+  /// No description provided for @transcodeAudioChannelsNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of audio channels is not supported.'**
+  String get transcodeAudioChannelsNotSupported;
+
+  /// No description provided for @sortAlphabetical.
+  ///
+  /// In en, this message translates to:
+  /// **'Alphabetical'**
+  String get sortAlphabetical;
+
+  /// No description provided for @sortReleaseAscending.
+  ///
+  /// In en, this message translates to:
+  /// **'Release Order (Ascending)'**
+  String get sortReleaseAscending;
+
+  /// No description provided for @sortReleaseDescending.
+  ///
+  /// In en, this message translates to:
+  /// **'Release Order (Descending)'**
+  String get sortReleaseDescending;
+
+  /// No description provided for @sortCustomDragDrop.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom (Drag-and-Drop)'**
+  String get sortCustomDragDrop;
+
+  /// No description provided for @playlistSortOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Playlist Sort Options'**
+  String get playlistSortOptions;
+
+  /// No description provided for @resetSort.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Sort'**
+  String get resetSort;
+
+  /// No description provided for @rewatchSeasonEpisode.
+  ///
+  /// In en, this message translates to:
+  /// **'Rewatch S{season}:E{episode}'**
+  String rewatchSeasonEpisode(int season, int episode);
+
+  /// No description provided for @rewatchPlaylist.
+  ///
+  /// In en, this message translates to:
+  /// **'Rewatch Playlist'**
+  String get rewatchPlaylist;
+
+  /// No description provided for @noSubtitlesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No subtitles found.'**
+  String get noSubtitlesFound;
+
+  /// No description provided for @adminControls.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Controls'**
+  String get adminControls;
 }
 
 class _AppLocalizationsDelegate

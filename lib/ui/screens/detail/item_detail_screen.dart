@@ -5581,7 +5581,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       playButtonLabel = hasProgress ? l10n.resumeReading : l10n.read;
     } else if (isSeason) {
       if (seasonAllWatched) {
-        playButtonLabel = 'Replay';
+        playButtonLabel = l10n.replay;
       } else if (seasonAllUnwatched) {
         playButtonLabel = l10n.play;
       } else {
@@ -5589,7 +5589,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       }
     } else if (isSeries) {
       if (isFullyWatched) {
-        playButtonLabel = 'Replay';
+        playButtonLabel = l10n.replay;
       } else if (isFullyUnwatched) {
         playButtonLabel = l10n.play;
       } else {
@@ -5617,7 +5617,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           ? l10n.play
           : l10n.resume;
     } else if (hasProgress) {
-      playButtonLabel = 'Resume (${_formatResumePosition(item.playbackPosition)})';
+      playButtonLabel = l10n.resumeFrom(_formatResumePosition(item.playbackPosition));
     } else {
       playButtonLabel = l10n.play;
     }
@@ -5712,9 +5712,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           onPressed: () {
             if (subtitleStreams.isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('No subtitles found.'),
-                  duration: Duration(seconds: 2),
+                SnackBar(
+                  content: Text(l10n.noSubtitlesFound),
+                  duration: const Duration(seconds: 2),
                 ),
               );
             } else {
@@ -5791,7 +5791,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       if ((GetIt.instance<UserRepository>().currentUser?.isAdministrator ?? false) &&
           GetIt.instance<MediaServerClient>().serverType == ServerType.jellyfin)
         _DetailActionButton(
-          label: 'Admin',
+          label: l10n.admin,
           icon: Icons.settings,
           onPressed: () => _showAdminDialog(context, item),
           isActive: true,
@@ -6163,14 +6163,15 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   }
 
   void _showAdminDialog(BuildContext context, AggregatedItem item) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           backgroundColor: const Color(0xFF1E1E24),
-          title: const Text(
-            'Admin Controls',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          title: Text(
+            l10n.adminControls,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -6205,11 +6206,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                           color: hasFocus ? Colors.white12 : Colors.transparent,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
-                            Icon(Icons.image, color: Colors.white70),
-                            SizedBox(width: 12),
-                            Text('Change Artwork', style: TextStyle(color: Colors.white)),
+                            const Icon(Icons.image, color: Colors.white70),
+                            const SizedBox(width: 12),
+                            Text(l10n.changeArtwork, style: const TextStyle(color: Colors.white)),
                           ],
                         ),
                       ),
@@ -6241,11 +6242,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                             color: hasFocus ? Colors.white12 : Colors.transparent,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
-                              Icon(Icons.edit_note, color: Colors.white70),
-                              SizedBox(width: 12),
-                              Text('Edit Metadata', style: TextStyle(color: Colors.white)),
+                              const Icon(Icons.edit_note, color: Colors.white70),
+                              const SizedBox(width: 12),
+                              Text(l10n.editMetadata, style: const TextStyle(color: Colors.white)),
                             ],
                           ),
                         ),
@@ -6276,11 +6277,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                           color: hasFocus ? Colors.white12 : Colors.transparent,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
-                            Icon(Icons.delete_forever, color: Colors.redAccent),
-                            SizedBox(width: 12),
-                            Text('Delete', style: TextStyle(color: Colors.redAccent)),
+                            const Icon(Icons.delete_forever, color: Colors.redAccent),
+                            const SizedBox(width: 12),
+                            Text(l10n.delete, style: const TextStyle(color: Colors.redAccent)),
                           ],
                         ),
                       ),

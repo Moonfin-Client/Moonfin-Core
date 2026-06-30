@@ -827,12 +827,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                                 FocusableToolbarButton(
                                   icon: Icons.sort_rounded,
                                   focusNode: _collectionSortFocusNode,
-                                  tooltip: 'Reset Sort',
+                                  tooltip: l10n.resetSort,
                                   onTap: () => _showCollectionSortDialog(context),
                                 ),
                                 const SizedBox(width: 12),
                                 Text(
-                                  'Sort: ${_getCollectionSortLabel(_vm.collectionSort)}',
+                                  'Sort: ${_getCollectionSortLabel(_vm.collectionSort, l10n)}',
                                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                         color: Colors.white70,
                                         fontWeight: FontWeight.bold,
@@ -2098,6 +2098,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     Map<String, dynamic> mediaSource,
   ) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final textTheme = theme.textTheme;
 
     // File name and Size
@@ -2179,7 +2180,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'File Information',
+          l10n.fileInformation,
           style: textTheme.titleMedium?.copyWith(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -2208,7 +2209,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Size: $formattedSize  •  Format: $container',
+                l10n.fileSizeFormat(formattedSize, container),
                 style: textTheme.bodySmall?.copyWith(color: Colors.white70),
               ),
             ],
@@ -2232,7 +2233,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
         if (audioStreams.isNotEmpty) ...[
           _buildInfoRow(
-            'Audio',
+            l10n.audio,
             Text.rich(
               TextSpan(
                 children: [
@@ -2249,7 +2250,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                         audioStreams.firstWhere((s) => s['IsDefault'] == true, orElse: () => audioStreams.first)['Index'] as int?;
                     final title = a['DisplayTitle'] ?? a['Codec']?.toString().toUpperCase();
                     final lang = formatLang(a['Language']);
-                    final isDefault = a['IsDefault'] == true ? ' [Default]' : '';
+                    final isDefault = a['IsDefault'] == true ? ' [${l10n.defaultLabel}]' : '';
                     final isSelected = a['Index'] == activeAudioIndex;
 
                     return [
@@ -2286,7 +2287,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     child: Text(
-                      _audioExpanded ? 'Show Less' : 'Show All (${audioStreams.length}) Audio Tracks',
+                      _audioExpanded ? l10n.showLess : l10n.showAllAudioTracks(audioStreams.length),
                       style: TextStyle(
                         color: AppColorScheme.accent,
                         fontWeight: FontWeight.bold,
@@ -2303,7 +2304,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
         if (subtitleStreams.isNotEmpty) ...[
           _buildInfoRow(
-            'Subtitles',
+            l10n.subtitles,
             Text.rich(
               TextSpan(
                 children: [
@@ -2320,8 +2321,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                         subtitleStreams.firstWhere((s) => s['IsDefault'] == true, orElse: () => subtitleStreams.first)['Index'] as int?;
                     final title = s['DisplayTitle'] ?? s['Codec']?.toString().toUpperCase();
                     final lang = formatLang(s['Language']);
-                    final isDefault = s['IsDefault'] == true ? ' [Default]' : '';
-                    final isForced = s['IsForced'] == true ? ' [Forced]' : '';
+                    final isDefault = s['IsDefault'] == true ? ' [${l10n.defaultLabel}]' : '';
+                    final isForced = s['IsForced'] == true ? ' [${l10n.forced}]' : '';
                     final isSelected = s['Index'] == activeSubtitleIndex;
 
                     return [
@@ -2358,7 +2359,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     child: Text(
-                      _subtitlesExpanded ? 'Show Less' : 'Show All (${subtitleStreams.length}) Subtitle Tracks',
+                      _subtitlesExpanded ? l10n.showLess : l10n.showAllSubtitleTracks(subtitleStreams.length),
                       style: TextStyle(
                         color: AppColorScheme.accent,
                         fontWeight: FontWeight.bold,
@@ -2401,6 +2402,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   }
 
   Widget _buildDirectPlaySection(BuildContext context, AggregatedItem item, TextTheme textTheme) {
+    final l10n = AppLocalizations.of(context);
     if (_loadingPlaybackInfo) {
       return Row(
         children: [
@@ -2411,7 +2413,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           ),
           const SizedBox(width: 8),
           Text(
-            'Checking Direct Play capability...',
+            l10n.checkingDirectPlay,
             style: textTheme.bodySmall?.copyWith(color: Colors.white54),
           ),
         ],
@@ -2440,14 +2442,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         Row(
           children: [
             Text(
-              'Direct Play Capability: ',
+              l10n.directPlayCapabilityLabel,
               style: textTheme.bodyMedium?.copyWith(
                 color: Colors.white54,
                 fontWeight: FontWeight.w600,
               ),
             ),
             Text(
-              canDirectPlay ? 'Yes' : 'No',
+              canDirectPlay ? l10n.yes : l10n.no,
               style: textTheme.bodyMedium?.copyWith(
                 color: canDirectPlay ? const Color(0xFF2E7D32) : const Color(0xFFD32F2F),
                 fontWeight: FontWeight.bold,
@@ -2462,7 +2464,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: reasons.map((r) {
-                final readable = _formatTranscodeReason(r);
+                final readable = _formatTranscodeReason(r, l10n);
                 return Padding(
                   padding: const EdgeInsets.only(top: 2),
                   child: Text(
@@ -2480,22 +2482,22 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     );
   }
 
-  String _formatTranscodeReason(String reason) {
+  String _formatTranscodeReason(String reason, AppLocalizations l10n) {
     return switch (reason) {
-      'ContainerNotSupported' => 'Container format is not supported by the player.',
-      'VideoCodecNotSupported' => 'Video codec is not supported.',
-      'AudioCodecNotSupported' => 'Audio codec is not supported.',
-      'SubtitleCodecNotSupported' => 'Subtitle format is not supported (requires burning).',
-      'AudioProfileNotSupported' => 'Audio profile is not supported.',
-      'VideoProfileNotSupported' => 'Video profile is not supported.',
-      'VideoLevelNotSupported' => 'Video level is not supported.',
-      'VideoResolutionNotSupported' => 'Video resolution is not supported by this device.',
-      'VideoBitDepthNotSupported' => 'Video bit depth is not supported.',
-      'VideoFramerateNotSupported' => 'Video framerate is not supported.',
-      'ContainerBitrateExceedsLimit' => 'File bitrate exceeds player streaming limit.',
-      'VideoBitrateExceedsLimit' => 'Video bitrate exceeds streaming limit.',
-      'AudioBitrateExceedsLimit' => 'Audio bitrate exceeds streaming limit.',
-      'AudioChannelsNotSupported' => 'Number of audio channels is not supported.',
+      'ContainerNotSupported' => l10n.transcodeContainerNotSupported,
+      'VideoCodecNotSupported' => l10n.transcodeVideoCodecNotSupported,
+      'AudioCodecNotSupported' => l10n.transcodeAudioCodecNotSupported,
+      'SubtitleCodecNotSupported' => l10n.transcodeSubtitleCodecNotSupported,
+      'AudioProfileNotSupported' => l10n.transcodeAudioProfileNotSupported,
+      'VideoProfileNotSupported' => l10n.transcodeVideoProfileNotSupported,
+      'VideoLevelNotSupported' => l10n.transcodeVideoLevelNotSupported,
+      'VideoResolutionNotSupported' => l10n.transcodeVideoResolutionNotSupported,
+      'VideoBitDepthNotSupported' => l10n.transcodeVideoBitDepthNotSupported,
+      'VideoFramerateNotSupported' => l10n.transcodeVideoFramerateNotSupported,
+      'ContainerBitrateExceedsLimit' => l10n.transcodeContainerBitrateExceedsLimit,
+      'VideoBitrateExceedsLimit' => l10n.transcodeVideoBitrateExceedsLimit,
+      'AudioBitrateExceedsLimit' => l10n.transcodeAudioBitrateExceedsLimit,
+      'AudioChannelsNotSupported' => l10n.transcodeAudioChannelsNotSupported,
       _ => reason,
     };
   }
@@ -2711,23 +2713,24 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     context.push(isAudio ? Destinations.audioPlayer : Destinations.videoPlayer);
   }
 
-  String _getCollectionSortLabel(CollectionSortOption option) {
+  String _getCollectionSortLabel(CollectionSortOption option, AppLocalizations l10n) {
     return switch (option) {
-      CollectionSortOption.alphabetical => 'Alphabetical',
-      CollectionSortOption.releaseAscending => 'Release Order (Ascending)',
-      CollectionSortOption.releaseDescending => 'Release Order (Descending)',
-      CollectionSortOption.custom => 'Custom (Drag-and-Drop)',
+      CollectionSortOption.alphabetical => l10n.sortAlphabetical,
+      CollectionSortOption.releaseAscending => l10n.sortReleaseAscending,
+      CollectionSortOption.releaseDescending => l10n.sortReleaseDescending,
+      CollectionSortOption.custom => l10n.sortCustomDragDrop,
     };
   }
 
   void _showCollectionSortDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           backgroundColor: const Color(0xFF1E1E24),
           title: Text(
-            'Playlist Sort Options',
+            l10n.playlistSortOptions,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -2777,7 +2780,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                             ),
                             const SizedBox(width: 16),
                             Text(
-                              _getCollectionSortLabel(option),
+                              _getCollectionSortLabel(option, l10n),
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge
@@ -3572,7 +3575,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       final seasonAllUnwatched = _vm.episodes.every((e) => !e.isPlayed && (e.playedPercentage == null || e.playedPercentage == 0));
       if (seasonAllWatched) {
         episode = _vm.episodes[0];
-        customLabel = 'Rewatch S${item.indexNumber}:E1';
+        customLabel = l10n.rewatchSeasonEpisode(item.indexNumber ?? 0, 1);
       } else if (!seasonAllUnwatched) {
         try {
           episode = _vm.episodes.firstWhere((e) => !e.isPlayed);
@@ -3583,7 +3586,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       if (episode != null) {
         final playedAll = _vm.playlistItems.every((item) => item.rawData['UserData']?['Played'] == true);
         if (playedAll) {
-          customLabel = 'Rewatch Playlist';
+          customLabel = l10n.rewatchPlaylist;
         }
       }
     } else {
@@ -3595,7 +3598,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           episode = _vm.seriesEpisodes.first;
           final s = episode.parentIndexNumber ?? 1;
           final e = episode.indexNumber ?? 1;
-          customLabel = 'Rewatch S$s:E$e';
+          customLabel = l10n.rewatchSeasonEpisode(s, e);
         }
       }
     }
