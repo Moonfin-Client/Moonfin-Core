@@ -97,7 +97,7 @@ const NEON = {
     background:'#FF0B0420',onBackground:'#FF00E5FF',surface:'#CC1E0A3F',
     onSurface:'#FF00E5FF',surfaceVariant:'#CC1E0A3F',scrim:'#CC0B0420',
     accent:'#FFFF2E92',onAccent:'#FFFFFFFF',buttonNormal:'#00000000',
-    buttonFocused:'#33FF2E92',buttonDisabled:'#22FFFFFF',buttonActive:'#33FF2E92',
+    buttonFocused:'#FF00E5FF',buttonDisabled:'#22FFFFFF',buttonActive:'#33FF2E92',
     onButtonNormal:'#FFFF2E92',onButtonFocused:'#FFFFFFFF',onButtonDisabled:'#AAFFFFFF',
     inputBackground:'#331E0A3F',inputFocused:'#441E0A3F',inputBorder:'#66FF2E92',
     inputBorderFocused:'#FFFF2E92',rangeTrack:'#66201840',rangeProgress:'#FFFF2E92',
