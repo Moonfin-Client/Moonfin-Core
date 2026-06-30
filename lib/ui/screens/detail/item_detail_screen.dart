@@ -54,7 +54,6 @@ import '../../widgets/seerr_icons.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/focusable_button.dart';
 import '../../widgets/focus/request_initial_focus.dart';
-import '../../widgets/focus/step_scroll.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/playback/player_loading_overlay.dart';
 import '../../../playback/offline_playback_launcher.dart';
@@ -5184,15 +5183,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     }
   }
 
-  void _focusFirstExpandedOverflowButton(BuildContext context) {
-    if (_overflowFirstExtraFocusNode.context != null &&
-        _overflowFirstExtraFocusNode.canRequestFocus) {
-      _overflowFirstExtraFocusNode.requestFocus();
-      return;
-    }
-    FocusScope.of(context).nextFocus();
-  }
-
   void _ensureOverflowButtonVisible(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -5555,19 +5545,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       widget.selectedMediaSourceId,
     );
     final mediaStreams = _mediaStreamsForItem(item, selectedSource);
-    final audioStreams = mediaStreams
-        .where((s) => s['Type'] == 'Audio')
-        .toList();
     final subtitleStreams = mediaStreams
         .where((s) => s['Type'] == 'Subtitle')
         .toList();
-    final canDownloadRemoteSubtitles = _canDownloadRemoteSubtitles(item);
-    final showSubtitleButton =
-        subtitleStreams.isNotEmpty || canDownloadRemoteSubtitles;
-    final subtitleButtonIcon =
-        subtitleStreams.isEmpty && canDownloadRemoteSubtitles
-        ? Icons.download_rounded
-        : Icons.subtitles;
 
     final canShowDownloadActions =
         _isDownloadable(item.type) &&
@@ -10766,7 +10746,6 @@ class _OverviewText extends StatelessWidget {
   final TextStyle? style;
   final TextAlign? textAlign;
   final FocusNode? focusNode;
-  final FocusNode? upTarget;
   final VoidCallback? onArrowUp;
   final VoidCallback? onArrowDown;
   final VoidCallback? onArrowLeft;
@@ -10777,7 +10756,6 @@ class _OverviewText extends StatelessWidget {
     this.style,
     this.textAlign,
     this.focusNode,
-    this.upTarget,
     this.onArrowUp,
     this.onArrowDown,
     this.onArrowLeft,
@@ -10790,7 +10768,6 @@ class _OverviewText extends StatelessWidget {
     return ExpandableBiography(
       text: text,
       toggleFocusNode: focusNode,
-      upTarget: upTarget,
       onArrowUp: onArrowUp,
       onArrowDown: onArrowDown,
       onArrowLeft: onArrowLeft,
@@ -13838,6 +13815,5 @@ class _PersonDisplaySettingsDialogState
   }
 }
 
-typedef DetailActionButton = _DetailActionButton;
 typedef PersonDisplaySettingsDialog = _PersonDisplaySettingsDialog;
 

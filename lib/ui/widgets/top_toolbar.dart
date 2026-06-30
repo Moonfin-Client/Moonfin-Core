@@ -2036,14 +2036,11 @@ class _TopMusicBarState extends State<TopMusicBar> {
             color: AppColorScheme.onSurface.withValues(alpha: 0.15),
             width: 1.0,
           );
-    final boxShadow = null;
-
     if (AppColorScheme.isGlass) {
       return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
           border: border,
-          boxShadow: boxShadow,
         ),
         child: GlassSurface(
           cornerRadius: 24,
@@ -2062,7 +2059,6 @@ class _TopMusicBarState extends State<TopMusicBar> {
         ),
         borderRadius: BorderRadius.circular(24),
         border: border,
-        boxShadow: boxShadow,
       ),
       child: child,
     );

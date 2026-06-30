@@ -15,7 +15,7 @@ class DetailsTabBar extends StatelessWidget {
   final void Function(int index)? onNavigateDown;
 
   const DetailsTabBar({
-    key,
+    super.key,
     required this.labels,
     required this.selectedIndex,
     required this.onSelect,
@@ -23,7 +23,7 @@ class DetailsTabBar extends StatelessWidget {
     this.onExitLeft,
     this.onExitUp,
     this.onNavigateDown,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
