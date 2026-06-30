@@ -98,7 +98,7 @@ class _HomeShellState extends State<_HomeShell>
   late final HomeViewModel _viewModel;
 
   final ValueNotifier<AggregatedItem?> _selectedItemNotifier = ValueNotifier(null);
-  String? _backdropUrl;
+  final ValueNotifier<String?> _backdropUrlNotifier = ValueNotifier(null);
   Timer? _selectionDebounce;
   Timer? _backdropDebounce;
   Timer? _hoverPauseTimer;
@@ -131,9 +131,9 @@ class _HomeShellState extends State<_HomeShell>
       _viewModel.refresh(preserveExisting: true);
     }
     _backgroundSub = _backgroundService.backgroundStream.listen((url) {
-      if (mounted) setState(() => _backdropUrl = url);
+      if (mounted) _backdropUrlNotifier.value = url;
     });
-    _backdropUrl = _backgroundService.currentUrl;
+    _backdropUrlNotifier.value = _backgroundService.currentUrl;
 
     _viewModel.addListener(_onViewModelChanged);
     _viewModel.mediaBarViewModel.addListener(_onMediaBarStateChanged);
@@ -184,6 +184,7 @@ class _HomeShellState extends State<_HomeShell>
     _hoverPauseTimer?.cancel();
     _backgroundSub?.cancel();
     _selectedItemNotifier.dispose();
+    _backdropUrlNotifier.dispose();
     _isHoverPausedNotifier.dispose();
     _isScrolledToTopNotifier.dispose();
     _viewModel.mediaBarViewModel.removeListener(_onMediaBarStateChanged);
@@ -402,10 +403,15 @@ class _HomeShellState extends State<_HomeShell>
             fit: StackFit.expand,
             children: [
               if (backdropEnabled)
-                _Backdrop(
-                  url: _backdropUrl,
-                  blurAmount: blurAmount,
-                  useMakdBackdropFx: useMakdBackdropFx,
+                ValueListenableBuilder<String?>(
+                  valueListenable: _backdropUrlNotifier,
+                  builder: (context, url, _) {
+                    return _Backdrop(
+                      url: url,
+                      blurAmount: blurAmount,
+                      useMakdBackdropFx: useMakdBackdropFx,
+                    );
+                  },
                 ),
               const _GradientScrim(),
               Positioned.fill(
