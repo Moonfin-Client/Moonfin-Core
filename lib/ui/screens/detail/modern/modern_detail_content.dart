@@ -1325,6 +1325,15 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           padding: const EdgeInsets.only(bottom: 6),
           child: FocusableWrapper(
             focusNode: headingNode,
+            onFocusChange: (focused) {
+              if (focused && mounted) {
+                Scrollable.ensureVisible(
+                  context,
+                  duration: const Duration(milliseconds: 150),
+                  alignment: 0.3,
+                );
+              }
+            },
             onNavigateLeft: () {
               final navbarPosition = widget.prefs.get(UserPreferences.navbarPosition);
               if (navbarPosition == NavbarPosition.left) {
@@ -1407,44 +1416,56 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         children.add(
           Padding(
             padding: const EdgeInsets.only(left: 12, bottom: 12),
-            child: SizedBox(
-              height: 200,
-              child: DetailCastRow(
-                people: childActors,
-                imageApi: _vm.imageApi,
-                serverId: childItem.serverId,
-                firstItemFocusNode: rowFirstNode,
-                onNavigateUp: () {
-                  headingNode.requestFocus();
-                },
-                onItemKeyEvent: (index, event) {
-                  if (event is KeyDownEvent || event is KeyRepeatEvent) {
-                    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                      if (i < sortedItems.length - 1) {
-                        final nextItem = sortedItems[i + 1];
-                        final nextNode = _boxSetHeadingFocusNodes.putIfAbsent(nextItem.id, () => FocusNode(debugLabel: 'heading_cast_${nextItem.name}'));
-                        nextNode.requestFocus();
-                      }
-                      return KeyEventResult.handled;
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                      headingNode.requestFocus();
-                      return KeyEventResult.handled;
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft && index == 0) {
-                      final navbarPosition = widget.prefs.get(UserPreferences.navbarPosition);
-                      if (navbarPosition == NavbarPosition.left) {
-                        final focusNavbar = NavigationLayout.focusNavbarNotifier.value;
-                        if (focusNavbar != null) {
-                          focusNavbar();
-                          return KeyEventResult.handled;
+            child: Focus(
+              canRequestFocus: false,
+              onFocusChange: (focused) {
+                if (focused && mounted) {
+                  Scrollable.ensureVisible(
+                    context,
+                    duration: const Duration(milliseconds: 150),
+                    alignment: 0.5,
+                  );
+                }
+              },
+              child: SizedBox(
+                height: 200,
+                child: DetailCastRow(
+                  people: childActors,
+                  imageApi: _vm.imageApi,
+                  serverId: childItem.serverId,
+                  firstItemFocusNode: rowFirstNode,
+                  onNavigateUp: () {
+                    headingNode.requestFocus();
+                  },
+                  onItemKeyEvent: (index, event) {
+                    if (event is KeyDownEvent || event is KeyRepeatEvent) {
+                      if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                        if (i < sortedItems.length - 1) {
+                          final nextItem = sortedItems[i + 1];
+                          final nextNode = _boxSetHeadingFocusNodes.putIfAbsent(nextItem.id, () => FocusNode(debugLabel: 'heading_cast_${nextItem.name}'));
+                          nextNode.requestFocus();
                         }
+                        return KeyEventResult.handled;
+                      } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                        headingNode.requestFocus();
+                        return KeyEventResult.handled;
+                      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft && index == 0) {
+                        final navbarPosition = widget.prefs.get(UserPreferences.navbarPosition);
+                        if (navbarPosition == NavbarPosition.left) {
+                          final focusNavbar = NavigationLayout.focusNavbarNotifier.value;
+                          if (focusNavbar != null) {
+                            focusNavbar();
+                            return KeyEventResult.handled;
+                          }
+                        }
+                        return KeyEventResult.handled; // Cap on left
+                      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight && index == childActors.length - 1) {
+                        return KeyEventResult.handled; // Cap on right
                       }
-                      return KeyEventResult.handled; // Cap on left
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowRight && index == childActors.length - 1) {
-                      return KeyEventResult.handled; // Cap on right
                     }
-                  }
-                  return KeyEventResult.ignored;
-                },
+                    return KeyEventResult.ignored;
+                  },
+                ),
               ),
             ),
           ),
@@ -1553,6 +1574,15 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           padding: const EdgeInsets.only(bottom: 6),
           child: FocusableWrapper(
             focusNode: headingNode,
+            onFocusChange: (focused) {
+              if (focused && mounted) {
+                Scrollable.ensureVisible(
+                  context,
+                  duration: const Duration(milliseconds: 150),
+                  alignment: 0.3,
+                );
+              }
+            },
             onNavigateLeft: () {
               final navbarPosition = widget.prefs.get(UserPreferences.navbarPosition);
               if (navbarPosition == NavbarPosition.left) {
@@ -1635,44 +1665,56 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         children.add(
           Padding(
             padding: const EdgeInsets.only(left: 12, bottom: 12),
-            child: SizedBox(
-              height: 200,
-              child: DetailCastRow(
-                people: childCrew,
-                imageApi: _vm.imageApi,
-                serverId: childItem.serverId,
-                firstItemFocusNode: rowFirstNode,
-                onNavigateUp: () {
-                  headingNode.requestFocus();
-                },
-                onItemKeyEvent: (index, event) {
-                  if (event is KeyDownEvent || event is KeyRepeatEvent) {
-                    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                      if (i < sortedItems.length - 1) {
-                        final nextItem = sortedItems[i + 1];
-                        final nextNode = _boxSetHeadingFocusNodes.putIfAbsent(nextItem.id, () => FocusNode(debugLabel: 'heading_crew_${nextItem.name}'));
-                        nextNode.requestFocus();
-                      }
-                      return KeyEventResult.handled;
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                      headingNode.requestFocus();
-                      return KeyEventResult.handled;
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft && index == 0) {
-                      final navbarPosition = widget.prefs.get(UserPreferences.navbarPosition);
-                      if (navbarPosition == NavbarPosition.left) {
-                        final focusNavbar = NavigationLayout.focusNavbarNotifier.value;
-                        if (focusNavbar != null) {
-                          focusNavbar();
-                          return KeyEventResult.handled;
+            child: Focus(
+              canRequestFocus: false,
+              onFocusChange: (focused) {
+                if (focused && mounted) {
+                  Scrollable.ensureVisible(
+                    context,
+                    duration: const Duration(milliseconds: 150),
+                    alignment: 0.5,
+                  );
+                }
+              },
+              child: SizedBox(
+                height: 200,
+                child: DetailCastRow(
+                  people: childCrew,
+                  imageApi: _vm.imageApi,
+                  serverId: childItem.serverId,
+                  firstItemFocusNode: rowFirstNode,
+                  onNavigateUp: () {
+                    headingNode.requestFocus();
+                  },
+                  onItemKeyEvent: (index, event) {
+                    if (event is KeyDownEvent || event is KeyRepeatEvent) {
+                      if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                        if (i < sortedItems.length - 1) {
+                          final nextItem = sortedItems[i + 1];
+                          final nextNode = _boxSetHeadingFocusNodes.putIfAbsent(nextItem.id, () => FocusNode(debugLabel: 'heading_crew_${nextItem.name}'));
+                          nextNode.requestFocus();
                         }
+                        return KeyEventResult.handled;
+                      } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                        headingNode.requestFocus();
+                        return KeyEventResult.handled;
+                      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft && index == 0) {
+                        final navbarPosition = widget.prefs.get(UserPreferences.navbarPosition);
+                        if (navbarPosition == NavbarPosition.left) {
+                          final focusNavbar = NavigationLayout.focusNavbarNotifier.value;
+                          if (focusNavbar != null) {
+                            focusNavbar();
+                            return KeyEventResult.handled;
+                          }
+                        }
+                        return KeyEventResult.handled; // Cap on left
+                      } else if (event.logicalKey == LogicalKeyboardKey.arrowRight && index == childCrew.length - 1) {
+                        return KeyEventResult.handled; // Cap on right
                       }
-                      return KeyEventResult.handled; // Cap on left
-                    } else if (event.logicalKey == LogicalKeyboardKey.arrowRight && index == childCrew.length - 1) {
-                      return KeyEventResult.handled; // Cap on right
                     }
-                  }
-                  return KeyEventResult.ignored;
-                },
+                    return KeyEventResult.ignored;
+                  },
+                ),
               ),
             ),
           ),
