@@ -3409,9 +3409,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                     if (_showNextUp && _nextUpItem != null)
                       NextUpOverlay(
                         nextItem: _nextUpItem!,
-                        isMinimal: _prefs.get(UserPreferences.nextUpBehavior) == NextUpBehavior.minimal,
-                        imageUrl: _nextUpItem!.primaryImageTag != null &&
-                                _prefs.get(UserPreferences.nextUpBehavior) != NextUpBehavior.minimal
+                        isMinimal:
+                            _prefs.get(UserPreferences.nextUpBehavior) ==
+                            NextUpBehavior.minimal,
+                        imageUrl:
+                            _nextUpItem!.primaryImageTag != null &&
+                                _prefs.get(UserPreferences.nextUpBehavior) !=
+                                    NextUpBehavior.minimal
                             ? _clientForItem(
                                 _nextUpItem!,
                               ).imageApi.getPrimaryImageUrl(
@@ -5087,8 +5091,10 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   }
 
   void _initDesktopVolume() {
-    _playerVolume =
-        _prefs.get(UserPreferences.playerVolume).clamp(0.0, 100.0).toDouble();
+    _playerVolume = _prefs
+        .get(UserPreferences.playerVolume)
+        .clamp(0.0, 100.0)
+        .toDouble();
     unawaited(_manager.backend?.setVolume(_playerVolume));
   }
 
@@ -5498,7 +5504,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const AdaptiveIcon(Icons.lock, color: Colors.white70, size: 18),
+                      const AdaptiveIcon(
+                        Icons.lock,
+                        color: Colors.white70,
+                        size: 18,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         AppLocalizations.of(context).longPressToUnlock,

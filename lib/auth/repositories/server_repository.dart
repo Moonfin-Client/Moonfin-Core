@@ -169,46 +169,15 @@ class ServerRepository {
     configureServerDio(dio);
 
     try {
-      var requestUrl = '$baseUrl/System/Info/Public';
-      var response = await dio.get(requestUrl);
-
-      var redirects = 0;
-      while (response.statusCode != null &&
-          [301, 302, 307, 308].contains(response.statusCode) &&
-          redirects < 5) {
-        final location = response.headers.value('location');
-        if (location == null || location.isEmpty) break;
-        requestUrl = Uri.parse(requestUrl).resolve(location).toString();
-        response = await dio.get(requestUrl);
-        redirects++;
+      final result = await probeServerPublicInfo(dio, baseUrl);
+      if (result == null) {
+        throw const FormatException('No Jellyfin or Emby server at this address');
       }
-
-      if (response.data is! Map<String, dynamic>) {
-        throw FormatException(
-          'Invalid server response: expected JSON object, got ${response.data.runtimeType}',
-        );
-      }
-      final data = response.data as Map<String, dynamic>;
-      final productName = data['ProductName'] as String?;
-      final version = data['Version'] as String?;
-      final serverType = ServerType.detect(productName, version);
-
-      var resolvedBaseUrl = baseUrl;
-      if (redirects > 0) {
-        final finalUri = Uri.parse(requestUrl);
-        const probe = '/System/Info/Public';
-        if (finalUri.path.endsWith(probe)) {
-          final basePath = finalUri.path.substring(
-            0,
-            finalUri.path.length - probe.length,
-          );
-          resolvedBaseUrl = normalizeServerBaseUrl(
-            '${finalUri.scheme}://${finalUri.authority}$basePath',
-          );
-        }
-      }
-
-      return (data, serverType, resolvedBaseUrl);
+      return (
+        result.info,
+        result.serverType,
+        normalizeServerBaseUrl(result.resolvedBaseUrl),
+      );
     } finally {
       dio.close();
     }

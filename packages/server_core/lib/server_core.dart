@@ -47,3 +47,4 @@ export 'src/diagnostics/server_log_sink.dart';
 export 'src/network/configure_server_dio.dart';
 export 'src/network/auth_header.dart';
 export 'src/network/redirect_interceptor.dart';
+export 'src/network/server_probe.dart';
