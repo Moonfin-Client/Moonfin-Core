@@ -638,10 +638,24 @@ class _ContentRowsState extends State<_ContentRows>
   final ValueNotifier<double> _scrollOffsetNotifier = ValueNotifier<double>(0);
   double _previewStartScrollOffset = 0;
   bool get _isScrolledToTop => widget.isScrolledToTopNotifier.value;
-  bool _isActivelyScrolling = false;
+  final ValueNotifier<bool> _isActivelyScrollingNotifier = ValueNotifier(false);
+  bool get _isActivelyScrolling => _isActivelyScrollingNotifier.value;
+  set _isActivelyScrolling(bool value) {
+    if (_isActivelyScrollingNotifier.value != value) {
+      _isActivelyScrollingNotifier.value = value;
+    }
+  }
+
+  final ValueNotifier<bool> _infoRevealedNotifier = ValueNotifier(false);
+  bool get _infoRevealed => _infoRevealedNotifier.value;
+  set _infoRevealed(bool value) {
+    if (_infoRevealedNotifier.value != value) {
+      _infoRevealedNotifier.value = value;
+    }
+  }
+
   Timer? _scrollIdleTimer;
   double _lastActiveRowOffsetUpdate = 0;
-  bool _infoRevealed = false;
   bool _initialFocusResolved = false;
   bool _hasEverFocusedHomeContent = false;
   String? _lastObservedPath;
@@ -978,6 +992,8 @@ class _ContentRowsState extends State<_ContentRows>
     _chromeAudioActiveNotifier.dispose();
     _activePreviewKeyNotifier.dispose();
     _previewReadyNotifier.dispose();
+    _isActivelyScrollingNotifier.dispose();
+    _infoRevealedNotifier.dispose();
     if (identical(
       NavigationLayout.focusContentFromNavbarNotifier.value,
       _focusContentFromNavbar,
@@ -1825,7 +1841,7 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     if (mounted) {
-      setState(() => _infoRevealed = true);
+      _infoRevealed = true;
     }
   }
 
@@ -2625,7 +2641,6 @@ class _ContentRowsState extends State<_ContentRows>
     final shouldMarkScrolling = !_isActivelyScrolling;
     if (shouldMarkScrolling) {
       _isActivelyScrolling = true;
-      if (mounted) setState(() {});
     }
 
     _scrollIdleTimer?.cancel();
@@ -2633,12 +2648,8 @@ class _ContentRowsState extends State<_ContentRows>
       Duration(milliseconds: isMouseScroll ? 1000 : 250),
       () {
         if (!mounted) return;
-        final shouldClearScrolling = _isActivelyScrolling;
         _isActivelyScrolling = false;
         _snapToNearestRow();
-        if (shouldClearScrolling && mounted) {
-          setState(() {});
-        }
       },
     );
     if (_activePreviewKey != null) {
@@ -3232,9 +3243,16 @@ class _ContentRowsState extends State<_ContentRows>
     final infoOverlayPlaceholder = showInfoOverlay
         ? infoTopPadding + infoAreaHeight + infoBottomPadding
         : 0.0;
-    final infoPlaceholderHeight = bannerMode
-        ? (_infoRevealed ? infoOverlayPlaceholder : 0.0)
-        : infoOverlayPlaceholder;
+
+    final infoPlaceholderHeightBuilder = bannerMode
+        ? ValueListenableBuilder<bool>(
+            valueListenable: _infoRevealedNotifier,
+            builder: (context, revealed, _) => SizedBox(
+              height: revealed ? infoOverlayPlaceholder : 0.0,
+            ),
+          )
+        : SizedBox(height: infoOverlayPlaceholder);
+
     final overlayBottom = _isHomeRowsStyleV2()
         ? (fullScreenRows
               ? (navbarHeight > 48.0 ? navbarHeight : 48.0)
@@ -3244,7 +3262,7 @@ class _ContentRowsState extends State<_ContentRows>
         : (fullScreenRows ? safeTop + 48.0 : 0.0);
     final rowExtents = _computeRowExtents(rows, posterSize, prefs);
     final rowTopOffsets = <double>[];
-    var currentTop = listTopPadding + infoPlaceholderHeight;
+    var currentTop = listTopPadding + (bannerMode ? 0.0 : infoOverlayPlaceholder);
     if (includeMediaBar) {
       currentTop += mediaBarHeight;
     }
@@ -3410,7 +3428,7 @@ class _ContentRowsState extends State<_ContentRows>
                     }
                     final infoIndex = includeMediaBar ? 1 : 0;
                     if (index == infoIndex) {
-                      return SizedBox(height: infoPlaceholderHeight);
+                      return infoPlaceholderHeightBuilder;
                     }
                     final row = rows[index - headerCount];
                     final rowIndex = index - headerCount;
@@ -3540,35 +3558,42 @@ class _ContentRowsState extends State<_ContentRows>
                 ),
               ),
             ),
-        if (_infoRevealed && showInfoOverlay)
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: IgnorePointer(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  PlatformDetection.useMobileUi
-                      ? navbarLeftInset
-                      : rowLeftInset,
-                  infoTopPadding,
-                  16,
-                  8,
+        ValueListenableBuilder<bool>(
+          valueListenable: _infoRevealedNotifier,
+          builder: (context, infoRevealed, _) {
+            if (infoRevealed && showInfoOverlay) {
+              return Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: IgnorePointer(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      PlatformDetection.useMobileUi
+                          ? navbarLeftInset
+                          : rowLeftInset,
+                      infoTopPadding,
+                      16,
+                      8,
+                    ),
+                    child: ValueListenableBuilder<AggregatedItem?>(
+                      valueListenable: widget.selectedItemNotifier,
+                      builder: (context, selectedItem, _) {
+                        return InfoArea(
+                          item: selectedItem,
+                          headerLeftInset: infoHeaderLeftInset,
+                        );
+                      },
+                    ),
+                  ),
                 ),
-                child: ValueListenableBuilder<AggregatedItem?>(
-                  valueListenable: widget.selectedItemNotifier,
-                  builder: (context, selectedItem, _) {
-                    return InfoArea(
-                      item: selectedItem,
-                      headerLeftInset: infoHeaderLeftInset,
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
+      ],
+    ),
     );
     _homeBuildMonitor.recordContent(watch.elapsedMicroseconds);
     return result;
