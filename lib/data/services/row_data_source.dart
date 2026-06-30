@@ -67,10 +67,24 @@ class RowDataSource {
   static const _imageTypes = 'Primary,Backdrop,Thumb';
   static const _imageTypeLimit = 1;
 
+  // ParentIds that returned 401/403 (no library access) this session. They are
+  // skipped on later requests so a restricted user does not repeatedly hit the
+  // server with 401s, which can trip reverse-proxy Fail2Ban jails (#635).
+  final Set<String> _accessDeniedParentIds = <String>{};
+
   RowDataSource(this._client);
 
   ImageApi get imageApi => _client.imageApi;
   AppLocalizations get _l10n => currentAppLocalizations();
+
+  bool _isAccessDenied(String? parentId) =>
+      parentId != null && _accessDeniedParentIds.contains(parentId);
+
+  void _recordIfAccessDenied(int statusCode, String? parentId) {
+    if ((statusCode == 401 || statusCode == 403) && parentId != null) {
+      _accessDeniedParentIds.add(parentId);
+    }
+  }
 
   Future<bool> hasLiveTvChannels() async {
     final response = await _client.liveTvApi.getChannels(
@@ -361,6 +375,15 @@ class RowDataSource {
     String? parentId,
   }) async {
     final browseItemTypes = normalizeBrowsableGenreItemTypes(includeItemTypes);
+    if (_isAccessDenied(parentId)) {
+      return _buildRow(
+        id: 'genres',
+        title: _l10n.genres,
+        response: const <String, dynamic>{'Items': <dynamic>[]},
+        serverId: serverId,
+        rowType: HomeRowType.genres,
+      );
+    }
     Map<String, dynamic> response;
     try {
       response = await _client.itemsApi.getGenres(
@@ -374,6 +397,7 @@ class RowDataSource {
       );
     } on DioException catch (e) {
       final statusCode = e.response?.statusCode ?? 0;
+      _recordIfAccessDenied(statusCode, parentId);
       if (statusCode < 500) rethrow;
       response = await _client.itemsApi.getGenres(
         parentId: parentId,
@@ -1128,6 +1152,9 @@ class RowDataSource {
     bool? isFavorite,
     String? fields,
   }) async {
+    if (_isAccessDenied(parentId)) {
+      return const <String, dynamic>{'Items': <dynamic>[], 'TotalRecordCount': 0};
+    }
     try {
       final response = await _client.itemsApi.getItems(
         parentId: parentId,
@@ -1148,6 +1175,7 @@ class RowDataSource {
       return response;
     } on DioException catch (e) {
       final statusCode = e.response?.statusCode ?? 0;
+      _recordIfAccessDenied(statusCode, parentId);
       if (statusCode < 500) rethrow;
 
       final fallbackSort = (sortBy ?? '').toLowerCase().contains('isfolder')
