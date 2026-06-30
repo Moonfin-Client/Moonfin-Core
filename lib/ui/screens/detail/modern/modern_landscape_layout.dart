@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../../../../preference/preference_constants.dart';
 import '../../../../preference/user_preferences.dart';
+import '../../../../util/platform_detection.dart';
 
 /// Arranges the Modern detail pieces for landscape (TV, desktop, any landscape
 /// device): full-bleed backdrop, a left hero column, a floating Up Next card on
@@ -47,6 +48,7 @@ class ModernLandscapeLayout extends StatelessWidget {
         SafeArea(
           child: SingleChildScrollView(
             controller: scrollController,
+            physics: PlatformDetection.isTV ? const NeverScrollableScrollPhysics() : const ScrollPhysics(),
             padding: EdgeInsets.only(top: hasUpNext ? topInset - 24 : topInset - 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,16 +59,16 @@ class ModernLandscapeLayout extends StatelessWidget {
                     child: aboveHero!,
                   ),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(leftPadding, 8, 40, 0),
+                  padding: EdgeInsets.fromLTRB(leftPadding, 20, 40, 0),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(width: heroWidth, child: hero),
-                      const SizedBox(width: 24),
-                      if (upNext != null)
+                      if (upNext != null) ...[
+                        const SizedBox(width: 24),
                         Expanded(
                           child: Align(
-                            alignment: Alignment.bottomRight,
+                            alignment: Alignment.topRight,
                             child: ConstrainedBox(
                               constraints:
                                   const BoxConstraints(maxWidth: 460),
@@ -74,6 +76,7 @@ class ModernLandscapeLayout extends StatelessWidget {
                             ),
                           ),
                         ),
+                      ],
                     ],
                   ),
                 ),

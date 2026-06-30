@@ -7,6 +7,7 @@ import '../models/aggregated_item.dart';
 import '../models/lyrics.dart';
 import '../repositories/item_mutation_repository.dart';
 import '../repositories/mdblist_repository.dart';
+import '../repositories/tmdb_repository.dart';
 import '../utils/playlist_utils.dart';
 import '../../util/episode_playability.dart';
 
@@ -19,6 +20,7 @@ class ItemDetailViewModel extends ChangeNotifier {
   final MediaServerClient _client;
   final ItemMutationRepository _mutations;
   final MdbListRepository _mdbListRepository;
+  final TmdbRepository _tmdbRepository;
 
   final String itemId;
 
@@ -114,10 +116,12 @@ class ItemDetailViewModel extends ChangeNotifier {
     required MediaServerClient client,
     required ItemMutationRepository mutations,
     required MdbListRepository mdbListRepository,
+    required TmdbRepository tmdbRepository,
   }) : _serverId = serverId,
        _client = client,
        _mutations = mutations,
-       _mdbListRepository = mdbListRepository;
+       _mdbListRepository = mdbListRepository,
+       _tmdbRepository = tmdbRepository;
 
   Future<void> load() async {
     _state = ItemDetailState.loading;
@@ -655,6 +659,35 @@ class ItemDetailViewModel extends ChangeNotifier {
   Future<void> _loadRatings() async {
     final item = _item;
     if (item == null) return;
+
+    if (item.type == 'Episode') {
+      final enableEpisodeRatings = GetIt.instance<UserPreferences>().get(UserPreferences.enableEpisodeRatings);
+      if (!enableEpisodeRatings) return;
+
+      final seriesId = item.seriesId;
+      final season = item.parentIndexNumber;
+      final episode = item.indexNumber;
+
+      if (seriesId != null && season != null && episode != null) {
+        try {
+          final seriesData = await _client.itemsApi.getItem(seriesId);
+          final seriesTmdbId = (seriesData['ProviderIds'] as Map?)?['Tmdb']?.toString();
+          if (seriesTmdbId != null && seriesTmdbId.isNotEmpty) {
+            final rating = await _tmdbRepository.getEpisodeRating(
+              tmdbId: seriesTmdbId,
+              season: season,
+              episode: episode,
+            );
+            if (rating != null && rating > 0) {
+              _ratings = {'stars': rating};
+              notifyListeners();
+            }
+          }
+        } catch (_) {}
+      }
+      return;
+    }
+
     final tmdbId = item.tmdbId;
     if (tmdbId == null) return;
     final mediaType = item.type ?? 'Movie';

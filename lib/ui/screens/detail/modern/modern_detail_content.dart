@@ -30,12 +30,18 @@ import '../item_detail_screen.dart'
         DetailFeaturesRow,
         DetailEpisodeCard,
         DetailTrackList,
+        ExpandableBiography,
         selectedMediaSourceForItem;
 import 'modern_landscape_layout.dart';
 import 'modern_portrait_layout.dart';
 import 'widgets/details_tab_bar.dart';
 import 'widgets/season_card.dart';
 import 'widgets/up_next_card.dart';
+
+double _desktopUiScale({UserPreferences? prefs}) {
+  final effectivePrefs = prefs ?? GetIt.instance<UserPreferences>();
+  return effectivePrefs.get(UserPreferences.desktopUiScale).scaleFactor;
+}
 
 /// "Modern" detail-screen style: one responsive screen that chooses a landscape
 /// (TV / desktop / any landscape device) or portrait (phone / tablet portrait)
@@ -56,6 +62,7 @@ class ModernDetailContent extends StatefulWidget {
   final ValueChanged<bool>? onToggleNavbar;
   final bool actionsExpanded;
   final ValueChanged<bool> onActionsExpandedChanged;
+  final VoidCallback? onCollapseBiography;
 
   const ModernDetailContent({
     super.key,
@@ -70,6 +77,7 @@ class ModernDetailContent extends StatefulWidget {
     this.onToggleNavbar,
     required this.actionsExpanded,
     required this.onActionsExpandedChanged,
+    this.onCollapseBiography,
   });
 
   @override
@@ -93,7 +101,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   final FocusNode _similarFirstFocusNode = FocusNode(debugLabel: 'similarFirst');
   final FocusNode _seasonsFirstFocusNode = FocusNode(debugLabel: 'seasonsFirst');
   final FocusNode _episodesFirstFocusNode = FocusNode(debugLabel: 'episodesFirst');
+  final FocusNode _overviewFocusNode = FocusNode(debugLabel: 'overview');
   late final ScrollController _scrollController = ScrollController();
+  String? _seriesLogoTag;
+  String? _seriesLogoId;
   bool _showNavbarState = true;
   bool _audioExpanded = false;
   bool _subtitlesExpanded = false;
@@ -209,6 +220,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       });
       NavigationLayout.focusDetailsPlayButtonNotifier.value = widget.initialFocusNode;
     }
+    _loadSeriesLogo();
   }
 
   @override
@@ -236,7 +248,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   }
 
   void _onViewModelChanged() {
-    if (mounted) setState(() {});
+    if (mounted) {
+      setState(() {});
+      _loadSeriesLogo();
+    }
   }
 
   @override
@@ -265,7 +280,27 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _similarFirstFocusNode.dispose();
     _seasonsFirstFocusNode.dispose();
     _episodesFirstFocusNode.dispose();
+    _overviewFocusNode.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadSeriesLogo() async {
+    final item = _vm.item;
+    if (item == null) return;
+    final seriesId = item.seriesId;
+    if (seriesId == null || _seriesLogoId == seriesId) return;
+
+    try {
+      final client = GetIt.instance<MediaServerClient>();
+      final seriesData = await client.itemsApi.getItem(seriesId);
+      final logoTag = (seriesData['ImageTags'] as Map?)?['Logo'] as String?;
+      if (mounted) {
+        setState(() {
+          _seriesLogoTag = logoTag;
+          _seriesLogoId = seriesId;
+        });
+      }
+    } catch (_) {}
   }
 
   /// Right of the action buttons goes to the Up Next card when it's present,
@@ -418,6 +453,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   Widget _seasonsTab(BuildContext context, AggregatedItem item) {
     final l10n = AppLocalizations.of(context);
+    final textTheme = Theme.of(context).textTheme;
     final counts = _episodeCountsBySeason();
     final showPosterUrl = _imageUrl(item);
     final cards = [
@@ -431,6 +467,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           isFallbackImage: _imageUrl(_vm.seasons[i]) == null,
           landscape: _landscape,
           onNavigateUp: _focusSelectedTab,
+          onNavigateRight: i == _vm.seasons.length - 1 ? () {} : null,
           focusNode: i == 0 ? _seasonsFirstFocusNode : null,
           onTap: () => context.push(
             Destinations.item(_vm.seasons[i].id, serverId: _vm.seasons[i].serverId),
@@ -443,20 +480,59 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                for (final card in cards)
+                for (var i = 0; i < cards.length; i++)
                   Padding(
                     padding: const EdgeInsets.only(right: 12),
-                    child: card,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          _vm.seasons[i].name.toUpperCase(),
+                          style: textTheme.labelMedium?.copyWith(
+                            color: Colors.white70,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.0,
+                            fontSize: 10,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 6),
+                        cards[i],
+                      ],
+                    ),
                   ),
               ],
             ),
           )
         : Column(
             children: [
-              for (final card in cards)
+              for (var i = 0; i < cards.length; i++)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
-                  child: card,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            _vm.seasons[i].name.toUpperCase(),
+                            style: textTheme.labelMedium?.copyWith(
+                              color: Colors.white70,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.0,
+                              fontSize: 10,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 6),
+                          cards[i],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
             ],
           );
@@ -477,7 +553,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         }
         return KeyEventResult.ignored;
       },
-      child: child,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 32),
+        child: child,
+      ),
     );
   }
 
@@ -497,27 +576,22 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           for (var i = 0; i < _vm.episodes.length; i++)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
-              child: i == 0
-                  ? Focus(
-                      focusNode: _episodesFirstFocusNode,
-                      onKeyEvent: (node, event) {
+              child: DetailEpisodeCard(
+                episode: _vm.episodes[i],
+                imageApi: _vm.imageApi,
+                onChanged: () => _vm.load(),
+                isActive: _vm.episodes[i].id == _vm.nextUp?.id,
+                focusNode: i == 0 ? _episodesFirstFocusNode : null,
+                onKeyEvent: i == 0
+                    ? (node, event) {
                         if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
                           _focusSelectedTab();
                           return KeyEventResult.handled;
                         }
                         return KeyEventResult.ignored;
-                      },
-                      child: DetailEpisodeCard(
-                        episode: _vm.episodes[i],
-                        imageApi: _vm.imageApi,
-                        onChanged: () => _vm.load(),
-                      ),
-                    )
-                  : DetailEpisodeCard(
-                      episode: _vm.episodes[i],
-                      imageApi: _vm.imageApi,
-                      onChanged: () => _vm.load(),
-                    ),
+                      }
+                    : null,
+              ),
             ),
         ],
       ),
@@ -638,6 +712,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                     episode: episode,
                     imageApi: _vm.imageApi,
                     onChanged: () => _vm.load(),
+                    isActive: episode.id == _vm.nextUp?.id,
                   ),
                 );
               }).toList(),
@@ -687,6 +762,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             serverId: item.serverId,
             firstItemFocusNode: _castFirstFocusNode,
             onNavigateUp: _focusSelectedTab,
+            onItemKeyEvent: (index, event) {
+              if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowRight && index == _vm.actors.length - 1) {
+                return KeyEventResult.handled;
+              }
+              return KeyEventResult.ignored;
+            },
           ),
         ),
       );
@@ -766,6 +847,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           serverId: item.serverId,
           firstItemFocusNode: _crewFirstFocusNode,
           onNavigateUp: _focusSelectedTab,
+          onItemKeyEvent: (index, event) {
+            if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowRight && index == crew.length - 1) {
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
         ),
       ),
     );
@@ -861,6 +948,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 borderRadius: 12,
                 suppressFocusGlow: true,
                 onNavigateUp: _focusSelectedTab,
+                onNavigateRight: index == studios.length - 1 ? () {} : null,
                 child: Container(
                   width: cardWidth,
                   height: cardHeight,
@@ -1612,27 +1700,56 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   Widget _buildHero(BuildContext context, AggregatedItem item) {
     final textTheme = Theme.of(context).textTheme;
     final isEpisode = item.type == 'Episode';
+    final isSeason = item.type == 'Season';
     final logoTag = item.logoImageTag ?? (isEpisode ? item.seriesLogoImageTag : null);
     final logoId = logoTag != null ? (item.logoImageTag != null ? item.id : item.seriesId) : null;
     final overview = item.overview?.trim();
     final hideTitleAndLogo = _landscape && _vm.nextUp != null;
-    return Column(
+    final hasUpNext = _landscape && _vm.nextUp != null;
+    final showRatings = isEpisode
+        ? false
+        : (_vm.ratings.isNotEmpty || item.communityRating != null || item.criticRating != null);
+
+    final desktopScale = _desktopUiScale(prefs: widget.prefs);
+    final logoScaleFactor = desktopScale > 1.1 ? 0.70 : 1.0;
+
+    final Column childrenCol = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: hasUpNext ? MainAxisSize.max : MainAxisSize.min,
       children: [
         if (!hideTitleAndLogo) ...[
-          if (logoTag != null && logoId != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: LogoView(
-                imageUrl: _vm.imageApi
-                    .getLogoImageUrl(logoId, maxWidth: 350, tag: logoTag),
-                maxHeight: _landscape ? 90 : 64,
-                maxWidth: _landscape ? 360 : 260,
+          if (isSeason && _seriesLogoTag != null && _seriesLogoId != null) ...[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                LogoView(
+                  imageUrl: _vm.imageApi
+                      .getLogoImageUrl(_seriesLogoId!, maxWidth: 200, tag: _seriesLogoTag),
+                  maxHeight: 50 * logoScaleFactor,
+                  maxWidth: 150 * logoScaleFactor,
+                ),
+                const SizedBox(width: 16),
+                Text(
+                  item.name,
+                  style: (_landscape
+                          ? textTheme.displaySmall
+                          : textTheme.headlineMedium)
+                      ?.copyWith(fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
+          ] else if (isEpisode) ...[
+            if (_seriesLogoTag != null && _seriesLogoId != null) ...[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: LogoView(
+                  imageUrl: _vm.imageApi
+                      .getLogoImageUrl(_seriesLogoId!, maxWidth: 350, tag: _seriesLogoTag),
+                  maxHeight: (_landscape ? 90 : 64) * logoScaleFactor,
+                  maxWidth: (_landscape ? 360 : 260) * logoScaleFactor,
+                ),
               ),
-            )
-          else ...[
-            if (isEpisode && item.seriesName != null)
+            ] else if (item.seriesName != null) ...[
               Padding(
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(
@@ -1643,6 +1760,25 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                   ),
                 ),
               ),
+            ],
+            Text(
+              item.name,
+              style: (_landscape
+                      ? textTheme.displaySmall
+                      : textTheme.headlineMedium)
+                  ?.copyWith(fontWeight: FontWeight.w700),
+            ),
+          ] else if (logoTag != null && logoId != null) ...[
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: LogoView(
+                imageUrl: _vm.imageApi
+                    .getLogoImageUrl(logoId, maxWidth: 350, tag: logoTag),
+                maxHeight: (_landscape ? 90 : 64) * logoScaleFactor,
+                maxWidth: (_landscape ? 360 : 260) * logoScaleFactor,
+              ),
+            ),
+          ] else ...[
             Text(
               item.name,
               style: (_landscape
@@ -1651,69 +1787,66 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                   ?.copyWith(fontWeight: FontWeight.w700),
             ),
           ],
-        ],
-        if (isEpisode && logoTag != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            item.name,
-            style: (_landscape
-                    ? textTheme.headlineMedium
-                    : textTheme.titleLarge)
-                ?.copyWith(fontWeight: FontWeight.w700),
-          ),
-        ],
-        const SizedBox(height: 6),
-        if (hideTitleAndLogo) ...[
-          RatingsRow(
-            ratings: _vm.ratings,
-            communityRating: item.communityRating,
-            criticRating: item.criticRating,
-            enableAdditionalRatings:
-                widget.prefs.get(UserPreferences.enableAdditionalRatings),
-            enabledRatings: widget.prefs.get(UserPreferences.enabledRatings),
-            showLabels: widget.prefs.get(UserPreferences.showRatingLabels),
-            showBadges: widget.prefs.get(UserPreferences.showRatingBadges),
-          ),
-        ] else ...[
+          const SizedBox(height: 6),
           _metadataRow(context, item),
-        ],
-        const SizedBox(height: 6),
-        if (!_landscape || _vm.nextUp == null) ...[
-          RatingsRow(
-            ratings: _vm.ratings,
-            communityRating: item.communityRating,
-            criticRating: item.criticRating,
-            enableAdditionalRatings:
-                widget.prefs.get(UserPreferences.enableAdditionalRatings),
-            enabledRatings: widget.prefs.get(UserPreferences.enabledRatings),
-            showLabels: widget.prefs.get(UserPreferences.showRatingLabels),
-            showBadges: widget.prefs.get(UserPreferences.showRatingBadges),
-          ),
+          if (showRatings) ...[
+            const SizedBox(height: 6),
+            RatingsRow(
+              ratings: _vm.ratings,
+              communityRating: item.communityRating,
+              criticRating: item.criticRating,
+              enableAdditionalRatings:
+                  widget.prefs.get(UserPreferences.enableAdditionalRatings),
+              enabledRatings: widget.prefs.get(UserPreferences.enabledRatings),
+              showLabels: widget.prefs.get(UserPreferences.showRatingLabels),
+              showBadges: widget.prefs.get(UserPreferences.showRatingBadges),
+            ),
+          ],
           const SizedBox(height: 6),
         ],
         if (item.tagline != null && item.tagline!.trim().isNotEmpty) ...[
           const SizedBox(height: 8),
-          Text(
-            item.tagline!.trim(),
-            style: textTheme.titleSmall?.copyWith(
-              fontStyle: FontStyle.italic,
-              color: AppColorScheme.onSurface.withValues(alpha: 0.9),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: _landscape ? 580 : double.infinity),
+            child: Text(
+              item.tagline!.trim(),
+              style: textTheme.titleSmall?.copyWith(
+                fontStyle: FontStyle.italic,
+                color: AppColorScheme.onSurface.withValues(alpha: 0.9),
+              ),
             ),
           ),
         ],
         if (overview != null && overview.isNotEmpty) ...[
           const SizedBox(height: 8),
-          Text(
-            overview,
-            maxLines: _landscape ? 4 : 6,
-            overflow: TextOverflow.ellipsis,
-            style: textTheme.bodyMedium?.copyWith(
-              height: 1.45,
-              color: AppColorScheme.onSurface.withValues(alpha: 0.85),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: _landscape ? 580 : double.infinity,
+            ),
+            child: ExpandableBiography(
+              text: overview,
+              toggleFocusNode: _overviewFocusNode,
+              onArrowDown: () {
+                widget.initialFocusNode?.requestFocus();
+              },
+              onArrowUp: () {
+                NavigationLayout.focusNavbarNotifier.value?.call();
+              },
+              onArrowLeft: () {
+                final navbarPosition = widget.prefs.get(UserPreferences.navbarPosition);
+                if (navbarPosition == NavbarPosition.left) {
+                  NavigationLayout.focusNavbarNotifier.value?.call();
+                }
+              },
+              onCollapse: widget.onCollapseBiography,
+              style: textTheme.bodyMedium?.copyWith(
+                height: 1.45,
+                color: AppColorScheme.onSurface.withValues(alpha: 0.85),
+              ),
             ),
           ),
         ],
-        const SizedBox(height: 10),
+        const SizedBox(height: 24),
         Focus(
           canRequestFocus: false,
           skipTraversal: true,
@@ -1736,27 +1869,22 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             onSelectedMediaSourceChanged: widget.onSelectedMediaSourceChanged,
             tvPlayFocusNode: widget.initialFocusNode,
             downTarget: _tabNode(_selectedTab >= 0 ? _selectedTab : 0),
+            upTarget: _overviewFocusNode,
             autoPlay: widget.autoPlay,
             modernStyle: true,
             fullWidthPrimary: !_landscape,
             maxVisibleButtonsOverride: _actionButtonCap(context, item),
             onArrowRightAtEnd: _landscape ? _focusRightOfActions : null,
             actionRowRightFocusNode: _actionRowRightFocusNode,
-            onFocusExtra: (isFocused) {
-              if (isFocused) {
-                widget.onToggleNavbar?.call(false);
-              } else {
-                if (_scrollController.hasClients && _scrollController.offset <= 140) {
-                  widget.onToggleNavbar?.call(true);
-                }
-              }
-            },
+            onFocusExtra: (_) {},
             actionsExpanded: widget.actionsExpanded,
             onActionsExpandedChanged: widget.onActionsExpandedChanged,
           ),
         ),
       ],
     );
+
+    return childrenCol;
   }
 
   Widget _metadataRow(BuildContext context, AggregatedItem item) {
@@ -1776,11 +1904,55 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     if (item.type == 'Series' && item.childCount != null) {
       addText(l10n.seasonCount(item.childCount!));
     }
+    if (item.type == 'Season') {
+      final epCount = _vm.episodes.length > 0 ? _vm.episodes.length : (item.childCount ?? 0);
+      if (epCount > 0) {
+        addText(l10n.episodeCount(epCount));
+      }
+    }
+    if (item.type == 'Episode') {
+      final s = item.parentIndexNumber;
+      final e = item.indexNumber;
+      if (s != null && e != null) {
+        addText('S${s}:E$e');
+      }
+      final enableEpisodeRatings = widget.prefs.get(UserPreferences.enableEpisodeRatings);
+      if (enableEpisodeRatings) {
+        final ratingVal = _vm.ratings['stars'] ?? item.communityRating;
+        if (ratingVal != null && ratingVal > 0) {
+          final displayVal = ratingVal <= 10.0 ? ratingVal * 10 : ratingVal;
+          final ratingText = '${displayVal.toInt()}%';
+          pieces.add(
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  'assets/icons/ratings/tmdb.png',
+                  height: 14,
+                  filterQuality: FilterQuality.medium,
+                ),
+                const SizedBox(width: 4),
+                Text(ratingText, style: style),
+              ],
+            ),
+          );
+        }
+      }
+    }
     final status = item.status;
     if (item.type == 'Series' && status != null && status.isNotEmpty) {
       pieces.add(_statusBadge(context, status));
     }
-    final runtime = item.runtime;
+    var runtime = item.runtime;
+    if (runtime == null && item.type == 'Season' && _vm.episodes.isNotEmpty) {
+      var totalMs = 0;
+      for (final ep in _vm.episodes) {
+        totalMs += ep.runtime?.inMilliseconds ?? 0;
+      }
+      if (totalMs > 0) {
+        runtime = Duration(milliseconds: totalMs);
+      }
+    }
     if (runtime != null && item.type != 'Series') {
       pieces.add(
         Row(
@@ -1842,18 +2014,38 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   }
 
   Widget? _buildUpNext(BuildContext context, AggregatedItem item) {
-    const supported = {'Series', 'Season', 'Episode'};
+    const supported = {'Series', 'Season'};
     if (!supported.contains(item.type)) return null;
-    final episode = _vm.nextUp;
-    if (episode == null) return null;
+
     final l10n = AppLocalizations.of(context);
+    AggregatedItem? episode;
+    String? customLabel;
+
+    if (item.type == 'Season') {
+      if (_vm.episodes.isEmpty) return null;
+      final seasonAllWatched = _vm.episodes.every((e) => e.isPlayed);
+      final seasonAllUnwatched = _vm.episodes.every((e) => !e.isPlayed && (e.playedPercentage == null || e.playedPercentage == 0));
+      if (seasonAllWatched) {
+        episode = _vm.episodes[0];
+        customLabel = 'Rewatch S${item.indexNumber}:E1';
+      } else if (!seasonAllUnwatched) {
+        try {
+          episode = _vm.episodes.firstWhere((e) => !e.isPlayed);
+        } catch (_) {}
+      }
+    } else {
+      episode = _vm.nextUp;
+    }
+
+    if (episode == null) return null;
+
     final s = episode.parentIndexNumber;
     final e = episode.indexNumber;
     final code = (s != null && e != null) ? 'S$s:E$e' : null;
     final title = code != null ? '$code - ${episode.name}' : episode.name;
     final progress = (episode.playedPercentage ?? 0) / 100.0;
     return UpNextCard(
-      label: l10n.nextUp,
+      label: customLabel ?? l10n.nextUp,
       title: title,
       description: episode.overview?.trim(),
       imageUrl: _imageUrl(episode),
@@ -1870,7 +2062,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       onNavigateDown: _focusSelectedTab,
       onTap: () async {
         final manager = GetIt.instance<PlaybackManager>();
-        final hasProgress = (episode.playbackPosition?.inMilliseconds ?? 0) > 0 ||
+        final hasProgress = (episode!.playbackPosition?.inMilliseconds ?? 0) > 0 ||
                             (episode.playedPercentage ?? 0) > 0;
         await manager.playItems(
           [episode],
@@ -2052,6 +2244,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
+    final desktopScale = _desktopUiScale(prefs: widget.prefs);
+    final logoScaleFactor = desktopScale > 1.1 ? 0.70 : 1.0;
+
     _landscape = PlatformDetection.isTV ||
         PlatformDetection.useDesktopUi ||
         MediaQuery.orientationOf(context) == Orientation.landscape;
@@ -2102,17 +2297,21 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final logoTag = item.logoImageTag ?? (isEpisode ? item.seriesLogoImageTag : null);
     final logoId = logoTag != null ? (item.logoImageTag != null ? item.id : item.seriesId) : null;
 
-    final Widget? aboveHeroWidget = (_vm.nextUp != null)
+    final showRatings = isEpisode
+        ? false
+        : (_vm.ratings.isNotEmpty || item.communityRating != null || item.criticRating != null);
+    final Widget? aboveHeroWidget = (_landscape && _vm.nextUp != null)
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
+              const SizedBox(height: 24),
               if (logoTag != null && logoId != null) ...[
                 LogoView(
                   imageUrl: _vm.imageApi
                       .getLogoImageUrl(logoId, maxWidth: 350, tag: logoTag),
-                  maxHeight: 90,
-                  maxWidth: 360,
+                  maxHeight: 90 * logoScaleFactor,
+                  maxWidth: 360 * logoScaleFactor,
                 ),
                 const SizedBox(height: 6),
               ] else ...[
@@ -2123,6 +2322,19 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 const SizedBox(height: 6),
               ],
               _metadataRow(context, item),
+              if (showRatings) ...[
+                const SizedBox(height: 6),
+                RatingsRow(
+                  ratings: _vm.ratings,
+                  communityRating: item.communityRating,
+                  criticRating: item.criticRating,
+                  enableAdditionalRatings:
+                      widget.prefs.get(UserPreferences.enableAdditionalRatings),
+                  enabledRatings: widget.prefs.get(UserPreferences.enabledRatings),
+                  showLabels: widget.prefs.get(UserPreferences.showRatingLabels),
+                  showBadges: widget.prefs.get(UserPreferences.showRatingBadges),
+                ),
+              ],
             ],
           )
         : null;

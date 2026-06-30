@@ -14,6 +14,7 @@ import 'package:server_core/server_core.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../data/repositories/mdblist_repository.dart';
+import '../../../data/repositories/tmdb_repository.dart';
 import '../../../data/services/background_service.dart';
 import '../../../data/services/download_service.dart';
 import '../../../data/models/download_quality.dart';
@@ -187,6 +188,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       client: client,
       mutations: GetIt.instance<ItemMutationRepository>(),
       mdbListRepository: GetIt.instance<MdbListRepository>(),
+      tmdbRepository: GetIt.instance<TmdbRepository>(),
     );
     _viewModel.addListener(_onChanged);
     _prefs.addListener(_onPrefsChanged);
@@ -327,12 +329,23 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     final useTargetNode = type != null && type != 'Photo';
     final node = useTargetNode ? _ensureInitialFocusNode() : null;
     final isAlbumOrPlaylist = type == 'MusicAlbum' || type == 'Playlist';
+    final lastCollapse = ExpandableBiography.lastCollapseTime;
+    final now = DateTime.now();
+    final wasCollapsedRecently = lastCollapse != null &&
+        now.difference(lastCollapse) < const Duration(milliseconds: 350);
+
     final showNavigationChrome =
         _viewModel.state == ItemDetailState.ready && !isAlbumOrPlaylist && _showNavbar;
+
     Widget body = NavigationLayout(
       showBackButton: true,
       showNavigationChrome: showNavigationChrome,
       child: _buildBody(context),
+    );
+
+    body = PopScope(
+      canPop: !wasCollapsedRecently,
+      child: body,
     );
     if (isAlbumOrPlaylist && !PlatformDetection.isTV) {
       body = Stack(
@@ -441,6 +454,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
                 onToggleNavbar: (show) => setState(() => _showNavbar = show),
                 actionsExpanded: _actionsExpanded,
                 onActionsExpandedChanged: (val) => setState(() => _actionsExpanded = val),
+                onCollapseBiography: () => setState(() {}),
               )
             : _DetailContent(
                 viewModel: _viewModel,
@@ -628,7 +642,7 @@ class _DetailContentState extends State<_DetailContent> {
       return true;
     }
     return target.context
-            ?.findAncestorWidgetOfExactType<_ExpandableBiography>() !=
+            ?.findAncestorWidgetOfExactType<ExpandableBiography>() !=
         null;
   }
 
@@ -1136,6 +1150,7 @@ class _DetailContentState extends State<_DetailContent> {
                         _requestSectionFocus(targetNode);
                       },
                       onArrowLeft: () => _tryFocusSidebar(),
+                      onCollapseBiography: () => setState(() {}),
                     ),
                   ),
                 SliverPadding(
@@ -1439,6 +1454,7 @@ class _DetailContentState extends State<_DetailContent> {
               ? () => _requestSectionFocus(similarFocusNode)
               : null,
           onArrowLeft: () => _tryFocusSidebar(),
+          onCollapse: () => setState(() {}),
           style: const TextStyle(
             color: Color(0xFFD7E8F6),
             fontSize: 14,
@@ -1885,6 +1901,7 @@ class _DetailContentState extends State<_DetailContent> {
               episode: ep,
               imageApi: viewModel.imageApi,
               onChanged: () => viewModel.load(),
+              isActive: viewModel.nextUp?.id == ep.id,
             ),
           ),
         ),
@@ -2409,7 +2426,7 @@ class _DetailContentState extends State<_DetailContent> {
       ],
       if (hasBio) ...[
         const SizedBox(height: 24),
-        _ExpandableBiography(
+        ExpandableBiography(
           text: item.overview!,
           toggleFocusNode: firstFocus,
           upTarget: null,
@@ -2420,6 +2437,7 @@ class _DetailContentState extends State<_DetailContent> {
           onArrowLeft: () {
             _tryFocusSidebar();
           },
+          onCollapse: () => setState(() {}),
         ),
       ],
       const SizedBox(height: 24),
@@ -2739,6 +2757,7 @@ class _DetailContentState extends State<_DetailContent> {
               ? () => _requestSectionFocus(albumsFocusNode ?? similarFocusNode)
               : null,
           onArrowLeft: () => _tryFocusSidebar(),
+          onCollapse: () => setState(() {}),
         ),
       ],
       if (viewModel.albums.isNotEmpty) ...[
@@ -3355,6 +3374,7 @@ class _HeaderSection extends StatelessWidget {
   final VoidCallback? onArrowUp;
   final VoidCallback? onArrowDown;
   final VoidCallback? onArrowLeft;
+  final VoidCallback? onCollapseBiography;
 
   const _HeaderSection({
     required this.viewModel,
@@ -3364,6 +3384,7 @@ class _HeaderSection extends StatelessWidget {
     this.onArrowUp,
     this.onArrowDown,
     this.onArrowLeft,
+    this.onCollapseBiography,
   });
 
   @override
@@ -3505,6 +3526,7 @@ class _HeaderSection extends StatelessWidget {
             onArrowUp: onArrowUp,
             onArrowDown: onArrowDown,
             onArrowLeft: onArrowLeft,
+            onCollapse: onCollapseBiography,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: ThemeRegistry.active.id == ThemeRegistry.neonPulseId
                   ? AppColorScheme.onSurface
@@ -4518,7 +4540,10 @@ class _BookAuthorDetailScreenState extends State<_BookAuthorDetailScreen> {
                     const SizedBox(height: 8),
                     if (data.biography != null &&
                         data.biography!.trim().isNotEmpty)
-                      _ExpandableBiography(text: data.biography!)
+                      ExpandableBiography(
+                        text: data.biography!,
+                        onCollapse: () => setState(() {}),
+                      )
                     else
                       Text(
                         AppLocalizations.of(context).noBiographyAvailable,
@@ -4949,11 +4974,8 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   }
 
   void _focusFirstRowButton(int index, int primaryCount) {
-    if (index == primaryCount) {
-      (widget.actionRowRightFocusNode ?? _overflowMoreFocusNode).requestFocus();
-    } else if (index >= 0 && index < primaryCount) {
-      _primaryFocusNode(index).requestFocus();
-    }
+    final targetIndex = index.clamp(0, primaryCount - 1);
+    _primaryFocusNode(targetIndex).requestFocus();
   }
   String? _tvPlayFocusAppliedForItemId;
   bool _rowHasFocus = false;
@@ -5075,7 +5097,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     if (target.canRequestFocus) {
       target.requestFocus();
       if (target.context
-              ?.findAncestorWidgetOfExactType<_ExpandableBiography>() !=
+              ?.findAncestorWidgetOfExactType<ExpandableBiography>() !=
           null) {
         return;
       }
@@ -5099,7 +5121,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
   }
 
   void _focusUpTarget() {
-    if (NavigationLayout.focusNavbarNotifier.value != null) {
+    final upTarget = widget.upTarget;
+    if (upTarget != null && upTarget.context != null && upTarget.canRequestFocus) {
+      upTarget.requestFocus();
+    } else if (NavigationLayout.focusNavbarNotifier.value != null) {
       NavigationLayout.focusNavbarNotifier.value?.call();
     } else {
       _focusTarget(widget.upTarget);
@@ -5387,6 +5412,19 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       boxSetAllWatched = false;
       boxSetAllUnwatched = false;
     }
+    final isSeason = item.type == 'Season';
+    bool seasonAllWatched = false;
+    bool seasonAllUnwatched = false;
+    AggregatedItem? seasonNextUpEp;
+    if (isSeason && viewModel.episodes.isNotEmpty) {
+      seasonAllWatched = viewModel.episodes.every((e) => e.isPlayed);
+      seasonAllUnwatched = viewModel.episodes.every((e) => !e.isPlayed && (e.playedPercentage == null || e.playedPercentage == 0));
+      if (!seasonAllWatched && !seasonAllUnwatched) {
+        try {
+          seasonNextUpEp = viewModel.episodes.firstWhere((e) => !e.isPlayed);
+        } catch (_) {}
+      }
+    }
     final selectedSource = selectedMediaSourceForItem(
       item,
       widget.selectedMediaSourceId,
@@ -5416,8 +5454,33 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       playButtonLabel = l10n.view;
     } else if (isBook) {
       playButtonLabel = hasProgress ? l10n.resumeReading : l10n.read;
+    } else if (isSeason) {
+      if (seasonAllWatched) {
+        playButtonLabel = 'Replay (S${item.indexNumber}:E1)';
+      } else if (seasonAllUnwatched) {
+        playButtonLabel = l10n.play;
+      } else {
+        if (seasonNextUpEp != null) {
+          playButtonLabel = 'Resume (S${item.indexNumber}:E${seasonNextUpEp.indexNumber})';
+        } else {
+          playButtonLabel = l10n.resume;
+        }
+      }
     } else if (isSeries) {
-      if (isFullyWatched || isFullyUnwatched) {
+      if (isFullyWatched) {
+        final nextUp = viewModel.nextUp;
+        if (nextUp != null) {
+          final s = nextUp.parentIndexNumber;
+          final e = nextUp.indexNumber;
+          if (s != null && e != null) {
+            playButtonLabel = 'Replay S${s}E$e';
+          } else {
+            playButtonLabel = 'Replay S1E1';
+          }
+        } else {
+          playButtonLabel = 'Replay S1E1';
+        }
+      } else if (isFullyUnwatched) {
         playButtonLabel = l10n.play;
       } else {
         final nextUp = viewModel.nextUp;
@@ -5462,13 +5525,24 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             : Icons.play_arrow,
         focusNode: _tvPlayFocusNode,
         autofocus: PlatformDetection.isTV,
-        onPressed: () => _play(
-          context,
-          item,
-          resume: isBoxSet
-              ? (!boxSetAllWatched && !boxSetAllUnwatched)
-              : (!isPhoto && hasProgress),
-        ),
+        onPressed: () {
+          if (isSeason && viewModel.episodes.isNotEmpty) {
+            final targetEp = seasonNextUpEp ?? viewModel.episodes[0];
+            _play(
+              context,
+              targetEp,
+              resume: seasonNextUpEp != null,
+            );
+          } else {
+            _play(
+              context,
+              item,
+              resume: isBoxSet
+                  ? (!boxSetAllWatched && !boxSetAllUnwatched)
+                  : (!isPhoto && hasProgress),
+            );
+          }
+        },
         onLongPress: isVideo
             ? () => _showAdvancedPlaybackMenu(context, item)
             : null,
@@ -5585,6 +5659,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       if (canShowDownloadActions)
         _DownloadButton(item: item, viewModel: viewModel),
       if (canShowDownloadActions) _DeleteDownloadButton(item: item),
+      if (item.type == 'Episode' && item.seriesId != null)
+        _DetailActionButton(
+          label: l10n.goToSeries,
+          icon: Icons.tv,
+          onPressed: () => context.push(
+            Destinations.item(item.seriesId!, serverId: item.serverId),
+          ),
+        ),
       if (item.type == 'BoxSet'
           ? (GetIt.instance<UserRepository>().currentUser?.isAdministrator ??
                 false)
@@ -5595,14 +5677,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           onPressed: () => _confirmDeleteItem(context, item),
           isActive: true,
           activeColor: const Color(0xFFD32F2F),
-        ),
-      if (item.type == 'Episode' && item.seriesId != null)
-        _DetailActionButton(
-          label: l10n.goToSeries,
-          icon: Icons.tv,
-          onPressed: () => context.push(
-            Destinations.item(item.seriesId!, serverId: item.serverId),
-          ),
         ),
       if ((GetIt.instance<UserRepository>().currentUser?.isAdministrator ??
               false) &&
@@ -5656,7 +5730,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final List<Widget> extraButtons;
     final bool needsOverflow;
 
-    final bool isTvShow = item.type == 'Series' || item.type == 'Season' || item.type == 'Episode';
+    final bool isTvShow = item.type == 'Series' || item.type == 'Season';
     final bool isTwoColumnLayout = widget.modernStyle && isTvShow && widget.maxVisibleButtonsOverride != null;
 
     if (isTwoColumnLayout) {
@@ -5693,19 +5767,36 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         final index = entry.key;
         final button = entry.value;
         if (button is! _DetailActionButton) return button;
+        final fNode = index == 0 ? (widget.tvPlayFocusNode ?? _primaryFocusNode(0)) : _primaryFocusNode(index);
         return _copyActionButton(
           button,
           focusNode: index == allButtons.length - 1
-              ? (widget.actionRowRightFocusNode ?? button.focusNode)
-              : button.focusNode,
+              ? (widget.actionRowRightFocusNode ?? fNode)
+              : fNode,
           onArrowUp:
               button.onArrowUp ??
               (NavigationLayout.focusNavbarNotifier.value != null || widget.upTarget != null ? _focusUpTarget : null),
-          onArrowLeft: index == 0 ? _focusSidebar : null,
+          onArrowLeft: index == 0
+              ? _focusSidebar
+              : () {
+                  if (index > 0) {
+                    final prevNode = (index - 1 == 0)
+                        ? (widget.tvPlayFocusNode ?? _primaryFocusNode(0))
+                        : _primaryFocusNode(index - 1);
+                    prevNode.requestFocus();
+                  }
+                },
           onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
           onArrowRight: index == allButtons.length - 1
               ? (widget.onArrowRightAtEnd ?? () {})
-              : null,
+              : () {
+                  if (index + 1 < allButtons.length) {
+                    final nextNode = (index + 1 == allButtons.length - 1)
+                        ? (widget.actionRowRightFocusNode ?? _primaryFocusNode(index + 1))
+                        : _primaryFocusNode(index + 1);
+                    nextNode.requestFocus();
+                  }
+                },
         );
       }).toList();
       rowContent = Align(
@@ -5726,13 +5817,29 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         final index = entry.key;
         final button = entry.value;
         if (button is! _DetailActionButton) return button;
-        final fNode = _primaryFocusNode(index);
+        final fNode = index == 0 ? (widget.tvPlayFocusNode ?? _primaryFocusNode(0)) : _primaryFocusNode(index);
         return _copyActionButton(
           button,
           focusNode: fNode,
           onFocused: () => widget.onFocusExtra?.call(false),
           onArrowUp: button.onArrowUp ?? (NavigationLayout.focusNavbarNotifier.value != null || widget.upTarget != null ? _focusUpTarget : null),
-          onArrowLeft: index == 0 ? _focusSidebar : null,
+          onArrowLeft: index == 0
+              ? _focusSidebar
+              : () {
+                  if (index > 0) {
+                    final prevNode = (index - 1 == 0)
+                        ? (widget.tvPlayFocusNode ?? _primaryFocusNode(0))
+                        : _primaryFocusNode(index - 1);
+                    prevNode.requestFocus();
+                  }
+                },
+          onArrowRight: () {
+            if (index < primaryButtons.length - 1) {
+              _primaryFocusNode(index + 1).requestFocus();
+            } else {
+              (widget.actionRowRightFocusNode ?? _overflowMoreFocusNode).requestFocus();
+            }
+          },
           onArrowDown: isTvShow
               ? (_expanded
                   ? () => _focusSecondRowButton(index, extraButtons.length)
@@ -5760,10 +5867,20 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               ? () => _focusFirstRowButton(index, primaryButtons.length)
               : (NavigationLayout.focusNavbarNotifier.value != null || widget.upTarget != null ? _focusUpTarget : null),
           onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
-          onArrowLeft: index == 0 ? _focusSidebar : null,
+          onArrowLeft: index == 0
+              ? _focusSidebar
+              : () {
+                  if (index > 0 && index - 1 < _extraFocusNodes.length) {
+                    _extraFocusNodes[index - 1].requestFocus();
+                  }
+                },
           onArrowRight: index == extraButtons.length - 1
               ? (widget.onArrowRightAtEnd ?? () {})
-              : null,
+              : () {
+                  if (index + 1 < _extraFocusNodes.length) {
+                    _extraFocusNodes[index + 1].requestFocus();
+                  }
+                },
           suppressAutoScrollToTop: true,
         );
       }).toList();
@@ -5774,11 +5891,12 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         focusNode: widget.actionRowRightFocusNode ?? _overflowMoreFocusNode,
         onFocused: () => widget.onFocusExtra?.call(false),
         onArrowUp: NavigationLayout.focusNavbarNotifier.value != null || widget.upTarget != null ? _focusUpTarget : null,
-        onArrowDown: isTvShow
-            ? (_expanded
-                ? () => _focusSecondRowButton(primaryButtons.length, extraButtons.length)
-                : (widget.downTarget != null ? _focusDownTarget : null))
-            : (widget.downTarget != null ? _focusDownTarget : null),
+        onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
+        onArrowLeft: () {
+          if (primaryButtons.isNotEmpty) {
+            _primaryFocusNode(primaryButtons.length - 1).requestFocus();
+          }
+        },
         onArrowRight: widget.onArrowRightAtEnd ?? () {},
         onPressed: () => setState(() => _expanded = !_expanded),
       );
@@ -8724,17 +8842,16 @@ class _DetailActionButtonState extends State<_DetailActionButton>
           false;
       // NOTE: only set `alignment` when full-width. A Container with an
       // alignment expands to fill the parent's bounded width, which would make
-      // the pill stretch even in landscape.
-      final double width = fullWidth 
+      final double? width = fullWidth 
           ? double.infinity 
-          : (isExpanded ? (isMobile ? 120.0 : 300.0) : height);
-
+          : (isExpanded ? null : height);
+ 
       final pill = AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         curve: Curves.easeOut,
         height: height,
         width: fullWidth ? null : width,
-        padding: EdgeInsets.symmetric(horizontal: isExpanded || fullWidth ? 12 : 0),
+        padding: EdgeInsets.symmetric(horizontal: isExpanded || fullWidth ? 16 : 0),
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: Colors.white,
@@ -8749,7 +8866,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
           children: [
             AdaptiveIcon(widget.icon ?? Icons.play_arrow, color: fg, size: 24),
             if (isExpanded || fullWidth) ...[
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               Flexible(
                 child: widget.label.contains('\n')
                     ? Column(
@@ -8761,7 +8878,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                             style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                   color: fg,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 12,
+                                  fontSize: 13,
                                   height: 1.1,
                                 ),
                           ),
@@ -8770,7 +8887,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                             style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                   color: fg.withValues(alpha: 0.8),
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 11,
+                                  fontSize: 12,
                                   height: 1.1,
                                 ),
                           ),
@@ -8783,7 +8900,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                               color: fg,
                               fontWeight: FontWeight.bold,
-                              fontSize: 12,
+                              fontSize: 14,
                               height: 1.1,
                             ),
                       ),
@@ -10333,6 +10450,7 @@ class _OverviewText extends StatelessWidget {
   final VoidCallback? onArrowUp;
   final VoidCallback? onArrowDown;
   final VoidCallback? onArrowLeft;
+  final VoidCallback? onCollapse;
 
   const _OverviewText({
     required this.text,
@@ -10343,18 +10461,20 @@ class _OverviewText extends StatelessWidget {
     this.onArrowUp,
     this.onArrowDown,
     this.onArrowLeft,
+    this.onCollapse,
   });
 
   @override
   Widget build(BuildContext context) {
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
-    return _ExpandableBiography(
+    return ExpandableBiography(
       text: text,
       toggleFocusNode: focusNode,
       upTarget: upTarget,
       onArrowUp: onArrowUp,
       onArrowDown: onArrowDown,
       onArrowLeft: onArrowLeft,
+      onCollapse: onCollapse,
       style:
           style ??
           Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -10948,11 +11068,18 @@ class DetailEpisodeCard extends StatefulWidget {
   final AggregatedItem episode;
   final ImageApi imageApi;
   final VoidCallback? onChanged;
+  final FocusNode? focusNode;
+  final FocusOnKeyEventCallback? onKeyEvent;
+
+  final bool isActive;
 
   const DetailEpisodeCard({
     required this.episode,
     required this.imageApi,
     this.onChanged,
+    this.focusNode,
+    this.onKeyEvent,
+    this.isActive = false,
   });
 
   @override
@@ -11000,8 +11127,13 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard> with FocusStateMix
       onEnter: (_) => setHovered(true),
       onExit: (_) => setHovered(false),
       child: Focus(
+        focusNode: widget.focusNode,
         onFocusChange: (focused) => setFocused(focused),
-        onKeyEvent: (_, event) {
+        onKeyEvent: (node, event) {
+          if (widget.onKeyEvent != null) {
+            final res = widget.onKeyEvent!(node, event);
+            if (res != KeyEventResult.ignored) return res;
+          }
           final handlerResult = _selectKeyHandler.handleKeyEvent(
             event,
             onTap: () => context.push(
@@ -11037,7 +11169,14 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard> with FocusStateMix
                           width: 1.5,
                         ),
                       )
-                    : null,
+                    : (widget.isActive
+                        ? Border.fromBorderSide(
+                            ThemeRegistry.active.borders.focusBorder.copyWith(
+                              color: isNeon ? const Color(0xFF00FFFF) : Colors.cyan.withValues(alpha: 0.7),
+                              width: 1.5,
+                            ),
+                          )
+                        : null),
               ),
               clipBehavior: Clip.antiAlias,
               child: Row(
@@ -11382,35 +11521,46 @@ class _PersonDatesVertical extends StatelessWidget {
   }
 }
 
-class _ExpandableBiography extends StatefulWidget {
+class ExpandableBiography extends StatefulWidget {
   final String text;
   final FocusNode? toggleFocusNode;
   final FocusNode? upTarget;
   final VoidCallback? onArrowUp;
   final VoidCallback? onArrowDown;
   final VoidCallback? onArrowLeft;
+  final VoidCallback? onCollapse;
   final TextStyle? style;
   final TextAlign? textAlign;
 
-  const _ExpandableBiography({
+  static DateTime? lastCollapseTime;
+
+  const ExpandableBiography({
     required this.text,
     this.toggleFocusNode,
     this.upTarget,
     this.onArrowUp,
     this.onArrowDown,
     this.onArrowLeft,
+    this.onCollapse,
     this.style,
     this.textAlign,
   });
 
   @override
-  State<_ExpandableBiography> createState() => _ExpandableBiographyState();
+  State<ExpandableBiography> createState() => _ExpandableBiographyState();
 }
 
-class _ExpandableBiographyState extends State<_ExpandableBiography> {
+class _ExpandableBiographyState extends State<ExpandableBiography> {
   bool _expanded = false;
   bool _focused = false;
   static const double _contentHorizontalPadding = 8;
+  final ScrollController _scrollbarController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollbarController.dispose();
+    super.dispose();
+  }
 
   bool _handleUpWithoutToggle() {
     if (widget.onArrowUp != null) {
@@ -11461,8 +11611,30 @@ class _ExpandableBiographyState extends State<_ExpandableBiography> {
     return tp.didExceedMaxLines;
   }
 
-  bool _stepScroll(BuildContext context, {required bool down}) {
-    return stepScrollWithinContextBounds(context, down: down);
+  bool _stepScrollDirect({required bool down}) {
+    if (!_scrollbarController.hasClients) return false;
+    final maxScroll = _scrollbarController.position.maxScrollExtent;
+    final currentScroll = _scrollbarController.offset;
+    if (down) {
+      if (currentScroll < maxScroll) {
+        _scrollbarController.animateTo(
+          (currentScroll + 40.0).clamp(0.0, maxScroll),
+          duration: const Duration(milliseconds: 80),
+          curve: Curves.easeOut,
+        );
+        return true;
+      }
+    } else {
+      if (currentScroll > 0.0) {
+        _scrollbarController.animateTo(
+          (currentScroll - 40.0).clamp(0.0, double.infinity),
+          duration: const Duration(milliseconds: 80),
+          curve: Curves.easeOut,
+        );
+        return true;
+      }
+    }
+    return false;
   }
 
   @override
@@ -11475,6 +11647,12 @@ class _ExpandableBiographyState extends State<_ExpandableBiography> {
           height: 1.5,
         );
     final l10n = AppLocalizations.of(context);
+    final focusColor = Color(
+      GetIt.instance<UserPreferences>()
+          .get(UserPreferences.focusColor)
+          .colorValue,
+    );
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -11493,6 +11671,20 @@ class _ExpandableBiographyState extends State<_ExpandableBiography> {
           onKeyEvent: (_, event) {
             if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
               return KeyEventResult.ignored;
+            }
+
+            final isBackKey = event.logicalKey == LogicalKeyboardKey.escape ||
+                event.logicalKey == LogicalKeyboardKey.goBack ||
+                event.logicalKey == LogicalKeyboardKey.browserBack ||
+                event.logicalKey == LogicalKeyboardKey.gameButtonB ||
+                event.logicalKey == LogicalKeyboardKey.backspace;
+            if (_expanded && isBackKey) {
+              setState(() {
+                _expanded = false;
+              });
+              ExpandableBiography.lastCollapseTime = DateTime.now();
+              widget.onCollapse?.call();
+              return KeyEventResult.handled;
             }
 
             if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
@@ -11523,22 +11715,12 @@ class _ExpandableBiographyState extends State<_ExpandableBiography> {
             }
 
             if (_expanded && event.logicalKey == LogicalKeyboardKey.arrowDown) {
-              if (_stepScroll(context, down: true)) {
-                return KeyEventResult.handled;
-              }
-              if (widget.onArrowDown != null) {
-                widget.onArrowDown!();
-                return KeyEventResult.handled;
-              }
-              return KeyEventResult.ignored;
+              _stepScrollDirect(down: true);
+              return KeyEventResult.handled;
             }
             if (_expanded && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-              if (_stepScroll(context, down: false)) {
-                return KeyEventResult.handled;
-              }
-              return _handleUpWithoutToggle()
-                  ? KeyEventResult.handled
-                  : KeyEventResult.ignored;
+              _stepScrollDirect(down: false);
+              return KeyEventResult.handled;
             }
             if (canToggle && isActivateKey(event)) {
               setState(() => _expanded = !_expanded);
@@ -11551,55 +11733,107 @@ class _ExpandableBiographyState extends State<_ExpandableBiography> {
                 ? () => setState(() => _expanded = !_expanded)
                 : null,
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 120),
-              padding: const EdgeInsets.symmetric(
-                horizontal: _contentHorizontalPadding,
-                vertical: 6,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: _focused
-                    ? Border.fromBorderSide(
-                        ThemeRegistry.active.borders.focusBorder.copyWith(
-                          color: AppColorScheme.accent,
-                          width: 1.5,
-                        ),
-                      )
-                    : null,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AnimatedCrossFade(
-                    firstChild: Text(
-                      widget.text,
-                      style: style,
-                      maxLines: 4,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: widget.textAlign,
-                    ),
-                    secondChild: Text(
-                      widget.text,
-                      style: style,
-                      textAlign: widget.textAlign,
-                    ),
-                    crossFadeState: _expanded
-                        ? CrossFadeState.showSecond
-                        : CrossFadeState.showFirst,
-                    duration: const Duration(milliseconds: 300),
-                  ),
-                  if (canToggle) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      _expanded ? l10n.showLess : l10n.readMore,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColorScheme.accent,
-                        fontWeight: FontWeight.w600,
+              duration: const Duration(milliseconds: 150),
+              constraints: (canToggle && _expanded)
+                  ? const BoxConstraints(maxHeight: 220.0)
+                  : const BoxConstraints(),
+              padding: canToggle
+                  ? const EdgeInsets.all(12)
+                  : EdgeInsets.zero,
+              decoration: canToggle
+                  ? BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: _focused
+                            ? (isNeon ? AppColorScheme.accent : focusColor)
+                            : Colors.white.withValues(alpha: 0.08),
+                        width: _focused ? 1.5 : 1.0,
                       ),
+                      color: _focused
+                          ? (isNeon
+                              ? AppColorScheme.accent.withValues(alpha: 0.04)
+                              : focusColor.withValues(alpha: 0.04))
+                          : Colors.white.withValues(alpha: 0.02),
+                    )
+                  : const BoxDecoration(),
+              child: _expanded
+                  ? Scrollbar(
+                      controller: _scrollbarController,
+                      thumbVisibility: _focused,
+                      child: NotificationListener<ScrollNotification>(
+                        onNotification: (notification) => true, // Stop bubbling
+                        child: SingleChildScrollView(
+                          controller: _scrollbarController,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AnimatedCrossFade(
+                                firstChild: Text(
+                                  widget.text,
+                                  style: style,
+                                  maxLines: 4,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: widget.textAlign,
+                                ),
+                                secondChild: Text(
+                                  widget.text,
+                                  style: style,
+                                  textAlign: widget.textAlign,
+                                ),
+                                crossFadeState: _expanded
+                                    ? CrossFadeState.showSecond
+                                    : CrossFadeState.showFirst,
+                                duration: const Duration(milliseconds: 300),
+                              ),
+                              if (canToggle) ...[
+                                const SizedBox(height: 8),
+                                Text(
+                                  _expanded ? l10n.showLess : l10n.readMore,
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AppColorScheme.accent,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnimatedCrossFade(
+                          firstChild: Text(
+                            widget.text,
+                            style: style,
+                            maxLines: 4,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: widget.textAlign,
+                          ),
+                          secondChild: Text(
+                            widget.text,
+                            style: style,
+                            textAlign: widget.textAlign,
+                          ),
+                          crossFadeState: _expanded
+                              ? CrossFadeState.showSecond
+                              : CrossFadeState.showFirst,
+                          duration: const Duration(milliseconds: 300),
+                        ),
+                        if (canToggle) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            _expanded ? l10n.showLess : l10n.readMore,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColorScheme.accent,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                  ],
-                ],
-              ),
             ),
           ),
         );

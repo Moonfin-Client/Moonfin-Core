@@ -17,6 +17,7 @@ class SeasonCard extends StatelessWidget {
   final FocusNode? focusNode;
 
   final VoidCallback? onNavigateUp;
+  final VoidCallback? onNavigateRight;
 
   const SeasonCard({
     super.key,
@@ -28,6 +29,7 @@ class SeasonCard extends StatelessWidget {
     required this.onTap,
     this.focusNode,
     this.onNavigateUp,
+    this.onNavigateRight,
   });
 
   @override
@@ -42,6 +44,7 @@ class SeasonCard extends StatelessWidget {
       onSelect: onTap,
       borderRadius: radius.topLeft.x,
       onNavigateUp: onNavigateUp,
+      onNavigateRight: onNavigateRight,
       child: GestureDetector(
         onTap: onTap,
         child: Container(
@@ -102,14 +105,17 @@ class SeasonCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                     ],
-                    Text(
-                      subtitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.85),
-                        fontWeight: FontWeight.w500,
-                        fontSize: 9,
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: Colors.white.withValues(alpha: 0.85),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 9,
+                        ),
                       ),
                     ),
                   ],
