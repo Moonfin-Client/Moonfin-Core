@@ -707,6 +707,7 @@ class _ContentRowsState extends State<_ContentRows>
   final Map<String, String?> _v2TmdbIdByKey = {};
   late bool _lastMedia3PreviewPreference;
   List<double> _rowTopOffsets = [];
+  List<double> _rowExtents = [];
   List<double> _cachedRowTargetOffsets = [];
   double _cachedRowTargetMaxScrollExtent = -1.0;
   bool _cachedRowTargetFullScreenRows = false;
@@ -935,6 +936,7 @@ class _ContentRowsState extends State<_ContentRows>
       _onMainPlaybackChanged,
     );
     _audioArbiter.register(this);
+    _activeFocusedRowNotifier.addListener(_updateOffsets);
     widget.viewModel.addListener(_onViewModelChanged);
     widget.mediaBarViewModel.addListener(_onMediaBarStateChanged);
     _lastMediaBarStateRuntime = widget.mediaBarViewModel.state.runtimeType;
@@ -947,6 +949,7 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   void _onViewModelChanged() {
+    _updateOffsets();
     if (mounted) setState(() {});
   }
 
@@ -961,7 +964,68 @@ class _ContentRowsState extends State<_ContentRows>
     }
     _lastMediaBarStateRuntime = runtime;
     _lastMediaBarItemCount = itemCount;
+    _updateOffsets();
     setState(() {});
+  }
+
+  void _updateOffsets() {
+    if (!mounted) return;
+    final rows = widget.viewModel.rows;
+    final prefs = widget.prefs;
+    final posterSize = (_isHomeRowsStyleV2() && !prefs.containsPreference(UserPreferences.posterSize))
+        ? PosterSize.small
+        : prefs.get(UserPreferences.posterSize);
+
+    final includeMediaBar = _isMediaBarIncluded();
+    final bannerMode = _isBannerMode();
+    final showInfoOverlay = _showHomeRowInfoOverlay();
+    final safeTop = MediaQuery.of(context).padding.top;
+    final navbarIsTop = prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
+    final fullScreenRows = !PlatformDetection.useMobileUi && prefs.get(UserPreferences.fullScreenRows);
+
+    final navbarHeight = PlatformDetection.isTV
+        ? (fullScreenRows ? 95.0 : (navbarIsTop ? 45.0 : 15.0))
+        : (navbarIsTop ? (PlatformDetection.useMobileUi ? 60.0 : 80.0) : (fullScreenRows ? 0.0 : 80.0));
+
+    final listTopPadding = includeMediaBar || showInfoOverlay
+        ? 0.0
+        : _isHomeRowsStyleV2()
+            ? (fullScreenRows ? (safeTop + navbarHeight + 8.0).clamp(56.0, double.infinity) : safeTop + navbarHeight + 8)
+            : safeTop + 56;
+
+    final infoTopBasePadding = (!PlatformDetection.useMobileUi && navbarHeight == 0) ? 14.0 : 8.0;
+    final infoTopPadding = safeTop + navbarHeight + infoTopBasePadding;
+    final desktopScale = _desktopUiScaleFactor();
+    final infoAreaHeight = InfoArea.fixedHeight(isMobile: PlatformDetection.useMobileUi, desktopScale: desktopScale);
+    final infoBottomPadding = includeMediaBar ? 20.0 : 8.0;
+    final infoOverlayPlaceholder = showInfoOverlay ? infoTopPadding + infoAreaHeight + infoBottomPadding : 0.0;
+
+    final overlayBottom = _isHomeRowsStyleV2()
+        ? (fullScreenRows ? (navbarHeight > 48.0 ? navbarHeight : 48.0) : navbarHeight)
+        : showInfoOverlay
+            ? infoTopPadding + infoAreaHeight
+            : (fullScreenRows ? safeTop + 48.0 : 0.0);
+
+    final rowExtents = _computeRowExtents(rows, posterSize, prefs);
+    final rowTopOffsets = <double>[];
+    var currentTop = listTopPadding + (bannerMode ? 0.0 : infoOverlayPlaceholder);
+    if (includeMediaBar) {
+      currentTop += _mediaBarHeight();
+    }
+    final focusedRowSpacing = PlatformDetection.isTV && !fullScreenRows ? _focusedRowExtraSpacing * 2 : 0.0;
+
+    for (var i = 0; i < rowExtents.length; i++) {
+      rowTopOffsets.add(currentTop);
+      currentTop += rowExtents[i];
+      if (i == _activeFocusedRowIndex) {
+        currentTop += focusedRowSpacing;
+      }
+    }
+
+    _invalidateRowTargetOffsetCache();
+    _rowTopOffsets = rowTopOffsets;
+    _rowExtents = rowExtents;
+    _overlayBottom = overlayBottom;
   }
 
   @override
@@ -1008,6 +1072,7 @@ class _ContentRowsState extends State<_ContentRows>
     }
     _scrollIdleTimer?.cancel();
     _mediaBarFocusNode.dispose();
+    _activeFocusedRowNotifier.removeListener(_updateOffsets);
     widget.viewModel.removeListener(_onViewModelChanged);
     widget.mediaBarViewModel.removeListener(_onMediaBarStateChanged);
     _mainPlaybackSub?.cancel();
@@ -3200,6 +3265,7 @@ class _ContentRowsState extends State<_ContentRows>
       return const Center(child: CircularProgressIndicator());
     }
 
+    _updateOffsets();
     final includeMediaBar = _isMediaBarIncluded();
     final bannerMode = _isBannerMode();
     final mediaBarHeight = _mediaBarHeight();
@@ -3260,33 +3326,9 @@ class _ContentRowsState extends State<_ContentRows>
           )
         : SizedBox(height: infoOverlayPlaceholder);
 
-    final overlayBottom = _isHomeRowsStyleV2()
-        ? (fullScreenRows
-              ? (navbarHeight > 48.0 ? navbarHeight : 48.0)
-              : navbarHeight)
-        : showInfoOverlay
-        ? infoTopPadding + infoAreaHeight
-        : (fullScreenRows ? safeTop + 48.0 : 0.0);
-    final rowExtents = _computeRowExtents(rows, posterSize, prefs);
-    final rowTopOffsets = <double>[];
-    var currentTop = listTopPadding + (bannerMode ? 0.0 : infoOverlayPlaceholder);
-    if (includeMediaBar) {
-      currentTop += mediaBarHeight;
-    }
-    final focusedRowSpacing = PlatformDetection.isTV && !fullScreenRows
-        ? _focusedRowExtraSpacing * 2
-        : 0.0;
-    for (var i = 0; i < rowExtents.length; i++) {
-      rowTopOffsets.add(currentTop);
-      currentTop += rowExtents[i];
-      if (i == _activeFocusedRowIndex) {
-        currentTop += focusedRowSpacing;
-      }
-    }
-
-    _invalidateRowTargetOffsetCache();
-    _rowTopOffsets = rowTopOffsets;
-    _overlayBottom = overlayBottom;
+    final overlayBottom = _overlayBottom;
+    final rowTopOffsets = _rowTopOffsets;
+    final rowExtents = _rowExtents;
     final headerCount = (includeMediaBar ? 1 : 0) + 1;
 
     // Ensure the last row can be scrolled so its top sits just below the info
