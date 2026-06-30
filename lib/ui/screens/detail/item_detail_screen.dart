@@ -168,6 +168,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   final Map<String, String> _focusedPrimaryBackdropUrlCache =
       <String, String>{};
   FocusNode? _initialContentFocusNode;
+  ModalRoute<dynamic>? _observedRoute;
 
   FocusNode _ensureInitialFocusNode() => _initialContentFocusNode ??= FocusNode(
     debugLabel: 'detailInitialContent',
@@ -207,7 +208,13 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    routeLifecycleObserver.subscribe(this, ModalRoute.of(context)!);
+    final route = ModalRoute.of(context);
+    if (route == null || route == _observedRoute) return;
+    if (_observedRoute != null) {
+      routeLifecycleObserver.unsubscribe(this);
+    }
+    _observedRoute = route;
+    routeLifecycleObserver.subscribe(this, route);
   }
 
   @override
@@ -249,7 +256,10 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
 
   @override
   void dispose() {
-    routeLifecycleObserver.unsubscribe(this);
+    if (_observedRoute != null) {
+      routeLifecycleObserver.unsubscribe(this);
+      _observedRoute = null;
+    }
     WidgetsBinding.instance.removeObserver(this);
     _themeMusicService.unregisterDetailScreen(this);
     _backgroundSub?.cancel();
@@ -5721,7 +5731,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           isActive: widget.selectedMediaSourceId != null,
           activeColor: AppColorScheme.accent,
         ),
-      if (!isBook)
+      if (!isBook && !PlatformDetection.isTV)
         _DetailActionButton(
           label: l10n.cast,
           icon: Icons.cast,
