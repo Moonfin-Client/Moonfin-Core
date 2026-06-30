@@ -613,7 +613,13 @@ class _ContentRowsState extends State<_ContentRows>
   final Map<String, String> _dynamicBackdrops = {};
   final Set<String> _fetchingBackdrops = {};
   final Map<int, double> _staticRowHeightCache = {};
-  int? _activeFocusedRowIndex;
+  final ValueNotifier<int?> _activeFocusedRowNotifier = ValueNotifier(null);
+  int? get _activeFocusedRowIndex => _activeFocusedRowNotifier.value;
+  set _activeFocusedRowIndex(int? value) {
+    if (_activeFocusedRowNotifier.value != value) {
+      _activeFocusedRowNotifier.value = value;
+    }
+  }
   Timer? _previewDelayTimer;
   Timer? _previewStopTimer;
   StreamSubscription<bool>? _mainPlaybackSub;
@@ -662,7 +668,8 @@ class _ContentRowsState extends State<_ContentRows>
   String? _mobilePressedV2Key;
   String? _mouseHoveredV2Key;
   final Set<String> _v2FocusPrefetchedUrls = <String>{};
-  final Map<String, Map<String, double>> _v2AdditionalRatingsByKey = {};
+  final ValueNotifier<Map<String, Map<String, double>>> _v2AdditionalRatingsNotifier = ValueNotifier({});
+  Map<String, Map<String, double>> get _v2AdditionalRatingsByKey => _v2AdditionalRatingsNotifier.value;
   final Map<String, Future<void>> _v2RatingsRequests = {};
   final Map<String, String?> _v2TmdbIdByKey = {};
   late bool _lastMedia3PreviewPreference;
@@ -928,6 +935,8 @@ class _ContentRowsState extends State<_ContentRows>
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _scrollOffsetNotifier.dispose();
+    _activeFocusedRowNotifier.dispose();
+    _v2AdditionalRatingsNotifier.dispose();
     if (identical(
       NavigationLayout.focusContentFromNavbarNotifier.value,
       _focusContentFromNavbar,
@@ -1712,9 +1721,10 @@ class _ContentRowsState extends State<_ContentRows>
       return;
     }
 
-    setState(() {
-      _v2AdditionalRatingsByKey[itemKey] = result;
-    });
+    _v2AdditionalRatingsNotifier.value = {
+      ..._v2AdditionalRatingsByKey,
+      itemKey: result,
+    };
   }
 
   double _mediaBarHeight() {
@@ -2474,24 +2484,18 @@ class _ContentRowsState extends State<_ContentRows>
 
   void _onRowFocusTracked(int rowIndex, bool focused) {
     if (!mounted) return;
-    final isMobileUi = PlatformDetection.useMobileUi;
     if (focused) {
       _hasEverFocusedHomeContent = true;
       if (_activeFocusedRowIndex != rowIndex && _activePreviewKey != null) {
         _finishSharedPreview();
       }
-      final indexChanged = _activeFocusedRowIndex != rowIndex;
       _activeFocusedRowIndex = rowIndex;
-      final fullScreenRows =
-          !PlatformDetection.useMobileUi &&
-          widget.prefs.get(UserPreferences.fullScreenRows);
-      if (!isMobileUi &&
+
+      if (!PlatformDetection.useMobileUi &&
           _mediaBarVisible &&
           !_verticalNavInFlight &&
           !_isBannerMode()) {
         setState(() => _mediaBarVisible = false);
-      } else if (indexChanged && (PlatformDetection.isTV || fullScreenRows)) {
-        setState(() {});
       }
     } else if (_activeFocusedRowIndex == rowIndex) {
       if (_isSidebarFocus) {
@@ -2572,9 +2576,7 @@ class _ContentRowsState extends State<_ContentRows>
       }
 
       if (closestRowIndex != _activeFocusedRowIndex) {
-        setState(() {
-          _activeFocusedRowIndex = closestRowIndex;
-        });
+        _activeFocusedRowIndex = closestRowIndex;
       }
     }
 
@@ -3451,30 +3453,34 @@ class _ContentRowsState extends State<_ContentRows>
 
                     final itemWidget = Padding(
                       padding: EdgeInsets.only(left: rowLeftInset),
-                      child: AnimatedPadding(
-                        duration: _focusedRowSpacingDuration,
-                        curve: Curves.easeOut,
-                        padding: EdgeInsets.symmetric(
-                          vertical:
-                              (PlatformDetection.isTV &&
-                                  !fullScreenRows &&
-                                  rowIndex == _activeFocusedRowIndex)
-                              ? _focusedRowExtraSpacing
-                              : 0,
-                        ),
-                        child: ValueListenableBuilder<double>(
-                          valueListenable: _scrollOffsetNotifier,
-                          builder: (context, scrollOffset, _) {
-                            return _buildShiftedRow(
-                              child: paddedRowChild,
-                              rowIndex: rowIndex,
-                              rowTopOffsets: rowTopOffsets,
-                              rowExtents: rowExtents,
-                              showInfoOverlay: showInfoOverlay,
-                              overlayBottom: overlayBottom,
-                            );
-                          },
-                        ),
+                      child: ValueListenableBuilder<int?>(
+                        valueListenable: _activeFocusedRowNotifier,
+                        builder: (context, activeRowIndex, _) {
+                          return AnimatedPadding(
+                            duration: _focusedRowSpacingDuration,
+                            curve: Curves.easeOut,
+                            padding: EdgeInsets.symmetric(
+                              vertical: (PlatformDetection.isTV &&
+                                      !fullScreenRows &&
+                                      rowIndex == activeRowIndex)
+                                  ? _focusedRowExtraSpacing
+                                  : 0,
+                            ),
+                            child: ValueListenableBuilder<double>(
+                              valueListenable: _scrollOffsetNotifier,
+                              builder: (context, scrollOffset, _) {
+                                return _buildShiftedRow(
+                                  child: paddedRowChild,
+                                  rowIndex: rowIndex,
+                                  rowTopOffsets: rowTopOffsets,
+                                  rowExtents: rowExtents,
+                                  showInfoOverlay: showInfoOverlay,
+                                  overlayBottom: overlayBottom,
+                                );
+                              },
+                            ),
+                          );
+                        },
                       ),
                     );
                     if (fullScreenRows) {
@@ -3558,45 +3564,47 @@ class _ContentRowsState extends State<_ContentRows>
       rowIndex: rowIndex,
       hasItems: actions.isNotEmpty,
       height: rowHeight,
-      child: LockedFocusRow<_LiveTvAction>(
-        key: _rowKey(rowIndex),
-        items: actions,
-        hubKey: _hubKeyForRow(row),
-        controller: _rowHorizontalController(rowIndex),
-        height: rowHeight,
-        itemExtent: squarePosterSide,
-        itemSpacing: 12,
-        leadingPadding: _isHomeRowsStyleV2() ? _kHomeRowLabelInset : 0,
-        padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
-        onIndexChanged: (_, _) {
-          _onHomeRowTileFocused(null);
-        },
-        onFocusChange: (has) => _onRowFocusTracked(rowIndex, has),
-        onVerticalNavigation: (isUp) => _onRowVerticalNavigation(
-          rowIndex: rowIndex,
-          rows: rows,
-          isUp: isUp,
-        ),
-        onLeftEdge: _onRowLeftEdge,
-        onTap: (_, action) => context.push(action.destination),
-        itemBuilder: (ctx, action, idx, isFocused) {
-          return Align(
-            alignment: Alignment.topCenter,
-            child: SizedBox.square(
-              dimension: squarePosterSide,
-              child: GridButtonCard(
-                icon: action.icon,
-                label: action.label,
-                width: squarePosterSide,
-                height: squarePosterSide,
-                focusColor: focusColor,
-                cardFocusExpansion: cardExpansion,
-                externalIsFocused: isFocused,
-                onTap: () => context.push(action.destination),
+      child: RepaintBoundary(
+        child: LockedFocusRow<_LiveTvAction>(
+          key: _rowKey(rowIndex),
+          items: actions,
+          hubKey: _hubKeyForRow(row),
+          controller: _rowHorizontalController(rowIndex),
+          height: rowHeight,
+          itemExtent: squarePosterSide,
+          itemSpacing: 12,
+          leadingPadding: _isHomeRowsStyleV2() ? _kHomeRowLabelInset : 0,
+          padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
+          onIndexChanged: (_, _) {
+            _onHomeRowTileFocused(null);
+          },
+          onFocusChange: (has) => _onRowFocusTracked(rowIndex, has),
+          onVerticalNavigation: (isUp) => _onRowVerticalNavigation(
+            rowIndex: rowIndex,
+            rows: rows,
+            isUp: isUp,
+          ),
+          onLeftEdge: _onRowLeftEdge,
+          onTap: (_, action) => context.push(action.destination),
+          itemBuilder: (ctx, action, idx, isFocused) {
+            return Align(
+              alignment: Alignment.topCenter,
+              child: SizedBox.square(
+                dimension: squarePosterSide,
+                child: GridButtonCard(
+                  icon: action.icon,
+                  label: action.label,
+                  width: squarePosterSide,
+                  height: squarePosterSide,
+                  focusColor: focusColor,
+                  cardFocusExpansion: cardExpansion,
+                  externalIsFocused: isFocused,
+                  onTap: () => context.push(action.destination),
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -3619,62 +3627,64 @@ class _ContentRowsState extends State<_ContentRows>
       rowIndex: rowIndex,
       hasItems: row.items.isNotEmpty,
       height: rowHeight,
-      child: LockedFocusRow<AggregatedItem>(
-        key: _rowKey(rowIndex),
-        items: row.items,
-        hubKey: _hubKeyForRow(row),
-        controller: _rowHorizontalController(rowIndex),
-        height: rowHeight,
-        itemExtent: squarePosterSide,
-        itemSpacing: 12,
-        leadingPadding: _isHomeRowsStyleV2() ? _kHomeRowLabelInset : 0,
-        padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
-        onIndexChanged: (_, item) {
-          _onHomeRowTileFocused(item);
-        },
-        onFocusChange: (has) => _onRowFocusTracked(rowIndex, has),
-        onVerticalNavigation: (isUp) => _onRowVerticalNavigation(
-          rowIndex: rowIndex,
-          rows: rows,
-          isUp: isUp,
-        ),
-        onLeftEdge: _onRowLeftEdge,
-        onTap: (_, item) => _navigateToLibrary(context, item),
-        onLongPress: (_, item) =>
-            showContextMenu(context, item, onChanged: () => setState(() {})),
-        itemBuilder: (ctx, item, idx, isFocused) {
-          final collectionType =
-              (item.rawData['CollectionType'] as String? ?? '').toLowerCase();
-          final icon = isGameLibrary(collectionType, item.name)
-              ? gameLibraryIcon
-              : _iconForCollectionType(collectionType);
-          return Align(
-            alignment: Alignment.topCenter,
-            child: SizedBox.square(
-              dimension: squarePosterSide,
-              child: GridButtonCard(
-                icon: icon,
-                label: item.name,
-                width: squarePosterSide,
-                height: squarePosterSide,
-                focusColor: focusColor,
-                cardFocusExpansion: cardExpansion,
-                externalIsFocused: isFocused,
-                onTap: () => _navigateToLibrary(context, item),
-                onLongPress: () => showContextMenu(
-                  context,
-                  item,
-                  onChanged: () => setState(() {}),
-                ),
-                onSecondaryTap: () => showContextMenu(
-                  context,
-                  item,
-                  onChanged: () => setState(() {}),
+      child: RepaintBoundary(
+        child: LockedFocusRow<AggregatedItem>(
+          key: _rowKey(rowIndex),
+          items: row.items,
+          hubKey: _hubKeyForRow(row),
+          controller: _rowHorizontalController(rowIndex),
+          height: rowHeight,
+          itemExtent: squarePosterSide,
+          itemSpacing: 12,
+          leadingPadding: _isHomeRowsStyleV2() ? _kHomeRowLabelInset : 0,
+          padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
+          onIndexChanged: (_, item) {
+            _onHomeRowTileFocused(item);
+          },
+          onFocusChange: (has) => _onRowFocusTracked(rowIndex, has),
+          onVerticalNavigation: (isUp) => _onRowVerticalNavigation(
+            rowIndex: rowIndex,
+            rows: rows,
+            isUp: isUp,
+          ),
+          onLeftEdge: _onRowLeftEdge,
+          onTap: (_, item) => _navigateToLibrary(context, item),
+          onLongPress: (_, item) =>
+              showContextMenu(context, item, onChanged: () => setState(() {})),
+          itemBuilder: (ctx, item, idx, isFocused) {
+            final collectionType =
+                (item.rawData['CollectionType'] as String? ?? '').toLowerCase();
+            final icon = isGameLibrary(collectionType, item.name)
+                ? gameLibraryIcon
+                : _iconForCollectionType(collectionType);
+            return Align(
+              alignment: Alignment.topCenter,
+              child: SizedBox.square(
+                dimension: squarePosterSide,
+                child: GridButtonCard(
+                  icon: icon,
+                  label: item.name,
+                  width: squarePosterSide,
+                  height: squarePosterSide,
+                  focusColor: focusColor,
+                  cardFocusExpansion: cardExpansion,
+                  externalIsFocused: isFocused,
+                  onTap: () => _navigateToLibrary(context, item),
+                  onLongPress: () => showContextMenu(
+                    context,
+                    item,
+                    onChanged: () => setState(() {}),
+                  ),
+                  onSecondaryTap: () => showContextMenu(
+                    context,
+                    item,
+                    onChanged: () => setState(() {}),
+                  ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -3776,25 +3786,26 @@ class _ContentRowsState extends State<_ContentRows>
       rowIndex: rowIndex,
       hasItems: row.items.isNotEmpty,
       height: maxCardHeight + (10 * metadataScale) + (hasSubtitle ? 18.0 : 0.0),
-      child: LockedFocusRow<AggregatedItem>(
-        key: _rowKey(rowIndex),
-        items: row.items,
-        hubKey: _hubKeyForRow(row),
-        controller: _rowHorizontalController(rowIndex),
-        height: maxCardHeight + (10 * metadataScale),
-        itemExtent: firstCardWidth,
-        itemSpacing: 12,
-        leadingPadding: isRowsV2 ? _kHomeRowLabelInset : 0,
-        clipBehavior: isRowsV2 ? Clip.none : Clip.hardEdge,
-        padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
-        onFocusChange: (has) => _onRowFocusTracked(rowIndex, has),
-        onVerticalNavigation: (isUp) => _onRowVerticalNavigation(
-          rowIndex: rowIndex,
-          rows: rows,
-          isUp: isUp,
-        ),
-        onLeftEdge: _onRowLeftEdge,
-        onIndexChanged: (index, item) {
+      child: RepaintBoundary(
+        child: LockedFocusRow<AggregatedItem>(
+          key: _rowKey(rowIndex),
+          items: row.items,
+          hubKey: _hubKeyForRow(row),
+          controller: _rowHorizontalController(rowIndex),
+          height: maxCardHeight + (10 * metadataScale),
+          itemExtent: firstCardWidth,
+          itemSpacing: 12,
+          leadingPadding: isRowsV2 ? _kHomeRowLabelInset : 0,
+          clipBehavior: isRowsV2 ? Clip.none : Clip.hardEdge,
+          padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
+          onFocusChange: (has) => _onRowFocusTracked(rowIndex, has),
+          onVerticalNavigation: (isUp) => _onRowVerticalNavigation(
+            rowIndex: rowIndex,
+            rows: rows,
+            isUp: isUp,
+          ),
+          onLeftEdge: _onRowLeftEdge,
+          onIndexChanged: (index, item) {
           final forceReveal = _forceRevealOnNextRowFocusFromMediaBar;
           _forceRevealOnNextRowFocusFromMediaBar = false;
           widget.onItemSelected(item);
@@ -4147,6 +4158,7 @@ class _ContentRowsState extends State<_ContentRows>
           return previewWrappedCard;
         },
       ),
+    ),
     );
     _homeBuildMonitor.recordRow(watch.elapsedMicroseconds);
     return result;
@@ -4160,15 +4172,17 @@ class _ContentRowsState extends State<_ContentRows>
     required double extendedWidth,
     required bool isAudioRow,
   }) {
-    final additionalRatings = _v2AdditionalRatingsByKey[itemKey] ?? {};
-    final hasAnyRating =
-        item.communityRating != null ||
-        item.criticRating != null ||
-        additionalRatings.isNotEmpty;
-    final overview = isAudioRow ? '' : (item.overview ?? '');
-    if (!hasAnyRating && overview.isEmpty) {
-      return SizedBox(width: cardWidth);
-    }
+    return ValueListenableBuilder<Map<String, Map<String, double>>>(
+      valueListenable: _v2AdditionalRatingsNotifier,
+      builder: (context, ratingsByKey, _) {
+        final additionalRatings = ratingsByKey[itemKey] ?? {};
+        final hasAnyRating = item.communityRating != null ||
+            item.criticRating != null ||
+            additionalRatings.isNotEmpty;
+        final overview = isAudioRow ? '' : (item.overview ?? '');
+        if (!hasAnyRating && overview.isEmpty) {
+          return SizedBox(width: cardWidth);
+        }
 
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final baseStyle =
@@ -4181,51 +4195,53 @@ class _ContentRowsState extends State<_ContentRows>
       height: 1.4,
     );
 
-    return SizedBox(
-      width: cardWidth,
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.topLeft,
-        children: [
-          SizedBox(
-            width: extendedWidth,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (hasAnyRating)
-                  RatingsRow(
-                    ratings: additionalRatings,
-                    communityRating: item.communityRating,
-                    criticRating: item.criticRating,
-                    enableAdditionalRatings: widget.prefs.get(
-                      UserPreferences.enableAdditionalRatings,
-                    ),
-                    enabledRatings: widget.prefs.get(
-                      UserPreferences.enabledRatings,
-                    ),
-                    showLabels: widget.prefs.get(
-                      UserPreferences.showRatingLabels,
-                    ),
-                    showBadges: widget.prefs.get(
-                      UserPreferences.showRatingBadges,
-                    ),
-                  ),
-                if (overview.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      overview,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: overviewStyle,
-                    ),
-                  ),
-              ],
-            ),
+        return SizedBox(
+          width: cardWidth,
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.topLeft,
+            children: [
+              SizedBox(
+                width: extendedWidth,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (hasAnyRating)
+                      RatingsRow(
+                        ratings: additionalRatings,
+                        communityRating: item.communityRating,
+                        criticRating: item.criticRating,
+                        enableAdditionalRatings: widget.prefs.get(
+                          UserPreferences.enableAdditionalRatings,
+                        ),
+                        enabledRatings: widget.prefs.get(
+                          UserPreferences.enabledRatings,
+                        ),
+                        showLabels: widget.prefs.get(
+                          UserPreferences.showRatingLabels,
+                        ),
+                        showBadges: widget.prefs.get(
+                          UserPreferences.showRatingBadges,
+                        ),
+                      ),
+                    if (overview.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          overview,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: overviewStyle,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
