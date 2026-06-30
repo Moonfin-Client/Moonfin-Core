@@ -2597,9 +2597,12 @@ class _ContentRowsState extends State<_ContentRows>
       Duration(milliseconds: isMouseScroll ? 1000 : 250),
       () {
         if (!mounted) return;
+        final shouldClearScrolling = _isActivelyScrolling;
         _isActivelyScrolling = false;
         _snapToNearestRow();
-        setState(() {});
+        if (shouldClearScrolling && mounted) {
+          setState(() {});
+        }
       },
     );
     if (_activePreviewKey != null) {
@@ -2613,19 +2616,18 @@ class _ContentRowsState extends State<_ContentRows>
     if (_infoRevealed && _isMediaBarIncluded() && _showHomeRowInfoOverlay()) {
       final collapseOffset = _pinnedInfoCollapseOffset();
       if (scrollingUp && offset < collapseOffset) {
-        setState(() {
+        if (_infoRevealed) {
           _infoRevealed = false;
           _scrollOffset = offset;
-        });
+          if (mounted) {
+            setState(() {});
+          }
+        }
         return;
       }
     }
 
-    if (_infoRevealed && _isMediaBarIncluded()) {
-      setState(() => _scrollOffset = offset);
-    } else {
-      _scrollOffset = offset;
-    }
+    _scrollOffset = offset;
   }
 
   void _snapToNearestRow() {
