@@ -628,6 +628,7 @@ class _ContentRowsState extends State<_ContentRows>
   bool _isScrolledToTop = true;
   bool _isActivelyScrolling = false;
   Timer? _scrollIdleTimer;
+  double _lastActiveRowOffsetUpdate = 0;
   bool _infoRevealed = false;
   bool _mediaBarVisible = true;
   bool _initialFocusResolved = false;
@@ -671,6 +672,7 @@ class _ContentRowsState extends State<_ContentRows>
   static const _focusHandoffDuration = Duration(milliseconds: 220);
   static const _focusHandoffCurve = Curves.easeInOutCubic;
   static const _mediaBarFadeDuration = Duration(milliseconds: 220);
+  static const double _activeRowRecalcDistance = 48.0;
 
   void _markUserGesture() {
     if (!kIsWeb) return;
@@ -2500,43 +2502,38 @@ class _ContentRowsState extends State<_ContentRows>
         !PlatformDetection.useMobileUi &&
         widget.prefs.get(UserPreferences.fullScreenRows);
 
-    final shouldUpdateActiveRow =
-        isDesktop && _rowTopOffsets.isNotEmpty && _scrollController.hasClients;
+    final shouldUpdateActiveRow = isDesktop &&
+        _rowTopOffsets.isNotEmpty &&
+        _scrollController.hasClients &&
+        (_activeFocusedRowIndex == null ||
+            (offset - _lastActiveRowOffsetUpdate).abs() >=
+                _activeRowRecalcDistance ||
+            offset <= 0);
     if (shouldUpdateActiveRow) {
+      _lastActiveRowOffsetUpdate = offset;
       double minDiff = double.infinity;
       int? closestRowIndex;
+      final maxScrollExtent = _scrollController.position.maxScrollExtent;
 
-      final List<double> targets = [];
       if (_isMediaBarIncluded()) {
-        targets.add(0.0);
-      }
-      for (var i = 0; i < _rowTopOffsets.length; i++) {
-        final double target;
-        if (fullScreenRows) {
-          final targetTop = _tvTargetTopForRow(i);
-          target = (_rowTopOffsets[i] - targetTop).clamp(
-            0.0,
-            _scrollController.position.maxScrollExtent,
-          );
-        } else {
-          target = _rowTopOffsets[i].clamp(
-            0.0,
-            _scrollController.position.maxScrollExtent,
-          );
+        final mediaBarDiff = offset.abs();
+        if (mediaBarDiff < minDiff) {
+          minDiff = mediaBarDiff;
+          closestRowIndex = null;
         }
-        targets.add(target);
       }
 
-      for (var i = 0; i < targets.length; i++) {
-        final target = targets[i];
+      for (var i = 0; i < _rowTopOffsets.length; i++) {
+        final target = fullScreenRows
+            ? (_rowTopOffsets[i] - _tvTargetTopForRow(i)).clamp(
+                0.0,
+                maxScrollExtent,
+              )
+            : _rowTopOffsets[i].clamp(0.0, maxScrollExtent);
         final diff = (target - offset).abs();
         if (diff < minDiff) {
           minDiff = diff;
-          if (_isMediaBarIncluded()) {
-            closestRowIndex = i == 0 ? null : i - 1;
-          } else {
-            closestRowIndex = i;
-          }
+          closestRowIndex = i;
         }
       }
 
