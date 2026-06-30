@@ -664,6 +664,9 @@ class _ContentRowsState extends State<_ContentRows>
   final Map<String, String?> _v2TmdbIdByKey = {};
   late bool _lastMedia3PreviewPreference;
   List<double> _rowTopOffsets = [];
+  List<double> _cachedRowTargetOffsets = [];
+  double _cachedRowTargetMaxScrollExtent = -1.0;
+  bool _cachedRowTargetFullScreenRows = false;
   double _overlayBottom = 0;
   static const _previewScrollThreshold = 150.0;
   static const _previewOpenTimeout = Duration(seconds: 10);
@@ -693,6 +696,40 @@ class _ContentRowsState extends State<_ContentRows>
 
   void _invalidateStaticRowHeightCache() {
     _staticRowHeightCache.clear();
+  }
+
+  void _invalidateRowTargetOffsetCache() {
+    _cachedRowTargetOffsets = [];
+    _cachedRowTargetMaxScrollExtent = -1.0;
+    _cachedRowTargetFullScreenRows = false;
+  }
+
+  List<double> _rowTargetOffsetsForScroll({required bool fullScreenRows}) {
+    final maxScrollExtent = _scrollController.hasClients
+        ? _scrollController.position.maxScrollExtent
+        : double.infinity;
+    if (_cachedRowTargetOffsets.length == _rowTopOffsets.length &&
+        _cachedRowTargetFullScreenRows == fullScreenRows &&
+        _cachedRowTargetMaxScrollExtent == maxScrollExtent) {
+      return _cachedRowTargetOffsets;
+    }
+
+    final targets = <double>[];
+    for (var i = 0; i < _rowTopOffsets.length; i++) {
+      targets.add(
+        fullScreenRows
+            ? (_rowTopOffsets[i] - _tvTargetTopForRow(i)).clamp(
+                0.0,
+                maxScrollExtent,
+              )
+            : _rowTopOffsets[i].clamp(0.0, maxScrollExtent),
+      );
+    }
+
+    _cachedRowTargetOffsets = targets;
+    _cachedRowTargetMaxScrollExtent = maxScrollExtent;
+    _cachedRowTargetFullScreenRows = fullScreenRows;
+    return targets;
   }
 
   int? _focusedRowIndex(FocusNode? node) {
@@ -2513,7 +2550,6 @@ class _ContentRowsState extends State<_ContentRows>
       _lastActiveRowOffsetUpdate = offset;
       double minDiff = double.infinity;
       int? closestRowIndex;
-      final maxScrollExtent = _scrollController.position.maxScrollExtent;
 
       if (_isMediaBarIncluded()) {
         final mediaBarDiff = offset.abs();
@@ -2523,14 +2559,9 @@ class _ContentRowsState extends State<_ContentRows>
         }
       }
 
-      for (var i = 0; i < _rowTopOffsets.length; i++) {
-        final target = fullScreenRows
-            ? (_rowTopOffsets[i] - _tvTargetTopForRow(i)).clamp(
-                0.0,
-                maxScrollExtent,
-              )
-            : _rowTopOffsets[i].clamp(0.0, maxScrollExtent);
-        final diff = (target - offset).abs();
+      final targets = _rowTargetOffsetsForScroll(fullScreenRows: fullScreenRows);
+      for (var i = 0; i < targets.length; i++) {
+        final diff = (targets[i] - offset).abs();
         if (diff < minDiff) {
           minDiff = diff;
           closestRowIndex = i;
@@ -3194,6 +3225,7 @@ class _ContentRowsState extends State<_ContentRows>
       }
     }
 
+    _invalidateRowTargetOffsetCache();
     _rowTopOffsets = rowTopOffsets;
     _overlayBottom = overlayBottom;
     final headerCount = (includeMediaBar ? 1 : 0) + 1;
