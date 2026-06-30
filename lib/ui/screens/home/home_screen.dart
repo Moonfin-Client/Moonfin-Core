@@ -3287,16 +3287,13 @@ class _ContentRowsState extends State<_ContentRows>
       },
       child: Stack(
         children: [
-        ValueListenableBuilder<double>(
-          valueListenable: _scrollOffsetNotifier,
-          builder: (context, _, _) {
-            return Positioned.fill(
-              child: Focus(
-                canRequestFocus: false,
-                skipTraversal: true,
-                onKeyEvent: (_, event) => _handleRowsKeyEvent(event),
-                child: ListView.builder(
-                  controller: _scrollController,
+        Positioned.fill(
+          child: Focus(
+            canRequestFocus: false,
+            skipTraversal: true,
+            onKeyEvent: (_, event) => _handleRowsKeyEvent(event),
+            child: ListView.builder(
+              controller: _scrollController,
                   padding: EdgeInsets.only(
                     top: listTopPadding,
                     bottom: neededBottomPadding,
@@ -3424,13 +3421,18 @@ class _ContentRowsState extends State<_ContentRows>
                     if (row.isLoading) {
                       final itemWidget = Padding(
                         padding: EdgeInsets.only(left: rowLeftInset),
-                        child: _buildShiftedRow(
-                          child: paddedRowChild,
-                          rowIndex: rowIndex,
-                          rowTopOffsets: rowTopOffsets,
-                          rowExtents: rowExtents,
-                          showInfoOverlay: showInfoOverlay,
-                          overlayBottom: overlayBottom,
+                        child: ValueListenableBuilder<double>(
+                          valueListenable: _scrollOffsetNotifier,
+                          builder: (context, scrollOffset, _) {
+                            return _buildShiftedRow(
+                              child: paddedRowChild,
+                              rowIndex: rowIndex,
+                              rowTopOffsets: rowTopOffsets,
+                              rowExtents: rowExtents,
+                              showInfoOverlay: showInfoOverlay,
+                              overlayBottom: overlayBottom,
+                            );
+                          },
                         ),
                       );
                       if (fullScreenRows) {
@@ -3455,13 +3457,18 @@ class _ContentRowsState extends State<_ContentRows>
                               ? _focusedRowExtraSpacing
                               : 0,
                         ),
-                        child: _buildShiftedRow(
-                          child: paddedRowChild,
-                          rowIndex: rowIndex,
-                          rowTopOffsets: rowTopOffsets,
-                          rowExtents: rowExtents,
-                          showInfoOverlay: showInfoOverlay,
-                          overlayBottom: overlayBottom,
+                        child: ValueListenableBuilder<double>(
+                          valueListenable: _scrollOffsetNotifier,
+                          builder: (context, scrollOffset, _) {
+                            return _buildShiftedRow(
+                              child: paddedRowChild,
+                              rowIndex: rowIndex,
+                              rowTopOffsets: rowTopOffsets,
+                              rowExtents: rowExtents,
+                              showInfoOverlay: showInfoOverlay,
+                              overlayBottom: overlayBottom,
+                            );
+                          },
                         ),
                       ),
                     );
@@ -3475,9 +3482,7 @@ class _ContentRowsState extends State<_ContentRows>
                   },
                 ),
               ),
-            );
-          },
-        ),
+            ),
         if (_infoRevealed && showInfoOverlay)
           Positioned(
             top: 0,
