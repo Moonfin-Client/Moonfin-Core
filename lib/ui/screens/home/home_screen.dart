@@ -565,7 +565,6 @@ class _ContentRowsState extends State<_ContentRows>
   final Map<int, GlobalKey> _rowKeys = {};
   final Map<int, GlobalKey> _rowContainerKeys = {};
   final Map<int, ScrollController> _rowHorizontalControllers = {};
-  final Set<int> _rowsWithPagingListener = {}; 
   List<HomeRow>? _cachedExtentRows;
   PosterSize? _cachedExtentPosterSize;
   double? _cachedExtentDesktopScale;
@@ -1883,14 +1882,11 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   ScrollController _rowHorizontalController(int rowIndex) {
-    final controller = _rowHorizontalControllers.putIfAbsent(
-      rowIndex,
-      () => ScrollController(),
-    );
-    if (_rowsWithPagingListener.add(rowIndex)) {
+    return _rowHorizontalControllers.putIfAbsent(rowIndex, () {
+      final controller = ScrollController();
       controller.addListener(() => _onRowScrolled(rowIndex, controller));
-    }
-    return controller;
+      return controller;
+    });
   }
 
   void _onRowScrolled(int rowIndex, ScrollController controller) {
