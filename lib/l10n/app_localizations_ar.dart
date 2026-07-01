@@ -145,10 +145,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Moonfin is the classic layout. Modern is a responsive cinematic layout.';
+      'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.';
 
   @override
-  String get detailScreenStyleMoonfin => 'Moonfin';
+  String get detailScreenStyleMoonfin => 'Classic';
 
   @override
   String get detailScreenStyleModern => 'Modern';

@@ -192,11 +192,11 @@
   "@detailScreenStyle": {
     "description": "Label for the media detail screen layout style setting"
   },
-  "detailScreenStyleSubtitle": "Moonfin is the classic layout. Modern is a responsive cinematic layout.",
+  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.",
   "@detailScreenStyleSubtitle": {
     "description": "Explanation under the detail screen style setting"
   },
-  "detailScreenStyleMoonfin": "Moonfin",
+  "detailScreenStyleMoonfin": "Classic",
   "@detailScreenStyleMoonfin": {
     "description": "Detail screen style option: the classic centered layout"
   },

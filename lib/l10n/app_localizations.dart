@@ -469,13 +469,13 @@ abstract class AppLocalizations {
   /// Explanation under the detail screen style setting
   ///
   /// In en, this message translates to:
-  /// **'Moonfin is the classic layout. Modern is a responsive cinematic layout.'**
+  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.'**
   String get detailScreenStyleSubtitle;
 
   /// Detail screen style option: the classic centered layout
   ///
   /// In en, this message translates to:
-  /// **'Moonfin'**
+  /// **'Classic'**
   String get detailScreenStyleMoonfin;
 
   /// Detail screen style option: the responsive cinematic layout
