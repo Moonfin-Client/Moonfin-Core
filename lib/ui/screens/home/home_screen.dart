@@ -2894,7 +2894,7 @@ class _ContentRowsState extends State<_ContentRows>
       UserPreferences.enableAdditionalRatings,
     );
     final hasAdditionalRatingsPadding = hasAdditionalRatings ? 8.0 : 0.0;
-    final heightBudget = 165.0 + hasAdditionalRatingsPadding;
+    final heightBudget = 175.0 + hasAdditionalRatingsPadding;
     return heightBudget;
   }
 
@@ -3854,14 +3854,16 @@ class _ContentRowsState extends State<_ContentRows>
                   ? '$episodeInfo - ${item.name}'
                   : item.name;
               final row3Text = _v2MetadataLine(item);
+              final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
               final baseTextStyle =
                   Theme.of(context).textTheme.bodySmall ??
                   const TextStyle(fontSize: 12);
-              final subtitleColor = Theme.of(
-                context,
-              ).colorScheme.onSurface.withAlpha(153);
+              final subtitleColor = isNeon
+                  ? AppColorScheme.onSurface
+                  : Theme.of(context).colorScheme.onSurface.withAlpha(180);
               final subtitleStyle = baseTextStyle.copyWith(
                 color: subtitleColor,
+                shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
               );
               cardSubtitleWidget = Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -4060,10 +4062,14 @@ class _ContentRowsState extends State<_ContentRows>
       return SizedBox(width: cardWidth);
     }
 
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final baseStyle =
         Theme.of(context).textTheme.bodySmall ?? const TextStyle(fontSize: 12);
     final overviewStyle = baseStyle.copyWith(
-      color: Theme.of(context).colorScheme.onSurface.withAlpha(140),
+      color: isNeon
+          ? AppColorScheme.onSurface
+          : Theme.of(context).colorScheme.onSurface.withAlpha(180),
+      shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
       height: 1.4,
     );
 

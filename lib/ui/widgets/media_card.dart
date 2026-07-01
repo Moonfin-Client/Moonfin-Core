@@ -159,13 +159,21 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
         Theme.of(context).textTheme.bodySmall ?? const TextStyle(fontSize: 12);
     final subtitleColor =
         widget.subtitleColor ??
-        Theme.of(context).colorScheme.onSurface.withAlpha(153);
+        (isNeon
+            ? AppColorScheme.onSurface
+            : Theme.of(context).colorScheme.onSurface.withAlpha(153));
     final titleStyle = baseTextStyle.copyWith(
       color:
           widget.titleColor ??
           (isNeon ? AppColorScheme.accent : baseTextStyle.color),
+      fontWeight: FontWeight.bold,
+      fontSize: (baseTextStyle.fontSize ?? 12) + 1.0,
+      shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
     );
-    final subtitleStyle = baseTextStyle.copyWith(color: subtitleColor);
+    final subtitleStyle = baseTextStyle.copyWith(
+      color: subtitleColor,
+      shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
+    );
     final textScaler = MediaQuery.textScalerOf(context);
 
     double lineHeightFor(TextStyle style) {
