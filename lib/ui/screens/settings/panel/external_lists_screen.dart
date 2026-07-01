@@ -1008,10 +1008,9 @@ class _SeerrRowSwitchTile extends StatelessWidget {
           secondary: secondary,
           title: Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColorScheme.onSurface,
             ),
           ),
           value: value,
@@ -1220,10 +1219,9 @@ class _CustomListsScreenState extends State<_CustomListsScreen> {
                                 Expanded(
                                   child: Text(
                                     config.pluginDisplayText ?? 'Custom Row',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColorScheme.onSurface,
                                     ),
                                   ),
                                 ),
