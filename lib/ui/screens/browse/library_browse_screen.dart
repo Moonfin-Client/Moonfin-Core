@@ -1613,7 +1613,7 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
                         LibrarySortBy.dateAdded,
                         LibrarySortBy.random,
                       ]
-                    : LibrarySortBy.values.where((o) => !vm.isMusicBrowse || (
+                    : LibrarySortBy.sortedValues.where((o) => !vm.isMusicBrowse || (
                         o != LibrarySortBy.rating &&
                         o != LibrarySortBy.criticRating &&
                         o != LibrarySortBy.communityRating

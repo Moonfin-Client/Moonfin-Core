@@ -1037,7 +1037,7 @@ class _SortDialogState extends State<_SortDialog> {
             ),
             Divider(color: dividerColor),
             _sectionHeader(AppLocalizations.of(context).sortBy),
-            for (final option in LibrarySortBy.values)
+            for (final option in LibrarySortBy.sortedValues)
               _radioTile(
                 label: option.displayName,
                 selected: vm.sortBy == option,

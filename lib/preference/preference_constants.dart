@@ -320,6 +320,7 @@ enum HomeSectionType {
 }
 
 enum LibrarySortBy {
+  original('', 'Original'),
   name('SortName', 'Name'),
   dateAdded('DateCreated', 'Date Added'),
   premiereDate('PremiereDate', 'Premiere Date'),
@@ -332,6 +333,19 @@ enum LibrarySortBy {
   const LibrarySortBy(this.apiValue, this.displayName);
   final String apiValue;
   final String displayName;
+
+  String? get sortByParameter => this == original ? null : apiValue;
+
+  static const sortedValues = [
+    name,
+    dateAdded,
+    premiereDate,
+    rating,
+    runtime,
+    random,
+    criticRating,
+    communityRating,
+  ];
 }
 
 enum GenresRowItemFilter {

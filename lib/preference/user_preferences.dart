@@ -1850,7 +1850,7 @@ class UserPreferences extends ChangeNotifier {
       EnumPreference(
         key: 'library_sort_by_$libraryId',
         defaultValue: LibrarySortBy.name,
-        values: LibrarySortBy.values,
+        values: LibrarySortBy.sortedValues,
       );
 
   static EnumPreference<SortDirection> librarySortDirection(String libraryId) =>
