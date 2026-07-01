@@ -4,5 +4,7 @@
 <dict>
 	<key>com.apple.developer.networking.multicast</key>
 	<true/>
+	<key>com.apple.developer.carplay-audio</key>
+	<true/>
 </dict>
 </plist>
