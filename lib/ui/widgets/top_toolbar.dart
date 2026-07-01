@@ -1727,12 +1727,26 @@ class _LibrariesDropdownState extends State<_LibrariesDropdown> {
       ),
     );
 
-    return CompositedTransformFollower(
-      link: _layerLink,
-      targetAnchor: _openToLeft ? Alignment.bottomRight : Alignment.bottomLeft,
-      followerAnchor: _openToLeft ? Alignment.topRight : Alignment.topLeft,
-      offset: Offset.zero,
-      child: content,
+    // Full-screen barrier so an outside tap dismisses the menu on touch, where
+    // there is no hover or focus change to close it (e.g. opening Settings).
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => _hideDropdown(),
+          ),
+        ),
+        CompositedTransformFollower(
+          link: _layerLink,
+          targetAnchor:
+              _openToLeft ? Alignment.bottomRight : Alignment.bottomLeft,
+          followerAnchor:
+              _openToLeft ? Alignment.topRight : Alignment.topLeft,
+          offset: Offset.zero,
+          child: content,
+        ),
+      ],
     );
   }
 
