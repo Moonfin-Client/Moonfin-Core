@@ -849,9 +849,9 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               },
             ),
           if (moviesList.isNotEmpty)
-            _ModernTab(l10n.movies, (context, item) => _moviesTab(context, moviesList, focusNode: _moviesFirstFocusNode)),
+            _ModernTab(l10n.movies, (context, item) => _mediaGrid(context, moviesList, firstFocusNode: _moviesFirstFocusNode)),
           if (seriesList.isNotEmpty)
-            _ModernTab(l10n.series, (context, item) => _seriesTab(context, seriesList, focusNode: _seriesFirstFocusNode)),
+            _ModernTab(l10n.series, (context, item) => _mediaGrid(context, seriesList, firstFocusNode: _seriesFirstFocusNode)),
           if (hasCast) _ModernTab(l10n.cast, _boxSetCastTab),
           if (hasCrew) _ModernTab(l10n.crewSection, _boxSetCrewTab),
           if (hasStudios) studios,
@@ -879,7 +879,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     // unplayed episode's seasonId so the cyan border always renders correctly.
     final nextUpSeasonId = _vm.nextUp?.seasonId ??
         _vm.seriesEpisodes.firstWhereOrNull((e) => !e.isPlayed)?.seasonId;
-    SeasonCard buildSeasonCard(int i, {double? width, double? height}) =>
+    SeasonCard buildSeasonCard(
+      int i, {
+      double? width,
+      double? height,
+      bool topRow = true,
+    }) =>
         SeasonCard(
           title: _vm.seasons[i].name,
           subtitle: l10n.episodeCount(
@@ -889,11 +894,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           isFallbackImage: _imageUrl(_vm.seasons[i]) == null,
           landscape: _landscape,
           isNextUp: _vm.seasons[i].id == nextUpSeasonId,
-          onNavigateUp: _focusSelectedTab,
-          onNavigateRight: i == _vm.seasons.length - 1 ? () {} : null,
+          onNavigateUp: topRow ? _focusSelectedTab : null,
           focusNode: i == 0 ? _seasonsFirstFocusNode : null,
           width: width,
           height: height,
+          autoScroll: true,
           onTap: () => context.push(
             Destinations.item(_vm.seasons[i].id, serverId: _vm.seasons[i].serverId),
           ),
@@ -904,64 +909,56 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       letterSpacing: 1.0,
       fontSize: 10,
     );
-    final child = _landscape
-        ? SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (var i = 0; i < _vm.seasons.length; i++)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          _vm.seasons[i].name.toUpperCase(),
-                          style: seasonLabelStyle,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 6),
-                        buildSeasonCard(i),
-                      ],
-                    ),
-                  ),
-              ],
+    // Centered when it fits, horizontally scrollable when the name is longer
+    // than the card, so a long season name never wraps to a second line.
+    Widget seasonLabel(int i, double viewportWidth) => SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: viewportWidth),
+            child: Text(
+              _vm.seasons[i].name.toUpperCase(),
+              maxLines: 1,
+              softWrap: false,
+              style: seasonLabelStyle,
+              textAlign: TextAlign.center,
             ),
-          )
-        : LayoutBuilder(
-            builder: (context, constraints) {
-              const spacing = 12.0;
-              final columns = (constraints.maxWidth / 130).floor().clamp(3, 6);
-              final cardWidth =
-                  ((constraints.maxWidth - spacing * (columns - 1)) / columns)
-                      .floorToDouble();
-              final cardHeight = cardWidth * 1.5;
-              return Wrap(
-                spacing: spacing,
-                runSpacing: 16,
-                children: [
-                  for (var i = 0; i < _vm.seasons.length; i++)
-                    SizedBox(
+          ),
+        );
+    final child = LayoutBuilder(
+      builder: (context, constraints) {
+        const spacing = 12.0;
+        final columns = (constraints.maxWidth / (_landscape ? 160.0 : 130.0))
+            .floor()
+            .clamp(3, _landscape ? 8 : 6);
+        final cardWidth =
+            ((constraints.maxWidth - spacing * (columns - 1)) / columns)
+                .floorToDouble();
+        final cardHeight = cardWidth * 1.5;
+        return Wrap(
+          spacing: spacing,
+          runSpacing: 16,
+          children: [
+            for (var i = 0; i < _vm.seasons.length; i++)
+              SizedBox(
+                width: cardWidth,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    seasonLabel(i, cardWidth),
+                    const SizedBox(height: 6),
+                    buildSeasonCard(
+                      i,
                       width: cardWidth,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            _vm.seasons[i].name.toUpperCase(),
-                            style: seasonLabelStyle,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 6),
-                          buildSeasonCard(i, width: cardWidth, height: cardHeight),
-                        ],
-                      ),
+                      height: cardHeight,
+                      topRow: i < columns,
                     ),
-                ],
-              );
-            },
-          );
+                  ],
+                ),
+              ),
+          ],
+        );
+      },
+    );
 
     return Focus(
       canRequestFocus: false,
@@ -971,13 +968,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         } else if (!focused && mounted) {
           widget.onToggleNavbar?.call(true);
         }
-      },
-      onKeyEvent: (node, event) {
-        if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-          _focusSelectedTab();
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
       },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 32),
@@ -2570,99 +2560,89 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     );
   }
 
-  Widget _similarTab(BuildContext context, List<AggregatedItem> items) {
+  Widget _similarTab(BuildContext context, List<AggregatedItem> items) =>
+      _mediaGrid(context, items, firstFocusNode: _similarFirstFocusNode);
+
+  /// Responsive poster grid shared by the Similar tab and the collection
+  /// Movies/Shows tabs. Columns scale to width; d-pad uses default geometric
+  /// traversal, the top row escapes up to the tab bar, and cards scroll into
+  /// view on focus so rows below the fold stay reachable.
+  Widget _mediaGrid(
+    BuildContext context,
+    List<AggregatedItem> items, {
+    FocusNode? firstFocusNode,
+  }) {
     if (items.isEmpty) return const SizedBox.shrink();
-    final isMobile = _landscape == false;
     const cardRatio = 2 / 3;
 
-    if (isMobile) {
-      return LayoutBuilder(
-        builder: (context, constraints) {
-          const spacing = 12.0;
-          final columns = (constraints.maxWidth / 130).floor().clamp(3, 6);
-          final cardWidth =
-              ((constraints.maxWidth - spacing * (columns - 1)) / columns)
-                  .floorToDouble();
-          return Wrap(
-            spacing: spacing,
-            runSpacing: 16,
-            children: [
-              for (final entry in items)
-                MediaCard(
-                  title: entry.name,
-                  imageUrl: _imageUrl(entry),
-                  width: cardWidth,
-                  aspectRatio: cardRatio,
-                  isPlayed: entry.isPlayed,
-                  isFavorite: entry.isFavorite,
-                  itemType: entry.type,
-                  watchedBehavior:
-                      widget.prefs.get(UserPreferences.watchedIndicatorBehavior),
-                  onTap: () => context.push(
-                    Destinations.item(entry.id, serverId: entry.serverId),
-                  ),
-                ),
-            ],
-          );
-        },
-      );
-    }
-
-    final desktopScale =
-        widget.prefs.get(UserPreferences.desktopUiScale).scaleFactor;
-    final cardWidth = 120.0 * desktopScale;
-    final cardHeight = cardWidth / cardRatio + 48.0;
-
-    return SizedBox(
-      height: cardHeight + 24.0,
-      child: Focus(
-        canRequestFocus: false,
-        onFocusChange: (focused) {
-          if (focused && mounted) {
-            widget.onToggleNavbar?.call(false);
-          } else if (!focused && mounted) {
-            widget.onToggleNavbar?.call(true);
-          }
-        },
-        onKeyEvent: (node, event) {
-          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            _focusSelectedTab();
-            return KeyEventResult.handled;
-          }
-          return KeyEventResult.ignored;
-        },
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          clipBehavior: Clip.none,
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
-          itemCount: items.length,
-          separatorBuilder: (_, __) => SizedBox(width: isMobile ? 8.0 : 12.0 * desktopScale),
-          itemBuilder: (context, i) {
-            final entry = items[i];
-            return MediaCard(
-              title: entry.name,
-              imageUrl: _imageUrl(entry),
-              width: cardWidth,
-              aspectRatio: cardRatio,
-              isPlayed: entry.isPlayed,
-              isFavorite: entry.isFavorite,
-              itemType: entry.type,
-              focusNode: i == 0 ? _similarFirstFocusNode : null,
-              onKeyEvent: (node, event) {
-                if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                  _focusSelectedTab();
-                  return KeyEventResult.handled;
-                }
-                return KeyEventResult.ignored;
-              },
-              watchedBehavior:
-                  widget.prefs.get(UserPreferences.watchedIndicatorBehavior),
-              onTap: () => context.push(
-                Destinations.item(entry.id, serverId: entry.serverId),
+    final grid = LayoutBuilder(
+      builder: (context, constraints) {
+        const spacing = 12.0;
+        final columns = (constraints.maxWidth / (_landscape ? 150.0 : 130.0))
+            .floor()
+            .clamp(3, _landscape ? 8 : 6);
+        final cardWidth =
+            ((constraints.maxWidth - spacing * (columns - 1)) / columns)
+                .floorToDouble();
+        return Wrap(
+          spacing: spacing,
+          runSpacing: 16,
+          children: [
+            for (var i = 0; i < items.length; i++)
+              Builder(
+                builder: (cellContext) {
+                  final entry = items[i];
+                  final topRow = i < columns;
+                  return MediaCard(
+                    title: entry.name,
+                    imageUrl: _imageUrl(entry),
+                    width: cardWidth,
+                    aspectRatio: cardRatio,
+                    isPlayed: entry.isPlayed,
+                    isFavorite: entry.isFavorite,
+                    itemType: entry.type,
+                    focusNode: i == 0 ? firstFocusNode : null,
+                    onFocus: () => Scrollable.ensureVisible(
+                      cellContext,
+                      alignment: 0.5,
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeOut,
+                    ),
+                    onKeyEvent: topRow
+                        ? (node, event) {
+                            if (event is KeyDownEvent &&
+                                event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                              _focusSelectedTab();
+                              return KeyEventResult.handled;
+                            }
+                            return KeyEventResult.ignored;
+                          }
+                        : null,
+                    watchedBehavior: widget.prefs
+                        .get(UserPreferences.watchedIndicatorBehavior),
+                    onTap: () => context.push(
+                      Destinations.item(entry.id, serverId: entry.serverId),
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
+          ],
+        );
+      },
+    );
+
+    return Focus(
+      canRequestFocus: false,
+      onFocusChange: (focused) {
+        if (focused && mounted) {
+          widget.onToggleNavbar?.call(false);
+        } else if (!focused && mounted) {
+          widget.onToggleNavbar?.call(true);
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 32),
+        child: grid,
       ),
     );
   }

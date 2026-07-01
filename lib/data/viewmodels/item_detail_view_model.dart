@@ -577,7 +577,11 @@ class ItemDetailViewModel extends ChangeNotifier {
       );
       final items = (data['Items'] as List?) ?? [];
       _collectionItems = _mapItems(items);
-      
+      // Render the Movies/Shows/Cast tabs as soon as the top-level items are in.
+      // The per-series episode fetch below only feeds the flattened Playlist tab
+      // and Next Up, so it should not block the collection from showing.
+      notifyListeners();
+
       // Fetch each series' episodes in parallel. The list is release sorted
       // below, so fetch order does not affect the result.
       final list = <AggregatedItem>[];

@@ -25,6 +25,10 @@ class SeasonCard extends StatelessWidget {
   final double? width;
   final double? height;
 
+  /// Scroll the card into view when it gains focus (used in the grid layout so
+  /// d-pad can reach rows below the fold).
+  final bool autoScroll;
+
   const SeasonCard({
     super.key,
     required this.title,
@@ -39,6 +43,7 @@ class SeasonCard extends StatelessWidget {
     this.onNavigateRight,
     this.width,
     this.height,
+    this.autoScroll = false,
   });
 
   @override
@@ -53,6 +58,8 @@ class SeasonCard extends StatelessWidget {
       focusNode: focusNode,
       onSelect: onTap,
       borderRadius: radius.topLeft.x,
+      autoScroll: autoScroll,
+      scrollAlignment: 0.5,
       onNavigateUp: onNavigateUp,
       onNavigateRight: onNavigateRight,
       child: GestureDetector(

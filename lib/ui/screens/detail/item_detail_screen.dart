@@ -5028,6 +5028,42 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     _extraFocusNode(targetIndex).requestFocus();
   }
 
+  /// Resolves the focus node for primary-row button [index] in a full (non-
+  /// overflow) row, where the last slot shares the right-edge node.
+  FocusNode _primaryNodeAt(int index, int count) {
+    if (index == 0) return widget.tvPlayFocusNode ?? _primaryFocusNode(0);
+    if (index == count - 1) {
+      return widget.actionRowRightFocusNode ?? _primaryFocusNode(index);
+    }
+    return _primaryFocusNode(index);
+  }
+
+  /// Resolves the focus node for primary-row button [index] in an overflow row,
+  /// where the More button owns the right-edge node separately.
+  FocusNode _primaryNodePlain(int index) => index == 0
+      ? (widget.tvPlayFocusNode ?? _primaryFocusNode(0))
+      : _primaryFocusNode(index);
+
+  /// Focuses the nearest mounted button along [nodeAt], scanning from [from] by
+  /// [step]. Skips slots that currently render nothing (unattached focus node),
+  /// e.g. the hidden delete-download action, so the d-pad chain is never
+  /// stranded on an invisible button.
+  bool _focusAdjacent(
+    FocusNode Function(int) nodeAt,
+    int from,
+    int step,
+    int count,
+  ) {
+    for (var i = from; i >= 0 && i < count; i += step) {
+      final node = nodeAt(i);
+      if (node.context != null) {
+        node.requestFocus();
+        return true;
+      }
+    }
+    return false;
+  }
+
   void _focusFirstRowButton(int index, int primaryCount) {
     final targetIndex = index.clamp(0, primaryCount - 1);
     _primaryFocusNode(targetIndex).requestFocus();
@@ -5101,6 +5137,61 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           suppressAutoScrollToTop ?? button.suppressAutoScrollToTop,
       isPrimary: button.isPrimary,
     );
+  }
+
+  /// Applies the row's per-slot focus node and arrow wiring to any action
+  /// widget, including the download/delete wrappers that are not themselves
+  /// _DetailActionButtons (without this they never join the d-pad chain).
+  Widget _wireButton(
+    Widget button, {
+    VoidCallback? onFocused,
+    VoidCallback? onArrowUp,
+    VoidCallback? onArrowDown,
+    VoidCallback? onArrowLeft,
+    VoidCallback? onArrowRight,
+    FocusNode? focusNode,
+    bool? autofocus,
+    bool? suppressAutoScrollToTop,
+  }) {
+    if (button is _DetailActionButton) {
+      return _copyActionButton(
+        button,
+        onFocused: onFocused,
+        onArrowUp: onArrowUp,
+        onArrowDown: onArrowDown,
+        onArrowLeft: onArrowLeft,
+        onArrowRight: onArrowRight,
+        focusNode: focusNode,
+        autofocus: autofocus,
+        suppressAutoScrollToTop: suppressAutoScrollToTop,
+      );
+    }
+    if (button is _DownloadButton) {
+      return _DownloadButton(
+        item: button.item,
+        viewModel: button.viewModel,
+        focusNode: focusNode,
+        onFocused: onFocused,
+        onArrowUp: onArrowUp,
+        onArrowDown: onArrowDown,
+        onArrowLeft: onArrowLeft,
+        onArrowRight: onArrowRight,
+        suppressAutoScrollToTop: suppressAutoScrollToTop ?? false,
+      );
+    }
+    if (button is _DeleteDownloadButton) {
+      return _DeleteDownloadButton(
+        item: button.item,
+        focusNode: focusNode,
+        onFocused: onFocused,
+        onArrowUp: onArrowUp,
+        onArrowDown: onArrowDown,
+        onArrowLeft: onArrowLeft,
+        onArrowRight: onArrowRight,
+        suppressAutoScrollToTop: suppressAutoScrollToTop ?? false,
+      );
+    }
+    return button;
   }
 
   bool _tryFocusSidebar() {
@@ -5591,8 +5682,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           if (s != null && e != null) {
             if (s == 1 && e == 1) {
               playButtonLabel = l10n.play;
-            } else if (_isCompact(context)) {
-              playButtonLabel = 'S${s}E$e';
             } else {
               playButtonLabel = l10n.resume;
             }
@@ -5868,7 +5957,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           isModernMobile ? allButtons.length - 1 : allButtons.length;
       final int visibleCount = isModernMobile ? maxVisible : maxVisible - 1;
       needsOverflow =
-          !isBoxSet &&
           (compact ||
               PlatformDetection.isTV ||
               widget.maxVisibleButtonsOverride != null) &&
@@ -5887,35 +5975,40 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       final normalizedButtons = allButtons.asMap().entries.map((entry) {
         final index = entry.key;
         final button = entry.value;
-        if (button is! _DetailActionButton) return button;
+        final existingUp =
+            button is _DetailActionButton ? button.onArrowUp : null;
         final fNode = index == 0 ? (widget.tvPlayFocusNode ?? _primaryFocusNode(0)) : _primaryFocusNode(index);
-        return _copyActionButton(
+        return _wireButton(
           button,
           focusNode: index == allButtons.length - 1
               ? (widget.actionRowRightFocusNode ?? fNode)
               : fNode,
           onArrowUp:
-              button.onArrowUp ??
+              existingUp ??
               (NavigationLayout.focusNavbarNotifier.value != null || widget.upTarget != null ? _focusUpTarget : null),
           onArrowLeft: index == 0
               ? _focusSidebar
               : () {
-                  if (index > 0) {
-                    final prevNode = (index - 1 == 0)
-                        ? (widget.tvPlayFocusNode ?? _primaryFocusNode(0))
-                        : _primaryFocusNode(index - 1);
-                    prevNode.requestFocus();
+                  if (!_focusAdjacent(
+                    (i) => _primaryNodeAt(i, allButtons.length),
+                    index - 1,
+                    -1,
+                    allButtons.length,
+                  )) {
+                    _focusSidebar();
                   }
                 },
           onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
           onArrowRight: index == allButtons.length - 1
               ? (widget.onArrowRightAtEnd ?? () {})
               : () {
-                  if (index + 1 < allButtons.length) {
-                    final nextNode = (index + 1 == allButtons.length - 1)
-                        ? (widget.actionRowRightFocusNode ?? _primaryFocusNode(index + 1))
-                        : _primaryFocusNode(index + 1);
-                    nextNode.requestFocus();
+                  if (!_focusAdjacent(
+                    (i) => _primaryNodeAt(i, allButtons.length),
+                    index + 1,
+                    1,
+                    allButtons.length,
+                  )) {
+                    (widget.onArrowRightAtEnd ?? () {})();
                   }
                 },
         );
@@ -5937,28 +6030,37 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       final normalizedPrimaryButtons = primaryButtons.asMap().entries.map((entry) {
         final index = entry.key;
         final button = entry.value;
-        if (button is! _DetailActionButton) return button;
+        final existingUp =
+            button is _DetailActionButton ? button.onArrowUp : null;
         final fNode = index == 0 ? (widget.tvPlayFocusNode ?? _primaryFocusNode(0)) : _primaryFocusNode(index);
-        return _copyActionButton(
+        return _wireButton(
           button,
           focusNode: fNode,
           onFocused: () => widget.onFocusExtra?.call(false),
-          onArrowUp: button.onArrowUp ?? (NavigationLayout.focusNavbarNotifier.value != null || widget.upTarget != null ? _focusUpTarget : null),
+          onArrowUp: existingUp ?? (NavigationLayout.focusNavbarNotifier.value != null || widget.upTarget != null ? _focusUpTarget : null),
           onArrowLeft: index == 0
               ? _focusSidebar
               : () {
-                  if (index > 0) {
-                    final prevNode = (index - 1 == 0)
-                        ? (widget.tvPlayFocusNode ?? _primaryFocusNode(0))
-                        : _primaryFocusNode(index - 1);
-                    prevNode.requestFocus();
+                  if (!_focusAdjacent(
+                    _primaryNodePlain,
+                    index - 1,
+                    -1,
+                    primaryButtons.length,
+                  )) {
+                    _focusSidebar();
                   }
                 },
           onArrowRight: () {
-            if (index < primaryButtons.length - 1) {
-              _primaryFocusNode(index + 1).requestFocus();
-            } else {
-              (widget.actionRowRightFocusNode ?? _overflowMoreFocusNode).requestFocus();
+            // Skip any unmounted slot (e.g. hidden delete-download) and fall
+            // through to the More button so it is always reachable.
+            if (!_focusAdjacent(
+              _primaryNodePlain,
+              index + 1,
+              1,
+              primaryButtons.length,
+            )) {
+              (widget.actionRowRightFocusNode ?? _overflowMoreFocusNode)
+                  .requestFocus();
             }
           },
           onArrowDown: isTvShow
@@ -5972,7 +6074,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       final normalizedExtraButtons = extraButtons.asMap().entries.map((entry) {
         final index = entry.key;
         final button = entry.value;
-        if (button is! _DetailActionButton) return button;
         final fNode = (index == 0 && widget.extraFirstFocusNode != null)
             ? widget.extraFirstFocusNode!
             : (() {
@@ -5981,7 +6082,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                 }
                 return _extraFocusNodes[index];
               })();
-        return _copyActionButton(
+        return _wireButton(
           button,
           focusNode: fNode,
           onFocused: () {
@@ -6003,13 +6104,25 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           onArrowLeft: index == 0
               ? _focusSidebar
               : () {
-                  _extraFocusNode(index - 1).requestFocus();
+                  if (!_focusAdjacent(
+                    _extraFocusNode,
+                    index - 1,
+                    -1,
+                    extraButtons.length,
+                  )) {
+                    _focusSidebar();
+                  }
                 },
-          onArrowRight: index == extraButtons.length - 1
-              ? (widget.onArrowRightAtEnd ?? () {})
-              : () {
-                  _extraFocusNode(index + 1).requestFocus();
-                },
+          onArrowRight: () {
+            if (!_focusAdjacent(
+              _extraFocusNode,
+              index + 1,
+              1,
+              extraButtons.length,
+            )) {
+              (widget.onArrowRightAtEnd ?? () {})();
+            }
+          },
           suppressAutoScrollToTop: true,
         );
       }).toList();
@@ -6026,9 +6139,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               }
             : (widget.downTarget != null ? _focusDownTarget : null),
         onArrowLeft: () {
-          if (primaryButtons.isNotEmpty) {
-            _primaryFocusNode(primaryButtons.length - 1).requestFocus();
-          }
+          // Scan back from the last primary slot, skipping any unmounted button
+          // (e.g. hidden delete-download) so More can always return to the row.
+          _focusAdjacent(
+            _primaryNodePlain,
+            primaryButtons.length - 1,
+            -1,
+            primaryButtons.length,
+          );
         },
         onArrowRight: widget.onArrowRightAtEnd ?? () {},
         onPressed: () => setState(() => _expanded = !_expanded),
@@ -6095,17 +6213,31 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                   spacing: buttonSpacing,
                   runSpacing: buttonRunSpacing,
                   crossAxisAlignment: WrapCrossAlignment.center,
-                  alignment: WrapAlignment.start,
+                  // On mobile the collapsed row is full (overflow is active), so
+                  // justify the tiles edge to edge with the full-width Play pill
+                  // above instead of piling leftover space on the right.
+                  alignment: compact
+                      ? WrapAlignment.spaceBetween
+                      : WrapAlignment.start,
                   children: [...normalizedPrimaryButtons, moreButton],
                 ),
                 if (_expanded) ...[
                   SizedBox(height: buttonRunSpacing),
-                  Wrap(
-                    spacing: buttonSpacing,
-                    runSpacing: buttonRunSpacing,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    alignment: WrapAlignment.start,
-                    children: normalizedExtraButtons,
+                  // Force full width so spaceBetween has room to justify; unlike
+                  // the collapsed row it has no full-width Play pill to stretch it.
+                  SizedBox(
+                    width: double.infinity,
+                    child: Wrap(
+                      spacing: buttonSpacing,
+                      runSpacing: buttonRunSpacing,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      // Match the collapsed row: justify the revealed tiles edge
+                      // to edge on mobile instead of piling space on the right.
+                      alignment: compact
+                          ? WrapAlignment.spaceBetween
+                          : WrapAlignment.start,
+                      children: normalizedExtraButtons,
+                    ),
                   ),
                 ],
               ],
@@ -8559,8 +8691,25 @@ bool _canUserDownload() {
 class _DownloadButton extends StatefulWidget {
   final AggregatedItem item;
   final ItemDetailViewModel viewModel;
+  final FocusNode? focusNode;
+  final VoidCallback? onFocused;
+  final VoidCallback? onArrowUp;
+  final VoidCallback? onArrowDown;
+  final VoidCallback? onArrowLeft;
+  final VoidCallback? onArrowRight;
+  final bool suppressAutoScrollToTop;
 
-  const _DownloadButton({required this.item, required this.viewModel});
+  const _DownloadButton({
+    required this.item,
+    required this.viewModel,
+    this.focusNode,
+    this.onFocused,
+    this.onArrowUp,
+    this.onArrowDown,
+    this.onArrowLeft,
+    this.onArrowRight,
+    this.suppressAutoScrollToTop = false,
+  });
 
   @override
   State<_DownloadButton> createState() => _DownloadButtonState();
@@ -8723,13 +8872,38 @@ class _DownloadButtonState extends State<_DownloadButton> {
         final downloadError = progress?.error;
         final isBatch = downloadService.isBatchDownloading;
 
+        // Forward the focus node and arrow wiring the action row assigns to this
+        // slot so the button is reachable by d-pad in every download state.
+        _DetailActionButton wire({
+          required String label,
+          required IconData icon,
+          required VoidCallback onPressed,
+          bool isActive = false,
+          Color? activeColor,
+        }) {
+          return _DetailActionButton(
+            label: label,
+            icon: icon,
+            onPressed: onPressed,
+            isActive: isActive,
+            activeColor: activeColor,
+            focusNode: widget.focusNode,
+            onFocused: widget.onFocused,
+            onArrowUp: widget.onArrowUp,
+            onArrowDown: widget.onArrowDown,
+            onArrowLeft: widget.onArrowLeft,
+            onArrowRight: widget.onArrowRight,
+            suppressAutoScrollToTop: widget.suppressAutoScrollToTop,
+          );
+        }
+
         if (progress != null &&
             !progress.isComplete &&
             progress.error == null) {
           final label = progress.progress >= 0
               ? '${(progress.progress * 100).toInt()}%'
               : '${(progress.bytesReceived / 1048576).toStringAsFixed(1)} MB';
-          return _DetailActionButton(
+          return wire(
             label: label,
             icon: Icons.close,
             onPressed: () => downloadService.cancelDownload(item.id),
@@ -8750,7 +8924,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
               break;
             }
           }
-          return _DetailActionButton(
+          return wire(
             label: '${done + 1}/$total${pct.isNotEmpty ? ' · $pct' : ''}',
             icon: Icons.close,
             onPressed: () => downloadService.cancelAll(),
@@ -8760,7 +8934,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
         }
 
         if (_isOffline || (progress != null && progress.isComplete)) {
-          return _DetailActionButton(
+          return wire(
             label: AppLocalizations.of(context).downloaded,
             icon: Icons.download_done,
             isActive: true,
@@ -8770,7 +8944,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
         }
 
         if (downloadError != null) {
-          return _DetailActionButton(
+          return wire(
             label: AppLocalizations.of(context).retry,
             icon: Icons.error_outline,
             isActive: true,
@@ -8786,7 +8960,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
           );
         }
 
-        return _DetailActionButton(
+        return wire(
           label: AppLocalizations.of(context).download,
           icon: Icons.download,
           onPressed: () => _showQualityPicker(context, downloadService),
@@ -8934,8 +9108,24 @@ class _DownloadButtonState extends State<_DownloadButton> {
 
 class _DeleteDownloadButton extends StatefulWidget {
   final AggregatedItem item;
+  final FocusNode? focusNode;
+  final VoidCallback? onFocused;
+  final VoidCallback? onArrowUp;
+  final VoidCallback? onArrowDown;
+  final VoidCallback? onArrowLeft;
+  final VoidCallback? onArrowRight;
+  final bool suppressAutoScrollToTop;
 
-  const _DeleteDownloadButton({required this.item});
+  const _DeleteDownloadButton({
+    required this.item,
+    this.focusNode,
+    this.onFocused,
+    this.onArrowUp,
+    this.onArrowDown,
+    this.onArrowLeft,
+    this.onArrowRight,
+    this.suppressAutoScrollToTop = false,
+  });
 
   @override
   State<_DeleteDownloadButton> createState() => _DeleteDownloadButtonState();
@@ -8985,6 +9175,13 @@ class _DeleteDownloadButtonState extends State<_DeleteDownloadButton> {
       onPressed: () => _confirmDelete(context),
       isActive: true,
       activeColor: const Color(0xFFFF4757),
+      focusNode: widget.focusNode,
+      onFocused: widget.onFocused,
+      onArrowUp: widget.onArrowUp,
+      onArrowDown: widget.onArrowDown,
+      onArrowLeft: widget.onArrowLeft,
+      onArrowRight: widget.onArrowRight,
+      suppressAutoScrollToTop: widget.suppressAutoScrollToTop,
     );
   }
 
@@ -9271,16 +9468,21 @@ class _DetailActionButtonState extends State<_DetailActionButton>
               child: Center(child: iconWidget),
             ),
             const SizedBox(height: 6),
-            Text(
-              widget.label,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: labelColor,
-                    fontWeight: FontWeight.w600,
-                    height: 1.1,
-                  ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+            // Shrink long labels (e.g. "Unwatched") to fit the tile on one line
+            // instead of wrapping a lone letter into the row below.
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                widget.label,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: labelColor,
+                      fontWeight: FontWeight.w600,
+                      height: 1.1,
+                    ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                softWrap: false,
+              ),
             ),
           ],
         ),
