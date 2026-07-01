@@ -394,10 +394,10 @@ void main() async {
   // Audio session ownership differs per platform:
   // - Android: the audio_session package configures and activates the session for
   //   the foreground media notification.
-  // - iOS: audio_service owns the AVAudioSession so that lock-screen / Control
-  //   Center Now Playing works. Configuring/activating it again here would detach
-  //   audio_service's Now Playing wiring, so we don't. Route handling (pause on
-  //   disconnect, A/V re-sync on connect) is done in _attachIosAudioRouteHandling.
+  // - iOS: MoonfinAudioHandler claims a non-mixing `.playback` session when
+  //   playback starts and releases it on stop, so the in-app player owns Control
+  //   Center / lock-screen Now Playing and AirPods/remote controls. Here we only
+  //   attach route handling (pause on disconnect, A/V re-sync on connect).
   if (PlatformDetection.isAndroid) {
     try {
       final session = await AudioSession.instance;

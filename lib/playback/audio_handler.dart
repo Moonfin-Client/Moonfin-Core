@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:get_it/get_it.dart';
 import 'package:playback_core/playback_core.dart';
@@ -19,6 +20,11 @@ class MoonfinAudioHandler extends BaseAudioHandler
 
   DateTime? _lastPositionPush;
 
+  // iOS claim/release state for the in-app player's `.playback` session.
+  // Android claims at startup; desktop/tvOS never run this handler.
+  bool _iosSessionConfigured = false;
+  bool _iosSessionActive = false;
+
   MoonfinAudioHandler(this._manager, this._clientFactory) {
     _bindStreams();
   }
@@ -28,7 +34,10 @@ class MoonfinAudioHandler extends BaseAudioHandler
     final q = _manager.queueService;
 
     _subs.addAll([
-      s.playingStream.listen((_) => _pushPlaybackState()),
+      s.playingStream.listen((_) {
+        _pushPlaybackState();
+        _updateIosAudioSession();
+      }),
       s.bufferingStream.listen((_) => _pushPlaybackState()),
       // Keep the lock-screen / notification scrubber advancing during steady
       // playback. positionStream fires several times a second, so throttle the
@@ -48,6 +57,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
         _pushQueue();
         _pushMediaItemForCurrentTrack();
         _pushPlaybackState();
+        _updateIosAudioSession();
       }),
     ]);
   }
@@ -56,6 +66,50 @@ class MoonfinAudioHandler extends BaseAudioHandler
     if (raw is! AggregatedItem) return false;
     if (PlatformDetection.isTV) return raw.isAudioLike;
     return true;
+  }
+
+  // Claimed only once playback is running, so the category is asserted after
+  // libmpv opens its audio output. Kept through pause, released on stop/idle.
+  void _updateIosAudioSession() {
+    if (!PlatformDetection.isIOS) return;
+    final s = _manager.state;
+    final q = _manager.queueService;
+    if (s.isPlaying && _drivesSession(q.currentItem)) {
+      _activateIosSession();
+    } else if (q.currentItem == null) {
+      _deactivateIosSession();
+    }
+  }
+
+  Future<void> _activateIosSession() async {
+    if (_iosSessionActive) return;
+    _iosSessionActive = true;
+    try {
+      final session = await AudioSession.instance;
+      if (!_iosSessionConfigured) {
+        await session.configure(const AudioSessionConfiguration(
+          avAudioSessionCategory: AVAudioSessionCategory.playback,
+          avAudioSessionMode: AVAudioSessionMode.moviePlayback,
+        ));
+        _iosSessionConfigured = true;
+      }
+      await session.setActive(true);
+    } catch (_) {
+      _iosSessionActive = false;
+    }
+  }
+
+  Future<void> _deactivateIosSession() async {
+    if (!_iosSessionActive) return;
+    _iosSessionActive = false;
+    try {
+      final session = await AudioSession.instance;
+      await session.setActive(
+        false,
+        avAudioSessionSetActiveOptions:
+            AVAudioSessionSetActiveOptions.notifyOthersOnDeactivation,
+      );
+    } catch (_) {}
   }
 
   void _pushPlaybackState() {
@@ -196,6 +250,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
     }
     _subs.clear();
     await _manager.stop(userInitiated: false);
+    await _deactivateIosSession();
     await super.stop();
   }
 
