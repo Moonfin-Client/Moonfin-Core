@@ -778,31 +778,31 @@ class UserPreferences extends ChangeNotifier {
   );
   static final favoritesRowSortBy = EnumPreference(
     key: 'pref_favorites_row_sort_by',
-    defaultValue: LibrarySortBy.name,
+    defaultValue: LibrarySortBy.original,
     values: LibrarySortBy.values,
   );
 
   static final collectionsRowSortBy = EnumPreference(
     key: 'pref_collections_row_sort_by',
-    defaultValue: LibrarySortBy.name,
+    defaultValue: LibrarySortBy.original,
     values: LibrarySortBy.values,
   );
 
   static final genresRowSortBy = EnumPreference(
     key: 'pref_genres_row_sort_by',
-    defaultValue: LibrarySortBy.name,
+    defaultValue: LibrarySortBy.original,
     values: LibrarySortBy.values,
   );
 
   static final playlistsRowSortBy = EnumPreference(
     key: 'pref_playlists_row_sort_by',
-    defaultValue: LibrarySortBy.name,
+    defaultValue: LibrarySortBy.original,
     values: LibrarySortBy.values,
   );
 
   static final audioRowsSortBy = EnumPreference(
     key: 'pref_audio_rows_sort_by',
-    defaultValue: LibrarySortBy.name,
+    defaultValue: LibrarySortBy.original,
     values: LibrarySortBy.values,
   );
 
