@@ -851,7 +851,7 @@ class UserPreferences extends ChangeNotifier {
   /// server/user), so it is deliberately omitted from [_scopedPreferenceKeys].
   static final detailScreenStyle = EnumPreference(
     key: 'pref_detail_screen_style',
-    defaultValue: DetailScreenStyle.moonfin,
+    defaultValue: DetailScreenStyle.modern,
     values: DetailScreenStyle.values,
   );
 
