@@ -707,7 +707,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (hasCrew) crew,
           if (hasStudios) studios,
           if (item.chapters.isNotEmpty) chapters,
-          details,
         ];
       case 'Episode':
         return [
@@ -880,8 +879,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     // unplayed episode's seasonId so the cyan border always renders correctly.
     final nextUpSeasonId = _vm.nextUp?.seasonId ??
         _vm.seriesEpisodes.firstWhereOrNull((e) => !e.isPlayed)?.seasonId;
-    final cards = [
-      for (var i = 0; i < _vm.seasons.length; i++)
+    SeasonCard buildSeasonCard(int i, {double? width, double? height}) =>
         SeasonCard(
           title: _vm.seasons[i].name,
           subtitle: l10n.episodeCount(
@@ -894,18 +892,25 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           onNavigateUp: _focusSelectedTab,
           onNavigateRight: i == _vm.seasons.length - 1 ? () {} : null,
           focusNode: i == 0 ? _seasonsFirstFocusNode : null,
+          width: width,
+          height: height,
           onTap: () => context.push(
             Destinations.item(_vm.seasons[i].id, serverId: _vm.seasons[i].serverId),
           ),
-        ),
-    ];
+        );
+    final seasonLabelStyle = textTheme.labelMedium?.copyWith(
+      color: Colors.white70,
+      fontWeight: FontWeight.bold,
+      letterSpacing: 1.0,
+      fontSize: 10,
+    );
     final child = _landscape
         ? SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                for (var i = 0; i < cards.length; i++)
+                for (var i = 0; i < _vm.seasons.length; i++)
                   Padding(
                     padding: const EdgeInsets.only(right: 12),
                     child: Column(
@@ -914,52 +919,48 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                       children: [
                         Text(
                           _vm.seasons[i].name.toUpperCase(),
-                          style: textTheme.labelMedium?.copyWith(
-                            color: Colors.white70,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.0,
-                            fontSize: 10,
-                          ),
+                          style: seasonLabelStyle,
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 6),
-                        cards[i],
+                        buildSeasonCard(i),
                       ],
                     ),
                   ),
               ],
             ),
           )
-        : Column(
-            children: [
-              for (var i = 0; i < cards.length; i++)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Column(
+        : LayoutBuilder(
+            builder: (context, constraints) {
+              const spacing = 12.0;
+              final columns = (constraints.maxWidth / 130).floor().clamp(3, 6);
+              final cardWidth =
+                  ((constraints.maxWidth - spacing * (columns - 1)) / columns)
+                      .floorToDouble();
+              final cardHeight = cardWidth * 1.5;
+              return Wrap(
+                spacing: spacing,
+                runSpacing: 16,
+                children: [
+                  for (var i = 0; i < _vm.seasons.length; i++)
+                    SizedBox(
+                      width: cardWidth,
+                      child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
                             _vm.seasons[i].name.toUpperCase(),
-                            style: textTheme.labelMedium?.copyWith(
-                              color: Colors.white70,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.0,
-                              fontSize: 10,
-                            ),
+                            style: seasonLabelStyle,
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 6),
-                          cards[i],
+                          buildSeasonCard(i, width: cardWidth, height: cardHeight),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-            ],
+                    ),
+                ],
+              );
+            },
           );
 
     return Focus(
@@ -2572,9 +2573,44 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   Widget _similarTab(BuildContext context, List<AggregatedItem> items) {
     if (items.isEmpty) return const SizedBox.shrink();
     final isMobile = _landscape == false;
-    final desktopScale = widget.prefs.get(UserPreferences.desktopUiScale).scaleFactor;
-    final cardWidth = isMobile ? 90.0 : 120.0 * desktopScale;
     const cardRatio = 2 / 3;
+
+    if (isMobile) {
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          const spacing = 12.0;
+          final columns = (constraints.maxWidth / 130).floor().clamp(3, 6);
+          final cardWidth =
+              ((constraints.maxWidth - spacing * (columns - 1)) / columns)
+                  .floorToDouble();
+          return Wrap(
+            spacing: spacing,
+            runSpacing: 16,
+            children: [
+              for (final entry in items)
+                MediaCard(
+                  title: entry.name,
+                  imageUrl: _imageUrl(entry),
+                  width: cardWidth,
+                  aspectRatio: cardRatio,
+                  isPlayed: entry.isPlayed,
+                  isFavorite: entry.isFavorite,
+                  itemType: entry.type,
+                  watchedBehavior:
+                      widget.prefs.get(UserPreferences.watchedIndicatorBehavior),
+                  onTap: () => context.push(
+                    Destinations.item(entry.id, serverId: entry.serverId),
+                  ),
+                ),
+            ],
+          );
+        },
+      );
+    }
+
+    final desktopScale =
+        widget.prefs.get(UserPreferences.desktopUiScale).scaleFactor;
+    final cardWidth = 120.0 * desktopScale;
     final cardHeight = cardWidth / cardRatio + 48.0;
 
     return SizedBox(
@@ -2807,43 +2843,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     );
   }
 
-  /// In landscape the hero column is ~45% of the width. Size the visible action
-  /// count so the Play pill, the circular buttons and the "More" toggle all stay
-  /// on a single row (extras expand to a second row beneath). Reserves room for
-  /// the Play pill (wider for "Resume from S#:E#" labels) plus More (~62); each
-  /// circular button is ~62 wide.
-  int? _actionButtonCap(BuildContext context, AggregatedItem item) {
-    if (item.type == 'Movie' || item.type == 'Episode') {
-      return 15;
-    }
-    if (item.type == 'Series') {
-      final hasUpNext = _vm.nextUp != null;
-      if (_landscape && hasUpNext) {
-        return 4;
-      }
-      return null;
-    }
-    if (item.type == 'Season') {
-      // Always use two-column layout for Seasons so Favorite folds into More
-      return 5;
-    }
-    if (item.type == 'BoxSet') {
-      return null;
-    }
-    if (!_landscape) return null;
-    final hasUpNext = _buildUpNext(context, item) != null;
-    final heroWidth = hasUpNext
-        ? (MediaQuery.sizeOf(context).width * 0.65).clamp(450.0, 900.0)
-        : (MediaQuery.sizeOf(context).width * 0.75).clamp(450.0, 960.0);
-    final pillWidth = switch (item.type) {
-      'Series' || 'Season' || 'Episode' => 300.0,
-      'MusicAlbum' || 'Playlist' || 'AudioBook' || 'MusicArtist' => 160.0,
-      _ => 220.0,
-    };
-    final circles = ((heroWidth - pillWidth - 62) / 62).floor();
-    return (circles + 2).clamp(2, 12);
-  }
-
   List<Shadow>? _neonTextGlow(double blurRadius) =>
       ThemeRegistry.active.id == ThemeRegistry.neonPulseId
           ? [Shadow(color: AppColorScheme.accent, blurRadius: blurRadius)]
@@ -2982,7 +2981,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               autoPlay: widget.autoPlay,
               modernStyle: true,
               fullWidthPrimary: !_landscape,
-              maxVisibleButtonsOverride: _actionButtonCap(context, item),
+              maxVisibleButtonsOverride: null,
               onArrowRightAtEnd: _landscape ? _focusRightOfActions : null,
               actionRowRightFocusNode: _actionRowRightFocusNode,
               onFocusExtra: (_) {},
@@ -3163,8 +3162,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                   : null,
               autoPlay: widget.autoPlay,
               modernStyle: true,
-              fullWidthPrimary: false,
-              maxVisibleButtonsOverride: 10,
+              fullWidthPrimary: !_landscape,
+              maxVisibleButtonsOverride: _landscape ? 10 : null,
               onArrowRightAtEnd: null,
               actionRowRightFocusNode: _actionRowRightFocusNode,
               onFocusExtra: (_) {},
@@ -3173,12 +3172,22 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         ],
       );
 
-      return Row(
+      if (_landscape) {
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            coverImage,
+            const SizedBox(width: 28),
+            Expanded(child: playlistInfo),
+          ],
+        );
+      }
+      return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          coverImage,
-          const SizedBox(width: 28),
-          Expanded(child: playlistInfo),
+          Center(child: coverImage),
+          const SizedBox(height: 20),
+          playlistInfo,
         ],
       );
     }
@@ -3410,7 +3419,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             autoPlay: widget.autoPlay,
             modernStyle: true,
             fullWidthPrimary: !_landscape,
-            maxVisibleButtonsOverride: _actionButtonCap(context, item),
+            maxVisibleButtonsOverride: null,
             onArrowRightAtEnd: _landscape ? _focusRightOfActions : null,
             actionRowRightFocusNode: _actionRowRightFocusNode,
             extraFirstFocusNode: _extraFirstFocusNode,

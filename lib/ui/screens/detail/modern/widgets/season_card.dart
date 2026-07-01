@@ -20,6 +20,11 @@ class SeasonCard extends StatelessWidget {
   final VoidCallback? onNavigateUp;
   final VoidCallback? onNavigateRight;
 
+  /// Optional explicit size; when null the card falls back to fixed
+  /// landscape/portrait defaults.
+  final double? width;
+  final double? height;
+
   const SeasonCard({
     super.key,
     required this.title,
@@ -32,14 +37,16 @@ class SeasonCard extends StatelessWidget {
     this.focusNode,
     this.onNavigateUp,
     this.onNavigateRight,
+    this.width,
+    this.height,
   });
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final radius = JellyfinTokens.shapes.mediumRadius;
-    final cardWidth = landscape ? 130.0 : 90.0;
-    final cardHeight = landscape ? 195.0 : 135.0;
+    final cardWidth = width ?? (landscape ? 130.0 : 90.0);
+    final cardHeight = height ?? (landscape ? 195.0 : 135.0);
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
 
     return FocusableWrapper(

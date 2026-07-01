@@ -198,7 +198,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
 
     _backdropUrl = _backgroundService.currentUrl;
     _backgroundSub = _backgroundService.backgroundStream.listen((url) {
-      if (mounted) {
+      // Ignore null: a child screen clearing the shared service on its way out
+      // must not blank this screen's backdrop after it has been restored.
+      if (mounted && url != null) {
         setState(() => _backdropUrl = url);
       }
     });
@@ -223,7 +225,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     if (item != null) {
       _backgroundService.setBackground(item, context: BlurContext.details);
       final nextUrl = _backgroundService.currentUrl;
-      if (nextUrl != _backdropUrl) {
+      // Keep the last good backdrop if the service has none to give (e.g. after
+      // returning from a child with no backdrop that cleared the shared service).
+      if (nextUrl != null && nextUrl != _backdropUrl) {
         setState(() => _backdropUrl = nextUrl);
       }
     }
@@ -382,14 +386,17 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
     final type = _viewModel.item?.type;
     final useTargetNode = type != null && type != 'Photo';
     final node = useTargetNode ? _ensureInitialFocusNode() : null;
-    final isAlbumOrPlaylist = type == 'MusicAlbum' || type == 'Playlist';
     final lastCollapse = ExpandableBiography.lastCollapseTime;
     final now = DateTime.now();
     final wasCollapsedRecently = lastCollapse != null &&
         now.difference(lastCollapse) < const Duration(milliseconds: 350);
 
-    final showNavigationChrome =
-        _viewModel.state == ItemDetailState.ready && !isAlbumOrPlaylist && _showNavbar;
+    // Albums/playlists hide the chrome on TV/desktop (their split hero owns the
+    // top area); on mobile they need the back arrow like every other screen.
+    final isAlbumOrPlaylist = type == 'MusicAlbum' || type == 'Playlist';
+    final showNavigationChrome = _viewModel.state == ItemDetailState.ready &&
+        _showNavbar &&
+        (!isAlbumOrPlaylist || _isCompact(context));
 
     Widget body = NavigationLayout(
       showBackButton: true,
@@ -5232,11 +5239,15 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       return maxTVButtons > 2 ? maxTVButtons : 2;
     }
     final screenWidth = MediaQuery.sizeOf(context).width;
-    final compact = !_useDesktopDetailLayout(context);
+    final compact = (widget.modernStyle && _isCompact(context)) ||
+        !_useDesktopDetailLayout(context);
     final desktopScale = _desktopUiScale();
-    final buttonWidth = compact ? 80.0 : 108.0 * desktopScale;
-    const spacing = 8.0;
-    const horizontalPadding = 64.0;
+    // On mobile, secondary buttons are labelled vertical tiles 66 wide; the
+    // spacing and content padding below mirror the real layout exactly so the
+    // row packs as many tiles as physically fit before the rest fold into More.
+    final buttonWidth = compact ? 66.0 : 108.0 * desktopScale;
+    final spacing = compact ? 4.0 : 8.0 * desktopScale;
+    final horizontalPadding = compact ? 40.0 : 64.0;
 
     final availableWidth = screenWidth - horizontalPadding;
     final maxButtons = ((availableWidth + spacing) / (buttonWidth + spacing))
@@ -5809,9 +5820,10 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       }).toList();
     }
 
-    final compact = !_useDesktopDetailLayout(context);
+    final compact = (widget.modernStyle && _isCompact(context)) ||
+        !_useDesktopDetailLayout(context);
     final desktopScale = _desktopUiScale();
-    final buttonSpacing = compact ? 6.0 : 8.0 * desktopScale;
+    final buttonSpacing = compact ? 4.0 : 8.0 * desktopScale;
     final buttonRunSpacing = compact ? 10.0 : 12.0 * desktopScale;
     final maxVisible = _calculateMaxVisibleButtons(context);
 
@@ -5822,7 +5834,12 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final bool isTvShow = item.type == 'Series' || item.type == 'Season';
     final bool isTvSeries = item.type == 'Series';
     final bool isTvSeason = item.type == 'Season';
-    final bool isTwoColumnLayout = (widget.modernStyle && isTvShow && widget.maxVisibleButtonsOverride != null) || isTvSeries;
+    // Series uses the two-column (inline-Play) layout on TV/desktop, but on the
+    // modern mobile layout it should match movies: full-width primary + overflow.
+    final bool isModernMobile = widget.modernStyle && _isCompact(context);
+    // Series/Season keep the two-column inline-Play layout on TV/desktop; on the
+    // compact (mobile) layout every type uses the full-width primary + overflow.
+    final bool isTwoColumnLayout = !isModernMobile && isTvShow;
 
     if (isTwoColumnLayout) {
       final List<Widget> prim = [];
@@ -5845,15 +5862,20 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       extraButtons = ext;
       needsOverflow = extraButtons.isNotEmpty;
     } else {
+      // On mobile the full-width primary sits on its own row, so it does not
+      // occupy a slot in the secondary row: exclude it from the count and split.
+      final int secondaryCount =
+          isModernMobile ? allButtons.length - 1 : allButtons.length;
+      final int visibleCount = isModernMobile ? maxVisible : maxVisible - 1;
       needsOverflow =
           !isBoxSet &&
           (compact ||
               PlatformDetection.isTV ||
               widget.maxVisibleButtonsOverride != null) &&
-          allButtons.length > maxVisible;
+          secondaryCount > maxVisible;
       if (needsOverflow) {
-        primaryButtons = allButtons.take(maxVisible - 1).toList();
-        extraButtons = allButtons.skip(maxVisible - 1).toList();
+        primaryButtons = allButtons.take(visibleCount).toList();
+        extraButtons = allButtons.skip(visibleCount).toList();
       } else {
         primaryButtons = allButtons;
         extraButtons = const [];
@@ -6013,7 +6035,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       );
 
       if (widget.modernStyle) {
-        if (isTvShow) {
+        if (isTwoColumnLayout) {
           // Build a Row so the play pill (first button) can grow via Flexible
           // to fill available space — avoids text truncation for long labels.
           final pillButton = normalizedPrimaryButtons.isNotEmpty
@@ -6061,17 +6083,32 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             );
           }
         } else {
-          // Movie page: single row!
+          // Primary row keeps the More/Less button pinned at its end; the extra
+          // buttons reveal in a second wrap below, so More/Less never moves.
           rowContent = Align(
             alignment: Alignment.centerLeft,
-            child: Wrap(
-              spacing: buttonSpacing,
-              runSpacing: buttonRunSpacing,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              alignment: WrapAlignment.start,
-              children: _expanded
-                  ? [...normalizedPrimaryButtons, ...normalizedExtraButtons, moreButton]
-                  : [...normalizedPrimaryButtons, moreButton],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Wrap(
+                  spacing: buttonSpacing,
+                  runSpacing: buttonRunSpacing,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  alignment: WrapAlignment.start,
+                  children: [...normalizedPrimaryButtons, moreButton],
+                ),
+                if (_expanded) ...[
+                  SizedBox(height: buttonRunSpacing),
+                  Wrap(
+                    spacing: buttonSpacing,
+                    runSpacing: buttonRunSpacing,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    alignment: WrapAlignment.start,
+                    children: normalizedExtraButtons,
+                  ),
+                ],
+              ],
             ),
           );
         }
@@ -8750,9 +8787,7 @@ class _DownloadButtonState extends State<_DownloadButton> {
         }
 
         return _DetailActionButton(
-          label: isMulti
-              ? AppLocalizations.of(context).downloadAll
-              : AppLocalizations.of(context).download,
+          label: AppLocalizations.of(context).download,
           icon: Icons.download,
           onPressed: () => _showQualityPicker(context, downloadService),
         );
@@ -9197,6 +9232,59 @@ class _DetailActionButtonState extends State<_DetailActionButton>
         );
       }
       return fullWidth ? SizedBox(width: double.infinity, child: pill) : pill;
+    }
+
+    if (isMobile) {
+      // Vertical tile: circular icon with its label always shown underneath.
+      final iconWidget = widget.iconBuilder != null
+          ? widget.iconBuilder!(36, iconColor)
+          : AdaptiveIcon(
+              widget.icon!,
+              color: (widget.icon == Icons.favorite && widget.isActive)
+                  ? const Color(0xFFE50914)
+                  : iconColor,
+              size: 24,
+            );
+      return SizedBox(
+        width: 66,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: height,
+              height: height,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: showHighlight
+                    ? AppColorScheme.buttonFocused
+                    : (widget.isActive
+                        ? (widget.activeColor ?? AppColorScheme.accent)
+                            .withValues(alpha: 0.18)
+                        : Colors.white.withValues(alpha: 0.06)),
+                border: Border.all(
+                  color: showHighlight
+                      ? focusColor
+                      : AppColorScheme.onSurface.withValues(alpha: 0.35),
+                  width: showHighlight ? 2.5 : 1.5,
+                ),
+              ),
+              child: Center(child: iconWidget),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              widget.label,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: labelColor,
+                    fontWeight: FontWeight.w600,
+                    height: 1.1,
+                  ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      );
     }
 
     final double minWidth = height;
@@ -12045,6 +12133,7 @@ class _ExpandableBiographyState extends State<ExpandableBiography> {
                 ? () => setState(() => _expanded = !_expanded)
                 : null,
             child: AnimatedSize(
+              alignment: Alignment.topCenter,
               duration: const Duration(milliseconds: 150),
               curve: Curves.easeOut,
               child: Container(
@@ -12752,7 +12841,7 @@ class _AlbumActions extends StatelessWidget {
       ),
       if (onDownloadAll != null)
         _DetailActionButton(
-          label: l10n.downloadAll,
+          label: l10n.download,
           icon: Icons.download,
           onArrowDown: onPlayDown,
           onPressed: onDownloadAll!,
