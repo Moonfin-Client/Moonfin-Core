@@ -869,6 +869,12 @@ class PluginSyncService extends ChangeNotifier {
         UserPreferences.homeRowsStyle,
         enumValues: prefs.HomeRowsStyle.values,
       );
+      _applyString(
+        resolved,
+        'detailScreenStyle'
+      UserPreferences.detailScreenStyle,
+      enumValues: pref.DetailScreenStyle.values,
+      )
       _applyBool(
         resolved,
         'fullScreenRows',
@@ -1501,6 +1507,7 @@ class PluginSyncService extends ChangeNotifier {
           .name,
       'cardFocusExpansion': _prefs.get(UserPreferences.cardFocusExpansion),
       'homeRowsStyle': _prefs.get(UserPreferences.homeRowsStyle).name,
+      'detailScreenStyle': _prefs.get(UserPreferences.detailScreenStyle).name,
       'homeImageTypeContinueWatching': _prefs
           .get(UserPreferences.homeRowImageType(prefs.HomeSectionType.resume))
           .name,
