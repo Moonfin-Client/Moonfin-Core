@@ -871,10 +871,10 @@ class PluginSyncService extends ChangeNotifier {
       );
       _applyString(
         resolved,
-        'detailScreenStyle'
-      UserPreferences.detailScreenStyle,
-      enumValues: pref.DetailScreenStyle.values,
-      )
+        'detailScreenStyle',
+        UserPreferences.detailScreenStyle,
+        enumValues: prefs.DetailScreenStyle.values,
+      );
       _applyBool(
         resolved,
         'fullScreenRows',
