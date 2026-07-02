@@ -79,7 +79,7 @@ class AudiobookHeader extends StatelessWidget {
       item?.album ?? item?.seriesName ?? '',
       textAlign: apple ? TextAlign.center : TextAlign.start,
       style: TextStyle(
-        color: onSurface.withValues(alpha: 0.7),
+        color: onSurface.withValues(alpha: 0.85),
         fontSize: 12,
         letterSpacing: 1.2,
       ),
@@ -113,6 +113,16 @@ class AudiobookHeader extends StatelessWidget {
       onPressed: onToggleDrawer,
     );
 
+    final Widget rightButton;
+    if (isTv) {
+      rightButton = AudiobookFocusRing(
+        focused: tvFocusIndex == 2,
+        child: drawerButton,
+      );
+    } else {
+      rightButton = drawerButton;
+    }
+
     final row = Padding(
       padding: EdgeInsets.symmetric(
         horizontal: apple ? AppSpacing.spaceXs : AppSpacing.spaceSm,
@@ -123,8 +133,9 @@ class AudiobookHeader extends StatelessWidget {
           backButton,
           const SizedBox(width: AppSpacing.spaceSm),
           Expanded(child: eyebrow),
-          ?castButton,
-          drawerButton,
+          // ignore: use_null_aware_elements
+          if (castButton != null) castButton,
+          rightButton,
         ],
       ),
     );

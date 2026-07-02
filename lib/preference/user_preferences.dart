@@ -1405,6 +1405,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 15,
   );
 
+  static final audiobookExtendSleepTimer = Preference(
+    key: 'pref_audiobook_extend_sleep_timer',
+    defaultValue: false,
+  );
+
   static final audiobookDrawerTab = Preference(
     key: 'pref_audiobook_drawer_tab',
     defaultValue: 'chapters',

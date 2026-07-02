@@ -68,7 +68,9 @@ class PlaySessionService implements PlayerService {
     Object? reportError;
     StackTrace? reportStackTrace;
     try {
-      await _client.playbackApi.reportPlaybackStopped(report.toJson());
+      if (!_isAudiobook(mediaItem)) {
+        await _client.playbackApi.reportPlaybackStopped(report.toJson());
+      }
     } catch (error, stackTrace) {
       reportError = error;
       reportStackTrace = stackTrace;
@@ -99,7 +101,7 @@ class PlaySessionService implements PlayerService {
     StreamResolutionResult resolution,
     int positionTicks,
   ) {
-    if (!PlaybackExitBeacon.supported) {
+    if (!PlaybackExitBeacon.supported || _isAudiobook(mediaItem)) {
       return;
     }
     final token = _client.accessToken;
@@ -131,6 +133,21 @@ class PlaySessionService implements PlayerService {
     StreamPlayMethod.directStream => PlayMethod.directStream,
     StreamPlayMethod.transcode => PlayMethod.transcode,
   };
+
+  bool _isAudiobook(dynamic mediaItem) {
+    if (mediaItem is Map) {
+      final type = mediaItem['Type']?.toString().toLowerCase();
+      final mediaType = mediaItem['MediaType']?.toString().toLowerCase();
+      return type == 'audiobook' || type == 'audio_book' || mediaType == 'audiobook';
+    }
+    try {
+      final type = mediaItem.type?.toString().toLowerCase();
+      final mediaType = mediaItem.mediaType?.toString().toLowerCase();
+      return type == 'audiobook' || type == 'audio_book' || mediaType == 'audiobook';
+    } catch (_) {
+      return false;
+    }
+  }
 
   @override
   void dispose() {

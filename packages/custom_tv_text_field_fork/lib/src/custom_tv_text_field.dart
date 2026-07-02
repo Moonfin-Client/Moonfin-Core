@@ -231,6 +231,9 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
   void _onKeyboardStateChanged() {
     if (!_keyboardController.isVisible && _isOverlayOpen.value) {
       _isOverlayOpen.value = false;
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
     }
     if (mounted) {
       setState(() {});
@@ -278,9 +281,19 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
     }
 
     if (!_isOverlayOpen.value) {
-      final previousFocus = FocusManager.instance.primaryFocus;
-      _focusToRestoreAfterOverlay =
-          identical(previousFocus, _keyboardFocusNode) ? null : previousFocus;
+      if (widget.popParentOnKeyboardClose) {
+        // Normal case: restore the previously-focused node after the keyboard closes.
+        final previousFocus = FocusManager.instance.primaryFocus;
+        _focusToRestoreAfterOverlay =
+            identical(previousFocus, _keyboardFocusNode) ? null : previousFocus;
+      } else {
+        // Keyboard is inside a parent dialog that manages its own focus.
+        // Do NOT capture primaryFocus here — it may not have updated yet
+        // (Flutter schedules focus changes for the next frame, but openKeyboard()
+        // runs on the event queue before that frame fires). Setting null prevents
+        // whenComplete() from overriding the parent's own requestFocus() call.
+        _focusToRestoreAfterOverlay = null;
+      }
     }
 
     _keyboardController.setText(widget.controller.text);
@@ -526,9 +539,9 @@ class _FieldDisplay extends StatelessWidget {
     final borderColor = hasError
         ? Colors.redAccent
         : (widget.borderColor ?? theme.canvasColor);
-    final focusedColor =
-        widget.focusedBorderColor ??
-        (hasFocus ? (hasError ? Colors.redAccent : Colors.white) : borderColor);
+    final focusedColor = hasFocus
+        ? (widget.focusedBorderColor ?? (hasError ? Colors.redAccent : Colors.white))
+        : borderColor;
 
     return BoxDecoration(
       color: widget.fillColor ?? widget.backgroundColor,

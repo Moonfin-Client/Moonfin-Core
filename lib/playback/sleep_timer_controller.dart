@@ -18,6 +18,9 @@ class SleepTimerController extends ChangeNotifier {
   SleepTimerController(this._manager);
 
   final PlaybackManager _manager;
+  final _expiryController = StreamController<void>.broadcast();
+
+  Stream<void> get onExpired => _expiryController.stream;
 
   SleepTimerMode _mode = SleepTimerMode.off;
   Duration _remaining = Duration.zero;
@@ -27,10 +30,19 @@ class SleepTimerController extends ChangeNotifier {
   StreamSubscription? _queueSub;
   int? _chapterTargetMs;
 
+  SleepTimerMode _lastActiveMode = SleepTimerMode.off;
+  Duration _lastActiveDuration = Duration.zero;
+
+  bool _isPaused = false;
+
   SleepTimerMode get mode => _mode;
   Duration get remaining => _remaining;
   Duration get totalRequested => _totalRequested;
   bool get isActive => _mode != SleepTimerMode.off;
+  bool get isPaused => _isPaused;
+
+  SleepTimerMode get lastActiveMode => _lastActiveMode;
+  Duration get lastActiveDuration => _lastActiveDuration;
 
   /// Start a countdown timer of [duration]; on expiry pauses playback.
   void startDuration(Duration duration) {
@@ -39,6 +51,8 @@ class SleepTimerController extends ChangeNotifier {
     _mode = SleepTimerMode.duration;
     _totalRequested = duration;
     _remaining = duration;
+    _lastActiveMode = SleepTimerMode.duration;
+    _lastActiveDuration = duration;
     _tick = Timer.periodic(const Duration(seconds: 1), (_) => _onTick());
     notifyListeners();
   }
@@ -60,9 +74,12 @@ class SleepTimerController extends ChangeNotifier {
     _chapterTargetMs = targetMs;
     _remaining = Duration(milliseconds: targetMs - currentPositionMs);
     _totalRequested = _remaining;
+    _lastActiveMode = SleepTimerMode.endOfChapter;
+    _lastActiveDuration = _remaining;
     _positionSub = _manager.state.positionStream.listen(_onPositionTick);
     _queueSub = _manager.queueService.queueChangedStream.listen((_) => cancel());
     _tick = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (_isPaused || !_manager.state.isPlaying) return;
       final next = _remaining - const Duration(seconds: 1);
       _remaining = next < Duration.zero ? Duration.zero : next;
       notifyListeners();
@@ -81,6 +98,19 @@ class SleepTimerController extends ChangeNotifier {
     _mode = SleepTimerMode.off;
     _remaining = Duration.zero;
     _totalRequested = Duration.zero;
+    _isPaused = false;
+    notifyListeners();
+  }
+
+  void pauseTimer() {
+    if (!isActive) return;
+    _isPaused = true;
+    notifyListeners();
+  }
+
+  void resumeTimer() {
+    if (!isActive) return;
+    _isPaused = false;
     notifyListeners();
   }
 
@@ -104,6 +134,7 @@ class SleepTimerController extends ChangeNotifier {
   }
 
   void _onTick() {
+    if (_isPaused || !_manager.state.isPlaying) return;
     _remaining = _remaining - const Duration(seconds: 1);
     if (_remaining <= Duration.zero) {
       _completeAndStop();
@@ -113,6 +144,7 @@ class SleepTimerController extends ChangeNotifier {
   }
 
   void _onPositionTick(Duration pos) {
+    if (_isPaused || !_manager.state.isPlaying) return;
     final target = _chapterTargetMs;
     if (target == null) return;
     final remainingMs = target - pos.inMilliseconds;
@@ -123,16 +155,18 @@ class SleepTimerController extends ChangeNotifier {
     }
   }
 
-  Future<void> _completeAndStop() async {
+  void _completeAndStop() {
     try {
-      await _manager.pause();
+      unawaited(_manager.pause());
     } catch (_) {}
+    _expiryController.add(null);
     cancel();
   }
 
   @override
   void dispose() {
     cancel();
+    _expiryController.close();
     super.dispose();
   }
 }

@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
+import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:moonfin_design/moonfin_design.dart';
+import '../../../preference/user_preferences.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../playback/sleep_timer_controller.dart';
@@ -16,6 +20,7 @@ Future<void> showAudiobookSpeedSheet({
   return _showAdaptiveSheet<void>(
     context,
     (ctx) => _SpeedSheet(current: current, onChanged: onChanged),
+    floating: true,
   );
 }
 
@@ -34,45 +39,87 @@ Future<void> showAudiobookSleepSheet({
       onPickEndOfChapter: onPickEndOfChapter,
       onCancel: onCancel,
     ),
+    floating: true,
   );
 }
 
-Future<String?> showAudiobookNoteEditor({
-  required BuildContext context,
-  required String initialText,
-  required String positionLabel,
-}) {
-  return _showAdaptiveSheet<String>(
-    context,
-    (ctx) => _NoteEditorSheet(
-      initialText: initialText,
-      positionLabel: positionLabel,
-    ),
-    scrollControlled: true,
-  );
-}
 
 Future<T?> _showAdaptiveSheet<T>(
   BuildContext context,
   WidgetBuilder builder, {
   bool scrollControlled = false,
+  bool floating = false,
 }) {
   if (PlatformDetection.isApple) {
     return showCupertinoModalPopup<T>(
       context: context,
-      builder: (ctx) => _CupertinoSheetShell(child: builder(ctx)),
+      builder: (ctx) {
+        final child = builder(ctx);
+        if (floating) {
+          return _FloatingSheetShell(child: child);
+        }
+        return _CupertinoSheetShell(child: child);
+      },
     );
   }
   return showFocusRestoringModalBottomSheet<T>(
     context: context,
     isScrollControlled: scrollControlled,
     useSafeArea: scrollControlled,
-    backgroundColor: AppColorScheme.surface,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
-    builder: builder,
+    backgroundColor: floating ? Colors.transparent : AppColorScheme.surface,
+    elevation: floating ? 0 : null,
+    shape: floating
+        ? null
+        : const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+    builder: (ctx) {
+      final child = builder(ctx);
+      if (floating) {
+        return _FloatingSheetShell(child: child);
+      }
+      return child;
+    },
   );
+}
+
+class _FloatingSheetShell extends StatelessWidget {
+  const _FloatingSheetShell({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          16,
+          0,
+          16,
+          16 + MediaQuery.viewInsetsOf(context).bottom,
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColorScheme.surface,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Material(
+            type: MaterialType.transparency,
+            child: child,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _CupertinoSheetShell extends StatelessWidget {
@@ -109,7 +156,7 @@ class _SheetTitle extends StatelessWidget {
   }
 }
 
-class _SheetChoice extends StatelessWidget {
+class _SheetChoice extends StatefulWidget {
   const _SheetChoice({
     required this.label,
     required this.selected,
@@ -121,69 +168,81 @@ class _SheetChoice extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
+  State<_SheetChoice> createState() => _SheetChoiceState();
+}
+
+class _SheetChoiceState extends State<_SheetChoice> {
+  bool _isFocused = false;
+  bool _isHovered = false;
+
+  @override
   Widget build(BuildContext context) {
-    if (!PlatformDetection.isApple) {
-      return ChoiceChip(
-        label: Text(label),
-        selected: selected,
-        onSelected: (_) => onTap(),
-      );
+    final focused = _isFocused || _isHovered;
+    final selected = widget.selected;
+    final prefs = GetIt.instance<UserPreferences>();
+    final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
+
+    final Color borderColor;
+    final double borderWidth;
+    if (focused) {
+      borderColor = focusColor;
+      borderWidth = 2.0;
+    } else if (selected) {
+      borderColor = AppColorScheme.onSurface.withValues(alpha: 0.8);
+      borderWidth = 1.5;
+    } else {
+      borderColor = AppColorScheme.onSurface.withValues(alpha: 0.15);
+      borderWidth = 1.0;
     }
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
+
+    return InkWell(
+      onTap: widget.onTap,
+      onFocusChange: (f) => setState(() => _isFocused = f),
+      onHover: (h) => setState(() => _isHovered = h),
+      borderRadius: BorderRadius.circular(10),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+        height: 38,
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
-          color: selected
-              ? AppColorScheme.accent.withValues(alpha: 0.18)
-              : AppColorScheme.onSurface.withValues(alpha: 0.07),
-          borderRadius: BorderRadius.circular(999),
+          color: Colors.transparent,
           border: Border.all(
-            color: selected ? AppColorScheme.accent : Colors.transparent,
-            width: 1.5,
+            color: borderColor,
+            width: borderWidth,
           ),
+          borderRadius: BorderRadius.circular(10),
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            color: selected ? AppColorScheme.accent : AppColorScheme.onSurface,
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                widget.label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: selected ? FontWeight.bold : FontWeight.w500,
+                  color: AppColorScheme.onSurface,
+                ),
+              ),
+            ),
+            if (selected) ...[
+              const SizedBox(height: 2),
+              Container(
+                width: 16,
+                height: 3,
+                decoration: BoxDecoration(
+                  color: AppColorScheme.accent,
+                  borderRadius: BorderRadius.circular(1.5),
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
   }
-}
-
-Widget _adaptiveSheetSlider({
-  required double value,
-  required double min,
-  required double max,
-  required int divisions,
-  required ValueChanged<double> onChanged,
-  ValueChanged<double>? onChangeEnd,
-}) {
-  if (PlatformDetection.isApple) {
-    return CupertinoSlider(
-      value: value.clamp(min, max),
-      min: min,
-      max: max,
-      divisions: divisions,
-      activeColor: AppColorScheme.accent,
-      onChanged: onChanged,
-      onChangeEnd: onChangeEnd,
-    );
-  }
-  return Slider(
-    value: value.clamp(min, max),
-    min: min,
-    max: max,
-    divisions: divisions,
-    onChanged: onChanged,
-    onChangeEnd: onChangeEnd,
-  );
 }
 
 class _SpeedSheet extends StatefulWidget {
@@ -198,12 +257,34 @@ class _SpeedSheet extends StatefulWidget {
 
 class _SpeedSheetState extends State<_SpeedSheet> {
   late double _value = widget.current;
-  static const _presets = [0.8, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0];
+  late final FocusNode _sliderFocusNode = FocusNode();
+  bool _sliderEditing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _sliderFocusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _sliderFocusNode.removeListener(_onFocusChange);
+    _sliderFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final apple = PlatformDetection.isApple;
+    String statusText = '';
+    if (_sliderFocusNode.hasFocus) {
+      statusText = _sliderEditing ? ' (Adjusting)' : ' (Press OK to Adjust)';
+    }
+
     return Padding(
       padding: EdgeInsets.fromLTRB(
         AppSpacing.spaceLg,
@@ -216,53 +297,191 @@ class _SpeedSheetState extends State<_SpeedSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _SheetTitle(l10n.audiobookPlaybackSpeed),
-          const SizedBox(height: AppSpacing.spaceMd),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+          const SizedBox(height: AppSpacing.spaceSm),
+          Column(
             children: [
-              for (final p in _presets)
-                _SheetChoice(
-                  label: '${p}x',
-                  selected: (_value - p).abs() < 0.01,
-                  onTap: () {
-                    setState(() => _value = p);
-                    widget.onChanged(p);
-                  },
-                ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.spaceMd),
-          Row(
-            children: [
-              SizedBox(width: 52, child: Text('${_value.toStringAsFixed(2)}x')),
-              Expanded(
-                child: _adaptiveSheetSlider(
-                  value: _value,
-                  min: 0.5,
-                  max: 3.5,
-                  divisions: 30,
-                  onChanged: (v) => setState(() => _value = v),
-                  onChangeEnd: widget.onChanged,
+              Row(
+                children: [
+                  Expanded(
+                    child: _SheetChoice(
+                      label: '0.5x',
+                      selected: (_value - 0.5).abs() < 0.01,
+                      onTap: () {
+                        setState(() => _value = 0.5);
+                        widget.onChanged(0.5);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _SheetChoice(
+                      label: '0.65x',
+                      selected: (_value - 0.65).abs() < 0.01,
+                      onTap: () {
+                        setState(() => _value = 0.65);
+                        widget.onChanged(0.65);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _SheetChoice(
+                      label: '0.8x',
+                      selected: (_value - 0.8).abs() < 0.01,
+                      onTap: () {
+                        setState(() => _value = 0.8);
+                        widget.onChanged(0.8);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _SheetChoice(
+                      label: '1.0x',
+                      selected: (_value - 1.0).abs() < 0.01,
+                      onTap: () {
+                        setState(() => _value = 1.0);
+                        widget.onChanged(1.0);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: _SheetChoice(
+                      label: '1.25x',
+                      selected: (_value - 1.25).abs() < 0.01,
+                      onTap: () {
+                        setState(() => _value = 1.25);
+                        widget.onChanged(1.25);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _SheetChoice(
+                      label: '1.5x',
+                      selected: (_value - 1.5).abs() < 0.01,
+                      onTap: () {
+                        setState(() => _value = 1.5);
+                        widget.onChanged(1.5);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _SheetChoice(
+                      label: '1.75x',
+                      selected: (_value - 1.75).abs() < 0.01,
+                      onTap: () {
+                        setState(() => _value = 1.75);
+                        widget.onChanged(1.75);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _SheetChoice(
+                      label: '2.0x',
+                      selected: (_value - 2.0).abs() < 0.01,
+                      onTap: () {
+                        setState(() => _value = 2.0);
+                        widget.onChanged(2.0);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.spaceMd),
+              Row(
+                children: [
+                  Text(
+                    'Fine Tune$statusText',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '${_value.toStringAsFixed(2)}x',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: AppColorScheme.accent,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.spaceXs),
+              Focus(
+                focusNode: _sliderFocusNode,
+                onKeyEvent: (node, event) {
+                  if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+                    return KeyEventResult.ignored;
+                  }
+                  final key = event.logicalKey;
+
+                  if (key == LogicalKeyboardKey.select ||
+                      key == LogicalKeyboardKey.enter ||
+                      key == LogicalKeyboardKey.gameButtonA) {
+                    setState(() {
+                      _sliderEditing = !_sliderEditing;
+                    });
+                    return KeyEventResult.handled;
+                  }
+
+                  if (_sliderEditing) {
+                    if (key == LogicalKeyboardKey.arrowLeft) {
+                      final newValue = (_value - 0.05).clamp(0.25, 3.0);
+                      final rounded = (newValue * 20).round() / 20.0;
+                      setState(() => _value = rounded);
+                      widget.onChanged(rounded);
+                      return KeyEventResult.handled;
+                    }
+                    if (key == LogicalKeyboardKey.arrowRight) {
+                      final newValue = (_value + 0.05).clamp(0.25, 3.0);
+                      final rounded = (newValue * 20).round() / 20.0;
+                      setState(() => _value = rounded);
+                      widget.onChanged(rounded);
+                      return KeyEventResult.handled;
+                    }
+                    if (key == LogicalKeyboardKey.arrowUp ||
+                        key == LogicalKeyboardKey.arrowDown ||
+                        key == LogicalKeyboardKey.escape ||
+                        key == LogicalKeyboardKey.goBack) {
+                      setState(() {
+                        _sliderEditing = false;
+                      });
+                      return KeyEventResult.handled;
+                    }
+                  } else {
+                    if (key == LogicalKeyboardKey.arrowLeft ||
+                        key == LogicalKeyboardKey.arrowRight) {
+                      return KeyEventResult.handled;
+                    }
+                  }
+                  return KeyEventResult.ignored;
+                },
+                child: ExcludeFocus(
+                  child: Slider(
+                    value: _value.clamp(0.25, 3.0),
+                    min: 0.25,
+                    max: 3.0,
+                    divisions: 55,
+                    activeColor: _sliderEditing ? AppColorScheme.accent : AppColorScheme.accent.withValues(alpha: 0.4),
+                    inactiveColor: AppColorScheme.onSurface.withValues(alpha: 0.1),
+                    onChanged: (v) {
+                      final rounded = (v * 20).round() / 20.0;
+                      setState(() => _value = rounded);
+                      widget.onChanged(rounded);
+                    },
+                  ),
                 ),
               ),
-              if (apple)
-                CupertinoButton(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  onPressed: () {
-                    setState(() => _value = 1.0);
-                    widget.onChanged(1.0);
-                  },
-                  child: Text(l10n.audiobookSpeedReset),
-                )
-              else
-                TextButton(
-                  onPressed: () {
-                    setState(() => _value = 1.0);
-                    widget.onChanged(1.0);
-                  },
-                  child: Text(l10n.audiobookSpeedReset),
-                ),
             ],
           ),
         ],
@@ -284,82 +503,274 @@ class _SleepSheet extends StatelessWidget {
   final VoidCallback onPickEndOfChapter;
   final VoidCallback onCancel;
 
-  static const _presets = [5, 15, 30, 45, 60];
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.spaceLg,
-        AppSpacing.spaceLg,
-        AppSpacing.spaceLg,
-        AppSpacing.spaceLg + MediaQuery.viewInsetsOf(context).bottom,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _SheetTitle(l10n.audiobookSleepTimer),
-          const SizedBox(height: AppSpacing.spaceMd),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final titleText = controller.isActive
+            ? (controller.isPaused
+                ? 'Sleep Timer Paused — Time Remaining: ${formatAudiobookCountdown(controller.remaining)}'
+                : 'Sleep Mode Activated — Time Remaining: ${formatAudiobookCountdown(controller.remaining)}')
+            : l10n.audiobookSleepTimer;
+
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.spaceLg,
+            AppSpacing.spaceLg,
+            AppSpacing.spaceLg,
+            AppSpacing.spaceLg + MediaQuery.viewInsetsOf(context).bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _SheetChoice(
-                label: l10n.audiobookSleepOff,
-                selected: controller.mode == SleepTimerMode.off,
-                onTap: () {
-                  onCancel();
-                  Navigator.of(context).maybePop();
-                },
-              ),
-              for (final m in _presets)
-                _SheetChoice(
-                  label: l10n.audiobookSleepMinutes(m),
-                  selected:
-                      controller.mode == SleepTimerMode.duration &&
-                      (controller.totalRequested.inMinutes - m).abs() < 1,
-                  onTap: () {
-                    onPickPreset(m);
-                    Navigator.of(context).maybePop();
-                  },
+              _SheetTitle(titleText),
+              const SizedBox(height: AppSpacing.spaceMd),
+              if (controller.isActive) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          if (controller.isPaused) {
+                            controller.resumeTimer();
+                          } else {
+                            controller.pauseTimer();
+                          }
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          height: 36,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColorScheme.accent),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                controller.isPaused ? Icons.play_arrow : Icons.pause,
+                                size: 16,
+                                color: AppColorScheme.accent,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                controller.isPaused ? 'Resume Timer' : 'Pause Timer',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColorScheme.accent,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          onCancel();
+                          Navigator.of(context).maybePop();
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          height: 36,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.red.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.stop,
+                                size: 16,
+                                color: Colors.red.withValues(alpha: 0.85),
+                              ),
+                              const SizedBox(width: 6),
+                              const Text(
+                                'Stop Timer',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.redAccent,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              _SheetChoice(
-                label: l10n.audiobookSleepEndOfChapter,
-                selected: controller.mode == SleepTimerMode.endOfChapter,
-                onTap: () {
-                  onPickEndOfChapter();
-                  Navigator.of(context).maybePop();
-                },
+                const SizedBox(height: AppSpacing.spaceMd),
+              ],
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _SheetChoice(
+                          label: l10n.audiobookSleepEndOfChapter,
+                          selected: controller.mode == SleepTimerMode.endOfChapter,
+                          onTap: () {
+                            onPickEndOfChapter();
+                            Navigator.of(context).maybePop();
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _SheetChoice(
+                          label: l10n.audiobookSleepMinutes(5),
+                          selected: controller.mode == SleepTimerMode.duration &&
+                              (controller.totalRequested.inMinutes - 5).abs() < 1,
+                          onTap: () {
+                            onPickPreset(5);
+                            Navigator.of(context).maybePop();
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _SheetChoice(
+                          label: l10n.audiobookSleepMinutes(15),
+                          selected: controller.mode == SleepTimerMode.duration &&
+                              (controller.totalRequested.inMinutes - 15).abs() < 1,
+                          onTap: () {
+                            onPickPreset(15);
+                            Navigator.of(context).maybePop();
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _SheetChoice(
+                          label: l10n.audiobookSleepMinutes(30),
+                          selected: controller.mode == SleepTimerMode.duration &&
+                              (controller.totalRequested.inMinutes - 30).abs() < 1,
+                          onTap: () {
+                            onPickPreset(30);
+                            Navigator.of(context).maybePop();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _SheetChoice(
+                          label: l10n.audiobookSleepMinutes(45),
+                          selected: controller.mode == SleepTimerMode.duration &&
+                              (controller.totalRequested.inMinutes - 45).abs() < 1,
+                          onTap: () {
+                            onPickPreset(45);
+                            Navigator.of(context).maybePop();
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _SheetChoice(
+                          label: l10n.audiobookSleepMinutes(60),
+                          selected: controller.mode == SleepTimerMode.duration &&
+                              (controller.totalRequested.inMinutes - 60).abs() < 1,
+                          onTap: () {
+                            onPickPreset(60);
+                            Navigator.of(context).maybePop();
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _SheetChoice(
+                          label: l10n.audiobookSleepMinutes(90),
+                          selected: controller.mode == SleepTimerMode.duration &&
+                              (controller.totalRequested.inMinutes - 90).abs() < 1,
+                          onTap: () {
+                            onPickPreset(90);
+                            Navigator.of(context).maybePop();
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: _SheetChoice(
+                          label: l10n.audiobookSleepMinutes(120),
+                          selected: controller.mode == SleepTimerMode.duration &&
+                              (controller.totalRequested.inMinutes - 120).abs() < 1,
+                          onTap: () {
+                            onPickPreset(120);
+                            Navigator.of(context).maybePop();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
-          if (controller.isActive) ...[
-            const SizedBox(height: AppSpacing.spaceMd),
-            Text(
-              l10n.audiobookSleepRemaining(
-                formatAudiobookCountdown(controller.remaining),
-              ),
-              style: TextStyle(
-                color: AppColorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
-          ],
-        ],
+        );
+      },
+    );
+  }
+}
+
+Future<dynamic> showAudiobookNoteEditor({
+  required BuildContext context,
+  required String initialText,
+  required String positionLabel,
+}) {
+  if (PlatformDetection.isTV) {
+    return showDialog<dynamic>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        alignment: const Alignment(0.0, -0.6),
+        backgroundColor: AppColorScheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: SizedBox(
+          width: 500,
+          child: _NoteEditorSheet(
+            initialText: initialText,
+            positionLabel: positionLabel,
+            dialogContext: ctx,
+          ),
+        ),
       ),
     );
   }
+  return _showAdaptiveSheet<dynamic>(
+    context,
+    (ctx) => _NoteEditorSheet(
+      initialText: initialText,
+      positionLabel: positionLabel,
+      dialogContext: ctx,
+    ),
+    floating: true,
+  );
 }
 
 class _NoteEditorSheet extends StatefulWidget {
   const _NoteEditorSheet({
     required this.initialText,
     required this.positionLabel,
+    this.dialogContext,
   });
 
   final String initialText;
   final String positionLabel;
+  final BuildContext? dialogContext;
 
   @override
   State<_NoteEditorSheet> createState() => _NoteEditorSheetState();
@@ -367,26 +778,82 @@ class _NoteEditorSheet extends StatefulWidget {
 
 class _NoteEditorSheetState extends State<_NoteEditorSheet> {
   late final _controller = TextEditingController(text: widget.initialText);
+  final _tvFocusNode = FocusNode();
+  final _tvFieldKey = GlobalKey<CustomTVTextFieldState>();
+  final _focusScopeNode = FocusScopeNode();
+  bool _isSubmitting = false;
+  // Set true briefly after the keyboard closes so that the hardware KeyUp event
+  // from the physical remote that closed the keyboard can't immediately activate
+  // a button (which would cause an unintended auto-submit and focus lockup).
+  bool _keyboardJustClosed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _tvFocusNode.addListener(_onTvFocusChange);
+    CustomTVTextField.isKeyboardVisibleNotifier.addListener(_onKeyboardVisibilityChange);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _tvFocusNode.requestFocus();
+    });
+  }
 
   @override
   void dispose() {
+    _tvFocusNode.removeListener(_onTvFocusChange);
+    CustomTVTextField.isKeyboardVisibleNotifier.removeListener(_onKeyboardVisibilityChange);
+    _tvFocusNode.dispose();
+    _focusScopeNode.dispose();
     _controller.dispose();
     super.dispose();
+  }
+
+  void _onTvFocusChange() {
+    if (mounted) setState(() {});
+  }
+
+  void _onKeyboardVisibilityChange() {
+    if (!mounted || _isSubmitting) return;
+    final visible = CustomTVTextField.isKeyboardVisibleNotifier.value;
+    debugPrint('[NoteEditor] keyboard visibility changed: visible=$visible isSubmitting=$_isSubmitting');
+    if (!visible) {
+      // Keep focus on the text field — do NOT move to Save button here.
+      // Moving focus to Save would cause the hardware KeyUp event from the
+      // same remote keypress that closed the keyboard to auto-activate Save.
+      _tvFocusNode.requestFocus();
+      // Block button activation briefly to absorb trailing hardware KeyUp events.
+      _keyboardJustClosed = true;
+      debugPrint('[NoteEditor] keyboardJustClosed=true — blocking buttons for 400ms');
+      Future.delayed(const Duration(milliseconds: 400), () {
+        if (mounted) {
+          debugPrint('[NoteEditor] keyboardJustClosed=false — buttons active');
+          setState(() => _keyboardJustClosed = false);
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final apple = PlatformDetection.isApple;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.spaceLg,
-        AppSpacing.spaceLg,
-        AppSpacing.spaceLg,
-        AppSpacing.spaceLg + MediaQuery.viewInsetsOf(context).bottom,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+    final isTV = PlatformDetection.isTV;
+    final prefs = GetIt.instance<UserPreferences>();
+    final preferSystemIme = prefs.get(UserPreferences.preferSystemImeKeyboard);
+    final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
+    final bottomPadding = isTV ? AppSpacing.spaceLg : (AppSpacing.spaceLg + MediaQuery.viewInsetsOf(context).bottom);
+
+    return FocusScope(
+      node: _focusScopeNode,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.spaceLg,
+          AppSpacing.spaceLg,
+          AppSpacing.spaceLg,
+          bottomPadding,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
@@ -408,7 +875,41 @@ class _NoteEditorSheetState extends State<_NoteEditorSheet> {
             ],
           ),
           const SizedBox(height: AppSpacing.spaceMd),
-          if (apple)
+          if (isTV)
+            Focus(
+              focusNode: _tvFocusNode,
+              autofocus: true,
+              onKeyEvent: (node, event) {
+                if (_isSubmitting) return KeyEventResult.handled;
+                final key = event.logicalKey;
+                final isDown = event is KeyDownEvent;
+                if (isDown &&
+                    (key == LogicalKeyboardKey.select ||
+                        key == LogicalKeyboardKey.enter ||
+                        key == LogicalKeyboardKey.numpadEnter)) {
+                  _tvFieldKey.currentState?.openKeyboard();
+                  return KeyEventResult.handled;
+                }
+                return KeyEventResult.ignored;
+              },
+              child: CustomTVTextField(
+                key: _tvFieldKey,
+                controller: _controller,
+                isFocused: _tvFocusNode.hasFocus,
+                hint: l10n.audiobookNoteHint,
+                maxLines: 1,
+                preferSystemIme: preferSystemIme,
+                keyboardType: KeyboardType.alphabetic,
+                popParentOnKeyboardClose: false,
+                borderColor: AppColorScheme.onSurface.withValues(alpha: 0.15),
+                focusedBorderColor: focusColor,
+                onFieldSubmitted: (_) {
+                  // Do nothing — focus stays on text field (_tvFocusNode).
+                  // _onKeyboardVisibilityChange handles focus restoration.
+                },
+              ),
+            )
+          else if (apple)
             CupertinoTextField(
               controller: _controller,
               autofocus: true,
@@ -439,37 +940,119 @@ class _NoteEditorSheetState extends State<_NoteEditorSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              if (apple) ...[
-                CupertinoButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(l10n.audiobookCancel),
-                ),
-                const SizedBox(width: 8),
-                CupertinoButton.filled(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
-                  ),
-                  onPressed: () =>
-                      Navigator.of(context).pop(_controller.text.trim()),
-                  child: Text(l10n.audiobookSave),
-                ),
-              ] else ...[
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(l10n.audiobookCancel),
-                ),
-                const SizedBox(width: 8),
-                FilledButton(
-                  onPressed: () =>
-                      Navigator.of(context).pop(_controller.text.trim()),
-                  child: Text(l10n.audiobookSave),
-                ),
-              ],
+              _SheetActionButton(
+                label: l10n.audiobookCancel,
+                onPressed: () {
+                  debugPrint('[NoteEditor] Cancel pressed: isSubmitting=$_isSubmitting keyboardJustClosed=$_keyboardJustClosed');
+                  if (_isSubmitting || _keyboardJustClosed) return;
+                  _isSubmitting = true;
+                  debugPrint('[NoteEditor] Cancel: popping dialog now');
+                  try {
+                    final targetCtx = widget.dialogContext ?? context;
+                    final canPop = Navigator.canPop(targetCtx);
+                    Navigator.pop(targetCtx, null);
+                    debugPrint('[NoteEditor] Cancel: canPop=$canPop');
+                  } catch (e, stack) {
+                    debugPrint('[NoteEditor] Cancel pop exception: $e\n$stack');
+                  }
+                },
+              ),
+              const SizedBox(width: 8),
+              _SheetActionButton(
+                label: l10n.audiobookSave,
+                onPressed: () {
+                  debugPrint('[NoteEditor] Save pressed: isSubmitting=$_isSubmitting keyboardJustClosed=$_keyboardJustClosed');
+                  if (_isSubmitting || _keyboardJustClosed) return;
+                  _isSubmitting = true;
+                  final text = _controller.text.trim();
+                  debugPrint('[NoteEditor] Save: popping dialog with text="$text"');
+                  try {
+                    final targetCtx = widget.dialogContext ?? context;
+                    final canPop = Navigator.canPop(targetCtx);
+                    Navigator.pop(targetCtx, text);
+                    debugPrint('[NoteEditor] Save: canPop=$canPop');
+                  } catch (e, stack) {
+                    debugPrint('[NoteEditor] Save pop exception: $e\n$stack');
+                  }
+                },
+                isFilled: true,
+              ),
             ],
           ),
         ],
       ),
+    ),
+  );
+}
+}
+
+class _SheetActionButton extends StatefulWidget {
+  const _SheetActionButton({
+    required this.label,
+    required this.onPressed,
+    this.isFilled = false,
+  });
+
+  final String label;
+  final VoidCallback onPressed;
+  final bool isFilled;
+
+  @override
+  State<_SheetActionButton> createState() => _SheetActionButtonState();
+}
+
+class _SheetActionButtonState extends State<_SheetActionButton> {
+  bool _isFocused = false;
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final focused = _isFocused || _isHovered;
+    final prefs = GetIt.instance<UserPreferences>();
+    final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
+
+    final Color backgroundColor;
+    final Color foregroundColor;
+    final Color borderColor;
+
+    if (widget.isFilled) {
+      backgroundColor = focused ? focusColor : AppColorScheme.accent;
+      foregroundColor = AppColorScheme.onAccent;
+      borderColor = focused ? Colors.white : Colors.transparent;
+    } else {
+      backgroundColor = focused ? AppColorScheme.onSurface.withValues(alpha: 0.08) : Colors.transparent;
+      foregroundColor = focused ? focusColor : AppColorScheme.onSurface.withValues(alpha: 0.8);
+      borderColor = focused ? focusColor : AppColorScheme.onSurface.withValues(alpha: 0.15);
+    }
+
+    return InkWell(
+      onTap: widget.onPressed,
+      onFocusChange: (f) => setState(() => _isFocused = f),
+      onHover: (h) => setState(() => _isHovered = h),
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        height: 38,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          border: Border.all(
+            color: borderColor,
+            width: focused ? 2.0 : 1.0,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          widget.label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: foregroundColor,
+          ),
+        ),
+      ),
     );
   }
 }
+
+

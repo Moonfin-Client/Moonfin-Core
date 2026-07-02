@@ -68,7 +68,10 @@ class AudiobookTransportRow extends StatelessWidget {
         ),
         AudiobookFocusRing(
           focused: tvFocusIndex == 2,
-          borderRadius: BorderRadius.circular(34),
+          borderRadius: BorderRadius.circular(38),
+          borderColor: AppColorScheme.onSurface,
+          backgroundColor: Colors.transparent,
+          padding: const EdgeInsets.all(4),
           child: AudiobookPlayButton(isPlaying: isPlaying, onTap: onPlayPause),
         ),
         AudiobookFocusRing(
@@ -174,12 +177,7 @@ class AudiobookSkipButton extends StatelessWidget {
     final apple = PlatformDetection.isApple;
     final color = AppColorScheme.onSurface;
 
-    final IconData icon;
-    if (apple) {
-      icon = forward ? CupertinoIcons.goforward : CupertinoIcons.gobackward;
-    } else {
-      icon = forward ? Icons.forward_30 : Icons.replay_30;
-    }
+    final IconData icon = forward ? CupertinoIcons.goforward : CupertinoIcons.gobackward;
 
     final glyph = Stack(
       alignment: Alignment.center,

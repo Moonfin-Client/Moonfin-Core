@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:moonfin_native_video/moonfin_native_video.dart';
 import 'package:playback_core/playback_core.dart';
@@ -569,7 +570,9 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     final item = _resolveCurrentItem();
     final attachMedia3View =
         PlatformDetection.useNativeVideoSurface && _activeMedia3Backend != null;
-    if (item != null && item.isAudiobook) {
+    final isAudiobookRoute = GoRouterState.of(context).uri.queryParameters['isAudiobook'] == 'true';
+    final isAudiobook = (item != null && item.isAudiobook) || isAudiobookRoute;
+    if (isAudiobook) {
       if (!attachMedia3View) {
         return const AudiobookPlayerView();
       }
