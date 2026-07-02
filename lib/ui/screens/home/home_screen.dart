@@ -3131,9 +3131,16 @@ class _ContentRowsState extends State<_ContentRows>
       final rowBottom = rowViewportTop + rowExtents[rowIndex];
       if (focusedRowIndex != null) {
         if (fullScreenRows) {
-          if (rowIndex != focusedRowIndex) {
+          final distance = (rowIndex - focusedRowIndex).abs();
+          if (distance > 1) {
             return IgnorePointer(
               child: Visibility(visible: false, child: child),
+            );
+          }
+          // Keep immediate neighbors in the tree so they are focusable
+          if (distance == 1) {
+            return IgnorePointer(
+              child: Opacity(opacity: 0.0, child: child),
             );
           }
         } else if (rowIndex < focusedRowIndex) {
