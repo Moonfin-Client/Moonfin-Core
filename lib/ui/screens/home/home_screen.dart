@@ -946,6 +946,7 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   void _onViewModelChanged() {
+    _invalidateStaticRowHeightCache();
     _updateOffsets();
     if (mounted) setState(() {});
   }
@@ -3012,7 +3013,7 @@ class _ContentRowsState extends State<_ContentRows>
     final viewportHeight = MediaQuery.sizeOf(context).height;
 
     if (_cachedRowExtents != null &&
-        identical(_cachedExtentRows, rows) &&
+        listEquals(_cachedExtentRows, rows) &&
         _cachedExtentPosterSize == posterSize &&
         _cachedExtentDesktopScale == desktopScale &&
         _cachedExtentFullScreenRows == fullScreenRows &&
@@ -3023,6 +3024,9 @@ class _ContentRowsState extends State<_ContentRows>
         _cachedExtentPrefsVersion == _layoutPrefsVersion) {
       return _cachedRowExtents!;
     }
+
+    _invalidateStaticRowHeightCache();
+
     final extents = <double>[];
     for (var i = 0; i < rows.length; i++) {
       extents.add(_estimatedRowExtent(i, rows[i], posterSize, prefs));
@@ -3460,7 +3464,7 @@ class _ContentRowsState extends State<_ContentRows>
                                                       ? _navigateFromMediaBarToNavbar
                                                       : null,
                                                   focusNode: _mediaBarFocusNode,
-                                            ),
+                                                ),
                                           );
                                         },
                                       );
@@ -3641,8 +3645,8 @@ class _ContentRowsState extends State<_ContentRows>
         ),
       ],
     ),
-    );
-  }
+  );
+}
 
   Widget _buildLiveTvRow(
     HomeRow row,
@@ -3889,7 +3893,7 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     final subtitle = _rowSubtitle(row, l10n);
-    final hasSubtitle = subtitle != null;
+    final hasSubtitle = subtitle != null && subtitle.isNotEmpty;
     return _buildTitledRow(
       key: _rowContainerKey(rowIndex),
       title: _localizedRowTitle(row, l10n),
