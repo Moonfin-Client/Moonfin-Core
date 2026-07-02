@@ -3416,7 +3416,8 @@ class _ContentRowsState extends State<_ContentRows>
                                               _isActivelyScrolling ||
                                               chromeAudioActive;
 
-                                          return bannerMode
+                                          return RepaintBoundary(
+                                            child: bannerMode
                                               ? BannerMediaBar(
                                                   viewModel: widget.mediaBarViewModel,
                                                   prefs: prefs,
@@ -3459,7 +3460,8 @@ class _ContentRowsState extends State<_ContentRows>
                                                       ? _navigateFromMediaBarToNavbar
                                                       : null,
                                                   focusNode: _mediaBarFocusNode,
-                                                );
+                                            ),
+                                          );
                                         },
                                       );
                                     },
@@ -3678,10 +3680,9 @@ class _ContentRowsState extends State<_ContentRows>
       rowIndex: rowIndex,
       hasItems: actions.isNotEmpty,
       height: rowHeight,
-      child: RepaintBoundary(
-        child: LockedFocusRow<_LiveTvAction>(
-          key: _rowKey(rowIndex),
-          items: actions,
+      child: LockedFocusRow<_LiveTvAction>(
+        key: _rowKey(rowIndex),
+        items: actions,
           hubKey: _hubKeyForRow(row),
           controller: _rowHorizontalController(rowIndex),
           height: rowHeight,
@@ -3719,7 +3720,6 @@ class _ContentRowsState extends State<_ContentRows>
             );
           },
         ),
-      ),
     );
   }
 
@@ -3741,10 +3741,9 @@ class _ContentRowsState extends State<_ContentRows>
       rowIndex: rowIndex,
       hasItems: row.items.isNotEmpty,
       height: rowHeight,
-      child: RepaintBoundary(
-        child: LockedFocusRow<AggregatedItem>(
-          key: _rowKey(rowIndex),
-          items: row.items,
+      child: LockedFocusRow<AggregatedItem>(
+        key: _rowKey(rowIndex),
+        items: row.items,
           hubKey: _hubKeyForRow(row),
           controller: _rowHorizontalController(rowIndex),
           height: rowHeight,
@@ -3799,7 +3798,6 @@ class _ContentRowsState extends State<_ContentRows>
             );
           },
         ),
-      ),
     );
   }
 
@@ -3899,10 +3897,9 @@ class _ContentRowsState extends State<_ContentRows>
       rowIndex: rowIndex,
       hasItems: row.items.isNotEmpty,
       height: maxCardHeight + (10 * metadataScale) + (hasSubtitle ? 18.0 : 0.0),
-      child: RepaintBoundary(
-        child: LockedFocusRow<AggregatedItem>(
-          key: _rowKey(rowIndex),
-          items: row.items,
+      child: LockedFocusRow<AggregatedItem>(
+        key: _rowKey(rowIndex),
+        items: row.items,
           hubKey: _hubKeyForRow(row),
           controller: _rowHorizontalController(rowIndex),
           height: maxCardHeight + (10 * metadataScale),
@@ -4275,7 +4272,6 @@ class _ContentRowsState extends State<_ContentRows>
           );
         },
       ),
-    ),
     );
   }
 
@@ -4430,73 +4426,75 @@ class _ContentRowsState extends State<_ContentRows>
     final isRowsV2 = _isHomeRowsStyleV2();
     final showHeaderControls =
         hasItems && PlatformDetection.useDesktopUi && !PlatformDetection.isTV;
-    return Column(
-      key: key,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(
-            _kHomeRowLabelInset,
-            isRowsV2 ? 6 : 16,
-            8,
-            isRowsV2 ? 1 : 8,
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppColorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (subtitle != null && subtitle.isNotEmpty) ...[
-                      const SizedBox(height: 2),
+    return RepaintBoundary(
+      child: Column(
+        key: key,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              _kHomeRowLabelInset,
+              isRowsV2 ? 6 : 16,
+              8,
+              isRowsV2 ? 1 : 8,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                       Text(
-                        subtitle,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColorScheme.onSurface.withValues(
-                            alpha: 0.5,
-                          ),
+                        title,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: AppColorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
+                      if (subtitle != null && subtitle.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColorScheme.onSurface.withValues(
+                              alpha: 0.5,
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
-                ),
-              ),
-              if (showHeaderControls) ...[
-                Focus(
-                  canRequestFocus: false,
-                  skipTraversal: true,
-                  descendantsAreFocusable: false,
-                  child: IconButton(
-                    icon: const Icon(Icons.chevron_left),
-                    onPressed: () => _scrollHomeRowHorizontal(rowIndex, -480),
-                    visualDensity: VisualDensity.compact,
                   ),
                 ),
-                Focus(
-                  canRequestFocus: false,
-                  skipTraversal: true,
-                  descendantsAreFocusable: false,
-                  child: IconButton(
-                    icon: const Icon(Icons.chevron_right),
-                    onPressed: () => _scrollHomeRowHorizontal(rowIndex, 480),
-                    visualDensity: VisualDensity.compact,
+                if (showHeaderControls) ...[
+                  Focus(
+                    canRequestFocus: false,
+                    skipTraversal: true,
+                    descendantsAreFocusable: false,
+                    child: IconButton(
+                      icon: const Icon(Icons.chevron_left),
+                      onPressed: () => _scrollHomeRowHorizontal(rowIndex, -480),
+                      visualDensity: VisualDensity.compact,
+                    ),
                   ),
-                ),
+                  Focus(
+                    canRequestFocus: false,
+                    skipTraversal: true,
+                    descendantsAreFocusable: false,
+                    child: IconButton(
+                      icon: const Icon(Icons.chevron_right),
+                      onPressed: () => _scrollHomeRowHorizontal(rowIndex, 480),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
-        child,
-      ],
+          child,
+        ],
+      ),
     );
   }
 
