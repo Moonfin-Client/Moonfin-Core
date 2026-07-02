@@ -111,6 +111,26 @@ class QueueService {
     }
   }
 
+  /// Moves the item at [oldIndex] to [newIndex], keeping [currentIndex]
+  /// pointing at the same item. Indices are clamped to the queue bounds.
+  void reorder(int oldIndex, int newIndex) {
+    if (_items.isEmpty) return;
+    final from = oldIndex.clamp(0, _items.length - 1);
+    var to = newIndex.clamp(0, _items.length);
+    if (to > from) to -= 1;
+    if (from == to) return;
+
+    final current = currentItem;
+    final moved = _items.removeAt(from);
+    _items.insert(to.clamp(0, _items.length), moved);
+
+    if (current != null) {
+      final idx = _items.indexOf(current);
+      if (idx >= 0) _currentIndex = idx;
+    }
+    _queueChangedController.add(null);
+  }
+
   void removeAt(int index) {
     if (index < 0 || index >= _items.length) return;
     final removedItem = _items.removeAt(index);

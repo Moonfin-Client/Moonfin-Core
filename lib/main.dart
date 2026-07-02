@@ -113,6 +113,10 @@ Future<void> _restoreWindowGeometry() async {
 }
 
 Future<void> _detectAndSetTvMode() async {
+  if (const bool.fromEnvironment('MOONFIN_FORCE_TV')) {
+    PlatformDetection.setTvMode(true);
+    return;
+  }
   if (!PlatformDetection.isAndroid) return;
   try {
     const channel = MethodChannel('org.moonfin.androidtv/platform');
