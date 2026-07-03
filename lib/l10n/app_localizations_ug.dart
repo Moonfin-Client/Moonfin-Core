@@ -173,6 +173,13 @@ class AppLocalizationsUg extends AppLocalizations {
       'بۇ دېتالنى قايتا قوزغىماي Moonfin بىلەن Neon Pulse نى ئالماشتۇرۇڭ';
 
   @override
+  String get customThemeTitle => 'Custom Theme';
+
+  @override
+  String get customThemeSubtitle =>
+      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
+
+  @override
   String get keyboardPreferSystemIme => 'Prefer system keyboard';
 
   @override

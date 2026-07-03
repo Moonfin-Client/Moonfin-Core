@@ -172,6 +172,13 @@ class AppLocalizationsZh extends AppLocalizations {
       '无需重启应用即可在 Moonfin 和 Neon Pulse 之间切换';
 
   @override
+  String get customThemeTitle => 'Custom Theme';
+
+  @override
+  String get customThemeSubtitle =>
+      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
+
+  @override
   String get keyboardPreferSystemIme => '优先使用系统键盘';
 
   @override

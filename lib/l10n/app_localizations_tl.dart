@@ -174,6 +174,13 @@ class AppLocalizationsTl extends AppLocalizations {
       'Lumipat sa pagitan ng Moonfin at Neon Pulse nang hindi nire-restart ang app';
 
   @override
+  String get customThemeTitle => 'Custom Theme';
+
+  @override
+  String get customThemeSubtitle =>
+      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
+
+  @override
   String get keyboardPreferSystemIme => 'Mas gusto ang keyboard ng system';
 
   @override

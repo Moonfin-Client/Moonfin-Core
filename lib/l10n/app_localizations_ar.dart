@@ -173,6 +173,13 @@ class AppLocalizationsAr extends AppLocalizations {
       'قم بالتبديل بين Moonfin وNeon Pulse دون إعادة تشغيل التطبيق';
 
   @override
+  String get customThemeTitle => 'Custom Theme';
+
+  @override
+  String get customThemeSubtitle =>
+      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
+
+  @override
   String get keyboardPreferSystemIme => 'تفضل لوحة مفاتيح النظام';
 
   @override

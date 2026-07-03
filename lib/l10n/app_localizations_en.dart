@@ -154,11 +154,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get detailScreenStyleModern => 'Modern';
 
   @override
-  String get interfaceStyle => 'Interface style';
+  String get interfaceStyle => 'Interface Style';
 
   @override
   String get interfaceStyleSubtitle =>
-      'Automatic uses the native look on Apple devices. Choose Apple to force it, or Material for the standard look.';
+      'Automatic matches your device. Choose Apple or Material to force a look.';
 
   @override
   String get interfaceStyleAutomatic => 'Automatic';
@@ -171,7 +171,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsAppearanceThemeSubtitle =>
-      'Switch between Moonfin and Neon Pulse without restarting the app';
+      'Apply a fully custom theme and switch between an Apple or Material inspired user interface.';
+
+  @override
+  String get customThemeTitle => 'Custom Theme';
+
+  @override
+  String get customThemeSubtitle =>
+      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
 
   @override
   String get keyboardPreferSystemIme => 'Prefer system keyboard';
@@ -184,8 +191,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get themeMoonfin => 'Moonfin';
 
   @override
-  String get themeMoonfinSubtitle =>
-      'Current Moonfin look you\'ve all come to love';
+  String get themeMoonfinSubtitle => 'The original clean Moonfin default.';
 
   @override
   String get themeNeonPulse => 'Neon Pulse';

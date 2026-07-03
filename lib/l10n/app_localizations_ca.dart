@@ -173,6 +173,13 @@ class AppLocalizationsCa extends AppLocalizations {
       'Canvia entre Moonfin i Neon Pulse sense reiniciar l\'aplicació';
 
   @override
+  String get customThemeTitle => 'Custom Theme';
+
+  @override
+  String get customThemeSubtitle =>
+      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
+
+  @override
   String get keyboardPreferSystemIme => 'Preferiu el teclat del sistema';
 
   @override

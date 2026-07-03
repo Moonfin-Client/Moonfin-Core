@@ -173,6 +173,13 @@ class AppLocalizationsSw extends AppLocalizations {
       'Badili kati ya Moonfin na Neon Pulse bila kuanzisha upya programu';
 
   @override
+  String get customThemeTitle => 'Custom Theme';
+
+  @override
+  String get customThemeSubtitle =>
+      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
+
+  @override
   String get keyboardPreferSystemIme => 'Prefer system keyboard';
 
   @override

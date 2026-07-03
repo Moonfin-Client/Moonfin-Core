@@ -487,13 +487,13 @@ abstract class AppLocalizations {
   /// Label for the Automatic/Apple/Material interface style setting
   ///
   /// In en, this message translates to:
-  /// **'Interface style'**
+  /// **'Interface Style'**
   String get interfaceStyle;
 
   /// Explanation under the interface style setting
   ///
   /// In en, this message translates to:
-  /// **'Automatic uses the native look on Apple devices. Choose Apple to force it, or Material for the standard look.'**
+  /// **'Automatic matches your device. Choose Apple or Material to force a look.'**
   String get interfaceStyleSubtitle;
 
   /// Interface style option: follow the platform
@@ -517,8 +517,20 @@ abstract class AppLocalizations {
   /// Subtitle for the theme selection screen and theme settings entry
   ///
   /// In en, this message translates to:
-  /// **'Switch between Moonfin and Neon Pulse without restarting the app'**
+  /// **'Apply a fully custom theme and switch between an Apple or Material inspired user interface.'**
   String get settingsAppearanceThemeSubtitle;
+
+  /// Title for the custom theme settings section
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Theme'**
+  String get customThemeTitle;
+
+  /// Description under custom themes section
+  ///
+  /// In en, this message translates to:
+  /// **'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.'**
+  String get customThemeSubtitle;
 
   /// Settings label for preferring the native system keyboard instead of the custom TV keyboard
   ///
@@ -541,7 +553,7 @@ abstract class AppLocalizations {
   /// Preview description for the Moonfin theme
   ///
   /// In en, this message translates to:
-  /// **'Current Moonfin look you\'ve all come to love'**
+  /// **'The original clean Moonfin default.'**
   String get themeMoonfinSubtitle;
 
   /// Display name for the Neon Pulse theme

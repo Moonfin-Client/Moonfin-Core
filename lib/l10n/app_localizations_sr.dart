@@ -173,6 +173,13 @@ class AppLocalizationsSr extends AppLocalizations {
       'Пребацивање између __АРБ_ТЕРМ_1__ и __АРБ_ТЕРМ_0__ без поновног покретања апликације';
 
   @override
+  String get customThemeTitle => 'Custom Theme';
+
+  @override
+  String get customThemeSubtitle =>
+      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
+
+  @override
   String get keyboardPreferSystemIme => 'Prefer system keyboard';
 
   @override
