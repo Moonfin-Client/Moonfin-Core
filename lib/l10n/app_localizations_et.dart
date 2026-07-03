@@ -4358,6 +4358,141 @@ class AppLocalizationsEt extends AppLocalizations {
   String get adminMetadataCountryHint => 'nt. USA, DE, FR';
 
   @override
+  String get adminLibraryTabPaths => 'Paths';
+
+  @override
+  String get adminLibraryTabOptions => 'Options';
+
+  @override
+  String get adminLibrarySectionGeneral => 'General';
+
+  @override
+  String get adminLibrarySectionMetadata => 'Metadata';
+
+  @override
+  String get adminLibrarySectionEmbedded => 'Embedded Info';
+
+  @override
+  String get adminLibrarySectionSubtitles => 'Subtitles';
+
+  @override
+  String get adminLibrarySectionImages => 'Images';
+
+  @override
+  String get adminLibrarySectionSeries => 'Series';
+
+  @override
+  String get adminLibrarySectionMusic => 'Music';
+
+  @override
+  String get adminLibrarySectionMovies => 'Movies';
+
+  @override
+  String get adminLibRealtimeMonitor => 'Enable real-time monitoring';
+
+  @override
+  String get adminLibRealtimeMonitorHint =>
+      'Detect file changes and process them automatically.';
+
+  @override
+  String get adminLibArchiveMediaFiles => 'Treat archives as media files';
+
+  @override
+  String get adminLibEnablePhotos => 'Display photos';
+
+  @override
+  String get adminLibSaveLocalMetadata => 'Save artwork into media folders';
+
+  @override
+  String get adminLibRefreshInterval => 'Automatic metadata refresh';
+
+  @override
+  String get adminLibRefreshNever => 'Never';
+
+  @override
+  String get adminLibDefault => 'Default';
+
+  @override
+  String adminLibRefreshDays(int days) {
+    return '$days days';
+  }
+
+  @override
+  String get adminLibEmbeddedTitles => 'Use embedded titles';
+
+  @override
+  String get adminLibEmbeddedExtrasTitles => 'Use embedded titles for extras';
+
+  @override
+  String get adminLibEmbeddedEpisodeInfos => 'Use embedded episode information';
+
+  @override
+  String get adminLibAllowEmbeddedSubtitles => 'Allow embedded subtitles';
+
+  @override
+  String get adminLibEmbeddedAllowAll => 'Allow all';
+
+  @override
+  String get adminLibEmbeddedAllowText => 'Text only';
+
+  @override
+  String get adminLibEmbeddedAllowImage => 'Image only';
+
+  @override
+  String get adminLibEmbeddedAllowNone => 'None';
+
+  @override
+  String get adminLibSkipIfEmbeddedSubs =>
+      'Skip download if embedded subtitles are present';
+
+  @override
+  String get adminLibSkipIfAudioMatches =>
+      'Skip download if the audio track matches the download language';
+
+  @override
+  String get adminLibRequirePerfectMatch => 'Require a perfect subtitle match';
+
+  @override
+  String get adminLibSaveSubtitlesWithMedia =>
+      'Save subtitles into media folders';
+
+  @override
+  String get adminLibChapterImageExtraction => 'Extract chapter images';
+
+  @override
+  String get adminLibChapterImagesDuringScan =>
+      'Extract chapter images during the library scan';
+
+  @override
+  String get adminLibTrickplayExtraction => 'Enable trickplay image extraction';
+
+  @override
+  String get adminLibTrickplayDuringScan =>
+      'Extract trickplay images during the library scan';
+
+  @override
+  String get adminLibSaveTrickplayWithMedia =>
+      'Save trickplay images into media folders';
+
+  @override
+  String get adminLibAutomaticSeriesGrouping =>
+      'Automatically merge series that are spread across multiple folders';
+
+  @override
+  String get adminLibSeasonZeroName => 'Season zero display name';
+
+  @override
+  String get adminLibLufsScan => 'Enable LUFS scan for audio normalization';
+
+  @override
+  String get adminLibPreferNonstandardArtist =>
+      'Prefer non-standard artists tag';
+
+  @override
+  String get adminLibAutoAddToCollection =>
+      'Automatically add movies to collections';
+
+  @override
   String get adminLibraryNameRequired => 'Teegi nimi on kohustuslik';
 
   @override

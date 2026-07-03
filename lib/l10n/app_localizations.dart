@@ -7972,6 +7972,252 @@ abstract class AppLocalizations {
   /// **'e.g. US, DE, FR'**
   String get adminMetadataCountryHint;
 
+  /// No description provided for @adminLibraryTabPaths.
+  ///
+  /// In en, this message translates to:
+  /// **'Paths'**
+  String get adminLibraryTabPaths;
+
+  /// No description provided for @adminLibraryTabOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Options'**
+  String get adminLibraryTabOptions;
+
+  /// No description provided for @adminLibrarySectionGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get adminLibrarySectionGeneral;
+
+  /// No description provided for @adminLibrarySectionMetadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Metadata'**
+  String get adminLibrarySectionMetadata;
+
+  /// No description provided for @adminLibrarySectionEmbedded.
+  ///
+  /// In en, this message translates to:
+  /// **'Embedded Info'**
+  String get adminLibrarySectionEmbedded;
+
+  /// No description provided for @adminLibrarySectionSubtitles.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitles'**
+  String get adminLibrarySectionSubtitles;
+
+  /// No description provided for @adminLibrarySectionImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Images'**
+  String get adminLibrarySectionImages;
+
+  /// No description provided for @adminLibrarySectionSeries.
+  ///
+  /// In en, this message translates to:
+  /// **'Series'**
+  String get adminLibrarySectionSeries;
+
+  /// No description provided for @adminLibrarySectionMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Music'**
+  String get adminLibrarySectionMusic;
+
+  /// No description provided for @adminLibrarySectionMovies.
+  ///
+  /// In en, this message translates to:
+  /// **'Movies'**
+  String get adminLibrarySectionMovies;
+
+  /// No description provided for @adminLibRealtimeMonitor.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable real-time monitoring'**
+  String get adminLibRealtimeMonitor;
+
+  /// No description provided for @adminLibRealtimeMonitorHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Detect file changes and process them automatically.'**
+  String get adminLibRealtimeMonitorHint;
+
+  /// No description provided for @adminLibArchiveMediaFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Treat archives as media files'**
+  String get adminLibArchiveMediaFiles;
+
+  /// No description provided for @adminLibEnablePhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Display photos'**
+  String get adminLibEnablePhotos;
+
+  /// No description provided for @adminLibSaveLocalMetadata.
+  ///
+  /// In en, this message translates to:
+  /// **'Save artwork into media folders'**
+  String get adminLibSaveLocalMetadata;
+
+  /// No description provided for @adminLibRefreshInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic metadata refresh'**
+  String get adminLibRefreshInterval;
+
+  /// No description provided for @adminLibRefreshNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get adminLibRefreshNever;
+
+  /// No description provided for @adminLibDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get adminLibDefault;
+
+  /// No description provided for @adminLibRefreshDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days'**
+  String adminLibRefreshDays(int days);
+
+  /// No description provided for @adminLibEmbeddedTitles.
+  ///
+  /// In en, this message translates to:
+  /// **'Use embedded titles'**
+  String get adminLibEmbeddedTitles;
+
+  /// No description provided for @adminLibEmbeddedExtrasTitles.
+  ///
+  /// In en, this message translates to:
+  /// **'Use embedded titles for extras'**
+  String get adminLibEmbeddedExtrasTitles;
+
+  /// No description provided for @adminLibEmbeddedEpisodeInfos.
+  ///
+  /// In en, this message translates to:
+  /// **'Use embedded episode information'**
+  String get adminLibEmbeddedEpisodeInfos;
+
+  /// No description provided for @adminLibAllowEmbeddedSubtitles.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow embedded subtitles'**
+  String get adminLibAllowEmbeddedSubtitles;
+
+  /// No description provided for @adminLibEmbeddedAllowAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow all'**
+  String get adminLibEmbeddedAllowAll;
+
+  /// No description provided for @adminLibEmbeddedAllowText.
+  ///
+  /// In en, this message translates to:
+  /// **'Text only'**
+  String get adminLibEmbeddedAllowText;
+
+  /// No description provided for @adminLibEmbeddedAllowImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Image only'**
+  String get adminLibEmbeddedAllowImage;
+
+  /// No description provided for @adminLibEmbeddedAllowNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get adminLibEmbeddedAllowNone;
+
+  /// No description provided for @adminLibSkipIfEmbeddedSubs.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip download if embedded subtitles are present'**
+  String get adminLibSkipIfEmbeddedSubs;
+
+  /// No description provided for @adminLibSkipIfAudioMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip download if the audio track matches the download language'**
+  String get adminLibSkipIfAudioMatches;
+
+  /// No description provided for @adminLibRequirePerfectMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Require a perfect subtitle match'**
+  String get adminLibRequirePerfectMatch;
+
+  /// No description provided for @adminLibSaveSubtitlesWithMedia.
+  ///
+  /// In en, this message translates to:
+  /// **'Save subtitles into media folders'**
+  String get adminLibSaveSubtitlesWithMedia;
+
+  /// No description provided for @adminLibChapterImageExtraction.
+  ///
+  /// In en, this message translates to:
+  /// **'Extract chapter images'**
+  String get adminLibChapterImageExtraction;
+
+  /// No description provided for @adminLibChapterImagesDuringScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Extract chapter images during the library scan'**
+  String get adminLibChapterImagesDuringScan;
+
+  /// No description provided for @adminLibTrickplayExtraction.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable trickplay image extraction'**
+  String get adminLibTrickplayExtraction;
+
+  /// No description provided for @adminLibTrickplayDuringScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Extract trickplay images during the library scan'**
+  String get adminLibTrickplayDuringScan;
+
+  /// No description provided for @adminLibSaveTrickplayWithMedia.
+  ///
+  /// In en, this message translates to:
+  /// **'Save trickplay images into media folders'**
+  String get adminLibSaveTrickplayWithMedia;
+
+  /// No description provided for @adminLibAutomaticSeriesGrouping.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically merge series that are spread across multiple folders'**
+  String get adminLibAutomaticSeriesGrouping;
+
+  /// No description provided for @adminLibSeasonZeroName.
+  ///
+  /// In en, this message translates to:
+  /// **'Season zero display name'**
+  String get adminLibSeasonZeroName;
+
+  /// No description provided for @adminLibLufsScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable LUFS scan for audio normalization'**
+  String get adminLibLufsScan;
+
+  /// No description provided for @adminLibPreferNonstandardArtist.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer non-standard artists tag'**
+  String get adminLibPreferNonstandardArtist;
+
+  /// No description provided for @adminLibAutoAddToCollection.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically add movies to collections'**
+  String get adminLibAutoAddToCollection;
+
   /// No description provided for @adminLibraryNameRequired.
   ///
   /// In en, this message translates to:
