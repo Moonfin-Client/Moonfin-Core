@@ -93,11 +93,9 @@ object AudioCapabilities {
         val speakerDevices =
             outputDevices.filter { it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER }
         val activeDevices = resolveActiveMediaDevices(audioManager)
-        val routeType = if (activeDevices.isNotEmpty()) {
-            classifyRoute(activeDevices.map { it.type }.toSet())
-        } else {
-            legacyResolveRouteType(outputDevices)
-        }
+        val routeDevices =
+            if (activeDevices.isNotEmpty()) activeDevices else outputDevices
+        val routeType = classifyRoute(routeDevices.map { it.type }.toSet())
         val routeSupportsHdAudio = routeType == ROUTE_EARC
         val allowSpeakerDolbyFallback =
             routeType == ROUTE_SPEAKER || routeType == ROUTE_OTHER
@@ -416,10 +414,12 @@ object AudioCapabilities {
     }
 
     /**
-     * Route classification for a known-active device set. Unlike the legacy
-     * heuristic this can trust HDMI over the built-in speaker, because the
-     * types come from the actual playback routing, not from everything the
-     * device enumerates.
+     * Classifies the output route from a set of device types, ranking the
+     * built-in speaker last so any real external output (HDMI, ARC/eARC,
+     * optical) wins. Fed the actual playback-routed devices on API 33+, or all
+     * enumerated outputs on older APIs: external outputs are generally only
+     * listed when connected, while the built-in speaker is always enumerated,
+     * so ranking it last keeps the enumerated path correct in practice too.
      */
     private fun classifyRoute(types: Set<Int>): String {
         if (types.any(::isBluetoothType)) {
@@ -452,54 +452,6 @@ object AudioCapabilities {
         return ROUTE_OTHER
     }
 
-    private fun legacyResolveRouteType(devices: List<AudioDeviceInfo>): String {
-        val types = devices.map { it.type }.toSet()
-
-        // 1. Bluetooth devices take highest priority if connected.
-        if (types.any(::isBluetoothType)) {
-            return ROUTE_BLUETOOTH
-        }
-
-        // 2. Wired or USB headsets/headphones take precedence over speakers or HDMI.
-        if (types.contains(AudioDeviceInfo.TYPE_WIRED_HEADPHONES) ||
-            types.contains(AudioDeviceInfo.TYPE_WIRED_HEADSET) ||
-            types.contains(AudioDeviceInfo.TYPE_USB_HEADSET)
-        ) {
-            return ROUTE_HEADPHONES
-        }
-
-        // 3. HDMI eARC and ARC receivers connected to a TV/device.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-            types.contains(AudioDeviceInfo.TYPE_HDMI_EARC)
-        ) {
-            return ROUTE_EARC
-        }
-        if (types.contains(AudioDeviceInfo.TYPE_HDMI_ARC)) {
-            return ROUTE_ARC
-        }
-
-        // 4. Built-in speakers default to a safe stereo route. We prefer this
-        // over plain HDMI on purpose, so a TV panel never tries to bitstream
-        // lossless audio to speakers that cannot decode it, which is the silent
-        // playback bug. A box wired to a real AV receiver should turn on the
-        // "AV receiver" output mode, which forces the HDMI route and passthrough
-        // on the Dart side.
-        if (types.contains(AudioDeviceInfo.TYPE_BUILTIN_SPEAKER) ||
-            types.contains(AudioDeviceInfo.TYPE_BUILTIN_EARPIECE)
-        ) {
-            return ROUTE_SPEAKER
-        }
-
-        // 5. Standard HDMI for boxes with no built-in speaker.
-        if (types.contains(AudioDeviceInfo.TYPE_HDMI) ||
-            types.contains(AudioDeviceInfo.TYPE_LINE_DIGITAL)
-        ) {
-            return ROUTE_HDMI
-        }
-
-        return ROUTE_OTHER
-    }
-
     private fun detectMaxPcmChannels(devices: List<AudioDeviceInfo>, routeType: String): Int {
         var maxVal = 0
         for (device in devices) {
@@ -523,7 +475,6 @@ object AudioCapabilities {
             ROUTE_EARC -> 8
             ROUTE_ARC -> 6
             ROUTE_HDMI -> 8
-            ROUTE_HEADPHONES -> 2
             else -> 2
         }
     }
@@ -537,18 +488,6 @@ object AudioCapabilities {
                 type == AudioDeviceInfo.TYPE_BLE_HEADSET ||
                     type == AudioDeviceInfo.TYPE_BLE_SPEAKER
                 )
-        }
-    }
-
-    private fun isSpeakerLikeType(type: Int): Boolean {
-        return when (type) {
-            AudioDeviceInfo.TYPE_BUILTIN_SPEAKER,
-            AudioDeviceInfo.TYPE_BUILTIN_EARPIECE,
-            AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
-            AudioDeviceInfo.TYPE_WIRED_HEADSET,
-            AudioDeviceInfo.TYPE_USB_HEADSET,
-            -> true
-            else -> false
         }
     }
 }
