@@ -681,7 +681,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
               if (PlatformDetection.isTV && !_drawerOpen) {
                 _drawerContentActive = false;
                 _tvArea = _AudiobookFocusArea.header;
-                _tvHeaderIndex = 2;
+                _tvHeaderIndex = 1;
               }
             });
           },
@@ -745,7 +745,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
               if (PlatformDetection.isTV && !_drawerOpen) {
                 _drawerContentActive = false;
                 _tvArea = _AudiobookFocusArea.header;
-                _tvHeaderIndex = 2;
+                _tvHeaderIndex = 1;
               }
             });
           },
@@ -1232,9 +1232,9 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
     } else if (candidate == _AudiobookFocusArea.actionRail && _tvArea == _AudiobookFocusArea.transport) {
       _tvRailIndex = _tvTransportIndex;
     } else if (candidate == _AudiobookFocusArea.header && _tvArea == _AudiobookFocusArea.progress) {
-      _tvHeaderIndex = 2;
+      _tvHeaderIndex = 1;
     } else if (candidate == _AudiobookFocusArea.header && _tvArea == _AudiobookFocusArea.drawerTabs) {
-      _tvHeaderIndex = 2;
+      _tvHeaderIndex = 1;
     }
 
     if (candidate == _AudiobookFocusArea.drawerContent) {
@@ -1272,7 +1272,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
     setState(() {
       switch (_tvArea) {
         case _AudiobookFocusArea.header:
-          _tvHeaderIndex = (_tvHeaderIndex + delta).clamp(0, 2);
+          _tvHeaderIndex = (_tvHeaderIndex + delta).clamp(0, 1);
           break;
         case _AudiobookFocusArea.progress:
           final ms = delta < 0
@@ -1317,9 +1317,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
       case _AudiobookFocusArea.header:
         if (_tvHeaderIndex == 0) {
           Navigator.of(context).pop();
-        } else if (_tvHeaderIndex == 1 && item != null) {
-          _castToDevice(item);
-        } else if (_tvHeaderIndex == 2) {
+        } else if (_tvHeaderIndex == 1) {
           setState(() {
             _drawerOpen = !_drawerOpen;
             if (!_drawerOpen) {

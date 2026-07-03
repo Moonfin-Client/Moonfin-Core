@@ -88,20 +88,18 @@ class AudiobookHeader extends StatelessWidget {
     );
 
     Widget? castButton;
-    if (item != null && onCast != null) {
+    if (!isTv && item != null && onCast != null) {
       castButton = ValueListenableBuilder<CastTargetKind?>(
         valueListenable: castService.activeKindNotifier,
         builder: (context, kind, _) {
           final active = kind != null;
-          final btn = iconButton(
+          return iconButton(
             icon: apple
                 ? CupertinoIcons.antenna_radiowaves_left_right
                 : (active ? Icons.cast_connected : Icons.cast),
             color: active ? AppColorScheme.accent : null,
             onPressed: active ? onCastSettings : onCast!,
           );
-          if (!isTv) return btn;
-          return AudiobookFocusRing(focused: tvFocusIndex == 1, child: btn);
         },
       );
     }
@@ -116,7 +114,7 @@ class AudiobookHeader extends StatelessWidget {
     final Widget rightButton;
     if (isTv) {
       rightButton = AudiobookFocusRing(
-        focused: tvFocusIndex == 2,
+        focused: tvFocusIndex == 1,
         child: drawerButton,
       );
     } else {

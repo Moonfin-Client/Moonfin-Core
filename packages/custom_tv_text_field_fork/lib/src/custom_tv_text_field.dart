@@ -231,7 +231,9 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
   void _onKeyboardStateChanged() {
     if (!_keyboardController.isVisible && _isOverlayOpen.value) {
       _isOverlayOpen.value = false;
-      if (mounted && Navigator.canPop(context)) {
+      if (widget.popParentOnKeyboardClose &&
+          mounted &&
+          Navigator.canPop(context)) {
         Navigator.pop(context);
       }
     }

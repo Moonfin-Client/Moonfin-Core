@@ -571,8 +571,9 @@ class _AudiobookNotesListState extends State<AudiobookNotesList> {
                       final isPlayFocused = isTvFocused && widget.tvSubIndex == 0;
                       final isEditFocused = isTvFocused && widget.tvSubIndex == 1;
                       final isDeleteFocused = isTvFocused && widget.tvSubIndex == 2;
-                      return GestureDetector(
+                      return InkWell(
                         onTap: () => widget.onJump(n),
+                        borderRadius: BorderRadius.circular(8),
                         child: Container(
                           height: 52.0,
                           margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
@@ -1029,7 +1030,7 @@ class _AudiobookQueueListState extends State<AudiobookQueueList> {
             final isTvFocused = index == widget.tvFocusedIndex;
             final titleText = item?.name ?? AppLocalizations.of(context).trackNumber(index + 1);
 
-            return GestureDetector(
+            return InkWell(
               onTap: () => widget.onPlay(index),
               child: Container(
                 height: 34.0,
