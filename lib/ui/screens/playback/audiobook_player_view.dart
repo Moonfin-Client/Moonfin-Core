@@ -928,7 +928,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
           ),
           const SizedBox(height: AppSpacing.spaceSm),
           Expanded(
-            child: Container(
+            child: DecoratedBox(
               decoration: BoxDecoration(
                 border: Border.all(
                   color: (PlatformDetection.isTV && _tvArea == _AudiobookFocusArea.drawerContent)
@@ -936,10 +936,13 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
                       : Colors.transparent,
                   width: 2.0,
                 ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.circular(16),
               ),
-              padding: const EdgeInsets.all(4),
-              child: switch (_drawerTab) {
+              child: GlassSurface(
+                cornerRadius: 14,
+                fallbackColor: AppColorScheme.surface.withValues(alpha: 0.5),
+                padding: const EdgeInsets.all(6),
+                child: switch (_drawerTab) {
                 AudiobookDrawerTab.timeline => AudiobookTimelineList(
                     events: _getTimelineEvents(chapters),
                     onJump: (ev) {
@@ -1045,7 +1048,8 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
                         ? _tvListIndex
                         : -1,
                   ),
-              },
+                },
+              ),
             ),
           ),
         ],

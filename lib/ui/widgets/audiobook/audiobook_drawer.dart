@@ -35,19 +35,24 @@ class AudiobookDrawerTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var i = 0; i < tabs.length; i++) ...[
-            AudiobookPillSegment(
-              label: labels[tabs[i]] ?? tabs[i].name,
-              selected: tabs[i] == current,
-              tvFocused: tvFocused && tvIndex == i,
-              onTap: () => onChanged(tabs[i]),
-            ),
-            if (i < tabs.length - 1) const SizedBox(width: 6),
+      child: Container(
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          color: AppColorScheme.surface.withValues(alpha: 0.55),
+          borderRadius: AppRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var i = 0; i < tabs.length; i++)
+              AudiobookPillSegment(
+                label: labels[tabs[i]] ?? tabs[i].name,
+                selected: tabs[i] == current,
+                tvFocused: tvFocused && tvIndex == i,
+                onTap: () => onChanged(tabs[i]),
+              ),
           ],
-        ],
+        ),
       ),
     );
   }
@@ -82,28 +87,30 @@ class AudiobookPillSegment extends StatelessWidget {
         fg = AppColorScheme.onAccent;
       }
     } else {
-      bg = AppColorScheme.surface.withValues(alpha: 0.6);
-      fg = AppColorScheme.onSurface.withValues(alpha: 0.85);
+      bg = Colors.transparent;
+      fg = AppColorScheme.onSurface.withValues(alpha: 0.6);
     }
 
-    final borderColor = tvFocused
-        ? Colors.white
-        : (selected && apple ? AppColorScheme.accent : Colors.transparent);
+    final radius = AppRadius.circular(9);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 140),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: borderColor, width: tvFocused ? 2.2 : 1.5),
+        borderRadius: radius,
+        border: tvFocused
+            ? Border.all(color: Colors.white, width: 2.2)
+            : null,
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: radius,
+          splashColor: apple ? Colors.transparent : null,
+          highlightColor: apple ? Colors.transparent : null,
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
             child: Text(
               label,
               style: TextStyle(
