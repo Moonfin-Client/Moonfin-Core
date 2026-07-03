@@ -63,6 +63,10 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
 
   final _subs = <StreamSubscription>[];
   final _tvFocus = FocusNode(debugLabel: 'AudiobookTvFocus');
+  // Position ticks arrive several times a second; drive them through a notifier
+  // so only the scrubbers and chapter strip repaint, not the whole view.
+  final ValueNotifier<Duration> _positionNotifier =
+      ValueNotifier(Duration.zero);
 
   AudiobookDrawerTab _drawerTab = AudiobookDrawerTab.chapters;
   bool _drawerOpen = false;
@@ -102,12 +106,13 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
     _subs.addAll([
       _manager.backendChangedStream.listen((_) => _rebuild()),
       _state.playingStream.listen((_) => _rebuild()),
-      _state.positionStream.listen((_) => _rebuild()),
+      _state.positionStream.listen((_) => _positionNotifier.value = _state.position),
       _state.durationStream.listen((_) => _rebuild()),
       _queue.queueChangedStream.listen((_) => _rebuild()),
       _sleep.onExpired.listen((_) => _onSleepTimerExpired()),
     ]);
     _sleep.addListener(_rebuild);
+    _positionNotifier.value = _state.position;
 
     if (PlatformDetection.useNativeVideoSurface) {
       unawaited(_manager.backend?.setVolume(100.0));
@@ -134,6 +139,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
     }
     _sleep.removeListener(_rebuild);
     _tvFocus.dispose();
+    _positionNotifier.dispose();
     super.dispose();
   }
 
@@ -695,13 +701,16 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
                 const SizedBox(height: AppSpacing.spaceLg),
                 _TitleBlock(item: item, centered: true),
                 const SizedBox(height: AppSpacing.spaceMd),
-                AudiobookChapterContextStrip(
-                  chapters: chapters,
-                  position: _state.position,
-                  onTap: () {
-                    _setDrawerTab(AudiobookDrawerTab.chapters);
-                    _openDrawerSheet(context, item, chapters);
-                  },
+                ValueListenableBuilder<Duration>(
+                  valueListenable: _positionNotifier,
+                  builder: (context, pos, _) => AudiobookChapterContextStrip(
+                    chapters: chapters,
+                    position: pos,
+                    onTap: () {
+                      _setDrawerTab(AudiobookDrawerTab.chapters);
+                      _openDrawerSheet(context, item, chapters);
+                    },
+                  ),
                 ),
               ],
             ),
@@ -776,13 +785,17 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        AudiobookChapterContextStrip(
-                          chapters: chapters,
-                          position: _state.position,
-                          onTap: () => setState(() {
-                            _drawerOpen = true;
-                            _drawerTab = AudiobookDrawerTab.chapters;
-                          }),
+                        ValueListenableBuilder<Duration>(
+                          valueListenable: _positionNotifier,
+                          builder: (context, pos, _) =>
+                              AudiobookChapterContextStrip(
+                            chapters: chapters,
+                            position: pos,
+                            onTap: () => setState(() {
+                              _drawerOpen = true;
+                              _drawerTab = AudiobookDrawerTab.chapters;
+                            }),
+                          ),
                         ),
                         const SizedBox(height: AppSpacing.spaceMd),
                         Expanded(
@@ -822,27 +835,35 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          AudiobookZoomedProgressBar(
-            position: _state.position,
-            duration: _state.duration,
-            chapters: chapters,
-            bookmarks: _bookmarksList,
-            notes: _notesList,
-            isTvFocused: PlatformDetection.isTV &&
-                _tvArea == _AudiobookFocusArea.progress,
-            showRemaining: _showRemaining,
-            onSeek: (d) => _manager.seekTo(d),
-            onToggleRemaining: () => _setShowRemaining(!_showRemaining),
-            formatPosition: formatAudiobookClock,
-            formatRemaining: _formatRemaining,
-          ),
-          const SizedBox(height: AppSpacing.spaceXs),
-          AudiobookBookOverview(
-            position: _state.position,
-            duration: _state.duration,
-            chapters: chapters,
-            bookmarks: _bookmarksList,
-            notes: _notesList,
+          ValueListenableBuilder<Duration>(
+            valueListenable: _positionNotifier,
+            builder: (context, pos, _) => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AudiobookZoomedProgressBar(
+                  position: pos,
+                  duration: _state.duration,
+                  chapters: chapters,
+                  bookmarks: _bookmarksList,
+                  notes: _notesList,
+                  isTvFocused: PlatformDetection.isTV &&
+                      _tvArea == _AudiobookFocusArea.progress,
+                  showRemaining: _showRemaining,
+                  onSeek: (d) => _manager.seekTo(d),
+                  onToggleRemaining: () => _setShowRemaining(!_showRemaining),
+                  formatPosition: formatAudiobookClock,
+                  formatRemaining: _formatRemaining,
+                ),
+                const SizedBox(height: AppSpacing.spaceXs),
+                AudiobookBookOverview(
+                  position: pos,
+                  duration: _state.duration,
+                  chapters: chapters,
+                  bookmarks: _bookmarksList,
+                  notes: _notesList,
+                ),
+              ],
+            ),
           ),
           if (PlatformDetection.useMobileUi) ...[
             const SizedBox(height: AppSpacing.spaceMd),
