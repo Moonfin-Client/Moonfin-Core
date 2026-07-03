@@ -865,6 +865,14 @@ class UserPreferences extends ChangeNotifier {
     values: DetailScreenStyle.values,
   );
 
+  /// Algorithm source for the similar items recommendation system. Global
+  /// (not scoped per server/user), so it is deliberately omitted from [_scopedPreferenceKeys].
+  static final recommendationSystemSource = EnumPreference(
+    key: 'pref_recommendation_system_source',
+    defaultValue: RecommendationSystemSource.local,
+    values: RecommendationSystemSource.values,
+  );
+
   /// Default mobile view for the Live TV guide (Now/Next list vs compact grid).
   static final epgMobileView = EnumPreference(
     key: 'pref_epg_mobile_view',

@@ -154,6 +154,19 @@ class AppLocalizationsAf extends AppLocalizations {
   String get detailScreenStyleModern => 'Modern';
 
   @override
+  String get recommendationSystem => 'Recommendation System';
+
+  @override
+  String get recommendationSystemSubtitle =>
+      'Use the Moonfin Recommends local-library algorithm or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.';
+
+  @override
+  String get recommendationSystemMoonfin => 'Moonfin Recommends';
+
+  @override
+  String get recommendationSystemTmdb => 'TMDb Similarity';
+
+  @override
   String get interfaceStyle => '';
 
   @override

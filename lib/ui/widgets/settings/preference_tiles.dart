@@ -217,7 +217,7 @@ Widget buildSettingsSelectionBubble(
   final theme = Theme.of(context);
   final colorScheme = theme.colorScheme;
   return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     decoration: BoxDecoration(
       color: focused
           ? AppColors.black.withValues(alpha: 0.12)
@@ -469,7 +469,8 @@ class _EnumPreferenceTileState<T extends Enum>
                     style: _kSettingsDescriptionTextStyle,
                   )
                 : null,
-            isThreeLine: false,
+            isThreeLine: widget.description != null,
+            titleAlignment: ListTileTitleAlignment.center,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             onTap: () => _showPicker(context, current),
           );
@@ -807,6 +808,7 @@ class _StringPickerPreferenceTileState
                   )
                 : null,
             isThreeLine: widget.description != null,
+            titleAlignment: ListTileTitleAlignment.center,
             onTap: () => _showPicker(context, value),
           );
         },
@@ -926,6 +928,7 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
                   )
                 : null,
             isThreeLine: widget.description != null,
+            titleAlignment: ListTileTitleAlignment.center,
             onTap: () => _showPicker(context, value),
           );
         },
@@ -1047,7 +1050,10 @@ class _TvFocusHighlightState extends State<TvFocusHighlight> {
                   : AppColorScheme.onSurface.withValues(alpha: 0.7),
               titleTextStyle: _kSettingsTitleTextStyle,
               subtitleTextStyle: _kSettingsSubtitleTextStyle,
-              child: Builder(builder: (ctx) => widget.builder(ctx, _focused)),
+              child: Material(
+                type: MaterialType.transparency,
+                child: Builder(builder: (ctx) => widget.builder(ctx, _focused)),
+              ),
             ),
           ),
         ),

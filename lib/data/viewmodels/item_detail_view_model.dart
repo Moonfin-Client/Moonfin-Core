@@ -2,9 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../models/aggregated_item.dart';
 import '../models/lyrics.dart';
+import '../services/row_data_source.dart';
 import '../repositories/item_mutation_repository.dart';
 import '../repositories/mdblist_repository.dart';
 import '../repositories/tmdb_repository.dart';
@@ -875,8 +877,37 @@ class ItemDetailViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadSimilar() async {
+    final item = _item;
+    if (item != null && (item.type == 'Movie' || item.type == 'Series')) {
+      try {
+        final prefs = GetIt.instance<UserPreferences>();
+        final sourceSetting = prefs.get(UserPreferences.recommendationSystemSource);
+        final isLocal = sourceSetting == RecommendationSystemSource.local;
+        final serverId = _serverId ?? _client.baseUrl;
+        final dataSource = GetIt.instance<RowDataSource>();
+
+        final recommended = await dataSource.getRecommendations(
+          serverId: serverId,
+          baseItem: item,
+          isLocal: isLocal,
+          limit: 15,
+          includeWatched: true,
+        );
+        // Only short-circuit when we actually have results. An empty list (e.g.
+        // the online source without Seerr configured, or no local matches)
+        // falls through to Jellyfin's similar-items below.
+        if (recommended.isNotEmpty) {
+          _similar = recommended;
+          notifyListeners();
+          return;
+        }
+      } catch (e) {
+        debugPrint('[ItemDetailViewModel] Custom recommendation system failed: $e');
+      }
+    }
+
     try {
-      final data = await _client.itemsApi.getSimilarItems(itemId, limit: 12);
+      final data = await _client.itemsApi.getSimilarItems(itemId, limit: 15);
       final items = (data['Items'] as List?) ?? [];
       _similar = _mapItems(items);
       notifyListeners();

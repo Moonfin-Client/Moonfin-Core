@@ -1845,9 +1845,35 @@ class RowDataSource {
     }
 
     final baseItem = baseItems[sourceIdx];
-    final itemDetail = baseItem.rawData;
     final baseItemName = baseItem.name;
 
+    final recommendedItems = await getRecommendations(
+      serverId: serverId,
+      baseItem: baseItem,
+      isLocal: isLocal,
+      candidateItemTypes: candidateItemTypes,
+      limit: 15,
+    );
+
+    return HomeRow(
+      id: 'sinceYouWatched$rowIndex',
+      title: 'Since you watched "$baseItemName"',
+      rowType: HomeRowType.latestMedia,
+      items: recommendedItems,
+    );
+  }
+
+  Future<List<AggregatedItem>> getRecommendations({
+    required String serverId,
+    required AggregatedItem baseItem,
+    required bool isLocal,
+    List<String>? candidateItemTypes,
+    int limit = 15,
+    bool? includeWatched,
+  }) async {
+    final prefs = GetIt.instance<UserPreferences>();
+    final itemDetail = baseItem.rawData;
+    final types = candidateItemTypes ?? (baseItem.type == 'Series' ? const ['Series'] : const ['Movie']);
     List<AggregatedItem> recommendedItems = [];
 
     if (isLocal) {
@@ -1894,7 +1920,7 @@ class RowDataSource {
       if (genres.isNotEmpty) {
         futures.add(() async {
           try {
-            final cacheKey = '$serverId:genres:${candidateItemTypes.join(",")}:${genres.join(",")}';
+            final cacheKey = '$serverId:genres:${types.join(",")}:${genres.join(",")}';
             if (_recommendationCache.containsKey(cacheKey)) {
               final cached = _recommendationCache[cacheKey]!;
               for (final item in cached) {
@@ -1904,7 +1930,7 @@ class RowDataSource {
               return;
             }
             final res = await _client.itemsApi.getItems(
-              includeItemTypes: candidateItemTypes,
+              includeItemTypes: types,
               genres: genres,
               recursive: true,
               limit: 80,
@@ -1927,7 +1953,7 @@ class RowDataSource {
       if (tags.isNotEmpty) {
         futures.add(() async {
           try {
-            final cacheKey = '$serverId:tags:${candidateItemTypes.join(",")}:${tags.join(",")}';
+            final cacheKey = '$serverId:tags:${types.join(",")}:${tags.join(",")}';
             if (_recommendationCache.containsKey(cacheKey)) {
               final cached = _recommendationCache[cacheKey]!;
               for (final item in cached) {
@@ -1937,7 +1963,7 @@ class RowDataSource {
               return;
             }
             final res = await _client.itemsApi.getItems(
-              includeItemTypes: candidateItemTypes,
+              includeItemTypes: types,
               tags: tags,
               recursive: true,
               limit: 80,
@@ -1965,7 +1991,7 @@ class RowDataSource {
       if (allPersonIds.isNotEmpty) {
         futures.add(() async {
           try {
-            final cacheKey = '$serverId:people:${candidateItemTypes.join(",")}:${allPersonIds.join(",")}';
+            final cacheKey = '$serverId:people:${types.join(",")}:${allPersonIds.join(",")}';
             if (_recommendationCache.containsKey(cacheKey)) {
               final cached = _recommendationCache[cacheKey]!;
               for (final item in cached) {
@@ -1975,7 +2001,7 @@ class RowDataSource {
               return;
             }
             final res = await _client.itemsApi.getItems(
-              includeItemTypes: candidateItemTypes,
+              includeItemTypes: types,
               personIds: allPersonIds,
               recursive: true,
               limit: 80,
@@ -1996,7 +2022,7 @@ class RowDataSource {
 
       await Future.wait(futures);
 
-      final includeWatched = prefs.get(UserPreferences.sinceYouWatchedIncludeWatched);
+      final bool effectiveIncludeWatched = includeWatched ?? prefs.get(UserPreferences.sinceYouWatchedIncludeWatched);
       final sourceRating = baseItem.officialRating;
       final sourceRatingLevel = _getRatingLevel(sourceRating);
 
@@ -2009,7 +2035,7 @@ class RowDataSource {
         // Played check
         final userData = candidate['UserData'] as Map?;
         final isPlayed = userData?['Played'] as bool? ?? false;
-        if (!includeWatched && isPlayed) continue;
+        if (!effectiveIncludeWatched && isPlayed) continue;
 
         // Parental rating constraint upper bound
         final candRating = candidate['OfficialRating'] as String?;
@@ -2060,7 +2086,7 @@ class RowDataSource {
       });
 
       recommendedItems = scoredCandidates
-          .take(15)
+          .take(limit)
           .map((e) => AggregatedItem(
                 id: e.key['Id']?.toString() ?? '',
                 serverId: serverId,
@@ -2154,7 +2180,7 @@ class RowDataSource {
                       'SeerrMediaType': type == 'Series' ? 'tv' : 'movie',
                     },
                   );
-                }).take(15).toList();
+                }).take(limit).toList();
               }
             } catch (e) {
               print('[RowDataSource] Direct TMDB recommendation query failed: $e');
@@ -2199,7 +2225,7 @@ class RowDataSource {
                       'SeerrMediaType': item.mediaType,
                     },
                   );
-                }).take(15).toList();
+                }).take(limit).toList();
               }
             } catch (_) {}
           }
@@ -2207,12 +2233,7 @@ class RowDataSource {
       }
     }
 
-    return HomeRow(
-      id: 'sinceYouWatched$rowIndex',
-      title: 'Since you watched "$baseItemName"',
-      rowType: HomeRowType.latestMedia,
-      items: recommendedItems,
-    );
+    return recommendedItems;
   }
 
   Future<HomeRow> loadRewatchRow(String serverId) async {

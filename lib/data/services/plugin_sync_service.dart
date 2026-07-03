@@ -917,6 +917,12 @@ class PluginSyncService extends ChangeNotifier {
       );
       _applyString(
         resolved,
+        'recommendationSystemSource',
+        UserPreferences.recommendationSystemSource,
+        enumValues: prefs.RecommendationSystemSource.values,
+      );
+      _applyString(
+        resolved,
         'detailScreenStyle',
         UserPreferences.detailScreenStyle,
         enumValues: prefs.DetailScreenStyle.values,
@@ -1553,6 +1559,8 @@ class PluginSyncService extends ChangeNotifier {
           .name,
       'cardFocusExpansion': _prefs.get(UserPreferences.cardFocusExpansion),
       'homeRowsStyle': _prefs.get(UserPreferences.homeRowsStyle).name,
+      'recommendationSystemSource':
+          _prefs.get(UserPreferences.recommendationSystemSource).name,
       'detailScreenStyle': _prefs.get(UserPreferences.detailScreenStyle).name,
       'homeImageTypeContinueWatching': _prefs
           .get(UserPreferences.homeRowImageType(prefs.HomeSectionType.resume))

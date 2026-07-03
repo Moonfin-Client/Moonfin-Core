@@ -202,7 +202,13 @@ enum VisualThemeId {
 /// globally (not scoped per server/user).
 enum DetailScreenStyle {
   moonfin,
-  modern,
+  modern;
+}
+
+/// Selectable algorithm source for similarity recommendation system.
+enum RecommendationSystemSource {
+  local,
+  online;
 }
 
 /// Default mobile (portrait phone) view for the Live TV guide: a Now/Next

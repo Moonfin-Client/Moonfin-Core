@@ -19,6 +19,19 @@ class _LibrariesCategoryScreen extends StatelessWidget {
                 onTap: () =>
                     context.pushSettingsScreen(const LibraryVisibilityScreen()),
               ),
+              EnumPreferenceTile<RecommendationSystemSource>(
+                preference: UserPreferences.recommendationSystemSource,
+                title: l10n.recommendationSystem,
+                description: l10n.recommendationSystemSubtitle,
+                icon: Icons.auto_awesome,
+                labelOf: (v) => switch (v) {
+                  RecommendationSystemSource.local =>
+                    l10n.recommendationSystemMoonfin,
+                  RecommendationSystemSource.online =>
+                    l10n.recommendationSystemTmdb,
+                },
+                onChanged: _pushPersonalizationSync,
+              ),
               SwitchPreferenceTile(
                 preference: UserPreferences.enableFolderView,
                 title: l10n.enableFolderView,
