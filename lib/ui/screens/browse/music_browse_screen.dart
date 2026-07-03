@@ -128,6 +128,7 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
         Destinations.item(
           albumId,
           serverId: item.serverId,
+          autoPlay: true,
           trackId: item.id,
         ),
       );
@@ -449,7 +450,7 @@ class _MusicHero extends StatefulWidget {
 }
 
 class _MusicHeroState extends State<_MusicHero> with FocusStateMixin {
-  void _open({bool play = false}) {
+  void _open({bool play = true}) {
     final albumId = widget.item.albumId?.isNotEmpty == true
         ? widget.item.albumId
         : widget.item.parentId;

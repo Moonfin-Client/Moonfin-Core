@@ -495,7 +495,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
                 },
                 onBackdropItemFocused: _onBackdropItemFocused,
                 autoPlay: widget.autoPlay,
-                trackId: widget.trackId,
                 onPlayFromChapter: (position) => unawaited(
                   _playFromChapter(context, _viewModel.item!, position, _selectedMediaSourceId),
                 ),
@@ -514,7 +513,6 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
                   setState(() => _selectedMediaSourceId = id);
                   _viewModel.load(mediaSourceId: id);
                 },
-                trackId: widget.trackId,
                 onBackdropItemFocused: _onBackdropItemFocused,
                 autoPlay: widget.autoPlay,
               ),
@@ -531,7 +529,6 @@ class _DetailContent extends StatefulWidget {
   final ValueChanged<AggregatedItem>? onBackdropItemFocused;
   final FocusNode? initialFocusNode;
   final bool autoPlay;
-  final String? trackId;
 
   const _DetailContent({
     required this.viewModel,
@@ -542,7 +539,6 @@ class _DetailContent extends StatefulWidget {
     this.onBackdropItemFocused,
     this.initialFocusNode,
     this.autoPlay = false,
-    this.trackId,
   });
 
   @override
@@ -5447,13 +5443,13 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
-      // Consume autoPlay from the current detail route so back navigation
-      // doesn't re-trigger playback.
-      context.replace(Destinations.item(item.id, serverId: item.serverId));
-
       final isPhoto = item.type == 'Photo';
       final ws = _computeWatchState(item);
       _play(context, item, resume: !isPhoto && ws.hasProgress);
+
+      // Consume autoPlay from the current detail route so back navigation
+      // doesn't re-trigger playback.
+      context.replace(Destinations.item(item.id, serverId: item.serverId));
     });
   }
 
