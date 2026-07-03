@@ -676,47 +676,36 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
           onClose: () => Navigator.of(context).pop(),
           onCast: item != null ? () => _castToDevice(item) : null,
           onCastSettings: _showCastControls,
-          onToggleDrawer: () {
-            setState(() {
-              _drawerOpen = !_drawerOpen;
-              if (PlatformDetection.isTV && !_drawerOpen) {
-                _drawerContentActive = false;
-                _tvArea = _AudiobookFocusArea.header;
-                _tvHeaderIndex = 1;
-              }
-            });
-          },
-          drawerOpen: _drawerOpen,
+          onToggleDrawer: () => _openDrawerSheet(context, item, chapters),
+          drawerOpen: false,
           tvFocusIndex: _tvArea == _AudiobookFocusArea.header ? _tvHeaderIndex : -1,
         ),
         Expanded(
-          child: _drawerOpen
-              ? _buildDrawer(context, item, chapters)
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.spaceLg),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: AppSpacing.spaceMd),
-                      _CoverArt(
-                        coverUrl: coverUrl,
-                        localPosterPath: localPoster,
-                        size: 260,
-                      ),
-                      const SizedBox(height: AppSpacing.spaceLg),
-                      _TitleBlock(item: item, centered: true),
-                      const SizedBox(height: AppSpacing.spaceMd),
-                      AudiobookChapterContextStrip(
-                        chapters: chapters,
-                        position: _state.position,
-                        onTap: () => setState(() {
-                          _drawerOpen = true;
-                          _drawerTab = AudiobookDrawerTab.chapters;
-                        }),
-                      ),
-                    ],
-                  ),
+          child: SingleChildScrollView(
+            padding:
+                const EdgeInsets.symmetric(horizontal: AppSpacing.spaceLg),
+            child: Column(
+              children: [
+                const SizedBox(height: AppSpacing.spaceMd),
+                _CoverArt(
+                  coverUrl: coverUrl,
+                  localPosterPath: localPoster,
+                  size: 260,
                 ),
+                const SizedBox(height: AppSpacing.spaceLg),
+                _TitleBlock(item: item, centered: true),
+                const SizedBox(height: AppSpacing.spaceMd),
+                AudiobookChapterContextStrip(
+                  chapters: chapters,
+                  position: _state.position,
+                  onTap: () {
+                    _setDrawerTab(AudiobookDrawerTab.chapters);
+                    _openDrawerSheet(context, item, chapters);
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
         _buildBottomControls(context, item, chapters),
       ],
@@ -907,6 +896,101 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
     );
   }
 
+  Widget _drawerTabContent(
+    AudiobookDrawerTab tab,
+    AggregatedItem? item,
+    List<Chapter> chapters, {
+    required bool tv,
+  }) {
+    final tvIdx = (tv &&
+            PlatformDetection.isTV &&
+            _tvArea == _AudiobookFocusArea.drawerContent &&
+            _drawerContentActive)
+        ? _tvListIndex
+        : -1;
+    final subIdx = tv ? _tvSubIndex : 0;
+
+    return switch (tab) {
+      AudiobookDrawerTab.timeline => AudiobookTimelineList(
+          events: _getTimelineEvents(chapters),
+          onJump: (ev) {
+            if (ev.type == TimelineEventType.chapter) {
+              _jumpToChapter(ev.originalObject as Chapter);
+            } else if (ev.type == TimelineEventType.bookmark) {
+              _manager.seekTo(Duration(
+                  milliseconds: (ev.originalObject as AudiobookBookmark).positionMs));
+            } else if (ev.type == TimelineEventType.note) {
+              _manager.seekTo(Duration(
+                  milliseconds: (ev.originalObject as AudiobookNote).positionMs));
+            }
+          },
+          onEditNote: (n) =>
+              item != null ? _openNoteEditor(item, existing: n) : null,
+          onDeleteBookmark: (b) =>
+              unawaited(_bookmarks.removeAt(item!.serverId, item.id, b.positionMs)),
+          onDeleteNote: (n) =>
+              unawaited(_notes.remove(item!.serverId, item.id, n.id)),
+          tvFocusedIndex: tvIdx,
+          tvSubIndex: subIdx,
+          onExport: () => _exportToCsv('All', _getTimelineEvents(chapters)),
+        ),
+      AudiobookDrawerTab.chapters => AudiobookChaptersList(
+          chapters: chapters,
+          position: _state.position,
+          onTap: (c) => _jumpToChapter(c),
+          tvFocusedIndex: tvIdx,
+        ),
+      AudiobookDrawerTab.bookmarks => AudiobookBookmarksList(
+          item: item,
+          service: _bookmarks,
+          onJump: (b) => _manager.seekTo(Duration(milliseconds: b.positionMs)),
+          tvFocusedIndex: tvIdx,
+          tvSubIndex: subIdx,
+          onExport: () {
+            final bEvents = _bookmarksList
+                .map((b) => TimelineEvent(
+                      id: 'bookmark_${b.positionMs}',
+                      type: TimelineEventType.bookmark,
+                      title: b.label,
+                      positionMs: b.positionMs,
+                      date: b.createdAt,
+                      originalObject: b,
+                    ))
+                .toList();
+            _exportToCsv('Bookmarks', bEvents);
+          },
+        ),
+      AudiobookDrawerTab.notes => AudiobookNotesList(
+          item: item,
+          service: _notes,
+          onJump: (n) => _manager.seekTo(Duration(milliseconds: n.positionMs)),
+          onEdit: (n) =>
+              item != null ? _openNoteEditor(item, existing: n) : null,
+          tvFocusedIndex: tvIdx,
+          tvSubIndex: subIdx,
+          onExport: () {
+            final nEvents = _notesList
+                .map((n) => TimelineEvent(
+                      id: 'note_${n.id}',
+                      type: TimelineEventType.note,
+                      title: 'Note: ${n.body}',
+                      content: n.body,
+                      positionMs: n.positionMs,
+                      date: n.updatedAt,
+                      originalObject: n,
+                    ))
+                .toList();
+            _exportToCsv('Notes', nEvents);
+          },
+        ),
+      AudiobookDrawerTab.queue => AudiobookQueueList(
+          queue: _queue,
+          onPlay: (i) => _manager.playFromQueue(i),
+          tvFocusedIndex: tvIdx,
+        ),
+    };
+  }
+
   Widget _buildDrawer(
     BuildContext context,
     AggregatedItem? item,
@@ -956,105 +1040,42 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
                 cornerRadius: 14,
                 fallbackColor: AppColorScheme.surface.withValues(alpha: 0.5),
                 padding: const EdgeInsets.all(6),
-                child: switch (_drawerTab) {
-                AudiobookDrawerTab.timeline => AudiobookTimelineList(
-                    events: _getTimelineEvents(chapters),
-                    onJump: (ev) {
-                      if (ev.type == TimelineEventType.chapter) {
-                        _jumpToChapter(ev.originalObject as Chapter);
-                      } else if (ev.type == TimelineEventType.bookmark) {
-                        _manager.seekTo(Duration(milliseconds: (ev.originalObject as AudiobookBookmark).positionMs));
-                      } else if (ev.type == TimelineEventType.note) {
-                        _manager.seekTo(Duration(milliseconds: (ev.originalObject as AudiobookNote).positionMs));
-                      }
-                    },
-                    onEditNote: (n) =>
-                        item != null ? _openNoteEditor(item, existing: n) : null,
-                    onDeleteBookmark: (b) =>
-                        unawaited(_bookmarks.removeAt(item!.serverId, item.id, b.positionMs)),
-                    onDeleteNote: (n) =>
-                        unawaited(_notes.remove(item!.serverId, item.id, n.id)),
-                    tvFocusedIndex: (PlatformDetection.isTV &&
-                            _tvArea == _AudiobookFocusArea.drawerContent &&
-                            _drawerContentActive)
-                        ? _tvListIndex
-                        : -1,
-                    tvSubIndex: _tvSubIndex,
-                    onExport: () => _exportToCsv('All', _getTimelineEvents(chapters)),
-                  ),
-                AudiobookDrawerTab.chapters => AudiobookChaptersList(
-                    chapters: chapters,
-                    position: _state.position,
-                    onTap: (c) => _jumpToChapter(c),
-                    tvFocusedIndex: (PlatformDetection.isTV &&
-                            _tvArea == _AudiobookFocusArea.drawerContent &&
-                            _drawerContentActive)
-                        ? _tvListIndex
-                        : -1,
-                  ),
-                AudiobookDrawerTab.bookmarks => AudiobookBookmarksList(
-                    item: item,
-                    service: _bookmarks,
-                    onJump: (b) =>
-                        _manager.seekTo(Duration(milliseconds: b.positionMs)),
-                    tvFocusedIndex: (PlatformDetection.isTV &&
-                            _tvArea == _AudiobookFocusArea.drawerContent &&
-                            _drawerContentActive)
-                        ? _tvListIndex
-                        : -1,
-                    tvSubIndex: _tvSubIndex,
-                    onExport: () {
-                      final bEvents = _bookmarksList.map((b) => TimelineEvent(
-                        id: 'bookmark_${b.positionMs}',
-                        type: TimelineEventType.bookmark,
-                        title: b.label,
-                        positionMs: b.positionMs,
-                        date: b.createdAt,
-                        originalObject: b,
-                      )).toList();
-                      _exportToCsv('Bookmarks', bEvents);
-                    },
-                  ),
-                AudiobookDrawerTab.notes => AudiobookNotesList(
-                    item: item,
-                    service: _notes,
-                    onJump: (n) =>
-                        _manager.seekTo(Duration(milliseconds: n.positionMs)),
-                    onEdit: (n) =>
-                        item != null ? _openNoteEditor(item, existing: n) : null,
-                    tvFocusedIndex: (PlatformDetection.isTV &&
-                            _tvArea == _AudiobookFocusArea.drawerContent &&
-                            _drawerContentActive)
-                        ? _tvListIndex
-                        : -1,
-                    tvSubIndex: _tvSubIndex,
-                    onExport: () {
-                      final nEvents = _notesList.map((n) => TimelineEvent(
-                        id: 'note_${n.id}',
-                        type: TimelineEventType.note,
-                        title: 'Note: ${n.body}',
-                        content: n.body,
-                        positionMs: n.positionMs,
-                        date: n.updatedAt,
-                        originalObject: n,
-                      )).toList();
-                      _exportToCsv('Notes', nEvents);
-                    },
-                  ),
-                AudiobookDrawerTab.queue => AudiobookQueueList(
-                    queue: _queue,
-                    onPlay: (i) => _manager.playFromQueue(i),
-                    tvFocusedIndex: (PlatformDetection.isTV &&
-                            _tvArea == _AudiobookFocusArea.drawerContent &&
-                            _drawerContentActive)
-                        ? _tvListIndex
-                        : -1,
-                  ),
-                },
+                child: _drawerTabContent(_drawerTab, item, chapters, tv: true),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _openDrawerSheet(
+    BuildContext context,
+    AggregatedItem? item,
+    List<Chapter> chapters,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    final availableTabs = _getAvailableTabs(chapters);
+    if (availableTabs.isEmpty) return;
+    final labels = {
+      AudiobookDrawerTab.timeline: 'Timeline',
+      AudiobookDrawerTab.chapters: l10n.audiobookChapters,
+      AudiobookDrawerTab.bookmarks: l10n.audiobookBookmarks,
+      AudiobookDrawerTab.notes: l10n.audiobookNotes,
+      AudiobookDrawerTab.queue: l10n.audiobookQueue,
+    };
+    final initial =
+        availableTabs.contains(_drawerTab) ? _drawerTab : availableTabs.first;
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => _AudiobookDrawerSheet(
+        initialTab: initial,
+        tabs: availableTabs,
+        labels: labels,
+        onTabChanged: _setDrawerTab,
+        contentBuilder: (tab) => _drawerTabContent(tab, item, chapters, tv: false),
       ),
     );
   }
@@ -1437,6 +1458,79 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
         }
         break;
     }
+  }
+}
+
+class _AudiobookDrawerSheet extends StatefulWidget {
+  const _AudiobookDrawerSheet({
+    required this.initialTab,
+    required this.tabs,
+    required this.labels,
+    required this.onTabChanged,
+    required this.contentBuilder,
+  });
+
+  final AudiobookDrawerTab initialTab;
+  final List<AudiobookDrawerTab> tabs;
+  final Map<AudiobookDrawerTab, String> labels;
+  final ValueChanged<AudiobookDrawerTab> onTabChanged;
+  final Widget Function(AudiobookDrawerTab) contentBuilder;
+
+  @override
+  State<_AudiobookDrawerSheet> createState() => _AudiobookDrawerSheetState();
+}
+
+class _AudiobookDrawerSheetState extends State<_AudiobookDrawerSheet> {
+  late AudiobookDrawerTab _tab = widget.initialTab;
+
+  @override
+  Widget build(BuildContext context) {
+    final height = MediaQuery.sizeOf(context).height * 0.82;
+    return Container(
+      height: height,
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: GlassSurface(
+        cornerRadius: 24,
+        fallbackColor: AppColorScheme.surface.withValues(alpha: 0.98),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColorScheme.onSurface.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: AudiobookDrawerTabBar(
+                  current: _tab,
+                  tvFocused: false,
+                  tvIndex: 0,
+                  onChanged: (t) {
+                    setState(() => _tab = t);
+                    widget.onTabChanged(t);
+                  },
+                  labels: widget.labels,
+                  tabs: widget.tabs,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: widget.contentBuilder(_tab),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
