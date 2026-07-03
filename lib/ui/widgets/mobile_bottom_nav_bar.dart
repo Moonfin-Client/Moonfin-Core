@@ -14,7 +14,6 @@ import '../../data/services/plugin_sync_service.dart';
 import '../../l10n/app_localizations.dart';
 import '../../preference/seerr_preferences.dart';
 import '../../preference/user_preferences.dart';
-import '../../util/idiom/app_ui_idiom.dart';
 import '../../util/overlay_color_palette.dart';
 import '../../util/game_library.dart';
 import '../navigation/destinations.dart';
@@ -30,10 +29,8 @@ import 'user_menu_dialog.dart';
 
 const double _kBarHeight = 54.0;
 const double _kIconSize = 24.0;
-const double _kBarCornerRadius = 16.0;
-const double _kBarHorizontalInset = 8.0;
 const double _kFloatingInset = 14.0;
-const double _kFloatingRadius = 28.0;
+const double _kFloatingRadius = 22.0;
 class MobileBottomNavBar extends StatefulWidget {
   final String? activeRoute;
 
@@ -554,8 +551,10 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
       {required int slot}) {
     final accent = Theme.of(context).colorScheme.primary;
     final slotColor = AppColorScheme.navColorForSlot(slot);
-    final color = slotColor ??
-        (action.isActive ? accent : Colors.white.withValues(alpha: 0.6));
+    final baseColor = slotColor ?? accent;
+    final color = action.isActive
+        ? Color.lerp(baseColor, Colors.white, 0.30)!
+        : (slotColor ?? Colors.white.withValues(alpha: 0.6));
     return Semantics(
       button: true,
       selected: action.isActive,
@@ -573,15 +572,23 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
             height: double.infinity,
             child: Center(
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                curve: Curves.easeOut,
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOutCubic,
                 width: 56,
                 height: 32,
                 decoration: BoxDecoration(
                   color: action.isActive
-                      ? accent.withValues(alpha: 0.16)
+                      ? baseColor.withValues(alpha: 0.16)
                       : Colors.transparent,
                   borderRadius: AppRadius.circular(16),
+                  boxShadow: action.isActive
+                      ? [
+                          BoxShadow(
+                            color: baseColor.withValues(alpha: 0.35),
+                            blurRadius: 12,
+                          ),
+                        ]
+                      : null,
                 ),
                 alignment: Alignment.center,
                 child: _icon(action, color: color),
@@ -636,34 +643,7 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
       ),
     );
 
-    if (AppUiIdiomResolver.current == AppUiIdiom.iosMobile) {
-      return _buildFloatingGlassBar(context, row);
-    }
-
-    final barColor = _resolveBarColor(context);
-    final borderAlpha = 0.08 * _overlayOpacity();
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: _kBarHorizontalInset),
-      child: ClipRRect(
-        borderRadius: AppRadius.circular(_kBarCornerRadius),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: barColor,
-            border: Border(
-              top: BorderSide(
-                color: Colors.white.withValues(alpha: borderAlpha),
-                width: 1,
-              ),
-            ),
-          ),
-          child: SafeArea(
-            top: false,
-            child: SizedBox(height: _kBarHeight, child: row),
-          ),
-        ),
-      ),
-    );
+    return _buildFloatingGlassBar(context, row);
   }
 
   Widget _buildFloatingGlassBar(BuildContext context, Widget row) {
@@ -676,12 +656,25 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
         _kFloatingInset,
         bottomInset > 0 ? bottomInset : _kFloatingInset,
       ),
-      child: adaptiveGlass(
-        cornerRadius: _kFloatingRadius,
-        blur: 24,
-        tint: accent.withValues(alpha: 0.04),
-        fallbackColor: _resolveBarColor(context, forSheet: true),
-        child: SizedBox(height: _kBarHeight, child: row),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: AppRadius.circular(_kFloatingRadius),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.45),
+              blurRadius: 30,
+              spreadRadius: -12,
+              offset: const Offset(0, 14),
+            ),
+          ],
+        ),
+        child: adaptiveGlass(
+          cornerRadius: _kFloatingRadius,
+          blur: 28,
+          tint: accent.withValues(alpha: 0.05),
+          fallbackColor: _resolveBarColor(context, forSheet: true),
+          child: SizedBox(height: _kBarHeight, child: row),
+        ),
       ),
     );
   }
