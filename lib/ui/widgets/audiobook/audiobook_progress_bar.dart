@@ -8,20 +8,14 @@ import '../../../data/services/audiobook_notes_service.dart';
 import '../../../util/platform_detection.dart';
 import 'chapter.dart';
 
-class AudiobookProgressBar extends StatelessWidget {
-  const AudiobookProgressBar({
+class AudiobookBookOverview extends StatelessWidget {
+  const AudiobookBookOverview({
     super.key,
     required this.position,
     required this.duration,
     required this.chapters,
     required this.bookmarks,
     required this.notes,
-    required this.showRemaining,
-    required this.isTvFocused,
-    required this.onSeek,
-    required this.onToggleRemaining,
-    required this.formatPosition,
-    required this.formatRemaining,
   });
 
   final Duration position;
@@ -29,122 +23,57 @@ class AudiobookProgressBar extends StatelessWidget {
   final List<Chapter> chapters;
   final List<AudiobookBookmark> bookmarks;
   final List<AudiobookNote> notes;
-  final bool showRemaining;
-  final bool isTvFocused;
-  final ValueChanged<Duration> onSeek;
-  final VoidCallback onToggleRemaining;
-  final String Function(Duration) formatPosition;
-  final String Function(Duration position, Duration total) formatRemaining;
 
   @override
   Widget build(BuildContext context) {
-    final apple = PlatformDetection.isApple;
     final maxMs = duration.inMilliseconds.toDouble();
-    final groupChapters = chapters.length > 40;
-    final value = maxMs > 0
-        ? position.inMilliseconds.toDouble().clamp(0, maxMs)
-        : 0.0;
-
-    final Widget slider;
-    if (apple) {
-      slider = Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: CupertinoSlider(
-          value: value.toDouble(),
-          max: maxMs > 0 ? maxMs : 1,
-          activeColor: AppColorScheme.rangeProgress,
-          onChanged: (v) => onSeek(Duration(milliseconds: v.toInt())),
-        ),
-      );
-    } else {
-      slider = SliderTheme(
-        data: SliderThemeData(
-          trackHeight: 4,
-          thumbShape: _FocusedSliderThumbShape(
-            enabledThumbRadius: 8,
-            isTvFocused: isTvFocused,
-          ),
-          overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
-          activeTrackColor: AppColorScheme.rangeProgress,
-          inactiveTrackColor: AppColorScheme.rangeTrack,
-          thumbColor: isTvFocused ? Colors.white : AppColorScheme.rangeThumb,
-          overlayColor: AppColorScheme.rangeThumb.withValues(alpha: 0.2),
-        ),
-        child: Slider(
-          value: value.toDouble(),
-          max: maxMs > 0 ? maxMs : 1,
-          onChanged: (v) => onSeek(Duration(milliseconds: v.toInt())),
-        ),
-      );
-    }
-
-    final double horizontalPadding = apple ? 20.0 : 24.0;
+    final fraction =
+        maxMs > 0 ? (position.inMilliseconds / maxMs).clamp(0.0, 1.0) : 0.0;
+    final percent = (fraction * 100).round();
+    final remaining = duration - position;
+    final noteColor = AppColorScheme.navColorCycle.length >= 2
+        ? AppColorScheme.navColorCycle[1]
+        : Theme.of(context).colorScheme.secondary;
+    final captionStyle = TextStyle(
+      fontSize: 11,
+      color: AppColorScheme.onSurface.withValues(alpha: 0.5),
+    );
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
-          height: 32,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              if (chapters.isNotEmpty || bookmarks.isNotEmpty || notes.isNotEmpty)
-                IgnorePointer(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-                    child: CustomPaint(
-                      painter: _TimelineTicksPainter(
-                        chapters: chapters,
-                        bookmarks: bookmarks,
-                        notes: notes,
-                        durationMs: maxMs.toInt(),
-                        grouped: groupChapters,
-                        chapterColor: Colors.white,
-                        bookmarkColor: AppColorScheme.accent,
-                        noteColor: AppColorScheme.navColorCycle.length >= 2
-                            ? AppColorScheme.navColorCycle[1]
-                            : Theme.of(context).colorScheme.secondary,
-                      ),
-                      size: Size.infinite,
-                    ),
-                  ),
-                ),
-              slider,
-            ],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: SizedBox(
+            height: 8,
+            child: CustomPaint(
+              size: Size.infinite,
+              painter: _BookOverviewPainter(
+                fraction: fraction.toDouble(),
+                chapters: chapters,
+                bookmarks: bookmarks,
+                notes: notes,
+                durationMs: maxMs.toInt(),
+                grouped: chapters.length > 40,
+                trackColor: AppColorScheme.rangeTrack,
+                fillColor: AppColorScheme.rangeProgress,
+                chapterColor: AppColorScheme.onSurface.withValues(alpha: 0.35),
+                bookmarkColor: AppColorScheme.accent,
+                noteColor: noteColor,
+              ),
+            ),
           ),
         ),
+        const SizedBox(height: 5),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Text('Whole book', style: captionStyle),
               Text(
-                formatPosition(position),
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColorScheme.onSurface.withValues(alpha: 0.85),
-                ),
-              ),
-              Text(
-                '${maxMs > 0 ? ((position.inMilliseconds / maxMs) * 100).round().clamp(0, 100) : 0}%',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: AppColorScheme.onSurface.withValues(alpha: 0.85),
-                ),
-              ),
-              GestureDetector(
-                onTap: onToggleRemaining,
-                behavior: HitTestBehavior.opaque,
-                child: Text(
-                  showRemaining
-                      ? formatRemaining(position, duration)
-                      : formatPosition(duration),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColorScheme.onSurface.withValues(alpha: 0.85),
-                  ),
-                ),
+                '$percent% · ${formatAudiobookClock(remaining)} left',
+                style: captionStyle,
               ),
             ],
           ),
@@ -154,35 +83,57 @@ class AudiobookProgressBar extends StatelessWidget {
   }
 }
 
-class _TimelineTicksPainter extends CustomPainter {
-  _TimelineTicksPainter({
+class _BookOverviewPainter extends CustomPainter {
+  _BookOverviewPainter({
+    required this.fraction,
     required this.chapters,
     required this.bookmarks,
     required this.notes,
     required this.durationMs,
     required this.grouped,
+    required this.trackColor,
+    required this.fillColor,
     required this.chapterColor,
     required this.bookmarkColor,
     required this.noteColor,
   });
 
+  final double fraction;
   final List<Chapter> chapters;
   final List<AudiobookBookmark> bookmarks;
   final List<AudiobookNote> notes;
   final int durationMs;
   final bool grouped;
+  final Color trackColor;
+  final Color fillColor;
   final Color chapterColor;
   final Color bookmarkColor;
   final Color noteColor;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final cy = size.height / 2;
+
+    final trackPaint = Paint()
+      ..color = trackColor
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(Offset(0, cy), Offset(size.width, cy), trackPaint);
+
+    if (fraction > 0) {
+      final fillPaint = Paint()
+        ..color = fillColor
+        ..strokeWidth = 3
+        ..strokeCap = StrokeCap.round;
+      canvas.drawLine(
+          Offset(0, cy), Offset(size.width * fraction, cy), fillPaint);
+    }
+
     if (durationMs <= 0) return;
 
-    // 1. Draw Chapters
     final chapterPaint = Paint()
       ..color = chapterColor
-      ..strokeWidth = 1.4;
+      ..strokeWidth = 1.2;
     if (grouped) {
       final step = (chapters.length / 10).ceil();
       for (var i = 0; i < chapters.length; i += step) {
@@ -192,23 +143,21 @@ class _TimelineTicksPainter extends CustomPainter {
     } else {
       for (final c in chapters) {
         final x = (c.startMs / durationMs) * size.width;
-        canvas.drawLine(Offset(x, 1), Offset(x, size.height - 1), chapterPaint);
+        canvas.drawLine(Offset(x, 0), Offset(x, size.height), chapterPaint);
       }
     }
 
-    // 2. Draw Bookmarks
     final bookmarkPaint = Paint()
       ..color = bookmarkColor
-      ..strokeWidth = 1.8;
+      ..strokeWidth = 1.6;
     for (final b in bookmarks) {
       final x = (b.positionMs / durationMs) * size.width;
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), bookmarkPaint);
     }
 
-    // 3. Draw Notes
     final notePaint = Paint()
       ..color = noteColor
-      ..strokeWidth = 1.8;
+      ..strokeWidth = 1.6;
     for (final n in notes) {
       final x = (n.positionMs / durationMs) * size.width;
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), notePaint);
@@ -216,7 +165,8 @@ class _TimelineTicksPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_TimelineTicksPainter old) =>
+  bool shouldRepaint(_BookOverviewPainter old) =>
+      old.fraction != fraction ||
       old.chapters != chapters ||
       old.bookmarks != bookmarks ||
       old.notes != notes ||
@@ -270,6 +220,8 @@ class _FocusedSliderThumbShape extends SliderComponentShape {
   }
 }
 
+/// The primary scrubber: a 1-hour window centered on the current position so a
+/// 17+ hour book stays draggable with real precision.
 class AudiobookZoomedProgressBar extends StatelessWidget {
   const AudiobookZoomedProgressBar({
     super.key,
@@ -279,7 +231,9 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
     required this.bookmarks,
     required this.notes,
     required this.isTvFocused,
+    required this.showRemaining,
     required this.onSeek,
+    required this.onToggleRemaining,
     required this.formatPosition,
     required this.formatRemaining,
   });
@@ -290,7 +244,9 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
   final List<AudiobookBookmark> bookmarks;
   final List<AudiobookNote> notes;
   final bool isTvFocused;
+  final bool showRemaining;
   final ValueChanged<Duration> onSeek;
+  final VoidCallback onToggleRemaining;
   final String Function(Duration) formatPosition;
   final String Function(Duration position, Duration total) formatRemaining;
 
@@ -361,6 +317,10 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
 
     final double horizontalPadding = apple ? 20.0 : 24.0;
     final groupChapters = chapters.length > 40;
+    final labelStyle = TextStyle(
+      fontSize: 12,
+      color: AppColorScheme.onSurface.withValues(alpha: 0.85),
+    );
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -401,13 +361,7 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                formatPosition(position),
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColorScheme.onSurface.withValues(alpha: 0.85),
-                ),
-              ),
+              Text(formatPosition(position), style: labelStyle),
               Text(
                 'Focused Timeline',
                 style: TextStyle(
@@ -416,11 +370,17 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
                   color: AppColorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
-              Text(
-                '-${formatAudiobookClock(Duration(milliseconds: (totalMs - posMs).toInt()))}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColorScheme.onSurface.withValues(alpha: 0.85),
+              InkWell(
+                onTap: onToggleRemaining,
+                borderRadius: BorderRadius.circular(6),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  child: Text(
+                    showRemaining
+                        ? formatRemaining(position, duration)
+                        : formatPosition(duration),
+                    style: labelStyle,
+                  ),
                 ),
               ),
             ],
@@ -459,13 +419,12 @@ class _ZoomedTimelineTicksPainter extends CustomPainter {
     final range = windowEndMs - windowStartMs;
     if (range <= 0) return;
 
-    // 1. Draw Chapters
     final chapterPaint = Paint()
       ..color = chapterColor
       ..strokeWidth = 2.0;
 
     if (grouped) {
-      // Draw simplified grouped chapters if there are too many (none needed for standard display)
+      // Simplified grouped chapters are not drawn in the zoomed window.
     } else {
       for (final c in chapters) {
         final pos = c.startMs.toDouble();
@@ -476,7 +435,6 @@ class _ZoomedTimelineTicksPainter extends CustomPainter {
       }
     }
 
-    // 2. Draw Bookmarks
     final bookmarkPaint = Paint()
       ..color = bookmarkColor
       ..strokeWidth = 1.8;
@@ -488,7 +446,6 @@ class _ZoomedTimelineTicksPainter extends CustomPainter {
       }
     }
 
-    // 3. Draw Notes
     final notePaint = Paint()
       ..color = noteColor
       ..strokeWidth = 1.8;

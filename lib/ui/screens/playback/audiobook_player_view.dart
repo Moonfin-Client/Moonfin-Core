@@ -773,20 +773,6 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
                         ),
                         const SizedBox(height: AppSpacing.spaceLg),
                         _TitleBlock(item: item, centered: true),
-                        const SizedBox(height: AppSpacing.spaceLg),
-                        AudiobookProgressBar(
-                          position: _state.position,
-                          duration: _state.duration,
-                          chapters: chapters,
-                          bookmarks: _bookmarksList,
-                          notes: _notesList,
-                          showRemaining: _showRemaining,
-                          isTvFocused: false,
-                          onSeek: (d) => _manager.seekTo(d),
-                          onToggleRemaining: () => _setShowRemaining(!_showRemaining),
-                          formatPosition: formatAudiobookClock,
-                          formatRemaining: _formatRemaining,
-                        ),
                       ],
                     ),
                   ),
@@ -846,34 +832,28 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (splitLayout)
-            AudiobookZoomedProgressBar(
-              position: _state.position,
-              duration: _state.duration,
-              chapters: chapters,
-              bookmarks: _bookmarksList,
-              notes: _notesList,
-              isTvFocused: PlatformDetection.isTV &&
-                  _tvArea == _AudiobookFocusArea.progress,
-              onSeek: (d) => _manager.seekTo(d),
-              formatPosition: formatAudiobookClock,
-              formatRemaining: _formatRemaining,
-            )
-          else
-            AudiobookProgressBar(
-              position: _state.position,
-              duration: _state.duration,
-              chapters: chapters,
-              bookmarks: _bookmarksList,
-              notes: _notesList,
-              showRemaining: _showRemaining,
-              isTvFocused: PlatformDetection.isTV &&
-                  _tvArea == _AudiobookFocusArea.progress,
-              onSeek: (d) => _manager.seekTo(d),
-              onToggleRemaining: () => _setShowRemaining(!_showRemaining),
-              formatPosition: formatAudiobookClock,
-              formatRemaining: _formatRemaining,
-            ),
+          AudiobookZoomedProgressBar(
+            position: _state.position,
+            duration: _state.duration,
+            chapters: chapters,
+            bookmarks: _bookmarksList,
+            notes: _notesList,
+            isTvFocused: PlatformDetection.isTV &&
+                _tvArea == _AudiobookFocusArea.progress,
+            showRemaining: _showRemaining,
+            onSeek: (d) => _manager.seekTo(d),
+            onToggleRemaining: () => _setShowRemaining(!_showRemaining),
+            formatPosition: formatAudiobookClock,
+            formatRemaining: _formatRemaining,
+          ),
+          const SizedBox(height: AppSpacing.spaceXs),
+          AudiobookBookOverview(
+            position: _state.position,
+            duration: _state.duration,
+            chapters: chapters,
+            bookmarks: _bookmarksList,
+            notes: _notesList,
+          ),
           const SizedBox(height: AppSpacing.spaceSm),
           AudiobookTransportRow(
             isPlaying: _state.isPlaying,
