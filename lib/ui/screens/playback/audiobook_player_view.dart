@@ -99,10 +99,13 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
   PlayerState get _state => _manager.state;
   QueueService get _queue => _manager.queueService;
 
+  bool get _dpadNav => !PlatformDetection.useMobileUi;
+
   @override
   void initState() {
     super.initState();
     _showRemaining = _prefs.get(UserPreferences.audiobookShowRemaining);
+    _drawerOpen = _dpadNav;
     final savedTab = _prefs.get(UserPreferences.audiobookDrawerTab);
     _drawerTab = AudiobookDrawerTab.values.firstWhere(
       (t) => t.name == savedTab,
@@ -135,7 +138,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
       unawaited(_manager.setPlaybackSpeed(defaultSpeed));
     }
 
-    if (PlatformDetection.isTV) {
+    if (_dpadNav) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) _tvFocus.requestFocus();
       });
@@ -678,12 +681,12 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
       },
     );
 
-    final body = PlatformDetection.isTV
+    final body = _dpadNav
         ? Focus(
             focusNode: _tvFocus,
             autofocus: true,
             onKeyEvent: _handleTvKey,
-            child: layout,
+            child: ExcludeFocus(child: layout),
           )
         : layout;
 
@@ -779,7 +782,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
           onToggleDrawer: () {
             setState(() {
               _drawerOpen = !_drawerOpen;
-              if (PlatformDetection.isTV && !_drawerOpen) {
+              if (_dpadNav && !_drawerOpen) {
                 _drawerContentActive = false;
                 _tvArea = _AudiobookFocusArea.header;
                 _tvHeaderIndex = 1;
@@ -884,7 +887,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
                   chapters: chapters,
                   bookmarks: _bookmarksList,
                   notes: _notesList,
-                  isTvFocused: PlatformDetection.isTV &&
+                  isTvFocused: _dpadNav &&
                       _tvArea == _AudiobookFocusArea.progress,
                   showRemaining: _showRemaining,
                   onSeek: (d) => _manager.seekTo(d),
@@ -915,7 +918,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
             const SizedBox(height: AppSpacing.spaceSm),
           AudiobookTransportRow(
             isPlaying: _state.isPlaying,
-            tvFocusIndex: PlatformDetection.isTV &&
+            tvFocusIndex: _dpadNav &&
                     _tvArea == _AudiobookFocusArea.transport
                 ? _tvTransportIndex
                 : -1,
@@ -940,7 +943,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
             sleepActive: _sleep.isActive,
             sleepRemaining: _sleep.remaining,
             isFavorite: item != null && _isFavoriteCurrent(item),
-            tvFocusIndex: PlatformDetection.isTV &&
+            tvFocusIndex: _dpadNav &&
                     _tvArea == _AudiobookFocusArea.actionRail
                 ? _tvRailIndex
                 : -1,
@@ -962,7 +965,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
     required bool tv,
   }) {
     final tvIdx = (tv &&
-            PlatformDetection.isTV &&
+            _dpadNav &&
             _tvArea == _AudiobookFocusArea.drawerContent &&
             _drawerContentActive)
         ? _tvListIndex
@@ -1076,7 +1079,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
         children: [
           AudiobookDrawerTabBar(
             current: _drawerTab,
-            tvFocused: PlatformDetection.isTV &&
+            tvFocused: _dpadNav &&
                 _tvArea == _AudiobookFocusArea.drawerTabs,
             tvIndex: _tvTabIndex,
             onChanged: _setDrawerTab,
@@ -1088,7 +1091,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
             child: DecoratedBox(
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: (PlatformDetection.isTV && _tvArea == _AudiobookFocusArea.drawerContent)
+                  color: (_dpadNav && _tvArea == _AudiobookFocusArea.drawerContent)
                       ? AppColorScheme.accent
                       : Colors.transparent,
                   width: 2.0,

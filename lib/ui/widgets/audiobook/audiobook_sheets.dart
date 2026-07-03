@@ -757,6 +757,7 @@ Future<dynamic> showAudiobookNoteEditor({
       positionLabel: positionLabel,
       dialogContext: ctx,
     ),
+    scrollControlled: true,
     floating: true,
   );
 }
