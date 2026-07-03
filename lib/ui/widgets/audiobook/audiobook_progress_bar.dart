@@ -70,15 +70,31 @@ class AudiobookBookOverview extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(l10n.audiobookWholeBook, style: captionStyle),
-              Text(
-                l10n.audiobookWholeBookProgress(
-                  '$percent',
-                  formatAudiobookClock(remaining),
+              Expanded(
+                child: Text(
+                  l10n.percentCompleted(percent),
+                  style: captionStyle,
+                  textAlign: TextAlign.left,
                 ),
-                style: captionStyle,
+              ),
+              Expanded(
+                child: Text(
+                  l10n.audiobookWholeBook,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontStyle: FontStyle.italic,
+                    color: AppColorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  l10n.audiobookSleepRemaining(formatAudiobookClock(remaining)),
+                  style: captionStyle,
+                  textAlign: TextAlign.right,
+                ),
               ),
             ],
           ),
@@ -236,11 +252,7 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
     required this.bookmarks,
     required this.notes,
     required this.isTvFocused,
-    required this.showRemaining,
     required this.onSeek,
-    required this.onToggleRemaining,
-    required this.formatPosition,
-    required this.formatRemaining,
   });
 
   final Duration position;
@@ -249,11 +261,13 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
   final List<AudiobookBookmark> bookmarks;
   final List<AudiobookNote> notes;
   final bool isTvFocused;
-  final bool showRemaining;
   final ValueChanged<Duration> onSeek;
-  final VoidCallback onToggleRemaining;
-  final String Function(Duration) formatPosition;
-  final String Function(Duration position, Duration total) formatRemaining;
+
+  String _formatFocusedTime(Duration d) {
+    final totalMinutes = d.inMinutes;
+    final seconds = d.inSeconds.remainder(60).abs();
+    return '$totalMinutes:${seconds.toString().padLeft(2, '0')}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -367,7 +381,10 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(formatPosition(position), style: labelStyle),
+              Text(
+                _formatFocusedTime(Duration(milliseconds: startMs.toInt())),
+                style: labelStyle,
+              ),
               Text(
                 l10n.audiobookFocusedTimeline,
                 style: TextStyle(
@@ -376,18 +393,9 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
                   color: AppColorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
-              InkWell(
-                onTap: onToggleRemaining,
-                borderRadius: BorderRadius.circular(6),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                  child: Text(
-                    showRemaining
-                        ? formatRemaining(position, duration)
-                        : formatPosition(duration),
-                    style: labelStyle,
-                  ),
-                ),
+              Text(
+                _formatFocusedTime(Duration(milliseconds: endMs.toInt())),
+                style: labelStyle,
               ),
             ],
           ),

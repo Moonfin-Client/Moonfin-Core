@@ -7803,7 +7803,7 @@
   "audiobookQueue": "Queue",
   "audiobookTimeline": "Timeline",
   "audiobookTimelineEmpty": "Timeline is empty",
-  "audiobookWholeBook": "Whole book",
+  "audiobookWholeBook": "Whole Book",
   "audiobookWholeBookProgress": "{percent}% · {time} left",
   "@audiobookWholeBookProgress": {
     "placeholders": {"percent": {"type": "String"}, "time": {"type": "String"}}
