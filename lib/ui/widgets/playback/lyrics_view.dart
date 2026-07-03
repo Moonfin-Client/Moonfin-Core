@@ -11,11 +11,16 @@ class LyricsView extends StatefulWidget {
   final Stream<Duration> positionStream;
   final Duration position;
 
+  /// Called when the user taps (or D-pad selects) a synced line, with that
+  /// line's timestamp so the player can seek to it. Null disables seeking.
+  final ValueChanged<Duration>? onSeekToLine;
+
   const LyricsView({
     super.key,
     required this.lyrics,
     required this.positionStream,
     required this.position,
+    this.onSeekToLine,
   });
 
   @override
@@ -138,34 +143,60 @@ class _LyricsViewState extends State<LyricsView> {
       );
     }
 
-    return ListView.builder(
+    final glow = ThemeRegistry.active.textGlow;
+    final list = ListView.builder(
       controller: _scrollController,
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.spaceXl,
-        vertical: AppSpacing.spaceLg,
+        vertical: AppSpacing.space3xl,
       ),
       itemCount: lines.length,
       itemBuilder: (context, index) {
         final isActive = index == _activeIndex;
-        return Center(
+        final line = Center(
           key: _lineKeys[index],
           child: AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOut,
             style: TextStyle(
               color: isActive
-                  ? AppColorScheme.onSurface
-                  : AppColorScheme.onSurface.withValues(alpha: 0.4),
-              fontSize: isActive ? 18 : 15,
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-              height: 1.4,
+                  ? AppColorScheme.accent
+                  : AppColorScheme.onSurface.withValues(alpha: 0.38),
+              fontSize: isActive ? 24 : 18,
+              fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
+              height: 1.35,
+              shadows: isActive ? glow : null,
             ),
-            child: Text(
-              lines[index].text,
-              textAlign: TextAlign.center,
-            ),
+            child: Text(lines[index].text, textAlign: TextAlign.center),
+          ),
+        );
+        if (widget.onSeekToLine == null) return line;
+        return InkWell(
+          onTap: () => widget.onSeekToLine!(lines[index].start),
+          borderRadius: AppRadius.circular(10),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: line,
           ),
         );
       },
+    );
+
+    // Soft fade at the top and bottom edges so lines scroll in/out gracefully.
+    return ShaderMask(
+      shaderCallback: (rect) => const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.transparent,
+          Colors.white,
+          Colors.white,
+          Colors.transparent,
+        ],
+        stops: [0.0, 0.12, 0.88, 1.0],
+      ).createShader(rect),
+      blendMode: BlendMode.dstIn,
+      child: list,
     );
   }
 }

@@ -29,6 +29,9 @@ import '../screens/browse/library_suggestions_screen.dart';
 import '../screens/browse/book_browse_screen.dart';
 import '../screens/browse/music_browse_screen.dart';
 import '../screens/detail/item_detail_screen.dart';
+import '../screens/games/game_library_screen.dart';
+import '../screens/games/game_detail_screen.dart';
+import '../screens/playback/game_emulator_screen.dart';
 import '../screens/detail/item_list_screen.dart';
 import '../screens/detail/music_favorites_screen.dart';
 import '../screens/home/home_screen.dart';
@@ -389,6 +392,45 @@ final appRouter = GoRouter(
         final parentId = state.pathParameters['parentId']!;
         return MusicFavoritesScreen(parentId: parentId);
       },
+    ),
+
+    // Games (EmulatorJS)
+    GoRoute(
+      path: Destinations.gameLibrary,
+      builder: (context, state) {
+        final libraryId = state.pathParameters['libraryId']!;
+        return GameLibraryScreen(
+          key: ValueKey('game-lib-$libraryId'),
+          libraryId: libraryId,
+          title: state.uri.queryParameters['title'],
+        );
+      },
+    ),
+    GoRoute(
+      path: Destinations.gameDetail,
+      builder: (context, state) {
+        final libraryId = state.pathParameters['libraryId']!;
+        final gameId = state.pathParameters['gameId']!;
+        return GameDetailScreen(
+          key: ValueKey('game-$gameId'),
+          libraryId: libraryId,
+          gameId: gameId,
+        );
+      },
+    ),
+    GoRoute(
+      path: Destinations.gamePlayer,
+      pageBuilder: (context, state) => _opaqueFullScreenPage<void>(
+        state: state,
+        child: GameEmulatorScreen(
+          libraryId: state.pathParameters['libraryId']!,
+          gameId: state.pathParameters['gameId']!,
+          core: state.uri.queryParameters['core'] ?? 'nes',
+          biosId: state.uri.queryParameters['bios'],
+          gameName: state.uri.queryParameters['name'],
+          startFresh: state.uri.queryParameters['fresh'] == '1',
+        ),
+      ),
     ),
 
     // Live TV

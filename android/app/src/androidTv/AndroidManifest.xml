@@ -15,9 +15,8 @@
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             tools:node="remove" />
 
-        <meta-data
-            android:name="io.flutter.embedding.android.EnableImpeller"
-            android:value="false" />
+        <!-- Impeller is chosen at runtime in MainActivity.getFlutterShellArgs()
+             from the user's Rendering engine preference, not pinned here. -->
 
         <activity android:name=".MainActivity">
             <intent-filter>

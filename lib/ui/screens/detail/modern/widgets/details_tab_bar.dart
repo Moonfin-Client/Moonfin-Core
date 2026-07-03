@@ -171,7 +171,7 @@ class _DetailsTabItemState extends State<_DetailsTabItem> {
         behavior: HitTestBehavior.opaque,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.circular(8),
             // Border is ALWAYS present with a fixed width to eliminate visual judder!
             border: Border.all(
               color: _isFocused ? accent : Colors.transparent,
@@ -203,7 +203,7 @@ class _DetailsTabItemState extends State<_DetailsTabItem> {
                     color: (widget.isSelected || _isFocused)
                         ? accent
                         : Colors.transparent,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: AppRadius.circular(2),
                   ),
                 ),
               ],

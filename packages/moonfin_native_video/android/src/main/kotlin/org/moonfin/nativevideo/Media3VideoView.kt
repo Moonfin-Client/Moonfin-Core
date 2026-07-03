@@ -344,18 +344,26 @@ class Media3VideoView(
         private const val EXTERNAL_SUBTITLE_ID_BASE = 10000
         private const val ASS_FALLBACK_FONT_ASSET = "fonts/NotoSans-Regular.ttf"
         private const val ASS_FALLBACK_FONT_NAME = "Noto Sans"
+        private val FONT_EXTENSIONS = setOf("ttf", "otf", "ttc")
         private val ASS_SYSTEM_CJK_FONTS = listOf(
             "NotoSansCJK-Regular.ttc",
             "NotoSerifCJK-Regular.ttc",
             "DroidSansFallbackFull.ttf",
             "DroidSansFallback.ttf",
         )
-        private val ASS_SYSTEM_SCRIPT_FONTS = listOf(
-            "NotoNaskhArabic-Regular.ttf",
-            "NotoSansArabic-Regular.ttf",
-            "NotoSansDevanagari-Regular.ttf",
-            "NotoSansThai-Regular.ttf",
-            "NotoSansHebrew-Regular.ttf",
+        // libass renders ASS itself and cannot query the OS font system, so it
+        // must be handed the system fonts for each script/symbol block. Matched
+        // by filename prefix so it works whether Android ships "-Regular.ttf" or
+        // a variable "-VF.ttf" file, and picks up scripts added in newer builds.
+        private val ASS_SYSTEM_SCRIPT_PREFIXES = listOf(
+            "NotoNaskhArabic", "NotoSansArabic",
+            "NotoSansDevanagari", "NotoSansBengali", "NotoSansTamil",
+            "NotoSansTelugu", "NotoSansKannada", "NotoSansMalayalam",
+            "NotoSansGujarati", "NotoSansGurmukhi", "NotoSansOriya",
+            "NotoSansSinhala", "NotoSansThai", "NotoSansLao",
+            "NotoSansKhmer", "NotoSansMyanmar", "NotoSansHebrew",
+            "NotoSansGeorgian", "NotoSansArmenian", "NotoSansEthiopic",
+            "NotoSansSymbols", "NotoSansSymbols2", "NotoSansMath", "NotoMusic",
         )
     }
 
@@ -540,11 +548,6 @@ class Media3VideoView(
     private var subtitleEmbeddedStylesEnabled = true
     private var subtitleEmbeddedFontSizesEnabled = true
     private var assFallbackFontBytes: ByteArray? = null
-    private val subtitleTypeface: Typeface? by lazy {
-        runCatching {
-            Typeface.createFromAsset(context.assets, ASS_FALLBACK_FONT_ASSET)
-        }.getOrNull()
-    }
     // Single pending runnable for delayed cue rendering (positive subtitle delay).
     // Replaced on every new cue group; cancelled on seek, source change, and dispose.
     private var pendingCueRunnable: Runnable? = null
@@ -1007,13 +1010,29 @@ class Media3VideoView(
     private fun registerSystemFallbackFonts(assHandler: AssHandler) {
         val dir = File("/system/fonts")
         if (!dir.isDirectory) return
-        val names = ArrayList<String>()
-        ASS_SYSTEM_CJK_FONTS.firstOrNull { File(dir, it).canRead() }?.let { names.add(it) }
-        names.addAll(ASS_SYSTEM_SCRIPT_FONTS)
-        for (name in names) {
-            val file = File(dir, name)
-            if (!file.canRead()) continue
+        val fonts = dir.listFiles()?.filter {
+            it.isFile && it.canRead() &&
+                it.extension.lowercase() in FONT_EXTENSIONS
+        } ?: return
+
+        val added = HashSet<String>()
+        fun add(file: File?) {
+            if (file == null || !added.add(file.name)) return
             runCatching { assHandler.addFont(file.nameWithoutExtension, file.readBytes()) }
+        }
+
+        // One CJK font is enough
+        add(ASS_SYSTEM_CJK_FONTS.firstNotNullOfOrNull { name ->
+            fonts.firstOrNull { it.name.equals(name, ignoreCase = true) }
+        })
+
+        // One font per script/symbol block. The char after the prefix must not be
+        // a digit, so "NotoSansSymbols" does not swallow "NotoSansSymbols2".
+        for (prefix in ASS_SYSTEM_SCRIPT_PREFIXES) {
+            add(fonts.firstOrNull {
+                it.name.startsWith(prefix, ignoreCase = true) &&
+                    it.name.getOrNull(prefix.length)?.isDigit() != true
+            })
         }
     }
 
@@ -2380,7 +2399,10 @@ class Media3VideoView(
         }
         refreshSubtitleRendererMode()
 
-        val baseTypeface = subtitleTypeface ?: Typeface.DEFAULT
+        // Use the OS default typeface so Android falls back per script
+        // for glyphs beyond Latin, instead of a bundled font
+        // that only covers Latin and renders everything else as tofu.
+        val baseTypeface = Typeface.DEFAULT
         val resolvedTypeface = if (bold) {
             Typeface.create(baseTypeface, Typeface.BOLD)
         } else {

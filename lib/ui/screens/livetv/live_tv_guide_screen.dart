@@ -29,6 +29,9 @@ import 'epg/widgets/epg_program_cell.dart';
 
 const _kChannelColumnWidth = 160.0;
 const _kRowHeight = 84.0;
+// Start fetching the next batch of channel programs this many rows before the
+// lazily-loaded edge, so rows are usually populated by the time they're visible.
+const _kProgramPrefetchRows = 12;
 const _kTimeHeaderHeight = 40.0;
 const _kPixelsPerMinute = 6.0;
 const _kMinGuideHours = 3;
@@ -388,6 +391,30 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
     return minutes * _kPixelsPerMinute;
   }
 
+  // Called from row itemBuilders: as the guide scrolls toward the lazily-loaded
+  // edge, request the next batch of programs (the VM guards against re-entry).
+  void _maybeLoadMore(int index) {
+    if (_vm.hasMorePrograms &&
+        index + _kProgramPrefetchRows >= _vm.programsHighWater) {
+      _vm.loadMorePrograms();
+    }
+  }
+
+  // A faint skeleton bar shown in a program row whose channel hasn't been
+  // fetched yet. Channel logos still render; they load with the channel list.
+  Widget _buildProgramPlaceholderRow() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 24),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Color(0x0FFFFFFF),
+          borderRadius: BorderRadius.all(Radius.circular(6)),
+        ),
+        child: SizedBox.expand(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) =>
       RequestInitialFocus(child: _buildContent(context));
@@ -624,6 +651,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
       padding: const EdgeInsets.fromLTRB(8, 4, 8, 16),
       itemCount: channels.length,
       itemBuilder: (context, index) {
+        _maybeLoadMore(index);
         final channel = channels[index];
         final nowNext = _vm.nowNextForChannel(channel.id);
         final now = nowNext.now;
@@ -695,7 +723,7 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.circular(12),
         border: Border.fromBorderSide(ThemeRegistry.active.borders.cardBorder),
       ),
       child: Row(
@@ -942,8 +970,10 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
                   controller: _channelScrollController,
                   itemCount: channels.length,
                   itemExtent: _kRowHeight,
-                  itemBuilder: (context, index) =>
-                      _buildChannelCell(channels[index], index),
+                  itemBuilder: (context, index) {
+                    _maybeLoadMore(index);
+                    return _buildChannelCell(channels[index], index);
+                  },
                 ),
               ),
               VerticalDivider(
@@ -958,6 +988,8 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
                   horizontalController: _guideHorizontalScrollController,
                   buildProgramRow: _buildProgramRow,
                   programsForChannel: _vm.programsForChannel,
+                  hasProgramsFor: _vm.hasProgramsFor,
+                  buildPlaceholderRow: _buildProgramPlaceholderRow,
                 ),
               ),
             ],
@@ -1263,6 +1295,8 @@ class _GuideGridView extends StatefulWidget {
   final ScrollController horizontalController;
   final Widget Function(List<GuideProgram>, int rowIndex) buildProgramRow;
   final List<GuideProgram> Function(String channelId) programsForChannel;
+  final bool Function(String channelId) hasProgramsFor;
+  final Widget Function() buildPlaceholderRow;
 
   const _GuideGridView({
     required this.channels,
@@ -1271,6 +1305,8 @@ class _GuideGridView extends StatefulWidget {
     required this.horizontalController,
     required this.buildProgramRow,
     required this.programsForChannel,
+    required this.hasProgramsFor,
+    required this.buildPlaceholderRow,
   });
 
   @override
@@ -1291,11 +1327,16 @@ class _GuideGridViewState extends State<_GuideGridView> {
           itemExtent: _kRowHeight,
           itemBuilder: (context, index) {
             final channel = widget.channels[index];
-            final programs = widget.programsForChannel(channel.id);
+            final loaded = widget.hasProgramsFor(channel.id);
             return SizedBox(
               width: widget.guideWidth,
               height: _kRowHeight,
-              child: widget.buildProgramRow(programs, index),
+              child: loaded
+                  ? widget.buildProgramRow(
+                      widget.programsForChannel(channel.id),
+                      index,
+                    )
+                  : widget.buildPlaceholderRow(),
             );
           },
         ),
@@ -1330,7 +1371,7 @@ class _GuidePillButtonState extends State<_GuidePillButton> {
       onFocusChange: (focused) {
         if (_focused != focused) setState(() => _focused = focused);
       },
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: AppRadius.circular(20),
       builder: (_) => AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
@@ -1338,7 +1379,7 @@ class _GuidePillButtonState extends State<_GuidePillButton> {
           color: active
               ? AppColorScheme.accent.withValues(alpha: _focused ? 1.0 : 0.7)
               : Colors.white.withValues(alpha: 0.10),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: AppRadius.circular(20),
         ),
         child: _buildChild(active),
       ),

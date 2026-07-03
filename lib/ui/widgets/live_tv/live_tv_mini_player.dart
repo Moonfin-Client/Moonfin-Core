@@ -150,14 +150,14 @@ class _LiveTvMiniPlayerState extends State<LiveTvMiniPlayer> {
       onKeyEvent: _handleKeyEvent,
       child: InkWell(
         onTap: widget.onActivate,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.circular(12),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 140),
           decoration: BoxDecoration(
             color: widget.transparentPreview
                 ? Colors.transparent
                 : Colors.white.withValues(alpha: _focused ? 0.18 : 0.10),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.circular(12),
             border: Border.fromBorderSide(
               ThemeRegistry.active.borders.focusBorder.copyWith(
                 color: _focused
@@ -168,7 +168,7 @@ class _LiveTvMiniPlayerState extends State<LiveTvMiniPlayer> {
             ),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: AppRadius.circular(10),
             child: Stack(
               fit: StackFit.expand,
               children: [

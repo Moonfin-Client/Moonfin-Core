@@ -56,6 +56,10 @@ class PlatformDetection {
   static bool _isTv = false;
   static void setTvMode(bool value) => _isTv = value;
 
+  /// EmulatorJS runs inside a WebView. tvOS has no WebKit/WKWebView, so retro-game
+  /// playback cannot run there; callers show a graceful "not supported" instead.
+  static bool get gamesPlaybackSupported => !isAppleTV;
+
   static final Set<String> _displayHdrTypes = <String>{};
   static final Map<String, dynamic> _mediaCodecCapabilities =
       <String, dynamic>{};

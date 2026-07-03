@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../l10n/app_localizations.dart';
@@ -105,7 +106,7 @@ class AdminShellScreen extends StatelessWidget {
                         child: Material(
                           color: theme.colorScheme.surface,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
+                            borderRadius: AppRadius.circular(18),
                             side: BorderSide(
                               color: theme.colorScheme.outlineVariant,
                             ),

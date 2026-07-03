@@ -183,7 +183,7 @@ class _Cover extends StatelessWidget {
             aspectRatio: 2 / 3,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
                     color: accent.withValues(alpha: 0.5 * t),
@@ -198,7 +198,7 @@ class _Cover extends StatelessWidget {
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.circular(14),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -211,7 +211,7 @@ class _Cover extends StatelessWidget {
                             alpha: 0.12,
                           ),
                         ),
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: AppRadius.circular(14),
                       ),
                     ),
                     if (trailer != null && trailerActive) trailer!,
@@ -311,7 +311,7 @@ class _Dots extends StatelessWidget {
               color: i == active
                   ? AppColorScheme.onSurface
                   : AppColorScheme.onSurface.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(3),
+              borderRadius: AppRadius.circular(3),
             ),
           ),
       ],

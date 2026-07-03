@@ -184,7 +184,7 @@ class _DiscoverBookDetailScreenState extends State<DiscoverBookDetailScreen> {
                         child: AspectRatio(
                           aspectRatio: 2 / 3,
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: AppRadius.circular(16),
                             child: book.coverUrl == null
                                 ? Container(
                                     color: const Color(0xFF2C77B7),

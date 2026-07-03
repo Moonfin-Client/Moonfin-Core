@@ -91,6 +91,26 @@ class EmbyItemsApi implements ItemsApi {
   }
 
   @override
+  Future<Map<String, dynamic>> getPersons({
+    required String searchTerm,
+    int? limit,
+    String? fields,
+    String? enableImageTypes,
+  }) async {
+    final response = await _dio.get(
+      '/Persons',
+      queryParameters: {
+        'UserId': _getUserId(),
+        'SearchTerm': searchTerm,
+        'Limit': ?limit,
+        'Fields': ?fields,
+        'EnableImageTypes': ?enableImageTypes,
+      },
+    );
+    return response.data as Map<String, dynamic>;
+  }
+
+  @override
   Future<Map<String, dynamic>> getItem(String itemId, {String? mediaSourceId}) async {
     final userId = _getUserId();
     final response = await _dio.get(

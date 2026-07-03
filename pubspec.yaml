@@ -200,6 +200,9 @@ flutter:
     - family: NotoSans
       fonts:
         - asset: assets/fonts/NotoSans-Regular.ttf
+    - family: EightBitHero
+      fonts:
+        - asset: assets/fonts/PressStart2P-Regular.ttf
 
 msix_config:
   display_name: Moonfin

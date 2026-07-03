@@ -138,7 +138,7 @@ class _SavedMediaScreenState extends ConsumerState<SavedMediaScreen> {
                 ),
                 side: BorderSide.none,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: AppRadius.circular(20),
                 ),
               ),
             );
@@ -535,7 +535,7 @@ class _DownloadedCardState extends State<_DownloadedCard> {
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.circular(8),
                 child: OfflineImage(
                   localPath: widget.item.posterPath,
                   width: double.infinity,

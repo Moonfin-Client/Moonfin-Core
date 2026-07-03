@@ -86,7 +86,7 @@ class _UpNextCardState extends State<UpNextCard> {
           child: Container(
             width: widget.width,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(radius.topLeft.x),
+              borderRadius: AppRadius.circular(radius.topLeft.x),
               border: Border.all(
                 color: hasFocus
                     ? (ThemeRegistry.active.id == ThemeRegistry.neonPulseId
@@ -99,7 +99,7 @@ class _UpNextCardState extends State<UpNextCard> {
               ),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(radius.topLeft.x - 1.25),
+              borderRadius: AppRadius.circular(radius.topLeft.x - 1.25),
               child: adaptiveGlass(
                 cornerRadius: radius.topLeft.x - 1.25,
                 blur: 18,
@@ -124,7 +124,7 @@ class _UpNextCardState extends State<UpNextCard> {
                       AspectRatio(
                         aspectRatio: 2 / 3,
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(radius.topLeft.x - 4),
+                          borderRadius: AppRadius.circular(radius.topLeft.x - 4),
                           child: _thumbnail(isMinimal: true),
                         ),
                       ),
@@ -162,7 +162,7 @@ class _UpNextCardState extends State<UpNextCard> {
           width: widget.width,
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(radius.topLeft.x),
+              borderRadius: AppRadius.circular(radius.topLeft.x),
               border: Border.all(
                 color: hasFocus
                     ? Colors.transparent
@@ -173,7 +173,7 @@ class _UpNextCardState extends State<UpNextCard> {
               ),
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(radius.topLeft.x - 1.25),
+              borderRadius: AppRadius.circular(radius.topLeft.x - 1.25),
               child: adaptiveGlass(
                 cornerRadius: radius.topLeft.x - 1.25,
                 blur: 18,
@@ -221,7 +221,7 @@ class _UpNextCardState extends State<UpNextCard> {
                                       if (widget.progress > 0)
                                         Expanded(
                                           child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(2),
+                                            borderRadius: AppRadius.circular(2),
                                             child: LinearProgressIndicator(
                                               value: widget.progress.clamp(0.0, 1.0),
                                               minHeight: 4,

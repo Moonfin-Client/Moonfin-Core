@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:moonfin_design/moonfin_design.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -217,7 +218,7 @@ class _SessionDetailSheetState extends State<SessionDetailSheet> {
               height: 4,
               decoration: BoxDecoration(
                 color: theme.colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.circular(2),
               ),
             ),
             Expanded(
@@ -271,7 +272,7 @@ class _SessionDetailSheetState extends State<SessionDetailSheet> {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: theme.colorScheme.surfaceContainerLow,
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: AppRadius.circular(14),
                         border: Border.all(
                           color: theme.colorScheme.outlineVariant.withValues(
                             alpha: 0.5,
@@ -333,7 +334,7 @@ class _SessionDetailSheetState extends State<SessionDetailSheet> {
                               ),
                               decoration: BoxDecoration(
                                 color: theme.colorScheme.secondaryContainer,
-                                borderRadius: BorderRadius.circular(6),
+                                borderRadius: AppRadius.circular(6),
                               ),
                               child: Text(
                                 l10n.paused,
@@ -531,7 +532,7 @@ class _ControlButton extends StatelessWidget {
         (primary ? theme.colorScheme.primary : theme.colorScheme.onSurface);
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: AppRadius.circular(12),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         child: Column(
@@ -559,7 +560,7 @@ class _InfoGrid extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.circular(14),
         border: Border.all(
           color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
         ),

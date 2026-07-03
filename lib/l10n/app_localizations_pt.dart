@@ -145,10 +145,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get detailScreenStyleSubtitle =>
-      'Moonfin is the classic layout. Modern is a responsive cinematic layout.';
+      'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.';
 
   @override
-  String get detailScreenStyleMoonfin => 'Moonfin';
+  String get detailScreenStyleMoonfin => 'Classic';
 
   @override
   String get detailScreenStyleModern => 'Modern';
@@ -186,6 +186,13 @@ class AppLocalizationsPt extends AppLocalizations {
       'Alternar entre Moonfin e Neon Pulse sem reiniciar o aplicativo';
 
   @override
+  String get customThemeTitle => 'Custom Theme';
+
+  @override
+  String get customThemeSubtitle =>
+      'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.';
+
+  @override
   String get keyboardPreferSystemIme => 'Prefira o teclado do sistema';
 
   @override
@@ -211,6 +218,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get themeGlassSubtitle => '';
+
+  @override
+  String get theme8BitHero => '8-bit Hero';
+
+  @override
+  String get theme8BitHeroSubtitle =>
+      'Retro pixel-art styling with a chunky palette, blocky borders, hard drop-shadows, and a pixel font';
 
   @override
   String get embyConnectSignInSubtitle => 'Entre com sua conta Emby Connect';
@@ -270,6 +284,34 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get exit => 'Sair';
+
+  @override
+  String get gameMenu => 'Menu';
+
+  @override
+  String get gamePaused => 'Paused';
+
+  @override
+  String get gameSaveState => 'Save state';
+
+  @override
+  String get gameLoadState => 'Load state';
+
+  @override
+  String get gameFastForward => 'Fast-forward';
+
+  @override
+  String get gameEmulatorSettings => 'Emulator settings';
+
+  @override
+  String get gameNoCoreOptions => 'This core has no adjustable options.';
+
+  @override
+  String get gameHoldToOpenMenu => 'Hold to open menu';
+
+  @override
+  String get gamePlaybackUnsupported =>
+      'Game playback is not supported on this device yet.';
 
   @override
   String get noHomeRowsLoaded =>
@@ -2890,6 +2932,9 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get showLibrariesInToolbar =>
       'Mostrar Bibliotecas na Barra de Ferramentas';
+
+  @override
+  String get navbarAlwaysExpanded => 'Always Expand Navbar Labels';
 
   @override
   String get showSeerrButton => '';
@@ -7051,6 +7096,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get settingsAlphabetical => 'Alfabético';
 
   @override
+  String get settingsConnectionSection => 'CONNECTION';
+
+  @override
+  String get settingsAllowSelfSignedCerts => 'Allow self-signed certificates';
+
+  @override
+  String get settingsAllowSelfSignedCertsSubtitle =>
+      'Trust servers using self-signed or private-CA TLS certificates. Only enable for servers you control. This disables certificate validation for all connections.';
+
+  @override
   String get settingsPrivacyAndSafetySection => 'PRIVACIDADE E SEGURANÇA';
 
   @override
@@ -7099,6 +7154,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get settingsShowSeerrButtonInNavigation => '';
+
+  @override
+  String get settingsAlwaysExpandNavbarLabels =>
+      'Always show text labels in the top navigation bar';
 
   @override
   String get settingsLibraryVisibilitySubtitle =>
@@ -8612,6 +8671,32 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get adminControls => 'Admin Controls';
+
+  @override
+  String get impellerRendering => 'Rendering engine (Impeller)';
+
+  @override
+  String get impellerRenderingSubtitle =>
+      'Impeller is Flutter\'s modern GPU renderer for smoother animations and less stutter. On some TV boxes and older GPUs it can cause glitches or black video; switch it Off if you see those. Automatic picks the best default for your device. Restart Moonfin to apply.';
+
+  @override
+  String get impellerAuto => 'Automatic';
+
+  @override
+  String get impellerOn => 'On';
+
+  @override
+  String get impellerOff => 'Off';
+
+  @override
+  String get impellerRestartTitle => 'Restart required';
+
+  @override
+  String get impellerRestartMessage =>
+      'Moonfin needs to restart to change the rendering engine. Close the app now, then reopen it to apply.';
+
+  @override
+  String get impellerCloseNow => 'Close app now';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).

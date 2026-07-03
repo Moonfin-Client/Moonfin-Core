@@ -192,11 +192,11 @@
   "@detailScreenStyle": {
     "description": "Label for the media detail screen layout style setting"
   },
-  "detailScreenStyleSubtitle": "Moonfin is the classic layout. Modern is a responsive cinematic layout.",
+  "detailScreenStyleSubtitle": "Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.",
   "@detailScreenStyleSubtitle": {
     "description": "Explanation under the detail screen style setting"
   },
-  "detailScreenStyleMoonfin": "Moonfin",
+  "detailScreenStyleMoonfin": "Classic",
   "@detailScreenStyleMoonfin": {
     "description": "Detail screen style option: the classic centered layout"
   },
@@ -220,11 +220,11 @@
   "@recommendationSystemTmdb": {
     "description": "Recommendation system option: TMDb Similarity"
   },
-  "interfaceStyle": "Interface style",
+  "interfaceStyle": "Interface Style",
   "@interfaceStyle": {
     "description": "Label for the Automatic/Apple/Material interface style setting"
   },
-  "interfaceStyleSubtitle": "Automatic uses the native look on Apple devices. Choose Apple to force it, or Material for the standard look.",
+  "interfaceStyleSubtitle": "Automatic matches your device. Choose Apple or Material to force a look.",
   "@interfaceStyleSubtitle": {
     "description": "Explanation under the interface style setting"
   },
@@ -240,9 +240,17 @@
   "@interfaceStyleMaterial": {
     "description": "Interface style option: Material look"
   },
-  "settingsAppearanceThemeSubtitle": "Switch between Moonfin and Neon Pulse without restarting the app",
+  "settingsAppearanceThemeSubtitle": "Apply a fully custom theme and switch between an Apple or Material inspired user interface.",
   "@settingsAppearanceThemeSubtitle": {
     "description": "Subtitle for the theme selection screen and theme settings entry"
+  },
+  "customThemeTitle": "Custom Theme",
+  "@customThemeTitle": {
+    "description": "Title for the custom theme settings section"
+  },
+  "customThemeSubtitle": "Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.",
+  "@customThemeSubtitle": {
+    "description": "Description under custom themes section"
   },
   "keyboardPreferSystemIme": "Prefer system keyboard",
   "@keyboardPreferSystemIme": {
@@ -256,7 +264,7 @@
   "@themeMoonfin": {
     "description": "Display name for the Moonfin theme"
   },
-  "themeMoonfinSubtitle": "Current Moonfin look you've all come to love",
+  "themeMoonfinSubtitle": "The original clean Moonfin default.",
   "@themeMoonfinSubtitle": {
     "description": "Preview description for the Moonfin theme"
   },
@@ -275,6 +283,14 @@
   "themeGlassSubtitle": "Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent",
   "@themeGlassSubtitle": {
     "description": "Preview description for the Glass theme"
+  },
+  "theme8BitHero": "8-bit Hero",
+  "@theme8BitHero": {
+    "description": "Display name for the 8-bit Hero theme"
+  },
+  "theme8BitHeroSubtitle": "Retro pixel-art styling with a chunky palette, blocky borders, hard drop-shadows, and a pixel font",
+  "@theme8BitHeroSubtitle": {
+    "description": "Preview description for the 8-bit Hero theme"
   },
   "embyConnectSignInSubtitle": "Sign in with your Emby Connect account",
   "@embyConnectSignInSubtitle": {
@@ -348,6 +364,42 @@
   "exit": "Exit",
   "@exit": {
     "description": "Exit button label"
+  },
+  "gameMenu": "Menu",
+  "@gameMenu": {
+    "description": "Tooltip for the in-game menu button"
+  },
+  "gamePaused": "Paused",
+  "@gamePaused": {
+    "description": "Status shown in the in-game menu while the game is paused"
+  },
+  "gameSaveState": "Save state",
+  "@gameSaveState": {
+    "description": "In-game menu action to save the game state"
+  },
+  "gameLoadState": "Load state",
+  "@gameLoadState": {
+    "description": "In-game menu action to load the saved game state"
+  },
+  "gameFastForward": "Fast-forward",
+  "@gameFastForward": {
+    "description": "In-game menu action to toggle fast-forward"
+  },
+  "gameEmulatorSettings": "Emulator settings",
+  "@gameEmulatorSettings": {
+    "description": "In-game menu action opening the emulator settings"
+  },
+  "gameNoCoreOptions": "This core has no adjustable options.",
+  "@gameNoCoreOptions": {
+    "description": "Shown when a game core exposes no settings"
+  },
+  "gameHoldToOpenMenu": "Hold to open menu",
+  "@gameHoldToOpenMenu": {
+    "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+  },
+  "gamePlaybackUnsupported": "Game playback is not supported on this device yet.",
+  "@gamePlaybackUnsupported": {
+    "description": "Shown when the device cannot run the retro-game emulator"
   },
   "noHomeRowsLoaded": "No home rows could be loaded",
   "@noHomeRowsLoaded": {
@@ -4007,6 +4059,10 @@
   "@showLibrariesInToolbar": {
     "description": "Setting for showing libraries in toolbar"
   },
+  "navbarAlwaysExpanded": "Always Expand Navbar Labels",
+  "@navbarAlwaysExpanded": {
+    "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+  },
   "showSeerrButton": "Show Seerr Button",
   "@showSeerrButton": {
     "description": "Setting for showing Seerr button"
@@ -7033,6 +7089,18 @@
   "settingsSortServersBy": "Sort Servers By",
   "settingsLastUsed": "Last Used",
   "settingsAlphabetical": "Alphabetical",
+  "settingsConnectionSection": "CONNECTION",
+  "@settingsConnectionSection": {
+    "description": "Section header for server connection settings"
+  },
+  "settingsAllowSelfSignedCerts": "Allow self-signed certificates",
+  "@settingsAllowSelfSignedCerts": {
+    "description": "Setting to trust self-signed TLS certificates"
+  },
+  "settingsAllowSelfSignedCertsSubtitle": "Trust servers using self-signed or private-CA TLS certificates. Only enable for servers you control. This disables certificate validation for all connections.",
+  "@settingsAllowSelfSignedCertsSubtitle": {
+    "description": "Description for the allow self-signed certificates setting"
+  },
   "settingsPrivacyAndSafetySection": "PRIVACY & SAFETY",
   "settingsBlockedRatings": "Blocked Ratings",
   "settingsGeneralStyle": "General Style",
@@ -7047,6 +7115,7 @@
   "settingsShowFavoritesButtonInNavigation": "Show the favorites button in the navigation bar",
   "settingsShowLibrariesButtonInNavigation": "Show the libraries button in the navigation bar",
   "settingsShowSeerrButtonInNavigation": "Show the Seerr button in the navigation bar",
+  "settingsAlwaysExpandNavbarLabels": "Always show text labels in the top navigation bar",
   "settingsLibraryVisibilitySubtitle": "Toggle home page visibility per library. Restart Moonfin for changes to take effect.",
   "settingsMediaBarAndLocalPreviews": "Media Bar & Local Previews",
   "settingsVisualOverlays": "Visual Overlays",
@@ -7832,5 +7901,28 @@
   },
   "rewatchPlaylist": "Rewatch Playlist",
   "noSubtitlesFound": "No subtitles found.",
-  "adminControls": "Admin Controls"
+  "adminControls": "Admin Controls",
+  "impellerRendering": "Rendering engine (Impeller)",
+  "@impellerRendering": {
+    "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+  },
+  "impellerRenderingSubtitle": "Impeller is Flutter's modern GPU renderer for smoother animations and less stutter. On some TV boxes and older GPUs it can cause glitches or black video; switch it Off if you see those. Automatic picks the best default for your device. Restart Moonfin to apply.",
+  "@impellerRenderingSubtitle": {
+    "description": "Explanatory description under the rendering engine setting."
+  },
+  "impellerAuto": "Automatic",
+  "impellerOn": "On",
+  "impellerOff": "Off",
+  "impellerRestartTitle": "Restart required",
+  "@impellerRestartTitle": {
+    "description": "Title of the dialog shown after changing the rendering engine."
+  },
+  "impellerRestartMessage": "Moonfin needs to restart to change the rendering engine. Close the app now, then reopen it to apply.",
+  "@impellerRestartMessage": {
+    "description": "Body of the dialog shown after changing the rendering engine."
+  },
+  "impellerCloseNow": "Close app now",
+  "@impellerCloseNow": {
+    "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+  }
 }

@@ -8,6 +8,7 @@ Widget adaptiveDialogAction({
   required Widget child,
   bool isDefault = false,
   bool isDestructive = false,
+  bool autofocus = false,
 }) {
   if (AppUiIdiomResolver.isApple) {
     return CupertinoDialogAction(
@@ -17,5 +18,5 @@ Widget adaptiveDialogAction({
       child: child,
     );
   }
-  return TextButton(onPressed: onPressed, child: child);
+  return TextButton(onPressed: onPressed, autofocus: autofocus, child: child);
 }

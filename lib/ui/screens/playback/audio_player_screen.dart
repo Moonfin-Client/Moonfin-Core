@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart' hide RepeatMode;
@@ -20,10 +19,12 @@ import '../../../data/services/cast/cast_target.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../playback/media3_player_backend.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../../util/focus/input_mode_tracker.dart';
 import '../../../util/platform_detection.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/remote_play_to_session_dialog.dart';
+import '../../widgets/playback/audio_quality_badge.dart';
 import '../../widgets/playback/lyrics_view.dart';
 import '../../../l10n/app_localizations.dart';
 
@@ -34,7 +35,7 @@ class AudioPlayerScreen extends StatefulWidget {
   State<AudioPlayerScreen> createState() => _AudioPlayerScreenState();
 }
 
-enum _TvAudioFocusArea { topActions, progress, transport, queue }
+enum _TvAudioFocusArea { favorite, viewTabs, panelBody, progress, transport }
 
 class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   static const _tvSeekStepMs = 10000;
@@ -55,10 +56,17 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   LyricsData? _lyrics;
   String? _lyricsItemId;
   _TvAudioFocusArea _tvFocusArea = _TvAudioFocusArea.transport;
-  int _tvTopActionIndex = 0;
   int _tvTransportActionIndex = 2;
   int _tvQueueFocusIndex = 0;
+  int _tvLyricCursor = 0;
+  // Which panel the TV right column shows: 0 = Up Next, 1 = Lyrics.
+  int _tvViewTab = 0;
+  int? _hoveredQueueIndex;
+  final _tvLyricScrollController = ScrollController();
   DateTime? _tvBackPopSuppressedUntil;
+  Timer? _sleepTimer;
+  bool _radioFetchInFlight = false;
+  String? _radioSeededItemId;
 
   PlayerState get _state => _manager.state;
   QueueService get _queue => _manager.queueService;
@@ -86,6 +94,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
         _syncTvQueueFocusIndex();
         _rebuild();
         _loadLyricsIfNeeded();
+        unawaited(_maybeExtendWithRadio());
       }),
       _manager.sessionEndedStream.listen((_) {
         if (!mounted || _isExitingPlayback) return;
@@ -95,7 +104,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     if (PlatformDetection.useNativeVideoSurface) {
       unawaited(_activeMedia3Backend?.setVolume(100.0));
     }
-    if (PlatformDetection.isTV) {
+    if (_isWidePlayer) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         _tvOverlayFocus.requestFocus();
@@ -108,32 +117,14 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     if (mounted) setState(() {});
   }
 
+  // Mobile only: toggles the full-screen queue panel. The wide player
+  // (desktop/TV) uses the two-column view switcher instead.
   void _toggleQueuePanel() {
-    final nextShowQueue = !_showQueue;
     setState(() {
-      _showQueue = nextShowQueue;
-      if (_showQueue) {
-        _showLyrics = false;
-      }
-      if (PlatformDetection.isTV && _showQueue) {
-        _tvFocusArea = _TvAudioFocusArea.queue;
-        _tvTopActionIndex = 1;
-        _tvQueueFocusIndex = _initialTvQueueFocusIndex();
-      } else if (PlatformDetection.isTV) {
-        _tvFocusArea = _TvAudioFocusArea.topActions;
-        _tvTopActionIndex = 1;
-      }
+      _showQueue = !_showQueue;
+      if (_showQueue) _showLyrics = false;
     });
-
-    if (PlatformDetection.isTV && nextShowQueue) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        _scrollTvQueueIntoView(_tvQueueFocusIndex);
-      });
-    }
   }
-
-  bool get _canUseTopActionsOnTv => _resolveCurrentItem() != null;
 
   void _seekTvRelative(int deltaMs) {
     final totalMs = _state.duration.inMilliseconds;
@@ -143,76 +134,120 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     unawaited(_manager.seekTo(Duration(milliseconds: targetMs)));
   }
 
+  bool get _isWidePlayer =>
+      PlatformDetection.isTV || PlatformDetection.useDesktopUi;
+
+  bool get _tvLyricsAvailable => _lyrics?.isNotEmpty ?? false;
+  int get _tvTabCount => _tvLyricsAvailable ? 2 : 1;
+  bool get _tvPanelIsLyrics => _tvViewTab == 1 && _tvLyricsAvailable;
+
+  int _currentLyricLineIndex() {
+    final lyrics = _lyrics;
+    if (lyrics == null || !lyrics.isSynced) return 0;
+    final pos = _state.position;
+    var idx = 0;
+    for (var i = lyrics.lines.length - 1; i >= 0; i--) {
+      if (pos >= lyrics.lines[i].start) {
+        idx = i;
+        break;
+      }
+    }
+    return idx;
+  }
+
   void _moveTvHorizontalFocus(int delta) {
-    if (_tvFocusArea == _TvAudioFocusArea.topActions) {
-      final next = (_tvTopActionIndex + delta).clamp(0, 1);
-      if (next != _tvTopActionIndex) {
-        setState(() => _tvTopActionIndex = next);
-      }
-      return;
-    }
-
-    if (_tvFocusArea == _TvAudioFocusArea.transport) {
-      final next = (_tvTransportActionIndex + delta).clamp(0, 4);
-      if (next != _tvTransportActionIndex) {
-        setState(() => _tvTransportActionIndex = next);
-      }
-      return;
-    }
-
-    if (_tvFocusArea == _TvAudioFocusArea.progress) {
-      _seekTvRelative(delta < 0 ? -_tvSeekStepMs : _tvSeekStepMs);
+    switch (_tvFocusArea) {
+      case _TvAudioFocusArea.viewTabs:
+        {
+          final next = (_tvViewTab + delta).clamp(0, _tvTabCount - 1);
+          if (next != _tvViewTab) setState(() => _tvViewTab = next);
+        }
+        break;
+      case _TvAudioFocusArea.transport:
+        {
+          final next = (_tvTransportActionIndex + delta).clamp(0, 4);
+          if (next != _tvTransportActionIndex) {
+            setState(() => _tvTransportActionIndex = next);
+          }
+        }
+        break;
+      case _TvAudioFocusArea.progress:
+        _seekTvRelative(delta < 0 ? -_tvSeekStepMs : _tvSeekStepMs);
+        break;
+      case _TvAudioFocusArea.panelBody:
+        if (delta < 0) {
+          setState(() => _tvFocusArea = _TvAudioFocusArea.viewTabs);
+        }
+        break;
+      case _TvAudioFocusArea.favorite:
+        break;
     }
   }
 
+  // panelBody is entered via SELECT on the switcher and left via LEFT/BACK, so
+  // it is not part of this vertical chain.
   void _moveTvVerticalFocus(int delta) {
     final current = _tvFocusArea;
-    _TvAudioFocusArea next = current;
-
-    if (delta < 0) {
-      switch (current) {
-        case _TvAudioFocusArea.transport:
-          next = _TvAudioFocusArea.progress;
-          break;
-        case _TvAudioFocusArea.progress:
-          next = _canUseTopActionsOnTv
-              ? _TvAudioFocusArea.topActions
-              : _TvAudioFocusArea.progress;
-          break;
-        case _TvAudioFocusArea.topActions:
-        case _TvAudioFocusArea.queue:
-          break;
-      }
-    } else if (delta > 0) {
-      switch (current) {
-        case _TvAudioFocusArea.topActions:
-          next = _TvAudioFocusArea.progress;
-          break;
-        case _TvAudioFocusArea.progress:
-          next = _TvAudioFocusArea.transport;
-          break;
-        case _TvAudioFocusArea.transport:
-        case _TvAudioFocusArea.queue:
-          break;
-      }
-    }
-
-    if (next != current) {
-      setState(() => _tvFocusArea = next);
-    }
+    final next = delta < 0
+        ? switch (current) {
+            _TvAudioFocusArea.transport => _TvAudioFocusArea.progress,
+            _TvAudioFocusArea.progress => _TvAudioFocusArea.viewTabs,
+            _TvAudioFocusArea.viewTabs => _TvAudioFocusArea.favorite,
+            _ => current,
+          }
+        : switch (current) {
+            _TvAudioFocusArea.favorite => _TvAudioFocusArea.viewTabs,
+            _TvAudioFocusArea.viewTabs => _TvAudioFocusArea.progress,
+            _TvAudioFocusArea.progress => _TvAudioFocusArea.transport,
+            _ => current,
+          };
+    if (next != current) setState(() => _tvFocusArea = next);
   }
 
-  void _activateTvTopAction() {
-    final item = _resolveCurrentItem();
-    if (item == null) return;
+  void _enterTvPanel() {
+    setState(() {
+      _tvFocusArea = _TvAudioFocusArea.panelBody;
+      if (_tvPanelIsLyrics) {
+        _tvLyricCursor = _currentLyricLineIndex();
+      } else {
+        _tvQueueFocusIndex = _initialTvQueueFocusIndex();
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_tvPanelIsLyrics) {
+        _scrollTvLyricIntoView(_tvLyricCursor);
+      } else {
+        _scrollTvQueueIntoView(_tvQueueFocusIndex);
+      }
+    });
+  }
 
-    switch (_tvTopActionIndex) {
-      case 0:
-        unawaited(_toggleFavorite(item));
-        return;
-      case 1:
-        _toggleQueuePanel();
-        return;
+  void _setTvLyricCursor(int index) {
+    final count = _lyrics?.lines.length ?? 0;
+    if (count <= 0) return;
+    final clamped = index.clamp(0, count - 1);
+    if (clamped == _tvLyricCursor) return;
+    setState(() => _tvLyricCursor = clamped);
+    _scrollTvLyricIntoView(clamped);
+  }
+
+  void _scrollTvLyricIntoView(int index, {bool animate = true}) {
+    if (!_tvLyricScrollController.hasClients) return;
+    final target = (index * 44.0).clamp(
+      _tvLyricScrollController.position.minScrollExtent,
+      _tvLyricScrollController.position.maxScrollExtent,
+    );
+    if (animate) {
+      unawaited(
+        _tvLyricScrollController.animateTo(
+          target,
+          duration: const Duration(milliseconds: 140),
+          curve: Curves.easeOut,
+        ),
+      );
+    } else {
+      _tvLyricScrollController.jumpTo(target);
     }
   }
 
@@ -245,9 +280,13 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     required Widget child,
     BorderRadius borderRadius = const BorderRadius.all(Radius.circular(12)),
   }) {
-    if (!PlatformDetection.isTV) {
+    if (!_isWidePlayer) {
       return child;
     }
+
+    // Only paint the focus ring when actually navigating by keyboard/D-pad, so
+    // desktop mouse users don't see a persistent glow 
+    final showFocus = InputModeTracker.showFocusVisuals(context, focused);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 120),
@@ -255,15 +294,15 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       decoration: BoxDecoration(
         borderRadius: borderRadius,
         border: Border.all(
-          color: focused
+          color: showFocus
               ? AppColorScheme.accent
               : AppColorScheme.onSurface.withValues(alpha: 0.0),
           width: 2.4,
         ),
-        color: focused
+        color: showFocus
             ? AppColorScheme.onSurface.withValues(alpha: 0.24)
             : Colors.transparent,
-        boxShadow: focused
+        boxShadow: showFocus
             ? [
                 BoxShadow(
                   color: AppColorScheme.accent.withValues(alpha: 0.45),
@@ -287,7 +326,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   }
 
   void _syncTvQueueFocusIndex() {
-    if (!PlatformDetection.isTV || !_showQueue) return;
+    if (!_isWidePlayer || _tvPanelIsLyrics) return;
     final count = _queue.items.length;
     if (count <= 0) {
       if (_tvQueueFocusIndex != 0) {
@@ -357,37 +396,63 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   }
 
   KeyEventResult _handleTvKeyEvent(FocusNode node, KeyEvent event) {
-    if (!PlatformDetection.isTV || !event.isActionable) {
+    if (!_isWidePlayer || !event.isActionable) {
       return KeyEventResult.ignored;
     }
 
     final key = event.logicalKey;
+
+    // Back: when inside the panel, step out to the switcher; otherwise let the
+    // framework handle it (exit playback).
     if (key.isBackKey) {
-      if (event is KeyRepeatEvent) {
+      if (_tvFocusArea == _TvAudioFocusArea.panelBody) {
+        if (event is KeyRepeatEvent) return KeyEventResult.handled;
+        setState(() => _tvFocusArea = _TvAudioFocusArea.viewTabs);
         return KeyEventResult.handled;
       }
+      if (event is KeyRepeatEvent) return KeyEventResult.handled;
       return KeyEventResult.ignored;
     }
 
-    if (_showQueue) {
-      if (key.isUpKey) {
-        _setTvQueueFocusIndex(_tvQueueFocusIndex - 1);
-        return KeyEventResult.handled;
-      }
-      if (key.isDownKey) {
-        _setTvQueueFocusIndex(_tvQueueFocusIndex + 1);
-        return KeyEventResult.handled;
-      }
-      if (key.isSelectKey) {
-        final count = _queue.items.length;
-        if (count > 0) {
-          final index = _tvQueueFocusIndex.clamp(0, count - 1);
-          unawaited(_manager.playFromQueue(index));
+    // Panel body captures up/down for its cursor, select acts on the item.
+    if (_tvFocusArea == _TvAudioFocusArea.panelBody) {
+      if (_tvPanelIsLyrics) {
+        if (key.isUpKey) {
+          _setTvLyricCursor(_tvLyricCursor - 1);
+          return KeyEventResult.handled;
         }
-        return KeyEventResult.handled;
+        if (key.isDownKey) {
+          _setTvLyricCursor(_tvLyricCursor + 1);
+          return KeyEventResult.handled;
+        }
+        if (key.isSelectKey) {
+          final lines = _lyrics?.lines ?? const <LyricLine>[];
+          if (_tvLyricCursor >= 0 && _tvLyricCursor < lines.length) {
+            unawaited(_manager.seekTo(lines[_tvLyricCursor].start));
+          }
+          return KeyEventResult.handled;
+        }
+      } else {
+        if (key.isUpKey) {
+          _setTvQueueFocusIndex(_tvQueueFocusIndex - 1);
+          return KeyEventResult.handled;
+        }
+        if (key.isDownKey) {
+          _setTvQueueFocusIndex(_tvQueueFocusIndex + 1);
+          return KeyEventResult.handled;
+        }
+        if (key.isSelectKey) {
+          final count = _queue.items.length;
+          if (count > 0) {
+            unawaited(
+              _manager.playFromQueue(_tvQueueFocusIndex.clamp(0, count - 1)),
+            );
+          }
+          return KeyEventResult.handled;
+        }
       }
-      if (key.isLeftKey || key.isRightKey) {
-        _toggleQueuePanel();
+      if (key.isLeftKey) {
+        setState(() => _tvFocusArea = _TvAudioFocusArea.viewTabs);
         return KeyEventResult.handled;
       }
       return KeyEventResult.handled;
@@ -397,36 +462,33 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       _moveTvHorizontalFocus(-1);
       return KeyEventResult.handled;
     }
-
     if (key.isRightKey) {
       _moveTvHorizontalFocus(1);
       return KeyEventResult.handled;
     }
-
     if (key.isUpKey) {
       _moveTvVerticalFocus(-1);
       return KeyEventResult.handled;
     }
-
     if (key.isDownKey) {
       _moveTvVerticalFocus(1);
       return KeyEventResult.handled;
     }
-
     if (key.isSelectKey) {
-      if (_tvFocusArea == _TvAudioFocusArea.topActions) {
-        _activateTvTopAction();
+      if (_tvFocusArea == _TvAudioFocusArea.favorite) {
+        final item = _resolveCurrentItem();
+        if (item != null) unawaited(_toggleFavorite(item));
+      } else if (_tvFocusArea == _TvAudioFocusArea.viewTabs) {
+        _enterTvPanel();
       } else if (_tvFocusArea == _TvAudioFocusArea.transport) {
         _activateTvTransportAction();
       }
       return KeyEventResult.handled;
     }
-
     if (key.isContextMenuKey) {
-      _toggleQueuePanel();
+      _enterTvPanel();
       return KeyEventResult.handled;
     }
-
     return KeyEventResult.ignored;
   }
 
@@ -449,6 +511,226 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     }
   }
 
+  /// When the queue is nearing its end (and repeat is off, online), seeds an
+  /// Instant Mix "radio" off the current track and appends fresh tracks so the
+  /// queue never dead-ends. Guarded so each seed only extends the queue once.
+  Future<void> _maybeExtendWithRadio() async {
+    if (_radioFetchInFlight || _manager.isOfflinePlayback) return;
+    if (_queue.repeatMode != RepeatMode.none) return;
+    final items = _queue.items;
+    final idx = _queue.currentIndex;
+    if (idx < 0 || items.isEmpty) return;
+    if (items.length - 1 - idx > 2) return; // only near the end
+    final seed = _resolveCurrentItem();
+    if (seed == null || _radioSeededItemId == seed.id) return;
+
+    _radioFetchInFlight = true;
+    _radioSeededItemId = seed.id;
+    try {
+      final client = _clientForItem(seed);
+      final data = await client.instantMixApi.getInstantMix(seed.id, limit: 25);
+      final rawList = (data['Items'] as List?) ?? const [];
+      final existingIds =
+          items.whereType<AggregatedItem>().map((e) => e.id).toSet();
+      final additions = <AggregatedItem>[];
+      for (final raw in rawList) {
+        if (raw is! Map) continue;
+        final map = Map<String, dynamic>.from(raw);
+        final id = map['Id']?.toString();
+        if (id == null || existingIds.contains(id)) continue;
+        existingIds.add(id);
+        additions.add(
+          AggregatedItem(
+            id: id,
+            serverId: map['ServerId']?.toString() ?? seed.serverId,
+            rawData: map,
+          ),
+        );
+      }
+      if (additions.isNotEmpty && mounted) {
+        _queue.addItems(additions);
+      }
+    } catch (_) {
+      _radioSeededItemId = null; // allow a later retry
+    } finally {
+      _radioFetchInFlight = false;
+    }
+  }
+
+  void _setSleepTimer(Duration? duration) {
+    _sleepTimer?.cancel();
+    _sleepTimer = null;
+    if (duration != null && duration > Duration.zero) {
+      _sleepTimer = Timer(duration, () {
+        _sleepTimer = null;
+        unawaited(_manager.pause());
+        if (mounted) setState(() {});
+      });
+    }
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _showOverflowSheet(AggregatedItem item) async {
+    const speeds = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
+    const sleepOptions = <String, Duration?>{
+      'Off': null,
+      '15 min': Duration(minutes: 15),
+      '30 min': Duration(minutes: 30),
+      '60 min': Duration(minutes: 60),
+    };
+
+    await showFocusRestoringModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColorScheme.surface,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheet) {
+          Widget sectionTitle(String t) => Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
+            child: Text(
+              t,
+              style: TextStyle(
+                color: AppColorScheme.onSurface.withValues(alpha: 0.6),
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+              ),
+            ),
+          );
+
+          return SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  sectionTitle('PLAYBACK SPEED'),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Wrap(
+                      spacing: 8,
+                      children: [
+                        for (final s in speeds)
+                          ChoiceChip(
+                            label: Text('${s}x'),
+                            selected: (_state.playbackSpeed - s).abs() < 0.01,
+                            onSelected: (_) {
+                              unawaited(_manager.setPlaybackSpeed(s));
+                              setSheet(() {});
+                              if (mounted) setState(() {});
+                            },
+                          ),
+                      ],
+                    ),
+                  ),
+                  sectionTitle('SLEEP TIMER'),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Wrap(
+                      spacing: 8,
+                      children: [
+                        for (final entry in sleepOptions.entries)
+                          ChoiceChip(
+                            label: Text(entry.key),
+                            selected: entry.value == null && _sleepTimer == null,
+                            onSelected: (_) {
+                              _setSleepTimer(entry.value);
+                              setSheet(() {});
+                            },
+                          ),
+                        ChoiceChip(
+                          label: const Text('End of track'),
+                          selected: false,
+                          onSelected: (_) {
+                            _setSleepTimer(_state.duration - _state.position);
+                            setSheet(() {});
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ListTile(
+                    leading: AdaptiveIcon(
+                      Icons.playlist_add_rounded,
+                      color: AppColorScheme.onSurface,
+                    ),
+                    title: Text(
+                      'Save queue as playlist',
+                      style: TextStyle(color: AppColorScheme.onSurface),
+                    ),
+                    onTap: () {
+                      Navigator.of(ctx).pop();
+                      unawaited(_saveQueueAsPlaylist(item));
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _saveQueueAsPlaylist(AggregatedItem item) async {
+    if (_manager.isOfflinePlayback) return;
+    final ids = _queue.items
+        .whereType<AggregatedItem>()
+        .map((e) => e.id)
+        .toList();
+    if (ids.isEmpty) return;
+    final name = await _promptPlaylistName();
+    if (name == null || name.trim().isEmpty || !mounted) return;
+    try {
+      final client = _clientForItem(item);
+      await client.itemsApi.createPlaylist(name: name.trim(), itemIds: ids);
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Saved "${name.trim()}"')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Could not save playlist: $e')));
+      }
+    }
+  }
+
+  Future<String?> _promptPlaylistName() {
+    final controller = TextEditingController(
+      text: _resolveCurrentItem()?.album ?? 'My Playlist',
+    );
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColorScheme.surface,
+        title: Text(
+          'Save queue as playlist',
+          style: TextStyle(color: AppColorScheme.onSurface),
+        ),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          style: TextStyle(color: AppColorScheme.onSurface),
+          decoration: const InputDecoration(hintText: 'Playlist name'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(controller.text),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _exitPlayback() async {
     if (_isExitingPlayback || !mounted) return;
     _isExitingPlayback = true;
@@ -465,8 +747,10 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     for (final sub in _subs) {
       sub.cancel();
     }
+    _sleepTimer?.cancel();
     _tvOverlayFocus.dispose();
     _queueScrollController.dispose();
+    _tvLyricScrollController.dispose();
     super.dispose();
   }
 
@@ -574,6 +858,11 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     final attachMedia3View =
         PlatformDetection.useNativeVideoSurface && _activeMedia3Backend != null;
 
+    final ImageProvider? ambientImage =
+        (localPoster != null && File(localPoster).existsSync())
+        ? FileImage(File(localPoster))
+        : (artUrl != null ? CachedNetworkImageProvider(artUrl) : null);
+
     final content = Stack(
       fit: StackFit.expand,
       children: [
@@ -587,66 +876,52 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               child: Media3VideoView(fill: Color(0x00000000)),
             ),
           ),
-        if (localPoster != null && File(localPoster).existsSync())
-          Positioned.fill(
-            child: ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
-              child: Image.file(
-                File(localPoster),
-                fit: BoxFit.cover,
-                cacheWidth: 256,
-                color: AppColorScheme.scrim.withValues(alpha: 0.54),
-                colorBlendMode: BlendMode.darken,
+        Positioned.fill(
+          child: AmbientBackground(
+            image: ambientImage,
+            child: SafeArea(
+              child: _isWidePlayer
+                  ? _buildTvBody(item, artUrl, localPoster: localPoster)
+                  : Column(
+                children: [
+                  _buildTopBar(context, item),
+                  Expanded(
+                    child: _showQueue
+                        ? _buildQueueList()
+                        : useSplitLyricsLayout
+                        ? _buildNowPlayingWithLyrics(
+                            item,
+                            artUrl,
+                            localPoster: localPoster,
+                          )
+                        : _showLyrics && _lyrics != null && _lyrics!.isNotEmpty
+                        ? LyricsView(
+                            lyrics: _lyrics!,
+                            positionStream: _state.positionStream,
+                            position: _state.position,
+                            onSeekToLine: (d) => unawaited(_manager.seekTo(d)),
+                          )
+                        : _buildNowPlaying(
+                            item,
+                            artUrl,
+                            localPoster: localPoster,
+                          ),
+                  ),
+                  if (item != null && !_showQueue && !_showLyrics)
+                    _buildFavoriteRow(item),
+                  _buildProgressBar(),
+                  _buildTransportControls(),
+                  if (!useSplitLyricsLayout) _buildMobileViewSwitcher(),
+                  const SizedBox(height: AppSpacing.spaceLg),
+                ],
               ),
             ),
-          )
-        else if (artUrl != null)
-          Positioned.fill(
-            child: ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
-              child: CachedNetworkImage(
-                imageUrl: artUrl,
-                fit: BoxFit.cover,
-                memCacheWidth: 256,
-                color: AppColorScheme.scrim.withValues(alpha: 0.54),
-                colorBlendMode: BlendMode.darken,
-              ),
-            ),
-          ),
-        SafeArea(
-          child: Column(
-            children: [
-              _buildTopBar(context, item),
-              Expanded(
-                child: _showQueue
-                    ? _buildQueueList()
-                    : useSplitLyricsLayout
-                    ? _buildNowPlayingWithLyrics(
-                        item,
-                        artUrl,
-                        localPoster: localPoster,
-                      )
-                    : _showLyrics && _lyrics != null && _lyrics!.isNotEmpty
-                    ? LyricsView(
-                        lyrics: _lyrics!,
-                        positionStream: _state.positionStream,
-                        position: _state.position,
-                      )
-                    : _buildNowPlaying(item, artUrl, localPoster: localPoster),
-              ),
-              if (item != null &&
-                  (PlatformDetection.isTV || (!_showQueue && !_showLyrics)))
-                _buildFavoriteRow(item),
-              _buildProgressBar(),
-              _buildTransportControls(),
-              const SizedBox(height: AppSpacing.spaceLg),
-            ],
           ),
         ),
       ],
     );
 
-    final tvWrappedContent = PlatformDetection.isTV
+    final tvWrappedContent = _isWidePlayer
         ? Focus(
             focusNode: _tvOverlayFocus,
             autofocus: true,
@@ -673,7 +948,6 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   }
 
   Widget _buildTopBar(BuildContext context, AggregatedItem? item) {
-    final useSplitLyricsLayout = _shouldUseSplitLyricsLayout(context);
     final isTv = PlatformDetection.isTV;
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -688,18 +962,13 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               onPressed: () => Navigator.of(context).pop(),
             ),
           const Spacer(),
-          if (_lyrics != null && _lyrics!.isNotEmpty && !useSplitLyricsLayout)
-            IconButton(
-              icon: AdaptiveIcon(
-                Icons.lyrics_outlined,
-                size: 24,
-                color: _showLyrics ? AppColorScheme.accent : null,
-              ),
-              onPressed: () => setState(() {
-                _showLyrics = !_showLyrics;
-                if (_showLyrics) _showQueue = false;
-              }),
+          if (item != null)
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: AppSpacing.spaceSm),
+              child: AudioQualityBadge(item: item),
             ),
+          const Spacer(),
           if (!isTv && item != null)
             ValueListenableBuilder<CastTargetKind?>(
               valueListenable: _castService.activeKindNotifier,
@@ -723,14 +992,10 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                 );
               },
             ),
-          if (!isTv)
+          if (!isTv && item != null)
             IconButton(
-              icon: AdaptiveIcon(
-                _showQueue ? Icons.album : Icons.queue_music,
-                size: 24,
-                color: _showQueue ? AppColorScheme.accent : null,
-              ),
-              onPressed: _toggleQueuePanel,
+              icon: const AdaptiveIcon(Icons.more_vert, size: 24),
+              onPressed: () => _showOverflowSheet(item),
             ),
         ],
       ),
@@ -759,6 +1024,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                 lyrics: _lyrics!,
                 positionStream: _state.positionStream,
                 position: _state.position,
+                onSeekToLine: (d) => unawaited(_manager.seekTo(d)),
               ),
             ),
           ),
@@ -796,7 +1062,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                   height: artSize,
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.circular(12),
                       boxShadow: const [
                         BoxShadow(
                           color: AppColors.black,
@@ -1149,10 +1415,69 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     );
   }
 
+  /// Mobile bottom switcher: `[ Lyrics | Up Next ]` pills that toggle the
+  /// centre view, mirroring the wide player's view switcher.
+  Widget _buildMobileViewSwitcher() {
+    final hasLyrics = _lyrics?.isNotEmpty ?? false;
+
+    Widget chip(String label, bool active, VoidCallback onTap) => Expanded(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+          margin: const EdgeInsets.all(4),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: active ? AppColorScheme.accent : Colors.transparent,
+            borderRadius: AppRadius.circular(20),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: active
+                  ? AppColorScheme.onAccent
+                  : AppColorScheme.onSurface.withValues(alpha: 0.8),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.spaceLg,
+        AppSpacing.spaceSm,
+        AppSpacing.spaceLg,
+        0,
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColorScheme.onSurface.withValues(alpha: 0.08),
+          borderRadius: AppRadius.circular(24),
+        ),
+        child: Row(
+          children: [
+            if (hasLyrics)
+              chip('Lyrics', _showLyrics, () {
+                setState(() {
+                  _showLyrics = !_showLyrics;
+                  if (_showLyrics) _showQueue = false;
+                });
+              }),
+            chip('Up Next', _showQueue, _toggleQueuePanel),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildFavoriteRow(AggregatedItem item) {
-    final isTv = PlatformDetection.isTV;
     final isFav = _getIsFavorite(item);
-    final favoriteButton = IconButton(
+    return IconButton(
       icon: AdaptiveIcon(
         isFav ? Icons.favorite : Icons.favorite_border,
         size: 28,
@@ -1162,43 +1487,204 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       ),
       onPressed: () => _toggleFavorite(item),
     );
+  }
 
-    if (!isTv) {
-      return favoriteButton;
-    }
+  Widget _tvFavoriteButton(AggregatedItem item) {
+    return _tvFocusShell(
+      focused: _tvFocusArea == _TvAudioFocusArea.favorite,
+      borderRadius: const BorderRadius.all(Radius.circular(24)),
+      child: _buildFavoriteRow(item),
+    );
+  }
 
-    final favoriteFocused =
-        !_showQueue &&
-        _tvFocusArea == _TvAudioFocusArea.topActions &&
-        _tvTopActionIndex == 0;
-    final queueFocused =
-        !_showQueue &&
-        _tvFocusArea == _TvAudioFocusArea.topActions &&
-        _tvTopActionIndex == 1;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.space2xs),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _tvFocusShell(focused: favoriteFocused, child: favoriteButton),
-          const SizedBox(width: AppSpacing.spaceSm),
-          _tvFocusShell(
-            focused: queueFocused,
-            child: IconButton(
-              icon: AdaptiveIcon(
-                _showQueue ? Icons.album : Icons.queue_music,
-                size: 28,
-                color: _showQueue
-                    ? AppColorScheme.accent
-                    : AppColorScheme.onSurface.withValues(alpha: 0.7),
+  /// TV/leanback two-column player: album art + metadata on the left, and a
+  /// D-pad-driven `[Up Next | Lyrics]` panel on the right, with full-width
+  /// progress + transport below.
+  Widget _buildTvBody(
+    AggregatedItem? item,
+    String? artUrl, {
+    String? localPoster,
+  }) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.spaceLg,
+            AppSpacing.spaceSm,
+            AppSpacing.spaceLg,
+            0,
+          ),
+          child: Row(
+            children: [
+              if (!PlatformDetection.isTV)
+                IconButton(
+                  icon: const AdaptiveIcon(Icons.arrow_back, size: 24),
+                  onPressed: () => Navigator.of(context).pop(),
+                )
+              else
+                const SizedBox(width: 48),
+              Expanded(
+                child: Center(
+                  child: item != null
+                      ? AudioQualityBadge(item: item)
+                      : const SizedBox.shrink(),
+                ),
               ),
-              onPressed: _toggleQueuePanel,
+              if (item != null)
+                _tvFavoriteButton(item)
+              else
+                const SizedBox(width: 48),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceLg),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: _buildNowPlaying(
+                    item,
+                    artUrl,
+                    localPoster: localPoster,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.spaceXl),
+                Expanded(
+                  child: Column(
+                    children: [
+                      _buildTvViewTabs(),
+                      const SizedBox(height: AppSpacing.spaceSm),
+                      Expanded(
+                        child: _tvPanelIsLyrics
+                            ? _buildTvLyricsPanel()
+                            : _buildQueueList(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
+        _buildProgressBar(),
+        _buildTransportControls(),
+        const SizedBox(height: AppSpacing.spaceLg),
+      ],
+    );
+  }
+
+  Widget _buildTvViewTabs() {
+    final focused = _tvFocusArea == _TvAudioFocusArea.viewTabs;
+    final showLyricsTab = _tvLyricsAvailable;
+
+    Widget tab(String label, int index, bool active) => GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => setState(() {
+        _tvViewTab = index;
+        _tvFocusArea = _TvAudioFocusArea.viewTabs;
+      }),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        decoration: BoxDecoration(
+          color: active ? AppColorScheme.accent : Colors.transparent,
+          borderRadius: AppRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: active
+                ? AppColorScheme.onAccent
+                : AppColorScheme.onSurface.withValues(alpha: 0.8),
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
+    );
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _tvFocusShell(
+          focused: focused,
+          borderRadius: const BorderRadius.all(Radius.circular(24)),
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: AppColorScheme.onSurface.withValues(alpha: 0.08),
+              borderRadius: AppRadius.circular(24),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                tab('Up Next', 0, _tvViewTab == 0 || !showLyricsTab),
+                if (showLyricsTab) tab('Lyrics', 1, _tvViewTab == 1),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTvLyricsPanel() {
+    final lyrics = _lyrics;
+    if (lyrics == null || lyrics.isEmpty) {
+      return Center(
+        child: Text(
+          AppLocalizations.of(context).lyricsNotAvailable,
+          style: TextStyle(
+            color: AppColorScheme.onSurface.withValues(alpha: 0.5),
+          ),
+        ),
+      );
+    }
+
+    final inPanel = _tvFocusArea == _TvAudioFocusArea.panelBody;
+    // When not actively cursoring, fall back to the auto-scrolling view so the
+    // lyrics still follow playback.
+    if (!inPanel) {
+      return LyricsView(
+        lyrics: lyrics,
+        positionStream: _state.positionStream,
+        position: _state.position,
+        onSeekToLine: (d) => unawaited(_manager.seekTo(d)),
+      );
+    }
+
+    final lines = lyrics.lines;
+    return ListView.builder(
+      controller: _tvLyricScrollController,
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.spaceLg),
+      itemCount: lines.length,
+      itemBuilder: (context, index) {
+        final isCursor = index == _tvLyricCursor;
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+          decoration: BoxDecoration(
+            color: isCursor
+                ? AppColorScheme.accent.withValues(alpha: 0.22)
+                : Colors.transparent,
+            borderRadius: AppRadius.circular(10),
+            border: isCursor
+                ? Border.all(color: AppColorScheme.accent, width: 2)
+                : null,
+          ),
+          child: Text(
+            lines[index].text,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: isCursor
+                  ? AppColorScheme.onSurface
+                  : AppColorScheme.onSurface.withValues(alpha: 0.7),
+              fontSize: 18,
+              fontWeight: isCursor ? FontWeight.w700 : FontWeight.w500,
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -1207,9 +1693,10 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     final dur = _state.duration;
     final maxMs = dur.inMilliseconds.toDouble();
     final isTvFocused =
-        PlatformDetection.isTV &&
+        _isWidePlayer &&
         !_showQueue &&
-        _tvFocusArea == _TvAudioFocusArea.progress;
+        _tvFocusArea == _TvAudioFocusArea.progress &&
+        InputModeTracker.showFocusVisuals(context, true);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceXl),
@@ -1223,7 +1710,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
               activeTrackColor: AppColorScheme.rangeProgress,
               inactiveTrackColor: AppColorScheme.rangeTrack,
-              thumbColor: (PlatformDetection.isTV && isTvFocused)
+              thumbColor: isTvFocused
                   ? Colors.white
                   : AppColorScheme.rangeThumb,
               overlayColor: AppColorScheme.rangeThumb.withValues(alpha: 0.2),
@@ -1266,7 +1753,6 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   }
 
   Widget _buildTransportControls() {
-    final isTv = PlatformDetection.isTV;
     final isPlaying = _state.isPlaying;
     final repeatMode = _queue.repeatMode;
     final isShuffled = _queue.isShuffled;
@@ -1277,7 +1763,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       BorderRadius borderRadius = const BorderRadius.all(Radius.circular(16)),
     }) {
       final focused =
-          isTv &&
+          _isWidePlayer &&
           !_showQueue &&
           _tvFocusArea == _TvAudioFocusArea.transport &&
           _tvTransportActionIndex == index;
@@ -1375,7 +1861,8 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   Widget _buildQueueList() {
     final items = _queue.items;
     final currentIdx = _queue.currentIndex;
-    final isTv = PlatformDetection.isTV;
+    final isWide = _isWidePlayer;
+    final keyboardFocus = InputModeTracker.showFocusVisuals(context, true);
 
     if (items.isEmpty) {
       return Center(
@@ -1388,72 +1875,118 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       );
     }
 
-    return ListView.builder(
-      controller: isTv ? _queueScrollController : null,
+    Widget buildTile(int index) {
+      final raw = items[index];
+      final item = raw is AggregatedItem ? raw : null;
+      final isCurrent = index == currentIdx;
+      final isDpadFocused =
+          isWide && index == _tvQueueFocusIndex && keyboardFocus;
+      final highlighted = isDpadFocused || index == _hoveredQueueIndex;
+      final artUrl = item != null ? _getArtUrl(item) : null;
+
+      return MouseRegion(
+        key: ValueKey('queue-$index'),
+        onEnter: (_) => setState(() => _hoveredQueueIndex = index),
+        onExit: (_) {
+          if (_hoveredQueueIndex == index) {
+            setState(() => _hoveredQueueIndex = null);
+          }
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 120),
+          curve: Curves.easeOut,
+          margin: const EdgeInsets.symmetric(vertical: 3),
+          decoration: BoxDecoration(
+            color: highlighted
+                ? AppColorScheme.accent.withValues(alpha: 0.22)
+                : Colors.transparent,
+            borderRadius: AppRadius.circular(16),
+            border: Border.all(
+              color: highlighted ? AppColorScheme.accent : Colors.transparent,
+              width: 2,
+            ),
+            boxShadow: isDpadFocused
+                ? [
+                    BoxShadow(
+                      color: AppColorScheme.accent.withValues(alpha: 0.40),
+                      blurRadius: 14,
+                      spreadRadius: 1,
+                    ),
+                  ]
+                : null,
+          ),
+          child: ListTile(
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.circular(16)),
+            leading: SizedBox(
+              width: 48,
+              height: 48,
+              child: ClipRRect(
+                borderRadius: AppRadius.circular(4),
+                child: artUrl != null
+                    ? CachedNetworkImage(
+                        imageUrl: artUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (_, _) => _queueArtPlaceholder(),
+                        errorWidget: (_, _, _) => _queueArtPlaceholder(),
+                      )
+                    : _queueArtPlaceholder(),
+              ),
+            ),
+            title: Text(
+              item?.name ?? AppLocalizations.of(context).trackNumber(index + 1),
+              style: TextStyle(
+                color: isCurrent
+                    ? AppColorScheme.accent
+                    : AppColorScheme.onSurface,
+                fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Text(
+              _artistLine(item),
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColorScheme.onSurface.withValues(alpha: 0.5),
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            trailing: isCurrent
+                ? AdaptiveIcon(
+                    Icons.equalizer,
+                    color: AppColorScheme.accent,
+                    size: 20,
+                  )
+                : null,
+            onTap: () {
+              if (isWide) {
+                _setTvQueueFocusIndex(index);
+              }
+              _manager.playFromQueue(index);
+            },
+          ),
+        ),
+      );
+    }
+
+    if (isWide) {
+      return ListView.builder(
+        controller: _queueScrollController,
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceLg),
+        itemCount: items.length,
+        itemBuilder: (context, index) => buildTile(index),
+      );
+    }
+
+    // Mobile / desktop: drag to reorder the queue.
+    return ReorderableListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spaceLg),
       itemCount: items.length,
-      itemBuilder: (context, index) {
-        final raw = items[index];
-        final item = raw is AggregatedItem ? raw : null;
-        final isCurrent = index == currentIdx;
-        final isTvFocused = isTv && index == _tvQueueFocusIndex;
-        final artUrl = item != null ? _getArtUrl(item) : null;
-
-        return ListTile(
-          selected: isTvFocused,
-          selectedTileColor: AppColorScheme.accent.withValues(alpha: 0.26),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: isTvFocused
-                ? BorderSide(color: AppColorScheme.accent, width: 2.4)
-                : BorderSide.none,
-          ),
-          leading: SizedBox(
-            width: 48,
-            height: 48,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: artUrl != null
-                  ? CachedNetworkImage(
-                      imageUrl: artUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (_, _) => _queueArtPlaceholder(),
-                      errorWidget: (_, _, _) => _queueArtPlaceholder(),
-                    )
-                  : _queueArtPlaceholder(),
-            ),
-          ),
-          title: Text(
-            item?.name ?? AppLocalizations.of(context).trackNumber(index + 1),
-            style: TextStyle(
-              color: isCurrent
-                  ? AppColorScheme.accent
-                  : AppColorScheme.onSurface,
-              fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text(
-            _artistLine(item),
-            style: TextStyle(
-              fontSize: 12,
-              color: AppColorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          trailing: isCurrent
-              ? AdaptiveIcon(Icons.equalizer, color: AppColorScheme.accent, size: 20)
-              : null,
-          onTap: () {
-            if (isTv) {
-              _setTvQueueFocusIndex(index);
-            }
-            _manager.playFromQueue(index);
-          },
-        );
+      onReorder: (oldIndex, newIndex) {
+        setState(() => _queue.reorder(oldIndex, newIndex));
       },
+      itemBuilder: (context, index) => buildTile(index),
     );
   }
 }

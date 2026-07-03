@@ -30,6 +30,9 @@ import android.os.Process
 import android.os.PowerManager
 import android.util.Rational
 import android.view.Display
+import android.view.InputDevice
+import android.view.KeyEvent
+import android.view.MotionEvent
 import androidx.mediarouter.media.MediaRouteSelector
 import androidx.mediarouter.media.MediaRouter
 import com.google.android.gms.cast.CastMediaControlIntent
@@ -47,6 +50,7 @@ import com.google.android.gms.cast.framework.SessionManagerListener
 import com.google.android.gms.common.images.WebImage
 import com.ryanheise.audioservice.AudioServiceActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.FlutterShellArgs
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import java.io.ByteArrayOutputStream
@@ -67,6 +71,10 @@ class MainActivity : AudioServiceActivity() {
     private var dlnaController: DlnaController? = null
     private var externalPlayerChannel: MethodChannel? = null
     private var externalPlayerPendingResult: MethodChannel.Result? = null
+    private var gamepadChannel: MethodChannel? = null
+    private var gameActive = false
+    private var hatX = 0
+    private var hatY = 0
     private var pipEnabled = false
     private val handler = Handler(Looper.getMainLooper())
     private var dismissRunnable: Runnable? = null
@@ -99,6 +107,7 @@ class MainActivity : AudioServiceActivity() {
         private const val ACTION_PLAY_PAUSE = "org.moonfin.androidtv.ACTION_PIP_PLAY_PAUSE"
         private const val DISMISS_DELAY_MS = 300L
         private const val PLATFORM_CHANNEL = "org.moonfin.androidtv/platform"
+        private const val GAMEPAD_CHANNEL = "org.moonfin.androidtv/gamepad"
         private const val AUDIO_CAPS_EVENTS_CHANNEL =
             "org.moonfin.androidtv/audioCapabilitiesEvents"
         private const val EXTERNAL_PLAYER_PROXY_REQUEST_CODE = 17115
@@ -170,6 +179,29 @@ class MainActivity : AudioServiceActivity() {
         }
     }
 
+    private fun isTvDevice(): Boolean {
+        val uiModeManager = getSystemService(UI_MODE_SERVICE) as UiModeManager
+        val pm = packageManager
+        return uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION ||
+            pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK) ||
+            pm.hasSystemFeature("amazon.hardware.fire_tv")
+    }
+
+    // Selects the renderer at engine startup (before Dart) from the persisted
+    // preference. Single source of truth: no static EnableImpeller manifest flag.
+    override fun getFlutterShellArgs(): FlutterShellArgs {
+        val args = super.getFlutterShellArgs()
+        val mode = getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+            .getString("flutter.pref_impeller_mode", "auto")
+        val enable = when (mode) {
+            "on" -> true
+            "off" -> false
+            else -> !isTvDevice() // auto: match the old default (off on TV boxes)
+        }
+        args.add(if (enable) "--enable-impeller=true" else "--enable-impeller=false")
+        return args
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
@@ -184,12 +216,7 @@ class MainActivity : AudioServiceActivity() {
         ).setMethodCallHandler { call, result ->
             when (call.method) {
                 "isTvDevice" -> {
-                    val uiModeManager = getSystemService(UI_MODE_SERVICE) as UiModeManager
-                    val pm = packageManager
-                    val isTv = uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION ||
-                        pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK) ||
-                        pm.hasSystemFeature("amazon.hardware.fire_tv")
-                    result.success(isTv)
+                    result.success(isTvDevice())
                 }
                 "displayHdrTypes" -> result.success(getDisplayHdrTypes())
                 "dolbyVisionCodecCapabilities" -> {
@@ -214,6 +241,21 @@ class MainActivity : AudioServiceActivity() {
                     } else {
                         finishAffinity()
                     }
+                }
+                else -> result.notImplemented()
+            }
+        }
+
+        gamepadChannel = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            GAMEPAD_CHANNEL,
+        )
+        gamepadChannel?.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "setActive" -> {
+                    gameActive = call.argument<Boolean>("active") ?: false
+                    if (!gameActive) { hatX = 0; hatY = 0 }
+                    result.success(true)
                 }
                 else -> result.notImplemented()
             }
@@ -493,6 +535,93 @@ class MainActivity : AudioServiceActivity() {
         }
     }
 
+    // While a game is running, the emulator lives in a WebView that owns key focus and the
+    // System WebView does not reliably expose the Gamepad API. Capture the pad at the Activity
+    // level (top of the dispatch chain, before any view) and forward RetroPad buttons to Dart,
+    // which injects them into the core. Consumed only while active so app navigation is intact
+    // otherwise; button events are also consumed in-game so they never reach Flutter focus.
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (gameActive) {
+            val index = retroPadIndex(event.keyCode)
+            if (index != null) {
+                if (event.repeatCount == 0 &&
+                    (event.action == KeyEvent.ACTION_DOWN || event.action == KeyEvent.ACTION_UP)
+                ) {
+                    sendGamepadButton(index, event.action == KeyEvent.ACTION_DOWN)
+                }
+                return true
+            }
+        }
+        return super.dispatchKeyEvent(event)
+    }
+
+    override fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {
+        if (gameActive &&
+            event.source and InputDevice.SOURCE_JOYSTICK == InputDevice.SOURCE_JOYSTICK &&
+            event.action == MotionEvent.ACTION_MOVE
+        ) {
+            val x = axisDirection(event, MotionEvent.AXIS_HAT_X, MotionEvent.AXIS_X)
+            if (x != hatX) {
+                if (hatX == -1) sendGamepadButton(6, false)
+                if (hatX == 1) sendGamepadButton(7, false)
+                if (x == -1) sendGamepadButton(6, true)
+                if (x == 1) sendGamepadButton(7, true)
+                hatX = x
+            }
+            val y = axisDirection(event, MotionEvent.AXIS_HAT_Y, MotionEvent.AXIS_Y)
+            if (y != hatY) {
+                if (hatY == -1) sendGamepadButton(4, false)
+                if (hatY == 1) sendGamepadButton(5, false)
+                if (y == -1) sendGamepadButton(4, true)
+                if (y == 1) sendGamepadButton(5, true)
+                hatY = y
+            }
+            return true
+        }
+        return super.dispatchGenericMotionEvent(event)
+    }
+
+    // Hardware keycode -> libretro RetroPad index. Face-button positions map by layout
+    // (bottom=B0, right=A8, left=Y1, top=X9). D-pad keycodes and keyboard arrows both count so
+    // controllers and keyboards drive gameplay.
+    private fun retroPadIndex(keyCode: Int): Int? = when (keyCode) {
+        KeyEvent.KEYCODE_DPAD_UP -> 4
+        KeyEvent.KEYCODE_DPAD_DOWN -> 5
+        KeyEvent.KEYCODE_DPAD_LEFT -> 6
+        KeyEvent.KEYCODE_DPAD_RIGHT -> 7
+        // Remote OK button; acts as the primary action in-game and select in the overlay.
+        KeyEvent.KEYCODE_DPAD_CENTER -> 0
+        KeyEvent.KEYCODE_ENTER -> 0
+        KeyEvent.KEYCODE_BUTTON_A -> 0
+        KeyEvent.KEYCODE_BUTTON_B -> 8
+        KeyEvent.KEYCODE_BUTTON_X -> 1
+        KeyEvent.KEYCODE_BUTTON_Y -> 9
+        KeyEvent.KEYCODE_BUTTON_START -> 3
+        KeyEvent.KEYCODE_BUTTON_SELECT -> 2
+        KeyEvent.KEYCODE_BUTTON_L1 -> 10
+        KeyEvent.KEYCODE_BUTTON_R1 -> 11
+        KeyEvent.KEYCODE_BUTTON_THUMBL -> 14
+        KeyEvent.KEYCODE_BUTTON_THUMBR -> 15
+        else -> null
+    }
+
+    // -1 / 0 / +1 from a HAT axis, falling back to the analog stick past a deadzone.
+    private fun axisDirection(event: MotionEvent, hatAxis: Int, stickAxis: Int): Int {
+        val hat = event.getAxisValue(hatAxis)
+        if (hat <= -0.5f) return -1
+        if (hat >= 0.5f) return 1
+        val stick = event.getAxisValue(stickAxis)
+        if (stick <= -0.5f) return -1
+        if (stick >= 0.5f) return 1
+        return 0
+    }
+
+    private fun sendGamepadButton(index: Int, pressed: Boolean) {
+        runOnUiThread {
+            gamepadChannel?.invokeMethod("onButton", mapOf("index" to index, "pressed" to pressed))
+        }
+    }
+
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
         requestEnterPiPIfEligible()
@@ -614,6 +743,7 @@ class MainActivity : AudioServiceActivity() {
         dlnaChannel?.setMethodCallHandler(null)
         dlnaEventsChannel?.setStreamHandler(null)
         externalPlayerChannel?.setMethodCallHandler(null)
+        gamepadChannel?.setMethodCallHandler(null)
         externalPlayerPendingResult?.error(
             "ACTIVITY_DESTROYED",
             "Main activity was destroyed before external playback returned.",

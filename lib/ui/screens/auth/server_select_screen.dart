@@ -806,7 +806,7 @@ class _FocusableTileState extends State<_FocusableTile> {
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(12);
+    final radius = AppRadius.circular(12);
     return Material(
       color: _focused ? _kAccent.withValues(alpha: 0.18) : _tileIdleColor(),
       borderRadius: radius,
@@ -1012,7 +1012,7 @@ class _AddServerDialogState extends State<_AddServerDialog> {
   ButtonStyle _actionStyle() {
     return OutlinedButton.styleFrom(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.circular(20)),
     ).copyWith(
       side: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.focused) ||

@@ -90,7 +90,7 @@ class DownloadProgressBar extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(2),
+                          borderRadius: AppRadius.circular(2),
                           child: LinearProgressIndicator(
                             value: progressValue,
                             backgroundColor: AppColorScheme.onAccent.withValues(alpha: 0.24),

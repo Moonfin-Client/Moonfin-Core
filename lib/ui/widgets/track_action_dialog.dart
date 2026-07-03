@@ -95,7 +95,7 @@ class TrackActionDialog extends StatelessWidget {
                 constraints: const BoxConstraints(minWidth: 340, maxWidth: 440),
                 decoration: BoxDecoration(
                   color: AppColorScheme.surface.withValues(alpha: 0.9),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: AppRadius.circular(20),
                   border: Border.fromBorderSide(ThemeRegistry.active.borders.chipBorder),
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 20),

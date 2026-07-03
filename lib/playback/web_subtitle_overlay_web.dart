@@ -20,6 +20,40 @@ class WebSubtitleOverlay {
   static String get _cjkFontUrl =>
       _localUrl('vendor/fonts/NotoSansCJK-Regular.otf');
 
+  // libass (wasm) has no OS fonts, so it can only fall back across fonts it is
+  // handed here. These small per-script Noto fonts are always loaded so glyphs
+  // beyond Latin (Indic, Thai, Hebrew, symbols) render instead of tofu. CJK is
+  // large, so it stays lazy in availableFonts, matched by family name.
+  static const _fallbackFonts = <String>[
+    'NotoSansArabic-Regular.ttf',
+    'NotoSansDevanagari-Regular.ttf',
+    'NotoSansBengali-Regular.ttf',
+    'NotoSansTamil-Regular.ttf',
+    'NotoSansTelugu-Regular.ttf',
+    'NotoSansKannada-Regular.ttf',
+    'NotoSansMalayalam-Regular.ttf',
+    'NotoSansGujarati-Regular.ttf',
+    'NotoSansGurmukhi-Regular.ttf',
+    'NotoSansOriya-Regular.ttf',
+    'NotoSansSinhala-Regular.ttf',
+    'NotoSansThai-Regular.ttf',
+    'NotoSansLao-Regular.ttf',
+    'NotoSansKhmer-Regular.ttf',
+    'NotoSansMyanmar-Regular.ttf',
+    'NotoSansHebrew-Regular.ttf',
+    'NotoSansGeorgian-Regular.ttf',
+    'NotoSansArmenian-Regular.ttf',
+    'NotoSansEthiopic-Regular.ttf',
+    'NotoSansSymbols-Regular.ttf',
+    'NotoSansSymbols2-Regular.ttf',
+    'NotoMusic-Regular.ttf',
+  ];
+
+  static List<String> get _fontUrls => <String>[
+    _latinFontUrl,
+    for (final name in _fallbackFonts) _localUrl('vendor/fonts/$name'),
+  ];
+
   final web.HTMLVideoElement _video;
 
   _Jassub? _assRenderer;
@@ -67,7 +101,7 @@ class WebSubtitleOverlay {
         'modernWasmUrl'.toJS,
         '$_jassubBase/jassub-worker-modern.wasm'.toJS,
       )
-      ..setProperty('fonts'.toJS, <String>[_latinFontUrl].jsify()!)
+      ..setProperty('fonts'.toJS, _fontUrls.jsify()!)
       ..setProperty('defaultFont'.toJS, 'Noto Sans'.toJS)
       ..setProperty('availableFonts'.toJS, _cjkAvailableFonts());
     try {

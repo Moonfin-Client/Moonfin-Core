@@ -152,7 +152,7 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: colorScheme.surfaceContainerLow,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: AppRadius.circular(16),
                     border: Border.fromBorderSide(
                       borders.cardBorder.copyWith(
                         color: pluginAvailable
@@ -175,7 +175,7 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
                               color: pluginAvailable
                                   ? colorScheme.primary.withValues(alpha: 0.18)
                                   : colorScheme.surfaceContainerHighest,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: AppRadius.circular(12),
                             ),
                             child: Icon(
                               pluginAvailable
@@ -255,7 +255,7 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
                 Container(
                   decoration: BoxDecoration(
                     color: colorScheme.surfaceContainerLow,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: AppRadius.circular(16),
                   ),
                   child: Column(
                     children: [
@@ -293,7 +293,7 @@ class _PluginSettingsSectionState extends State<PluginSettingsSection> {
                           decoration: BoxDecoration(
                             color: colorScheme.surfaceContainerHighest
                                 .withValues(alpha: 0.35),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: AppRadius.circular(12),
                           ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,

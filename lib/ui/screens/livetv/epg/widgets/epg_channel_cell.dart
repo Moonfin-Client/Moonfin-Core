@@ -65,7 +65,7 @@ class EpgChannelCell extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: AppRadius.circular(radius),
         border: focused
             ? Border.all(color: accent.withValues(alpha: 0.7), width: 1)
             : null,
@@ -78,7 +78,7 @@ class EpgChannelCell extends StatelessWidget {
         width: size,
         height: size,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(radius * 0.6),
+          borderRadius: AppRadius.circular(radius * 0.6),
           child: (logoUrl != null && logoUrl!.isNotEmpty)
               ? CachedNetworkImage(
                   imageUrl: logoUrl!,
@@ -96,7 +96,7 @@ class EpgChannelCell extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 1),
         decoration: BoxDecoration(
           color: focused ? accent : AppColorScheme.onSurface.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(7),
+          borderRadius: AppRadius.circular(7),
         ),
         child: Text(
           number,

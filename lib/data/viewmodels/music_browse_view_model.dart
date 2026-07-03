@@ -28,6 +28,18 @@ class MusicBrowseViewModel extends ChangeNotifier {
   AggregatedItem? _focusedItem;
   AggregatedItem? get focusedItem => _focusedItem;
 
+  AggregatedItem? get featuredItem {
+    for (final row in _rows) {
+      if (row.id.startsWith('lastPlayed_') && row.items.isNotEmpty) {
+        return row.items.first;
+      }
+    }
+    for (final row in _rows) {
+      if (row.items.isNotEmpty) return row.items.first;
+    }
+    return null;
+  }
+
   String get _serverId => _client.baseUrl;
   ImageApi get imageApi => _dataSource.imageApi;
 

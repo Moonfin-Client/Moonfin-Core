@@ -230,7 +230,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
               height: 4,
               decoration: BoxDecoration(
                 color: theme.colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.circular(2),
               ),
             ),
             Padding(
@@ -343,14 +343,14 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
         color: isSelected
             ? theme.colorScheme.primaryContainer.withValues(alpha: 0.35)
             : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.circular(14),
         child: InkWell(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.circular(14),
           onTap: () =>
               setState(() => _selectedSession = isSelected ? null : session),
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: AppRadius.circular(14),
               border: Border.all(
                 color: isSelected
                     ? theme.colorScheme.primary.withValues(alpha: 0.6)
@@ -432,7 +432,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
                   Padding(
                     padding: const EdgeInsets.only(left: 42),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: AppRadius.circular(999),
                       child: LinearProgressIndicator(
                         value: progress,
                         minHeight: 3,
@@ -511,14 +511,14 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.circular(16),
         border: Border.fromBorderSide(ThemeRegistry.active.borders.chipBorder),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.circular(8),
             child: SizedBox(
               width: 56,
               height: 84,
@@ -694,7 +694,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.circular(14),
         border: Border.fromBorderSide(ThemeRegistry.active.borders.chipBorder),
       ),
       child: Row(
@@ -753,7 +753,7 @@ class _RemoteControlSheetState extends State<_RemoteControlSheet> {
           foregroundColor: theme.colorScheme.error,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.circular(12),
             side: BorderSide(
               color: theme.colorScheme.error.withValues(alpha: 0.4),
             ),
@@ -826,7 +826,7 @@ class _ControlButton extends StatelessWidget {
     final fg = theme.colorScheme.onSurface;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: AppRadius.circular(12),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         child: Column(

@@ -473,7 +473,7 @@ class _ServerScreenState extends State<ServerScreen> {
                 focusNode: focusNode,
                 onFocusChange: (f) => hasFocus.value = f,
                 onTap: () => _onUserTap(user),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.circular(12),
                 child: Padding(
                   padding: const EdgeInsets.all(8),
                   child: Column(

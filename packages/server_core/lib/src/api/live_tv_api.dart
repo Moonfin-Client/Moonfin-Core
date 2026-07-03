@@ -15,6 +15,8 @@ abstract class LiveTvApi {
     List<String>? channelIds,
     String? fields,
     bool? enableTotalRecordCount,
+    bool? enableImages,
+    bool? enableUserData,
     String? userId,
   });
 

@@ -180,6 +180,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
   final bool _hwDecodingEnabled;
   bool _didNotifyNativeHandle = false;
   bool _didConfigureAppleMobileLibassFont = false;
+  bool _didConfigureAndroidLibassFonts = false;
   Map<String, String>? _appliedAudioPassthroughProperties;
   bool _audioPassthroughApplyInProgress = false;
   bool _audioPassthroughApplyQueued = false;
@@ -534,6 +535,7 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
     await _notifyNativeHandleReady();
     await _configureAppleMobileLibassFont();
+    await _configureAndroidLibassFonts();
     await _applyAudioPassthroughOptions();
     await _applyCustomMpvConfIfEnabled();
     await _applyAssOverrideMode();
@@ -1058,6 +1060,18 @@ class MediaKitPlayerBackend extends PlayerBackend {
       await _nativeSetProperty(native, 'sub-ass', 'yes');
       await _nativeSetProperty(native, 'sub-visibility', 'yes');
       _didConfigureAppleMobileLibassFont = true;
+    } catch (_) {}
+  }
+
+  Future<void> _configureAndroidLibassFonts() async {
+    if (!PlatformDetection.isAndroid || _didConfigureAndroidLibassFonts) {
+      return;
+    }
+    if (_player.platform is! NativePlayer) return;
+    try {
+      final native = _player.platform as NativePlayer;
+      await _nativeSetProperty(native, 'sub-fonts-dir', '/system/fonts');
+      _didConfigureAndroidLibassFonts = true;
     } catch (_) {}
   }
 

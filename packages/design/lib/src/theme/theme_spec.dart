@@ -392,6 +392,12 @@ class ThemeSpec {
   /// flat fills. Widgets check this via `AppColorScheme.isGlass`.
   final bool isGlass;
 
+  /// When `true`, surfaces render retro pixel-art chrome (blocky bevels,
+  /// stair-step / zero-radius corners, and hard offset drop-shadows) instead
+  /// of smooth glass or flat fills. Widgets check this via
+  /// `AppColorScheme.isPixel`. Mutually exclusive with [isGlass].
+  final bool isPixel;
+
   const ThemeSpec({
     required this.id,
     required this.displayName,
@@ -405,6 +411,7 @@ class ThemeSpec {
     this.navColorCycle = const [],
     this.transparentNavbarSurface = false,
     this.isGlass = false,
+    this.isPixel = false,
   });
 
   factory ThemeSpec.fromJson(Map<String, dynamic> json) {
@@ -459,6 +466,7 @@ class ThemeSpec {
       navColorCycle: _parseColorList(json['navColorCycle']),
       transparentNavbarSurface: (json['transparentNavbarSurface'] as bool?) ?? false,
       isGlass: (json['isGlass'] as bool?) ?? false,
+      isPixel: (json['isPixel'] as bool?) ?? false,
     );
   }
 
@@ -474,6 +482,7 @@ class ThemeSpec {
           'navColorCycle': navColorCycle.map(_encodeColor).toList(),
         if (transparentNavbarSurface) 'transparentNavbarSurface': true,
         if (isGlass) 'isGlass': true,
+        if (isPixel) 'isPixel': true,
         'colors': colors.toJson(),
         'borders': borders.toJson(),
         'semantic': semantic.toJson(),

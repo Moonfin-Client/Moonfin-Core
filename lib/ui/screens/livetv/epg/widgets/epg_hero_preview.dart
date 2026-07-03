@@ -95,7 +95,7 @@ class EpgHeroPreview extends StatelessWidget {
         : DecoratedBox(
             decoration: BoxDecoration(
               color: AppColorScheme.surface.withValues(alpha: 0.45),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: AppRadius.circular(16),
             ),
             child: inner,
           );
@@ -108,7 +108,7 @@ class EpgHeroPreview extends StatelessWidget {
             width: 46,
             height: 46,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(apple ? 12 : 8),
+              borderRadius: AppRadius.circular(apple ? 12 : 8),
               child: (channelLogoUrl != null && channelLogoUrl!.isNotEmpty)
                   ? CachedNetworkImage(
                       imageUrl: channelLogoUrl!,

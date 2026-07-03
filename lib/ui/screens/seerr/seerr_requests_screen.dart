@@ -183,7 +183,7 @@ class _RequestCard extends StatelessWidget {
     return Card(
       color: AppColorScheme.onSurface.withValues(alpha: 0.08),
       margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.circular(12)),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
@@ -320,7 +320,7 @@ class _StatusChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: AppRadius.circular(4),
         border: Border.fromBorderSide(
           ThemeRegistry.active.borders.chipBorder.copyWith(
             color: color.withValues(alpha: 0.4),

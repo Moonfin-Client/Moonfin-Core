@@ -65,7 +65,7 @@ class _SubtitlePreviewState extends State<SubtitlePreview> {
             gradientBottom,
           ],
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.circular(12),
       ),
       child: Text(
         AppLocalizations.of(context).subtitlePreviewText,

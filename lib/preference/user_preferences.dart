@@ -5,6 +5,7 @@ import 'package:server_core/server_core.dart' hide ImageType;
 
 import '../playback/audio_capability_profile.dart';
 import '../util/idiom/app_ui_idiom.dart';
+import '../util/insecure_certificates.dart';
 import '../util/language_matching.dart';
 import '../util/platform_detection.dart';
 import 'home_section_config.dart';
@@ -39,6 +40,14 @@ class UserPreferences extends ChangeNotifier {
     _migrateSeerrRowsVisibility();
     _enforceMediaQueuingAlwaysOn();
     _seedClockFormatFromSystem();
+    _syncInsecureCertificateFlag();
+  }
+
+  // Prime the native bad-certificate override with the stored opt-in so the
+  // choice survives restarts. The toggle keeps [gAllowSelfSignedCertificates]
+  // in sync while the app runs; this covers the value at launch.
+  void _syncInsecureCertificateFlag() {
+    gAllowSelfSignedCertificates = get(allowSelfSignedCerts);
   }
 
   // Carry over the pre-rename jellyseerr* preference keys to their seerr* names.
@@ -209,6 +218,7 @@ class UserPreferences extends ChangeNotifier {
     'pref_show_favorites_button',
     'pref_show_syncplay_button',
     'pref_show_libraries_in_toolbar',
+    'pref_navbar_always_expanded',
     'pref_shuffle_content_type',
     'pref_merge_continue_watching_next_up',
     'enable_multi_server_libraries',
@@ -851,7 +861,7 @@ class UserPreferences extends ChangeNotifier {
   /// server/user), so it is deliberately omitted from [_scopedPreferenceKeys].
   static final detailScreenStyle = EnumPreference(
     key: 'pref_detail_screen_style',
-    defaultValue: DetailScreenStyle.moonfin,
+    defaultValue: DetailScreenStyle.modern,
     values: DetailScreenStyle.values,
   );
 
@@ -888,6 +898,13 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  // Opt-in: trust self-signed / private-CA TLS certificates. Off by default so
+  // certificate validation stays on for everyone who doesn't need it.
+  static final allowSelfSignedCerts = Preference(
+    key: 'pref_allow_self_signed_certs',
+    defaultValue: false,
+  );
+
   static final showShuffleButton = Preference(
     key: 'pref_show_shuffle_button',
     defaultValue: true,
@@ -911,6 +928,11 @@ class UserPreferences extends ChangeNotifier {
   static final showLibrariesInToolbar = Preference(
     key: 'pref_show_libraries_in_toolbar',
     defaultValue: true,
+  );
+
+  static final navbarAlwaysExpanded = Preference(
+    key: 'pref_navbar_always_expanded',
+    defaultValue: false,
   );
 
   static final showSeerrButton = Preference(
@@ -1115,6 +1137,13 @@ class UserPreferences extends ChangeNotifier {
     key: 'desktop_scroll_wheel_action',
     defaultValue: DesktopScrollWheelAction.volume,
     values: DesktopScrollWheelAction.values,
+  );
+
+  // Read by native Android startup code; keep the key in sync with MainActivity.
+  static final impellerMode = EnumPreference(
+    key: 'pref_impeller_mode',
+    defaultValue: ImpellerMode.auto,
+    values: ImpellerMode.values,
   );
 
   static final trickPlayEnabled = Preference(

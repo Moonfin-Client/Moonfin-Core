@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
@@ -565,7 +566,7 @@ class _PluginImage extends StatelessWidget {
   Widget build(BuildContext context) {
     if (imageUrl == null) return _fallback(context);
     return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: AppRadius.circular(12),
       child: Image.network(
         imageUrl!,
         width: size,
@@ -583,7 +584,7 @@ class _PluginImage extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.circular(12),
       ),
       child: Icon(
         Icons.extension,

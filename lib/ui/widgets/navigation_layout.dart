@@ -255,6 +255,14 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
                   top: 0,
                   child: toolbar,
                 ),
+              if (widget.showBackButton &&
+                  !PlatformDetection.isTV &&
+                  !widget.showNavigationChrome)
+                Positioned(
+                  top: 16,
+                  left: 16,
+                  child: SafeArea(child: _buildFloatingBackButton()),
+                ),
             ],
           ),
         ),

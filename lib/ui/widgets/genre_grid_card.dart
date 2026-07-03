@@ -105,7 +105,7 @@ class _GenreGridCardState extends State<GenreGridCard> with FocusStateMixin {
                     child: IgnorePointer(
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: borders.cardRadius + BorderRadius.circular(1.0),
+                          borderRadius: borders.cardRadius + AppRadius.circular(1.0),
                           boxShadow: borders.focusGlow,
                         ),
                       ),
@@ -120,7 +120,7 @@ class _GenreGridCardState extends State<GenreGridCard> with FocusStateMixin {
                     child: IgnorePointer(
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: borders.cardRadius + BorderRadius.circular(1.0),
+                          borderRadius: borders.cardRadius + AppRadius.circular(1.0),
                           boxShadow: [
                             BoxShadow(
                               color: AppColorScheme.accent.withAlpha(145),
@@ -214,7 +214,7 @@ class _GenreGridCardState extends State<GenreGridCard> with FocusStateMixin {
                     child: IgnorePointer(
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: borders.cardRadius + BorderRadius.circular(1.0),
+                          borderRadius: borders.cardRadius + AppRadius.circular(1.0),
                           border: Border.fromBorderSide(
                             borders.focusBorder.copyWith(
                               color: borderColor,

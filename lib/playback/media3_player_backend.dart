@@ -642,6 +642,8 @@ class Media3PlayerBackend extends PlayerBackend {
             behavior: _prefs.get(
               UserPreferences.dolbyVisionProfile7DirectPlayBehavior,
             ),
+            hasHardwareDolbyVisionDecoder:
+                PlatformDetection.supportsHevcDolbyVision,
           ),
     );
   }

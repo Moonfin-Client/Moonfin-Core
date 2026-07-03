@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../l10n/app_localizations.dart';
@@ -385,15 +386,15 @@ class _LibraryTabBox extends StatelessWidget {
       color: selected
           ? theme.colorScheme.primaryContainer
           : theme.colorScheme.surfaceContainerHigh,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: AppRadius.circular(10),
       child: InkWell(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.circular(10),
         onTap: onTap,
         child: Container(
           height: 44,
           padding: const EdgeInsets.symmetric(horizontal: 10),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: AppRadius.circular(10),
             border: Border.all(
               color: selected
                   ? theme.colorScheme.primary.withValues(alpha: 0.35)

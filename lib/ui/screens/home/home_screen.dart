@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, listEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -65,6 +65,7 @@ import '../../widgets/bounded_network_image.dart';
 import '../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../navigation/route_lifecycle_observer.dart';
 import '../../util/home_row_title_localizer.dart';
+import '../../../util/game_library.dart';
 import 'home_view_model.dart';
 
 Color get _homeBackground => AppColorScheme.background;
@@ -96,17 +97,15 @@ class _HomeShellState extends State<_HomeShell>
   final _pluginSyncService = GetIt.instance<PluginSyncService>();
   late final HomeViewModel _viewModel;
 
-  AggregatedItem? _selectedItem;
-  String? _backdropUrl;
+  final ValueNotifier<AggregatedItem?> _selectedItemNotifier = ValueNotifier(null);
+  final ValueNotifier<String?> _backdropUrlNotifier = ValueNotifier(null);
   Timer? _selectionDebounce;
   Timer? _backdropDebounce;
   Timer? _hoverPauseTimer;
   StreamSubscription<String?>? _backgroundSub;
-  bool _isHoverPaused = false;
-  bool _isScrolledToTop = true;
+  final ValueNotifier<bool> _isHoverPausedNotifier = ValueNotifier(false);
+  final ValueNotifier<bool> _isScrolledToTopNotifier = ValueNotifier(true);
   String _lastSectionsJson = '';
-  Type? _lastMediaBarStateRuntime;
-  int _lastMediaBarItemCount = 0;
   bool _lastMultiServer = false;
   bool _lastMergeContinueWatchingNextUp = false;
   String _lastBlockedParentalRatings = '';
@@ -130,16 +129,10 @@ class _HomeShellState extends State<_HomeShell>
       _viewModel.refresh(preserveExisting: true);
     }
     _backgroundSub = _backgroundService.backgroundStream.listen((url) {
-      if (mounted) setState(() => _backdropUrl = url);
+      if (mounted) _backdropUrlNotifier.value = url;
     });
-    _backdropUrl = _backgroundService.currentUrl;
+    _backdropUrlNotifier.value = _backgroundService.currentUrl;
 
-    _viewModel.addListener(_onViewModelChanged);
-    _viewModel.mediaBarViewModel.addListener(_onMediaBarStateChanged);
-    _lastMediaBarStateRuntime = _viewModel.mediaBarViewModel.state.runtimeType;
-    _lastMediaBarItemCount = _viewModel.mediaBarViewModel.state is MediaBarReady
-        ? (_viewModel.mediaBarViewModel.state as MediaBarReady).items.length
-        : 0;
     _lastSectionsJson = _userPrefs.get(UserPreferences.homeSectionsJson);
     _lastMultiServer = _userPrefs.get(
       UserPreferences.enableMultiServerLibraries,
@@ -182,8 +175,10 @@ class _HomeShellState extends State<_HomeShell>
     _backdropDebounce?.cancel();
     _hoverPauseTimer?.cancel();
     _backgroundSub?.cancel();
-    _viewModel.mediaBarViewModel.removeListener(_onMediaBarStateChanged);
-    _viewModel.removeListener(_onViewModelChanged);
+    _selectedItemNotifier.dispose();
+    _backdropUrlNotifier.dispose();
+    _isHoverPausedNotifier.dispose();
+    _isScrolledToTopNotifier.dispose();
     _pluginSyncService.removeListener(_onPluginSyncChanged);
     _userPrefs.removeListener(_onPrefsChanged);
     if (_themeMusicRegistered) {
@@ -193,9 +188,6 @@ class _HomeShellState extends State<_HomeShell>
     super.dispose();
   }
 
-  void _onViewModelChanged() {
-    if (mounted) setState(() {});
-  }
 
   void _onPluginSyncChanged() {
     if (!mounted) return;
@@ -203,20 +195,6 @@ class _HomeShellState extends State<_HomeShell>
     if (seerrAvailable == _lastSeerrAvailable) return;
     _lastSeerrAvailable = seerrAvailable;
     _viewModel.refresh(preserveExisting: true);
-  }
-
-  void _onMediaBarStateChanged() {
-    if (!mounted) return;
-    final state = _viewModel.mediaBarViewModel.state;
-    final runtime = state.runtimeType;
-    final itemCount = state is MediaBarReady ? state.items.length : 0;
-    if (runtime == _lastMediaBarStateRuntime &&
-        itemCount == _lastMediaBarItemCount) {
-      return;
-    }
-    _lastMediaBarStateRuntime = runtime;
-    _lastMediaBarItemCount = itemCount;
-    setState(() {});
   }
 
   @override
@@ -268,14 +246,12 @@ class _HomeShellState extends State<_HomeShell>
     _selectionDebounce?.cancel();
     _selectionDebounce = Timer(_selectionDelay, () {
       if (!mounted) return;
-      setState(() {
-        _selectedItem = item;
-        _isHoverPaused = true;
-      });
+      _selectedItemNotifier.value = item;
+      _isHoverPausedNotifier.value = true;
 
       _hoverPauseTimer?.cancel();
       _hoverPauseTimer = Timer(const Duration(seconds: 15), () {
-        if (mounted) setState(() => _isHoverPaused = false);
+        if (mounted) _isHoverPausedNotifier.value = false;
       });
 
       _backdropDebounce?.cancel();
@@ -340,8 +316,8 @@ class _HomeShellState extends State<_HomeShell>
     }
 
     _maybeRegisterThemeMusic();
-    if (_selectedItem != null) {
-      _maybePlayThemeMusic(_selectedItem);
+    if (_selectedItemNotifier.value != null) {
+      _maybePlayThemeMusic(_selectedItemNotifier.value);
     }
   }
 
@@ -366,8 +342,8 @@ class _HomeShellState extends State<_HomeShell>
       }
     });
     _maybeRegisterThemeMusic();
-    if (_selectedItem != null) {
-      _maybePlayThemeMusic(_selectedItem);
+    if (_selectedItemNotifier.value != null) {
+      _maybePlayThemeMusic(_selectedItemNotifier.value);
     }
   }
 
@@ -399,10 +375,15 @@ class _HomeShellState extends State<_HomeShell>
             fit: StackFit.expand,
             children: [
               if (backdropEnabled)
-                _Backdrop(
-                  url: _backdropUrl,
-                  blurAmount: blurAmount,
-                  useMakdBackdropFx: useMakdBackdropFx,
+                ValueListenableBuilder<String?>(
+                  valueListenable: _backdropUrlNotifier,
+                  builder: (context, url, _) {
+                    return _Backdrop(
+                      url: url,
+                      blurAmount: blurAmount,
+                      useMakdBackdropFx: useMakdBackdropFx,
+                    );
+                  },
                 ),
               const _GradientScrim(),
               Positioned.fill(
@@ -410,12 +391,13 @@ class _HomeShellState extends State<_HomeShell>
                   viewModel: _viewModel,
                   mediaBarViewModel: _viewModel.mediaBarViewModel,
                   prefs: _userPrefs,
-                  selectedItem: _selectedItem,
+                  selectedItemNotifier: _selectedItemNotifier,
                   onItemSelected: onItemSelected,
-                  isHoverPaused: _isHoverPaused,
+                  isHoverPausedNotifier: _isHoverPausedNotifier,
+                  isScrolledToTopNotifier: _isScrolledToTopNotifier,
                   onScrolledToTopChanged: (atTop) {
-                    if (atTop != _isScrolledToTop) {
-                      setState(() => _isScrolledToTop = atTop);
+                    if (atTop != _isScrolledToTopNotifier.value) {
+                      _isScrolledToTopNotifier.value = atTop;
                     }
                   },
                 ),
@@ -444,20 +426,22 @@ class _GradientScrim extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            AppColorScheme.scrim.withValues(alpha: 0.8),
-            AppColorScheme.scrim.withValues(alpha: 0.4),
-            AppColorScheme.scrim.withValues(alpha: 0.8),
-          ],
-          stops: [0.0, 0.3, 1.0],
+    return RepaintBoundary(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColorScheme.scrim.withValues(alpha: 0.8),
+              AppColorScheme.scrim.withValues(alpha: 0.4),
+              AppColorScheme.scrim.withValues(alpha: 0.8),
+            ],
+            stops: [0.0, 0.3, 1.0],
+          ),
         ),
+        child: SizedBox.expand(),
       ),
-      child: SizedBox.expand(),
     );
   }
 }
@@ -475,43 +459,45 @@ class _Backdrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FullscreenBackdropSwitcher(
-      imageUrl: url,
-      duration: BackgroundService.transitionDuration,
-      imageBuilder: (imageUrl) {
-        final image = _blurredImage(context, imageUrl, blurAmount);
-        if (!useMakdBackdropFx) {
-          return image;
-        }
+    return RepaintBoundary(
+      child: FullscreenBackdropSwitcher(
+        imageUrl: url,
+        duration: BackgroundService.transitionDuration,
+        imageBuilder: (imageUrl) {
+          final image = _blurredImage(context, imageUrl, blurAmount);
+          if (!useMakdBackdropFx) {
+            return image;
+          }
 
-        return ClipRect(
-          child: TweenAnimationBuilder<double>(
-            key: ValueKey('makd_home_backdrop_$imageUrl'),
-            tween: Tween(begin: 1.0, end: 1.08),
-            duration: const Duration(seconds: 10),
-            curve: Curves.easeOut,
-            builder: (context, scale, child) {
-              return Transform.scale(
-                scale: scale,
-                alignment: Alignment.center,
-                child: child,
-              );
-            },
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                image,
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: AppColorScheme.scrim.withValues(alpha: 0.26),
+          return ClipRect(
+            child: TweenAnimationBuilder<double>(
+              key: ValueKey('makd_home_backdrop_$imageUrl'),
+              tween: Tween(begin: 1.0, end: 1.08),
+              duration: const Duration(seconds: 10),
+              curve: Curves.easeOut,
+              builder: (context, scale, child) {
+                return Transform.scale(
+                  scale: scale,
+                  alignment: Alignment.center,
+                  child: child,
+                );
+              },
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  image,
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: AppColorScheme.scrim.withValues(alpha: 0.26),
+                    ),
+                    child: const SizedBox.expand(),
                   ),
-                  child: const SizedBox.expand(),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
@@ -549,18 +535,20 @@ class _ContentRows extends StatefulWidget {
   final HomeViewModel viewModel;
   final MediaBarViewModel mediaBarViewModel;
   final UserPreferences prefs;
-  final AggregatedItem? selectedItem;
+  final ValueNotifier<AggregatedItem?> selectedItemNotifier;
   final ValueChanged<AggregatedItem?> onItemSelected;
-  final bool isHoverPaused;
+  final ValueNotifier<bool> isHoverPausedNotifier;
+  final ValueNotifier<bool> isScrolledToTopNotifier;
   final ValueChanged<bool>? onScrolledToTopChanged;
 
   const _ContentRows({
     required this.viewModel,
     required this.mediaBarViewModel,
     required this.prefs,
-    required this.selectedItem,
+    required this.selectedItemNotifier,
     required this.onItemSelected,
-    this.isHoverPaused = false,
+    required this.isHoverPausedNotifier,
+    required this.isScrolledToTopNotifier,
     this.onScrolledToTopChanged,
   });
 
@@ -599,12 +587,21 @@ class _ContentRowsState extends State<_ContentRows>
   int _cachedExtentPrefsVersion = -1;
   List<double>? _cachedRowExtents;
   int _layoutPrefsVersion = 0;
+  Type? _lastMediaBarStateRuntime;
+  int _lastMediaBarItemCount = 0;
   // Cache for non-focused row image URLs (independent of focus state). Cleared
   // with the extent cache on data/pref/scale change, and size-capped.
   final Map<String, String?> _rowImageUrlCache = {};
   final Map<String, String> _dynamicBackdrops = {};
   final Set<String> _fetchingBackdrops = {};
-  int? _activeFocusedRowIndex;
+  final Map<int, double> _staticRowHeightCache = {};
+  final ValueNotifier<int?> _activeFocusedRowNotifier = ValueNotifier(null);
+  int? get _activeFocusedRowIndex => _activeFocusedRowNotifier.value;
+  set _activeFocusedRowIndex(int? value) {
+    if (_activeFocusedRowNotifier.value != value) {
+      _activeFocusedRowNotifier.value = value;
+    }
+  }
   Timer? _previewDelayTimer;
   Timer? _previewStopTimer;
   StreamSubscription<bool>? _mainPlaybackSub;
@@ -614,16 +611,29 @@ class _ContentRowsState extends State<_ContentRows>
   StreamSubscription<void>? _appleTvPreviewCompletedSub;
   int _previewRequestId = 0;
   bool _mainPlaybackActive = false;
-  bool _previewReady = false;
   bool _previewUsingMedia3 = false;
   bool _previewUsingAppleTv = false;
-  double _scrollOffset = 0;
+  final ValueNotifier<double> _scrollOffsetNotifier = ValueNotifier<double>(0);
   double _previewStartScrollOffset = 0;
-  bool _isScrolledToTop = true;
-  bool _isActivelyScrolling = false;
+  bool get _isScrolledToTop => widget.isScrolledToTopNotifier.value;
+  final ValueNotifier<bool> _isActivelyScrollingNotifier = ValueNotifier(false);
+  bool get _isActivelyScrolling => _isActivelyScrollingNotifier.value;
+  set _isActivelyScrolling(bool value) {
+    if (_isActivelyScrollingNotifier.value != value) {
+      _isActivelyScrollingNotifier.value = value;
+    }
+  }
+
+  final ValueNotifier<bool> _infoRevealedNotifier = ValueNotifier(false);
+  bool get _infoRevealed => _infoRevealedNotifier.value;
+  set _infoRevealed(bool value) {
+    if (_infoRevealedNotifier.value != value) {
+      _infoRevealedNotifier.value = value;
+    }
+  }
+
   Timer? _scrollIdleTimer;
-  bool _infoRevealed = false;
-  bool _mediaBarVisible = true;
+  double _lastActiveRowOffsetUpdate = 0;
   bool _initialFocusResolved = false;
   bool _hasEverFocusedHomeContent = false;
   String? _lastObservedPath;
@@ -633,23 +643,71 @@ class _ContentRowsState extends State<_ContentRows>
   DateTime? _lastMouseWheelTime;
   DateTime? _lastVerticalNavAt;
   bool _verticalNavInFlight = false;
-  bool _chromeFocusActive = false;
-  bool _chromeAudioActive = false;
   bool _windowHasFocus = true;
   bool _holdMediaBarWhileSidebarFocused = false;
+
+  final ValueNotifier<String?> _activePreviewKeyNotifier = ValueNotifier(null);
+  String? get _activePreviewKey => _activePreviewKeyNotifier.value;
+  set _activePreviewKey(String? value) {
+    if (_activePreviewKeyNotifier.value != value) {
+      _activePreviewKeyNotifier.value = value;
+    }
+  }
+
+  final ValueNotifier<bool> _previewReadyNotifier = ValueNotifier(false);
+  bool get _previewReady => _previewReadyNotifier.value;
+  set _previewReady(bool value) {
+    if (_previewReadyNotifier.value != value) {
+      _previewReadyNotifier.value = value;
+    }
+  }
+
+  final ValueNotifier<bool> _mediaBarVisibleNotifier = ValueNotifier(true);
+  bool get _mediaBarVisible => _mediaBarVisibleNotifier.value;
+  set _mediaBarVisible(bool value) {
+    if (_mediaBarVisibleNotifier.value != value) {
+      _mediaBarVisibleNotifier.value = value;
+    }
+  }
+
+  final ValueNotifier<bool> _chromeFocusActiveNotifier = ValueNotifier(false);
+  bool get _chromeFocusActive => _chromeFocusActiveNotifier.value;
+  set _chromeFocusActive(bool value) {
+    if (_chromeFocusActiveNotifier.value != value) {
+      _chromeFocusActiveNotifier.value = value;
+    }
+  }
+
+  final ValueNotifier<bool> _chromeAudioActiveNotifier = ValueNotifier(false);
+  set _chromeAudioActive(bool value) {
+    if (_chromeAudioActiveNotifier.value != value) {
+      _chromeAudioActiveNotifier.value = value;
+    }
+  }
+
+  double get _scrollOffset => _scrollOffsetNotifier.value;
+  set _scrollOffset(double value) {
+    if (_scrollOffsetNotifier.value != value) {
+      _scrollOffsetNotifier.value = value;
+    }
+  }
   bool get _isSidebarFocus => LeftSidebar.isFocusedNotifier.value;
   bool _wasSidebarFocused = false;
   VoidCallback? _previousFocusContentFromNavbarCallback;
   FocusNode? _lastGlobalPrimaryFocus;
-  String? _activePreviewKey;
   String? _mobilePressedV2Key;
   String? _mouseHoveredV2Key;
   final Set<String> _v2FocusPrefetchedUrls = <String>{};
-  final Map<String, Map<String, double>> _v2AdditionalRatingsByKey = {};
+  final ValueNotifier<Map<String, Map<String, double>>> _v2AdditionalRatingsNotifier = ValueNotifier({});
+  Map<String, Map<String, double>> get _v2AdditionalRatingsByKey => _v2AdditionalRatingsNotifier.value;
   final Map<String, Future<void>> _v2RatingsRequests = {};
   final Map<String, String?> _v2TmdbIdByKey = {};
   late bool _lastMedia3PreviewPreference;
   List<double> _rowTopOffsets = [];
+  List<double> _rowExtents = [];
+  List<double> _cachedRowTargetOffsets = [];
+  double _cachedRowTargetMaxScrollExtent = -1.0;
+  bool _cachedRowTargetFullScreenRows = false;
   double _overlayBottom = 0;
   static const _previewScrollThreshold = 150.0;
   static const _previewOpenTimeout = Duration(seconds: 10);
@@ -658,6 +716,7 @@ class _ContentRowsState extends State<_ContentRows>
   static const _focusHandoffDuration = Duration(milliseconds: 220);
   static const _focusHandoffCurve = Curves.easeInOutCubic;
   static const _mediaBarFadeDuration = Duration(milliseconds: 220);
+  static const double _activeRowRecalcDistance = 48.0;
 
   void _markUserGesture() {
     if (!kIsWeb) return;
@@ -665,6 +724,53 @@ class _ContentRowsState extends State<_ContentRows>
     final player = _previewPlayer;
     if (player == null || _activePreviewKey == null) return;
     unawaited(player.setVolume(100.0));
+  }
+
+  @override
+  void didUpdateWidget(covariant _ContentRows oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final rowsChanged = !listEquals(oldWidget.viewModel.rows, widget.viewModel.rows);
+    if (rowsChanged || oldWidget.prefs != widget.prefs) {
+      _invalidateStaticRowHeightCache();
+    }
+  }
+
+  void _invalidateStaticRowHeightCache() {
+    _staticRowHeightCache.clear();
+  }
+
+  void _invalidateRowTargetOffsetCache() {
+    _cachedRowTargetOffsets = [];
+    _cachedRowTargetMaxScrollExtent = -1.0;
+    _cachedRowTargetFullScreenRows = false;
+  }
+
+  List<double> _rowTargetOffsetsForScroll({required bool fullScreenRows}) {
+    final maxScrollExtent = _scrollController.hasClients
+        ? _scrollController.position.maxScrollExtent
+        : double.infinity;
+    if (_cachedRowTargetOffsets.length == _rowTopOffsets.length &&
+        _cachedRowTargetFullScreenRows == fullScreenRows &&
+        _cachedRowTargetMaxScrollExtent == maxScrollExtent) {
+      return _cachedRowTargetOffsets;
+    }
+
+    final targets = <double>[];
+    for (var i = 0; i < _rowTopOffsets.length; i++) {
+      targets.add(
+        fullScreenRows
+            ? (_rowTopOffsets[i] - _tvTargetTopForRow(i)).clamp(
+                0.0,
+                maxScrollExtent,
+              )
+            : _rowTopOffsets[i].clamp(0.0, maxScrollExtent),
+      );
+    }
+
+    _cachedRowTargetOffsets = targets;
+    _cachedRowTargetMaxScrollExtent = maxScrollExtent;
+    _cachedRowTargetFullScreenRows = fullScreenRows;
+    return targets;
   }
 
   int? _focusedRowIndex(FocusNode? node) {
@@ -707,15 +813,13 @@ class _ContentRowsState extends State<_ContentRows>
               (_verticalNavInFlight && _mediaBarVisible) ||
               (!onSidebar && _activeFocusedRowIndex == null);
     final chromeChanged =
-        _chromeFocusActive != chromeFocusActive ||
-        _chromeAudioActive != chromeAudioActive;
+        _chromeFocusActiveNotifier.value != chromeFocusActive ||
+        _chromeAudioActiveNotifier.value != chromeAudioActive;
 
-    if (_mediaBarVisible != nextMediaBarVisible || chromeChanged) {
-      setState(() {
-        _mediaBarVisible = nextMediaBarVisible;
-        _chromeFocusActive = chromeFocusActive;
-        _chromeAudioActive = chromeAudioActive;
-      });
+    if (_mediaBarVisibleNotifier.value != nextMediaBarVisible || chromeChanged) {
+      _mediaBarVisible = nextMediaBarVisible;
+      _chromeFocusActive = chromeFocusActive;
+      _chromeAudioActive = chromeAudioActive;
     }
 
     if (wasOnSidebar && !onSidebar && _activeFocusedRowIndex != null) {
@@ -829,9 +933,97 @@ class _ContentRowsState extends State<_ContentRows>
       _onMainPlaybackChanged,
     );
     _audioArbiter.register(this);
+    _activeFocusedRowNotifier.addListener(_updateOffsets);
+    widget.viewModel.addListener(_onViewModelChanged);
+    widget.mediaBarViewModel.addListener(_onMediaBarStateChanged);
+    _lastMediaBarStateRuntime = widget.mediaBarViewModel.state.runtimeType;
+    _lastMediaBarItemCount = widget.mediaBarViewModel.state is MediaBarReady
+        ? (widget.mediaBarViewModel.state as MediaBarReady).items.length
+        : 0;
     if (!_isMediaBarEnabledByMode()) {
       _infoRevealed = true;
     }
+  }
+
+  void _onViewModelChanged() {
+    _invalidateStaticRowHeightCache();
+    _updateOffsets();
+    if (mounted) setState(() {});
+  }
+
+  void _onMediaBarStateChanged() {
+    if (!mounted) return;
+    final state = widget.mediaBarViewModel.state;
+    final runtime = state.runtimeType;
+    final itemCount = state is MediaBarReady ? state.items.length : 0;
+    if (runtime == _lastMediaBarStateRuntime &&
+        itemCount == _lastMediaBarItemCount) {
+      return;
+    }
+    _lastMediaBarStateRuntime = runtime;
+    _lastMediaBarItemCount = itemCount;
+    _updateOffsets();
+    setState(() {});
+  }
+
+  void _updateOffsets() {
+    if (!mounted) return;
+    final rows = widget.viewModel.rows;
+    final prefs = widget.prefs;
+    final posterSize = (_isHomeRowsStyleV2() && !prefs.containsPreference(UserPreferences.posterSize))
+        ? PosterSize.small
+        : prefs.get(UserPreferences.posterSize);
+
+    final includeMediaBar = _isMediaBarIncluded();
+    final bannerMode = _isBannerMode();
+    final showInfoOverlay = _showHomeRowInfoOverlay();
+    final safeTop = MediaQuery.of(context).padding.top;
+    final navbarIsTop = prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
+    final fullScreenRows = !PlatformDetection.useMobileUi && prefs.get(UserPreferences.fullScreenRows);
+
+    final navbarHeight = PlatformDetection.isTV
+        ? (fullScreenRows ? 95.0 : (navbarIsTop ? 45.0 : 15.0))
+        : (navbarIsTop ? (PlatformDetection.useMobileUi ? 60.0 : 80.0) : (fullScreenRows ? 0.0 : 80.0));
+
+    final listTopPadding = includeMediaBar || showInfoOverlay
+        ? 0.0
+        : _isHomeRowsStyleV2()
+            ? (fullScreenRows ? (safeTop + navbarHeight + 8.0).clamp(56.0, double.infinity) : safeTop + navbarHeight + 8)
+            : safeTop + 56;
+
+    final infoTopBasePadding = (!PlatformDetection.useMobileUi && navbarHeight == 0) ? 14.0 : 8.0;
+    final infoTopPadding = safeTop + navbarHeight + infoTopBasePadding;
+    final desktopScale = _desktopUiScaleFactor();
+    final infoAreaHeight = InfoArea.fixedHeight(isMobile: PlatformDetection.useMobileUi, desktopScale: desktopScale);
+    final infoBottomPadding = includeMediaBar ? 20.0 : 8.0;
+    final infoOverlayPlaceholder = showInfoOverlay ? infoTopPadding + infoAreaHeight + infoBottomPadding : 0.0;
+
+    final overlayBottom = _isHomeRowsStyleV2()
+        ? (fullScreenRows ? (navbarHeight > 48.0 ? navbarHeight : 48.0) : navbarHeight)
+        : showInfoOverlay
+            ? infoTopPadding + infoAreaHeight
+            : (fullScreenRows ? safeTop + 48.0 : 0.0);
+
+    final rowExtents = _computeRowExtents(rows, posterSize, prefs);
+    final rowTopOffsets = <double>[];
+    var currentTop = listTopPadding + (bannerMode ? 0.0 : infoOverlayPlaceholder);
+    if (includeMediaBar) {
+      currentTop += _mediaBarHeight();
+    }
+    final focusedRowSpacing = PlatformDetection.isTV && !fullScreenRows ? _focusedRowExtraSpacing * 2 : 0.0;
+
+    for (var i = 0; i < rowExtents.length; i++) {
+      rowTopOffsets.add(currentTop);
+      currentTop += rowExtents[i];
+      if (i == _activeFocusedRowIndex) {
+        currentTop += focusedRowSpacing;
+      }
+    }
+
+    _invalidateRowTargetOffsetCache();
+    _rowTopOffsets = rowTopOffsets;
+    _rowExtents = rowExtents;
+    _overlayBottom = overlayBottom;
   }
 
   @override
@@ -859,6 +1051,16 @@ class _ContentRowsState extends State<_ContentRows>
     LeftSidebar.isFocusedNotifier.removeListener(_onGlobalFocusChanged);
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _scrollOffsetNotifier.dispose();
+    _activeFocusedRowNotifier.dispose();
+    _v2AdditionalRatingsNotifier.dispose();
+    _mediaBarVisibleNotifier.dispose();
+    _chromeFocusActiveNotifier.dispose();
+    _chromeAudioActiveNotifier.dispose();
+    _activePreviewKeyNotifier.dispose();
+    _previewReadyNotifier.dispose();
+    _isActivelyScrollingNotifier.dispose();
+    _infoRevealedNotifier.dispose();
     if (identical(
       NavigationLayout.focusContentFromNavbarNotifier.value,
       _focusContentFromNavbar,
@@ -868,6 +1070,9 @@ class _ContentRowsState extends State<_ContentRows>
     }
     _scrollIdleTimer?.cancel();
     _mediaBarFocusNode.dispose();
+    _activeFocusedRowNotifier.removeListener(_updateOffsets);
+    widget.viewModel.removeListener(_onViewModelChanged);
+    widget.mediaBarViewModel.removeListener(_onMediaBarStateChanged);
     _mainPlaybackSub?.cancel();
     widget.prefs.removeListener(_onPreviewPrefsChanged);
     _rowKeys.clear();
@@ -1047,10 +1252,8 @@ class _ContentRowsState extends State<_ContentRows>
         return;
       }
       _previewStartScrollOffset = _scrollController.offset;
-      setState(() {
-        _activePreviewKey = previewKey;
-        _previewReady = false;
-      });
+      _activePreviewKey = previewKey;
+      _previewReady = false;
       await _startSharedPreview(item, previewKey);
     });
     _previewDelayTimer = thisTimer;
@@ -1106,15 +1309,8 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     if (_activePreviewKey != null || _previewReady) {
-      if (updateUi && mounted) {
-        setState(() {
-          _activePreviewKey = null;
-          _previewReady = false;
-        });
-      } else {
-        _activePreviewKey = null;
-        _previewReady = false;
-      }
+      _activePreviewKey = null;
+      _previewReady = false;
     }
     _themeMusicService.setExternalAudioActive(false);
   }
@@ -1248,7 +1444,7 @@ class _ContentRowsState extends State<_ContentRows>
       });
 
       if (_isPreviewRequestActive(requestId, previewKey)) {
-        setState(() => _previewReady = true);
+        _previewReady = true;
       }
     } catch (_) {
       if (_isPreviewRequestActive(requestId, previewKey)) {
@@ -1643,9 +1839,10 @@ class _ContentRowsState extends State<_ContentRows>
       return;
     }
 
-    setState(() {
-      _v2AdditionalRatingsByKey[itemKey] = result;
-    });
+    _v2AdditionalRatingsNotifier.value = {
+      ..._v2AdditionalRatingsByKey,
+      itemKey: result,
+    };
   }
 
   double _mediaBarHeight() {
@@ -1714,7 +1911,7 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     if (mounted) {
-      setState(() => _infoRevealed = true);
+      _infoRevealed = true;
     }
   }
 
@@ -1818,7 +2015,7 @@ class _ContentRowsState extends State<_ContentRows>
     _forceRevealOnNextRowFocusFromMediaBar = true;
     final isBanner = _isBannerMode();
     if (mounted && _mediaBarVisible && !isBanner) {
-      setState(() => _mediaBarVisible = false);
+      _mediaBarVisible = false;
     }
     if (!isBanner && _scrollController.hasClients) {
       final offsetAdjustment = _isBookshelfMode() ? (_overlayBottom + 8) : 0.0;
@@ -1990,6 +2187,11 @@ class _ContentRowsState extends State<_ContentRows>
     final row = rowIndex < widget.viewModel.rows.length ? widget.viewModel.rows[rowIndex] : null;
     if (row == null) return 0.0;
 
+    final cached = _staticRowHeightCache[rowIndex];
+    if (cached != null) {
+      return cached;
+    }
+
     final prefs = widget.prefs;
     final posterSize =
         (_isHomeRowsStyleV2() &&
@@ -2043,7 +2245,7 @@ class _ContentRowsState extends State<_ContentRows>
       childHeight = maxCardHeight + (10 * metadataScale);
     }
 
-    final subtitle = _rowSubtitle(row, AppLocalizations.of(context)!);
+    final subtitle = _rowSubtitle(row, AppLocalizations.of(context));
     final hasSubtitle = subtitle != null &&
         (row.rowType != HomeRowType.liveTv &&
             row.rowType != HomeRowType.libraryTilesSmall);
@@ -2053,7 +2255,9 @@ class _ContentRowsState extends State<_ContentRows>
     final subtitleHeight = hasSubtitle ? (18.0 * metadataScale) : 0.0;
     final headerHeight = headerPaddingTop + headerPaddingBottom + titleHeight + subtitleHeight;
 
-    return childHeight + headerHeight;
+    final totalHeight = childHeight + headerHeight;
+    _staticRowHeightCache[rowIndex] = totalHeight;
+    return totalHeight;
   }
 
   double _tvTargetTopForRow(int rowIndex) {
@@ -2398,24 +2602,18 @@ class _ContentRowsState extends State<_ContentRows>
 
   void _onRowFocusTracked(int rowIndex, bool focused) {
     if (!mounted) return;
-    final isMobileUi = PlatformDetection.useMobileUi;
     if (focused) {
       _hasEverFocusedHomeContent = true;
       if (_activeFocusedRowIndex != rowIndex && _activePreviewKey != null) {
         _finishSharedPreview();
       }
-      final indexChanged = _activeFocusedRowIndex != rowIndex;
       _activeFocusedRowIndex = rowIndex;
-      final fullScreenRows =
-          !PlatformDetection.useMobileUi &&
-          widget.prefs.get(UserPreferences.fullScreenRows);
-      if (!isMobileUi &&
+
+      if (!PlatformDetection.useMobileUi &&
           _mediaBarVisible &&
           !_verticalNavInFlight &&
           !_isBannerMode()) {
         setState(() => _mediaBarVisible = false);
-      } else if (indexChanged && (PlatformDetection.isTV || fullScreenRows)) {
-        setState(() {});
       }
     } else if (_activeFocusedRowIndex == rowIndex) {
       if (_isSidebarFocus) {
@@ -2455,8 +2653,8 @@ class _ContentRowsState extends State<_ContentRows>
     final previousOffset = _scrollOffset;
     final scrollingUp = offset < previousOffset;
     final atTop = offset <= 0;
-    if (atTop != _isScrolledToTop) {
-      _isScrolledToTop = atTop;
+    final topStateChanged = atTop != _isScrolledToTop;
+    if (topStateChanged) {
       widget.onScrolledToTopChanged?.call(atTop);
     }
 
@@ -2465,48 +2663,37 @@ class _ContentRowsState extends State<_ContentRows>
         !PlatformDetection.useMobileUi &&
         widget.prefs.get(UserPreferences.fullScreenRows);
 
-    if (isDesktop && _rowTopOffsets.isNotEmpty && _scrollController.hasClients) {
+    final shouldUpdateActiveRow = isDesktop &&
+        _rowTopOffsets.isNotEmpty &&
+        _scrollController.hasClients &&
+        (_activeFocusedRowIndex == null ||
+            (offset - _lastActiveRowOffsetUpdate).abs() >=
+                _activeRowRecalcDistance ||
+            offset <= 0);
+    if (shouldUpdateActiveRow) {
+      _lastActiveRowOffsetUpdate = offset;
       double minDiff = double.infinity;
       int? closestRowIndex;
 
-      final List<double> targets = [];
       if (_isMediaBarIncluded()) {
-        targets.add(0.0);
-      }
-      for (var i = 0; i < _rowTopOffsets.length; i++) {
-        final double target;
-        if (fullScreenRows) {
-          final targetTop = _tvTargetTopForRow(i);
-          target = (_rowTopOffsets[i] - targetTop).clamp(
-            0.0,
-            _scrollController.position.maxScrollExtent,
-          );
-        } else {
-          target = _rowTopOffsets[i].clamp(
-            0.0,
-            _scrollController.position.maxScrollExtent,
-          );
+        final mediaBarDiff = offset.abs();
+        if (mediaBarDiff < minDiff) {
+          minDiff = mediaBarDiff;
+          closestRowIndex = null;
         }
-        targets.add(target);
       }
 
+      final targets = _rowTargetOffsetsForScroll(fullScreenRows: fullScreenRows);
       for (var i = 0; i < targets.length; i++) {
-        final target = targets[i];
-        final diff = (target - offset).abs();
+        final diff = (targets[i] - offset).abs();
         if (diff < minDiff) {
           minDiff = diff;
-          if (_isMediaBarIncluded()) {
-            closestRowIndex = i == 0 ? null : i - 1;
-          } else {
-            closestRowIndex = i;
-          }
+          closestRowIndex = i;
         }
       }
 
       if (closestRowIndex != _activeFocusedRowIndex) {
-        setState(() {
-          _activeFocusedRowIndex = closestRowIndex;
-        });
+        _activeFocusedRowIndex = closestRowIndex;
       }
     }
 
@@ -2521,9 +2708,9 @@ class _ContentRowsState extends State<_ContentRows>
       }
     }
 
-    if (!_isActivelyScrolling) {
+    final shouldMarkScrolling = !_isActivelyScrolling;
+    if (shouldMarkScrolling) {
       _isActivelyScrolling = true;
-      if (mounted) setState(() {});
     }
 
     _scrollIdleTimer?.cancel();
@@ -2533,7 +2720,6 @@ class _ContentRowsState extends State<_ContentRows>
         if (!mounted) return;
         _isActivelyScrolling = false;
         _snapToNearestRow();
-        setState(() {});
       },
     );
     if (_activePreviewKey != null) {
@@ -2547,19 +2733,18 @@ class _ContentRowsState extends State<_ContentRows>
     if (_infoRevealed && _isMediaBarIncluded() && _showHomeRowInfoOverlay()) {
       final collapseOffset = _pinnedInfoCollapseOffset();
       if (scrollingUp && offset < collapseOffset) {
-        setState(() {
+        if (_infoRevealed) {
           _infoRevealed = false;
           _scrollOffset = offset;
-        });
+          if (mounted) {
+            setState(() {});
+          }
+        }
         return;
       }
     }
 
-    if (_infoRevealed && _isMediaBarIncluded()) {
-      setState(() => _scrollOffset = offset);
-    } else {
-      _scrollOffset = offset;
-    }
+    _scrollOffset = offset;
   }
 
   void _snapToNearestRow() {
@@ -2828,7 +3013,7 @@ class _ContentRowsState extends State<_ContentRows>
     final viewportHeight = MediaQuery.sizeOf(context).height;
 
     if (_cachedRowExtents != null &&
-        identical(_cachedExtentRows, rows) &&
+        listEquals(_cachedExtentRows, rows) &&
         _cachedExtentPosterSize == posterSize &&
         _cachedExtentDesktopScale == desktopScale &&
         _cachedExtentFullScreenRows == fullScreenRows &&
@@ -2839,6 +3024,9 @@ class _ContentRowsState extends State<_ContentRows>
         _cachedExtentPrefsVersion == _layoutPrefsVersion) {
       return _cachedRowExtents!;
     }
+
+    _invalidateStaticRowHeightCache();
+
     final extents = <double>[];
     for (var i = 0; i < rows.length; i++) {
       extents.add(_estimatedRowExtent(i, rows[i], posterSize, prefs));
@@ -2894,7 +3082,7 @@ class _ContentRowsState extends State<_ContentRows>
       UserPreferences.enableAdditionalRatings,
     );
     final hasAdditionalRatingsPadding = hasAdditionalRatings ? 8.0 : 0.0;
-    final heightBudget = 165.0 + hasAdditionalRatingsPadding;
+    final heightBudget = 175.0 + hasAdditionalRatingsPadding;
     return heightBudget;
   }
 
@@ -2943,15 +3131,28 @@ class _ContentRowsState extends State<_ContentRows>
       final rowBottom = rowViewportTop + rowExtents[rowIndex];
       if (focusedRowIndex != null) {
         if (fullScreenRows) {
-          if (rowIndex != focusedRowIndex) {
-            return IgnorePointer(child: Opacity(opacity: 0, child: child));
+          final distance = (rowIndex - focusedRowIndex).abs();
+          if (distance > 1) {
+            return IgnorePointer(
+              child: Visibility(visible: false, child: child),
+            );
+          }
+          // Keep immediate neighbors in the tree so they are focusable
+          if (distance == 1) {
+            return IgnorePointer(
+              child: Opacity(opacity: 0.0, child: child),
+            );
           }
         } else if (rowIndex < focusedRowIndex) {
-          return IgnorePointer(child: Opacity(opacity: 0, child: child));
+          return IgnorePointer(
+            child: Visibility(visible: false, child: child),
+          );
         }
       }
       if (rowBottom < overlayBottom - 80) {
-        return IgnorePointer(child: Opacity(opacity: 0, child: child));
+        return IgnorePointer(
+          child: Visibility(visible: false, child: child),
+        );
       }
       return child;
     }
@@ -2967,7 +3168,9 @@ class _ContentRowsState extends State<_ContentRows>
     final rowViewportBottom = rowViewportTop + rowExtents[rowIndex];
 
     if (rowViewportBottom <= overlayBottom + 8) {
-      return IgnorePointer(child: Opacity(opacity: 0, child: child));
+      return IgnorePointer(
+        child: Visibility(visible: false, child: child),
+      );
     }
 
     if (focusedRowIndex != null &&
@@ -3069,14 +3272,10 @@ class _ContentRowsState extends State<_ContentRows>
       return const Center(child: CircularProgressIndicator());
     }
 
+    _updateOffsets();
     final includeMediaBar = _isMediaBarIncluded();
     final bannerMode = _isBannerMode();
     final mediaBarHeight = _mediaBarHeight();
-    final carouselPaused =
-        widget.isHoverPaused ||
-        !_isScrolledToTop ||
-        _isActivelyScrolling ||
-        _chromeAudioActive;
     final showInfoOverlay = _showHomeRowInfoOverlay();
     final safeTop = MediaQuery.of(context).padding.top;
     final desktopScale = _desktopUiScaleFactor();
@@ -3124,35 +3323,19 @@ class _ContentRowsState extends State<_ContentRows>
     final infoOverlayPlaceholder = showInfoOverlay
         ? infoTopPadding + infoAreaHeight + infoBottomPadding
         : 0.0;
-    final infoPlaceholderHeight = bannerMode
-        ? (_infoRevealed ? infoOverlayPlaceholder : 0.0)
-        : infoOverlayPlaceholder;
-    final overlayBottom = _isHomeRowsStyleV2()
-        ? (fullScreenRows
-              ? (navbarHeight > 48.0 ? navbarHeight : 48.0)
-              : navbarHeight)
-        : showInfoOverlay
-        ? infoTopPadding + infoAreaHeight
-        : (fullScreenRows ? safeTop + 48.0 : 0.0);
-    final rowExtents = _computeRowExtents(rows, posterSize, prefs);
-    final rowTopOffsets = <double>[];
-    var currentTop = listTopPadding + infoPlaceholderHeight;
-    if (includeMediaBar) {
-      currentTop += mediaBarHeight;
-    }
-    final focusedRowSpacing = PlatformDetection.isTV && !fullScreenRows
-        ? _focusedRowExtraSpacing * 2
-        : 0.0;
-    for (var i = 0; i < rowExtents.length; i++) {
-      rowTopOffsets.add(currentTop);
-      currentTop += rowExtents[i];
-      if (i == _activeFocusedRowIndex) {
-        currentTop += focusedRowSpacing;
-      }
-    }
 
-    _rowTopOffsets = rowTopOffsets;
-    _overlayBottom = overlayBottom;
+    final infoPlaceholderHeightBuilder = bannerMode
+        ? ValueListenableBuilder<bool>(
+            valueListenable: _infoRevealedNotifier,
+            builder: (context, revealed, _) => SizedBox(
+              height: revealed ? infoOverlayPlaceholder : 0.0,
+            ),
+          )
+        : SizedBox(height: infoOverlayPlaceholder);
+
+    final overlayBottom = _overlayBottom;
+    final rowTopOffsets = _rowTopOffsets;
+    final rowExtents = _rowExtents;
     final headerCount = (includeMediaBar ? 1 : 0) + 1;
 
     // Ensure the last row can be scrolled so its top sits just below the info
@@ -3213,211 +3396,264 @@ class _ContentRowsState extends State<_ContentRows>
             onKeyEvent: (_, event) => _handleRowsKeyEvent(event),
             child: ListView.builder(
               controller: _scrollController,
-              padding: EdgeInsets.only(
-                top: listTopPadding,
-                bottom: neededBottomPadding,
-              ),
-              itemCount: rows.length + headerCount,
-              cacheExtent: 600,
-              itemBuilder: (context, index) {
-              if (includeMediaBar && index == 0) {
-                return AnimatedOpacity(
-                  duration: _mediaBarFadeDuration,
-                  curve: Curves.easeInOutCubic,
-                  opacity: _mediaBarVisible ? 1.0 : 0.0,
-                  child: IgnorePointer(
-                    ignoring: !_mediaBarVisible,
-                    child: bannerMode
-                        ? BannerMediaBar(
-                            viewModel: widget.mediaBarViewModel,
-                            prefs: prefs,
-                            height: mediaBarHeight,
-                            externallyPaused:
-                                carouselPaused ||
-                                !_mediaBarVisible ||
-                                _activePreviewKey != null,
-                            focusNode: _mediaBarFocusNode,
-                            onNavigateDown: _moveFocusFromMediaBarToRows,
-                            onNavigateUp: _navigateFromMediaBarToNavbar,
-                            onNavigateLeft: navbarIsLeft
-                                ? _navigateFromMediaBarToNavbar
-                                : null,
-                            onOpen: (item) => context.push(
-                              Destinations.item(
-                                item.itemId,
-                                serverId: item.serverId,
+                  padding: EdgeInsets.only(
+                    top: listTopPadding,
+                    bottom: neededBottomPadding,
+                  ),
+                  itemCount: rows.length + headerCount,
+                  cacheExtent: 600,
+                  itemBuilder: (context, index) {
+                    if (includeMediaBar && index == 0) {
+                      return ValueListenableBuilder<bool>(
+                        valueListenable: _mediaBarVisibleNotifier,
+                        builder: (context, mediaBarVisible, _) {
+                          return AnimatedOpacity(
+                            duration: _mediaBarFadeDuration,
+                            curve: Curves.easeInOutCubic,
+                            opacity: mediaBarVisible ? 1.0 : 0.0,
+                            child: IgnorePointer(
+                              ignoring: !mediaBarVisible,
+                              child: ValueListenableBuilder<bool>(
+                                valueListenable: widget.isHoverPausedNotifier,
+                                builder: (context, isHoverPaused, _) {
+                                  return ValueListenableBuilder<bool>(
+                                    valueListenable: widget.isScrolledToTopNotifier,
+                                    builder: (context, isScrolledToTop, _) {
+                                      return ValueListenableBuilder<bool>(
+                                        valueListenable: _chromeAudioActiveNotifier,
+                                        builder: (context, chromeAudioActive, _) {
+                                          final barPaused = isHoverPaused ||
+                                              !isScrolledToTop ||
+                                              _isActivelyScrolling ||
+                                              chromeAudioActive;
+
+                                          return RepaintBoundary(
+                                            child: bannerMode
+                                              ? BannerMediaBar(
+                                                  viewModel: widget.mediaBarViewModel,
+                                                  prefs: prefs,
+                                                  height: mediaBarHeight,
+                                                  externallyPaused:
+                                                      barPaused ||
+                                                      !mediaBarVisible ||
+                                                      _activePreviewKey != null,
+                                                  focusNode: _mediaBarFocusNode,
+                                                  onNavigateDown: _moveFocusFromMediaBarToRows,
+                                                  onNavigateUp: _navigateFromMediaBarToNavbar,
+                                                  onNavigateLeft: navbarIsLeft
+                                                      ? _navigateFromMediaBarToNavbar
+                                                      : null,
+                                                  onOpen: (item) => context.push(
+                                                    Destinations.item(
+                                                      item.itemId,
+                                                      serverId: item.serverId,
+                                                    ),
+                                                  ),
+                                                  onPlay: (item) => context.push(
+                                                    Destinations.item(
+                                                      item.itemId,
+                                                      serverId: item.serverId,
+                                                      autoPlay: true,
+                                                    ),
+                                                  ),
+                                                )
+                                              : MediaBar(
+                                                  viewModel: widget.mediaBarViewModel,
+                                                  prefs: prefs,
+                                                  externallyPaused:
+                                                      barPaused ||
+                                                      !mediaBarVisible ||
+                                                      _activePreviewKey != null,
+                                                  height: mediaBarHeight,
+                                                  onNavigateDown: _moveFocusFromMediaBarToRows,
+                                                  onNavigateUp: _navigateFromMediaBarToNavbar,
+                                                  onNavigateLeft: navbarIsLeft
+                                                      ? _navigateFromMediaBarToNavbar
+                                                      : null,
+                                                  focusNode: _mediaBarFocusNode,
+                                                ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  );
+                                },
                               ),
                             ),
-                            onPlay: (item) => context.push(
-                              Destinations.item(
-                                item.itemId,
-                                serverId: item.serverId,
-                                autoPlay: true,
-                              ),
-                            ),
+                          );
+                        },
+                      );
+                    }
+                    final infoIndex = includeMediaBar ? 1 : 0;
+                    if (index == infoIndex) {
+                      return infoPlaceholderHeightBuilder;
+                    }
+                    final row = rows[index - headerCount];
+                    final rowIndex = index - headerCount;
+                    final l10n = AppLocalizations.of(context);
+                    late final Widget rowChild;
+                    if (row.isLoading) {
+                      rowChild = LibraryRow(
+                        title: _localizedRowTitle(row, l10n),
+                        isLoading: true,
+                        children: const [],
+                      );
+                    } else if (row.rowType == HomeRowType.liveTv) {
+                      rowChild = _buildLiveTvRow(
+                        row,
+                        focusColor,
+                        cardExpansion,
+                        posterSize: posterSize,
+                        rowIndex: rowIndex,
+                        rows: rows,
+                      );
+                    } else if (row.rowType == HomeRowType.libraryTilesSmall) {
+                      rowChild = _buildLibraryButtonsRow(
+                        row,
+                        focusColor,
+                        cardExpansion,
+                        posterSize: posterSize,
+                        rowIndex: rowIndex,
+                        rows: rows,
+                      );
+                    } else {
+                      rowChild = _buildMediaRow(
+                        row: row,
+                        rowIndex: rowIndex,
+                        rows: rows,
+                        prefs: prefs,
+                        posterSize: posterSize,
+                        watchedBehavior: watchedBehavior,
+                        focusColor: focusColor,
+                        cardExpansion: cardExpansion,
+                        useSeriesThumbs: useSeriesThumbs,
+                        l10n: l10n,
+                      );
+                    }
+
+                    final contentHeight = _rowContentHeight(row, posterSize, prefs);
+                    final targetExtent = rowExtents[rowIndex];
+                    final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isSeerrFilterRow(row);
+                    final extraTopPadding = fullScreenRows
+                        ? (isRowsV2
+                            ? ((targetExtent - contentHeight) * 0.1).clamp(0.0, double.infinity)
+                            : ((targetExtent - contentHeight) / 2.0).clamp(0.0, double.infinity))
+                        : 0.0;
+
+                    final paddedRowChild = extraTopPadding > 0.0
+                        ? Padding(
+                            padding: EdgeInsets.only(top: extraTopPadding),
+                            child: rowChild,
                           )
-                        : MediaBar(
-                            viewModel: widget.mediaBarViewModel,
-                            prefs: prefs,
-                            externallyPaused:
-                                carouselPaused ||
-                                !_mediaBarVisible ||
-                                _activePreviewKey != null,
-                            height: mediaBarHeight,
-                            onNavigateDown: _moveFocusFromMediaBarToRows,
-                            onNavigateUp: _navigateFromMediaBarToNavbar,
-                            onNavigateLeft: navbarIsLeft
-                                ? _navigateFromMediaBarToNavbar
-                                : null,
-                            focusNode: _mediaBarFocusNode,
-                          ),
-                  ),
-                );
-              }
-              final infoIndex = includeMediaBar ? 1 : 0;
-              if (index == infoIndex) {
-                return SizedBox(height: infoPlaceholderHeight);
-              }
-              final row = rows[index - headerCount];
-              final rowIndex = index - headerCount;
-              final l10n = AppLocalizations.of(context);
-              late final Widget rowChild;
-              if (row.isLoading) {
-                rowChild = LibraryRow(
-                  title: _localizedRowTitle(row, l10n),
-                  isLoading: true,
-                  children: const [],
-                );
-              } else if (row.rowType == HomeRowType.liveTv) {
-                rowChild = _buildLiveTvRow(
-                  row,
-                  focusColor,
-                  cardExpansion,
-                  posterSize: posterSize,
-                  rowIndex: rowIndex,
-                  rows: rows,
-                );
-              } else if (row.rowType == HomeRowType.libraryTilesSmall) {
-                rowChild = _buildLibraryButtonsRow(
-                  row,
-                  focusColor,
-                  cardExpansion,
-                  posterSize: posterSize,
-                  rowIndex: rowIndex,
-                  rows: rows,
-                );
-              } else {
-                rowChild = _buildMediaRow(
-                  row: row,
-                  rowIndex: rowIndex,
-                  rows: rows,
-                  prefs: prefs,
-                  posterSize: posterSize,
-                  watchedBehavior: watchedBehavior,
-                  focusColor: focusColor,
-                  cardExpansion: cardExpansion,
-                  useSeriesThumbs: useSeriesThumbs,
-                  l10n: l10n,
-                );
-              }
+                        : rowChild;
 
-              final contentHeight = _rowContentHeight(row, posterSize, prefs);
-              final targetExtent = rowExtents[rowIndex];
-              final isRowsV2 = prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2 && !_isSeerrFilterRow(row);
-              final extraTopPadding = fullScreenRows
-                  ? (isRowsV2
-                      ? ((targetExtent - contentHeight) * 0.1).clamp(0.0, double.infinity)
-                      : ((targetExtent - contentHeight) / 2.0).clamp(0.0, double.infinity))
-                  : 0.0;
+                    if (row.isLoading) {
+                      final itemWidget = Padding(
+                        padding: EdgeInsets.only(left: rowLeftInset),
+                        child: ValueListenableBuilder<double>(
+                          valueListenable: _scrollOffsetNotifier,
+                          builder: (context, scrollOffset, _) {
+                            return _buildShiftedRow(
+                              child: paddedRowChild,
+                              rowIndex: rowIndex,
+                              rowTopOffsets: rowTopOffsets,
+                              rowExtents: rowExtents,
+                              showInfoOverlay: showInfoOverlay,
+                              overlayBottom: overlayBottom,
+                            );
+                          },
+                        ),
+                      );
+                      if (fullScreenRows) {
+                        return SizedBox(
+                          height: rowExtents[rowIndex],
+                          child: itemWidget,
+                        );
+                      }
+                      return itemWidget;
+                    }
 
-              final paddedRowChild = extraTopPadding > 0.0
-                  ? Padding(
-                      padding: EdgeInsets.only(top: extraTopPadding),
-                      child: rowChild,
-                    )
-                  : rowChild;
-
-              if (row.isLoading) {
-                final itemWidget = Padding(
-                  padding: EdgeInsets.only(left: rowLeftInset),
-                  child: _buildShiftedRow(
-                    child: paddedRowChild,
-                    rowIndex: rowIndex,
-                    rowTopOffsets: rowTopOffsets,
-                    rowExtents: rowExtents,
-                    showInfoOverlay: showInfoOverlay,
-                    overlayBottom: overlayBottom,
-                  ),
-                );
-                if (fullScreenRows) {
-                  return SizedBox(
-                    height: rowExtents[rowIndex],
-                    child: itemWidget,
-                  );
-                }
-                return itemWidget;
-              }
-
-              final itemWidget = Padding(
-                padding: EdgeInsets.only(left: rowLeftInset),
-                child: AnimatedPadding(
-                  duration: _focusedRowSpacingDuration,
-                  curve: Curves.easeOut,
-                  padding: EdgeInsets.symmetric(
-                    vertical:
-                        (PlatformDetection.isTV &&
-                            !fullScreenRows &&
-                            rowIndex == _activeFocusedRowIndex)
-                        ? _focusedRowExtraSpacing
-                        : 0,
-                  ),
-                  child: _buildShiftedRow(
-                    child: paddedRowChild,
-                    rowIndex: rowIndex,
-                    rowTopOffsets: rowTopOffsets,
-                    rowExtents: rowExtents,
-                    showInfoOverlay: showInfoOverlay,
-                    overlayBottom: overlayBottom,
+                    final itemWidget = Padding(
+                      padding: EdgeInsets.only(left: rowLeftInset),
+                      child: ValueListenableBuilder<int?>(
+                        valueListenable: _activeFocusedRowNotifier,
+                        builder: (context, activeRowIndex, _) {
+                          return AnimatedPadding(
+                            duration: _focusedRowSpacingDuration,
+                            curve: Curves.easeOut,
+                            padding: EdgeInsets.symmetric(
+                              vertical: (PlatformDetection.isTV &&
+                                      !fullScreenRows &&
+                                      rowIndex == activeRowIndex)
+                                  ? _focusedRowExtraSpacing
+                                  : 0,
+                            ),
+                            child: ValueListenableBuilder<double>(
+                              valueListenable: _scrollOffsetNotifier,
+                              builder: (context, scrollOffset, _) {
+                                return _buildShiftedRow(
+                                  child: paddedRowChild,
+                                  rowIndex: rowIndex,
+                                  rowTopOffsets: rowTopOffsets,
+                                  rowExtents: rowExtents,
+                                  showInfoOverlay: showInfoOverlay,
+                                  overlayBottom: overlayBottom,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                    if (fullScreenRows) {
+                      return SizedBox(
+                        height: rowExtents[rowIndex],
+                        child: itemWidget,
+                      );
+                    }
+                    return itemWidget;
+                  },
+                ),
+              ),
+            ),
+        ValueListenableBuilder<bool>(
+          valueListenable: _infoRevealedNotifier,
+          builder: (context, infoRevealed, _) {
+            if (infoRevealed && showInfoOverlay) {
+              return Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: IgnorePointer(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      PlatformDetection.useMobileUi
+                          ? navbarLeftInset
+                          : rowLeftInset,
+                      infoTopPadding,
+                      16,
+                      8,
+                    ),
+                    child: ValueListenableBuilder<AggregatedItem?>(
+                      valueListenable: widget.selectedItemNotifier,
+                      builder: (context, selectedItem, _) {
+                        return InfoArea(
+                          item: selectedItem,
+                          headerLeftInset: infoHeaderLeftInset,
+                        );
+                      },
+                    ),
                   ),
                 ),
               );
-              if (fullScreenRows) {
-                return SizedBox(
-                  height: rowExtents[rowIndex],
-                  child: itemWidget,
-                );
-              }
-              return itemWidget;
-              },
-            ),
-          ),
+            }
+            return const SizedBox.shrink();
+          },
         ),
-        if (_infoRevealed && showInfoOverlay)
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: IgnorePointer(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  PlatformDetection.useMobileUi
-                      ? navbarLeftInset
-                      : rowLeftInset,
-                  infoTopPadding,
-                  16,
-                  8,
-                ),
-                child: InfoArea(
-                  item: widget.selectedItem,
-                  headerLeftInset: infoHeaderLeftInset,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
 
   Widget _buildLiveTvRow(
     HomeRow row,
@@ -3458,43 +3694,43 @@ class _ContentRowsState extends State<_ContentRows>
       child: LockedFocusRow<_LiveTvAction>(
         key: _rowKey(rowIndex),
         items: actions,
-        hubKey: _hubKeyForRow(row),
-        controller: _rowHorizontalController(rowIndex),
-        height: rowHeight,
-        itemExtent: squarePosterSide,
-        itemSpacing: 12,
-        leadingPadding: _isHomeRowsStyleV2() ? _kHomeRowLabelInset : 0,
-        padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
-        onIndexChanged: (_, _) {
-          _onHomeRowTileFocused(null);
-        },
-        onFocusChange: (has) => _onRowFocusTracked(rowIndex, has),
-        onVerticalNavigation: (isUp) => _onRowVerticalNavigation(
-          rowIndex: rowIndex,
-          rows: rows,
-          isUp: isUp,
-        ),
-        onLeftEdge: _onRowLeftEdge,
-        onTap: (_, action) => context.push(action.destination),
-        itemBuilder: (ctx, action, idx, isFocused) {
-          return Align(
-            alignment: Alignment.topCenter,
-            child: SizedBox.square(
-              dimension: squarePosterSide,
-              child: GridButtonCard(
-                icon: action.icon,
-                label: action.label,
-                width: squarePosterSide,
-                height: squarePosterSide,
-                focusColor: focusColor,
-                cardFocusExpansion: cardExpansion,
-                externalIsFocused: isFocused,
-                onTap: () => context.push(action.destination),
+          hubKey: _hubKeyForRow(row),
+          controller: _rowHorizontalController(rowIndex),
+          height: rowHeight,
+          itemExtent: squarePosterSide,
+          itemSpacing: 12,
+          leadingPadding: _isHomeRowsStyleV2() ? _kHomeRowLabelInset : 0,
+          padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
+          onIndexChanged: (_, _) {
+            _onHomeRowTileFocused(null);
+          },
+          onFocusChange: (has) => _onRowFocusTracked(rowIndex, has),
+          onVerticalNavigation: (isUp) => _onRowVerticalNavigation(
+            rowIndex: rowIndex,
+            rows: rows,
+            isUp: isUp,
+          ),
+          onLeftEdge: _onRowLeftEdge,
+          onTap: (_, action) => context.push(action.destination),
+          itemBuilder: (ctx, action, idx, isFocused) {
+            return Align(
+              alignment: Alignment.topCenter,
+              child: SizedBox.square(
+                dimension: squarePosterSide,
+                child: GridButtonCard(
+                  icon: action.icon,
+                  label: action.label,
+                  width: squarePosterSide,
+                  height: squarePosterSide,
+                  focusColor: focusColor,
+                  cardFocusExpansion: cardExpansion,
+                  externalIsFocused: isFocused,
+                  onTap: () => context.push(action.destination),
+                ),
               ),
-            ),
-          );
-        },
-      ),
+            );
+          },
+        ),
     );
   }
 
@@ -3519,58 +3755,60 @@ class _ContentRowsState extends State<_ContentRows>
       child: LockedFocusRow<AggregatedItem>(
         key: _rowKey(rowIndex),
         items: row.items,
-        hubKey: _hubKeyForRow(row),
-        controller: _rowHorizontalController(rowIndex),
-        height: rowHeight,
-        itemExtent: squarePosterSide,
-        itemSpacing: 12,
-        leadingPadding: _isHomeRowsStyleV2() ? _kHomeRowLabelInset : 0,
-        padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
-        onIndexChanged: (_, item) {
-          _onHomeRowTileFocused(item);
-        },
-        onFocusChange: (has) => _onRowFocusTracked(rowIndex, has),
-        onVerticalNavigation: (isUp) => _onRowVerticalNavigation(
-          rowIndex: rowIndex,
-          rows: rows,
-          isUp: isUp,
-        ),
-        onLeftEdge: _onRowLeftEdge,
-        onTap: (_, item) => _navigateToLibrary(context, item),
-        onLongPress: (_, item) =>
-            showContextMenu(context, item, onChanged: () => setState(() {})),
-        itemBuilder: (ctx, item, idx, isFocused) {
-          final collectionType =
-              (item.rawData['CollectionType'] as String? ?? '').toLowerCase();
-          final icon = _iconForCollectionType(collectionType);
-          return Align(
-            alignment: Alignment.topCenter,
-            child: SizedBox.square(
-              dimension: squarePosterSide,
-              child: GridButtonCard(
-                icon: icon,
-                label: item.name,
-                width: squarePosterSide,
-                height: squarePosterSide,
-                focusColor: focusColor,
-                cardFocusExpansion: cardExpansion,
-                externalIsFocused: isFocused,
-                onTap: () => _navigateToLibrary(context, item),
-                onLongPress: () => showContextMenu(
-                  context,
-                  item,
-                  onChanged: () => setState(() {}),
-                ),
-                onSecondaryTap: () => showContextMenu(
-                  context,
-                  item,
-                  onChanged: () => setState(() {}),
+          hubKey: _hubKeyForRow(row),
+          controller: _rowHorizontalController(rowIndex),
+          height: rowHeight,
+          itemExtent: squarePosterSide,
+          itemSpacing: 12,
+          leadingPadding: _isHomeRowsStyleV2() ? _kHomeRowLabelInset : 0,
+          padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
+          onIndexChanged: (_, item) {
+            _onHomeRowTileFocused(item);
+          },
+          onFocusChange: (has) => _onRowFocusTracked(rowIndex, has),
+          onVerticalNavigation: (isUp) => _onRowVerticalNavigation(
+            rowIndex: rowIndex,
+            rows: rows,
+            isUp: isUp,
+          ),
+          onLeftEdge: _onRowLeftEdge,
+          onTap: (_, item) => _navigateToLibrary(context, item),
+          onLongPress: (_, item) =>
+              showContextMenu(context, item, onChanged: () => setState(() {})),
+          itemBuilder: (ctx, item, idx, isFocused) {
+            final collectionType =
+                (item.rawData['CollectionType'] as String? ?? '').toLowerCase();
+            final icon = isGameLibrary(collectionType, item.name)
+                ? gameLibraryIcon
+                : _iconForCollectionType(collectionType);
+            return Align(
+              alignment: Alignment.topCenter,
+              child: SizedBox.square(
+                dimension: squarePosterSide,
+                child: GridButtonCard(
+                  icon: icon,
+                  label: item.name,
+                  width: squarePosterSide,
+                  height: squarePosterSide,
+                  focusColor: focusColor,
+                  cardFocusExpansion: cardExpansion,
+                  externalIsFocused: isFocused,
+                  onTap: () => _navigateToLibrary(context, item),
+                  onLongPress: () => showContextMenu(
+                    context,
+                    item,
+                    onChanged: () => setState(() {}),
+                  ),
+                  onSecondaryTap: () => showContextMenu(
+                    context,
+                    item,
+                    onChanged: () => setState(() {}),
+                  ),
                 ),
               ),
-            ),
-          );
-        },
-      ),
+            );
+          },
+        ),
     );
   }
 
@@ -3662,7 +3900,7 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     final subtitle = _rowSubtitle(row, l10n);
-    final hasSubtitle = subtitle != null;
+    final hasSubtitle = subtitle != null && subtitle.isNotEmpty;
     return _buildTitledRow(
       key: _rowContainerKey(rowIndex),
       title: _localizedRowTitle(row, l10n),
@@ -3673,22 +3911,22 @@ class _ContentRowsState extends State<_ContentRows>
       child: LockedFocusRow<AggregatedItem>(
         key: _rowKey(rowIndex),
         items: row.items,
-        hubKey: _hubKeyForRow(row),
-        controller: _rowHorizontalController(rowIndex),
-        height: maxCardHeight + (10 * metadataScale),
-        itemExtent: firstCardWidth,
-        itemSpacing: 12,
-        leadingPadding: isRowsV2 ? _kHomeRowLabelInset : 0,
-        clipBehavior: isRowsV2 ? Clip.none : Clip.hardEdge,
-        padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
-        onFocusChange: (has) => _onRowFocusTracked(rowIndex, has),
-        onVerticalNavigation: (isUp) => _onRowVerticalNavigation(
-          rowIndex: rowIndex,
-          rows: rows,
-          isUp: isUp,
-        ),
-        onLeftEdge: _onRowLeftEdge,
-        onIndexChanged: (index, item) {
+          hubKey: _hubKeyForRow(row),
+          controller: _rowHorizontalController(rowIndex),
+          height: maxCardHeight + (10 * metadataScale),
+          itemExtent: firstCardWidth,
+          itemSpacing: 12,
+          leadingPadding: isRowsV2 ? _kHomeRowLabelInset : 0,
+          clipBehavior: isRowsV2 ? Clip.none : Clip.hardEdge,
+          padding: const EdgeInsets.fromLTRB(_kHomeRowLabelInset, 5, 20, 5),
+          onFocusChange: (has) => _onRowFocusTracked(rowIndex, has),
+          onVerticalNavigation: (isUp) => _onRowVerticalNavigation(
+            rowIndex: rowIndex,
+            rows: rows,
+            isUp: isUp,
+          ),
+          onLeftEdge: _onRowLeftEdge,
+          onIndexChanged: (index, item) {
           final forceReveal = _forceRevealOnNextRowFocusFromMediaBar;
           _forceRevealOnNextRowFocusFromMediaBar = false;
           widget.onItemSelected(item);
@@ -3814,31 +4052,35 @@ class _ContentRowsState extends State<_ContentRows>
 
           final canPreview = _supportsEpisodePreview(item);
 
-          final showPreviewVideo =
-              _activePreviewKey == previewKey && _previewReady;
+          return ValueListenableBuilder<String?>(
+            valueListenable: _activePreviewKeyNotifier,
+            builder: (context, activePreviewKey, _) {
+              return ValueListenableBuilder<bool>(
+                valueListenable: _previewReadyNotifier,
+                builder: (context, previewReady, _) {
+                  final showPreviewVideo = activePreviewKey == previewKey && previewReady;
 
-          void navigateToItem() {
-            if (row.rowType == HomeRowType.libraryTiles) {
-              _navigateToLibrary(context, item);
-            } else if (row.rowType == HomeRowType.genres &&
-                row.id == 'genres') {
-              context.push(Destinations.genre(item.name, genreId: item.id));
-            } else if (item.serverId == 'seerr') {
-              _navigateToSeerrItem(context, item);
-            } else {
-              context.push(
-                Destinations.itemOrPhoto(
-                  item.id,
-                  serverId: item.serverId,
-                  type: item.type,
-                ),
-              );
-            }
-          }
+                  void navigateToItem() {
+                    if (row.rowType == HomeRowType.libraryTiles) {
+                      _navigateToLibrary(context, item);
+                    } else if (row.rowType == HomeRowType.genres && row.id == 'genres') {
+                      context.push(Destinations.genre(item.name, genreId: item.id));
+                    } else if (item.serverId == 'seerr') {
+                      _navigateToSeerrItem(context, item);
+                    } else {
+                      context.push(
+                        Destinations.itemOrPhoto(
+                          item.id,
+                          serverId: item.serverId,
+                          type: item.type,
+                        ),
+                      );
+                    }
+                  }
 
-          final String cardTitle;
-          final String? cardSubtitle;
-          final Widget? cardSubtitleWidget;
+                  final String cardTitle;
+                  final String? cardSubtitle;
+                  final Widget? cardSubtitleWidget;
 
           if (isRowsV2 && item.type == 'Episode') {
             final s = item.parentIndexNumber;
@@ -3854,14 +4096,16 @@ class _ContentRowsState extends State<_ContentRows>
                   ? '$episodeInfo - ${item.name}'
                   : item.name;
               final row3Text = _v2MetadataLine(item);
+              final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
               final baseTextStyle =
                   Theme.of(context).textTheme.bodySmall ??
                   const TextStyle(fontSize: 12);
-              final subtitleColor = Theme.of(
-                context,
-              ).colorScheme.onSurface.withAlpha(153);
+              final subtitleColor = isNeon
+                  ? AppColorScheme.onSurface
+                  : Theme.of(context).colorScheme.onSurface.withAlpha(180);
               final subtitleStyle = baseTextStyle.copyWith(
                 color: subtitleColor,
+                shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
               );
               cardSubtitleWidget = Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -3903,140 +4147,140 @@ class _ContentRowsState extends State<_ContentRows>
             cardSubtitleWidget = null;
           }
 
-          final card = MediaCard(
-            title: cardTitle,
-            subtitle: cardSubtitle,
-            subtitleWidget: cardSubtitleWidget,
-            imageUrl: imageUrl,
-            width: width,
-            aspectRatio: ar,
-            isFavorite: item.isFavorite,
-            isPlayed: item.isPlayed,
-            unplayedCount: item.unplayedItemCount,
-            playedPercentage: item.playedPercentage,
-            watchedBehavior: watchedBehavior,
-            itemType: item.type,
-            seerrMediaType: item.seerrMediaType,
-            seerrStatus: item.seerrStatus,
-            focusColor:
-                (row.rowType == HomeRowType.genres && row.id == 'genres')
-                ? ThemeRegistry.active.borders.focusBorder.color
-                : focusColor,
-            cardFocusExpansion: isRowsV2
-                ? false
-                : cardExpansion && !showPreviewVideo,
-            externalIsFocused: effectiveV2Focused,
-            suppressImageFocusBorder: showPreviewVideo,
-            suppressFocusGlow: suppressFocusGlow,
-            onHoverStart: () {
-              unawaited(_revealAndScrollToPinnedInfo());
-              widget.onItemSelected(item);
-              if (isRowsV2) {
-                if (_mouseHoveredV2Key != previewKey) {
-                  setState(() => _mouseHoveredV2Key = previewKey);
-                }
-                if (!row.isAudio) {
-                  _primeV2FocusedRatings(item);
-                }
-              }
-              if (!PlatformDetection.useMobileUi && canPreview) {
-                _schedulePreview(item, delay: _previewStartDelay);
-              } else {
-                _finishSharedPreview();
-              }
-            },
-            onHoverEnd: () {
-              if (isRowsV2) {
-                if (_mouseHoveredV2Key == previewKey) {
-                  setState(() => _mouseHoveredV2Key = null);
-                }
-                _finishSharedPreview();
-              } else {
-                _stopPreviewFor(item);
-              }
-            },
-            onLongPress: () => showContextMenu(
-              context,
-              item,
-              onChanged: () => setState(() {}),
-            ),
-            onTap: () {
-              if (isV2MobileTouch) {
-                if (_mobilePressedV2Key == previewKey) {
-                  setState(() => _mobilePressedV2Key = null);
-                  _finishSharedPreview(releaseResources: true);
-                  navigateToItem();
-                } else {
-                  setState(() {
-                    _mobilePressedV2Key = previewKey;
-                    _mouseHoveredV2Key = null;
-                  });
-                  widget.onItemSelected(item);
-                  _primeV2FocusedRatings(item);
-                }
-                return;
-              }
+                  final card = MediaCard(
+                    title: cardTitle,
+                    subtitle: cardSubtitle,
+                    subtitleWidget: cardSubtitleWidget,
+                    imageUrl: imageUrl,
+                    width: width,
+                    aspectRatio: ar,
+                    isFavorite: item.isFavorite,
+                    isPlayed: item.isPlayed,
+                    unplayedCount: item.unplayedItemCount,
+                    playedPercentage: item.playedPercentage,
+                    watchedBehavior: watchedBehavior,
+                    itemType: item.type,
+                    seerrMediaType: item.seerrMediaType,
+                    seerrStatus: item.seerrStatus,
+                    focusColor: (row.rowType == HomeRowType.genres && row.id == 'genres')
+                        ? ThemeRegistry.active.borders.focusBorder.color
+                        : focusColor,
+                    cardFocusExpansion: isRowsV2 ? false : cardExpansion && !showPreviewVideo,
+                    externalIsFocused: effectiveV2Focused,
+                    suppressImageFocusBorder: showPreviewVideo,
+                    suppressFocusGlow: suppressFocusGlow,
+                    onHoverStart: () {
+                      unawaited(_revealAndScrollToPinnedInfo());
+                      widget.onItemSelected(item);
+                      if (isRowsV2) {
+                        if (_mouseHoveredV2Key != previewKey) {
+                          setState(() => _mouseHoveredV2Key = previewKey);
+                        }
+                        if (!row.isAudio) {
+                          _primeV2FocusedRatings(item);
+                        }
+                      }
+                      if (!PlatformDetection.useMobileUi && canPreview) {
+                        _schedulePreview(item, delay: _previewStartDelay);
+                      } else {
+                        _finishSharedPreview();
+                      }
+                    },
+                    onHoverEnd: () {
+                      if (isRowsV2) {
+                        if (_mouseHoveredV2Key == previewKey) {
+                          setState(() => _mouseHoveredV2Key = null);
+                        }
+                        _finishSharedPreview();
+                      } else {
+                        _stopPreviewFor(item);
+                      }
+                    },
+                    onLongPress: () => showContextMenu(
+                      context,
+                      item,
+                      onChanged: () => setState(() {}),
+                    ),
+                    onTap: () {
+                      if (isV2MobileTouch) {
+                        if (_mobilePressedV2Key == previewKey) {
+                          setState(() => _mobilePressedV2Key = null);
+                          _finishSharedPreview(releaseResources: true);
+                          navigateToItem();
+                        } else {
+                          setState(() {
+                            _mobilePressedV2Key = previewKey;
+                            _mouseHoveredV2Key = null;
+                          });
+                          widget.onItemSelected(item);
+                          _primeV2FocusedRatings(item);
+                        }
+                        return;
+                      }
 
-              if (isRowsV2 &&
-                  (_mobilePressedV2Key != null || _mouseHoveredV2Key != null)) {
-                setState(() {
-                  _mobilePressedV2Key = null;
-                  _mouseHoveredV2Key = null;
-                });
-              }
-              _finishSharedPreview(releaseResources: true);
-              navigateToItem();
+                      if (isRowsV2 && (_mobilePressedV2Key != null || _mouseHoveredV2Key != null)) {
+                        setState(() {
+                          _mobilePressedV2Key = null;
+                          _mouseHoveredV2Key = null;
+                        });
+                      }
+                      _finishSharedPreview(releaseResources: true);
+                      navigateToItem();
+                    },
+                  );
+
+                  final previewWrappedCard = !canPreview
+                      ? card
+                      : _PreviewCardShell(
+                          card: card,
+                          width: width,
+                          aspectRatio: ar,
+                          showVideo: showPreviewVideo,
+                          useMedia3: showPreviewVideo && _previewUsingMedia3,
+                          controller: _previewController,
+                          appleTvTextureId: showPreviewVideo && _previewUsingAppleTv
+                              ? _appleTvPreviewPlayer?.textureId
+                              : null,
+                          isFocused: isFocused,
+                          focusColor: focusColor,
+                        );
+
+                  if (isRowsV2) {
+                    final showExtendedSection = effectiveV2Focused;
+                    final extendedSection = showExtendedSection
+                        ? _buildV2ExtendedSection(
+                            ctx,
+                            item,
+                            previewKey,
+                            cardWidth: width,
+                            extendedWidth: v2ExtendedWidth,
+                            isAudioRow: row.isAudio,
+                          )
+                        : null;
+                    return AnimatedSize(
+                      duration: const Duration(milliseconds: 150),
+                      curve: Curves.easeInOutCubic,
+                      alignment: Alignment.topLeft,
+                      clipBehavior: Clip.none,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          previewWrappedCard,
+                          if (extendedSection != null) ...[
+                            const SizedBox(height: 4),
+                            extendedSection,
+                          ],
+                        ],
+                      ),
+                    );
+                  }
+
+                  return previewWrappedCard;
+                },
+              );
             },
           );
-
-          final previewWrappedCard = !canPreview
-              ? card
-              : _PreviewCardShell(
-                  card: card,
-                  width: width,
-                  aspectRatio: ar,
-                  showVideo: showPreviewVideo,
-                  useMedia3: showPreviewVideo && _previewUsingMedia3,
-                  controller: _previewController,
-                  appleTvTextureId: showPreviewVideo && _previewUsingAppleTv
-                      ? _appleTvPreviewPlayer?.textureId
-                      : null,
-                  isFocused: isFocused,
-                  focusColor: focusColor,
-                );
-
-          if (isRowsV2) {
-            final showExtendedSection = effectiveV2Focused;
-            final extendedSection = showExtendedSection
-                ? _buildV2ExtendedSection(
-                    ctx,
-                    item,
-                    previewKey,
-                    cardWidth: width,
-                    extendedWidth: v2ExtendedWidth,
-                    isAudioRow: row.isAudio,
-                  )
-                : null;
-            return AnimatedSize(
-              duration: const Duration(milliseconds: 150),
-              curve: Curves.easeInOutCubic,
-              alignment: Alignment.topLeft,
-              clipBehavior: Clip.none,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  previewWrappedCard,
-                  if (extendedSection != null) ...[
-                    const SizedBox(height: 4),
-                    extendedSection,
-                  ],
-                ],
-              ),
-            );
-          }
-
-          return previewWrappedCard;
         },
       ),
     );
@@ -4050,68 +4294,76 @@ class _ContentRowsState extends State<_ContentRows>
     required double extendedWidth,
     required bool isAudioRow,
   }) {
-    final additionalRatings = _v2AdditionalRatingsByKey[itemKey] ?? {};
-    final hasAnyRating =
-        item.communityRating != null ||
-        item.criticRating != null ||
-        additionalRatings.isNotEmpty;
-    final overview = isAudioRow ? '' : (item.overview ?? '');
-    if (!hasAnyRating && overview.isEmpty) {
-      return SizedBox(width: cardWidth);
-    }
+    return ValueListenableBuilder<Map<String, Map<String, double>>>(
+      valueListenable: _v2AdditionalRatingsNotifier,
+      builder: (context, ratingsByKey, _) {
+        final additionalRatings = ratingsByKey[itemKey] ?? {};
+        final hasAnyRating = item.communityRating != null ||
+            item.criticRating != null ||
+            additionalRatings.isNotEmpty;
+        final overview = isAudioRow ? '' : (item.overview ?? '');
+        if (!hasAnyRating && overview.isEmpty) {
+          return SizedBox(width: cardWidth);
+        }
 
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final baseStyle =
         Theme.of(context).textTheme.bodySmall ?? const TextStyle(fontSize: 12);
     final overviewStyle = baseStyle.copyWith(
-      color: Theme.of(context).colorScheme.onSurface.withAlpha(140),
+      color: isNeon
+          ? AppColorScheme.onSurface
+          : Theme.of(context).colorScheme.onSurface.withAlpha(180),
+      shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
       height: 1.4,
     );
 
-    return SizedBox(
-      width: cardWidth,
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.topLeft,
-        children: [
-          SizedBox(
-            width: extendedWidth,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (hasAnyRating)
-                  RatingsRow(
-                    ratings: additionalRatings,
-                    communityRating: item.communityRating,
-                    criticRating: item.criticRating,
-                    enableAdditionalRatings: widget.prefs.get(
-                      UserPreferences.enableAdditionalRatings,
-                    ),
-                    enabledRatings: widget.prefs.get(
-                      UserPreferences.enabledRatings,
-                    ),
-                    showLabels: widget.prefs.get(
-                      UserPreferences.showRatingLabels,
-                    ),
-                    showBadges: widget.prefs.get(
-                      UserPreferences.showRatingBadges,
-                    ),
-                  ),
-                if (overview.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      overview,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: overviewStyle,
-                    ),
-                  ),
-              ],
-            ),
+        return SizedBox(
+          width: cardWidth,
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.topLeft,
+            children: [
+              SizedBox(
+                width: extendedWidth,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (hasAnyRating)
+                      RatingsRow(
+                        ratings: additionalRatings,
+                        communityRating: item.communityRating,
+                        criticRating: item.criticRating,
+                        enableAdditionalRatings: widget.prefs.get(
+                          UserPreferences.enableAdditionalRatings,
+                        ),
+                        enabledRatings: widget.prefs.get(
+                          UserPreferences.enabledRatings,
+                        ),
+                        showLabels: widget.prefs.get(
+                          UserPreferences.showRatingLabels,
+                        ),
+                        showBadges: widget.prefs.get(
+                          UserPreferences.showRatingBadges,
+                        ),
+                      ),
+                    if (overview.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          overview,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: overviewStyle,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -4185,73 +4437,75 @@ class _ContentRowsState extends State<_ContentRows>
     final isRowsV2 = _isHomeRowsStyleV2();
     final showHeaderControls =
         hasItems && PlatformDetection.useDesktopUi && !PlatformDetection.isTV;
-    return Column(
-      key: key,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(
-            _kHomeRowLabelInset,
-            isRowsV2 ? 6 : 16,
-            8,
-            isRowsV2 ? 1 : 8,
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppColorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (subtitle != null && subtitle.isNotEmpty) ...[
-                      const SizedBox(height: 2),
+    return RepaintBoundary(
+      child: Column(
+        key: key,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+              _kHomeRowLabelInset,
+              isRowsV2 ? 6 : 16,
+              8,
+              isRowsV2 ? 1 : 8,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                       Text(
-                        subtitle,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColorScheme.onSurface.withValues(
-                            alpha: 0.5,
-                          ),
+                        title,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: AppColorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
+                      if (subtitle != null && subtitle.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColorScheme.onSurface.withValues(
+                              alpha: 0.5,
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
-                ),
-              ),
-              if (showHeaderControls) ...[
-                Focus(
-                  canRequestFocus: false,
-                  skipTraversal: true,
-                  descendantsAreFocusable: false,
-                  child: IconButton(
-                    icon: const Icon(Icons.chevron_left),
-                    onPressed: () => _scrollHomeRowHorizontal(rowIndex, -480),
-                    visualDensity: VisualDensity.compact,
                   ),
                 ),
-                Focus(
-                  canRequestFocus: false,
-                  skipTraversal: true,
-                  descendantsAreFocusable: false,
-                  child: IconButton(
-                    icon: const Icon(Icons.chevron_right),
-                    onPressed: () => _scrollHomeRowHorizontal(rowIndex, 480),
-                    visualDensity: VisualDensity.compact,
+                if (showHeaderControls) ...[
+                  Focus(
+                    canRequestFocus: false,
+                    skipTraversal: true,
+                    descendantsAreFocusable: false,
+                    child: IconButton(
+                      icon: const Icon(Icons.chevron_left),
+                      onPressed: () => _scrollHomeRowHorizontal(rowIndex, -480),
+                      visualDensity: VisualDensity.compact,
+                    ),
                   ),
-                ),
+                  Focus(
+                    canRequestFocus: false,
+                    skipTraversal: true,
+                    descendantsAreFocusable: false,
+                    child: IconButton(
+                      icon: const Icon(Icons.chevron_right),
+                      onPressed: () => _scrollHomeRowHorizontal(rowIndex, 480),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
-        child,
-      ],
+          child,
+        ],
+      ),
     );
   }
 
@@ -4325,7 +4579,9 @@ class _ContentRowsState extends State<_ContentRows>
         context.push(Destinations.liveTvGuide);
         return;
       default:
-        context.push(Destinations.library(item.id));
+        // Game libraries route to the EmulatorJS browser; everything else to the
+        // normal library view. Shared with the sidebar and bottom nav.
+        context.push(gameOrLibraryRoute(item.id, collectionType, item.name));
         return;
     }
   }
@@ -4962,7 +5218,7 @@ class _PreviewCardShell extends StatelessWidget {
               height: width / aspectRatio,
               child: IgnorePointer(
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.circular(8),
                   child: ColoredBox(
                     color: AppColorScheme.background,
                     child: previewSurface,
@@ -4980,7 +5236,7 @@ class _PreviewCardShell extends StatelessWidget {
                 child: Container(
                   height: width / aspectRatio,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.circular(8),
                     border: Border.fromBorderSide(
                       ThemeRegistry.active.borders.focusBorder.copyWith(
                         color: focusColor,

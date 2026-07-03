@@ -126,7 +126,7 @@ class _AddToPlaylistDialogState extends State<AddToPlaylistDialog> {
                 constraints: const BoxConstraints(minWidth: 320, maxWidth: 440),
                 decoration: BoxDecoration(
                   color: AppColorScheme.surface.withValues(alpha: 0.9),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: AppRadius.circular(20),
                   border: Border.fromBorderSide(
                     ThemeRegistry.active.borders.chipBorder,
                   ),
@@ -161,7 +161,7 @@ class _AddToPlaylistDialogState extends State<AddToPlaylistDialog> {
                           alpha: 0.08,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: AppRadius.circular(8),
                           borderSide: BorderSide.none,
                         ),
                       ),
@@ -215,7 +215,7 @@ class _AddToPlaylistDialogState extends State<AddToPlaylistDialog> {
         constraints: const BoxConstraints(minWidth: 340, maxWidth: 440),
         decoration: BoxDecoration(
           color: AppColorScheme.surface.withValues(alpha: 0.9),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: AppRadius.circular(20),
           border: Border.fromBorderSide(
             ThemeRegistry.active.borders.chipBorder,
           ),

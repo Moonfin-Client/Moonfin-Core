@@ -36,7 +36,7 @@ Future<void> showQrOrLaunch(
         Container(
           decoration: BoxDecoration(
             color: AppColorScheme.onSurface,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.circular(12),
           ),
           padding: const EdgeInsets.all(12),
           child: QrImageView(

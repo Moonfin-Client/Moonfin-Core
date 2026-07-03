@@ -422,7 +422,7 @@ class _SeriesTimerCardState extends State<_SeriesTimerCard> with FocusStateMixin
                       height: 112,
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.06),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: AppRadius.circular(4),
                         border: showFocusBorder
                             ? Border.fromBorderSide(
                                 ThemeRegistry.active.borders.focusBorder.copyWith(
@@ -498,10 +498,10 @@ class _RecordingsPillButtonState extends State<_RecordingsPillButton> {
     final active = _focused || widget.isActive;
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: AppRadius.circular(20),
       child: InkWell(
         onTap: widget.onPressed,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.circular(20),
         focusColor: Colors.transparent,
         hoverColor: Colors.white.withValues(alpha: 0.05),
         splashColor: Colors.white24,
@@ -516,7 +516,7 @@ class _RecordingsPillButtonState extends State<_RecordingsPillButton> {
             color: active
                 ? AppColorScheme.accent.withValues(alpha: _focused ? 1.0 : 0.7)
                 : Colors.white.withValues(alpha: 0.10),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: AppRadius.circular(20),
           ),
           child: widget.icon != null
               ? Icon(widget.icon, color: Colors.white.withValues(alpha: active ? 1.0 : 0.8), size: 18)
@@ -645,7 +645,7 @@ class _RecordingCardState extends State<_RecordingCard> with FocusStateMixin {
                       height: 112,
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.06),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: AppRadius.circular(4),
                         border: showFocusBorder
                             ? Border.fromBorderSide(
                                 ThemeRegistry.active.borders.focusBorder.copyWith(

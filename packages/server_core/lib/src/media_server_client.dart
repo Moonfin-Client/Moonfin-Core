@@ -25,6 +25,7 @@ import 'api/admin_live_tv_api.dart';
 import 'api/admin_items_api.dart';
 import 'api/client_log_api.dart';
 import 'api/syncplay_api.dart';
+import 'api/games_api.dart';
 
 abstract class MediaServerClient {
   ServerType get serverType;
@@ -71,6 +72,10 @@ abstract class MediaServerClient {
   /// as reports. Returns null on servers that don't support it (Emby, or
   /// Jellyfin with client log upload disabled).
   ClientLogApi? get clientLogApi => null;
+
+  /// Optional client for the Moonbase plugin retro-games (EmulatorJS) API.
+  /// Returns null on servers without the plugin.
+  GamesApi? get gamesApi => null;
 
   void dispose();
 }

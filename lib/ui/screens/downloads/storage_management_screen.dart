@@ -162,7 +162,7 @@ class _StorageManagementScreenState extends ConsumerState<StorageManagementScree
         const SizedBox(height: 12),
         if (total > 0)
           ClipRRect(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: AppRadius.circular(4),
             child: SizedBox(
               height: 12,
               child: Row(
@@ -181,7 +181,7 @@ class _StorageManagementScreenState extends ConsumerState<StorageManagementScree
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Row(
                 children: [
-                  Container(width: 12, height: 12, decoration: BoxDecoration(color: b.color, borderRadius: BorderRadius.circular(2))),
+                  Container(width: 12, height: 12, decoration: BoxDecoration(color: b.color, borderRadius: AppRadius.circular(2))),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(

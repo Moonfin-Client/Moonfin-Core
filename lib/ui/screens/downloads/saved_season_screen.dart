@@ -160,7 +160,7 @@ class _EpisodeRow extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: AppRadius.circular(6),
               child: SizedBox(
                 width: 160,
                 height: 90,

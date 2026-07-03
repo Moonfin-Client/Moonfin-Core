@@ -317,7 +317,7 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
         children: [
           if (s.posterPath != null)
             ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.circular(10),
               child: CachedNetworkImage(
                 imageUrl: '$_tmdbPosterBase${s.posterPath}',
                 width: posterWidth,
@@ -392,7 +392,7 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.55),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: AppRadius.circular(999),
       ),
       child: Text(
         label.toUpperCase(),
@@ -452,7 +452,7 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
                       return Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: AppRadius.circular(8),
                           border: Border.fromBorderSide(
                             ThemeRegistry.active.borders.focusBorder.copyWith(
                               color: focused ? focusColor : Colors.transparent,
@@ -603,7 +603,7 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.circular(10),
         border: Border.fromBorderSide(ThemeRegistry.active.borders.cardBorder),
       ),
       child: Column(
@@ -913,7 +913,7 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
           if (s.posterPath != null)
             Center(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.circular(8),
                 child: CachedNetworkImage(
                   imageUrl: '$_tmdbPosterBase${s.posterPath}',
                   width: 180,
@@ -971,7 +971,7 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
         border: Border.fromBorderSide(
           ThemeRegistry.active.borders.chipBorder.copyWith(color: color),
         ),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: AppRadius.circular(6),
       ),
       child: Text(
         s.requestStatusText,
@@ -1437,7 +1437,7 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: bg.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: AppRadius.circular(4),
       ),
       child: Text(
         status,
@@ -1533,7 +1533,7 @@ class _BrowseChipState extends State<_BrowseChip> with FocusStateMixin {
   Widget build(BuildContext context) {
     final hPad = widget.dense ? 8.0 : 10.0;
     final vPad = widget.dense ? 4.0 : 6.0;
-    final borderRadius = BorderRadius.circular(999);
+    final borderRadius = AppRadius.circular(999);
     return Focus(
       onFocusChange: setFocused,
       onKeyEvent: (node, event) {
@@ -1781,7 +1781,7 @@ class _ActionTileState extends State<_ActionTile> with FocusStateMixin {
                     height: 88,
                     decoration: BoxDecoration(
                       color: bg,
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: AppRadius.circular(14),
                       border: showFocusBorder
                           ? Border.fromBorderSide(
                               ThemeRegistry.active.borders.focusBorder.copyWith(

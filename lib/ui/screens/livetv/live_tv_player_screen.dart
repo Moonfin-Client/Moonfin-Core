@@ -330,13 +330,21 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
     _scheduleHide();
   }
 
+  void _hideInfo() {
+    _hideTimer?.cancel();
+    if (_infoVisible) {
+      setState(() => _infoVisible = false);
+    }
+    // Move focus off the OSD controls so it doesn't immediately re-pin itself
+    // (a focused control keeps the OSD visible via _onControlFocusChanged).
+    if (PlatformDetection.isTV) {
+      _overlayFocus.requestFocus();
+    }
+  }
+
   void _toggleInfo() {
     if (_infoVisible) {
-      _hideTimer?.cancel();
-      setState(() => _infoVisible = false);
-      if (PlatformDetection.isTV) {
-        _overlayFocus.requestFocus();
-      }
+      _hideInfo();
     } else {
       _showInfo();
     }
@@ -789,6 +797,13 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
           return;
         }
         if (_isBackNavigationSuppressed) return;
+        // Back dismisses the on-screen controls first; only exit the player once
+        // the OSD is already hidden (e.g. after returning from the EPG overlay,
+        // where a focused control otherwise keeps the OSD pinned open).
+        if (_infoVisible) {
+          _hideInfo();
+          return;
+        }
         _exitPlayback();
       },
       child: Scaffold(
@@ -997,7 +1012,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
                 ),
                 decoration: BoxDecoration(
                   color: AppColorScheme.accent,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: AppRadius.circular(4),
                 ),
                 child: Text(
                   channel.number!,
@@ -1193,7 +1208,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: AppRadius.circular(2),
                   child: LinearProgressIndicator(
                     value: progress,
                     backgroundColor: Colors.white24,

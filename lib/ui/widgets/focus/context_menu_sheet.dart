@@ -38,7 +38,7 @@ class _ContextMenu extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             color: theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(FocusTheme.defaultBorderRadius),
+            borderRadius: AppRadius.circular(FocusTheme.defaultBorderRadius),
             boxShadow: [
               BoxShadow(
                 color: AppColorScheme.scrim.withValues(alpha: 0.4),

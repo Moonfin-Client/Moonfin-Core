@@ -232,7 +232,7 @@ class _ArtThumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: AppRadius.circular(4),
       child: SizedBox(
         width: 44,
         height: 44,
@@ -478,7 +478,7 @@ class _TvTrackInfo extends StatelessWidget {
       duration: const Duration(milliseconds: 90),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.circular(12),
         color: focused ? AppColorScheme.onSurface : Colors.transparent,
       ),
       child: Row(

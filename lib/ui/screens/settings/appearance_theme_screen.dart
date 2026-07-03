@@ -9,7 +9,6 @@ import '../../theme/app_theme_controller.dart';
 import '../../widgets/adaptive/adaptive_segmented.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import 'settings_app_bar.dart';
-import '../../../util/platform_detection.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 
 class AppearanceThemeScreen extends StatefulWidget {
@@ -20,11 +19,11 @@ class AppearanceThemeScreen extends StatefulWidget {
 }
 
 class _AppearanceThemeScreenState extends State<AppearanceThemeScreen> {
-  final _moonfinFocusNode = FocusNode(debugLabel: 'theme_moonfin');
+  final _scrollController = ScrollController();
 
   @override
   void dispose() {
-    _moonfinFocusNode.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -60,37 +59,49 @@ class _AppearanceThemeScreenState extends State<AppearanceThemeScreen> {
               });
 
             return RequestInitialFocus(
-              targetNode: PlatformDetection.isTV ? _moonfinFocusNode : null,
               child: ListView(
+                controller: _scrollController,
                 padding: const EdgeInsets.all(20),
                 children: [
-                  Text(
-                    l10n.interfaceStyle,
-                    style: theme.textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 10),
-                  adaptiveSegmented<InterfaceStyle>(
-                    options: {
-                      InterfaceStyle.automatic: l10n.interfaceStyleAutomatic,
-                      InterfaceStyle.apple: l10n.interfaceStyleApple,
-                      InterfaceStyle.material: l10n.interfaceStyleMaterial,
-                    },
-                    selected: prefs.get(UserPreferences.interfaceStyle),
-                    onChanged: (s) =>
-                        prefs.set(UserPreferences.interfaceStyle, s),
-                  ),
-                  const SizedBox(height: 8),
+                  _SectionHeader(l10n.interfaceStyle, topPadding: 0),
+                  const SizedBox(height: 4),
                   Text(
                     l10n.interfaceStyleSubtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurface.withValues(
-                        alpha: 0.6,
+                        alpha: 0.74,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 12),
+                  Focus(
+                    canRequestFocus: false,
+                    onFocusChange: (hasFocus) {
+                      if (hasFocus) {
+                        _scrollController.animateTo(
+                          0.0,
+                          duration: const Duration(milliseconds: 150),
+                          curve: Curves.easeInOut,
+                        );
+                      }
+                    },
+                    child: adaptiveSegmented<InterfaceStyle>(
+                      context: context,
+                      options: {
+                        InterfaceStyle.automatic: l10n.interfaceStyleAutomatic,
+                        InterfaceStyle.apple: l10n.interfaceStyleApple,
+                        InterfaceStyle.material: l10n.interfaceStyleMaterial,
+                      },
+                      selected: prefs.get(UserPreferences.interfaceStyle),
+                      onChanged: (s) =>
+                          prefs.set(UserPreferences.interfaceStyle, s),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _SectionHeader(l10n.customThemeTitle),
+                  const SizedBox(height: 4),
                   Text(
-                    l10n.settingsAppearanceThemeSubtitle,
+                    l10n.customThemeSubtitle,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurface.withValues(
                         alpha: 0.74,
@@ -100,9 +111,6 @@ class _AppearanceThemeScreenState extends State<AppearanceThemeScreen> {
                   const SizedBox(height: 20),
                   for (var i = 0; i < themes.length; i++) ...[
                     _ThemePreviewCard(
-                      focusNode: themes[i].id == ThemeRegistry.moonfinId
-                          ? _moonfinFocusNode
-                          : null,
                       themeId: themes[i].id,
                       title: _titleForTheme(l10n, themes[i]),
                       subtitle: _subtitleForTheme(l10n, themes[i]),
@@ -130,6 +138,7 @@ class _AppearanceThemeScreenState extends State<AppearanceThemeScreen> {
       ThemeRegistry.moonfinId => l10n.themeMoonfin,
       ThemeRegistry.neonPulseId => l10n.themeNeonPulse,
       ThemeRegistry.glassId => l10n.themeGlass,
+      ThemeRegistry.eightbitHeroId => l10n.theme8BitHero,
       _ => spec.displayName,
     };
   }
@@ -139,6 +148,7 @@ class _AppearanceThemeScreenState extends State<AppearanceThemeScreen> {
       ThemeRegistry.moonfinId => l10n.themeMoonfinSubtitle,
       ThemeRegistry.neonPulseId => l10n.themeNeonPulseSubtitle,
       ThemeRegistry.glassId => l10n.themeGlassSubtitle,
+      ThemeRegistry.eightbitHeroId => l10n.theme8BitHeroSubtitle,
       _ => spec.description,
     };
   }
@@ -147,13 +157,13 @@ class _AppearanceThemeScreenState extends State<AppearanceThemeScreen> {
     if (id == ThemeRegistry.moonfinId) return 0;
     if (id == ThemeRegistry.neonPulseId) return 1;
     if (id == ThemeRegistry.glassId) return 2;
-    return 3;
+    if (id == ThemeRegistry.eightbitHeroId) return 3;
+    return 4;
   }
 }
 
 class _ThemePreviewCard extends StatefulWidget {
   const _ThemePreviewCard({
-    this.focusNode,
     required this.themeId,
     required this.title,
     this.subtitle,
@@ -161,7 +171,6 @@ class _ThemePreviewCard extends StatefulWidget {
     required this.stripes,
   });
 
-  final FocusNode? focusNode;
   final String themeId;
   final String title;
   final String? subtitle;
@@ -211,10 +220,8 @@ class _ThemePreviewCardState extends State<_ThemePreviewCard> {
         : null;
 
     return InkWell(
-      focusNode: widget.focusNode,
-      autofocus:
-          PlatformDetection.isTV && widget.themeId == ThemeRegistry.moonfinId,
-      borderRadius: BorderRadius.circular(18),
+      autofocus: false,
+      borderRadius: AppRadius.circular(18),
       onFocusChange: (f) {
         setState(() => _focused = f);
       },
@@ -225,7 +232,7 @@ class _ThemePreviewCardState extends State<_ThemePreviewCard> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: AppRadius.circular(18),
           border: Border.fromBorderSide(borderSide),
           boxShadow: shadow,
         ),
@@ -235,7 +242,10 @@ class _ThemePreviewCardState extends State<_ThemePreviewCard> {
             Row(
               children: [
                 Expanded(
-                  child: Text(widget.title, style: theme.textTheme.titleMedium),
+                  child: Text(
+                    widget.title,
+                    style: theme.textTheme.titleMedium?.copyWith(fontSize: 15),
+                  ),
                 ),
                 if (widget.selected)
                   Icon(Icons.check_circle, color: AppColorScheme.accent),
@@ -245,7 +255,7 @@ class _ThemePreviewCardState extends State<_ThemePreviewCard> {
             if (widget.subtitle != null) ...[
               Text(
                 widget.subtitle!,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.74),
                 ),
               ),
@@ -253,9 +263,9 @@ class _ThemePreviewCardState extends State<_ThemePreviewCard> {
             ] else
               const SizedBox(height: 10),
             ClipRRect(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: AppRadius.circular(14),
               child: SizedBox(
-                height: 92,
+                height: 52,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -265,13 +275,13 @@ class _ThemePreviewCardState extends State<_ThemePreviewCard> {
                       ),
                     ),
                     Align(
-                      alignment: Alignment.bottomCenter,
+                      alignment: Alignment.center,
                       child: Container(
                         height: 28,
-                        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                        margin: const EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
                           color: AppColorScheme.scrim.withValues(alpha: 0.28),
-                          borderRadius: BorderRadius.circular(999),
+                          borderRadius: AppRadius.circular(999),
                           border: Border.fromBorderSide(
                             ThemeRegistry.active.borders.chipBorder.copyWith(
                               color: widget.stripes.last.withValues(alpha: 0.8),
@@ -285,6 +295,28 @@ class _ThemePreviewCardState extends State<_ThemePreviewCard> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final String text;
+  final double topPadding;
+  const _SectionHeader(this.text, {this.topPadding = 16});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(0, topPadding, 0, 8),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).colorScheme.primary,
+          letterSpacing: 1.2,
         ),
       ),
     );

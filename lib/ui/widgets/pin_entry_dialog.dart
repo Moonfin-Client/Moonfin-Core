@@ -206,7 +206,7 @@ class _PinEntryDialogState extends State<PinEntryDialog> {
         skipTraversal: true,
         onKeyEvent: _onDialogKey,
         child: Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.circular(16)),
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -380,7 +380,7 @@ class _PinEntryDialogState extends State<PinEntryDialog> {
   ButtonStyle _keypadButtonStyle() {
     return ElevatedButton.styleFrom(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.circular(12),
       ),
     ).copyWith(
       backgroundColor: WidgetStateProperty.resolveWith((states) {

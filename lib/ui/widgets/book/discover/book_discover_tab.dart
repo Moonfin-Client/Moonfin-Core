@@ -707,14 +707,14 @@ class _BookDiscoverTabState extends State<BookDiscoverTab> {
     Color foregroundColor = const Color(0xFFEAF4FF),
   }) {
     return InkWell(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: AppRadius.circular(20),
       onTap: onTap,
       child: Container(
         width: 52,
         height: 52,
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: AppRadius.circular(20),
           border: Border.fromBorderSide(
             ThemeRegistry.active.borders.cardBorder.copyWith(
               color: foregroundColor.withAlpha(28),
@@ -730,7 +730,7 @@ class _BookDiscoverTabState extends State<BookDiscoverTab> {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFEFF6FF),
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: AppRadius.circular(32),
         boxShadow: const [
           BoxShadow(
             color: Color(0x1A0F2E4D),
@@ -796,7 +796,7 @@ class _BookDiscoverTabState extends State<BookDiscoverTab> {
                     ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFDDEEFF),
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: AppRadius.circular(999),
                     ),
                     child: Text(
                       displayBookGenre(genre),
@@ -943,7 +943,7 @@ class _BookDiscoverTabState extends State<BookDiscoverTab> {
 
   Widget _buildDiscoverBookCard(DiscoverBook item) {
     return InkWell(
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: AppRadius.circular(18),
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute<void>(
           builder: (_) => DiscoverBookDetailScreen(book: item),
@@ -954,7 +954,7 @@ class _BookDiscoverTabState extends State<BookDiscoverTab> {
         children: [
           Expanded(
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: AppRadius.circular(18),
               child: item.coverUrl == null
                   ? Container(
                       color: const Color(0xFF2C77B7),
@@ -1003,7 +1003,7 @@ class _BookDiscoverTabState extends State<BookDiscoverTab> {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFEFF6FF),
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: AppRadius.circular(32),
         boxShadow: const [
           BoxShadow(
             color: Color(0x1A0F2E4D),
@@ -1092,7 +1092,7 @@ class _BookDiscoverTabState extends State<BookDiscoverTab> {
                     ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFDDEEFF),
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: AppRadius.circular(999),
                     ),
                     child: Text(
                       genre,
@@ -1258,7 +1258,7 @@ class _BookDiscoverTabState extends State<BookDiscoverTab> {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
                 color: Colors.black.withAlpha(50),
-                borderRadius: BorderRadius.circular(999),
+                borderRadius: AppRadius.circular(999),
               ),
               child: Text(
                 duration,
@@ -1285,7 +1285,7 @@ class _BookDiscoverTabState extends State<BookDiscoverTab> {
     final resolvedCover = coverUrl;
 
     return InkWell(
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: AppRadius.circular(18),
       onTap: () {
         final allBooksById = <String, LibrivoxBook>{};
         for (final bookList in _discoverAudiobooksByGenre.values) {
@@ -1310,7 +1310,7 @@ class _BookDiscoverTabState extends State<BookDiscoverTab> {
         children: [
           Expanded(
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: AppRadius.circular(18),
               child: hasCover
                   ? CachedNetworkImage(
                       imageUrl: resolvedCover ?? '',

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -12,17 +14,62 @@ import '../../../data/viewmodels/music_browse_view_model.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
 import '../../../util/focus/dpad_keys.dart';
+import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/focus/focusable_toolbar_button.dart';
 import '../../widgets/focus/request_initial_focus.dart';
+import '../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/home_row_title_localizer.dart';
 import '../../widgets/overlay_sheet.dart';
 
 Color get _navyBackground => AppColorScheme.background;
-const _cardSize = 140.0;
-const _horizontalPadding = 60.0;
+
+double get _horizontalPadding => PlatformDetection.useMobileUi ? 20.0 : 60.0;
+double get _cardSize => PlatformDetection.useMobileUi
+    ? 112.0
+    : (PlatformDetection.isTV ? 168.0 : 148.0);
 const _cardSpacing = 12.0;
+
+/// music library category shown in the chip bar (mobile/TV) and the desktop
+/// rail, routing to the matching all-items screen.
+class _MusicCategory {
+  final IconData icon;
+  final String label;
+  final String route;
+  const _MusicCategory(this.icon, this.label, this.route);
+}
+
+List<_MusicCategory> _musicCategories(BuildContext context, String libraryId) {
+  final l10n = AppLocalizations.of(context);
+  return [
+    _MusicCategory(
+      Icons.album,
+      l10n.albums,
+      Destinations.library(libraryId, includeItemTypes: const ['MusicAlbum']),
+    ),
+    _MusicCategory(
+      Icons.person,
+      l10n.artists,
+      Destinations.library(libraryId, includeItemTypes: const ['AlbumArtist']),
+    ),
+    _MusicCategory(
+      Icons.queue_music,
+      l10n.playlists,
+      Destinations.library(libraryId, includeItemTypes: const ['Playlist']),
+    ),
+    _MusicCategory(
+      Icons.category,
+      l10n.genres,
+      Destinations.libraryGenresOf(libraryId),
+    ),
+    _MusicCategory(
+      Icons.favorite,
+      l10n.favorites,
+      Destinations.musicFavoritesOf(libraryId),
+    ),
+  ];
+}
 
 class MusicBrowseScreen extends StatefulWidget {
   final String libraryId;
@@ -36,6 +83,8 @@ class MusicBrowseScreen extends StatefulWidget {
 class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
   late final MusicBrowseViewModel _vm;
   final _backgroundService = GetIt.instance<BackgroundService>();
+  StreamSubscription<String?>? _backgroundSub;
+  String? _backdropUrl;
 
   @override
   void initState() {
@@ -47,10 +96,15 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
     );
     _vm.addListener(_onChanged);
     _vm.load();
+    _backgroundSub = _backgroundService.backgroundStream.listen((url) {
+      if (mounted) setState(() => _backdropUrl = url);
+    });
+    _backdropUrl = _backgroundService.currentUrl;
   }
 
   @override
   void dispose() {
+    _backgroundSub?.cancel();
     _vm.removeListener(_onChanged);
     _vm.dispose();
     super.dispose();
@@ -69,25 +123,6 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
     context.push(Destinations.item(item.id, serverId: item.serverId));
   }
 
-  void _onRandomAlbum() async {
-    try {
-      final client = GetIt.instance<MediaServerClient>();
-      final response = await client.itemsApi.getItems(
-        parentId: widget.libraryId,
-        includeItemTypes: ['MusicAlbum'],
-        sortBy: 'Random',
-        sortOrder: 'Ascending',
-        recursive: true,
-        limit: 1,
-      );
-      final items = (response['Items'] as List?) ?? [];
-      if (items.isNotEmpty && mounted) {
-        final id = items.first['Id']?.toString() ?? '';
-        context.push(Destinations.itemListOf(id));
-      }
-    } catch (_) {}
-  }
-
   void _showFilterDialog(BuildContext context) {
     OverlaySheetController.show<void>(
       context,
@@ -98,18 +133,70 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
     );
   }
 
+  VoidCallback? _seeAllForRow(String rowId) {
+    String? route;
+    if (rowId.startsWith('musicalbum_')) {
+      route = Destinations.library(
+        widget.libraryId,
+        includeItemTypes: const ['MusicAlbum'],
+      );
+    } else if (rowId.startsWith('albumartist_')) {
+      route = Destinations.library(
+        widget.libraryId,
+        includeItemTypes: const ['AlbumArtist'],
+      );
+    } else if (rowId.startsWith('musicartist_')) {
+      route = Destinations.library(
+        widget.libraryId,
+        includeItemTypes: const ['MusicArtist'],
+      );
+    } else if (rowId == 'playlists') {
+      route = Destinations.library(
+        widget.libraryId,
+        includeItemTypes: const ['Playlist'],
+      );
+    } else if (rowId.startsWith('favorites_')) {
+      route = Destinations.musicFavoritesOf(widget.libraryId);
+    }
+    if (route == null) return null;
+    final target = route;
+    return () => context.push(target);
+  }
+
   @override
   Widget build(BuildContext context) =>
       RequestInitialFocus(child: _buildContent(context));
 
   Widget _buildContent(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final isMobile = PlatformDetection.useMobileUi;
+    final isDesktop = PlatformDetection.useDesktopUi;
+    final hasBackdrop = !isMobile && _backdropUrl != null;
     return Scaffold(
       backgroundColor: _navyBackground,
       body: Stack(
         children: [
-          Container(color: _navyBackground.withAlpha(191)),
-          Column(
+          if (hasBackdrop)
+            Positioned.fill(
+              child: FullscreenBackdropSwitcher(
+                imageUrl: _backdropUrl!,
+                duration: BackgroundService.transitionDuration,
+              ),
+            ),
+          Positioned.fill(
+            child: Container(
+              color: _navyBackground.withAlpha(hasBackdrop ? 140 : 191),
+            ),
+          ),
+          Row(
+            children: [
+              if (isDesktop)
+                _MusicCategoryRail(
+                  libraryId: widget.libraryId,
+                  libraryName: _vm.libraryName,
+                ),
+              Expanded(
+                child: Column(
             children: [
               _MusicHeader(
                 libraryName: _vm.libraryName,
@@ -136,10 +223,25 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
                               itemCount: _vm.rows.length + 1,
                               itemBuilder: (context, index) {
                                 if (index == 0) {
-                                  return _MusicViewsRow(
-                                    key: const ValueKey('views_row'),
-                                    libraryId: widget.libraryId,
-                                    onRandomAlbum: _onRandomAlbum,
+                                  final featured = _vm.featuredItem;
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      if (featured != null)
+                                        _MusicHero(
+                                          key: ValueKey('hero_${featured.id}'),
+                                          item: featured,
+                                          imageUrl: _vm.getMusicImageUrl(featured),
+                                          subtitle: _vm.getMusicSubtitle(featured),
+                                          onFocused: () => _onItemFocused(featured),
+                                        ),
+                                      if (!isDesktop)
+                                        _MusicCategoryBar(
+                                          key: const ValueKey('category_bar'),
+                                          libraryId: widget.libraryId,
+                                        ),
+                                    ],
                                   );
                                 }
                                 final row = _vm.rows[index - 1];
@@ -156,12 +258,16 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
                                   onFocused: _onItemFocused,
                                   onTap: _onItemTap,
                                   onLoadMore: () => _vm.loadMoreForRow(index - 1),
+                                  onSeeAll: _seeAllForRow(row.id),
                                 );
                               },
                             );
                           },
                         ),
                       ),
+              ),
+            ],
+          ),
               ),
             ],
           ),
@@ -216,17 +322,20 @@ class _MusicHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Center(
-            child: Text(
-              libraryName,
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w300,
-                color: AppColorScheme.onSurface,
+          // The desktop rail already shows the library title.
+          if (!PlatformDetection.useDesktopUi) ...[
+            Center(
+              child: Text(
+                libraryName,
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w300,
+                  color: AppColorScheme.onSurface,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 6),
+            const SizedBox(height: 6),
+          ],
           Row(
             children: [
               FocusableToolbarButton(
@@ -305,24 +414,205 @@ class _MusicHeader extends StatelessWidget {
   }
 }
 
-class _MusicViewsRow extends StatefulWidget {
-  final String libraryId;
-  final VoidCallback onRandomAlbum;
+/// Featured/resume hero at the top of the library: large album art, name and
+/// subtitle, with a Play affordance. Focusable for D-pad; tapping (or Play)
+/// opens the item detail, which already owns playback.
+class _MusicHero extends StatefulWidget {
+  final AggregatedItem item;
+  final String? imageUrl;
+  final String subtitle;
+  final VoidCallback onFocused;
 
-  const _MusicViewsRow({super.key, required this.libraryId, required this.onRandomAlbum});
+  const _MusicHero({
+    super.key,
+    required this.item,
+    required this.imageUrl,
+    required this.subtitle,
+    required this.onFocused,
+  });
 
   @override
-  State<_MusicViewsRow> createState() => _MusicViewsRowState();
+  State<_MusicHero> createState() => _MusicHeroState();
 }
 
-class _MusicViewsRowState extends State<_MusicViewsRow> with AutomaticKeepAliveClientMixin {
-  late final ScrollController _scrollController;
+class _MusicHeroState extends State<_MusicHero> with FocusStateMixin {
+  void _open({bool play = false}) {
+    context.push(
+      Destinations.item(
+        widget.item.id,
+        serverId: widget.item.serverId,
+        autoPlay: play,
+      ),
+    );
+  }
 
   @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
+  Widget build(BuildContext context) {
+    final isMobile = PlatformDetection.useMobileUi;
+    final height = isMobile ? 108.0 : (PlatformDetection.isTV ? 220.0 : 168.0);
+    final activeTheme = ThemeRegistry.active;
+    final isNeon = activeTheme.id == ThemeRegistry.neonPulseId;
+    final focusColor = this.focusColor;
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        _horizontalPadding,
+        isMobile ? 4 : 8,
+        _horizontalPadding,
+        isMobile ? 8 : 12,
+      ),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setHovered(true),
+        onExit: (_) => setHovered(false),
+        child: Focus(
+          onFocusChange: (hasFocus) {
+            setFocused(hasFocus);
+            if (hasFocus) widget.onFocused();
+          },
+          onKeyEvent: (_, event) {
+            if (isActivateKey(event)) {
+              _open();
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          child: GestureDetector(
+            onTap: () => _open(),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              height: height,
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                borderRadius: AppRadius.circular(16),
+                color: AppColorScheme.onSurface.withAlpha(showFocusBorder ? 38 : 18),
+                border: showFocusBorder
+                    ? Border.fromBorderSide(
+                        activeTheme.borders.focusBorder.copyWith(
+                          color: focusColor,
+                          width: 2.4,
+                        ),
+                      )
+                    : null,
+                boxShadow: showFocusBorder && !isNeon
+                    ? [
+                        BoxShadow(
+                          color: AppColorScheme.accent.withAlpha(120),
+                          blurRadius: 18,
+                          spreadRadius: 1,
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Row(
+                children: [
+                  AspectRatio(
+                    aspectRatio: 1,
+                    child: widget.imageUrl != null
+                        ? CachedNetworkImage(
+                            imageUrl: widget.imageUrl!,
+                            fit: BoxFit.cover,
+                            errorWidget: (_, _, _) => _heroArtPlaceholder(),
+                          )
+                        : _heroArtPlaceholder(),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile ? 14 : 24,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'JUMP BACK IN',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.2,
+                              color: AppColorScheme.accent,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            widget.item.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: isMobile ? 18 : 24,
+                              fontWeight: FontWeight.w800,
+                              color: AppColorScheme.onSurface,
+                            ),
+                          ),
+                          if (widget.subtitle.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              widget.subtitle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: isMobile ? 13 : 15,
+                                color: AppColorScheme.onSurface.withAlpha(179),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(right: isMobile ? 14 : 24),
+                    child: GestureDetector(
+                      onTap: () => _open(play: true),
+                      child: Container(
+                        width: isMobile ? 40 : 52,
+                        height: isMobile ? 40 : 52,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColorScheme.accent,
+                        ),
+                        child: Icon(
+                          Icons.play_arrow_rounded,
+                          color: AppColorScheme.onAccent,
+                          size: isMobile ? 26 : 32,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
+
+  Widget _heroArtPlaceholder() => Container(
+    color: AppColorScheme.onSurface.withAlpha(20),
+    child: Center(
+      child: Icon(
+        Icons.album,
+        size: 40,
+        color: AppColorScheme.onSurface.withAlpha(51),
+      ),
+    ),
+  );
+}
+
+/// Horizontal category chips (mobile / TV) under the hero.
+class _MusicCategoryBar extends StatefulWidget {
+  final String libraryId;
+  const _MusicCategoryBar({super.key, required this.libraryId});
+
+  @override
+  State<_MusicCategoryBar> createState() => _MusicCategoryBarState();
+}
+
+class _MusicCategoryBarState extends State<_MusicCategoryBar>
+    with AutomaticKeepAliveClientMixin {
+  final _scrollController = ScrollController();
 
   @override
   void dispose() {
@@ -333,141 +623,145 @@ class _MusicViewsRowState extends State<_MusicViewsRow> with AutomaticKeepAliveC
   @override
   bool get wantKeepAlive => true;
 
-  void _onFocused(bool isFirst) {
-    if (mounted) {
-      Scrollable.ensureVisible(
-        context,
-        alignment: 0.5,
+  void _ensureVisible(bool isFirst) {
+    if (!mounted) return;
+    Scrollable.ensureVisible(
+      context,
+      alignment: 0.5,
+      duration: const Duration(milliseconds: 240),
+      curve: Curves.easeInOut,
+    );
+    if (isFirst && _scrollController.hasClients) {
+      _scrollController.animateTo(
+        0,
         duration: const Duration(milliseconds: 240),
         curve: Curves.easeInOut,
       );
-      if (isFirst && _scrollController.hasClients) {
-        _scrollController.animateTo(
-          0,
-          duration: const Duration(milliseconds: 240),
-          curve: Curves.easeInOut,
-        );
-      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            _horizontalPadding,
-            12,
-            _horizontalPadding,
-            8,
-          ),
-          child: Text(
-            AppLocalizations.of(context).views,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppColorScheme.onSurface,
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 104,
-          child: ListView(
-            controller: _scrollController,
-            scrollDirection: Axis.horizontal,
-            clipBehavior: Clip.none,
-            padding: const EdgeInsets.fromLTRB(
-              _horizontalPadding,
-              4,
-              _horizontalPadding,
-              6,
-            ),
-            children: [
-              _ViewButton(
-                icon: Icons.album,
-                label: AppLocalizations.of(context).albums,
-                isFirst: true,
-                onFocused: () => _onFocused(true),
-                onTap: () => context.push(
-                  Destinations.library(
-                    widget.libraryId,
-                    includeItemTypes: ['MusicAlbum'],
-                  ),
-                ),
-              ),
-              const SizedBox(width: _cardSpacing),
-              _ViewButton(
-                icon: Icons.person,
-                label: AppLocalizations.of(context).albumArtists,
-                onFocused: () => _onFocused(false),
-                onTap: () => context.push(
-                  Destinations.library(
-                    widget.libraryId,
-                    includeItemTypes: ['AlbumArtist'],
-                  ),
-                ),
-              ),
-              const SizedBox(width: _cardSpacing),
-              _ViewButton(
-                icon: Icons.groups,
-                label: AppLocalizations.of(context).artists,
-                onFocused: () => _onFocused(false),
-                onTap: () => context.push(
-                  Destinations.library(
-                    widget.libraryId,
-                    includeItemTypes: ['MusicArtist'],
-                  ),
-                ),
-              ),
-              const SizedBox(width: _cardSpacing),
-              _ViewButton(
-                icon: Icons.album,
-                label: AppLocalizations.of(context).genres,
-                isLast: true,
-                onFocused: () => _onFocused(false),
-                onTap: () =>
-                    context.push(Destinations.libraryGenresOf(widget.libraryId)),
-              ),
-            ],
-          ),
-        ),
-      ],
+    final categories = _musicCategories(context, widget.libraryId);
+    return SizedBox(
+      height: 56,
+      child: ListView.separated(
+        controller: _scrollController,
+        scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
+        padding: EdgeInsets.fromLTRB(_horizontalPadding, 6, _horizontalPadding, 8),
+        itemCount: categories.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
+        itemBuilder: (context, i) {
+          final c = categories[i];
+          return _CategoryButton(
+            icon: c.icon,
+            label: c.label,
+            isFirst: i == 0,
+            isLast: i == categories.length - 1,
+            onFocused: () => _ensureVisible(i == 0),
+            onTap: () => context.push(c.route),
+          );
+        },
+      ),
     );
   }
 }
 
-class _ViewButton extends StatefulWidget {
+/// Vertical category rail shown on the left of the desktop layout.
+class _MusicCategoryRail extends StatelessWidget {
+  final String libraryId;
+  final String libraryName;
+  const _MusicCategoryRail({
+    required this.libraryId,
+    required this.libraryName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final categories = _musicCategories(context, libraryId);
+    final title = libraryName.isEmpty
+        ? AppLocalizations.of(context).music
+        : libraryName;
+    return Container(
+      width: 244,
+      color: AppColorScheme.onSurface.withAlpha(12),
+      child: SafeArea(
+        right: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(28, 24, 20, 18),
+              child: Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  color: AppColorScheme.onSurface,
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                itemCount: categories.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 4),
+                itemBuilder: (context, i) {
+                  final c = categories[i];
+                  return _CategoryButton(
+                    icon: c.icon,
+                    label: c.label,
+                    vertical: true,
+                    onTap: () => context.push(c.route),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A focusable category control rendered either as a horizontal pill (chip
+/// bar) or a full-width tile (desktop rail)
+class _CategoryButton extends StatefulWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
   final VoidCallback? onFocused;
   final bool isFirst;
   final bool isLast;
+  final bool vertical;
 
-  const _ViewButton({
+  const _CategoryButton({
     required this.icon,
     required this.label,
     required this.onTap,
     this.onFocused,
     this.isFirst = false,
     this.isLast = false,
+    this.vertical = false,
   });
 
   @override
-  State<_ViewButton> createState() => _ViewButtonState();
+  State<_CategoryButton> createState() => _CategoryButtonState();
 }
 
-class _ViewButtonState extends State<_ViewButton> with FocusStateMixin {
+class _CategoryButtonState extends State<_CategoryButton> with FocusStateMixin {
   @override
   Widget build(BuildContext context) {
-    final cardExpansion = GetIt.instance<UserPreferences>().get(
-      UserPreferences.cardFocusExpansion,
-    );
-    final focusColor = this.focusColor;
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+    final active = showFocusBorder;
+    final fg = active
+        ? AppColorScheme.onAccent
+        : AppColorScheme.onSurface.withAlpha(220);
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setHovered(true),
@@ -482,7 +776,7 @@ class _ViewButtonState extends State<_ViewButton> with FocusStateMixin {
             widget.onTap();
             return KeyEventResult.handled;
           }
-          if (event.isActionable) {
+          if (event.isActionable && !widget.vertical) {
             if (widget.isFirst && event.logicalKey.isLeftKey) {
               return KeyEventResult.handled;
             }
@@ -494,59 +788,47 @@ class _ViewButtonState extends State<_ViewButton> with FocusStateMixin {
         },
         child: GestureDetector(
           onTap: widget.onTap,
-          child: AnimatedScale(
-            scale: cardExpansion && showFocusBorder ? 1.05 : 1.0,
-            duration: const Duration(milliseconds: 120),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              width: _cardSize,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: AppColorScheme.onSurface.withAlpha(focused ? 51 : 20),
-                borderRadius: BorderRadius.circular(8),
-                border: showFocusBorder
-                    ? Border.fromBorderSide(
-                        ThemeRegistry.active.borders.focusBorder.copyWith(
-                          color: focusColor,
-                          width: 2.4,
-                        ),
-                      )
-                    : null,
-                boxShadow: showFocusBorder && ThemeRegistry.active.id != ThemeRegistry.neonPulseId
-                    ? [
-                        BoxShadow(
-                          color: AppColorScheme.accent.withAlpha(140),
-                          blurRadius: 14,
-                          spreadRadius: 1.2,
-                        ),
-                      ]
-                    : null,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    widget.icon,
-                    size: 30,
-                    color: AppColorScheme.onSurface.withAlpha(
-                      focused ? 255 : 153,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            padding: EdgeInsets.symmetric(
+              horizontal: widget.vertical ? 16 : 18,
+              vertical: widget.vertical ? 12 : 10,
+            ),
+            decoration: BoxDecoration(
+              color: active
+                  ? AppColorScheme.accent
+                  : (widget.vertical
+                        ? Colors.transparent
+                        : AppColorScheme.onSurface.withAlpha(22)),
+              borderRadius: AppRadius.circular(widget.vertical ? 12 : 22),
+              boxShadow: active && !isNeon
+                  ? [
+                      BoxShadow(
+                        color: AppColorScheme.accent.withAlpha(120),
+                        blurRadius: 14,
+                        spreadRadius: 1,
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Row(
+              mainAxisSize: widget.vertical ? MainAxisSize.max : MainAxisSize.min,
+              children: [
+                Icon(widget.icon, size: 20, color: fg),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Text(
                     widget.label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: focused ? FontWeight.w600 : FontWeight.normal,
-                      color: AppColorScheme.onSurface.withAlpha(
-                        focused ? 255 : 179,
-                      ),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: fg,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -564,6 +846,7 @@ class _MusicItemRow extends StatefulWidget {
   final ValueChanged<AggregatedItem> onFocused;
   final ValueChanged<AggregatedItem> onTap;
   final VoidCallback? onLoadMore;
+  final VoidCallback? onSeeAll;
 
   const _MusicItemRow({
     super.key,
@@ -575,6 +858,7 @@ class _MusicItemRow extends StatefulWidget {
     required this.onFocused,
     required this.onTap,
     this.onLoadMore,
+    this.onSeeAll,
   });
 
   @override
@@ -627,19 +911,45 @@ class _MusicItemRowState extends State<_MusicItemRow> with AutomaticKeepAliveCli
       mainAxisSize: MainAxisSize.min,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(
+          padding: EdgeInsets.fromLTRB(
             _horizontalPadding,
             16,
             _horizontalPadding,
             8,
           ),
-          child: Text(
-            widget.title,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppColorScheme.onSurface,
-            ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  widget.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: AppColorScheme.onSurface,
+                  ),
+                ),
+              ),
+              if (widget.onSeeAll != null)
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: widget.onSeeAll,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12),
+                      child: Text(
+                        '${AppLocalizations.of(context).seeAll} ›',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppColorScheme.accent,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
         SizedBox(
@@ -648,7 +958,7 @@ class _MusicItemRowState extends State<_MusicItemRow> with AutomaticKeepAliveCli
             controller: _scrollController,
             scrollDirection: Axis.horizontal,
             clipBehavior: Clip.none,
-            padding: const EdgeInsets.fromLTRB(_horizontalPadding, 6, _horizontalPadding, 12),
+            padding: EdgeInsets.fromLTRB(_horizontalPadding, 6, _horizontalPadding, 12),
             itemCount: widget.items.length,
             separatorBuilder: (_, _) => const SizedBox(width: _cardSpacing),
             itemBuilder: (_, i) {
@@ -658,6 +968,8 @@ class _MusicItemRowState extends State<_MusicItemRow> with AutomaticKeepAliveCli
                 title: item.name,
                 subtitle: widget.getSubtitle(item),
                 imageUrl: widget.getImageUrl(item),
+                isCircular:
+                    item.type == 'MusicArtist' || item.type == 'AlbumArtist',
                 onFocus: () {
                   _onCardFocused(item, isFirst);
                   if (i >= widget.items.length - 8) {
@@ -684,6 +996,7 @@ class _MusicSquareCard extends StatefulWidget {
   final VoidCallback? onTap;
   final bool isFirst;
   final bool isLast;
+  final bool isCircular;
 
   const _MusicSquareCard({
     required this.title,
@@ -693,6 +1006,7 @@ class _MusicSquareCard extends StatefulWidget {
     this.onTap,
     this.isFirst = false,
     this.isLast = false,
+    this.isCircular = false,
   });
 
   @override
@@ -717,6 +1031,8 @@ class _MusicSquareCardState extends State<_MusicSquareCard>
           );
 
     final showGlow = showFocusBorder && !isNeon;
+    final imgRadius = widget.isCircular ? _cardSize / 2 : 12.0;
+    final ringRadius = widget.isCircular ? _cardSize / 2 : 15.0;
 
     return SizedBox(
       width: _cardSize,
@@ -752,7 +1068,9 @@ class _MusicSquareCardState extends State<_MusicSquareCard>
                 scale: cardExpansion && showFocusBorder ? 1.08 : 1.0,
                 duration: const Duration(milliseconds: 150),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: widget.isCircular
+                      ? CrossAxisAlignment.center
+                      : CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Stack(
@@ -767,7 +1085,7 @@ class _MusicSquareCardState extends State<_MusicSquareCard>
                             child: IgnorePointer(
                               child: Container(
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(9.5),
+                                  borderRadius: AppRadius.circular(ringRadius),
                                   boxShadow: [
                                     BoxShadow(
                                       color: AppColorScheme.accent.withAlpha(150),
@@ -780,7 +1098,7 @@ class _MusicSquareCardState extends State<_MusicSquareCard>
                             ),
                           ),
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: AppRadius.circular(imgRadius),
                           child: Container(
                             width: _cardSize,
                             height: _cardSize,
@@ -808,7 +1126,7 @@ class _MusicSquareCardState extends State<_MusicSquareCard>
                             child: IgnorePointer(
                               child: Container(
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(9.5),
+                                  borderRadius: AppRadius.circular(ringRadius),
                                   border: Border.fromBorderSide(
                                     activeTheme.borders.focusBorder.copyWith(
                                       color: focusColor,
@@ -915,7 +1233,7 @@ class _MusicRowVisibilityDialogState extends State<_MusicRowVisibilityDialog> {
     return Dialog(
       backgroundColor: surfaceColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.circular(20),
         side: ThemeRegistry.active.borders.chipBorder.copyWith(
           color: onSurface.withValues(alpha: 0.18),
         ),
@@ -1134,7 +1452,7 @@ class _DialogCheckboxTileState extends State<_DialogCheckboxTile> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: _focused ? onSurface.withAlpha(36) : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.circular(8),
             border: _focused
                 ? Border.fromBorderSide(
                     ThemeRegistry.active.borders.focusBorder.copyWith(
@@ -1151,7 +1469,7 @@ class _DialogCheckboxTileState extends State<_DialogCheckboxTile> {
                 height: 20,
                 decoration: BoxDecoration(
                   shape: widget.isRadio ? BoxShape.circle : BoxShape.rectangle,
-                  borderRadius: widget.isRadio ? null : BorderRadius.circular(4),
+                  borderRadius: widget.isRadio ? null : AppRadius.circular(4),
                   border: Border.fromBorderSide(
                     ThemeRegistry.active.borders.chipBorder.copyWith(
                       color: widget.checked ? accent : onSurface.withAlpha(128),

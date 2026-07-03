@@ -1398,7 +1398,7 @@ class _DetailContentState extends State<_DetailContent> {
             child: AspectRatio(
               aspectRatio: 2 / 3,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.circular(14),
                 child: coverUrl == null
                     ? Container(
                         color: const Color(0xFF2C77B7),
@@ -1444,7 +1444,7 @@ class _DetailContentState extends State<_DetailContent> {
                   onTap: author != null
                       ? () => _openBookAuthorDetails(context, item, author)
                       : null,
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: AppRadius.circular(6),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 2),
                     child: Text(
@@ -1530,7 +1530,7 @@ class _DetailContentState extends State<_DetailContent> {
                   ),
                   decoration: BoxDecoration(
                     color: ThemeRegistry.active.borders.chipBackground,
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: AppRadius.circular(999),
                     border: Border.fromBorderSide(
                       ThemeRegistry.active.borders.chipBorder,
                     ),
@@ -1727,6 +1727,7 @@ class _DetailContentState extends State<_DetailContent> {
     final hasSeasons = viewModel.seasons.isNotEmpty;
     final hasCast = viewModel.actors.isNotEmpty;
     final hasSimilar = viewModel.similar.isNotEmpty;
+    final hasFeatures = viewModel.features.isNotEmpty;
     final hasNextUp = viewModel.nextUp != null;
     final seriesNextUpFocusNode = hasNextUp ? _seriesNextUpFocusNode : null;
     final seasonsFocusNode = hasSeasons
@@ -1910,12 +1911,24 @@ class _DetailContentState extends State<_DetailContent> {
                   seriesNextUpFocusNode ??
                   metadataFocusNode ??
                   actionButtonsFocusNode,
+              downTarget: hasFeatures ? _firstFeatureFocusNode : null,
               itemCount: viewModel.similar.length,
-              consumeDownWhenNoTarget: true,
+              consumeDownWhenNoTarget: !hasFeatures,
             ),
           ),
         ),
       ],
+      ..._buildChapterAndFeatureSections(
+        context,
+        item,
+        selectedMediaSourceId: selectedMediaSourceId,
+        prevSectionFocusNode: similarFocusNode ??
+            castFocusNode ??
+            seasonsFocusNode ??
+            seriesNextUpFocusNode ??
+            metadataFocusNode ??
+            actionButtonsFocusNode,
+      ),
       const SizedBox(height: 48),
     ];
   }
@@ -1949,6 +1962,11 @@ class _DetailContentState extends State<_DetailContent> {
           ),
         ),
       ],
+      ..._buildChapterAndFeatureSections(
+        context,
+        item,
+        selectedMediaSourceId: selectedMediaSourceId,
+      ),
       const SizedBox(height: 48),
     ];
   }
@@ -3475,7 +3493,7 @@ class _HeaderSection extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.circular(12),
                     ),
                     child: Text(
                       'S${item.parentIndexNumber}E${item.indexNumber}',
@@ -3664,7 +3682,7 @@ class _LyricsPanel extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.32),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.circular(10),
         border: Border.fromBorderSide(
           ThemeRegistry.active.borders.cardBorder.copyWith(
             color: Colors.white.withValues(alpha: 0.14),
@@ -3736,7 +3754,7 @@ class _DownloadedBadgeState extends State<_DownloadedBadge> {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: const Color(0xFF4CAF50),
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: AppRadius.circular(4),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -3785,7 +3803,7 @@ class DetailPosterImage extends StatelessWidget {
       child: Stack(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.circular(8),
             child: CachedNetworkImage(
               imageUrl: imageApi.getPrimaryImageUrl(
                 item.id,
@@ -3836,7 +3854,7 @@ class DetailPosterImage extends StatelessWidget {
               right: 6,
               bottom: 6,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(3),
+                borderRadius: AppRadius.circular(3),
                 child: LinearProgressIndicator(
                   value: item.playedPercentage! / 100.0,
                   minHeight: 6,
@@ -3875,7 +3893,7 @@ class _EpisodeThumbnail extends StatelessWidget {
       child: Stack(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.circular(8),
             child: CachedNetworkImage(
               imageUrl: imageApi.getPrimaryImageUrl(
                 item.id,
@@ -3926,7 +3944,7 @@ class _EpisodeThumbnail extends StatelessWidget {
               right: 6,
               bottom: 6,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(3),
+                borderRadius: AppRadius.circular(3),
                 child: LinearProgressIndicator(
                   value: item.playedPercentage! / 100.0,
                   minHeight: 6,
@@ -4116,7 +4134,7 @@ class DetailMetadataRow extends StatelessWidget {
                 ),
               )
             : null,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: AppRadius.circular(4),
       ),
       child: Text(
         label,
@@ -4136,7 +4154,7 @@ class DetailMetadataRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: isEnded ? const Color(0xFFB71C1C) : const Color(0xFF2E7D32),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: AppRadius.circular(4),
       ),
       child: Text(
         isEnded
@@ -4162,7 +4180,7 @@ class DetailMetadataRow extends StatelessWidget {
                 : Colors.white.withValues(alpha: 0.3),
           ),
         ),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: AppRadius.circular(4),
       ),
       child: Text(
         label,
@@ -4716,7 +4734,7 @@ class _AuthorBookTile extends StatelessWidget {
             fit: StackFit.expand,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.circular(12),
                 child: Container(
                   color: const Color(0xFF2C77B7),
                   child: book.coverUrl == null
@@ -4797,7 +4815,7 @@ class _AuthorBookTile extends StatelessWidget {
     }
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: AppRadius.circular(12),
       child: content,
     );
   }
@@ -6353,7 +6371,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                         decoration: BoxDecoration(
                           color: hasFocus ? Colors.white12 : Colors.transparent,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: AppRadius.circular(8),
                         ),
                         child: Row(
                           children: [
@@ -6389,7 +6407,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                           decoration: BoxDecoration(
                             color: hasFocus ? Colors.white12 : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: AppRadius.circular(8),
                           ),
                           child: Row(
                             children: [
@@ -6424,7 +6442,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                         decoration: BoxDecoration(
                           color: hasFocus ? Colors.white12 : Colors.transparent,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: AppRadius.circular(8),
                         ),
                         child: Row(
                           children: [
@@ -9344,7 +9362,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
             color: showHighlight
                 ? AppColorScheme.buttonFocused
                 : Colors.white.withValues(alpha: 0.06),
-            borderRadius: BorderRadius.circular(height / 2),
+            borderRadius: AppRadius.circular(height / 2),
             border: Border.all(
               color: showHighlight ? focusColor : Colors.transparent,
               width: 3,
@@ -9415,7 +9433,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
               width: height,
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(height / 2),
+                borderRadius: AppRadius.circular(height / 2),
                 border: Border.all(
                   color: Colors.transparent,
                   width: 3,
@@ -9505,7 +9523,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
         right: isExpanded ? 16 : 0,
       ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(height / 2),
+        borderRadius: AppRadius.circular(height / 2),
         color: showHighlight
             ? AppColorScheme.buttonFocused
             : (widget.isActive
@@ -9645,7 +9663,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
               : (isNeon ? neonAccent : Colors.white));
     final labelColor = showHighlight
         ? (isNeon
-              ? neonAccent
+              ? AppColorScheme.accent
               : (AppColorScheme.isGlass
                     ? Colors.white
                     : AppColorScheme.onButtonFocused))
@@ -9787,7 +9805,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                                   ),
                                 )
                               : null,
-                          borderRadius: BorderRadius.circular(
+                          borderRadius: AppRadius.circular(
                             isMobile ? 14 : 15 * desktopScale,
                           ),
                         ),
@@ -10415,7 +10433,7 @@ class _ChapterListCardState extends State<_ChapterListCard>
                   child: DecoratedBox(
                     position: DecorationPosition.foreground,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: AppRadius.circular(10),
                       border: showFocusBorder
                           ? Border.fromBorderSide(
                               ThemeRegistry.active.borders.focusBorder.copyWith(
@@ -10432,10 +10450,10 @@ class _ChapterListCardState extends State<_ChapterListCard>
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.06),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: AppRadius.circular(10),
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(9),
+                        borderRadius: AppRadius.circular(9),
                         child: SizedBox(
                           width: double.infinity,
                           child: Image.network(
@@ -10551,7 +10569,7 @@ class _MetadataChipState extends State<_MetadataChip> with FocusStateMixin {
                           : Colors.white.withValues(alpha: 0.1)),
                 width: 1.5,
               ),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppRadius.circular(8),
             ),
             child: Text(
               widget.item.name,
@@ -10930,7 +10948,7 @@ class DetailMetadataSectionState extends State<DetailMetadataSection> {
             width: isNeon ? 1.2 : null,
           ),
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.circular(12),
       ),
       child: isMobile
           ? Padding(
@@ -11364,7 +11382,7 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
           child: Container(
             width: widget.isMobile ? 180.0 : 220.0 * desktopScale,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppRadius.circular(8),
               border: showFocusBorder
                   ? Border.fromBorderSide(
                       ThemeRegistry.active.borders.focusBorder.copyWith(
@@ -11562,7 +11580,7 @@ class DetailNextUpCardState extends State<DetailNextUpCard> with FocusStateMixin
                 color: isNeon
                     ? Colors.transparent
                     : Colors.white.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.circular(8),
                 border: showFocusBorder
                     ? Border.fromBorderSide(
                         ThemeRegistry.active.borders.focusBorder.copyWith(
@@ -11748,7 +11766,7 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard> with FocusStateMix
                 color: isNeon
                     ? Colors.transparent
                     : Colors.white.withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.circular(8),
                 border: showFocusBorder
                     ? Border.fromBorderSide(
                         ThemeRegistry.active.borders.focusBorder.copyWith(
@@ -11767,7 +11785,7 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard> with FocusStateMix
               ),
               clipBehavior: Clip.none,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.circular(8),
                 child: Row(
                 children: [
                   SizedBox(
@@ -12347,7 +12365,7 @@ class _ExpandableBiographyState extends State<ExpandableBiography> {
                     : EdgeInsets.zero,
                 decoration: canToggle
                     ? BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: AppRadius.circular(12),
                         border: Border.all(
                           color: _focused
                               ? (isNeon ? AppColorScheme.accent : focusColor)
@@ -12812,7 +12830,7 @@ class _AlbumHeader extends StatelessWidget {
     final albumSize = isMobile ? 150.0 : 200.0 * desktopScale;
 
     final albumArt = ClipRRect(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: AppRadius.circular(8),
       child: item.primaryImageTag != null
           ? CachedNetworkImage(
               imageUrl: imageApi.getPrimaryImageUrl(
@@ -13537,14 +13555,14 @@ class _TrackTileState extends State<_TrackTile> with FocusStateMixin {
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: AppRadius.circular(4),
           border: Border.all(
             color: alternateAccentColor,
             width: 1.5,
           ),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(2.5),
+          borderRadius: AppRadius.circular(2.5),
           child: CachedNetworkImage(
             imageUrl: imageUrl,
             fit: fit,
@@ -13592,7 +13610,7 @@ class _TrackTileState extends State<_TrackTile> with FocusStateMixin {
             height: 56,
             decoration: BoxDecoration(
               color: showFocusBorder ? activeBackground : baseBackground,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: AppRadius.circular(4),
               border: showFocusBorder
                   ? Border.fromBorderSide(
                       ThemeRegistry.active.borders.focusBorder.copyWith(
@@ -13882,7 +13900,7 @@ class _PersonDisplaySettingsDialogState
     return Dialog(
       backgroundColor: AppColorScheme.surface.withValues(alpha: 0.92),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.circular(20),
         side: ThemeRegistry.active.borders.chipBorder.copyWith(
           color: onSurface.withValues(alpha: 0.18),
         ),
@@ -14065,7 +14083,7 @@ class _PersonDisplaySettingsDialogState
               width: 18,
               height: 18,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: AppRadius.circular(4),
                 border: Border.fromBorderSide(
                   ThemeRegistry.active.borders.chipBorder.copyWith(
                     color: checked ? accent : onSurface.withValues(alpha: 0.5),

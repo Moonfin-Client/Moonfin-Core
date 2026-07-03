@@ -36,26 +36,43 @@ class EmbyLiveTvApi implements LiveTvApi {
     List<String>? channelIds,
     String? fields,
     bool? enableTotalRecordCount,
+    bool? enableImages,
+    bool? enableUserData,
     String? userId,
   }) async {
-    final channelIdsParam =
-        (channelIds != null && channelIds.isNotEmpty)
-            ? channelIds.join(',')
-            : null;
-    final params = {
+    final ids =
+        (channelIds != null && channelIds.isNotEmpty) ? channelIds : null;
+    final joined = ids?.join(',');
+    final usePost = joined != null && joined.length > _postChannelIdsThreshold;
+
+    // EnableImages/EnableUserData are off for the guide to keep the per-program
+    // payload small (issue #666). Channel logos come from /LiveTv/Channels, not
+    // this response, so they are unaffected.
+    final common = <String, dynamic>{
       if (startDate != null) 'MinEndDate': startDate.toUtc().toIso8601String(),
       if (endDate != null) 'MaxStartDate': endDate.toUtc().toIso8601String(),
-      'ChannelIds': ?channelIdsParam,
       'Fields': ?fields,
       'EnableTotalRecordCount': ?enableTotalRecordCount,
+      'EnableImages': ?enableImages,
+      'EnableUserData': ?enableUserData,
       'UserId': ?userId,
     };
 
-    final response =
-        (channelIdsParam != null &&
-                channelIdsParam.length > _postChannelIdsThreshold)
-            ? await _dio.post('/LiveTv/Programs', data: params)
-            : await _dio.get('/LiveTv/Programs', queryParameters: params);
+    // POST needs ChannelIds as a JSON array (Jellyfin GetProgramsDto and remux
+    // GetProgramsBody both type it as a GUID list); a comma string is rejected
+    // by strict servers. GET uses the conventional comma form.
+    final Response response;
+    if (usePost) {
+      response = await _dio.post('/LiveTv/Programs', data: {
+        ...common,
+        'ChannelIds': ids,
+      });
+    } else {
+      response = await _dio.get('/LiveTv/Programs', queryParameters: {
+        ...common,
+        'ChannelIds': ?joined,
+      });
+    }
     return response.data as Map<String, dynamic>;
   }
 

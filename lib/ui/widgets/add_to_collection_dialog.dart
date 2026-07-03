@@ -294,7 +294,7 @@ class _AddToCollectionDialogState extends State<AddToCollectionDialog> {
                   ),
                   decoration: BoxDecoration(
                     color: AppColorScheme.surface.withValues(alpha: 0.9),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: AppRadius.circular(20),
                     border: Border.fromBorderSide(
                       ThemeRegistry.active.borders.chipBorder,
                     ),
@@ -348,7 +348,7 @@ class _AddToCollectionDialogState extends State<AddToCollectionDialog> {
                                   alpha: 0.08,
                                 ),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: AppRadius.circular(8),
                                   borderSide: BorderSide.none,
                                 ),
                               ),
@@ -405,7 +405,7 @@ class _AddToCollectionDialogState extends State<AddToCollectionDialog> {
         constraints: const BoxConstraints(minWidth: 340, maxWidth: 440),
         decoration: BoxDecoration(
           color: AppColorScheme.surface.withValues(alpha: 0.9),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: AppRadius.circular(20),
           border: Border.fromBorderSide(
             ThemeRegistry.active.borders.chipBorder,
           ),

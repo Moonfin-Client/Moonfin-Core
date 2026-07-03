@@ -32,6 +32,13 @@ abstract class ItemsApi {
     String? anyProviderIdEquals,
   });
 
+  Future<Map<String, dynamic>> getPersons({
+    required String searchTerm,
+    int? limit,
+    String? fields,
+    String? enableImageTypes,
+  });
+
   Future<Map<String, dynamic>> getItem(String itemId, {String? mediaSourceId});
   Future<List<Map<String, dynamic>>> getAncestors(String itemId);
   Future<Map<String, dynamic>> getSimilarItems(String itemId, {int? limit});

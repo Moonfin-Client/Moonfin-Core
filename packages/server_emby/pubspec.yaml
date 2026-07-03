@@ -11,3 +11,6 @@ dependencies:
     path: ../server_core
   dio: ^5.9.2
   logger: ^2.6.2
+
+dev_dependencies:
+  test: ^1.25.0

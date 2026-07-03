@@ -41,7 +41,7 @@ class _PosterSizeSettingsDialogState extends State<PosterSizeSettingsDialog> {
     return Dialog(
       backgroundColor: AppColorScheme.surface.withValues(alpha: 0.9),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.circular(20),
         side: ThemeRegistry.active.borders.chipBorder.copyWith(
           color: onSurface.withValues(alpha: 0.18),
         ),

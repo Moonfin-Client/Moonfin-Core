@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:moonfin_design/moonfin_design.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -466,7 +467,7 @@ class _PluginWebSettingsScreenState extends State<PluginWebSettingsScreen> {
               ),
               prefixIcon: const Icon(Icons.language, size: 18),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.circular(14),
               ),
             ),
           );

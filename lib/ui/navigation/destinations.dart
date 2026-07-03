@@ -82,6 +82,11 @@ class Destinations {
   static const itemDetail = '/item/:itemId';
   static const musicFavorites = '/music-favorites/:parentId';
 
+  // Games (EmulatorJS)
+  static const gameLibrary = '/games/:libraryId';
+  static const gameDetail = '/game/:libraryId/:gameId';
+  static const gamePlayer = '/game-player/:libraryId/:gameId';
+
   // Live TV
   static const liveTv = '/live-tv';
   static const liveTvGuide = '/live-tv/guide';
@@ -178,6 +183,32 @@ class Destinations {
   }
 
   static String itemListOf(String itemId) => '/item/$itemId/list';
+
+  // Games (EmulatorJS)
+  static String gamesLibrary(String libraryId) =>
+      '/games/${Uri.encodeComponent(libraryId)}';
+  static String gameDetailOf(String libraryId, String gameId) =>
+      '/game/${Uri.encodeComponent(libraryId)}/${Uri.encodeComponent(gameId)}';
+  static String gamePlayerOf(
+    String libraryId,
+    String gameId, {
+    required String core,
+    String? biosId,
+    String? name,
+    bool startFresh = false,
+  }) {
+    final base =
+        '/game-player/${Uri.encodeComponent(libraryId)}/${Uri.encodeComponent(gameId)}';
+    final params = <String>[
+      'core=${Uri.encodeQueryComponent(core)}',
+      if (biosId != null && biosId.isNotEmpty)
+        'bios=${Uri.encodeQueryComponent(biosId)}',
+      if (name != null && name.isNotEmpty)
+        'name=${Uri.encodeQueryComponent(name)}',
+      if (startFresh) 'fresh=1',
+    ];
+    return '$base?${params.join('&')}';
+  }
   static String musicFavoritesOf(String parentId) =>
       '/music-favorites/$parentId';
   static String genre(

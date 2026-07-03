@@ -234,7 +234,7 @@ class _SubtitleCustomizationScreenState
               color: activeFocusStyling
                   ? AppColorScheme.onSurface
                   : colorScheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.circular(12),
               border: Border.fromBorderSide(
                 (activeFocusStyling
                         ? ThemeRegistry.active.borders.focusBorder

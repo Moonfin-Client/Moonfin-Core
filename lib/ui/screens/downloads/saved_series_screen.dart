@@ -196,7 +196,7 @@ class SavedSeriesScreen extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: AppColorScheme.onSurface.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: AppRadius.circular(4),
       ),
       child: Text(
         text,

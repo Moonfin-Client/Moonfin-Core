@@ -120,6 +120,22 @@ class _AuthenticationCategoryScreen extends StatelessWidget {
                 ),
             ],
           ),
+          // Certificate trust is the browser's job on web, so this is
+          // native-only.
+          if (!PlatformDetection.isWeb) ...[
+            _SectionHeader(l10n.settingsConnectionSection),
+            adaptiveListSection(
+              children: [
+                SwitchPreferenceTile(
+                  preference: UserPreferences.allowSelfSignedCerts,
+                  title: l10n.settingsAllowSelfSignedCerts,
+                  subtitle: l10n.settingsAllowSelfSignedCertsSubtitle,
+                  icon: Icons.gpp_maybe,
+                  onChangedValue: (v) => gAllowSelfSignedCertificates = v,
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );

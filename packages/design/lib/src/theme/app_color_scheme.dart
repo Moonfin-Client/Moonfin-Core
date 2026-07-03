@@ -13,6 +13,11 @@ class AppColorScheme {
   static bool get isNeonPulse =>
       ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
 
+  /// Whether the active theme uses the retro pixel-art treatment (blocky
+  /// bevels, stair-step corners, hard shadows). Cheap check for pixel-aware
+  /// widgets. Mutually exclusive with [isGlass].
+  static bool get isPixel => ThemeRegistry.active.isPixel;
+
   // Background & Surface
   static Color get background => ThemeRegistry.active.colors.background;
   static Color get onBackground => ThemeRegistry.active.colors.onBackground;

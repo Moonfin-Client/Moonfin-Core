@@ -532,7 +532,7 @@ class _MetadataRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: AppRadius.circular(4),
       ),
       child: Text(
         label,
@@ -577,7 +577,7 @@ class _SeerrFilterChips extends StatelessWidget {
           color: selected
               ? _seerrAccent
               : AppColorScheme.onSurface.withAlpha(20),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.circular(14),
         ),
         child: Text(
           label,
@@ -691,7 +691,7 @@ class _AlphaLetterButtonState extends State<_AlphaLetterButton>
               color: widget.isSelected
                   ? AppColorScheme.onSurface.withAlpha(26)
                   : null,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: AppRadius.circular(4),
               border:
                   showFocusBorder
                       ? Border.fromBorderSide(
@@ -753,7 +753,7 @@ class _ToolbarButtonState extends State<_ToolbarButton> with FocusStateMixin {
               color: focused
                   ? AppColorScheme.buttonFocused
                   : Colors.transparent,
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: AppRadius.circular(6),
               border: showFocusBorder
                   ? Border.fromBorderSide(
                       ThemeRegistry.active.borders.focusBorder.copyWith(
@@ -855,7 +855,7 @@ class _SeerrSortDialogState extends State<_SeerrSortDialog> {
     return Dialog(
       backgroundColor: AppColorScheme.surface.withValues(alpha: 0.9),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.circular(20),
         side: ThemeRegistry.active.borders.chipBorder,
       ),
       child: SizedBox(
@@ -967,7 +967,7 @@ class _SeerrSettingsDialog extends StatelessWidget {
     return Dialog(
       backgroundColor: AppColorScheme.surface.withValues(alpha: 0.9),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.circular(20),
         side: ThemeRegistry.active.borders.chipBorder,
       ),
       child: SizedBox(

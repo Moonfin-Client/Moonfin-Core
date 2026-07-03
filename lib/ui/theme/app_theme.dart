@@ -59,6 +59,13 @@ class AppTheme {
 
   static ThemeData buildTheme(ThemeSpec spec) {
     final c = spec.colors;
+    // Pixel themes use blocky zero-radius chrome; other themes stay rounded.
+    final pixel = spec.isPixel;
+    final buttonShape = pixel
+        ? const RoundedRectangleBorder(borderRadius: BorderRadius.zero)
+        : JellyfinTokens.shapes.smallShape;
+    final inputRadius =
+        pixel ? BorderRadius.zero : JellyfinTokens.shapes.smallRadius;
     return ThemeData(
       useMaterial3: true,
       platform: switch (AppUiIdiomResolver.current) {
@@ -69,6 +76,9 @@ class AppTheme {
       },
       brightness: Brightness.dark,
       fontFamily: spec.fontFamily,
+      // The pixel font (Press Start 2P) is Latin-only; fall back to NotoSans so
+      // CJK/Arabic/etc. glyphs still render.
+      fontFamilyFallback: pixel ? const ['NotoSans'] : null,
       colorScheme: ColorScheme.dark(
         primary: c.accent,
         secondary: JellyfinTokens.colors.secondary,
@@ -82,7 +92,7 @@ class AppTheme {
       scaffoldBackgroundColor: c.background,
       cardTheme: CardThemeData(
         color: JellyfinTokens.colors.card,
-        shape: JellyfinTokens.shapes.smallShape,
+        shape: buttonShape,
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: c.background,
@@ -102,25 +112,25 @@ class AppTheme {
           foregroundColor: c.onButtonNormal,
           disabledBackgroundColor: c.buttonDisabled,
           disabledForegroundColor: c.onButtonDisabled,
-          shape: JellyfinTokens.shapes.smallShape,
+          shape: buttonShape,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: c.onSurface,
           side: BorderSide(color: c.inputBorder),
-          shape: JellyfinTokens.shapes.smallShape,
+          shape: buttonShape,
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: c.inputBackground,
         border: OutlineInputBorder(
-          borderRadius: JellyfinTokens.shapes.smallRadius,
+          borderRadius: inputRadius,
           borderSide: BorderSide(color: c.inputBorder),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: JellyfinTokens.shapes.smallRadius,
+          borderRadius: inputRadius,
           borderSide: BorderSide(color: c.inputBorderFocused, width: 2),
         ),
       ),
@@ -136,17 +146,22 @@ class AppTheme {
       textTheme: _buildTextTheme(spec),
       chipTheme: ChipThemeData(
         backgroundColor: c.buttonNormal,
-        shape: JellyfinTokens.shapes.extraLargeShape,
+        shape: pixel ? buttonShape : JellyfinTokens.shapes.extraLargeShape,
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: spec.isGlass ? const Color(0xD90E1117) : c.surface,
         surfaceTintColor: spec.isGlass ? Colors.transparent : null,
         shape: spec.isGlass
             ? RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: AppRadius.circular(20),
                 side: const BorderSide(color: Color(0x33FFFFFF), width: 1),
               )
-            : JellyfinTokens.shapes.largeShape,
+            : pixel
+                ? RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
+                    side: BorderSide(color: c.surfaceVariant, width: 2),
+                  )
+                : JellyfinTokens.shapes.largeShape,
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {

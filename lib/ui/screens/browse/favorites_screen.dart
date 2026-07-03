@@ -858,7 +858,7 @@ class _MetadataRow extends StatelessWidget {
             color: continuing
                 ? const Color(0xFF22C55E)
                 : const Color(0xFFEF4444),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: AppRadius.circular(4),
           ),
           child: Text(
             continuing ? AppLocalizations.of(context).continuing : AppLocalizations.of(context).ended,
@@ -878,7 +878,7 @@ class _MetadataRow extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           decoration: BoxDecoration(
             color: Colors.white.withAlpha(38),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: AppRadius.circular(4),
           ),
           child: Text(
             item.officialRating!,
@@ -899,7 +899,7 @@ class _MetadataRow extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           decoration: BoxDecoration(
             color: Colors.white.withAlpha(38),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: AppRadius.circular(4),
           ),
           child: Text(
             resolution,
@@ -1015,7 +1015,7 @@ class _SortDialogState extends State<_SortDialog> {
     return Dialog(
       backgroundColor: AppColorScheme.surface.withValues(alpha: 0.9),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.circular(20),
         side: ThemeRegistry.active.borders.chipBorder,
       ),
       child: SizedBox(
@@ -1139,7 +1139,7 @@ class _DisplaySettingsDialogState extends State<_DisplaySettingsDialog> {
     return Dialog(
       backgroundColor: AppColorScheme.surface.withValues(alpha: 0.9),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.circular(20),
         side: ThemeRegistry.active.borders.chipBorder,
       ),
       child: SizedBox(

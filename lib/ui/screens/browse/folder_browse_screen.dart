@@ -383,7 +383,7 @@ class _FolderGridCard extends StatelessWidget {
     final ar = isFolder ? 16 / 9 : MediaCard.aspectRatioForType(item.type);
 
     return InkWell(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: AppRadius.circular(10),
       onTap: onTap,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,7 +391,7 @@ class _FolderGridCard extends StatelessWidget {
           AspectRatio(
             aspectRatio: ar,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.circular(10),
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: AppColorScheme.onSurface.withAlpha(20),

@@ -188,7 +188,7 @@ class _CategorySection extends StatelessWidget {
                 height: 14,
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primary,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: AppRadius.circular(2),
                 ),
               ),
               const SizedBox(width: 8),

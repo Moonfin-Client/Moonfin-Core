@@ -90,7 +90,7 @@ class GalleryLayout extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: AppRadius.circular(18),
                   child: Row(
                     children: [
                       for (var i = 0; i < panels.length; i++)
@@ -188,7 +188,7 @@ class _Panel extends StatelessWidget {
                     Expanded(
                       child: DecoratedBox(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: AppRadius.circular(14),
                           boxShadow: t > 0.01
                               ? [
                                   BoxShadow(
@@ -200,7 +200,7 @@ class _Panel extends StatelessWidget {
                               : null,
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: AppRadius.circular(14),
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
@@ -351,7 +351,7 @@ class _IdlePanelContent extends StatelessWidget {
           height: double.infinity,
           decoration: BoxDecoration(
             color: accent.withValues(alpha: 0.7),
-            borderRadius: BorderRadius.circular(1),
+            borderRadius: AppRadius.circular(1),
           ),
         ),
       );

@@ -632,7 +632,7 @@ class _LoginScreenState extends State<LoginScreen> {
               minimumSize: const Size(120, 44),
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: AppRadius.circular(24),
               ),
             ).copyWith(
               side: WidgetStateProperty.resolveWith((states) {
@@ -659,7 +659,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return OutlinedButton.styleFrom(
       foregroundColor: _loginForeground(0.8),
       padding: padding,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.circular(24)),
     ).copyWith(
       side: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.focused)) {
@@ -860,15 +860,15 @@ class _LoginScreenState extends State<LoginScreen> {
         filled: true,
         fillColor: _loginForeground(0.08),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.circular(12),
           borderSide: BorderSide(color: _loginForeground(0.1)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.circular(12),
           borderSide: BorderSide(color: _loginForeground(0.1)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.circular(12),
           borderSide: BorderSide(color: _kAccent, width: 2),
         ),
       ),

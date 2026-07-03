@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:moonfin_design/moonfin_design.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -146,7 +147,7 @@ class _ActiveSessionsCardState extends State<ActiveSessionsCard> {
 
                 return InkWell(
                   onTap: () => _openDetail(session),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: AppRadius.circular(10),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 8, horizontal: 2),
@@ -218,7 +219,7 @@ class _ActiveSessionsCardState extends State<ActiveSessionsCard> {
                           Padding(
                             padding: const EdgeInsets.only(left: 42),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(999),
+                              borderRadius: AppRadius.circular(999),
                               child: LinearProgressIndicator(
                                 value: progress,
                                 minHeight: 3,
@@ -301,7 +302,7 @@ class _ActiveSessionsCardState extends State<ActiveSessionsCard> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration:
-          BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
+          BoxDecoration(color: bg, borderRadius: AppRadius.circular(999)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

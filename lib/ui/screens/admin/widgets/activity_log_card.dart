@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
@@ -108,7 +109,7 @@ class ActivityLogCard extends StatelessWidget {
               margin: const EdgeInsets.only(right: 10),
               decoration: BoxDecoration(
                 color: rail,
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.circular(2),
               ),
             ),
             icon,

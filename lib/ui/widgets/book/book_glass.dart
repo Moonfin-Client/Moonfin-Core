@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:moonfin_design/moonfin_design.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/widgets.dart';
@@ -14,7 +15,7 @@ Widget bookGlassOrSolid({
   double blur = 16,
   Color? tint,
 }) {
-  final radius = BorderRadius.circular(cornerRadius);
+  final radius = AppRadius.circular(cornerRadius);
 
   if (!bookGlassEligible) {
     return DecoratedBox(

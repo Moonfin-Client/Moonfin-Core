@@ -431,7 +431,7 @@ class _LogTile extends StatelessWidget {
               height: 40,
               decoration: BoxDecoration(
                 color: levelColor,
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.circular(2),
               ),
             ),
             title: Text(

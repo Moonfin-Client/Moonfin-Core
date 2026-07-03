@@ -1197,7 +1197,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         ),
         decoration: BoxDecoration(
           color: AppColorScheme.surface.withValues(alpha: 0.95),
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: AppRadius.circular(24),
           border: Border.fromBorderSide(
             ThemeRegistry.active.borders.chipBorder,
           ),
@@ -1649,7 +1649,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                     ),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: AppRadius.circular(16),
                     ),
                   ),
                 );
@@ -2023,7 +2023,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       selectCallback = null;
       childWidget = Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.circular(8),
           border: Border.all(
             color: Colors.white24,
             width: 1.5,
@@ -2056,7 +2056,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
           ? null
           : () => _deleteImage(category, imageIndex: imageIndex);
       childWidget = ClipRRect(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.circular(8),
         child: Stack(
           children: [
             Positioned.fill(
@@ -2319,7 +2319,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: AppColorScheme.surface,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: AppRadius.circular(16),
                     border: Border.all(color: Colors.white10, width: 1),
                   ),
                   child: Column(
@@ -2362,10 +2362,10 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                           width: targetWidth,
                           height: targetHeight,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: AppRadius.circular(8),
                           ),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: AppRadius.circular(8),
                             child: CachedNetworkImage(
                               imageUrl: previewUrl,
                               fit: BoxFit.contain,
@@ -2421,7 +2421,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                                 vertical: 8,
                               ),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: AppRadius.circular(8),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -2462,7 +2462,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                                 vertical: 8,
                               ),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: AppRadius.circular(8),
                                 border: Border.all(
                                   color: Colors.white24,
                                   width: 1,
@@ -2525,7 +2525,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       category: category,
       dims: dims,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.circular(8),
         child: Stack(
           children: [
             Positioned.fill(

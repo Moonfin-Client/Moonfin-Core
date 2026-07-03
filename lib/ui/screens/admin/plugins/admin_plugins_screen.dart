@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -57,7 +58,7 @@ class _AdminPluginsScreenState extends ConsumerState<AdminPluginsScreen>
                     hintText: AppLocalizations.of(context).adminSearchPlugins,
                     prefixIcon: const Icon(Icons.search),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: AppRadius.circular(8),
                     ),
                     isDense: true,
                     contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -407,7 +408,7 @@ class _InstalledFilterTabs extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.circular(10),
       ),
       child: Row(
         children: [
@@ -457,9 +458,9 @@ class _InstalledFilterTab extends StatelessWidget {
           color: selected
               ? theme.colorScheme.primaryContainer
               : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.circular(8),
           child: InkWell(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.circular(8),
             onTap: onTap,
             child: SizedBox(
               height: 34,
@@ -509,7 +510,7 @@ class _InstalledPluginTile extends StatelessWidget {
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       leading: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.circular(8),
         child: SizedBox(
           width: 36,
           height: 36,
@@ -794,7 +795,7 @@ class _CatalogPackageTile extends StatelessWidget {
                                 horizontal: 6, vertical: 1),
                             decoration: BoxDecoration(
                               color: theme.colorScheme.secondaryContainer,
-                              borderRadius: BorderRadius.circular(999),
+                              borderRadius: AppRadius.circular(999),
                             ),
                             child: Text(
                               package.category,

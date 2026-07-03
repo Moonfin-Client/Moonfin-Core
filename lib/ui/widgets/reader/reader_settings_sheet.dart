@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:flutter/material.dart';
 
 import '../../../data/models/reader_settings.dart';
@@ -102,7 +103,7 @@ class _ReaderSettingsBodyState extends State<_ReaderSettingsBody> {
               margin: const EdgeInsets.only(top: 10, bottom: 8),
               decoration: BoxDecoration(
                 color: _muted.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(3),
+                borderRadius: AppRadius.circular(3),
               ),
             ),
           ),
@@ -177,7 +178,7 @@ class _ReaderSettingsBodyState extends State<_ReaderSettingsBody> {
             height: 44,
             decoration: BoxDecoration(
               color: colors.background,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.circular(12),
               border: Border.all(
                 color: selected ? _accent : _muted.withValues(alpha: 0.25),
                 width: selected ? 2.5 : 0.5,
@@ -207,7 +208,7 @@ class _ReaderSettingsBodyState extends State<_ReaderSettingsBody> {
     return Container(
       decoration: BoxDecoration(
         color: _fill,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.circular(14),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Row(
@@ -400,7 +401,7 @@ class _ReaderSettingsBodyState extends State<_ReaderSettingsBody> {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: selected ? _accent.withValues(alpha: 0.18) : _fill,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.circular(12),
           border: Border.all(
             color: selected ? _accent : Colors.transparent,
             width: 1.5,
@@ -440,7 +441,7 @@ class _ReaderSettingsBodyState extends State<_ReaderSettingsBody> {
           height: 40,
           decoration: BoxDecoration(
             color: selected ? _accent.withValues(alpha: 0.18) : _fill,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.circular(12),
             border: Border.all(
               color: selected ? _accent : Colors.transparent,
               width: 1.5,

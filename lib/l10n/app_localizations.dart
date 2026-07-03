@@ -469,13 +469,13 @@ abstract class AppLocalizations {
   /// Explanation under the detail screen style setting
   ///
   /// In en, this message translates to:
-  /// **'Moonfin is the classic layout. Modern is a responsive cinematic layout.'**
+  /// **'Classic is the original centered moonfin layout. Modern is a responsive cinematic layout.'**
   String get detailScreenStyleSubtitle;
 
   /// Detail screen style option: the classic centered layout
   ///
   /// In en, this message translates to:
-  /// **'Moonfin'**
+  /// **'Classic'**
   String get detailScreenStyleMoonfin;
 
   /// Detail screen style option: the responsive cinematic layout
@@ -511,13 +511,13 @@ abstract class AppLocalizations {
   /// Label for the Automatic/Apple/Material interface style setting
   ///
   /// In en, this message translates to:
-  /// **'Interface style'**
+  /// **'Interface Style'**
   String get interfaceStyle;
 
   /// Explanation under the interface style setting
   ///
   /// In en, this message translates to:
-  /// **'Automatic uses the native look on Apple devices. Choose Apple to force it, or Material for the standard look.'**
+  /// **'Automatic matches your device. Choose Apple or Material to force a look.'**
   String get interfaceStyleSubtitle;
 
   /// Interface style option: follow the platform
@@ -541,8 +541,20 @@ abstract class AppLocalizations {
   /// Subtitle for the theme selection screen and theme settings entry
   ///
   /// In en, this message translates to:
-  /// **'Switch between Moonfin and Neon Pulse without restarting the app'**
+  /// **'Apply a fully custom theme and switch between an Apple or Material inspired user interface.'**
   String get settingsAppearanceThemeSubtitle;
+
+  /// Title for the custom theme settings section
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Theme'**
+  String get customThemeTitle;
+
+  /// Description under custom themes section
+  ///
+  /// In en, this message translates to:
+  /// **'Custom themes alter visual elements across Moonfin. Choose one of these options to suit your style.'**
+  String get customThemeSubtitle;
 
   /// Settings label for preferring the native system keyboard instead of the custom TV keyboard
   ///
@@ -565,7 +577,7 @@ abstract class AppLocalizations {
   /// Preview description for the Moonfin theme
   ///
   /// In en, this message translates to:
-  /// **'Current Moonfin look you\'ve all come to love'**
+  /// **'The original clean Moonfin default.'**
   String get themeMoonfinSubtitle;
 
   /// Display name for the Neon Pulse theme
@@ -591,6 +603,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Liquid-glass styling with a drifting gradient backdrop, frosted surfaces, and Apple-blue accent'**
   String get themeGlassSubtitle;
+
+  /// Display name for the 8-bit Hero theme
+  ///
+  /// In en, this message translates to:
+  /// **'8-bit Hero'**
+  String get theme8BitHero;
+
+  /// Preview description for the 8-bit Hero theme
+  ///
+  /// In en, this message translates to:
+  /// **'Retro pixel-art styling with a chunky palette, blocky borders, hard drop-shadows, and a pixel font'**
+  String get theme8BitHeroSubtitle;
 
   /// Subtitle on the Emby Connect sign-in screen
   ///
@@ -693,6 +717,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exit'**
   String get exit;
+
+  /// Tooltip for the in-game menu button
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get gameMenu;
+
+  /// Status shown in the in-game menu while the game is paused
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get gamePaused;
+
+  /// In-game menu action to save the game state
+  ///
+  /// In en, this message translates to:
+  /// **'Save state'**
+  String get gameSaveState;
+
+  /// In-game menu action to load the saved game state
+  ///
+  /// In en, this message translates to:
+  /// **'Load state'**
+  String get gameLoadState;
+
+  /// In-game menu action to toggle fast-forward
+  ///
+  /// In en, this message translates to:
+  /// **'Fast-forward'**
+  String get gameFastForward;
+
+  /// In-game menu action opening the emulator settings
+  ///
+  /// In en, this message translates to:
+  /// **'Emulator settings'**
+  String get gameEmulatorSettings;
+
+  /// Shown when a game core exposes no settings
+  ///
+  /// In en, this message translates to:
+  /// **'This core has no adjustable options.'**
+  String get gameNoCoreOptions;
+
+  /// Hint shown while holding the gamepad combo to open the in-game menu
+  ///
+  /// In en, this message translates to:
+  /// **'Hold to open menu'**
+  String get gameHoldToOpenMenu;
+
+  /// Shown when the device cannot run the retro-game emulator
+  ///
+  /// In en, this message translates to:
+  /// **'Game playback is not supported on this device yet.'**
+  String get gamePlaybackUnsupported;
 
   /// Heading when home screen has no rows to display
   ///
@@ -5265,6 +5343,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show Libraries in Toolbar'**
   String get showLibrariesInToolbar;
+
+  /// Setting to keep every top navbar heading's text label visible at all times, tvOS-style
+  ///
+  /// In en, this message translates to:
+  /// **'Always Expand Navbar Labels'**
+  String get navbarAlwaysExpanded;
 
   /// Setting for showing Seerr button
   ///
@@ -12538,6 +12622,24 @@ abstract class AppLocalizations {
   /// **'Alphabetical'**
   String get settingsAlphabetical;
 
+  /// Section header for server connection settings
+  ///
+  /// In en, this message translates to:
+  /// **'CONNECTION'**
+  String get settingsConnectionSection;
+
+  /// Setting to trust self-signed TLS certificates
+  ///
+  /// In en, this message translates to:
+  /// **'Allow self-signed certificates'**
+  String get settingsAllowSelfSignedCerts;
+
+  /// Description for the allow self-signed certificates setting
+  ///
+  /// In en, this message translates to:
+  /// **'Trust servers using self-signed or private-CA TLS certificates. Only enable for servers you control. This disables certificate validation for all connections.'**
+  String get settingsAllowSelfSignedCertsSubtitle;
+
   /// No description provided for @settingsPrivacyAndSafetySection.
   ///
   /// In en, this message translates to:
@@ -12621,6 +12723,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show the Seerr button in the navigation bar'**
   String get settingsShowSeerrButtonInNavigation;
+
+  /// No description provided for @settingsAlwaysExpandNavbarLabels.
+  ///
+  /// In en, this message translates to:
+  /// **'Always show text labels in the top navigation bar'**
+  String get settingsAlwaysExpandNavbarLabels;
 
   /// No description provided for @settingsLibraryVisibilitySubtitle.
   ///
@@ -15249,6 +15357,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Admin Controls'**
   String get adminControls;
+
+  /// Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy).
+  ///
+  /// In en, this message translates to:
+  /// **'Rendering engine (Impeller)'**
+  String get impellerRendering;
+
+  /// Explanatory description under the rendering engine setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Impeller is Flutter\'s modern GPU renderer for smoother animations and less stutter. On some TV boxes and older GPUs it can cause glitches or black video; switch it Off if you see those. Automatic picks the best default for your device. Restart Moonfin to apply.'**
+  String get impellerRenderingSubtitle;
+
+  /// No description provided for @impellerAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic'**
+  String get impellerAuto;
+
+  /// No description provided for @impellerOn.
+  ///
+  /// In en, this message translates to:
+  /// **'On'**
+  String get impellerOn;
+
+  /// No description provided for @impellerOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get impellerOff;
+
+  /// Title of the dialog shown after changing the rendering engine.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart required'**
+  String get impellerRestartTitle;
+
+  /// Body of the dialog shown after changing the rendering engine.
+  ///
+  /// In en, this message translates to:
+  /// **'Moonfin needs to restart to change the rendering engine. Close the app now, then reopen it to apply.'**
+  String get impellerRestartMessage;
+
+  /// Button that closes the app so the new rendering engine takes effect on next launch.
+  ///
+  /// In en, this message translates to:
+  /// **'Close app now'**
+  String get impellerCloseNow;
 }
 
 class _AppLocalizationsDelegate

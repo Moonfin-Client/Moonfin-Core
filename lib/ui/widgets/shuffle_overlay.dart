@@ -792,7 +792,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
               node: _focusScopeNode,
               autofocus: true,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(isMobile ? 22 : 28),
+                borderRadius: AppRadius.circular(isMobile ? 22 : 28),
                 child: Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -803,7 +803,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
                         AppColorScheme.surface.withValues(alpha: 0.96),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(isMobile ? 22 : 28),
+                    borderRadius: AppRadius.circular(isMobile ? 22 : 28),
                     border: Border.fromBorderSide(
                       ThemeRegistry.active.borders.chipBorder.copyWith(
                         color: AppColorScheme.onSurface.withValues(alpha: 0.22),
@@ -1165,7 +1165,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
       padding: EdgeInsets.all(isMobile ? 8 : (tvDense ? 6 : 10)),
       decoration: BoxDecoration(
         color: AppColorScheme.scrim.withValues(alpha: 0.28),
-        borderRadius: BorderRadius.circular(isMobile ? 20 : (tvDense ? 18 : 24)),
+        borderRadius: AppRadius.circular(isMobile ? 20 : (tvDense ? 18 : 24)),
         border: Border.fromBorderSide(
           ThemeRegistry.active.borders.cardBorder.copyWith(
             color: AppColorScheme.onSurface.withValues(alpha: 0.15),
@@ -1299,7 +1299,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
           ),
           decoration: BoxDecoration(
             color: AppColorScheme.scrim.withValues(alpha: 0.34),
-            borderRadius: BorderRadius.circular(999),
+            borderRadius: AppRadius.circular(999),
             border: Border.fromBorderSide(
               ThemeRegistry.active.borders.cardBorder.copyWith(
                 color: AppColorScheme.onSurface.withValues(alpha: 0.22),
@@ -1381,7 +1381,7 @@ class _ShuffleOverlayState extends State<_ShuffleOverlay> {
       ),
       decoration: BoxDecoration(
         color: AppColorScheme.scrim.withValues(alpha: 0.35),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.circular(16),
         border: Border.fromBorderSide(
           ThemeRegistry.active.borders.cardBorder.copyWith(
             color: AppColorScheme.onSurface.withValues(alpha: 0.18),
@@ -1636,7 +1636,7 @@ class _ShuffleActionCardState extends State<_ShuffleActionCard> {
                 AppColorScheme.scrim.withValues(alpha: active ? 0.42 : 0.34),
               ],
       ),
-      borderRadius: BorderRadius.circular(widget.compact ? 18 : (widget.dense ? 16 : 20)),
+      borderRadius: AppRadius.circular(widget.compact ? 18 : (widget.dense ? 16 : 20)),
       border: Border.fromBorderSide(
         ThemeRegistry.active.borders.cardBorder.copyWith(
           color: active
@@ -1826,7 +1826,7 @@ class _ShufflePickerDialogState<T> extends State<_ShufflePickerDialog<T>> {
         constraints: const BoxConstraints(minWidth: 340, maxWidth: 440),
         decoration: BoxDecoration(
           color: AppColorScheme.surface.withValues(alpha: 0.9),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: AppRadius.circular(20),
           border: Border.fromBorderSide(
             ThemeRegistry.active.borders.chipBorder,
           ),

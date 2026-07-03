@@ -168,6 +168,10 @@ class EmbyMediaServerClient extends MediaServerClient {
       throw UnsupportedError('Admin not supported on Emby yet');
 
   @override
+  late final GamesApi gamesApi =
+      MoonbaseGamesApi(_dio, () => _baseUrl, () => _accessToken);
+
+  @override
   void dispose() {
     _dio.close();
   }

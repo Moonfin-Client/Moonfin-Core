@@ -333,11 +333,17 @@ class HomeSectionConfig {
     if (jsonString.isEmpty) return defaults();
     try {
       final list = jsonDecode(jsonString) as List;
-      return [
-        for (final e in list)
-          if (e is Map<String, dynamic> && isSupportedJson(e))
-            HomeSectionConfig.fromJson(e),
-      ];
+      final parsed = <HomeSectionConfig>[];
+      for (final e in list) {
+        if (e is Map<String, dynamic> && isSupportedJson(e)) {
+          final cfg = HomeSectionConfig.fromJson(e);
+          if (cfg.isBuiltin && cfg.type == HomeSectionType.none) {
+            continue;
+          }
+          parsed.add(cfg);
+        }
+      }
+      return parsed;
     } catch (_) {
       return defaults();
     }

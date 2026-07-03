@@ -136,7 +136,7 @@ class ServerPathsCard extends StatelessWidget {
           if (hasCapacity) ...[
             const SizedBox(height: 4),
             ClipRRect(
-              borderRadius: BorderRadius.circular(999),
+              borderRadius: AppRadius.circular(999),
               child: LinearProgressIndicator(
                 minHeight: 4,
                 value: usageFrac,

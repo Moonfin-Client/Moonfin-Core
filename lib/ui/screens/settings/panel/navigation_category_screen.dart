@@ -122,6 +122,13 @@ class _NavigationCategoryScreenState extends State<_NavigationCategoryScreen> {
                   icon: Icons.video_library,
                   onChanged: _pushPersonalizationSync,
                 ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.navbarAlwaysExpanded,
+                  title: l10n.navbarAlwaysExpanded,
+                  subtitle: l10n.settingsAlwaysExpandNavbarLabels,
+                  icon: Icons.unfold_more,
+                  onChanged: _pushPersonalizationSync,
+                ),
                 if (seerrEnabledOnAccount && _syncService.seerrAvailable)
                   SwitchPreferenceTile(
                     preference: UserPreferences.showSeerrButton,

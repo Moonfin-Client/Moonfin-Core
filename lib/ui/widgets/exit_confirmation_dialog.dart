@@ -94,7 +94,7 @@ class _ExitConfirmationContentState extends State<_ExitConfirmationContent> {
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
           color: glass ? const Color(0xD90E1117) : AppColorScheme.surface,
-          borderRadius: BorderRadius.circular(glass ? 20 : 16),
+          borderRadius: AppRadius.circular(glass ? 20 : 16),
           border: glass
               ? const Border.fromBorderSide(
                   BorderSide(color: Color(0x33FFFFFF), width: 1),
@@ -190,7 +190,7 @@ class _ExitDialogButtonState extends State<_ExitDialogButton> {
             color: _focused
                 ? AppColorScheme.onSurface
                 : AppColorScheme.onSurface.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.circular(8),
           ),
           child: Text(
             widget.label,

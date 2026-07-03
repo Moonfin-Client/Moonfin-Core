@@ -735,7 +735,7 @@ class _GenreCardState extends State<_GenreCard> with FocusStateMixin {
               width: 180,
               height: 90,
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.circular(8),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -791,7 +791,7 @@ class _GenreCardState extends State<_GenreCard> with FocusStateMixin {
                               width: 2,
                             ),
                           ),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: AppRadius.circular(8),
                         ),
                       ),
                   ],
@@ -867,7 +867,7 @@ class _LogoCardState extends State<_LogoCard> with FocusStateMixin {
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: AppColorScheme.surface,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.circular(8),
                   border: showFocusBorder
                       ? Border.fromBorderSide(
                           ThemeRegistry.active.borders.focusBorder.copyWith(

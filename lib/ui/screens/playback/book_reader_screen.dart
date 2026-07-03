@@ -2192,7 +2192,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
                   color: selected ? _readerAccent : Colors.white24,
                   width: selected ? 2 : 1,
                 ),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: AppRadius.circular(4),
               ),
               clipBehavior: Clip.antiAlias,
               child: Image.memory(
@@ -2225,7 +2225,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
               color: selected ? accent : Colors.white.withValues(alpha: 0.14),
-              borderRadius: BorderRadius.circular(controlHeight / 2),
+              borderRadius: AppRadius.circular(controlHeight / 2),
             ),
             child: Text(
               label,

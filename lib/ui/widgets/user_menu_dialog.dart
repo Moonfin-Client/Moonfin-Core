@@ -244,7 +244,7 @@ class _AccountDialogState extends State<_AccountDialog> {
         ),
         decoration: BoxDecoration(
           color: AppColorScheme.surface.withValues(alpha: 0.9),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: AppRadius.circular(20),
           border: Border.fromBorderSide(ThemeRegistry.active.borders.chipBorder),
         ),
         padding: const EdgeInsets.symmetric(vertical: 20),
@@ -704,7 +704,7 @@ class _ActionButtonState extends State<_ActionButton> {
                       ? widget.focusColor.withValues(alpha: 0.16)
                       : AppColorScheme.onSurface.withValues(alpha: 0.08))
                 : AppColorScheme.onSurface.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.circular(8),
             border: Border.fromBorderSide(
               enabled
                   ? (_focused

@@ -48,40 +48,11 @@ BoxDecoration _homeSectionTileDecoration(
       ? AppColorScheme.onSurface.withValues(alpha: 0.16)
       : baseBorder.withValues(alpha: 0.55);
 
-  final isMergedResume = mergeEnabled && type == HomeSectionType.resume;
-  final isMergedNextUp = mergeEnabled && type == HomeSectionType.nextUp;
-
-  if (isMergedResume || isMergedNextUp) {
-    final borderColor = focused
-        ? AppColorScheme.accent.withValues(alpha: 0.72)
-        : const Color(0xFF00F0FF); // Neon cyan border for merged rows
-    final borderWidth = focused ? 2.0 : 1.5;
-
-    return BoxDecoration(
-      color: focused
-          ? AppColorScheme.onSurface
-          : colorScheme.surfaceContainerLow.withValues(alpha: 0.82),
-      borderRadius: isMergedResume
-          ? const BorderRadius.vertical(top: Radius.circular(_kHomeSectionTileRadius))
-          : const BorderRadius.vertical(bottom: Radius.circular(_kHomeSectionTileRadius)),
-      border: Border(
-        top: isMergedResume
-            ? BorderSide(color: borderColor, width: borderWidth)
-            : BorderSide.none,
-        bottom: isMergedNextUp
-            ? BorderSide(color: borderColor, width: borderWidth)
-            : BorderSide.none,
-        left: BorderSide(color: borderColor, width: borderWidth),
-        right: BorderSide(color: borderColor, width: borderWidth),
-      ),
-    );
-  }
-
   return BoxDecoration(
     color: focused
         ? AppColorScheme.onSurface
         : colorScheme.surfaceContainerLow.withValues(alpha: 0.82),
-    borderRadius: BorderRadius.circular(_kHomeSectionTileRadius),
+    borderRadius: AppRadius.circular(_kHomeSectionTileRadius),
     border: Border.fromBorderSide(
       (focused ? borderTokens.focusBorder : borderTokens.cardBorder).copyWith(
         color: focused
@@ -1245,11 +1216,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
 
         var targetIndex = toIndex;
         if (targetIndex > first) {
-          if (targetIndex <= first + 2) {
-            targetIndex = first;
-          } else {
-            targetIndex -= 2;
-          }
+          targetIndex -= 1;
         }
 
         _sections.insert(targetIndex, item1);
@@ -1279,11 +1246,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         final first = resumeIdx < nextUpIdx ? resumeIdx : nextUpIdx;
         var targetIndex = toIndex;
         if (targetIndex > first) {
-          if (targetIndex <= first + 2) {
-            targetIndex = first;
-          } else {
-            targetIndex -= 2;
-          }
+          targetIndex -= 1;
         }
         focusIndex = targetIndex;
       }
@@ -1553,7 +1516,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerLow.withValues(alpha: 0.82),
-                  borderRadius: BorderRadius.circular(_kHomeSectionTileRadius),
+                  borderRadius: AppRadius.circular(_kHomeSectionTileRadius),
                   border: Border.all(
                     color: const Color(0xFF00F0FF), // Neon cyan border
                     width: 1.5,
@@ -1707,7 +1670,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: Colors.red.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: AppRadius.circular(4),
                           border: Border.all(
                             color: Colors.red.withValues(alpha: 0.5),
                             width: 0.8,
@@ -1812,6 +1775,22 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         final sectionIndex = visibleIndices[visibleIndex];
         final section = _sections[sectionIndex];
         final isEmpty = _emptySectionIds.contains(section.stableId);
+        final mergeEnabled = _prefs.get(UserPreferences.mergeContinueWatchingNextUp);
+
+        if (mergeEnabled && section.type == HomeSectionType.resume) {
+          final nextUpIndex = _sections.indexWhere((s) => s.type == HomeSectionType.nextUp);
+          if (nextUpIndex >= 0) {
+            return _buildMergedTvTile(
+              context,
+              sectionIndex,
+              nextUpIndex,
+              l10n,
+              visibleIndex == 0,
+              visibleIndex == visibleIndices.length - 1,
+            );
+          }
+        }
+
         return _HomeSectionTile(
           key: ValueKey(section.stableId),
           focusNode: _focusNodes[sectionIndex],
@@ -1853,6 +1832,297 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
           },
         );
       },
+    );
+  }
+
+  Widget _buildMergedTvTile(
+    BuildContext context,
+    int resumeSectionIndex,
+    int nextUpSectionIndex,
+    AppLocalizations l10n,
+    bool isFirst,
+    bool isLast,
+  ) {
+    final resumeSection = _sections[resumeSectionIndex];
+    final nextUpSection = _sections[nextUpSectionIndex];
+    final isResumeEmpty = _emptySectionIds.contains(resumeSection.stableId);
+    final isNextUpEmpty = _emptySectionIds.contains(nextUpSection.stableId);
+
+    final resumeNode = _focusNodes[resumeSectionIndex];
+    final nextUpNode = _focusNodes[nextUpSectionIndex];
+
+    return AnimatedBuilder(
+      key: ValueKey(resumeSection.stableId),
+      animation: Listenable.merge([resumeNode, nextUpNode]),
+      builder: (context, _) {
+        final resumeFocused = resumeNode.hasFocus;
+        final nextUpFocused = nextUpNode.hasFocus;
+        final anyFocused = resumeFocused || nextUpFocused;
+
+        final colorScheme = Theme.of(context).colorScheme;
+        final borderTokens = ThemeRegistry.active.borders;
+        final baseBorder = borderTokens.cardBorder.color;
+        final unfocusedBorderColor = baseBorder.a == 0
+            ? AppColorScheme.onSurface.withValues(alpha: 0.16)
+            : baseBorder.withValues(alpha: 0.55);
+
+        final borderColor = anyFocused
+            ? AppColorScheme.accent.withValues(alpha: 0.72)
+            : unfocusedBorderColor;
+        final borderWidth = 1.0;
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          child: Container(
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerLow.withValues(alpha: 0.82),
+              borderRadius: AppRadius.circular(_kHomeSectionTileRadius),
+              border: Border.all(
+                color: borderColor,
+                width: borderWidth,
+              ),
+              boxShadow: anyFocused
+                  ? [
+                      BoxShadow(
+                        color: AppColorScheme.accent.withValues(alpha: 0.22),
+                        blurRadius: 14,
+                        spreadRadius: 0.5,
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildTvTileInner(
+                  context,
+                  focusNode: resumeNode,
+                  section: resumeSection,
+                  label: _labelFor(resumeSection, l10n),
+                  focused: resumeFocused,
+                  isEmpty: isResumeEmpty,
+                  isFirst: isFirst,
+                  isLast: isLast,
+                  autofocus: isFirst,
+                  showArrows: resumeFocused || (!resumeFocused && !nextUpFocused),
+                  onToggle: (enabled) {
+                    setState(() {
+                      _sections[resumeSectionIndex] = resumeSection.copyWith(enabled: enabled);
+                    });
+                    _save();
+                  },
+                  onMoveUp: () {
+                    if (isFirst) return;
+                    final visibleIndices = _visibleSectionIndices();
+                    final currentIdx = visibleIndices.indexOf(resumeSectionIndex);
+                    _moveSection(resumeSectionIndex, visibleIndices[currentIdx - 1]);
+                  },
+                  onMoveDown: () {
+                    if (isLast) return;
+                    final visibleIndices = _visibleSectionIndices();
+                    final currentIdx = visibleIndices.indexOf(resumeSectionIndex);
+                    if (currentIdx >= visibleIndices.length - 1) return;
+                    _moveSection(resumeSectionIndex, visibleIndices[currentIdx + 1]);
+                  },
+                ),
+                Divider(
+                  height: 1,
+                  color: const Color(0xFF00F0FF).withValues(alpha: 0.4),
+                  indent: 16,
+                  endIndent: 16,
+                ),
+                _buildTvTileInner(
+                  context,
+                  focusNode: nextUpNode,
+                  section: nextUpSection,
+                  label: _labelFor(nextUpSection, l10n),
+                  focused: nextUpFocused,
+                  isEmpty: isNextUpEmpty,
+                  isFirst: isFirst,
+                  isLast: isLast,
+                  showArrows: nextUpFocused,
+                  onToggle: (enabled) {
+                    setState(() {
+                      _sections[nextUpSectionIndex] = nextUpSection.copyWith(enabled: enabled);
+                    });
+                    _save();
+                  },
+                  onMoveUp: () {
+                    if (isFirst) return;
+                    final visibleIndices = _visibleSectionIndices();
+                    final currentIdx = visibleIndices.indexOf(resumeSectionIndex);
+                    _moveSection(resumeSectionIndex, visibleIndices[currentIdx - 1]);
+                  },
+                  onMoveDown: () {
+                    if (isLast) return;
+                    final visibleIndices = _visibleSectionIndices();
+                    final currentIdx = visibleIndices.indexOf(resumeSectionIndex);
+                    if (currentIdx >= visibleIndices.length - 1) return;
+                    _moveSection(resumeSectionIndex, visibleIndices[currentIdx + 1]);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTvTileInner(
+    BuildContext context, {
+    required FocusNode focusNode,
+    required HomeSectionConfig section,
+    required String label,
+    required bool focused,
+    required bool isEmpty,
+    required bool isFirst,
+    required bool isLast,
+    required VoidCallback onMoveUp,
+    required VoidCallback onMoveDown,
+    required ValueChanged<bool> onToggle,
+    bool autofocus = false,
+    bool showArrows = true,
+  }) {
+    final l10n = AppLocalizations.of(context);
+    return Focus(
+      focusNode: focusNode,
+      autofocus: autofocus,
+      canRequestFocus: true,
+      onFocusChange: (f) {
+        if (f) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!focusNode.hasFocus) return;
+            Scrollable.ensureVisible(
+              context,
+              duration: const Duration(milliseconds: 120),
+              curve: Curves.easeOut,
+              alignment: 0.2,
+              alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+            );
+          });
+        }
+      },
+      onKeyEvent: (node, event) {
+        if (event is! KeyDownEvent) return KeyEventResult.ignored;
+        if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+          onMoveUp();
+          return KeyEventResult.handled;
+        }
+        if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+          onMoveDown();
+          return KeyEventResult.handled;
+        }
+        if (event.logicalKey == LogicalKeyboardKey.select ||
+            event.logicalKey == LogicalKeyboardKey.enter) {
+          if (!isEmpty) {
+            onToggle(!section.enabled);
+          }
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: Opacity(
+        opacity: isEmpty ? 0.45 : 1.0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: focused
+                ? AppColorScheme.onSurface
+                : Colors.transparent,
+            borderRadius: AppRadius.circular(12),
+          ),
+          child: ListTile(
+            focusColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            contentPadding: _kHomeSectionTileContentPadding,
+            minLeadingWidth: 44,
+            horizontalTitleGap: 14,
+            leading: buildSettingsLeadingIconShell(
+              context,
+              icon: Icon(
+                (section.enabled && !isEmpty)
+                    ? Icons.check_box
+                    : Icons.check_box_outline_blank,
+              ),
+              focused: focused,
+              iconColor: focused
+                  ? AppColors.black.withValues(alpha: 0.54)
+                  : AppColorScheme.onSurface.withValues(alpha: 0.78),
+            ),
+            title: Row(
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: kCleanSettingsFontFamily,
+                    color: focused
+                        ? AppColors.black.withValues(alpha: 0.87)
+                        : AppColorScheme.onSurface,
+                  ),
+                ),
+                if (isEmpty) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withValues(alpha: 0.15),
+                      borderRadius: AppRadius.circular(4),
+                      border: Border.all(
+                        color: Colors.red.withValues(alpha: 0.5),
+                        width: 0.8,
+                      ),
+                    ),
+                    child: Text(
+                      l10n.empty,
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: kCleanSettingsFontFamily,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            subtitle: section.isPluginDynamic
+                ? Text(_pluginSubtitle(section))
+                : (_isAudioSectionType(section.type)
+                      ? const Text('Audio row')
+                      : (_isSeerrSectionType(section.type)
+                            ? const Text('Seerr Discovery Rows')
+                            : (_isTmdbSectionType(section.type)
+                                  ? const Text('TMDB Lists')
+                                  : null))),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (showArrows) ...[
+                  if (!isFirst)
+                    Icon(
+                      Icons.arrow_left,
+                      size: 18,
+                      color: focused
+                          ? AppColors.black.withValues(alpha: 0.54)
+                          : AppColorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
+                  if (!isLast)
+                    Icon(
+                      Icons.arrow_right,
+                      size: 18,
+                      color: focused
+                          ? AppColors.black.withValues(alpha: 0.54)
+                          : AppColorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -1965,6 +2235,7 @@ class _HomeSectionTileState extends State<_HomeSectionTile> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+
     return Focus(
       focusNode: widget.focusNode,
       autofocus: widget.autofocus,
@@ -2062,7 +2333,7 @@ class _HomeSectionTileState extends State<_HomeSectionTile> {
                       ),
                       decoration: BoxDecoration(
                         color: Colors.red.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: AppRadius.circular(4),
                         border: Border.all(
                           color: Colors.red.withValues(alpha: 0.5),
                           width: 0.8,

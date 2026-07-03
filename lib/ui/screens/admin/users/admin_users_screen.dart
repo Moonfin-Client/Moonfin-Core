@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -148,7 +149,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                             icon: const Icon(Icons.clear),
                           ),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.circular(12),
                     ),
                   ),
                 ),
@@ -336,7 +337,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: base.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: AppRadius.circular(999),
         border: Border.all(color: base.withValues(alpha: 0.35)),
       ),
       child: Row(

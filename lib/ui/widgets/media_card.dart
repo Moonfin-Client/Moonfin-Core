@@ -159,13 +159,21 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
         Theme.of(context).textTheme.bodySmall ?? const TextStyle(fontSize: 12);
     final subtitleColor =
         widget.subtitleColor ??
-        Theme.of(context).colorScheme.onSurface.withAlpha(153);
+        (isNeon
+            ? AppColorScheme.onSurface
+            : Theme.of(context).colorScheme.onSurface.withAlpha(153));
     final titleStyle = baseTextStyle.copyWith(
       color:
           widget.titleColor ??
           (isNeon ? AppColorScheme.accent : baseTextStyle.color),
+      fontWeight: FontWeight.bold,
+      fontSize: (baseTextStyle.fontSize ?? 12) + 1.0,
+      shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
     );
-    final subtitleStyle = baseTextStyle.copyWith(color: subtitleColor);
+    final subtitleStyle = baseTextStyle.copyWith(
+      color: subtitleColor,
+      shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
+    );
     final textScaler = MediaQuery.textScalerOf(context);
 
     double lineHeightFor(TextStyle style) {
@@ -501,8 +509,8 @@ class _CardImage extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: isCircular
-                        ? BorderRadius.circular(radius + 3.5)
-                        : borders.cardRadius + BorderRadius.circular(3.5),
+                        ? AppRadius.circular(radius + 3.5)
+                        : borders.cardRadius + AppRadius.circular(3.5),
                     boxShadow: borders.focusGlow,
                   ),
                 ),
@@ -510,7 +518,7 @@ class _CardImage extends StatelessWidget {
             ),
           ClipRRect(
             borderRadius: isCircular
-                ? BorderRadius.circular(radius)
+                ? AppRadius.circular(radius)
                 : borders.cardRadius,
             child: Stack(
               fit: StackFit.expand,
@@ -573,7 +581,7 @@ class _CardImage extends StatelessWidget {
                     right: 6,
                     bottom: 6,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(3),
+                      borderRadius: AppRadius.circular(3),
                       child: LinearProgressIndicator(
                         value: playedPercentage! / 100,
                         minHeight: 6,
@@ -599,8 +607,8 @@ class _CardImage extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: isCircular
-                        ? BorderRadius.circular(radius + 3.5)
-                        : borders.cardRadius + BorderRadius.circular(3.5),
+                        ? AppRadius.circular(radius + 3.5)
+                        : borders.cardRadius + AppRadius.circular(3.5),
                     border: Border.fromBorderSide(
                       borders.focusBorder.copyWith(
                         color: borderColor,
@@ -650,7 +658,7 @@ class _CardImage extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: badgeColor.withValues(alpha: 0.85),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: AppRadius.circular(4),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -753,7 +761,7 @@ class _CardImage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
         decoration: BoxDecoration(
           color: AppColorScheme.badgeUnplayed,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.circular(8),
         ),
         child: Text(
           '$unplayedCount',

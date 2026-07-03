@@ -310,7 +310,7 @@ class _SeerrPersonScreenState extends State<SeerrPersonScreen> {
                 duration: const Duration(milliseconds: 120),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.circular(8),
                   border: _bioFocused
                       ? Border.all(color: AppColorScheme.accent, width: 1.5)
                       : null,

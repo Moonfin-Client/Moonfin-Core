@@ -480,7 +480,7 @@ class _ExternalPlayerAppIcon extends StatelessWidget {
     }
 
     return ClipRRect(
-      borderRadius: BorderRadius.circular(6),
+      borderRadius: AppRadius.circular(6),
       child: Image.memory(
         bytes,
         width: 24,

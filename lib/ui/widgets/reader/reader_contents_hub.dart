@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/models/reader_settings.dart';
 import '../../../util/platform_detection.dart';
@@ -196,7 +197,7 @@ class _ContentsHubBodyState extends State<_ContentsHubBody> {
               fillColor: _fill,
               contentPadding: const EdgeInsets.symmetric(vertical: 10),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.circular(12),
                 borderSide: BorderSide.none,
               ),
             ),
@@ -218,7 +219,7 @@ class _ContentsHubBodyState extends State<_ContentsHubBody> {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: selected ? _accent : _fill,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: AppRadius.circular(20),
           ),
           child: Text(
             label,

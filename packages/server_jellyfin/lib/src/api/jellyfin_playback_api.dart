@@ -64,19 +64,39 @@ class JellyfinPlaybackApi implements PlaybackApi {
       );
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
-      if (e.response?.statusCode != 500) rethrow;
+      // Strict servers (e.g. remux) reject our full DeviceProfile with 400/422;
+      // real Jellyfin/Emby return 200 and never reach here. Retry without the
+      // profile, then with a bare body, before giving up.
+      final status = e.response?.statusCode;
+      final isBodyRejection = status == 400 || status == 422 || status == 500;
+      if (!isBodyRejection) rethrow;
+
+      final withoutProfile = Map<String, dynamic>.from(body)
+        ..remove('DeviceProfile');
       try {
         final retry = await _dio.post(
           '/Items/$itemId/PlaybackInfo',
-          data: <String, dynamic>{'UserId': ?userId},
+          data: withoutProfile,
           queryParameters: query,
         );
         return retry.data as Map<String, dynamic>;
-      } on DioException catch (e2) {
-        throw Exception(
-          'PlaybackInfo failed for item $itemId: '
-          'HTTP ${e2.response?.statusCode} ${e2.response?.data}',
-        );
+      } on DioException catch (_) {
+        try {
+          final minimal = await _dio.post(
+            '/Items/$itemId/PlaybackInfo',
+            data: <String, dynamic>{
+              'UserId': ?userId,
+              'AutoOpenLiveStream': true,
+            },
+            queryParameters: query,
+          );
+          return minimal.data as Map<String, dynamic>;
+        } on DioException catch (e2) {
+          throw Exception(
+            'PlaybackInfo failed for item $itemId: '
+            'HTTP ${e2.response?.statusCode} ${e2.response?.data}',
+          );
+        }
       }
     }
   }

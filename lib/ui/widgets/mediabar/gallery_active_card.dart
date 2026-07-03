@@ -184,7 +184,7 @@ class _BadgeRow extends StatelessWidget {
         color: tinted
             ? accent.withValues(alpha: 0.22)
             : AppColorScheme.scrim.withValues(alpha: 0.35),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.circular(8),
         border: outlined
             ? Border.all(
                 color: AppColorScheme.onSurface.withValues(alpha: 0.55),
@@ -223,7 +223,7 @@ class _RightCard extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: AppColorScheme.scrim.withValues(alpha: 0.55),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: AppRadius.circular(18),
         border: Border.all(
           color: AppColorScheme.onSurface.withValues(alpha: 0.12),
         ),
@@ -313,7 +313,7 @@ class _ShimmerPlaceholderState extends State<_ShimmerPlaceholder>
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
                   color: AppColorScheme.onSurface.withValues(alpha: alpha),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: AppRadius.circular(6),
                 ),
               ),
             );

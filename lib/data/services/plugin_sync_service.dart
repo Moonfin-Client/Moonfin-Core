@@ -921,6 +921,12 @@ class PluginSyncService extends ChangeNotifier {
         UserPreferences.recommendationSystemSource,
         enumValues: prefs.RecommendationSystemSource.values,
       );
+      _applyString(
+        resolved,
+        'detailScreenStyle',
+        UserPreferences.detailScreenStyle,
+        enumValues: prefs.DetailScreenStyle.values,
+      );
       _applyBool(
         resolved,
         'fullScreenRows',
@@ -1555,6 +1561,7 @@ class PluginSyncService extends ChangeNotifier {
       'homeRowsStyle': _prefs.get(UserPreferences.homeRowsStyle).name,
       'recommendationSystemSource':
           _prefs.get(UserPreferences.recommendationSystemSource).name,
+      'detailScreenStyle': _prefs.get(UserPreferences.detailScreenStyle).name,
       'homeImageTypeContinueWatching': _prefs
           .get(UserPreferences.homeRowImageType(prefs.HomeSectionType.resume))
           .name,

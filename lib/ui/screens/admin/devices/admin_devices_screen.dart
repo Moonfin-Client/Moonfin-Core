@@ -209,7 +209,7 @@ class _AdminDevicesScreenState extends ConsumerState<AdminDevicesScreen> {
                           icon: const Icon(Icons.clear),
                         ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.circular(12),
                   ),
                 ),
               ),

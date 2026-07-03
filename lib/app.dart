@@ -237,9 +237,14 @@ class _MoonfinAppState extends State<MoonfinApp> {
                         _prefs.get(UserPreferences.desktopUiScale).scaleFactor;
                     final systemScale =
                         MediaQuery.textScalerOf(context).scale(1.0);
+                    // The pixel font renders far larger and wider than a normal
+                    // face at a given size, so shrink all text to keep dense
+                    // layouts from overflowing.
+                    final pixelScale = AppColorScheme.isPixel ? 0.6 : 1.0;
                     return MediaQuery(
                       data: MediaQuery.of(context).copyWith(
-                        textScaler: TextScaler.linear(scale * systemScale),
+                        textScaler:
+                            TextScaler.linear(scale * systemScale * pixelScale),
                       ),
                       child: mainChild,
                     );
@@ -981,7 +986,7 @@ class _AdminMessageDialogState extends State<_AdminMessageDialog> {
                 color: AppColorScheme.isGlass
                     ? const Color(0xD90E1117)
                     : AppColorScheme.surface,
-                borderRadius: BorderRadius.circular(
+                borderRadius: AppRadius.circular(
                   AppColorScheme.isGlass ? 20 : 16,
                 ),
                 border: Border.fromBorderSide(
@@ -1037,7 +1042,7 @@ class _AdminMessageDialogState extends State<_AdminMessageDialog> {
                           color: _focused
                               ? AppColorScheme.onSurface
                               : AppColorScheme.onSurface.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: AppRadius.circular(8),
                         ),
                         child: Text(
                           l10n.ok,

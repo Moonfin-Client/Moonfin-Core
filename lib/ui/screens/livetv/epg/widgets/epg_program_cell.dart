@@ -55,7 +55,7 @@ class EpgProgramCell extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: AppRadius.circular(radius),
         border: focused
             ? Border.all(color: accent, width: apple ? 1.5 : 2)
             : null,
@@ -141,7 +141,7 @@ class EpgProgramCell extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: AppRadius.circular(4),
         ),
         child: const Text('LIVE',
             style: TextStyle(

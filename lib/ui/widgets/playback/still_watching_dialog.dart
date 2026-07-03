@@ -92,7 +92,7 @@ class StillWatchingDialog extends StatelessWidget {
                     foregroundColor: AppColorScheme.onAccent,
                     padding: const EdgeInsets.symmetric(vertical: 13),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: AppRadius.circular(14),
                     ),
                     textStyle: const TextStyle(
                       fontSize: 15,

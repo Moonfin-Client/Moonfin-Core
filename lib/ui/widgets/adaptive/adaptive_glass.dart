@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:moonfin_design/moonfin_design.dart';
 
 import 'package:flutter/widgets.dart';
 
@@ -11,7 +12,7 @@ Widget adaptiveGlass({
   double blur = 16,
   Color? tint,
 }) {
-  final radius = BorderRadius.circular(cornerRadius);
+  final radius = AppRadius.circular(cornerRadius);
   switch (GlassCapability.resolve()) {
     case GlassTier.solid:
       return DecoratedBox(
@@ -35,7 +36,7 @@ Widget _frostGlass({
   required Color? tint,
   required Widget child,
 }) {
-  final radius = BorderRadius.circular(cornerRadius);
+  final radius = AppRadius.circular(cornerRadius);
   const veil = Color(0x24FFFFFF);
 
   return DecoratedBox(

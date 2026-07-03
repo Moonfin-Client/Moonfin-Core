@@ -129,7 +129,7 @@ class _NextUpOverlayState extends State<NextUpOverlay>
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
               color: AppColorScheme.accent.withValues(alpha: 0.22),
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: AppRadius.circular(6),
               border: Border.all(
                 color: AppColorScheme.accent.withValues(alpha: 0.4),
                 width: 0.5,
@@ -178,7 +178,7 @@ class _NextUpOverlayState extends State<NextUpOverlay>
         width: widget.isMinimal ? 300 : 340,
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: AppRadius.circular(18),
           boxShadow: const [
             BoxShadow(
               color: Colors.black54,
@@ -290,7 +290,7 @@ class _NextUpOverlayState extends State<NextUpOverlay>
                                   horizontal: widget.isMinimal ? 10 : 16,
                                 ),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: AppRadius.circular(12),
                                 ),
                               ),
                               child: Row(
@@ -345,7 +345,7 @@ class _NextUpOverlayState extends State<NextUpOverlay>
                                 padding: EdgeInsets.all(widget.isMinimal ? 8 : 11),
                                 minimumSize: const Size(44, 44),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: AppRadius.circular(12),
                                 ),
                               ),
                               child: const Icon(Icons.close_rounded, size: 20),

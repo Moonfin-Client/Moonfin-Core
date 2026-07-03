@@ -182,14 +182,22 @@ class SearchViewModel extends ChangeNotifier {
     String query,
     List<SearchResultGroup> activeGroups,
   ) async {
+    final peopleFuture = _searchRepository
+        .searchPeople(query, limit: _resultLimit)
+        .catchError((_) => <AggregatedItem>[]);
     final allItems = await _searchRepository.search(
       query,
       parentId: _scopedParentId,
       limit: _globalFetchLimit,
     );
+    final people = await peopleFuture;
 
     final grouped = <SearchResultGroup>[];
     for (final group in activeGroups) {
+      if (group.itemTypes.contains('Person')) {
+        grouped.add(group.copyWith(items: people.take(_resultLimit).toList()));
+        continue;
+      }
       final matched = allItems
           .where((item) => group.itemTypes.contains(item.type))
           .take(_resultLimit)

@@ -286,7 +286,7 @@ class _ActivityTile extends StatelessWidget {
                 margin: const EdgeInsets.only(right: 10),
                 decoration: BoxDecoration(
                   color: rail,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: AppRadius.circular(2),
                 ),
               ),
               icon,
@@ -421,7 +421,7 @@ class _SeverityBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: AppRadius.circular(999),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

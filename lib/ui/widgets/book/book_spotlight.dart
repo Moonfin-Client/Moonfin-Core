@@ -160,7 +160,7 @@ class _Cover extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(9),
+        borderRadius: AppRadius.circular(9),
         boxShadow: const [
           BoxShadow(
             color: Color(0x80000000),
@@ -170,7 +170,7 @@ class _Cover extends StatelessWidget {
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(9),
+        borderRadius: AppRadius.circular(9),
         child: SizedBox(
           width: width,
           height: height,
@@ -280,7 +280,7 @@ class _ResumeButton extends StatelessWidget {
           : DecoratedBox(
               decoration: BoxDecoration(
                 color: AppColorScheme.accent,
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: AppRadius.circular(22),
               ),
               child: content,
             ),

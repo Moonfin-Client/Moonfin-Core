@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../providers/admin_media_analytics_provider.dart';
@@ -131,7 +132,7 @@ class _AdminMediaMetricTile extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHigh.withValues(alpha: 0.72),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.circular(14),
         border: Border.all(
           color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6),
         ),
@@ -176,7 +177,7 @@ class _AdminMediaMetricTile extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.circular(14),
         onTap: onTap,
         child: child,
       ),

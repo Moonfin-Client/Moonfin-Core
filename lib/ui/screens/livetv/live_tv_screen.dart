@@ -176,7 +176,7 @@ class _LiveTvMenuCardState extends State<_LiveTvMenuCard> {
             ..scaleByDouble(_focused ? 1.02 : 1.0, _focused ? 1.02 : 1.0, 1.0, 1.0),
           decoration: BoxDecoration(
             color: const Color(0xCC101822),
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: AppRadius.circular(24),
             border: Border.all(color: borderColor, width: _focused ? 2.4 : 1),
             boxShadow: [
               BoxShadow(
@@ -196,7 +196,7 @@ class _LiveTvMenuCardState extends State<_LiveTvMenuCard> {
                   height: 72,
                   decoration: BoxDecoration(
                     color: AppColorScheme.accent.withValues(alpha: 0.16),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: AppRadius.circular(20),
                   ),
                   child: Icon(widget.icon, color: Colors.white, size: 34),
                 ),

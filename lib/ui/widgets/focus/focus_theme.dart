@@ -16,9 +16,10 @@ class FocusTheme {
     bool suppressFocusGlow = false,
   }) {
     final borders = ThemeRegistry.active.borders;
+    final effectiveRadius = AppColorScheme.isPixel ? 0.0 : radius;
     return BoxDecoration(
       color: backgroundColor,
-      borderRadius: BorderRadius.circular(radius),
+      borderRadius: AppRadius.circular(effectiveRadius),
       border: isFocused && color != null
           ? Border.fromBorderSide(
               borders.focusBorder.copyWith(color: color),

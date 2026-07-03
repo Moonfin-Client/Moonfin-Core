@@ -50,7 +50,7 @@ class LibrivoxBookDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: AppRadius.circular(14),
                     child: SizedBox(
                       width: 120,
                       height: 180,
@@ -264,7 +264,7 @@ class LibrivoxBookDetailScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.black.withAlpha(44),
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: AppRadius.circular(999),
       ),
       child: Text(
         label,

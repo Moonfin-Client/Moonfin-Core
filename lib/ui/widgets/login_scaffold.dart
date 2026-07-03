@@ -59,7 +59,7 @@ class LoginScaffold extends StatelessWidget {
                     Container(
                       decoration: BoxDecoration(
                         color: cardColor,
-                        borderRadius: BorderRadius.circular(_kCardRadius),
+                        borderRadius: AppRadius.circular(_kCardRadius),
                         border: cardBorder,
                       ),
                       padding: const EdgeInsets.all(32),

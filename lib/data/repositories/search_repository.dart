@@ -49,6 +49,37 @@ class SearchRepository {
     return suggestions;
   }
 
+  /// People are not returned by the global `/Items` recursive query, so they
+  /// need the dedicated `/Persons` endpoint. Results are tagged `Person` so the
+  /// UI renders them as circular avatars and groups them correctly.
+  Future<List<AggregatedItem>> searchPeople(
+    String query, {
+    int limit = 24,
+  }) async {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty || trimmed.toLowerCase().startsWith('studio:')) {
+      return const [];
+    }
+
+    final response = await _client.itemsApi.getPersons(
+      searchTerm: trimmed,
+      limit: limit,
+      fields: 'PrimaryImageAspectRatio',
+      enableImageTypes: 'Primary',
+    );
+
+    final items = response['Items'] as List? ?? const [];
+    return items.map((item) {
+      final data = Map<String, dynamic>.from(item as Map);
+      data['Type'] ??= 'Person';
+      return AggregatedItem(
+        id: data['Id']?.toString() ?? '',
+        serverId: data['ServerId']?.toString() ?? '',
+        rawData: data,
+      );
+    }).toList();
+  }
+
   Future<List<AggregatedItem>> search(
     String query, {
     List<String>? includeItemTypes,

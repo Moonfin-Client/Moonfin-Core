@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:server_core/server_core.dart';
@@ -162,7 +163,7 @@ class _AdminLogsScreenState extends State<AdminLogsScreen> {
                             horizontal: 6, vertical: 1),
                         decoration: BoxDecoration(
                           color: Colors.green,
-                          borderRadius: BorderRadius.circular(999),
+                          borderRadius: AppRadius.circular(999),
                         ),
                         child: Text(
                           AppLocalizations.of(context).liveBadge,

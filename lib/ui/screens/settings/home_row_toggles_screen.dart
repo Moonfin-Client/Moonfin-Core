@@ -274,7 +274,7 @@ class _HomeRowTogglesScreenState extends State<HomeRowTogglesScreen> {
                     color: colorScheme.surfaceContainerLow.withValues(
                       alpha: 0.82,
                     ),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: AppRadius.circular(16),
                     border: Border.fromBorderSide(
                       borderTokens.cardBorder.copyWith(
                         color: unfocusedBorderColor,

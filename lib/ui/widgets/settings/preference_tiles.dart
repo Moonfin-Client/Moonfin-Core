@@ -78,7 +78,7 @@ Widget buildSettingsLeadingIconShell(
       height: _kSettingsIconShellSize,
       decoration: BoxDecoration(
         color: Color.lerp(base, const Color(0xFF1C1C1E), 0.4),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.circular(8),
       ),
       child: Center(
         child: glyph != null
@@ -121,7 +121,7 @@ Widget buildSettingsLeadingIconShell(
     height: _kSettingsIconShellSize,
     decoration: BoxDecoration(
       color: AppColorScheme.accent.withValues(alpha: focused ? 0.22 : 0.14),
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: AppRadius.circular(14),
       border: Border.fromBorderSide(
         borderTokens.chipBorder.copyWith(
           color: AppColorScheme.accent.withValues(alpha: focused ? 0.64 : 0.42),
@@ -159,7 +159,7 @@ BoxDecoration _settingsTileDecoration(
     if (!focused) return const BoxDecoration();
     return BoxDecoration(
       color: AppColorScheme.buttonFocused.withValues(alpha: 0.14),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: AppRadius.circular(8),
       border: Border.all(
         color: AppColorScheme.accent.withValues(alpha: 0.9),
         width: 1,
@@ -172,7 +172,7 @@ BoxDecoration _settingsTileDecoration(
       color: AppColorScheme.isNeonPulse
           ? AppColorScheme.accent.withValues(alpha: 0.38)
           : AppColorScheme.surfaceVariant,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: AppRadius.circular(12),
     );
   }
   final colorScheme = Theme.of(context).colorScheme;
@@ -186,7 +186,7 @@ BoxDecoration _settingsTileDecoration(
     color: focused
         ? AppColorScheme.buttonFocused
         : colorScheme.surfaceContainerLow.withValues(alpha: 0.82),
-    borderRadius: BorderRadius.circular(_kSettingsTileRadius),
+    borderRadius: AppRadius.circular(_kSettingsTileRadius),
     border: Border.fromBorderSide(
       (focused ? borderTokens.focusBorder : borderTokens.cardBorder).copyWith(
         color: focused
@@ -222,7 +222,7 @@ Widget buildSettingsSelectionBubble(
       color: focused
           ? AppColors.black.withValues(alpha: 0.12)
           : colorScheme.primary.withValues(alpha: 0.1),
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: AppRadius.circular(12),
       border: Border.all(
         color: focused
             ? AppColors.black.withValues(alpha: 0.35)

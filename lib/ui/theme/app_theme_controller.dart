@@ -24,6 +24,7 @@ class AppThemeController extends ChangeNotifier {
       VisualThemeId.moonfin => ThemeRegistry.moonfinId,
       VisualThemeId.neonPulse => ThemeRegistry.neonPulseId,
       VisualThemeId.glass => ThemeRegistry.glassId,
+      VisualThemeId.eightbitHero => ThemeRegistry.eightbitHeroId,
     };
   }
 
@@ -32,6 +33,7 @@ class AppThemeController extends ChangeNotifier {
       ThemeRegistry.moonfinId => VisualThemeId.moonfin,
       ThemeRegistry.neonPulseId => VisualThemeId.neonPulse,
       ThemeRegistry.glassId => VisualThemeId.glass,
+      ThemeRegistry.eightbitHeroId => VisualThemeId.eightbitHero,
       _ => null,
     };
   }
@@ -41,6 +43,7 @@ class AppThemeController extends ChangeNotifier {
       VisualThemeId.moonfin => AppTheme.moonfinCyan,
       VisualThemeId.neonPulse => AppTheme.neonPulseMagenta,
       VisualThemeId.glass => AppTheme.white,
+      VisualThemeId.eightbitHero => AppTheme.eightBitGold,
     };
   }
 

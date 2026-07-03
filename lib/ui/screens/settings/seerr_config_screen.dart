@@ -605,7 +605,7 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
 
     return BoxDecoration(
       color: colorScheme.surfaceContainerLow.withValues(alpha: 0.82),
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: AppRadius.circular(16),
       border: Border.fromBorderSide(
         (focused ? borderTokens.focusBorder : borderTokens.cardBorder).copyWith(
           color: focused
@@ -1015,7 +1015,7 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
           : autofillHints,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(borderRadius: AppRadius.circular(12)),
       ),
     );
   }
@@ -1067,7 +1067,7 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
               color: selected
                   ? selectedBackground
                   : (focused ? focusedBackground : idleBackground),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.circular(12),
               border: Border.all(
                 color: focused
                     ? focusedBorder
@@ -1076,7 +1076,7 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
               ),
             ),
             child: InkWell(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.circular(12),
               onTap: _submitting
                   ? null
                   : () {
@@ -1255,7 +1255,7 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 120),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(24),
+                                borderRadius: AppRadius.circular(24),
                                 boxShadow: isFocused
                                     ? [
                                         BoxShadow(
@@ -1275,7 +1275,7 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
                                   foregroundColor: colorScheme.onPrimary,
                                   backgroundColor: colorScheme.primary,
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(24),
+                                    borderRadius: AppRadius.circular(24),
                                   ),
                                   side: isFocused
                                       ? BorderSide(
@@ -1408,7 +1408,7 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 120),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
+                              borderRadius: AppRadius.circular(24),
                               boxShadow: isFocused
                                   ? [
                                       BoxShadow(
@@ -1427,7 +1427,7 @@ class _SeerrLoginCardState extends State<_SeerrLoginCard> {
                               onPressed: _canSignIn ? _submitSignIn : null,
                               style: FilledButton.styleFrom(
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
+                                  borderRadius: AppRadius.circular(24),
                                 ),
                                 side: isFocused
                                     ? BorderSide(
@@ -1553,7 +1553,7 @@ class _SeerrReorderableTileState extends State<_SeerrReorderableTile> {
       color: focused
           ? AppColorScheme.onSurface
           : colorScheme.surfaceContainerLow.withValues(alpha: 0.82),
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: AppRadius.circular(12),
       border: Border.fromBorderSide(
         (focused ? borderTokens.focusBorder : borderTokens.cardBorder).copyWith(
           color: focused

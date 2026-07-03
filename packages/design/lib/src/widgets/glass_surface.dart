@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import '../theme/app_color_scheme.dart';
+import '../theme/theme_registry.dart';
+import 'pixel_border_painter.dart';
 
 class GlassSurface extends StatelessWidget {
   const GlassSurface({
@@ -26,6 +28,20 @@ class GlassSurface extends StatelessWidget {
     final radius = BorderRadius.circular(cornerRadius);
     final content =
         padding == null ? child : Padding(padding: padding!, child: child);
+
+    if (AppColorScheme.isPixel) {
+      final border = ThemeRegistry.active.borders.cardBorder;
+      final painter = PixelBorderPainter(
+        fillColor: fallbackColor,
+        borderColor: border.color,
+        borderWidth: border.width,
+        shadowColor: const Color(0xB3000000),
+      );
+      return CustomPaint(
+        painter: painter,
+        child: Padding(padding: painter.contentInsets, child: content),
+      );
+    }
 
     if (!AppColorScheme.isGlass) {
       return DecoratedBox(

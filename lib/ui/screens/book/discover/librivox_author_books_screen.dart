@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../util/platform_detection.dart';
@@ -44,7 +45,7 @@ class LibrivoxAuthorBooksScreen extends StatelessWidget {
               book.id.hashCode.abs() % audiobookPlaceholderColors.length;
           final placeholderColor = audiobookPlaceholderColors[colorIndex];
           return InkWell(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.circular(12),
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => LibrivoxBookDetailScreen(
@@ -58,13 +59,13 @@ class LibrivoxAuthorBooksScreen extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 color: const Color(0xFF1A2740),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.circular(12),
               ),
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.circular(8),
                     child: SizedBox(
                       width: 60,
                       height: 90,

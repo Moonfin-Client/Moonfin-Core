@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -209,7 +210,7 @@ class _AdminLibraryAddScreenState
               : null,
           child: InkWell(
             onTap: () => _selectType(entry.key),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.circular(12),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Row(

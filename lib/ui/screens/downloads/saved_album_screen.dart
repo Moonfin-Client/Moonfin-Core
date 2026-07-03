@@ -255,7 +255,7 @@ class _OfflineTrackTileState extends State<_OfflineTrackTile>
               color: showFocusBorder
                   ? focusColor.withValues(alpha: 0.14)
                   : Colors.transparent,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppRadius.circular(8),
               border: showFocusBorder
                   ? Border.fromBorderSide(
                       ThemeRegistry.active.borders.focusBorder.copyWith(
@@ -271,7 +271,7 @@ class _OfflineTrackTileState extends State<_OfflineTrackTile>
                 width: 54,
                 height: 54,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: AppRadius.circular(6),
                   child: OfflineImage(
                     localPath: widget.track.posterPath,
                     fit: BoxFit.cover,

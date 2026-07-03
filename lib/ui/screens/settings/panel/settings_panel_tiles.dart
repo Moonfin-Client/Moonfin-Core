@@ -207,7 +207,7 @@ class _DoubleSliderTileState extends State<_DoubleSliderTile> {
             color: _outerFocused
                 ? AppColorScheme.onSurface
                 : colorScheme.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.circular(12),
             border: Border.fromBorderSide(
               (_outerFocused
                       ? ThemeRegistry.active.borders.focusBorder

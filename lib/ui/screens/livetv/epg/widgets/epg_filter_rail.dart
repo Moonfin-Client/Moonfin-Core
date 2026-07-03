@@ -46,7 +46,13 @@ class EpgFilterRail extends StatelessWidget {
                 if (i < labels.length - 1) focusNodeFor(i + 1).requestFocus();
               },
               onNavigateDown: onNavigateDown,
-              child: _chip(context, i),
+              // Rebuild the chip on focus change so the focused-but-unselected
+              // pill can show an accent border.
+              child: ListenableBuilder(
+                listenable: focusNodeFor(i),
+                builder: (context, _) =>
+                    _chip(context, i, focusNodeFor(i).hasFocus),
+              ),
             ),
           ),
       ],
@@ -66,7 +72,7 @@ class EpgFilterRail extends StatelessWidget {
     );
   }
 
-  Widget _chip(BuildContext context, int i) {
+  Widget _chip(BuildContext context, int i, bool focused) {
     final selected = i == selectedIndex;
     final textTheme = Theme.of(context).textTheme;
     final Color bg;
@@ -80,15 +86,23 @@ class EpgFilterRail extends StatelessWidget {
           : AppColorScheme.surface.withValues(alpha: 0.55);
       fg = AppColorScheme.onSurface.withValues(alpha: 0.85);
     }
+    // A constant-width border avoids layout shift: accent when focused-but-not-
+    // selected, faint on Material's idle pills, otherwise transparent.
+    final Color borderColor;
+    if (focused && !selected) {
+      borderColor = AppColorScheme.accent;
+    } else if (!apple && !selected) {
+      borderColor = AppColorScheme.onSurface.withValues(alpha: 0.12);
+    } else {
+      borderColor = Colors.transparent;
+    }
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(13),
-        border: (!apple && !selected)
-            ? Border.all(color: AppColorScheme.onSurface.withValues(alpha: 0.12))
-            : null,
+        borderRadius: AppRadius.circular(13),
+        border: Border.all(color: borderColor, width: 2),
       ),
       child: Text(
         labels[i],

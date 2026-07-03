@@ -11,7 +11,10 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:moonfin_native_video/moonfin_native_video.dart';
+import 'package:logger/logger.dart';
 import 'package:playback_core/playback_core.dart';
+import 'package:playback_emby/playback_emby.dart';
+import 'package:playback_jellyfin/playback_jellyfin.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../data/models/media_bar_slide_item.dart';
@@ -30,6 +33,8 @@ import '../../util/overlay_color_palette.dart';
 import '../../util/platform_detection.dart';
 import '../../l10n/app_localizations.dart';
 import '../../playback/appletv_preview_player.dart';
+import '../../playback/device_profile_builder.dart';
+import '../../playback/html_video_backend_profile.dart';
 import '../../playback/inline_preview_engine.dart';
 import '../../playback/media3_player_backend.dart';
 import 'bounded_network_image.dart';
@@ -38,7 +43,10 @@ import 'mediabar/bookshelf_layout.dart';
 import 'mediabar/gallery_coverflow.dart';
 import 'mediabar/gallery_layout.dart';
 import 'rating_display.dart';
+import 'web_local_trailer.dart';
 import 'web_youtube_trailer.dart';
+
+final Logger _trailerLog = Logger();
 
 List<Shadow> get _textShadows => [
   Shadow(blurRadius: 4, color: AppColorScheme.scrim.withValues(alpha: 0.54)),
@@ -123,6 +131,8 @@ class _MediaBarState extends State<MediaBar>
   bool _trailerUsingMedia3 = false;
   String? _activeYouTubeVideoId;
   String? _pendingYouTubeVideoId;
+  String? _activeWebTrailerUrl;
+  String? _pendingWebTrailerUrl;
   bool _embeddedYouTubeAvailable = true;
   bool _sponsorBlockSeekInFlight = false;
   int _sponsorBlockToken = 0;
@@ -728,12 +738,15 @@ class _MediaBarState extends State<MediaBar>
     _activeTrailerItemId = null;
     _pendingTrailerItemId = null;
     _pendingYouTubeVideoId = null;
+    _pendingWebTrailerUrl = null;
     _clearSponsorBlockTracking();
     if (_activeYouTubeVideoId != null ||
+        _activeWebTrailerUrl != null ||
         _trailerVideoOpacity != 0.0 ||
         wasUsingMedia3 ||
         wasUsingAppleTv) {
       _activeYouTubeVideoId = null;
+      _activeWebTrailerUrl = null;
       _trailerVideoOpacity = 0.0;
       // deactivate() runs during the build phase, where setState() would throw.
       if (rebuild && mounted) setState(() {});
@@ -755,19 +768,36 @@ class _MediaBarState extends State<MediaBar>
     bool useYouTubeHeaders = false;
     String? youTubeVideoId;
     String? sponsorBlockVideoId;
+    StreamResolutionResult? localRes;
     final webOnly = PlatformDetection.isWeb;
     final supportsEmbeddedYouTube = _supportsEmbeddedYouTubePreview();
 
-    if (!webOnly) {
-      try {
-        final trailers = await client.itemsApi.getLocalTrailers(item.itemId);
-        if (!mounted || resolveId != _trailerResolveId) return;
+    // Negotiate local trailers through the shared PlaybackInfo path (direct-play
+    // when compatible, transcode otherwise) instead of a hand-built URL.
+    try {
+      final trailers = await client.itemsApi.getLocalTrailers(item.itemId);
+      if (!mounted || resolveId != _trailerResolveId) return;
 
-        final trailerId = _preferredLocalTrailerId(trailers);
-        if (trailerId != null) {
-          streamUrl = _buildLocalTrailerUrl(client, trailerId);
-        }
-      } catch (_) {}
+      final trailer = _preferredLocalTrailer(trailers);
+      if (trailer != null) {
+        localRes = await _resolverForClient(client)
+            .resolve(
+              trailer,
+              deviceProfile: _trailerDeviceProfile(),
+              enableDirectPlay: true,
+              enableDirectStream: true,
+              enableTranscoding: true,
+            )
+            .timeout(_trailerResolveTimeout);
+        if (!mounted || resolveId != _trailerResolveId) return;
+        streamUrl = localRes.streamUrl;
+      }
+    } catch (error, stack) {
+      _trailerLog.w(
+        'Local trailer resolution failed for ${item.itemId}',
+        error: error,
+        stackTrace: stack,
+      );
     }
 
     List<Map<String, dynamic>> remoteTrailers = item.remoteTrailers;
@@ -819,12 +849,35 @@ class _MediaBarState extends State<MediaBar>
       return;
     }
 
+    if (webOnly) {
+      // No media_kit/mpv backend in the browser; a local trailer plays through
+      // an HTML <video> element (YouTube trailers use the iframe path above).
+      if (streamUrl != null) {
+        _activeTrailerItemId = item.itemId;
+        _pendingTrailerItemId = null;
+        _pendingWebTrailerUrl = streamUrl;
+        if (sponsorBlockVideoId != null && sponsorBlockVideoId.isNotEmpty) {
+          _startSponsorBlockTracking(sponsorBlockVideoId, resolveId);
+        } else {
+          _clearSponsorBlockTracking();
+        }
+        await _tryRevealPreparedTrailer(item, resolveId);
+      } else if (_pendingTrailerItemId == item.itemId) {
+        _pendingTrailerItemId = null;
+      }
+      return;
+    }
+
     if (streamUrl == null) {
       if (_pendingTrailerItemId == item.itemId) {
         _pendingTrailerItemId = null;
       }
       return;
     }
+
+    final localHeaders = useYouTubeHeaders
+        ? YouTubeStreamResolver.youtubeHeaders
+        : (localRes?.requestHeaders ?? const <String, String>{});
 
     try {
       final useMedia3 = _useMedia3TrailerEngine() && !webOnly;
@@ -837,9 +890,11 @@ class _MediaBarState extends State<MediaBar>
 
         final payload = <String, dynamic>{
           'url': streamUrl,
-          'mediaType': 'video',
-          if (useYouTubeHeaders)
-            'headers': YouTubeStreamResolver.youtubeHeaders,
+          'mediaType': localRes?.mediaType ?? 'video',
+          if (localHeaders.isNotEmpty) 'headers': localHeaders,
+          if (localRes?.container != null) 'container': localRes!.container,
+          if (localRes?.videoRangeType != null)
+            'videoRangeType': localRes!.videoRangeType,
         };
         await _media3TrailerBackend.play(payload).timeout(_openTimeout);
         if (resolveId != _trailerResolveId || !_trailerShouldBeActive()) {
@@ -852,9 +907,7 @@ class _MediaBarState extends State<MediaBar>
         await player
             .open(
               streamUrl,
-              headers: useYouTubeHeaders
-                  ? YouTubeStreamResolver.youtubeHeaders
-                  : null,
+              headers: localHeaders.isNotEmpty ? localHeaders : null,
               volume: 0,
               backend: 'mpv',
             )
@@ -870,11 +923,8 @@ class _MediaBarState extends State<MediaBar>
         await player.setVolume(0);
         if (!mounted || resolveId != _trailerResolveId) return;
 
-        final media = useYouTubeHeaders
-            ? Media(
-                streamUrl,
-                httpHeaders: YouTubeStreamResolver.youtubeHeaders,
-              )
+        final media = localHeaders.isNotEmpty
+            ? Media(streamUrl, httpHeaders: localHeaders)
             : Media(streamUrl);
         await player.open(media).timeout(_openTimeout);
         if (resolveId != _trailerResolveId || !_trailerShouldBeActive()) {
@@ -896,7 +946,12 @@ class _MediaBarState extends State<MediaBar>
       }
 
       await _tryRevealPreparedTrailer(item, resolveId);
-    } catch (error) {
+    } catch (error, stack) {
+      _trailerLog.w(
+        'Trailer preview playback failed for ${item.itemId}',
+        error: error,
+        stackTrace: stack,
+      );
       _markTrailerFailed(item.itemId);
       if (mounted) _cancelTrailerPreview();
     }
@@ -929,6 +984,23 @@ class _MediaBarState extends State<MediaBar>
     }
 
     if (_activeYouTubeVideoId != null) {
+      _isTrailerPlaying = true;
+      _autoAdvanceTimer?.cancel();
+      return;
+    }
+
+    if (_pendingWebTrailerUrl != null) {
+      _isTrailerPlaying = true;
+      _autoAdvanceTimer?.cancel();
+      setState(() {
+        _activeWebTrailerUrl = _pendingWebTrailerUrl;
+        _trailerVideoOpacity = 1.0;
+      });
+      _pendingWebTrailerUrl = null;
+      return;
+    }
+
+    if (_activeWebTrailerUrl != null) {
       _isTrailerPlaying = true;
       _autoAdvanceTimer?.cancel();
       return;
@@ -1378,19 +1450,20 @@ class _MediaBarState extends State<MediaBar>
     _handleEmbeddedYouTubeUnavailable();
   }
 
-  String? _firstItemId(List<Map<String, dynamic>> items) {
+  /// Picks the local trailer item (raw map) to play, preferring one whose audio
+  /// matches the user's default audio language and falling back to the first.
+  Map<String, dynamic>? _preferredLocalTrailer(
+    List<Map<String, dynamic>> items,
+  ) {
+    Map<String, dynamic>? firstWithId;
     for (final item in items) {
       final id = item['Id']?.toString();
       if (id != null && id.isNotEmpty) {
-        return id;
+        firstWithId = item;
+        break;
       }
     }
-    return null;
-  }
-
-  String? _preferredLocalTrailerId(List<Map<String, dynamic>> items) {
-    final first = _firstItemId(items);
-    if (first == null) {
+    if (firstWithId == null) {
       return null;
     }
 
@@ -1398,12 +1471,12 @@ class _MediaBarState extends State<MediaBar>
         .get(UserPreferences.defaultAudioLanguage)
         .trim();
     if (preferred.isEmpty) {
-      return first;
+      return firstWithId;
     }
 
     final preferredNormalized = normalizeLanguage(preferred);
     if (preferredNormalized.isEmpty) {
-      return first;
+      return firstWithId;
     }
     final preferredIso3 = toIso3Language(preferredNormalized);
 
@@ -1422,11 +1495,25 @@ class _MediaBarState extends State<MediaBar>
         ),
       );
       if (hasMatch) {
-        return id;
+        return item;
       }
     }
 
-    return first;
+    return firstWithId;
+  }
+
+  MediaStreamResolver _resolverForClient(MediaServerClient client) {
+    return switch (client.serverType) {
+      ServerType.jellyfin => JellyfinPlugin(client).createStreamResolver(),
+      ServerType.emby => EmbyPlugin(client).createStreamResolver(),
+    };
+  }
+
+  Map<String, dynamic> _trailerDeviceProfile() {
+    if (PlatformDetection.isWeb) {
+      return buildHtmlVideoBackendDeviceProfile(widget.prefs);
+    }
+    return DeviceProfileBuilder.build();
   }
 
   List<Map<String, dynamic>> _audioStreamsFromRawTrailer(
@@ -1460,22 +1547,6 @@ class _MediaBarState extends State<MediaBar>
     }
 
     return audio;
-  }
-
-  String _buildLocalTrailerUrl(MediaServerClient client, String trailerId) {
-    final params = <String, String>{
-      'Static': 'false',
-      'videoCodec': 'h264',
-      'audioCodec': 'aac',
-      'maxVideoBitDepth': '8',
-      'audioBitRate': '128000',
-      'audioChannels': '2',
-      'subtitleMethod': 'Drop',
-      if (client.accessToken != null) 'ApiKey': client.accessToken!,
-    };
-    return Uri.parse(
-      '${client.baseUrl}/Videos/$trailerId/stream',
-    ).replace(queryParameters: params).toString();
   }
 
   @override
@@ -1525,7 +1596,7 @@ class _MediaBarState extends State<MediaBar>
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: AppColorScheme.scrim.withValues(alpha: 0.35),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.circular(12),
             border: Border.fromBorderSide(
               ThemeRegistry.active.borders.cardBorder,
             ),
@@ -1599,6 +1670,7 @@ class _MediaBarState extends State<MediaBar>
         : 0.0;
     final hasVisibleTrailerVideo =
         (_activeYouTubeVideoId != null ||
+            _activeWebTrailerUrl != null ||
             _trailerUsingMedia3 ||
             _trailerController != null) &&
         _trailerVideoOpacity > 0;
@@ -1801,6 +1873,7 @@ class _MediaBarState extends State<MediaBar>
     );
     final hasVisibleTrailerVideo =
         (_activeYouTubeVideoId != null ||
+            _activeWebTrailerUrl != null ||
             _trailerUsingMedia3 ||
             _trailerController != null) &&
         _trailerVideoOpacity > 0;
@@ -2216,6 +2289,7 @@ class _MediaBarState extends State<MediaBar>
     final trailerOverlays = _buildVideoOverlays();
     final trailerVisible =
         (_activeYouTubeVideoId != null ||
+            _activeWebTrailerUrl != null ||
             _trailerUsingMedia3 ||
             _trailerController != null) &&
         _trailerVideoOpacity > 0;
@@ -2468,6 +2542,30 @@ class _MediaBarState extends State<MediaBar>
             ),
           ),
         ),
+      if (_activeWebTrailerUrl != null)
+        Positioned.fill(
+          child: IgnorePointer(
+            child: AnimatedOpacity(
+              opacity: _trailerVideoOpacity,
+              duration: const Duration(milliseconds: 800),
+              child: ClipRect(
+                child: WebLocalTrailer(
+                  key: ValueKey(_activeWebTrailerUrl),
+                  url: _activeWebTrailerUrl!,
+                  muted: !widget.prefs.get(
+                    UserPreferences.previewAudioEnabled,
+                  ),
+                  ignorePointer: true,
+                  onCompleted: () => _onTrailerCompleted(true),
+                  onError: () {
+                    _markTrailerFailed(_activeTrailerItemId);
+                    _cancelTrailerPreview();
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
     ];
   }
 
@@ -2656,7 +2754,7 @@ class _SlideInfo extends StatelessWidget {
           ? null
           : BoxDecoration(
               color: overlayColor.withValues(alpha: cardAlpha.clamp(0.0, 1.0)),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: AppRadius.circular(16),
               border: Border.fromBorderSide(
                 ThemeRegistry.active.borders.cardBorder,
               ),
@@ -2727,7 +2825,7 @@ class _SlideInfo extends StatelessWidget {
               child: infoCard,
             )
           : ClipRRect(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: AppRadius.circular(16),
               child: kIsWeb
                   ? infoCard
                   : BackdropFilter(
@@ -2813,7 +2911,7 @@ class _MetadataRow extends StatelessWidget {
             color: ThemeRegistry.active.borders.chipBorder.color,
           ),
         ),
-        borderRadius: BorderRadius.circular(3),
+        borderRadius: AppRadius.circular(3),
       ),
       child: Text(
         label,
@@ -2846,7 +2944,7 @@ class _IndicatorDots extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: overlayColor.withValues(alpha: overlayOpacity * 0.6),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.circular(12),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -3009,7 +3107,7 @@ class _MakdActionButtons extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               color: AppColorScheme.buttonFocused,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppRadius.circular(8),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,

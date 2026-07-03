@@ -25,6 +25,11 @@ class ExpandableIconButton extends StatefulWidget {
   final ValueChanged<bool>? onFocusChanged;
   final Color? baseColor;
 
+  /// When true, the label stays visible even when unfocused/unhovered instead
+  /// of collapsing to an icon-only button. Drives the "always expand navbar
+  /// labels" preference.
+  final bool forceExpanded;
+
   const ExpandableIconButton({
     super.key,
     this.icon,
@@ -36,6 +41,7 @@ class ExpandableIconButton extends StatefulWidget {
     this.onKeyEvent,
     this.onFocusChanged,
     this.baseColor,
+    this.forceExpanded = false,
   });
 
   @override
@@ -76,7 +82,23 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
       _isFocused = hasFocus;
       if (hoverChanged) _isHovered = false;
     });
+    if (hasFocus) _ensureVisible();
     widget.onFocusChanged?.call(hasFocus);
+  }
+
+  // Keep the focused item on screen inside a horizontally-scrolling navbar.
+  // Runs after the frame so the expand animation's new width is measured first.
+  // A no-op when there is no enclosing Scrollable.
+  void _ensureVisible() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_focusNode.hasFocus) return;
+      Scrollable.ensureVisible(
+        context,
+        alignment: 0.5,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+      );
+    });
   }
 
   KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
@@ -135,7 +157,7 @@ class _ExpandableIconButtonState extends State<ExpandableIconButton> {
 
     final hoverActive = _isHovered && !isTV;
     final leanbackFocused = _isFocused && !isMobile;
-    final isExpanded = _isFocused || hoverActive;
+    final isExpanded = widget.forceExpanded || _isFocused || hoverActive;
     final effectiveBorderRadius = !isMobile ? 36.0 : (btnSize / 2);
     final baseColor = widget.baseColor ?? AppColorScheme.onSurface.withValues(alpha: 0.6);
     final useBaseForFocus = widget.baseColor != null;

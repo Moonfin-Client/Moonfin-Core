@@ -92,7 +92,7 @@ class EpgNowNextCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: AppRadius.circular(2),
                       child: LinearProgressIndicator(
                         value: nowProgress.clamp(0.0, 1.0),
                         minHeight: 4,
@@ -144,7 +144,7 @@ class EpgNowNextCard extends StatelessWidget {
           : DecoratedBox(
               decoration: BoxDecoration(
                 color: AppColorScheme.surface.withValues(alpha: 0.55),
-                borderRadius: BorderRadius.circular(radius),
+                borderRadius: AppRadius.circular(radius),
               ),
               child: padded,
             ),
@@ -159,7 +159,7 @@ class EpgNowNextCard extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(radius),
+            borderRadius: AppRadius.circular(radius),
             child: (logoUrl != null && logoUrl!.isNotEmpty)
                 ? CachedNetworkImage(
                     imageUrl: logoUrl!,
@@ -190,7 +190,7 @@ class EpgNowNextCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
         decoration: BoxDecoration(
           color: AppColorScheme.accent,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.circular(8),
         ),
         child: Text(
           number,
@@ -206,7 +206,7 @@ class EpgNowNextCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
         decoration: BoxDecoration(
           color: const Color(0xFFE0685C),
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: AppRadius.circular(4),
         ),
         child: const Text(
           'LIVE',

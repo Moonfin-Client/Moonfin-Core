@@ -189,12 +189,12 @@ class _SingleRating extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: AppColorScheme.scrim.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: AppRadius.circular(4),
         border: badgeBorder,
       ),
       child: ratingContent,
     );
-    return ClipRRect(borderRadius: BorderRadius.circular(4), child: badge);
+    return ClipRRect(borderRadius: AppRadius.circular(4), child: badge);
   }
 }
 

@@ -22,6 +22,7 @@ import '../../../data/services/storage_path_service.dart';
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../di/providers.dart';
 import '../../../util/idiom/app_ui_idiom.dart';
+import '../../../util/insecure_certificates.dart';
 import '../../../platform/web_runtime_config.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/language_codes.dart';
@@ -29,6 +30,7 @@ import '../../../util/locale_names.dart';
 import '../../../util/overlay_color_palette.dart';
 import '../../../util/platform_detection.dart';
 import '../../../util/app_distribution.dart';
+import '../../../util/app_exit.dart';
 import '../../widgets/app_update_dialog.dart';
 
 import '../../../auth/store/authentication_preferences.dart';

@@ -319,7 +319,7 @@ class _SeriesTimerCardState extends State<_SeriesTimerCard> with FocusStateMixin
                       height: 112,
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.06),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: AppRadius.circular(4),
                         border: showFocusBorder
                             ? Border.fromBorderSide(
                                 ThemeRegistry.active.borders.focusBorder.copyWith(

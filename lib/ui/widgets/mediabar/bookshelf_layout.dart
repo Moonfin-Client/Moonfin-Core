@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
@@ -481,7 +482,7 @@ class BookshelfLayout extends StatelessWidget {
           height: height,
           decoration: BoxDecoration(
             color: baseColor,
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: AppRadius.circular(6),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.55),
@@ -496,7 +497,7 @@ class BookshelfLayout extends StatelessWidget {
               // Cylindrical vertical lighting overlay for 3D spine effect
               DecoratedBox(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: AppRadius.circular(6),
                   gradient: LinearGradient(
                     colors: [
                       Colors.black.withValues(alpha: 0.35),

@@ -1352,7 +1352,7 @@ class _MetadataRow extends StatelessWidget {
             color: continuing
                 ? const Color(0xFF22C55E)
                 : const Color(0xFFEF4444),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: AppRadius.circular(4),
           ),
           child: Text(
             continuing ? 'Continuing' : 'Ended',
@@ -1372,7 +1372,7 @@ class _MetadataRow extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           decoration: BoxDecoration(
             color: Colors.white.withAlpha(38),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: AppRadius.circular(4),
           ),
           child: Text(
             item.officialRating!,
@@ -1508,7 +1508,7 @@ class _AlphaLetterButtonState extends State<_AlphaLetterButton>
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: widget.isSelected ? Colors.white.withAlpha(26) : null,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: AppRadius.circular(4),
               border: showFocusBorder
                   ? Border.fromBorderSide(
                       ThemeRegistry.active.borders.focusBorder.copyWith(
@@ -1582,7 +1582,7 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
     return Dialog(
       backgroundColor: surfaceColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.circular(20),
         side: ThemeRegistry.active.borders.chipBorder.copyWith(
           color: onSurface.withValues(alpha: 0.18),
         ),
@@ -1808,7 +1808,7 @@ class _FilterSortDialogState extends State<_FilterSortDialog> {
               width: 18,
               height: 18,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: AppRadius.circular(4),
                 border: Border.fromBorderSide(
                   ThemeRegistry.active.borders.chipBorder.copyWith(
                     color: checked ? accent : onSurface.withValues(alpha: 0.5),
@@ -1889,7 +1889,7 @@ class _SettingsDialogState extends State<_SettingsDialog> {
     return Dialog(
       backgroundColor: surfaceColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.circular(20),
         side: ThemeRegistry.active.borders.chipBorder.copyWith(
           color: onSurface.withValues(alpha: 0.18),
         ),
@@ -2159,13 +2159,13 @@ class _BookFilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(999),
+      borderRadius: AppRadius.circular(999),
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 160),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: AppRadius.circular(999),
           color: selected ? const Color(0x3332B9E8) : const Color(0x22131E33),
           border: Border.fromBorderSide(
             ThemeRegistry.active.borders.chipBorder.copyWith(

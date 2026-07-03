@@ -314,6 +314,35 @@ class AggregatedItem {
     };
   }
 
+  int? get audioSampleRateHz => _toInt(_defaultAudioStream?['SampleRate']);
+
+  int? get audioBitDepth => _toInt(_defaultAudioStream?['BitDepth']);
+
+  int? get audioBitRate {
+    final streamRate = _toInt(_defaultAudioStream?['BitRate']);
+    if (streamRate != null && streamRate > 0) return streamRate;
+    for (final source in mediaSources) {
+      final rate = _toInt(source['Bitrate']);
+      if (rate != null && rate > 0) return rate;
+    }
+    return null;
+  }
+
+  String? get audioContainer => mediaSources.isNotEmpty
+      ? mediaSources.first['Container'] as String?
+      : null;
+
+  static const _losslessCodecs = {
+    'flac', 'alac', 'wav', 'ape', 'wavpack', 'wv', 'tak', 'tta',
+    'dsd', 'dsf', 'mlp', 'truehd', 'pcm',
+  };
+
+  bool get isLosslessAudio {
+    final codec = (audioCodec ?? audioContainer)?.toLowerCase();
+    if (codec == null) return false;
+    return _losslessCodecs.contains(codec);
+  }
+
   String? endsAt({bool use24Hour = false}) {
     final ticks = runTimeTicks;
     if (ticks == null) return null;

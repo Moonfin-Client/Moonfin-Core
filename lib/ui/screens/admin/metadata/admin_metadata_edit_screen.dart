@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:moonfin_design/moonfin_design.dart';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -1166,7 +1167,7 @@ class _AdminMetadataEditScreenState extends State<AdminMetadataEditScreen>
                               Theme.of(
                                 context,
                               ).colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: AppRadius.circular(4),
                         ),
                         child: const Center(
                           child: Icon(
@@ -1722,7 +1723,7 @@ class _RemoteImagePickerDialogState extends State<_RemoteImagePickerDialog> {
 
                                 return InkWell(
                                   onTap: () => Navigator.pop(context, image),
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: AppRadius.circular(12),
                                   child: Card(
                                     clipBehavior: Clip.antiAlias,
                                     child: Column(

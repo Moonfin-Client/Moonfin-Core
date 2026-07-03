@@ -3,7 +3,6 @@ import 'package:moonfin/playback/audio_capability_profile.dart';
 import 'package:moonfin/playback/device_profile_builder.dart';
 import 'package:moonfin/playback/known_defects.dart';
 import 'package:moonfin/preference/preference_constants.dart';
-import 'package:moonfin/util/platform_detection.dart';
 
 Set<String> _hevcUnsupportedRangeTypes(Map<String, dynamic> profile) {
   final codecProfiles = profile['CodecProfiles'] as List<dynamic>? ?? const [];
@@ -212,13 +211,10 @@ void main() {
       expect(codecs, contains('eac3'));
       expect(codecs, contains('dts'));
       expect(codecs, contains('dca'));
-      if (!PlatformDetection.isAndroid) {
-        expect(codecs, contains('truehd'));
-        expect(codecs, contains('mlp'));
-      } else {
-        expect(codecs, isNot(contains('truehd')));
-        expect(codecs, isNot(contains('mlp')));
-      }
+      // TrueHD/MLP are advertised on every platform: where there is no hardware
+      // decoder (Android) the bundled FFmpeg decoder handles them.
+      expect(codecs, contains('truehd'));
+      expect(codecs, contains('mlp'));
     });
 
     test('keeps codec when local decode is available even without passthrough', () {
@@ -418,6 +414,7 @@ void main() {
             canDecodeTrueHd: false,
             canPassthroughTrueHd: false,
             canPassthroughTrueHdJoc: true,
+            activeRouteType: AudioRouteType.earc,
           ),
           trueHdPassthroughEnabled: false,
           trueHdAtmosPassthroughEnabled: true,
@@ -496,6 +493,36 @@ void main() {
     test('matches additional Fire TV models for DoVi HDR10+ bug', () {
       expect(KnownDefects.modelHasHevcDoviHdr10PlusBug('AFTKRT'), isTrue);
       expect(KnownDefects.modelHasHevcDoviHdr10PlusBug('aftmm'), isFalse);
+    });
+  });
+
+  group('KnownDefects DoVi Profile 7 EL direct play', () {
+    test('enabled and disabled behaviors take precedence over device signals', () {
+      expect(
+        KnownDefects.shouldAllowDolbyVisionProfile7ElDirectPlay(
+          behavior: DolbyVisionProfile7DirectPlayBehavior.enabled,
+          hasHardwareDolbyVisionDecoder: false,
+        ),
+        isTrue,
+      );
+      expect(
+        KnownDefects.shouldAllowDolbyVisionProfile7ElDirectPlay(
+          behavior: DolbyVisionProfile7DirectPlayBehavior.disabled,
+          hasHardwareDolbyVisionDecoder: true,
+        ),
+        isFalse,
+      );
+    });
+
+    test('auto allows direct play when a hardware DoVi decoder is present', () {
+      expect(
+        KnownDefects.shouldAllowDolbyVisionProfile7ElDirectPlay(
+          behavior: DolbyVisionProfile7DirectPlayBehavior.auto,
+          model: 'not-in-allowlist',
+          hasHardwareDolbyVisionDecoder: true,
+        ),
+        isTrue,
+      );
     });
   });
 }

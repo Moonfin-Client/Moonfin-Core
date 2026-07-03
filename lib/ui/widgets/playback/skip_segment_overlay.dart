@@ -134,7 +134,7 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
             children: [
               InkWell(
                 onTap: widget.onSkip,
-                borderRadius: BorderRadius.circular(_capsuleRadius),
+                borderRadius: AppRadius.circular(_capsuleRadius),
                 child: Container(
                   decoration: FocusTheme.focusDecoration(
                     isFocused: true,

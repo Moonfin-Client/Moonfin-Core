@@ -20,6 +20,7 @@ import '../../preference/user_preferences.dart';
 import '../../l10n/app_localizations.dart';
 import '../../util/clock_format.dart';
 import '../../util/focus/dpad_keys.dart';
+import '../../util/game_library.dart';
 import '../../util/overlay_color_palette.dart';
 import '../../util/platform_detection.dart';
 import '../navigation/destinations.dart';
@@ -1005,7 +1006,11 @@ class _LeftSidebarState extends State<LeftSidebar> {
                                         );
                                       } else {
                                         context.navigateTopLevel(
-                                          '/library/${lib.id}',
+                                          gameOrLibraryRoute(
+                                            lib.id,
+                                            lib.collectionType,
+                                            lib.name,
+                                          ),
                                         );
                                       }
                                     },
@@ -1154,7 +1159,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
         color: (PlatformDetection.isTV && isFocused && _showLabels)
             ? Colors.white
             : Colors.transparent,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: AppRadius.circular(24),
       ),
       child: Row(
         children: [
@@ -1338,7 +1343,7 @@ class _SidebarItemState extends State<_SidebarItem> {
                           : focusColor.withValues(alpha: 0.12))
                     : Colors.transparent,
                 borderRadius: PlatformDetection.isTV
-                    ? BorderRadius.circular(24)
+                    ? AppRadius.circular(24)
                     : BorderRadius.zero,
               ),
               child: Row(
@@ -1463,7 +1468,7 @@ class _SidebarLibraryItemState extends State<_SidebarLibraryItem> {
                           : focusColor.withValues(alpha: 0.1))
                     : Colors.transparent,
                 borderRadius: PlatformDetection.isTV
-                    ? BorderRadius.circular(24)
+                    ? AppRadius.circular(24)
                     : BorderRadius.zero,
               ),
               alignment: Alignment.centerLeft,
@@ -1699,7 +1704,7 @@ class _SidebarMusicCardState extends State<SidebarMusicCard> {
             child: Row(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.circular(8),
                   child: SizedBox(
                     width: 48,
                     height: 48,
@@ -1785,7 +1790,7 @@ class _SidebarMusicCardState extends State<SidebarMusicCard> {
         child: FocusTraversalGroup(
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: AppRadius.circular(16),
               border: border,
               boxShadow: boxShadow,
             ),

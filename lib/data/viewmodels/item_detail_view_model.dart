@@ -234,9 +234,11 @@ class ItemDetailViewModel extends ChangeNotifier {
       futures.add(_loadSeasons());
       futures.add(_loadNextUp());
       futures.add(_loadSimilar());
+      futures.add(_loadFeatures());
     } else if (type == 'Season') {
       futures.add(_loadRatings());
       futures.add(_loadEpisodes());
+      futures.add(_loadFeatures());
     } else if (type == 'Episode') {
       futures.add(_loadRatings());
       futures.add(_loadEpisodes());
