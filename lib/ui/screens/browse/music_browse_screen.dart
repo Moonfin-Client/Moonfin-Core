@@ -6,6 +6,8 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
+import 'package:playback_core/playback_core.dart';
+import '../../../data/services/media_server_client_factory.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/services/background_service.dart';
@@ -120,18 +122,8 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
   }
 
   void _onItemTap(AggregatedItem item) {
-    final albumId = item.albumId?.isNotEmpty == true
-        ? item.albumId
-        : item.parentId;
-    if (item.type == 'Audio' && albumId != null && albumId.isNotEmpty) {
-      context.push(
-        Destinations.item(
-          albumId,
-          serverId: item.serverId,
-          autoPlay: true,
-          trackId: item.id,
-        ),
-      );
+    if (item.type == 'Audio') {
+      unawaited(_playTrackDirectly(context, item));
       return;
     }
     context.push(Destinations.item(item.id, serverId: item.serverId));
@@ -451,18 +443,8 @@ class _MusicHero extends StatefulWidget {
 
 class _MusicHeroState extends State<_MusicHero> with FocusStateMixin {
   void _open({bool play = true}) {
-    final albumId = widget.item.albumId?.isNotEmpty == true
-        ? widget.item.albumId
-        : widget.item.parentId;
-    if (widget.item.type == 'Audio' && albumId != null && albumId.isNotEmpty) {
-      context.push(
-        Destinations.item(
-          albumId,
-          serverId: widget.item.serverId,
-          autoPlay: play,
-          trackId: widget.item.id,
-        ),
-      );
+    if (widget.item.type == 'Audio') {
+      unawaited(_playTrackDirectly(context, widget.item));
       return;
     }
     context.push(
@@ -1541,5 +1523,88 @@ class _DialogCheckboxTileState extends State<_DialogCheckboxTile> {
         ),
       ),
     );
+  }
+}
+
+Future<void> _playTrackDirectly(BuildContext context, AggregatedItem item) async {
+  // Show a loading indicator
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    },
+  );
+
+  final albumId = item.albumId?.isNotEmpty == true
+      ? item.albumId
+      : item.parentId;
+
+  try {
+    List<AggregatedItem> tracks = [item];
+    int startIndex = 0;
+
+    if (albumId != null && albumId.isNotEmpty) {
+      final factory = GetIt.instance<MediaServerClientFactory>();
+      final client = item.serverId != null
+          ? factory.getClientIfExists(item.serverId!) ??
+                GetIt.instance<MediaServerClient>()
+          : GetIt.instance<MediaServerClient>();
+
+      // Load all tracks in the album
+      final data = await client.itemsApi.getItems(
+        parentId: albumId,
+        includeItemTypes: const ['Audio'],
+        sortBy: 'ParentIndexNumber,IndexNumber,SortName',
+        fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
+      );
+
+      final rawItems = data['Items'] as List?;
+      final itemsList = (rawItems as List?)
+              ?.whereType<Map>()
+              .map((raw) => raw.cast<String, dynamic>())
+              .toList() ??
+          const <Map<String, dynamic>>[];
+
+      final loadedTracks = itemsList
+          .where((raw) => raw['Id']?.toString().isNotEmpty == true)
+          .map((raw) => AggregatedItem(
+                id: raw['Id'].toString(),
+                serverId: item.serverId,
+                rawData: raw,
+              ))
+          .toList();
+
+      if (loadedTracks.isNotEmpty) {
+        tracks = loadedTracks;
+        final idx = tracks.indexWhere((t) => t.id == item.id);
+        if (idx >= 0) {
+          startIndex = idx;
+        }
+      }
+    }
+
+    final manager = GetIt.instance<PlaybackManager>();
+    await manager.playItems(tracks, startIndex: startIndex);
+    
+    if (context.mounted) {
+      // Dismiss the loading indicator
+      Navigator.of(context).pop();
+      // Navigate straight to the audio player
+      context.push(Destinations.audioPlayer);
+    }
+  } catch (e) {
+    if (context.mounted) {
+      // Dismiss the loading indicator
+      Navigator.of(context).pop();
+    }
+    // Fallback: play the single item directly if API fails
+    final manager = GetIt.instance<PlaybackManager>();
+    await manager.playItems([item]);
+    if (context.mounted) {
+      context.push(Destinations.audioPlayer);
+    }
   }
 }
