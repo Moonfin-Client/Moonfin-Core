@@ -1823,8 +1823,16 @@ class _LibrariesDropdownState extends State<_LibrariesDropdown> {
       ),
     );
 
-    // Full-screen barrier so an outside tap dismisses the menu on touch, where
-    // there is no hover or focus change to close it (e.g. opening Settings).
+    final follower = CompositedTransformFollower(
+      link: _layerLink,
+      targetAnchor: _openToLeft ? Alignment.bottomRight : Alignment.bottomLeft,
+      followerAnchor: _openToLeft ? Alignment.topRight : Alignment.topLeft,
+      offset: Offset.zero,
+      child: content,
+    );
+
+    if (!PlatformDetection.isMobile) return follower;
+
     return Stack(
       children: [
         Positioned.fill(
@@ -1833,15 +1841,7 @@ class _LibrariesDropdownState extends State<_LibrariesDropdown> {
             onTap: () => _hideDropdown(),
           ),
         ),
-        CompositedTransformFollower(
-          link: _layerLink,
-          targetAnchor:
-              _openToLeft ? Alignment.bottomRight : Alignment.bottomLeft,
-          followerAnchor:
-              _openToLeft ? Alignment.topRight : Alignment.topLeft,
-          offset: Offset.zero,
-          child: content,
-        ),
+        follower,
       ],
     );
   }
