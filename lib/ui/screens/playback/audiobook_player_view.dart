@@ -418,7 +418,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Exported successfully to: ${file.path}'),
+            content: Text(AppLocalizations.of(context).audiobookExportSuccess(file.path)),
             backgroundColor: AppColorScheme.accent,
           ),
         );
@@ -427,7 +427,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Export failed: $e'),
+            content: Text(AppLocalizations.of(context).audiobookExportFailed('$e')),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -1063,7 +1063,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
     _tvTabIndex = availableTabs.indexOf(_drawerTab).clamp(0, availableTabs.length - 1);
 
     final labels = {
-      AudiobookDrawerTab.timeline: 'Timeline',
+      AudiobookDrawerTab.timeline: l10n.audiobookTimeline,
       AudiobookDrawerTab.chapters: l10n.audiobookChapters,
       AudiobookDrawerTab.bookmarks: l10n.audiobookBookmarks,
       AudiobookDrawerTab.notes: l10n.audiobookNotes,
@@ -1117,7 +1117,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
     final availableTabs = _getAvailableTabs(chapters);
     if (availableTabs.isEmpty) return;
     final labels = {
-      AudiobookDrawerTab.timeline: 'Timeline',
+      AudiobookDrawerTab.timeline: l10n.audiobookTimeline,
       AudiobookDrawerTab.chapters: l10n.audiobookChapters,
       AudiobookDrawerTab.bookmarks: l10n.audiobookBookmarks,
       AudiobookDrawerTab.notes: l10n.audiobookNotes,

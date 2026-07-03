@@ -7725,6 +7725,25 @@
   "audiobookBookmarks": "Bookmarks",
   "audiobookNotes": "Notes",
   "audiobookQueue": "Queue",
+  "audiobookTimeline": "Timeline",
+  "audiobookTimelineEmpty": "Timeline is empty",
+  "audiobookWholeBook": "Whole book",
+  "audiobookWholeBookProgress": "{percent}% · {time} left",
+  "@audiobookWholeBookProgress": {
+    "placeholders": {"percent": {"type": "String"}, "time": {"type": "String"}}
+  },
+  "audiobookFocusedTimeline": "Focused Timeline",
+  "audiobookExportBookmarks": "Export Bookmarks",
+  "audiobookExportNotes": "Export Notes",
+  "audiobookExportAll": "Export All",
+  "audiobookExportSuccess": "Exported to {path}",
+  "@audiobookExportSuccess": {
+    "placeholders": {"path": {"type": "String"}}
+  },
+  "audiobookExportFailed": "Export failed: {error}",
+  "@audiobookExportFailed": {
+    "placeholders": {"error": {"type": "String"}}
+  },
   "audiobookLyrics": "Lyrics",
   "audiobookAddBookmark": "Add bookmark",
   "audiobookAddNote": "Add note",

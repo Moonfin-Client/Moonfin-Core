@@ -14992,6 +14992,66 @@ abstract class AppLocalizations {
   /// **'Queue'**
   String get audiobookQueue;
 
+  /// No description provided for @audiobookTimeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline'**
+  String get audiobookTimeline;
+
+  /// No description provided for @audiobookTimelineEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline is empty'**
+  String get audiobookTimelineEmpty;
+
+  /// No description provided for @audiobookWholeBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole book'**
+  String get audiobookWholeBook;
+
+  /// No description provided for @audiobookWholeBookProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% · {time} left'**
+  String audiobookWholeBookProgress(String percent, String time);
+
+  /// No description provided for @audiobookFocusedTimeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Focused Timeline'**
+  String get audiobookFocusedTimeline;
+
+  /// No description provided for @audiobookExportBookmarks.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Bookmarks'**
+  String get audiobookExportBookmarks;
+
+  /// No description provided for @audiobookExportNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Notes'**
+  String get audiobookExportNotes;
+
+  /// No description provided for @audiobookExportAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Export All'**
+  String get audiobookExportAll;
+
+  /// No description provided for @audiobookExportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Exported to {path}'**
+  String audiobookExportSuccess(String path);
+
+  /// No description provided for @audiobookExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed: {error}'**
+  String audiobookExportFailed(String error);
+
   /// No description provided for @audiobookLyrics.
   ///
   /// In en, this message translates to:

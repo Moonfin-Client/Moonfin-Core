@@ -8416,6 +8416,42 @@ class AppLocalizationsCs extends AppLocalizations {
   String get audiobookQueue => 'Queue';
 
   @override
+  String get audiobookTimeline => 'Timeline';
+
+  @override
+  String get audiobookTimelineEmpty => 'Timeline is empty';
+
+  @override
+  String get audiobookWholeBook => 'Whole book';
+
+  @override
+  String audiobookWholeBookProgress(String percent, String time) {
+    return '$percent% · $time left';
+  }
+
+  @override
+  String get audiobookFocusedTimeline => 'Focused Timeline';
+
+  @override
+  String get audiobookExportBookmarks => 'Export Bookmarks';
+
+  @override
+  String get audiobookExportNotes => 'Export Notes';
+
+  @override
+  String get audiobookExportAll => 'Export All';
+
+  @override
+  String audiobookExportSuccess(String path) {
+    return 'Exported to $path';
+  }
+
+  @override
+  String audiobookExportFailed(String error) {
+    return 'Export failed: $error';
+  }
+
+  @override
   String get audiobookLyrics => 'Lyrics';
 
   @override

@@ -356,7 +356,7 @@ class _AudiobookBookmarksListState extends State<AudiobookBookmarksList> {
                     TextButton.icon(
                       onPressed: widget.onExport,
                       icon: Icon(apple ? CupertinoIcons.square_arrow_down : Icons.download, size: 16),
-                      label: const Text('Export Bookmarks', style: TextStyle(fontSize: 12)),
+                      label: Text(AppLocalizations.of(context).audiobookExportBookmarks, style: const TextStyle(fontSize: 12)),
                       style: TextButton.styleFrom(
                         foregroundColor: AppColorScheme.accent,
                         visualDensity: VisualDensity.compact,
@@ -551,7 +551,7 @@ class _AudiobookNotesListState extends State<AudiobookNotesList> {
                     TextButton.icon(
                       onPressed: widget.onExport,
                       icon: Icon(apple ? CupertinoIcons.square_arrow_down : Icons.download, size: 16),
-                      label: const Text('Export Notes', style: TextStyle(fontSize: 12)),
+                      label: Text(AppLocalizations.of(context).audiobookExportNotes, style: const TextStyle(fontSize: 12)),
                       style: TextButton.styleFrom(
                         foregroundColor: AppColorScheme.accent,
                         visualDensity: VisualDensity.compact,
@@ -776,7 +776,7 @@ class _AudiobookTimelineListState extends State<AudiobookTimelineList> {
   @override
   Widget build(BuildContext context) {
     if (widget.events.isEmpty) {
-      return const _EmptyState(text: 'Timeline is empty');
+      return _EmptyState(text: AppLocalizations.of(context).audiobookTimelineEmpty);
     }
     final apple = PlatformDetection.isApple;
     return Column(
@@ -790,7 +790,7 @@ class _AudiobookTimelineListState extends State<AudiobookTimelineList> {
                 TextButton.icon(
                   onPressed: widget.onExport,
                   icon: Icon(apple ? CupertinoIcons.square_arrow_down : Icons.download, size: 16),
-                  label: const Text('Export All', style: TextStyle(fontSize: 12)),
+                  label: Text(AppLocalizations.of(context).audiobookExportAll, style: const TextStyle(fontSize: 12)),
                   style: TextButton.styleFrom(
                     foregroundColor: AppColorScheme.accent,
                     visualDensity: VisualDensity.compact,

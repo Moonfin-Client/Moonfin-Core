@@ -5,6 +5,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import 'audiobook_time.dart';
 import '../../../data/services/audiobook_bookmarks_service.dart';
 import '../../../data/services/audiobook_notes_service.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../util/platform_detection.dart';
 import 'chapter.dart';
 
@@ -26,6 +27,7 @@ class AudiobookBookOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final maxMs = duration.inMilliseconds.toDouble();
     final fraction =
         maxMs > 0 ? (position.inMilliseconds / maxMs).clamp(0.0, 1.0) : 0.0;
@@ -70,9 +72,12 @@ class AudiobookBookOverview extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Whole book', style: captionStyle),
+              Text(l10n.audiobookWholeBook, style: captionStyle),
               Text(
-                '$percent% · ${formatAudiobookClock(remaining)} left',
+                l10n.audiobookWholeBookProgress(
+                  '$percent',
+                  formatAudiobookClock(remaining),
+                ),
                 style: captionStyle,
               ),
             ],
@@ -252,6 +257,7 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final apple = PlatformDetection.isApple;
     final totalMs = duration.inMilliseconds.toDouble();
     final posMs = position.inMilliseconds.toDouble().clamp(0, totalMs);
@@ -363,7 +369,7 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
             children: [
               Text(formatPosition(position), style: labelStyle),
               Text(
-                'Focused Timeline',
+                l10n.audiobookFocusedTimeline,
                 style: TextStyle(
                   fontSize: 11,
                   fontStyle: FontStyle.italic,
