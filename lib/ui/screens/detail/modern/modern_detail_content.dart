@@ -596,7 +596,17 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   FocusNode _tabNode(int index) {
     while (_tabFocusNodes.length <= index) {
-      final node = FocusNode(debugLabel: 'tab_$index');
+      final i = _tabFocusNodes.length;
+      final node = FocusNode(debugLabel: 'tab_$i');
+      // On TV the tab content is collapsed by default
+      // Auto-expand the tab you first land on
+      if (PlatformDetection.isTV) {
+        node.addListener(() {
+          if (node.hasFocus && mounted && _selectedTab < 0) {
+            _selectTab(i);
+          }
+        });
+      }
       _tabFocusNodes.add(node);
     }
     return _tabFocusNodes[index];
