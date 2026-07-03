@@ -1246,11 +1246,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         final first = resumeIdx < nextUpIdx ? resumeIdx : nextUpIdx;
         var targetIndex = toIndex;
         if (targetIndex > first) {
-          if (targetIndex <= first + 2) {
-            targetIndex = first;
-          } else {
-            targetIndex -= 2;
-          }
+          targetIndex -= 1;
         }
         focusIndex = targetIndex;
       }
@@ -1917,19 +1913,15 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                     _save();
                   },
                   onMoveUp: () {
-                    debugPrint('TV MoveUp: resume, isFirst: $isFirst');
                     if (isFirst) return;
                     final visibleIndices = _visibleSectionIndices();
                     final currentIdx = visibleIndices.indexOf(resumeSectionIndex);
-                    debugPrint('TV MoveUp: resume, currentIdx: $currentIdx, target: ${currentIdx - 1}');
                     _moveSection(resumeSectionIndex, visibleIndices[currentIdx - 1]);
                   },
                   onMoveDown: () {
-                    debugPrint('TV MoveDown: resume, isLast: $isLast');
                     if (isLast) return;
                     final visibleIndices = _visibleSectionIndices();
                     final currentIdx = visibleIndices.indexOf(resumeSectionIndex);
-                    debugPrint('TV MoveDown: resume, currentIdx: $currentIdx, target: ${currentIdx + 1}, len: ${visibleIndices.length}');
                     if (currentIdx >= visibleIndices.length - 1) return;
                     _moveSection(resumeSectionIndex, visibleIndices[currentIdx + 1]);
                   },
@@ -1957,19 +1949,15 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                     _save();
                   },
                   onMoveUp: () {
-                    debugPrint('TV MoveUp: nextUp, isFirst: $isFirst');
                     if (isFirst) return;
                     final visibleIndices = _visibleSectionIndices();
                     final currentIdx = visibleIndices.indexOf(resumeSectionIndex);
-                    debugPrint('TV MoveUp: nextUp, currentIdx: $currentIdx, target: ${currentIdx - 1}');
                     _moveSection(resumeSectionIndex, visibleIndices[currentIdx - 1]);
                   },
                   onMoveDown: () {
-                    debugPrint('TV MoveDown: nextUp, isLast: $isLast');
                     if (isLast) return;
                     final visibleIndices = _visibleSectionIndices();
                     final currentIdx = visibleIndices.indexOf(resumeSectionIndex);
-                    debugPrint('TV MoveDown: nextUp, currentIdx: $currentIdx, target: ${currentIdx + 1}, len: ${visibleIndices.length}');
                     if (currentIdx >= visibleIndices.length - 1) return;
                     _moveSection(resumeSectionIndex, visibleIndices[currentIdx + 1]);
                   },
