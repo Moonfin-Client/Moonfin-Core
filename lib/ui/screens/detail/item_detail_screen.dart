@@ -138,12 +138,14 @@ class ItemDetailScreen extends StatefulWidget {
   final String itemId;
   final String? serverId;
   final bool autoPlay;
+  final String? trackId;
 
   const ItemDetailScreen({
     super.key,
     required this.itemId,
     this.serverId,
     this.autoPlay = false,
+    this.trackId,
   });
 
   @override
@@ -493,6 +495,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
                 },
                 onBackdropItemFocused: _onBackdropItemFocused,
                 autoPlay: widget.autoPlay,
+                trackId: widget.trackId,
                 onPlayFromChapter: (position) => unawaited(
                   _playFromChapter(context, _viewModel.item!, position, _selectedMediaSourceId),
                 ),
@@ -511,6 +514,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
                   setState(() => _selectedMediaSourceId = id);
                   _viewModel.load(mediaSourceId: id);
                 },
+                trackId: widget.trackId,
                 onBackdropItemFocused: _onBackdropItemFocused,
                 autoPlay: widget.autoPlay,
               ),
@@ -527,6 +531,7 @@ class _DetailContent extends StatefulWidget {
   final ValueChanged<AggregatedItem>? onBackdropItemFocused;
   final FocusNode? initialFocusNode;
   final bool autoPlay;
+  final String? trackId;
 
   const _DetailContent({
     required this.viewModel,
@@ -537,6 +542,7 @@ class _DetailContent extends StatefulWidget {
     this.onBackdropItemFocused,
     this.initialFocusNode,
     this.autoPlay = false,
+    this.trackId,
   });
 
   @override
@@ -7076,6 +7082,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     bool forceTranscode = false,
     bool useExternalPlayer = false,
   }) async {
+    final detailScreen = context.findAncestorWidgetOfExactType<ItemDetailScreen>();
     final manager = GetIt.instance<PlaybackManager>();
     final mediaStreams = _mediaStreamsForCurrentSelection(item);
     final audioStreams = mediaStreams
@@ -7448,7 +7455,15 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               }
               throw PlaybackStartupRecoveryAbortedException();
             }
-            await manager.playItems(tracks);
+            int startIndex = 0;
+            final trackId = detailScreen?.trackId;
+            if (trackId != null && trackId.isNotEmpty) {
+              final idx = tracks.indexWhere((t) => t.id == trackId);
+              if (idx >= 0) {
+                startIndex = idx;
+              }
+            }
+            await manager.playItems(tracks, startIndex: startIndex);
             break;
 
           case 'Playlist':
@@ -7467,6 +7482,14 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               throw PlaybackStartupRecoveryAbortedException();
             }
             if (!context.mounted) return;
+            int startIndex = 0;
+            final trackId = detailScreen?.trackId;
+            if (trackId != null && trackId.isNotEmpty) {
+              final idx = tracks.indexWhere((t) => t.id == trackId);
+              if (idx >= 0) {
+                startIndex = idx;
+              }
+            }
             // Playlists can contain video, so honor the Dolby Vision
             // force-transcode check before allowing direct play/stream.
             final dvForceTranscode =
@@ -7474,6 +7497,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             final directAllowed = !dvForceTranscode && !forceTranscode;
             await manager.playItems(
               tracks,
+              startIndex: startIndex,
               enableDirectPlay: directAllowed,
               enableDirectStream: directAllowed,
             );

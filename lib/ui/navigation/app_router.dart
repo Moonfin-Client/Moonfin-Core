@@ -369,11 +369,13 @@ final appRouter = GoRouter(
         final itemId = state.pathParameters['itemId']!;
         final serverId = state.uri.queryParameters['serverId'];
         final autoPlay = state.uri.queryParameters['autoPlay'] == 'true';
+        final trackId = state.uri.queryParameters['trackId'];
         return ItemDetailScreen(
           key: ValueKey(itemId),
           itemId: itemId,
           serverId: serverId,
           autoPlay: autoPlay,
+          trackId: trackId,
         );
       },
       routes: [

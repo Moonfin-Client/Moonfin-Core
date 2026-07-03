@@ -71,6 +71,7 @@ class ModernDetailContent extends StatefulWidget {
   final ValueChanged<String?> onSelectedMediaSourceChanged;
   final FocusNode? initialFocusNode;
   final bool autoPlay;
+  final String? trackId;
   final void Function(Duration position)? onPlayFromChapter;
   final ValueChanged<bool>? onToggleNavbar;
   final bool actionsExpanded;
@@ -88,6 +89,7 @@ class ModernDetailContent extends StatefulWidget {
     this.onBackdropItemFocused,
     this.initialFocusNode,
     this.autoPlay = false,
+    this.trackId,
     this.onPlayFromChapter,
     this.onToggleNavbar,
     required this.actionsExpanded,
@@ -483,7 +485,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         _selectedTab = -1;
       }
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) widget.initialFocusNode?.requestFocus();
+        if (mounted) {
+          final targetTrackId = widget.trackId;
+          if (targetTrackId != null && targetTrackId.isNotEmpty) {
+            _trackFocusNodes.putIfAbsent(targetTrackId, () => FocusNode()).requestFocus();
+          } else {
+            widget.initialFocusNode?.requestFocus();
+          }
+        }
       });
       NavigationLayout.focusDetailsPlayButtonNotifier.value = widget.initialFocusNode;
     }
@@ -498,7 +507,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     super.didUpdateWidget(oldWidget);
     if (widget.initialFocusNode != oldWidget.initialFocusNode && PlatformDetection.isTV) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) widget.initialFocusNode?.requestFocus();
+        if (mounted) {
+          final targetTrackId = widget.trackId;
+          if (targetTrackId != null && targetTrackId.isNotEmpty) {
+            _trackFocusNodes.putIfAbsent(targetTrackId, () => FocusNode()).requestFocus();
+          } else {
+            widget.initialFocusNode?.requestFocus();
+          }
+        }
       });
       NavigationLayout.focusDetailsPlayButtonNotifier.value = widget.initialFocusNode;
     }

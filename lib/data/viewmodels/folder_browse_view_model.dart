@@ -216,7 +216,10 @@ class FolderBrowseViewModel extends ChangeNotifier {
     if (type == 'Series' ||
         type == 'Season' ||
         type == 'BoxSet' ||
-        type == 'Playlist') {
+        type == 'Playlist' ||
+        type == 'MusicArtist' ||
+        type == 'MusicAlbum' ||
+        type == 'AlbumArtist') {
       return false;
     }
 
@@ -226,7 +229,6 @@ class FolderBrowseViewModel extends ChangeNotifier {
     return type == 'Folder' ||
         type == 'CollectionFolder' ||
         type == 'UserView' ||
-        type == 'MusicAlbum' ||
         type == 'PhotoAlbum';
   }
 

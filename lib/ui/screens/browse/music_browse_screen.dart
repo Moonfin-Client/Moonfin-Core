@@ -120,6 +120,19 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
   }
 
   void _onItemTap(AggregatedItem item) {
+    final albumId = item.albumId?.isNotEmpty == true
+        ? item.albumId
+        : item.parentId;
+    if (item.type == 'Audio' && albumId != null && albumId.isNotEmpty) {
+      context.push(
+        Destinations.item(
+          albumId,
+          serverId: item.serverId,
+          trackId: item.id,
+        ),
+      );
+      return;
+    }
     context.push(Destinations.item(item.id, serverId: item.serverId));
   }
 
@@ -437,6 +450,20 @@ class _MusicHero extends StatefulWidget {
 
 class _MusicHeroState extends State<_MusicHero> with FocusStateMixin {
   void _open({bool play = false}) {
+    final albumId = widget.item.albumId?.isNotEmpty == true
+        ? widget.item.albumId
+        : widget.item.parentId;
+    if (widget.item.type == 'Audio' && albumId != null && albumId.isNotEmpty) {
+      context.push(
+        Destinations.item(
+          albumId,
+          serverId: widget.item.serverId,
+          autoPlay: play,
+          trackId: widget.item.id,
+        ),
+      );
+      return;
+    }
     context.push(
       Destinations.item(
         widget.item.id,
