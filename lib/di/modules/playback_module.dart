@@ -8,6 +8,7 @@ import '../../data/models/aggregated_item.dart';
 import '../../data/repositories/offline_repository.dart';
 import '../../data/services/audiobook_bookmarks_service.dart';
 import '../../data/services/audiobook_notes_service.dart';
+import '../../data/services/audiobook_resume_service.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/offline_playback_tracker.dart';
 
@@ -583,6 +584,9 @@ void registerPlaybackModule() {
   _getIt.registerLazySingleton<AudiobookNotesService>(
     () => AudiobookNotesService(),
     dispose: (s) => s.dispose(),
+  );
+  _getIt.registerLazySingleton<AudiobookResumeService>(
+    () => AudiobookResumeService(),
   );
   _getIt.registerLazySingleton<SleepTimerController>(
     () => SleepTimerController(_getIt<PlaybackManager>()),

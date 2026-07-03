@@ -16,6 +16,7 @@ import '../../../data/models/aggregated_item.dart';
 import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../data/services/audiobook_bookmarks_service.dart';
 import '../../../data/services/audiobook_notes_service.dart';
+import '../../../data/services/audiobook_resume_service.dart';
 import '../../../data/services/cast/cast_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/services/storage_path_service.dart';
@@ -59,7 +60,12 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
   final _prefs = GetIt.instance<UserPreferences>();
   final _bookmarks = GetIt.instance<AudiobookBookmarksService>();
   final _notes = GetIt.instance<AudiobookNotesService>();
+  final _resume = GetIt.instance<AudiobookResumeService>();
   final _sleep = GetIt.instance<SleepTimerController>();
+
+  Timer? _resumeTimer;
+  String? _resumeAppliedForItemId;
+  bool _resumeRestored = false;
 
   final _subs = <StreamSubscription>[];
   final _tvFocus = FocusNode(debugLabel: 'AudiobookTvFocus');
@@ -105,7 +111,10 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
 
     _subs.addAll([
       _manager.backendChangedStream.listen((_) => _rebuild()),
-      _state.playingStream.listen((_) => _rebuild()),
+      _state.playingStream.listen((_) {
+        _rebuild();
+        if (!_state.isPlaying) _saveResume();
+      }),
       _state.positionStream.listen((_) => _positionNotifier.value = _state.position),
       _state.durationStream.listen((_) => _rebuild()),
       _queue.queueChangedStream.listen((_) => _rebuild()),
@@ -113,6 +122,9 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
     ]);
     _sleep.addListener(_rebuild);
     _positionNotifier.value = _state.position;
+    _resumeTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (_state.isPlaying) _saveResume();
+    });
 
     if (PlatformDetection.useNativeVideoSurface) {
       unawaited(_manager.backend?.setVolume(100.0));
@@ -132,6 +144,8 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
 
   @override
   void dispose() {
+    _saveResume();
+    _resumeTimer?.cancel();
     _bookmarkSub?.cancel();
     _noteSub?.cancel();
     for (final s in _subs) {
@@ -183,7 +197,38 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
 
   void _rebuild() {
     _updateStreamSubscriptions();
+    unawaited(_maybeApplyResume());
     if (mounted) setState(() {});
+  }
+
+  // Restore the locally storedd resume position once playback is ready, seeking
+  // only if it is ahead of where the server already resumed us to. Saving is
+  // gated until this runs so the initial position never overwrites the store.
+  Future<void> _maybeApplyResume() async {
+    final item = _resolveItem();
+    if (item == null) return;
+    if (_resumeAppliedForItemId == item.id) return;
+    if (_state.duration <= Duration.zero) return;
+    _resumeAppliedForItemId = item.id;
+    _resumeRestored = false;
+    final ms = await _resume.load(item.serverId, item.id);
+    if (!mounted || _resumeAppliedForItemId != item.id) return;
+    final currentMs = _state.position.inMilliseconds;
+    if (ms != null && ms > currentMs + 1500) {
+      await _manager.seekTo(Duration(milliseconds: ms));
+    }
+    _resumeRestored = true;
+  }
+
+  void _saveResume() {
+    final item = _resolveItem();
+    if (item == null ||
+        !_resumeRestored ||
+        _resumeAppliedForItemId != item.id) {
+      return;
+    }
+    unawaited(
+        _resume.save(item.serverId, item.id, _state.position.inMilliseconds));
   }
 
   void _onSleepTimerExpired() {
