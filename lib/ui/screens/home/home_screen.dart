@@ -3115,71 +3115,61 @@ class _ContentRowsState extends State<_ContentRows>
         widget.prefs.get(UserPreferences.fullScreenRows);
     final isRowsV2 =
         widget.prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
+    // If overlay isn't active, return child unchanged
     if ((!showInfoOverlay || !_infoRevealed) && !(isRowsV2 && fullScreenRows)) {
       return child;
     }
 
+    // If media bar isn't included, no shifting
     if (!PlatformDetection.isTV && !fullScreenRows && !_isMediaBarIncluded()) {
       return child;
     }
 
-    if (PlatformDetection.isTV || fullScreenRows) {
-      final focusedRowIndex = _focusedRowIndex(
-        FocusManager.instance.primaryFocus,
-      );
-      final rowViewportTop = rowTopOffsets[rowIndex] - _scrollOffset;
-      final rowBottom = rowViewportTop + rowExtents[rowIndex];
-      if (focusedRowIndex != null) {
-        if (fullScreenRows) {
-          final distance = (rowIndex - focusedRowIndex).abs();
-          if (distance > 1) {
-            return IgnorePointer(
-              child: Visibility(visible: false, child: child),
-            );
-          }
-          // Keep immediate neighbors in the tree so they are focusable
-          if (distance == 1) {
-            return IgnorePointer(
-              child: Opacity(opacity: 0.0, child: child),
-            );
-          }
-        } else if (rowIndex < focusedRowIndex) {
-          return IgnorePointer(
-            child: Visibility(visible: false, child: child),
-          );
-        }
-      }
-      if (rowBottom < overlayBottom - 80) {
-        return IgnorePointer(
-          child: Visibility(visible: false, child: child),
-        );
-      }
-      return child;
-    }
+    final focusedRowIndex = _focusedRowIndex(FocusManager.instance.primaryFocus);
 
-    final focusedRowIndex = _focusedRowIndex(
-      FocusManager.instance.primaryFocus,
-    );
-    if (focusedRowIndex != null && rowIndex >= focusedRowIndex) {
-      return child;
-    }
-
+    // Compute viewport geometry
     final rowViewportTop = rowTopOffsets[rowIndex] - _scrollOffset;
     final rowViewportBottom = rowViewportTop + rowExtents[rowIndex];
 
-    if (rowViewportBottom <= overlayBottom + 8) {
+    // Get viewport height from scroll controller
+    final viewportHeight = _scrollController.position.viewportDimension;
+
+    // Classifier inputs
+    final isVisibleOnScreen = rowViewportBottom > 0 && rowViewportTop < viewportHeight;
+    final isUnderOverlay = rowViewportBottom <= overlayBottom + 8;
+    final isNeighbor = focusedRowIndex != null &&
+        (rowIndex - focusedRowIndex).abs() == 1;
+    final isFocusedRow = focusedRowIndex == rowIndex;
+    final isFarAway = focusedRowIndex != null &&
+        (rowIndex - focusedRowIndex).abs() > 1;
+
+    // Focused row: always visible
+    if (isFocusedRow) {
+      return child;
+    }
+
+    // Neighbor rows: always kept in tree (opacity fade)
+    if (isNeighbor) {
+      return IgnorePointer(
+        child: Opacity(opacity: 0.0, child: child),
+      );
+    }
+
+    // Far-away rows: hide only if offscreen
+    if (isFarAway && !isVisibleOnScreen) {
       return IgnorePointer(
         child: Visibility(visible: false, child: child),
       );
     }
 
-    if (focusedRowIndex != null &&
-        focusedRowIndex < rowTopOffsets.length &&
-        (rowTopOffsets[focusedRowIndex] - _scrollOffset) >=
-            overlayBottom + 20) {
-      return child;
+    // Rows under overlay: fade out but keep focusable
+    if (isUnderOverlay) {
+      return IgnorePointer(
+        child: Opacity(opacity: 0.0, child: child),
+      );
     }
 
+    // Overlay shift logic
     final shift = _overlayRowShift(
       rowViewportTop: rowViewportTop,
       rowExtent: rowExtents[rowIndex],
