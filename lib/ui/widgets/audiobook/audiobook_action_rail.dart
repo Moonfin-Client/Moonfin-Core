@@ -155,14 +155,79 @@ class _RailEntryWidgetState extends State<_RailEntryWidget> {
   bool _isHovered = false;
   bool _isFocused = false;
 
+  Widget _buildCaptioned({required Color color, required bool accent}) {
+    final caption = widget.subLabel ?? widget.label;
+    final captionColor = accent
+        ? AppColorScheme.accent
+        : AppColorScheme.onSurface.withValues(alpha: 0.55);
+
+    final content = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 46,
+          height: 46,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: accent
+                ? AppColorScheme.accent.withValues(alpha: 0.14)
+                : AppColorScheme.onSurface.withValues(alpha: 0.05),
+            border: Border.all(
+              color: AppColorScheme.onSurface.withValues(alpha: 0.08),
+            ),
+          ),
+          child: Center(child: Icon(widget.icon, color: color, size: 20)),
+        ),
+        if (caption != null) ...[
+          const SizedBox(height: 6),
+          SizedBox(
+            width: 62,
+            child: Text(
+              caption,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: captionColor,
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+
+    if (widget.apple) {
+      return CupertinoButton(
+        padding: EdgeInsets.zero,
+        onPressed: widget.onTap,
+        child: content,
+      );
+    }
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: widget.onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: content,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isExpanded = widget.forceFocused || _isHovered || _isFocused;
-    final color = (widget.accent ?? false)
+    final accent = widget.accent ?? false;
+    final color = accent
         ? AppColorScheme.accent
         : AppColorScheme.onSurface.withValues(
             alpha: widget.onTap == null ? 0.4 : 0.85,
           );
+
+    if (PlatformDetection.useMobileUi) {
+      return _buildCaptioned(color: color, accent: accent);
+    }
 
     final height = 40.0;
     final totalHeight = 40.0;

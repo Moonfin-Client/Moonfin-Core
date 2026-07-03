@@ -855,7 +855,16 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
             bookmarks: _bookmarksList,
             notes: _notesList,
           ),
-          const SizedBox(height: AppSpacing.spaceSm),
+          if (PlatformDetection.useMobileUi) ...[
+            const SizedBox(height: AppSpacing.spaceMd),
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: AppColorScheme.onSurface.withValues(alpha: 0.06),
+            ),
+            const SizedBox(height: AppSpacing.spaceMd),
+          ] else
+            const SizedBox(height: AppSpacing.spaceSm),
           AudiobookTransportRow(
             isPlaying: _state.isPlaying,
             tvFocusIndex: PlatformDetection.isTV &&
@@ -873,7 +882,11 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
             onSkipForward: _skipForward,
             onNextChapter: () => _nextChapter(chapters),
           ),
-          const SizedBox(height: AppSpacing.spaceSm),
+          SizedBox(
+            height: PlatformDetection.useMobileUi
+                ? AppSpacing.spaceLg
+                : AppSpacing.spaceSm,
+          ),
           AudiobookActionRail(
             speed: _state.playbackSpeed,
             sleepActive: _sleep.isActive,
