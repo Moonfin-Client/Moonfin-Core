@@ -915,6 +915,12 @@ class PluginSyncService extends ChangeNotifier {
         UserPreferences.homeRowsStyle,
         enumValues: prefs.HomeRowsStyle.values,
       );
+      _applyString(
+        resolved,
+        'recommendationSystemSource',
+        UserPreferences.recommendationSystemSource,
+        enumValues: prefs.RecommendationSystemSource.values,
+      );
       _applyBool(
         resolved,
         'fullScreenRows',
@@ -1547,6 +1553,8 @@ class PluginSyncService extends ChangeNotifier {
           .name,
       'cardFocusExpansion': _prefs.get(UserPreferences.cardFocusExpansion),
       'homeRowsStyle': _prefs.get(UserPreferences.homeRowsStyle).name,
+      'recommendationSystemSource':
+          _prefs.get(UserPreferences.recommendationSystemSource).name,
       'homeImageTypeContinueWatching': _prefs
           .get(UserPreferences.homeRowImageType(prefs.HomeSectionType.resume))
           .name,

@@ -484,6 +484,30 @@ abstract class AppLocalizations {
   /// **'Modern'**
   String get detailScreenStyleModern;
 
+  /// Label for the Recommendation System setting
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendation System'**
+  String get recommendationSystem;
+
+  /// Explanation under the recommendation system setting
+  ///
+  /// In en, this message translates to:
+  /// **'Use the Moonfin Recommends local-library algorithm or the online TMDb\'s Similarity Metrics. Note: Online recommendations require Seerr integration.'**
+  String get recommendationSystemSubtitle;
+
+  /// Recommendation system option: Moonfin Recommends
+  ///
+  /// In en, this message translates to:
+  /// **'Moonfin Recommends'**
+  String get recommendationSystemMoonfin;
+
+  /// Recommendation system option: TMDb Similarity
+  ///
+  /// In en, this message translates to:
+  /// **'TMDb Similarity'**
+  String get recommendationSystemTmdb;
+
   /// Label for the Automatic/Apple/Material interface style setting
   ///
   /// In en, this message translates to:

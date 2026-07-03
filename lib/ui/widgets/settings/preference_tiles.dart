@@ -217,7 +217,6 @@ Widget buildSettingsSelectionBubble(
   final theme = Theme.of(context);
   final colorScheme = theme.colorScheme;
   return Container(
-    constraints: const BoxConstraints(maxWidth: 100),
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     decoration: BoxDecoration(
       color: focused

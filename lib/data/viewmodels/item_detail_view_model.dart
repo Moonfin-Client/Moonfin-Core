@@ -5,8 +5,8 @@ import 'package:server_core/server_core.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../models/aggregated_item.dart';
-import '../services/row_data_source.dart';
 import '../models/lyrics.dart';
+import '../services/row_data_source.dart';
 import '../repositories/item_mutation_repository.dart';
 import '../repositories/mdblist_repository.dart';
 import '../repositories/tmdb_repository.dart';
@@ -891,9 +891,14 @@ class ItemDetailViewModel extends ChangeNotifier {
           limit: 15,
           includeWatched: true,
         );
-        _similar = recommended;
-        notifyListeners();
-        return;
+        // Only short-circuit when we actually have results. An empty list (e.g.
+        // the online source without Seerr configured, or no local matches)
+        // falls through to Jellyfin's similar-items below.
+        if (recommended.isNotEmpty) {
+          _similar = recommended;
+          notifyListeners();
+          return;
+        }
       } catch (e) {
         debugPrint('[ItemDetailViewModel] Custom recommendation system failed: $e');
       }
