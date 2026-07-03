@@ -814,18 +814,14 @@ class _NoteEditorSheetState extends State<_NoteEditorSheet> {
   void _onKeyboardVisibilityChange() {
     if (!mounted || _isSubmitting) return;
     final visible = CustomTVTextField.isKeyboardVisibleNotifier.value;
-    debugPrint('[NoteEditor] keyboard visibility changed: visible=$visible isSubmitting=$_isSubmitting');
     if (!visible) {
-      // Keep focus on the text field — do NOT move to Save button here.
-      // Moving focus to Save would cause the hardware KeyUp event from the
-      // same remote keypress that closed the keyboard to auto-activate Save.
+      // Keep focus on the text field rather than moving to Save, so the trailing
+      // hardware KeyUp from the remote keypress that closed the keyboard cannot
+      // auto-activate a button. Block buttons briefly to absorb that KeyUp.
       _tvFocusNode.requestFocus();
-      // Block button activation briefly to absorb trailing hardware KeyUp events.
       _keyboardJustClosed = true;
-      debugPrint('[NoteEditor] keyboardJustClosed=true — blocking buttons for 400ms');
       Future.delayed(const Duration(milliseconds: 400), () {
         if (mounted) {
-          debugPrint('[NoteEditor] keyboardJustClosed=false — buttons active');
           setState(() => _keyboardJustClosed = false);
         }
       });
@@ -943,37 +939,23 @@ class _NoteEditorSheetState extends State<_NoteEditorSheet> {
               _SheetActionButton(
                 label: l10n.audiobookCancel,
                 onPressed: () {
-                  debugPrint('[NoteEditor] Cancel pressed: isSubmitting=$_isSubmitting keyboardJustClosed=$_keyboardJustClosed');
                   if (_isSubmitting || _keyboardJustClosed) return;
                   _isSubmitting = true;
-                  debugPrint('[NoteEditor] Cancel: popping dialog now');
                   try {
-                    final targetCtx = widget.dialogContext ?? context;
-                    final canPop = Navigator.canPop(targetCtx);
-                    Navigator.pop(targetCtx, null);
-                    debugPrint('[NoteEditor] Cancel: canPop=$canPop');
-                  } catch (e, stack) {
-                    debugPrint('[NoteEditor] Cancel pop exception: $e\n$stack');
-                  }
+                    Navigator.pop(widget.dialogContext ?? context, null);
+                  } catch (_) {}
                 },
               ),
               const SizedBox(width: 8),
               _SheetActionButton(
                 label: l10n.audiobookSave,
                 onPressed: () {
-                  debugPrint('[NoteEditor] Save pressed: isSubmitting=$_isSubmitting keyboardJustClosed=$_keyboardJustClosed');
                   if (_isSubmitting || _keyboardJustClosed) return;
                   _isSubmitting = true;
                   final text = _controller.text.trim();
-                  debugPrint('[NoteEditor] Save: popping dialog with text="$text"');
                   try {
-                    final targetCtx = widget.dialogContext ?? context;
-                    final canPop = Navigator.canPop(targetCtx);
-                    Navigator.pop(targetCtx, text);
-                    debugPrint('[NoteEditor] Save: canPop=$canPop');
-                  } catch (e, stack) {
-                    debugPrint('[NoteEditor] Save pop exception: $e\n$stack');
-                  }
+                    Navigator.pop(widget.dialogContext ?? context, text);
+                  } catch (_) {}
                 },
                 isFilled: true,
               ),

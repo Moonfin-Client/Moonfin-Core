@@ -232,7 +232,6 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
   }
 
   void _onSleepTimerExpired() {
-    debugPrint('AudiobookPlayerView: _onSleepTimerExpired triggered!');
     if (!mounted) return;
 
     final lastMode = _sleep.lastActiveMode;
@@ -425,7 +424,6 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
         );
       }
     } catch (e) {
-      debugPrint('[ExportDebug] Failed to export CSV: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -603,13 +601,10 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
   }
 
   Future<void> _openNoteEditor(AggregatedItem item, {AudiobookNote? existing}) async {
-    debugPrint('[AudiobookPlayer] _openNoteEditor called: dialogOpen=$_dialogOpen');
     if (_dialogOpen) {
-      debugPrint('[AudiobookPlayer] _openNoteEditor BLOCKED by dialogOpen lock');
       return;
     }
     _dialogOpen = true;
-    debugPrint('[AudiobookPlayer] _openNoteEditor dialog OPENED');
 
     final wasPlaying = _state.isPlaying;
     if (wasPlaying) await _manager.pause();
@@ -623,14 +618,12 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
       initialText: existing?.body ?? '',
       positionLabel: formatAudiobookClock(Duration(milliseconds: pos)),
     );
-    debugPrint('[AudiobookPlayer] _openNoteEditor returned result: ${result != null ? '"$result"' : 'null'}');
 
     // Hold the lock long enough to cover the dialog route exit animation
     // and clear any trailing key events. The Select-KeyDownOnly fix in
     // _handleTvKey already prevents KeyRepeat from re-triggering; 300ms
     // is enough buffer without making the player feel frozen.
     await Future.delayed(const Duration(milliseconds: 300));
-    debugPrint('[AudiobookPlayer] _dialogOpen RELEASED');
     _dialogOpen = false;
 
     final noteText = result is String ? result.trim() : null;
