@@ -283,6 +283,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
   }
 
   bool _tabHasExport(AudiobookDrawerTab tab) {
+    if (PlatformDetection.isTV) return false;
     return tab == AudiobookDrawerTab.timeline ||
         tab == AudiobookDrawerTab.bookmarks ||
         tab == AudiobookDrawerTab.notes;
@@ -967,10 +968,6 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
                         : -1,
                     tvSubIndex: _tvSubIndex,
                     onExport: () => _exportToCsv('All', _getTimelineEvents(chapters)),
-                    tvExportFocused: (PlatformDetection.isTV &&
-                        _tvArea == _AudiobookFocusArea.drawerContent &&
-                        _drawerContentActive &&
-                        _tvListIndex == -1),
                   ),
                 AudiobookDrawerTab.chapters => AudiobookChaptersList(
                     chapters: chapters,
@@ -1004,10 +1001,6 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
                       )).toList();
                       _exportToCsv('Bookmarks', bEvents);
                     },
-                    tvExportFocused: (PlatformDetection.isTV &&
-                        _tvArea == _AudiobookFocusArea.drawerContent &&
-                        _drawerContentActive &&
-                        _tvListIndex == -1),
                   ),
                 AudiobookDrawerTab.notes => AudiobookNotesList(
                     item: item,
@@ -1034,10 +1027,6 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
                       )).toList();
                       _exportToCsv('Notes', nEvents);
                     },
-                    tvExportFocused: (PlatformDetection.isTV &&
-                        _tvArea == _AudiobookFocusArea.drawerContent &&
-                        _drawerContentActive &&
-                        _tvListIndex == -1),
                   ),
                 AudiobookDrawerTab.queue => AudiobookQueueList(
                     queue: _queue,
@@ -1358,36 +1347,9 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
           setState(() {
             _drawerContentActive = true;
             _tvSubIndex = 0;
-            _tvListIndex = _tabHasExport(_drawerTab) ? -1 : 0;
+            _tvListIndex = 0;
           });
         } else {
-          if (_tvListIndex == -1) {
-            if (_drawerTab == AudiobookDrawerTab.bookmarks) {
-              final bEvents = _bookmarksList.map((b) => TimelineEvent(
-                id: 'bookmark_${b.positionMs}',
-                type: TimelineEventType.bookmark,
-                title: b.label,
-                positionMs: b.positionMs,
-                date: b.createdAt,
-                originalObject: b,
-              )).toList();
-              _exportToCsv('Bookmarks', bEvents);
-            } else if (_drawerTab == AudiobookDrawerTab.notes) {
-              final nEvents = _notesList.map((n) => TimelineEvent(
-                id: 'note_${n.id}',
-                type: TimelineEventType.note,
-                title: 'Note: ${n.body}',
-                content: n.body,
-                positionMs: n.positionMs,
-                date: n.updatedAt,
-                originalObject: n,
-              )).toList();
-              _exportToCsv('Notes', nEvents);
-            } else if (_drawerTab == AudiobookDrawerTab.timeline) {
-              _exportToCsv('All', _getTimelineEvents(chapters));
-            }
-            return;
-          }
           switch (_drawerTab) {
             case AudiobookDrawerTab.timeline:
               final events = _getTimelineEvents(chapters);

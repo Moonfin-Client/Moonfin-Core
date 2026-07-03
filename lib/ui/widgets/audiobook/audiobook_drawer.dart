@@ -271,7 +271,6 @@ class AudiobookBookmarksList extends StatefulWidget {
     required this.tvFocusedIndex,
     required this.tvSubIndex,
     this.onExport,
-    this.tvExportFocused = false,
   });
 
   final AggregatedItem? item;
@@ -280,7 +279,6 @@ class AudiobookBookmarksList extends StatefulWidget {
   final int tvFocusedIndex;
   final int tvSubIndex;
   final VoidCallback? onExport;
-  final bool tvExportFocused;
 
   @override
   State<AudiobookBookmarksList> createState() => _AudiobookBookmarksListState();
@@ -349,24 +347,24 @@ class _AudiobookBookmarksListState extends State<AudiobookBookmarksList> {
         }
         return Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton.icon(
-                    onPressed: widget.onExport,
-                    icon: Icon(apple ? CupertinoIcons.square_arrow_down : Icons.download, size: 16),
-                    label: const Text('Export Bookmarks', style: TextStyle(fontSize: 12)),
-                    style: TextButton.styleFrom(
-                      foregroundColor: widget.tvExportFocused ? Colors.white : AppColorScheme.accent,
-                      backgroundColor: widget.tvExportFocused ? AppColorScheme.accent : null,
-                      visualDensity: VisualDensity.compact,
+            if (!PlatformDetection.isTV && widget.onExport != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton.icon(
+                      onPressed: widget.onExport,
+                      icon: Icon(apple ? CupertinoIcons.square_arrow_down : Icons.download, size: 16),
+                      label: const Text('Export Bookmarks', style: TextStyle(fontSize: 12)),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColorScheme.accent,
+                        visualDensity: VisualDensity.compact,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
             Expanded(
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -467,7 +465,6 @@ class AudiobookNotesList extends StatefulWidget {
     required this.tvFocusedIndex,
     required this.tvSubIndex,
     this.onExport,
-    this.tvExportFocused = false,
   });
 
   final AggregatedItem? item;
@@ -477,7 +474,6 @@ class AudiobookNotesList extends StatefulWidget {
   final int tvFocusedIndex;
   final int tvSubIndex;
   final VoidCallback? onExport;
-  final bool tvExportFocused;
 
   @override
   State<AudiobookNotesList> createState() => _AudiobookNotesListState();
@@ -546,24 +542,24 @@ class _AudiobookNotesListState extends State<AudiobookNotesList> {
         }
         return Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton.icon(
-                    onPressed: widget.onExport,
-                    icon: Icon(apple ? CupertinoIcons.square_arrow_down : Icons.download, size: 16),
-                    label: const Text('Export Notes', style: TextStyle(fontSize: 12)),
-                    style: TextButton.styleFrom(
-                      foregroundColor: widget.tvExportFocused ? Colors.white : AppColorScheme.accent,
-                      backgroundColor: widget.tvExportFocused ? AppColorScheme.accent : null,
-                      visualDensity: VisualDensity.compact,
+            if (!PlatformDetection.isTV && widget.onExport != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton.icon(
+                      onPressed: widget.onExport,
+                      icon: Icon(apple ? CupertinoIcons.square_arrow_down : Icons.download, size: 16),
+                      label: const Text('Export Notes', style: TextStyle(fontSize: 12)),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColorScheme.accent,
+                        visualDensity: VisualDensity.compact,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
             Expanded(
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -715,7 +711,6 @@ class AudiobookTimelineList extends StatefulWidget {
     required this.tvFocusedIndex,
     required this.tvSubIndex,
     this.onExport,
-    this.tvExportFocused = false,
   });
 
   final List<TimelineEvent> events;
@@ -726,7 +721,6 @@ class AudiobookTimelineList extends StatefulWidget {
   final int tvFocusedIndex;
   final int tvSubIndex;
   final VoidCallback? onExport;
-  final bool tvExportFocused;
 
   @override
   State<AudiobookTimelineList> createState() => _AudiobookTimelineListState();
@@ -787,24 +781,24 @@ class _AudiobookTimelineListState extends State<AudiobookTimelineList> {
     final apple = PlatformDetection.isApple;
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton.icon(
-                onPressed: widget.onExport,
-                icon: Icon(apple ? CupertinoIcons.square_arrow_down : Icons.download, size: 16),
-                label: const Text('Export All', style: TextStyle(fontSize: 12)),
-                style: TextButton.styleFrom(
-                  foregroundColor: widget.tvExportFocused ? Colors.white : AppColorScheme.accent,
-                  backgroundColor: widget.tvExportFocused ? AppColorScheme.accent : null,
-                  visualDensity: VisualDensity.compact,
+        if (!PlatformDetection.isTV && widget.onExport != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton.icon(
+                  onPressed: widget.onExport,
+                  icon: Icon(apple ? CupertinoIcons.square_arrow_down : Icons.download, size: 16),
+                  label: const Text('Export All', style: TextStyle(fontSize: 12)),
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColorScheme.accent,
+                    visualDensity: VisualDensity.compact,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
         Expanded(
           child: LayoutBuilder(
             builder: (context, constraints) {
