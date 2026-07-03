@@ -52,6 +52,7 @@ class _AudioPreferencesScreenState extends State<_AudioPreferencesScreen> {
       AudioRouteType.earc => l10n.settingsAudioRouteEarc,
       AudioRouteType.bluetooth => l10n.settingsAudioRouteBluetooth,
       AudioRouteType.speaker => l10n.settingsAudioRouteSpeaker,
+      AudioRouteType.headphones => l10n.settingsAudioRouteHeadphones,
       AudioRouteType.other => l10n.unknown,
     };
   }

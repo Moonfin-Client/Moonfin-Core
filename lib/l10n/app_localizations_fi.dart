@@ -2523,6 +2523,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get settingsAudioRouteSpeaker => 'Kaiutin';
 
   @override
+  String get settingsAudioRouteHeadphones => 'Headphones';
+
+  @override
   String settingsAudioPcmChannels(int count) {
     return '${count}ch PCM';
   }

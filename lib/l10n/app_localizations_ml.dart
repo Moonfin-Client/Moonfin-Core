@@ -2528,6 +2528,9 @@ class AppLocalizationsMl extends AppLocalizations {
   String get settingsAudioRouteSpeaker => 'Speaker';
 
   @override
+  String get settingsAudioRouteHeadphones => 'Headphones';
+
+  @override
   String settingsAudioPcmChannels(int count) {
     return '${count}ch PCM';
   }

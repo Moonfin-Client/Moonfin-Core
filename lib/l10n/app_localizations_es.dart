@@ -2531,6 +2531,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsAudioRouteSpeaker => 'Vocero';
 
   @override
+  String get settingsAudioRouteHeadphones => 'Headphones';
+
+  @override
   String settingsAudioPcmChannels(int count) {
     return '${count}chPCM';
   }

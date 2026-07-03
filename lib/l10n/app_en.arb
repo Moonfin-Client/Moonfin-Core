@@ -3526,6 +3526,10 @@
   "@settingsAudioRouteSpeaker": {
     "description": "Audio route type speaker"
   },
+  "settingsAudioRouteHeadphones": "Headphones",
+  "@settingsAudioRouteHeadphones": {
+    "description": "Audio route type wired or USB headphones"
+  },
   "settingsAudioPcmChannels": "{count}ch PCM",
   "@settingsAudioPcmChannels": {
     "description": "Audio route subtitle showing max PCM channels",

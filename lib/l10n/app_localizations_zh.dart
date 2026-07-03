@@ -2461,6 +2461,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsAudioRouteSpeaker => '扬声器';
 
   @override
+  String get settingsAudioRouteHeadphones => 'Headphones';
+
+  @override
   String settingsAudioPcmChannels(int count) {
     return '${count}ch PCM';
   }

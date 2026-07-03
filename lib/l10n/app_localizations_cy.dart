@@ -2524,6 +2524,9 @@ class AppLocalizationsCy extends AppLocalizations {
   String get settingsAudioRouteSpeaker => 'Llefarydd';
 
   @override
+  String get settingsAudioRouteHeadphones => 'Headphones';
+
+  @override
   String settingsAudioPcmChannels(int count) {
     return '${count}ch PCM';
   }

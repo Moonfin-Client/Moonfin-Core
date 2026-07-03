@@ -18,6 +18,7 @@ object AudioCapabilities {
     private const val ROUTE_EARC = "earc"
     private const val ROUTE_BLUETOOTH = "bluetooth"
     private const val ROUTE_SPEAKER = "speaker"
+    private const val ROUTE_HEADPHONES = "headphones"
     private const val ROUTE_OTHER = "other"
 
     private val directAudioAttributes = AudioAttributes.Builder()
@@ -91,7 +92,12 @@ object AudioCapabilities {
         val bitstreamDevices = outputDevices.filter(::isBitstreamOutputDevice)
         val speakerDevices =
             outputDevices.filter { it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER }
-        val routeType = resolveRouteType(outputDevices)
+        val activeDevices = resolveActiveMediaDevices(audioManager)
+        val routeType = if (activeDevices.isNotEmpty()) {
+            classifyRoute(activeDevices.map { it.type }.toSet())
+        } else {
+            legacyResolveRouteType(outputDevices)
+        }
         val routeSupportsHdAudio = routeType == ROUTE_EARC
         val allowSpeakerDolbyFallback =
             routeType == ROUTE_SPEAKER || routeType == ROUTE_OTHER
@@ -227,7 +233,10 @@ object AudioCapabilities {
         val supportsDts = canPassthroughDts || canPassthroughDtsHd || canPassthroughDtsX
         val supportsTrueHd = canPassthroughTrueHd || canPassthroughTrueHdJoc
 
-        val maxPcmChannels = detectMaxPcmChannels(bitstreamDevices, routeType)
+        val maxPcmChannels = detectMaxPcmChannels(
+            if (activeDevices.isNotEmpty()) activeDevices else bitstreamDevices,
+            routeType,
+        )
 
         return mapOf(
             "supportsAc3" to supportsAc3,
@@ -392,7 +401,58 @@ object AudioCapabilities {
         return encoding != null && encodings.contains(encoding)
     }
 
-    private fun resolveRouteType(devices: List<AudioDeviceInfo>): String {
+    /**
+     * Devices the system would actually route media playback to right now.
+     * Only available on API 33+; an empty result means "fall back to the
+     * legacy enumeration heuristic".
+     */
+    private fun resolveActiveMediaDevices(audioManager: AudioManager): List<AudioDeviceInfo> {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return emptyList()
+        }
+        return runCatching {
+            audioManager.getAudioDevicesForAttributes(directAudioAttributes).toList()
+        }.getOrDefault(emptyList())
+    }
+
+    /**
+     * Route classification for a known-active device set. Unlike the legacy
+     * heuristic this can trust HDMI over the built-in speaker, because the
+     * types come from the actual playback routing, not from everything the
+     * device enumerates.
+     */
+    private fun classifyRoute(types: Set<Int>): String {
+        if (types.any(::isBluetoothType)) {
+            return ROUTE_BLUETOOTH
+        }
+        if (types.contains(AudioDeviceInfo.TYPE_WIRED_HEADPHONES) ||
+            types.contains(AudioDeviceInfo.TYPE_WIRED_HEADSET) ||
+            types.contains(AudioDeviceInfo.TYPE_USB_HEADSET)
+        ) {
+            return ROUTE_HEADPHONES
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            types.contains(AudioDeviceInfo.TYPE_HDMI_EARC)
+        ) {
+            return ROUTE_EARC
+        }
+        if (types.contains(AudioDeviceInfo.TYPE_HDMI_ARC)) {
+            return ROUTE_ARC
+        }
+        if (types.contains(AudioDeviceInfo.TYPE_HDMI) ||
+            types.contains(AudioDeviceInfo.TYPE_LINE_DIGITAL)
+        ) {
+            return ROUTE_HDMI
+        }
+        if (types.contains(AudioDeviceInfo.TYPE_BUILTIN_SPEAKER) ||
+            types.contains(AudioDeviceInfo.TYPE_BUILTIN_EARPIECE)
+        ) {
+            return ROUTE_SPEAKER
+        }
+        return ROUTE_OTHER
+    }
+
+    private fun legacyResolveRouteType(devices: List<AudioDeviceInfo>): String {
         val types = devices.map { it.type }.toSet()
 
         // 1. Bluetooth devices take highest priority if connected.
@@ -405,7 +465,7 @@ object AudioCapabilities {
             types.contains(AudioDeviceInfo.TYPE_WIRED_HEADSET) ||
             types.contains(AudioDeviceInfo.TYPE_USB_HEADSET)
         ) {
-            return ROUTE_SPEAKER
+            return ROUTE_HEADPHONES
         }
 
         // 3. HDMI eARC and ARC receivers connected to a TV/device.
@@ -463,6 +523,7 @@ object AudioCapabilities {
             ROUTE_EARC -> 8
             ROUTE_ARC -> 6
             ROUTE_HDMI -> 8
+            ROUTE_HEADPHONES -> 2
             else -> 2
         }
     }

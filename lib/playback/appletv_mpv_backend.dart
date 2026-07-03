@@ -393,6 +393,9 @@ class AppleTvMpvBackend implements PlayerBackend {
       trueHdPassthroughEnabled: _prefs.resolveTrueHdPassthroughEnabled(),
       trueHdAtmosPassthroughEnabled: _prefs
           .resolveTrueHdAtmosPassthroughEnabled(),
+      // MPVKit decodes all advertised audio codecs in software and downmixes
+      // locally, so stereo routes never need a server-side audio transcode.
+      universalAudioDecode: true,
       maxResolution: maxResolution,
       pgsDirectPlay: _prefs.get(UserPreferences.pgsDirectPlay),
       assDirectPlay: _prefs.get(UserPreferences.assDirectPlay),

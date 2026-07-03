@@ -112,6 +112,10 @@ class DeviceProfileBuilder {
     bool trueHdPassthroughEnabled = false,
     bool trueHdAtmosPassthroughEnabled = false,
     int maxAudioChannels = 0,
+    // The player decodes every advertised audio codec in software (FFmpeg),
+    // so the output route limits rendering, not decoding: stereo-only routes
+    // still direct-play multichannel/compressed audio and downmix locally.
+    bool universalAudioDecode = false,
     MaxVideoResolution maxResolution = MaxVideoResolution.auto,
     bool pgsDirectPlay = true,
     bool assDirectPlay = true,
@@ -214,13 +218,20 @@ class DeviceProfileBuilder {
         : maxAudioChannels;
     final forceStereo = effectiveMaxChannels <= 2 ||
         audioOutputMode == AudioOutputMode.forceStereo;
+    // Server-facing channel cap: an explicit user cap always wins; otherwise a
+    // universal-decode player advertises 8ch regardless of the detected sink,
+    // since it downmixes locally instead of asking the server to transcode.
+    final advertisedMaxChannels = maxAudioChannels > 0
+        ? maxAudioChannels
+        : (universalAudioDecode ? 8 : effectiveMaxChannels);
+    final limitStereoDirectPlay = forceStereo && !universalAudioDecode;
     final effectiveAudioFallbackCodec = _resolveAudioFallbackCodec(
       requested: audioFallbackCodec,
       capabilityProfile: capabilityProfile,
       forceStereo: forceStereo,
     );
 
-    final baseAllowedAudioCodecs = forceStereo
+    final baseAllowedAudioCodecs = limitStereoDirectPlay
         ? _downmixSupportedAudioCodecs
         : _supportedAudioCodecs
               .where(
@@ -228,6 +239,7 @@ class DeviceProfileBuilder {
                   codec: codec,
                   audioOutputMode: audioOutputMode,
                   capabilityProfile: capabilityProfile,
+                  universalAudioDecode: universalAudioDecode,
                   ac3PassthroughEnabled: ac3PassthroughEnabled,
                   eac3PassthroughEnabled: eac3PassthroughEnabled,
                   eac3JocPassthroughEnabled: eac3JocPassthroughEnabled,
@@ -304,6 +316,7 @@ class DeviceProfileBuilder {
               'AudioCodec': mpegTsAudioCodecs.join(','),
               'CopyTimestamps': false,
               'EnableSubtitlesInManifest': true,
+              if (forceStereo) 'MaxAudioChannels': '2',
             },
             <String, dynamic>{
               'Type': 'Video',
@@ -317,6 +330,7 @@ class DeviceProfileBuilder {
               ).join(','),
               'CopyTimestamps': false,
               'EnableSubtitlesInManifest': true,
+              if (forceStereo) 'MaxAudioChannels': '2',
             },
             <String, dynamic>{
               'Type': 'Audio',
@@ -324,6 +338,7 @@ class DeviceProfileBuilder {
               'Container': 'ts',
               'Protocol': 'hls',
               'AudioCodec': 'aac',
+              if (forceStereo) 'MaxAudioChannels': '2',
             },
           ]
         : _buildWebTranscodingProfiles(
@@ -333,8 +348,8 @@ class DeviceProfileBuilder {
           );
 
     final codecProfiles = _codecProfiles(
-      maxAudioChannels: effectiveMaxChannels,
-      forceStereo: forceStereo,
+      maxAudioChannels: advertisedMaxChannels,
+      forceStereo: limitStereoDirectPlay,
       maxResolution: maxResolution,
       supportsAvc: effectiveSupportsAvc,
       supportsAvcHigh10: effectiveSupportsAvcHigh10,
@@ -834,6 +849,7 @@ class DeviceProfileBuilder {
     required String codec,
     required AudioOutputMode audioOutputMode,
     required AudioCapabilityProfile capabilityProfile,
+    bool universalAudioDecode = false,
     required bool ac3PassthroughEnabled,
     required bool eac3PassthroughEnabled,
     required bool eac3JocPassthroughEnabled,
@@ -857,6 +873,10 @@ class DeviceProfileBuilder {
         trueHdPassthroughEnabled: trueHdPassthroughEnabled,
         trueHdAtmosPassthroughEnabled: trueHdAtmosPassthroughEnabled,
       );
+    }
+
+    if (universalAudioDecode) {
+      return true;
     }
 
     return _isAudioCodecDecodeSupported(codec, capabilityProfile) ||

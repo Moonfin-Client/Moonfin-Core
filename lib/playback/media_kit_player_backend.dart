@@ -483,6 +483,9 @@ class MediaKitPlayerBackend extends PlayerBackend {
       trueHdAtmosPassthroughEnabled: _prefs
           .resolveTrueHdAtmosPassthroughEnabled(),
       maxAudioChannels: _prefs.resolveMaxAudioChannels(),
+      // mpv decodes all advertised audio codecs in software and downmixes
+      // locally, so stereo routes never need a server-side audio transcode.
+      universalAudioDecode: true,
       maxResolution: maxResolution,
       pgsDirectPlay: _prefs.get(UserPreferences.pgsDirectPlay) && canRenderBitmapSubtitles,
       assDirectPlay: _prefs.get(UserPreferences.assDirectPlay),

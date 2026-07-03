@@ -111,6 +111,9 @@ class _ExternalPlayerHostScreenState extends State<ExternalPlayerHostScreen> {
           audioCapabilityProfile: const AudioCapabilityProfile.optimistic(),
           audioOutputMode: AudioOutputMode.auto,
           audioFallbackCodec: AudioFallbackCodec.auto,
+          // External players (VLC, mpv, Just Player, …) decode audio in
+          // software; never restrict them by the detected output route.
+          universalAudioDecode: true,
           maxResolution: maxResolution,
           pgsDirectPlay: true,
           assDirectPlay: true,

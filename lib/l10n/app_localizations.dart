@@ -4594,6 +4594,12 @@ abstract class AppLocalizations {
   /// **'Speaker'**
   String get settingsAudioRouteSpeaker;
 
+  /// Audio route type wired or USB headphones
+  ///
+  /// In en, this message translates to:
+  /// **'Headphones'**
+  String get settingsAudioRouteHeadphones;
+
   /// Audio route subtitle showing max PCM channels
   ///
   /// In en, this message translates to:

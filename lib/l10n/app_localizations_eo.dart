@@ -2512,6 +2512,9 @@ class AppLocalizationsEo extends AppLocalizations {
   String get settingsAudioRouteSpeaker => 'Parolanto';
 
   @override
+  String get settingsAudioRouteHeadphones => 'Headphones';
+
+  @override
   String settingsAudioPcmChannels(int count) {
     return '${count}ch PCM';
   }

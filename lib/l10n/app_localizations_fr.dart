@@ -2558,6 +2558,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsAudioRouteSpeaker => 'Enceintes';
 
   @override
+  String get settingsAudioRouteHeadphones => 'Headphones';
+
+  @override
   String settingsAudioPcmChannels(int count) {
     return '$count canaux PCM';
   }
