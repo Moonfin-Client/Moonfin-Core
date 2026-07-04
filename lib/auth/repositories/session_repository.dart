@@ -11,6 +11,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../data/models/aggregated_item.dart';
+import '../../data/services/carplay_service.dart';
 import '../../data/services/download_notification_service.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/plugin_sync_service.dart';
@@ -192,7 +193,7 @@ class SessionRepository {
     setActiveStreamResolver(client);
     _socketHandler.connectTo(client);
     _bindRemoteCommandHandling();
-    _refreshCarBrowseTree();
+    _refreshCarBrowseTree(signedIn: true);
 
     _activeServerId = serverId;
     _activeUserId = userId;
@@ -323,21 +324,25 @@ class SessionRepository {
     _activeUserId = null;
     _hasCheckedWriteAccess = false;
     _userRepository.setCurrentUser(null);
-    _refreshCarBrowseTree(clearLastSession: true);
+    _refreshCarBrowseTree(signedIn: false);
     _setState(SessionState.ready);
   }
 
   // Keep car clients (Android Auto / CarPlay) in sync with sign-in changes:
-  // drop cached browse data and make the car re-query its root.
-  void _refreshCarBrowseTree({bool clearLastSession = false}) {
+  // drop cached browse data and make the car re-query its root. On sign-out
+  // the persisted resumption queue is cleared too.
+  void _refreshCarBrowseTree({required bool signedIn}) {
     try {
       GetIt.instance<HeadlessSessionBootstrap>().invalidate();
       GetIt.instance<MediaBrowseService>().clearCache();
-      if (clearLastSession) {
+      if (!signedIn) {
         unawaited(GetIt.instance<LastPlaybackSessionStore>().clear());
       }
       if (GetIt.instance.isRegistered<MoonfinAudioHandler>()) {
         GetIt.instance<MoonfinAudioHandler>().notifyChildrenChanged();
+      }
+      if (GetIt.instance.isRegistered<CarPlayService>()) {
+        GetIt.instance<CarPlayService>().notifySignInChanged(signedIn: signedIn);
       }
     } catch (_) {}
   }

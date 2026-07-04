@@ -9,6 +9,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'app.dart';
+import 'data/services/carplay_service.dart';
 import 'data/services/cast/airplay_command_bridge.dart';
 import 'data/services/download_notification_service.dart';
 import 'data/services/media_server_client_factory.dart';
@@ -20,6 +21,7 @@ import 'playback/appletv_mpv_backend.dart';
 import 'playback/audio_capability_profile.dart';
 import 'playback/audio_capability_probe.dart';
 import 'playback/audio_handler.dart';
+import 'playback/media_browse_service.dart';
 import 'playback/playback_lifecycle_handler.dart';
 import 'platform/web_runtime_config.dart';
 import 'preference/user_preferences.dart';
@@ -380,6 +382,18 @@ void main() async {
     } catch (e, st) {
       debugPrint('initAudioService failed (lock-screen controls disabled): $e\n$st');
     }
+  }
+
+  // Registered before runApp so a CarPlay-only launch (no window scene, no
+  // widgets) can browse and start playback.
+  if (PlatformDetection.isIOS && !GetIt.instance.isRegistered<CarPlayService>()) {
+    try {
+      final carPlayService = CarPlayService(
+        browse: GetIt.instance<MediaBrowseService>(),
+        manager: GetIt.instance<PlaybackManager>(),
+      )..start();
+      GetIt.instance.registerSingleton<CarPlayService>(carPlayService);
+    } catch (_) {}
   }
 
   final prefs = GetIt.instance<UserPreferences>();
