@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -49,9 +50,14 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
   bool _initialFocusResolved = false;
   bool _isFirstRowFocused = false;
   final Map<int, GlobalKey<LockedFocusRowState>> _rowKeys = {};
+  final Map<int, ScrollController> _rowScrollControllers = {};
 
   GlobalKey<LockedFocusRowState> _getRowKey(int index) {
     return _rowKeys.putIfAbsent(index, () => GlobalKey<LockedFocusRowState>());
+  }
+
+  ScrollController _getRowScroll(int index) {
+    return _rowScrollControllers.putIfAbsent(index, () => ScrollController());
   }
 
   void _onRowLeftEdge() {
@@ -114,6 +120,9 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     _selectionDebounce?.cancel();
     _backdropDebounce?.cancel();
     _scrollController.dispose();
+    for (final controller in _rowScrollControllers.values) {
+      controller.dispose();
+    }
     _viewModel?.removeListener(_onChanged);
     _prefs.removeListener(_onPrefsChanged);
     _initialFocusNode.removeListener(_onInitialFocusNodeChanged);
@@ -323,7 +332,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       controller: _scrollController,
       padding: EdgeInsets.only(left: rowLeftInset, bottom: 32),
       itemCount: rows.length,
-      cacheExtent: 600.0,
+      scrollCacheExtent: const ScrollCacheExtent.pixels(600.0),
       itemBuilder: (context, index) {
         final row = rows[index];
         if (!row.isLoading && !_rowHasFocusableContent(row)) {
@@ -390,6 +399,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     required double rowHeight,
     required bool isLoading,
     required bool hasItems,
+    required ScrollController scrollController,
     required Widget child,
   }) {
     final l10n = AppLocalizations.of(context);
@@ -400,6 +410,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
 
     return HorizontalScrollSection(
       title: title,
+      scrollController: scrollController,
       titleStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
         color: AppColorScheme.onSurface,
         fontWeight: FontWeight.w700,
@@ -472,7 +483,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         key: focusKey,
         items: row.items,
         hubKey: 'seerr_discover_media_${rowIndex}_${row.title}',
-        itemExtent: 130 * desktopScale,
+        controller: _getRowScroll(rowIndex),
+        itemExtent: 130,
         itemSpacing: 12 * desktopScale,
         height: 260 * desktopScale,
         clipBehavior: Clip.none,
@@ -515,13 +527,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
             suppressFocusGlow: suppressFocusGlow,
             externalIsFocused: isFocused,
             onTap: () => _onItemTap(item),
-            onFocus: () {
-              _onItemSelected(item);
-              if (rowIndex == 0) {
-                _setFirstRowFocused(true);
-                _restoreNavbarToNormalPosition();
-              }
-            },
+            onHoverStart: () => _onItemSelected(item),
           );
         },
       ),
@@ -532,6 +538,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       rowHeight: 260,
       isLoading: row.isLoading && row.items.isEmpty,
       hasItems: row.items.isNotEmpty,
+      scrollController: _getRowScroll(rowIndex),
       child: child,
     );
   }
@@ -553,7 +560,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       key: focusKey,
       items: row.genres,
       hubKey: 'seerr_discover_genres_${rowIndex}_${row.title}',
-      itemExtent: 180 * desktopScale,
+      controller: _getRowScroll(rowIndex),
+      itemExtent: 180,
       itemSpacing: 12 * desktopScale,
       height: 90 * desktopScale,
       clipBehavior: Clip.none,
@@ -619,6 +627,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       rowHeight: 90,
       isLoading: row.isLoading && row.genres.isEmpty,
       hasItems: row.genres.isNotEmpty,
+      scrollController: _getRowScroll(rowIndex),
       child: child,
     );
   }
@@ -639,7 +648,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       key: focusKey,
       items: row.networks,
       hubKey: 'seerr_discover_networks_${rowIndex}_${row.title}',
-      itemExtent: 180 * desktopScale,
+      controller: _getRowScroll(rowIndex),
+      itemExtent: 180,
       itemSpacing: 12 * desktopScale,
       height: 90 * desktopScale,
       clipBehavior: Clip.none,
@@ -702,6 +712,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       rowHeight: 90,
       isLoading: row.isLoading && row.networks.isEmpty,
       hasItems: row.networks.isNotEmpty,
+      scrollController: _getRowScroll(rowIndex),
       child: child,
     );
   }
@@ -722,7 +733,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       key: focusKey,
       items: row.studios,
       hubKey: 'seerr_discover_studios_${rowIndex}_${row.title}',
-      itemExtent: 180 * desktopScale,
+      controller: _getRowScroll(rowIndex),
+      itemExtent: 180,
       itemSpacing: 12 * desktopScale,
       height: 90 * desktopScale,
       clipBehavior: Clip.none,
@@ -785,6 +797,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       rowHeight: 90,
       isLoading: row.isLoading && row.studios.isEmpty,
       hasItems: row.studios.isNotEmpty,
+      scrollController: _getRowScroll(rowIndex),
       child: child,
     );
   }
