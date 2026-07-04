@@ -13,6 +13,7 @@ import 'package:rar/rar.dart';
 import 'package:server_core/server_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pdfrx/pdfrx.dart';
+import '../../../util/webview_environment.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -27,6 +28,7 @@ import '../../../data/services/book_reader_service.dart';
 import '../../../data/services/media_server_client_factory.dart';
 import '../../../data/services/reader_settings_store.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/insecure_certificates.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../l10n/current_app_localizations.dart';
 import '../../widgets/adaptive/sf_symbol.dart';
@@ -2724,6 +2726,7 @@ class _BookReaderScreenState extends State<BookReaderScreen>
 
     final webView = InAppWebView(
       key: ValueKey<String>(isEpub ? 'epub-web' : 'reader-web'),
+      webViewEnvironment: gWebViewEnvironment,
       initialData: isEpub
           ? InAppWebViewInitialData(
               data:
@@ -2756,6 +2759,16 @@ class _BookReaderScreenState extends State<BookReaderScreen>
           : null,
       onWebViewCreated: (controller) {
         _webController = controller;
+      },
+      onReceivedServerTrustAuthRequest: (controller, challenge) async {
+        if (gAllowSelfSignedCertificates) {
+          return ServerTrustAuthResponse(
+            action: ServerTrustAuthResponseAction.PROCEED,
+          );
+        }
+        return ServerTrustAuthResponse(
+          action: ServerTrustAuthResponseAction.CANCEL,
+        );
       },
       onProgressChanged: (controller, progress) {
         if (!mounted) return;

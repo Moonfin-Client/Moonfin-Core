@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get_it/get_it.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -13,6 +15,7 @@ import 'data/services/cast/airplay_command_bridge.dart';
 import 'data/services/download_notification_service.dart';
 import 'data/services/media_server_client_factory.dart';
 import 'data/services/storage_path_service.dart';
+import 'util/webview_environment.dart';
 import 'data/services/theme_store_service.dart';
 import 'di/injection.dart';
 import 'playback/appletv_audio_now_playing_feeder.dart';
@@ -304,6 +307,16 @@ class _PreferenceWriteFlushObserver with WidgetsBindingObserver {
 void main() async {
   configureHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
+
+  if (!PlatformDetection.isWeb && PlatformDetection.isWindows) {
+    try {
+      final appDataDir = await getApplicationSupportDirectory();
+      final customPath = '${appDataDir.path}\\WebView2Data';
+      gWebViewEnvironment = await WebViewEnvironment.create(
+        settings: WebViewEnvironmentSettings(userDataFolder: customPath),
+      );
+    } catch (_) {}
+  }
 
   if (PlatformDetection.isAppleTV) {
     ErrorWidget.builder = (FlutterErrorDetails details) {

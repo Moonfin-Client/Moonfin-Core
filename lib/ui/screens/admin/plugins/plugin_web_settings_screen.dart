@@ -1,4 +1,6 @@
+import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +10,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../util/platform_detection.dart';
+import '../../../../util/insecure_certificates.dart';
+import '../../../../util/webview_environment.dart';
 import '../widgets/admin_form_styles.dart';
 
 class PluginWebSettingsScreen extends StatefulWidget {
@@ -334,6 +338,42 @@ class _PluginWebSettingsScreenState extends State<PluginWebSettingsScreen> {
 </body></html>''';
   }
 
+  String _buildCredentialsJs() {
+    final payload = <String, dynamic>{
+      'Servers': <Map<String, dynamic>>[
+        <String, dynamic>{
+          'Id': widget.serverId,
+          'Name': widget.serverName,
+          'Url': _normalizedServerBaseUrl,
+          'ManualAddress': _normalizedServerBaseUrl,
+          'AccessToken': widget.accessToken,
+          'UserId': widget.userId ?? '',
+          'DateLastAccessed': DateTime.now().millisecondsSinceEpoch,
+          'LastConnectionMode': 1,
+        },
+      ],
+    };
+
+    final payloadLiteral = jsonEncode(payload);
+    return '''(() => {
+  try {
+    const credentials = $payloadLiteral;
+    const s = JSON.stringify(credentials);
+    const keys = [
+      'jellyfin_credentials',
+      'jellyfin_credentials_v2',
+      'jellyfin_credentials_v3',
+      'jellyfin-credentials',
+      'emby_credentials',
+    ];
+    for (const k of keys) {
+      localStorage.setItem(k, s);
+      sessionStorage.setItem(k, s);
+    }
+  } catch (_) {}
+})();''';
+  }
+
   Future<void> _openExternalUri(Uri uri) async {
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
@@ -515,18 +555,31 @@ class _PluginWebSettingsScreenState extends State<PluginWebSettingsScreen> {
   Widget _buildInAppWebView() {
     return InAppWebView(
       key: const ValueKey('plugin-webview-inapp'),
+      webViewEnvironment: gWebViewEnvironment,
       initialSettings: InAppWebViewSettings(
         javaScriptEnabled: true,
         domStorageEnabled: true,
+        isInspectable: true,
       ),
-      initialData: InAppWebViewInitialData(
-        data: _buildBootstrapHtml(_currentUrl),
-        baseUrl: WebUri.uri(_serverBaseUri.resolve('/web/')),
-        mimeType: 'text/html',
-        encoding: 'utf-8',
-      ),
+      initialUrlRequest: URLRequest(url: WebUri.uri(_currentUrl)),
+      initialUserScripts: UnmodifiableListView<UserScript>([
+        UserScript(
+          source: _buildCredentialsJs(),
+          injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
+        ),
+      ]),
       onWebViewCreated: (controller) {
         _inAppController = controller;
+      },
+      onReceivedServerTrustAuthRequest: (controller, challenge) async {
+        if (gAllowSelfSignedCertificates) {
+          return ServerTrustAuthResponse(
+            action: ServerTrustAuthResponseAction.PROCEED,
+          );
+        }
+        return ServerTrustAuthResponse(
+          action: ServerTrustAuthResponseAction.CANCEL,
+        );
       },
       shouldOverrideUrlLoading: (controller, navigationAction) async {
         final targetUri = navigationAction.request.url?.uriValue;

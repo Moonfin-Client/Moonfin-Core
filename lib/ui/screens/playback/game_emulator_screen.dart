@@ -12,6 +12,8 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../widgets/adaptive/adaptive_glass.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/insecure_certificates.dart';
+import '../../../util/webview_environment.dart';
 
 /// Full-screen EmulatorJS host. Loads the Moonbase plugin's player shell in a WebView, streams
 /// the ROM from the user's server, and syncs the save state on exit. Includes a native,
@@ -555,6 +557,7 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen> {
             else
               InAppWebView(
                 key: const ValueKey('game-emulator-webview'),
+                webViewEnvironment: gWebViewEnvironment,
                 initialUrlRequest: URLRequest(url: WebUri(_playerUrl!)),
                 initialUserScripts: _userScripts.isEmpty
                     ? null
@@ -572,6 +575,16 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen> {
                   controller.addJavaScriptHandler(
                     handlerName: 'moonfinPlayer',
                     callback: _onPlayerMessage,
+                  );
+                },
+                onReceivedServerTrustAuthRequest: (controller, challenge) async {
+                  if (gAllowSelfSignedCertificates) {
+                    return ServerTrustAuthResponse(
+                      action: ServerTrustAuthResponseAction.PROCEED,
+                    );
+                  }
+                  return ServerTrustAuthResponse(
+                    action: ServerTrustAuthResponseAction.CANCEL,
                   );
                 },
               ),
