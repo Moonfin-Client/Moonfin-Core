@@ -31,4 +31,9 @@ abstract class AdminLibraryApi {
   Future<void> refreshLibrary();
   Future<List<String>> getPhysicalPaths();
   Future<List<VirtualFolderInfo>> getMediaFolders();
+
+  /// Available metadata/image/subtitle/lyric fetchers and savers for a library
+  /// content type, used to build the downloader-ordering UI. Returned as a raw
+  /// map (`MetadataSavers`, `SubtitleFetchers`, `TypeOptions[]`, ...).
+  Future<Map<String, dynamic>> getAvailableLibraryOptions(String? contentType);
 }

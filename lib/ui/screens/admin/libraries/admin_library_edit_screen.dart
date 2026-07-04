@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../../../l10n/app_localizations.dart';
@@ -29,6 +30,7 @@ class _AdminLibraryEditScreenState
   VirtualFolderInfo? _library;
   late List<String> _paths;
   late Map<String, dynamic> _options;
+  Map<String, dynamic> _available = const {};
   List<Map<String, dynamic>> _cultures = const [];
   List<Map<String, dynamic>> _countries = const [];
 
@@ -78,13 +80,18 @@ class _AdminLibraryEditScreenState
       final countries = await _client.adminSystemApi
           .getCountries()
           .catchError((_) => <Map<String, dynamic>>[]);
+      final available = await _client.adminLibraryApi
+          .getAvailableLibraryOptions(lib.collectionType)
+          .catchError((_) => <String, dynamic>{});
       if (!mounted) return;
       setState(() {
         _library = lib;
         _paths = List<String>.from(lib.locations);
         _options = Map<String, dynamic>.from(lib.libraryOptions ?? {});
+        _available = available;
         _cultures = cultures;
         _countries = countries;
+        _seedDownloaderOptions();
         _loading = false;
       });
     } catch (e) {
@@ -181,6 +188,300 @@ class _AdminLibraryEditScreenState
     }
   }
 
+  // ---- Downloaders (metadata / image / subtitle / lyric fetchers + savers) --
+
+  List<Map<String, dynamic>> _availableList(String key) {
+    final raw = _available[key];
+    if (raw is List) {
+      return raw
+          .whereType<Map>()
+          .map((e) => Map<String, dynamic>.from(e))
+          .toList();
+    }
+    return const [];
+  }
+
+  /// Ensures [name] is present in [list] exactly when [present] is true.
+  void _setMembership(List<String> list, String name, bool present) {
+    if (present) {
+      if (!list.contains(name)) list.add(name);
+    } else {
+      list.remove(name);
+    }
+  }
+
+  /// The library's stored per-type option map for [type], creating it (and
+  /// preserving any existing entries and their other fields) if absent.
+  Map<String, dynamic> _typeOptionsFor(String type) {
+    final list = (_options['TypeOptions'] as List?)?.whereType<Map>().toList() ??
+        const <Map>[];
+    for (final t in list) {
+      if (t['Type'] == type) return t.cast<String, dynamic>();
+    }
+    final created = <String, dynamic>{'Type': type};
+    _options['TypeOptions'] = [
+      ...list.map((e) => e.cast<String, dynamic>()),
+      created,
+    ];
+    return created;
+  }
+
+  /// Orders [available] provider maps by [order] (configured names first), then
+  /// any remaining in their available order.
+  List<Map<String, dynamic>> _ordered(
+      List<Map<String, dynamic>> available, List<String> order) {
+    final byName = {
+      for (final p in available) (p['Name']?.toString() ?? ''): p,
+    };
+    final result = <Map<String, dynamic>>[];
+    for (final name in order) {
+      final p = byName.remove(name);
+      if (p != null) result.add(p);
+    }
+    result.addAll(byName.values);
+    return result;
+  }
+
+  List<String> _names(List<Map<String, dynamic>> plugins) => plugins
+      .map((p) => p['Name']?.toString() ?? '')
+      .where((n) => n.isNotEmpty)
+      .toList();
+
+  List<String> _defaultEnabled(List<Map<String, dynamic>> plugins) => plugins
+      .where((p) => p['DefaultEnabled'] == true)
+      .map((p) => p['Name'].toString())
+      .toList();
+
+  /// Writes the effective enabled/order arrays into [_options] so the tab reads
+  /// and writes them directly and saving needs no extra reconciliation.
+  void _seedDownloaderOptions() {
+    if (_available.isEmpty) return;
+
+    final savers = _availableList('MetadataSavers');
+    if (savers.isNotEmpty) {
+      _options['MetadataSavers'] =
+          (_options['MetadataSavers'] as List?)?.map((e) => e.toString()).toList() ??
+              _defaultEnabled(savers);
+    }
+
+    _seedGlobalFetchers(
+        'SubtitleFetchers', 'SubtitleFetcherOrder', 'DisabledSubtitleFetchers');
+    _seedGlobalFetchers(
+        'LyricFetchers', 'LyricFetcherOrder', 'DisabledLyricFetchers');
+
+    for (final typeOpt in _availableList('TypeOptions')) {
+      final type = typeOpt['Type']?.toString();
+      if (type == null) continue;
+      final stored = _typeOptionsFor(type);
+      _seedTypeFetchers(stored, typeOpt, 'MetadataFetchers', 'MetadataFetcherOrder');
+      _seedTypeFetchers(stored, typeOpt, 'ImageFetchers', 'ImageFetcherOrder');
+    }
+  }
+
+  void _seedGlobalFetchers(
+      String availKey, String orderKey, String disabledKey) {
+    final avail = _availableList(availKey);
+    if (avail.isEmpty) return;
+    final order =
+        (_options[orderKey] as List?)?.map((e) => e.toString()).toList() ??
+            const <String>[];
+    _options[orderKey] = _names(_ordered(avail, order));
+    _options[disabledKey] =
+        (_options[disabledKey] as List?)?.map((e) => e.toString()).toList() ??
+            avail
+                .where((p) => p['DefaultEnabled'] != true)
+                .map((p) => p['Name'].toString())
+                .toList();
+  }
+
+  void _seedTypeFetchers(Map<String, dynamic> stored,
+      Map<String, dynamic> typeOpt, String enabledKey, String orderKey) {
+    final avail = (typeOpt[enabledKey] as List?)
+            ?.whereType<Map>()
+            .map((e) => e.cast<String, dynamic>())
+            .toList() ??
+        const <Map<String, dynamic>>[];
+    if (avail.isEmpty) return;
+    final order =
+        (stored[orderKey] as List?)?.map((e) => e.toString()).toList() ??
+            const <String>[];
+    stored[orderKey] = _names(_ordered(avail, order));
+    stored[enabledKey] =
+        (stored[enabledKey] as List?)?.map((e) => e.toString()).toList() ??
+            _defaultEnabled(avail);
+  }
+
+  Widget _buildDownloadersTab() {
+    final l10n = AppLocalizations.of(context);
+    final bottomSafe = MediaQuery.of(context).padding.bottom;
+    final savers = _availableList('MetadataSavers');
+    final subs = _availableList('SubtitleFetchers');
+    final lyrics = _availableList('LyricFetchers');
+    final types = _availableList('TypeOptions');
+    final hasAny = savers.isNotEmpty ||
+        subs.isNotEmpty ||
+        lyrics.isNotEmpty ||
+        types.isNotEmpty;
+
+    if (!hasAny) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Text(l10n.adminLibNoDownloaders, textAlign: TextAlign.center),
+        ),
+      );
+    }
+
+    return ListView(
+      padding: EdgeInsets.fromLTRB(16, 4, 16, bottomSafe + 40),
+      children: [
+        for (final t in types)
+          if ((t['MetadataFetchers'] as List?)?.isNotEmpty ?? false) ...[
+            adminSectionLabel(
+                context, l10n.adminLibMetadataDownloadersFor(t['Type'].toString()),
+                icon: Icons.cloud_download_outlined),
+            _typeFetcherList(t, meta: true),
+          ],
+        if (savers.isNotEmpty) ...[
+          adminSectionLabel(context, l10n.adminLibMetadataSavers,
+              icon: Icons.save_outlined),
+          _saverList(savers),
+        ],
+        for (final t in types)
+          if ((t['ImageFetchers'] as List?)?.isNotEmpty ?? false) ...[
+            adminSectionLabel(
+                context, l10n.adminLibImageFetchersFor(t['Type'].toString()),
+                icon: Icons.image_outlined),
+            _typeFetcherList(t, meta: false),
+          ],
+        if (subs.isNotEmpty) ...[
+          adminSectionLabel(context, l10n.adminLibSubtitleDownloaders,
+              icon: Icons.subtitles_outlined),
+          _globalFetcherList('SubtitleFetcherOrder', 'DisabledSubtitleFetchers'),
+        ],
+        if (lyrics.isNotEmpty) ...[
+          adminSectionLabel(context, l10n.adminLibLyricDownloaders,
+              icon: Icons.lyrics_outlined),
+          _globalFetcherList('LyricFetcherOrder', 'DisabledLyricFetchers'),
+        ],
+        const SizedBox(height: AppSpacing.spaceXl),
+        adminSaveButton(label: l10n.save, saving: _saving, onPressed: _saveOptions),
+      ],
+    );
+  }
+
+  Widget _typeFetcherList(Map<String, dynamic> availType, {required bool meta}) {
+    final type = availType['Type'].toString();
+    final stored = _typeOptionsFor(type);
+    final orderKey = meta ? 'MetadataFetcherOrder' : 'ImageFetcherOrder';
+    final enabledKey = meta ? 'MetadataFetchers' : 'ImageFetchers';
+    final order =
+        (stored[orderKey] as List?)?.map((e) => e.toString()).toList() ??
+            const <String>[];
+    final enabled = ((stored[enabledKey] as List?) ?? const [])
+        .map((e) => e.toString())
+        .toSet();
+    return _providerList(
+      names: order,
+      isEnabled: enabled.contains,
+      onToggle: (name, value) => setState(() {
+        final list = List<String>.from(stored[enabledKey] as List? ?? const []);
+        _setMembership(list, name, value);
+        stored[enabledKey] = list;
+      }),
+      onMove: (index, delta) =>
+          _moveInList(stored, orderKey, order, index, delta),
+    );
+  }
+
+  Widget _globalFetcherList(String orderKey, String disabledKey) {
+    final order =
+        (_options[orderKey] as List?)?.map((e) => e.toString()).toList() ??
+            const <String>[];
+    final disabled = ((_options[disabledKey] as List?) ?? const [])
+        .map((e) => e.toString())
+        .toSet();
+    return _providerList(
+      names: order,
+      isEnabled: (name) => !disabled.contains(name),
+      onToggle: (name, value) => setState(() {
+        final list = List<String>.from(_options[disabledKey] as List? ?? const []);
+        _setMembership(list, name, !value);
+        _options[disabledKey] = list;
+      }),
+      onMove: (index, delta) =>
+          _moveInList(_options, orderKey, order, index, delta),
+    );
+  }
+
+  Widget _saverList(List<Map<String, dynamic>> savers) {
+    final enabled = ((_options['MetadataSavers'] as List?) ?? const [])
+        .map((e) => e.toString())
+        .toSet();
+    return _providerList(
+      names: _names(savers),
+      isEnabled: enabled.contains,
+      onToggle: (name, value) => setState(() {
+        final list =
+            List<String>.from(_options['MetadataSavers'] as List? ?? const []);
+        _setMembership(list, name, value);
+        _options['MetadataSavers'] = list;
+      }),
+    );
+  }
+
+  void _moveInList(Map<String, dynamic> owner, String orderKey,
+      List<String> current, int index, int delta) {
+    final target = index + delta;
+    if (target < 0 || target >= current.length) return;
+    setState(() {
+      final list = List<String>.from(owner[orderKey] as List? ?? current);
+      final moved = list.removeAt(index);
+      list.insert(target, moved);
+      owner[orderKey] = list;
+    });
+  }
+
+  Widget _providerList({
+    required List<String> names,
+    required bool Function(String) isEnabled,
+    required void Function(String name, bool enabled) onToggle,
+    void Function(int index, int delta)? onMove,
+  }) {
+    return adminGlassGroup(
+      context,
+      children: [
+        for (var i = 0; i < names.length; i++)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            child: Row(
+              children: [
+                Checkbox(
+                  value: isEnabled(names[i]),
+                  onChanged: (v) => onToggle(names[i], v ?? false),
+                ),
+                Expanded(
+                  child: Text(names[i], style: const TextStyle(fontSize: 15)),
+                ),
+                if (onMove != null) ...[
+                  IconButton(
+                    icon: const Icon(Icons.keyboard_arrow_up),
+                    visualDensity: VisualDensity.compact,
+                    onPressed: i > 0 ? () => onMove(i, -1) : null,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.keyboard_arrow_down),
+                    visualDensity: VisualDensity.compact,
+                    onPressed: i < names.length - 1 ? () => onMove(i, 1) : null,
+                  ),
+                ],
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -221,7 +522,11 @@ class _AdminLibraryEditScreenState
           child: DetailsTabBar(
             segmented: true,
             wrap: PlatformDetection.useMobileUi,
-            labels: [l10n.adminLibraryTabPaths, l10n.adminLibraryTabOptions],
+            labels: [
+              l10n.adminLibraryTabPaths,
+              l10n.adminLibraryTabOptions,
+              l10n.adminLibraryTabDownloaders,
+            ],
             selectedIndex: _selectedTab,
             onSelect: (i) => setState(() => _selectedTab = i),
             focusNodeFor: _tabNode,
@@ -233,6 +538,7 @@ class _AdminLibraryEditScreenState
             children: [
               _buildPathsTab(),
               _buildOptionsTab(),
+              _buildDownloadersTab(),
             ],
           ),
         ),

@@ -5584,6 +5584,27 @@
   "adminMetadataCountryHint": "e.g. US, DE, FR",
   "adminLibraryTabPaths": "Paths",
   "adminLibraryTabOptions": "Options",
+  "adminLibraryTabDownloaders": "Downloaders",
+  "adminLibMetadataSavers": "Metadata savers",
+  "adminLibSubtitleDownloaders": "Subtitle downloaders",
+  "adminLibLyricDownloaders": "Lyric downloaders",
+  "adminLibMetadataDownloadersFor": "Metadata downloaders: {type}",
+  "@adminLibMetadataDownloadersFor": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "adminLibImageFetchersFor": "Image fetchers: {type}",
+  "@adminLibImageFetchersFor": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "adminLibNoDownloaders": "This server exposes no downloaders for this library type.",
   "adminLibrarySectionGeneral": "General",
   "adminLibrarySectionMetadata": "Metadata",
   "adminLibrarySectionEmbedded": "Embedded Info",

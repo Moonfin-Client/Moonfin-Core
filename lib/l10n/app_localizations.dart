@@ -8044,6 +8044,48 @@ abstract class AppLocalizations {
   /// **'Options'**
   String get adminLibraryTabOptions;
 
+  /// No description provided for @adminLibraryTabDownloaders.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaders'**
+  String get adminLibraryTabDownloaders;
+
+  /// No description provided for @adminLibMetadataSavers.
+  ///
+  /// In en, this message translates to:
+  /// **'Metadata savers'**
+  String get adminLibMetadataSavers;
+
+  /// No description provided for @adminLibSubtitleDownloaders.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtitle downloaders'**
+  String get adminLibSubtitleDownloaders;
+
+  /// No description provided for @adminLibLyricDownloaders.
+  ///
+  /// In en, this message translates to:
+  /// **'Lyric downloaders'**
+  String get adminLibLyricDownloaders;
+
+  /// No description provided for @adminLibMetadataDownloadersFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Metadata downloaders: {type}'**
+  String adminLibMetadataDownloadersFor(String type);
+
+  /// No description provided for @adminLibImageFetchersFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Image fetchers: {type}'**
+  String adminLibImageFetchersFor(String type);
+
+  /// No description provided for @adminLibNoDownloaders.
+  ///
+  /// In en, this message translates to:
+  /// **'This server exposes no downloaders for this library type.'**
+  String get adminLibNoDownloaders;
+
   /// No description provided for @adminLibrarySectionGeneral.
   ///
   /// In en, this message translates to:

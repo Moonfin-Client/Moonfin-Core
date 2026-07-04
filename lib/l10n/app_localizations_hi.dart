@@ -4388,6 +4388,32 @@ class AppLocalizationsHi extends AppLocalizations {
   String get adminLibraryTabOptions => 'Options';
 
   @override
+  String get adminLibraryTabDownloaders => 'Downloaders';
+
+  @override
+  String get adminLibMetadataSavers => 'Metadata savers';
+
+  @override
+  String get adminLibSubtitleDownloaders => 'Subtitle downloaders';
+
+  @override
+  String get adminLibLyricDownloaders => 'Lyric downloaders';
+
+  @override
+  String adminLibMetadataDownloadersFor(String type) {
+    return 'Metadata downloaders: $type';
+  }
+
+  @override
+  String adminLibImageFetchersFor(String type) {
+    return 'Image fetchers: $type';
+  }
+
+  @override
+  String get adminLibNoDownloaders =>
+      'This server exposes no downloaders for this library type.';
+
+  @override
   String get adminLibrarySectionGeneral => 'General';
 
   @override

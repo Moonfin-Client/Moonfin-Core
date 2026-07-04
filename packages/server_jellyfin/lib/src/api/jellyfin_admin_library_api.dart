@@ -140,4 +140,19 @@ class JellyfinAdminLibraryApi implements AdminLibraryApi {
             .toList() ??
         const [];
   }
+
+  @override
+  Future<Map<String, dynamic>> getAvailableLibraryOptions(
+    String? contentType,
+  ) async {
+    final response = await _dio.get(
+      '/Libraries/AvailableOptions',
+      queryParameters: {
+        if (contentType != null && contentType.isNotEmpty)
+          'libraryContentType': contentType,
+        'isNewLibrary': false,
+      },
+    );
+    return Map<String, dynamic>.from(response.data as Map);
+  }
 }
