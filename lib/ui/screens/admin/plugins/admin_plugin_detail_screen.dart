@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:server_core/server_core.dart';
 import 'package:dio/dio.dart';
 import 'dart:convert';
 import 'dart:io';
 
+import '../../../navigation/destinations.dart';
 import '../admin_plugin_version_utils.dart';
 import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../providers/admin_user_providers.dart';
@@ -190,9 +192,15 @@ class _AdminPluginDetailScreenState
 
   Uri _pluginHtmlSettingsUri(String configPageName) {
     final client = GetIt.instance<MediaServerClient>();
-    return Uri.parse(client.baseUrl).resolve(
-      '/web/ConfigurationPage?name=${Uri.encodeQueryComponent(configPageName)}',
-    );
+    final base = client.baseUrl.endsWith('/')
+        ? client.baseUrl.substring(0, client.baseUrl.length - 1)
+        : client.baseUrl;
+    // Load the config page through the jellyfin-web app (legacy hash route) so
+    // it renders inside the styled shell. The explicit index.html keeps the
+    // path distinct from the bootstrap page (/web/) so the credential-priming
+    // location.replace performs a real navigation instead of a hash-only change.
+    final encoded = Uri.encodeComponent(configPageName);
+    return Uri.parse('$base/web/index.html#!/configurationpage?name=$encoded');
   }
 
   Future<String?> _resolveConfigurationPageName(PluginInfo plugin) async {
@@ -305,6 +313,14 @@ class _AdminPluginDetailScreenState
     );
   }
 
+  Widget _backButton(BuildContext context) {
+    return IconButton(
+      tooltip: AppLocalizations.of(context).adminDrawerPlugins,
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () => context.go(Destinations.adminPlugins),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final pluginsAsync = ref.watch(adminInstalledPluginsProvider);
@@ -359,12 +375,20 @@ class _AdminPluginDetailScreenState
       return ListView(
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
         children: [
-          adminScreenHeader(
-            context,
-            title: plugin.name,
-            subtitle: AppLocalizations.of(context)
-                .adminPluginVersion(plugin.version),
-            icon: Icons.extension_outlined,
+          Row(
+            children: [
+              _backButton(context),
+              const SizedBox(width: 4),
+              Expanded(
+                child: adminScreenHeader(
+                  context,
+                  title: plugin.name,
+                  subtitle: AppLocalizations.of(context)
+                      .adminPluginVersion(plugin.version),
+                  icon: Icons.extension_outlined,
+                ),
+              ),
+            ],
           ),
           if (statusBanner != null) ...[
             statusBanner,
@@ -445,6 +469,8 @@ class _AdminPluginDetailScreenState
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            _backButton(context),
+            const SizedBox(width: 4),
             _PluginImage(
               imageUrl: plugin.hasImage
                   ? _pluginImageUrl(plugin)

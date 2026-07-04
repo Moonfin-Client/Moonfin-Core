@@ -43,6 +43,7 @@ class _PluginWebSettingsScreenState extends State<PluginWebSettingsScreen> {
     const style = document.createElement('style');
     style.id = styleId;
     style.textContent = `
+      /* Legacy jellyfin-web shell (older servers) */
       #header,
       .skinHeader,
       .mainDrawer,
@@ -52,12 +53,18 @@ class _PluginWebSettingsScreenState extends State<PluginWebSettingsScreen> {
       .sectionTabs,
       .emby-tab-button,
       .pageTitle,
-      .pageTitleWithLogo {
+      .pageTitleWithLogo,
+      /* Modern React dashboard chrome (10.9+) */
+      .MuiAppBar-root,
+      .MuiDrawer-root {
         display: none !important;
       }
 
+      /* Reclaim the space the removed chrome used, without forcing colors so
+         the server's own (usually dark) theme is preserved. */
       html,
       body,
+      main,
       .mainAnimatedPage,
       .page,
       .scrollY,
@@ -66,13 +73,14 @@ class _PluginWebSettingsScreenState extends State<PluginWebSettingsScreen> {
         padding-top: 0 !important;
       }
 
-      html,
-      body,
+      main,
       .mainAnimatedPage,
       .page,
-      .scrollY,
       .content-primary {
-        background-color: #ffffff !important;
+        margin-left: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
       }
     `;
     document.head.appendChild(style);
