@@ -1421,11 +1421,6 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 0,
   );
 
-  static final audiobookShowRemaining = Preference(
-    key: 'pref_audiobook_show_remaining',
-    defaultValue: false,
-  );
-
   static final audiobookDefaultSpeed = Preference(
     key: 'pref_audiobook_default_speed',
     defaultValue: 1.0,

@@ -15121,14 +15121,8 @@ abstract class AppLocalizations {
   /// No description provided for @audiobookWholeBook.
   ///
   /// In en, this message translates to:
-  /// **'Whole book'**
+  /// **'Whole Book'**
   String get audiobookWholeBook;
-
-  /// No description provided for @audiobookWholeBookProgress.
-  ///
-  /// In en, this message translates to:
-  /// **'{percent}% · {time} left'**
-  String audiobookWholeBookProgress(String percent, String time);
 
   /// No description provided for @audiobookFocusedTimeline.
   ///

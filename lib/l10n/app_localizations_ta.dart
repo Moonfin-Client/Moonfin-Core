@@ -8522,12 +8522,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Timeline is empty';
 
   @override
-  String get audiobookWholeBook => 'Whole book';
-
-  @override
-  String audiobookWholeBookProgress(String percent, String time) {
-    return '$percent% · $time left';
-  }
+  String get audiobookWholeBook => 'Whole Book';
 
   @override
   String get audiobookFocusedTimeline => 'Focused Timeline';

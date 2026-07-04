@@ -263,12 +263,6 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
   final bool isTvFocused;
   final ValueChanged<Duration> onSeek;
 
-  String _formatFocusedTime(Duration d) {
-    final totalMinutes = d.inMinutes;
-    final seconds = d.inSeconds.remainder(60).abs();
-    return '$totalMinutes:${seconds.toString().padLeft(2, '0')}';
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -382,7 +376,7 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                _formatFocusedTime(Duration(milliseconds: startMs.toInt())),
+                formatAudiobookClock(Duration(milliseconds: startMs.toInt())),
                 style: labelStyle,
               ),
               Text(
@@ -394,7 +388,7 @@ class AudiobookZoomedProgressBar extends StatelessWidget {
                 ),
               ),
               Text(
-                _formatFocusedTime(Duration(milliseconds: endMs.toInt())),
+                formatAudiobookClock(Duration(milliseconds: endMs.toInt())),
                 style: labelStyle,
               ),
             ],
