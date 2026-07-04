@@ -1527,24 +1527,28 @@ class _DialogCheckboxTileState extends State<_DialogCheckboxTile> {
 }
 
 Future<void> _playTrackDirectly(BuildContext context, AggregatedItem item) async {
-  // Show a loading indicator
+  final navigator = Navigator.of(context, rootNavigator: true);
+  final manager = GetIt.instance<PlaybackManager>();
+  var loadingVisible = true;
+  void dismissLoading() {
+    if (loadingVisible) {
+      loadingVisible = false;
+      navigator.pop();
+    }
+  }
+
   showDialog(
     context: context,
     barrierDismissible: false,
-    builder: (BuildContext context) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    },
+    builder: (_) => const Center(child: CircularProgressIndicator()),
   );
 
-  final albumId = item.albumId?.isNotEmpty == true
-      ? item.albumId
-      : item.parentId;
+  final albumId =
+      item.albumId?.isNotEmpty == true ? item.albumId : item.parentId;
 
   try {
-    List<AggregatedItem> tracks = [item];
-    int startIndex = 0;
+    var tracks = <AggregatedItem>[item];
+    var startIndex = 0;
 
     if (albumId != null && albumId.isNotEmpty) {
       final factory = GetIt.instance<MediaServerClientFactory>();
@@ -1553,7 +1557,6 @@ Future<void> _playTrackDirectly(BuildContext context, AggregatedItem item) async
                 GetIt.instance<MediaServerClient>()
           : GetIt.instance<MediaServerClient>();
 
-      // Load all tracks in the album
       final data = await client.itemsApi.getItems(
         parentId: albumId,
         includeItemTypes: const ['Audio'],
@@ -1561,21 +1564,17 @@ Future<void> _playTrackDirectly(BuildContext context, AggregatedItem item) async
         fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
       );
 
-      final rawItems = data['Items'] as List?;
-      final itemsList = (rawItems as List?)
+      final loadedTracks = (data['Items'] as List?)
               ?.whereType<Map>()
               .map((raw) => raw.cast<String, dynamic>())
+              .where((raw) => raw['Id']?.toString().isNotEmpty == true)
+              .map((raw) => AggregatedItem(
+                    id: raw['Id'].toString(),
+                    serverId: item.serverId,
+                    rawData: raw,
+                  ))
               .toList() ??
-          const <Map<String, dynamic>>[];
-
-      final loadedTracks = itemsList
-          .where((raw) => raw['Id']?.toString().isNotEmpty == true)
-          .map((raw) => AggregatedItem(
-                id: raw['Id'].toString(),
-                serverId: item.serverId,
-                rawData: raw,
-              ))
-          .toList();
+          const <AggregatedItem>[];
 
       if (loadedTracks.isNotEmpty) {
         tracks = loadedTracks;
@@ -1586,22 +1585,13 @@ Future<void> _playTrackDirectly(BuildContext context, AggregatedItem item) async
       }
     }
 
-    final manager = GetIt.instance<PlaybackManager>();
     await manager.playItems(tracks, startIndex: startIndex);
-    
+    dismissLoading();
     if (context.mounted) {
-      // Dismiss the loading indicator
-      Navigator.of(context).pop();
-      // Navigate straight to the audio player
       context.push(Destinations.audioPlayer);
     }
-  } catch (e) {
-    if (context.mounted) {
-      // Dismiss the loading indicator
-      Navigator.of(context).pop();
-    }
-    // Fallback: play the single item directly if API fails
-    final manager = GetIt.instance<PlaybackManager>();
+  } catch (_) {
+    dismissLoading();
     await manager.playItems([item]);
     if (context.mounted) {
       context.push(Destinations.audioPlayer);

@@ -173,12 +173,11 @@ class Destinations {
       '/library/$libraryId/letters';
   static String librarySuggestionsOf(String libraryId) =>
       '/library/$libraryId/suggestions';
-  static String item(String itemId, {String? serverId, bool autoPlay = false, String? trackId}) {
+  static String item(String itemId, {String? serverId, bool autoPlay = false}) {
     final base = '/item/$itemId';
     final params = <String>[
       if (serverId != null) 'serverId=$serverId',
       if (autoPlay) 'autoPlay=true',
-      if (trackId != null && trackId.isNotEmpty) 'trackId=${Uri.encodeComponent(trackId)}',
     ];
     return params.isEmpty ? base : '$base?${params.join('&')}';
   }

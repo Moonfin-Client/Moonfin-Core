@@ -138,14 +138,12 @@ class ItemDetailScreen extends StatefulWidget {
   final String itemId;
   final String? serverId;
   final bool autoPlay;
-  final String? trackId;
 
   const ItemDetailScreen({
     super.key,
     required this.itemId,
     this.serverId,
     this.autoPlay = false,
-    this.trackId,
   });
 
   @override
@@ -5443,13 +5441,13 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
-      final isPhoto = item.type == 'Photo';
-      final ws = _computeWatchState(item);
-      _play(context, item, resume: !isPhoto && ws.hasProgress);
-
       // Consume autoPlay from the current detail route so back navigation
       // doesn't re-trigger playback.
       context.replace(Destinations.item(item.id, serverId: item.serverId));
+
+      final isPhoto = item.type == 'Photo';
+      final ws = _computeWatchState(item);
+      _play(context, item, resume: !isPhoto && ws.hasProgress);
     });
   }
 
@@ -7078,7 +7076,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     bool forceTranscode = false,
     bool useExternalPlayer = false,
   }) async {
-    final detailScreen = context.findAncestorWidgetOfExactType<ItemDetailScreen>();
     final manager = GetIt.instance<PlaybackManager>();
     final mediaStreams = _mediaStreamsForCurrentSelection(item);
     final audioStreams = mediaStreams
@@ -7451,15 +7448,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               }
               throw PlaybackStartupRecoveryAbortedException();
             }
-            int startIndex = 0;
-            final trackId = detailScreen?.trackId;
-            if (trackId != null && trackId.isNotEmpty) {
-              final idx = tracks.indexWhere((t) => t.id == trackId);
-              if (idx >= 0) {
-                startIndex = idx;
-              }
-            }
-            await manager.playItems(tracks, startIndex: startIndex);
+            await manager.playItems(tracks);
             break;
 
           case 'Playlist':
@@ -7478,14 +7467,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               throw PlaybackStartupRecoveryAbortedException();
             }
             if (!context.mounted) return;
-            int startIndex = 0;
-            final trackId = detailScreen?.trackId;
-            if (trackId != null && trackId.isNotEmpty) {
-              final idx = tracks.indexWhere((t) => t.id == trackId);
-              if (idx >= 0) {
-                startIndex = idx;
-              }
-            }
             // Playlists can contain video, so honor the Dolby Vision
             // force-transcode check before allowing direct play/stream.
             final dvForceTranscode =
@@ -7493,7 +7474,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             final directAllowed = !dvForceTranscode && !forceTranscode;
             await manager.playItems(
               tracks,
-              startIndex: startIndex,
               enableDirectPlay: directAllowed,
               enableDirectStream: directAllowed,
             );
