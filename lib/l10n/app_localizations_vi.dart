@@ -925,6 +925,27 @@ class AppLocalizationsVi extends AppLocalizations {
   String get extras => 'Extras';
 
   @override
+  String get behindTheScenes => 'Behind the Scenes';
+
+  @override
+  String get deletedScenes => 'Deleted Scenes';
+
+  @override
+  String get featurettes => 'Featurettes';
+
+  @override
+  String get interviews => 'Interviews';
+
+  @override
+  String get scenes => 'Scenes';
+
+  @override
+  String get shorts => 'Shorts';
+
+  @override
+  String get trailers => 'Xe kéo';
+
+  @override
   String timeRemaining(String time) {
     return '$time remaining';
   }
@@ -8024,9 +8045,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get videos => 'Video';
-
-  @override
-  String get trailers => 'Xe kéo';
 
   @override
   String get programs => 'Chương trình';

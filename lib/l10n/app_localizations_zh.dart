@@ -891,6 +891,27 @@ class AppLocalizationsZh extends AppLocalizations {
   String get extras => 'Extras';
 
   @override
+  String get behindTheScenes => 'Behind the Scenes';
+
+  @override
+  String get deletedScenes => 'Deleted Scenes';
+
+  @override
+  String get featurettes => 'Featurettes';
+
+  @override
+  String get interviews => 'Interviews';
+
+  @override
+  String get scenes => 'Scenes';
+
+  @override
+  String get shorts => 'Shorts';
+
+  @override
+  String get trailers => '预告片';
+
+  @override
   String timeRemaining(String time) {
     return '$time remaining';
   }
@@ -7740,9 +7761,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get videos => '视频';
 
   @override
-  String get trailers => '预告片';
-
-  @override
   String get programs => '节目';
 
   @override
@@ -9312,6 +9330,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String endsAt(String time) {
     return 'Ends at $time';
   }
+
+  @override
+  String get trailers => 'Trailers';
 
   @override
   String endsIn(String time) {
@@ -16147,9 +16168,6 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get videos => 'Videos';
-
-  @override
-  String get trailers => 'Trailers';
 
   @override
   String get programs => 'Programs';

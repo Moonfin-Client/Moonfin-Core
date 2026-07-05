@@ -129,6 +129,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   final FocusNode _personSeerrCrewCreditsFirstFocusNode = FocusNode(debugLabel: 'personSeerrCrewCreditsFirst');
   final Map<String, FocusNode> _boxSetHeadingFocusNodes = {};
   final Map<String, FocusNode> _boxSetRowFirstFocusNodes = {};
+  final Map<String, FocusNode> _featuresFirstFocusNodes = {};
   late final ScrollController _scrollController = ScrollController();
   String? _seriesLogoTag;
   String? _seriesLogoId;
@@ -455,6 +456,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _gridFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _moviesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _seriesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
+
+    for (final cat in extraCategoriesOrder) {
+      final node = FocusNode(debugLabel: 'modernFeatureFirst_$cat');
+      node.onKeyEvent = leftToSidebarHandler;
+      _featuresFirstFocusNodes[cat] = node;
+    }
     _collectionSortFocusNode.onKeyEvent = (node, event) {
       if (event is KeyDownEvent) {
         if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
@@ -573,6 +580,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     for (final node in _boxSetRowFirstFocusNodes.values) {
       node.dispose();
     }
+    for (final node in _featuresFirstFocusNodes.values) {
+      node.dispose();
+    }
+    _featuresFirstFocusNodes.clear();
     super.dispose();
   }
 
@@ -648,7 +659,17 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       final tabs = _tabsFor(_vm.item!, l10n);
       if (tabIndex >= 0 && tabIndex < tabs.length) {
         final label = tabs[tabIndex].label;
-        if (label == l10n.cast) {
+        bool isExtraLabel = false;
+        for (final cat in extraCategoriesOrder) {
+          if (label == getExtraCategoryLabel(cat, l10n)) {
+            _featuresFirstFocusNodes[cat]?.requestFocus();
+            isExtraLabel = true;
+            break;
+          }
+        }
+        if (isExtraLabel) {
+          // Handled
+        } else if (label == l10n.cast) {
           _castFirstFocusNode.requestFocus();
         } else if (label == l10n.crewSection) {
           _crewFirstFocusNode.requestFocus();
@@ -711,7 +732,23 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final hasCrew = _vm.directors.isNotEmpty || _vm.writers.isNotEmpty;
     final hasStudios = item.studios.isNotEmpty;
     final hasSimilar = _vm.similar.isNotEmpty;
-    final hasFeatures = _vm.features.isNotEmpty;
+
+    final groupedFeatures = <String, List<AggregatedItem>>{};
+    for (final f in _vm.features) {
+      final cat = _getExtraCategory(f);
+      groupedFeatures.putIfAbsent(cat, () => []).add(f);
+    }
+
+    final List<_ModernTab> extraTabs = [];
+    for (final cat in extraCategoriesOrder) {
+      final items = groupedFeatures[cat];
+      if (items != null && items.isNotEmpty) {
+        extraTabs.add(_ModernTab(
+          getExtraCategoryLabel(cat, l10n),
+          (context, item) => _extrasTab(context, item, items),
+        ));
+      }
+    }
 
     final cast = _ModernTab(l10n.cast, _castTab);
     final crew = _ModernTab(l10n.crewSection, _crewTab);
@@ -730,7 +767,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (hasStudios) studios,
           if (item.chapters.isNotEmpty) chapters,
           details,
-          if (hasFeatures) _ModernTab(l10n.extras, _extrasTab),
+          ...extraTabs,
           if (hasSimilar) similar,
         ];
       case 'Season':
@@ -741,7 +778,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (hasCrew) crew,
           if (hasStudios) studios,
           if (item.chapters.isNotEmpty) chapters,
-          if (hasFeatures) _ModernTab(l10n.extras, _extrasTab),
+          ...extraTabs,
         ];
       case 'Episode':
         return [
@@ -752,6 +789,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (hasStudios) studios,
           if (item.chapters.isNotEmpty) chapters,
           details,
+          ...extraTabs,
           if (hasSimilar) similar,
         ];
       case 'MusicAlbum':
@@ -898,7 +936,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (hasStudios) studios,
           if (item.chapters.isNotEmpty) chapters,
           details,
-          if (hasFeatures) _ModernTab(l10n.extras, _extrasTab),
+          ...extraTabs,
           if (hasSimilar) similar,
         ];
     }
@@ -2026,7 +2064,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     );
   }
 
-  Widget _extrasTab(BuildContext context, AggregatedItem item) => SizedBox(
+  Widget _extrasTab(BuildContext context, AggregatedItem item, List<AggregatedItem> items) => SizedBox(
         height: 200,
         child: Focus(
           canRequestFocus: false,
@@ -2045,7 +2083,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             return KeyEventResult.ignored;
           },
           child: DetailFeaturesRow(
-            items: _vm.features,
+            items: items,
             imageApi: _vm.imageApi,
             prefs: widget.prefs,
           ),
@@ -4188,5 +4226,93 @@ class _DetailsContainerState extends State<_DetailsContainer> with FocusStateMix
             : widget.child,
       ),
     );
+  }
+}
+
+const extraCategoriesOrder = [
+  'extras',
+  'behindTheScenes',
+  'deletedScenes',
+  'featurettes',
+  'interviews',
+  'scenes',
+  'shorts',
+  'trailers',
+];
+
+String _getExtraCategory(AggregatedItem item) {
+  final extraType = item.rawData['ExtraType'] as String?;
+  if (extraType == null) return 'extras';
+  switch (extraType) {
+    case 'BehindTheScenes':
+      return 'behindTheScenes';
+    case 'DeletedScene':
+      return 'deletedScenes';
+    case 'Featurette':
+      return 'featurettes';
+    case 'Interview':
+      return 'interviews';
+    case 'Scene':
+      return 'scenes';
+    case 'Short':
+      return 'shorts';
+    case 'Trailer':
+      return 'trailers';
+    default:
+      return 'extras';
+  }
+}
+
+String getExtraCategoryLabel(String key, AppLocalizations l10n) {
+  switch (key) {
+    case 'behindTheScenes':
+      try {
+        return l10n.behindTheScenes;
+      } catch (_) {
+        return 'Behind the Scenes';
+      }
+    case 'deletedScenes':
+      try {
+        return l10n.deletedScenes;
+      } catch (_) {
+        return 'Deleted Scenes';
+      }
+    case 'featurettes':
+      try {
+        return l10n.featurettes;
+      } catch (_) {
+        return 'Featurettes';
+      }
+    case 'interviews':
+      try {
+        return l10n.interviews;
+      } catch (_) {
+        return 'Interviews';
+      }
+    case 'scenes':
+      try {
+        return l10n.scenes;
+      } catch (_) {
+        return 'Scenes';
+      }
+    case 'shorts':
+      try {
+        return l10n.shorts;
+      } catch (_) {
+        return 'Shorts';
+      }
+    case 'trailers':
+      try {
+        return l10n.trailers;
+      } catch (_) {
+        return 'Trailers';
+      }
+    case 'extras':
+    default:
+      try {
+        return l10n.extras;
+      } catch (_) {
+        return 'Extras';
+      }
   }
 }

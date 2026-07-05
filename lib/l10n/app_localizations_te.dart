@@ -923,6 +923,27 @@ class AppLocalizationsTe extends AppLocalizations {
   String get extras => 'Extras';
 
   @override
+  String get behindTheScenes => 'Behind the Scenes';
+
+  @override
+  String get deletedScenes => 'Deleted Scenes';
+
+  @override
+  String get featurettes => 'Featurettes';
+
+  @override
+  String get interviews => 'Interviews';
+
+  @override
+  String get scenes => 'Scenes';
+
+  @override
+  String get shorts => 'Shorts';
+
+  @override
+  String get trailers => 'ట్రైలర్స్';
+
+  @override
   String timeRemaining(String time) {
     return '$time remaining';
   }
@@ -8063,9 +8084,6 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get videos => 'వీడియోలు';
-
-  @override
-  String get trailers => 'ట్రైలర్స్';
 
   @override
   String get programs => 'కార్యక్రమాలు';

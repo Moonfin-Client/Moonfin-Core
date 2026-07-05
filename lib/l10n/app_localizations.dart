@@ -1834,6 +1834,48 @@ abstract class AppLocalizations {
   /// **'Extras'**
   String get extras;
 
+  /// Tab label for behind the scenes special features
+  ///
+  /// In en, this message translates to:
+  /// **'Behind the Scenes'**
+  String get behindTheScenes;
+
+  /// Tab label for deleted scenes special features
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted Scenes'**
+  String get deletedScenes;
+
+  /// Tab label for featurettes special features
+  ///
+  /// In en, this message translates to:
+  /// **'Featurettes'**
+  String get featurettes;
+
+  /// Tab label for interviews special features
+  ///
+  /// In en, this message translates to:
+  /// **'Interviews'**
+  String get interviews;
+
+  /// Tab label for scenes special features
+  ///
+  /// In en, this message translates to:
+  /// **'Scenes'**
+  String get scenes;
+
+  /// Tab label for shorts special features
+  ///
+  /// In en, this message translates to:
+  /// **'Shorts'**
+  String get shorts;
+
+  /// Tab label for trailers special features
+  ///
+  /// In en, this message translates to:
+  /// **'Trailers'**
+  String get trailers;
+
   /// Label showing remaining playback time, e.g. '42m remaining'
   ///
   /// In en, this message translates to:
@@ -14301,12 +14343,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Videos'**
   String get videos;
-
-  /// No description provided for @trailers.
-  ///
-  /// In en, this message translates to:
-  /// **'Trailers'**
-  String get trailers;
 
   /// No description provided for @programs.
   ///

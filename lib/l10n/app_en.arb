@@ -1232,6 +1232,34 @@
   "@extras": {
     "description": "Tab label for special features / extras"
   },
+  "behindTheScenes": "Behind the Scenes",
+  "@behindTheScenes": {
+    "description": "Tab label for behind the scenes special features"
+  },
+  "deletedScenes": "Deleted Scenes",
+  "@deletedScenes": {
+    "description": "Tab label for deleted scenes special features"
+  },
+  "featurettes": "Featurettes",
+  "@featurettes": {
+    "description": "Tab label for featurettes special features"
+  },
+  "interviews": "Interviews",
+  "@interviews": {
+    "description": "Tab label for interviews special features"
+  },
+  "scenes": "Scenes",
+  "@scenes": {
+    "description": "Tab label for scenes special features"
+  },
+  "shorts": "Shorts",
+  "@shorts": {
+    "description": "Tab label for shorts special features"
+  },
+  "trailers": "Trailers",
+  "@trailers": {
+    "description": "Tab label for trailers special features"
+  },
   "timeRemaining": "{time} remaining",
   "@timeRemaining": {
     "description": "Label showing remaining playback time, e.g. '42m remaining'",
