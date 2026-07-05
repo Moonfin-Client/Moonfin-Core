@@ -5511,18 +5511,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     return _mediaStreamsForItem(item, selectedSource);
   }
 
-  void _openAudioSelector(BuildContext context, AggregatedItem item) {
-    final selectedSource = selectedMediaSourceForItem(
-      item,
-      widget.selectedMediaSourceId,
-    );
-    final streams = _streamsForTrackSelectors(
-      item,
-      selectedSource,
-    ).where((s) => s['Type'] == 'Audio').toList();
-    _showAudioSelector(context, streams);
-  }
-
   void _openSubtitleSelector(BuildContext context, AggregatedItem item) {
     final selectedSource = selectedMediaSourceForItem(
       item,
@@ -5678,6 +5666,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final subtitleStreams = mediaStreams
         .where((s) => s['Type'] == 'Subtitle')
         .toList();
+    final audioStreams = _streamsForTrackSelectors(item, selectedSource)
+        .where((s) => s['Type'] == 'Audio')
+        .toList();
 
     final canShowDownloadActions =
         _isDownloadable(item.type) &&
@@ -5809,11 +5800,12 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           activeColor: const Color(0xFF4CAF50),
         ),
       if (isPlayableVideo) ...[
-        _DetailActionButton(
-          label: l10n.audio,
-          icon: Icons.audiotrack,
-          onPressed: () => _openAudioSelector(context, item),
-        ),
+        if (audioStreams.length > 1)
+          _DetailActionButton(
+            label: l10n.audio,
+            icon: Icons.audiotrack,
+            onPressed: () => _showAudioSelector(context, audioStreams),
+          ),
         _DetailActionButton(
           label: l10n.subtitles,
           icon: Icons.subtitles,
