@@ -62,8 +62,8 @@ class _LibrariesCategoryScreenState extends State<_LibrariesCategoryScreen> {
                   }
                   return SwitchPreferenceTile(
                     preference: UserPreferences.recommendationsApplyParentalRatingCap,
-                    title: 'Apply Parental Rating Cap?',
-                    subtitle: 'Limit Moonfin Recommends suggestions by parental rating of target media',
+                    title: l10n.recommendationsApplyParentalRatingCap,
+                    subtitle: l10n.recommendationsApplyParentalRatingCapSubtitle,
                     icon: Icons.family_restroom,
                     onChanged: _pushPersonalizationSync,
                   );

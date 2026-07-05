@@ -220,6 +220,14 @@
   "@recommendationSystemTmdb": {
     "description": "Recommendation system option: TMDb Similarity"
   },
+  "recommendationsApplyParentalRatingCap": "Apply Parental Rating Cap?",
+  "@recommendationsApplyParentalRatingCap": {
+    "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+  },
+  "recommendationsApplyParentalRatingCapSubtitle": "Limit Moonfin Recommends suggestions by parental rating of target media",
+  "@recommendationsApplyParentalRatingCapSubtitle": {
+    "description": "Explanation under the parental rating cap setting toggle"
+  },
   "interfaceStyle": "Interface Style",
   "@interfaceStyle": {
     "description": "Label for the Automatic/Apple/Material interface style setting"
