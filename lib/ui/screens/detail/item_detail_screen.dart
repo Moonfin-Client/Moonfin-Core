@@ -5520,9 +5520,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       item,
       selectedSource,
     ).where((s) => s['Type'] == 'Audio').toList();
-    if (streams.length > 1) {
-      _showAudioSelector(context, streams);
-    }
+    _showAudioSelector(context, streams);
   }
 
   void _openSubtitleSelector(BuildContext context, AggregatedItem item) {
