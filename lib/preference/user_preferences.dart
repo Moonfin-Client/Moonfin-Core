@@ -873,6 +873,12 @@ class UserPreferences extends ChangeNotifier {
     values: RecommendationSystemSource.values,
   );
 
+  /// Apply parental rating ceiling to Moonfin Recommends suggestions.
+  static final recommendationsApplyParentalRatingCap = Preference(
+    key: 'pref_recommendations_apply_parental_rating_cap',
+    defaultValue: true,
+  );
+
   /// Default mobile view for the Live TV guide (Now/Next list vs compact grid).
   static final epgMobileView = EnumPreference(
     key: 'pref_epg_mobile_view',

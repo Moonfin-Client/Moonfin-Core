@@ -1,7 +1,29 @@
 part of '../settings_side_panel.dart';
 
-class _LibrariesCategoryScreen extends StatelessWidget {
+class _LibrariesCategoryScreen extends StatefulWidget {
   const _LibrariesCategoryScreen();
+
+  @override
+  State<_LibrariesCategoryScreen> createState() => _LibrariesCategoryScreenState();
+}
+
+class _LibrariesCategoryScreenState extends State<_LibrariesCategoryScreen> {
+  late final PreferenceBinding<RecommendationSystemSource> _recSysBinding;
+
+  @override
+  void initState() {
+    super.initState();
+    _recSysBinding = PreferenceBinding(
+      GetIt.instance<PreferenceStore>(),
+      UserPreferences.recommendationSystemSource,
+    );
+  }
+
+  @override
+  void dispose() {
+    _recSysBinding.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +53,21 @@ class _LibrariesCategoryScreen extends StatelessWidget {
                     l10n.recommendationSystemTmdb,
                 },
                 onChanged: _pushPersonalizationSync,
+              ),
+              ValueListenableBuilder<RecommendationSystemSource>(
+                valueListenable: _recSysBinding,
+                builder: (context, source, _) {
+                  if (source != RecommendationSystemSource.local) {
+                    return const SizedBox.shrink();
+                  }
+                  return SwitchPreferenceTile(
+                    preference: UserPreferences.recommendationsApplyParentalRatingCap,
+                    title: 'Apply Parental Rating Cap?',
+                    subtitle: 'Limit Moonfin Recommends suggestions by parental rating of target media',
+                    icon: Icons.family_restroom,
+                    onChanged: _pushPersonalizationSync,
+                  );
+                },
               ),
               SwitchPreferenceTile(
                 preference: UserPreferences.enableFolderView,

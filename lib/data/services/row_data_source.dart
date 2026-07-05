@@ -52,8 +52,12 @@ class RowDataSource {
   // Cache for local recommendations to make them practically instantaneous
   static const int _recommendationCacheMaxEntries = 64;
   static final Map<String, List<Map<String, dynamic>>> _recommendationCache = {};
+  static final Map<String, List<AggregatedItem>> _scoredRecommendationsCache = {};
 
-  static void clearRecommendationCache() => _recommendationCache.clear();
+  static void clearRecommendationCache() {
+    _recommendationCache.clear();
+    _scoredRecommendationsCache.clear();
+  }
 
   static void _cacheRecommendations(String key, List<Map<String, dynamic>> items) {
     _recommendationCache.remove(key);
@@ -1074,6 +1078,14 @@ class RowDataSource {
             fields: 'PrimaryImageAspectRatio,SortName',
           );
         } else {
+          if (row.id.startsWith('sinceYouWatched')) {
+            final cached = _scoredRecommendationsCache[row.id];
+            if (cached != null) {
+              final nextItems = cached.take(currentOffset + _defaultLimit).toList();
+              return (nextItems, cached.length);
+            }
+            return (row.items, row.totalCount);
+          }
           final underscoreIndex = row.id.indexOf('_');
           if (underscoreIndex >= 0) {
             final type = row.id.substring(0, underscoreIndex);
@@ -1852,14 +1864,18 @@ class RowDataSource {
       baseItem: baseItem,
       isLocal: isLocal,
       candidateItemTypes: candidateItemTypes,
-      limit: 15,
+      limit: 100,
     );
 
+    final rowId = 'sinceYouWatched$rowIndex';
+    _scoredRecommendationsCache[rowId] = recommendedItems;
+
     return HomeRow(
-      id: 'sinceYouWatched$rowIndex',
+      id: rowId,
       title: 'Since you watched "$baseItemName"',
       rowType: HomeRowType.latestMedia,
-      items: recommendedItems,
+      items: recommendedItems.take(15).toList(),
+      totalCount: recommendedItems.length,
     );
   }
 
@@ -1880,6 +1896,8 @@ class RowDataSource {
       final genres = (itemDetail['Genres'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
       final tags = (itemDetail['Tags'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
       final people = (itemDetail['People'] as List?)?.map((e) => e is Map ? Map<String, dynamic>.from(e) : null).whereType<Map<String, dynamic>>().toList() ?? const <Map<String, dynamic>>[];
+      final baseStudios = (itemDetail['Studios'] as List?)?.map((e) => e is Map ? e['Name']?.toString() : e?.toString()).whereType<String>().toList() ?? const <String>[];
+      final baseYear = itemDetail['ProductionYear'] as int?;
 
       final actorNames = people
           .where((p) => p['Type'] == 'Actor')
@@ -1933,8 +1951,8 @@ class RowDataSource {
               includeItemTypes: types,
               genres: genres,
               recursive: true,
-              limit: 80,
-              fields: 'Genres,Tags,People,UserData,OfficialRating',
+              limit: 40,
+              fields: 'Genres,Tags,People,UserData,OfficialRating,ProductionYear,CommunityRating,Studios',
             );
             final items = (res['Items'] as List? ?? [])
                 .map((e) => e is Map ? Map<String, dynamic>.from(e) : null)
@@ -1966,8 +1984,8 @@ class RowDataSource {
               includeItemTypes: types,
               tags: tags,
               recursive: true,
-              limit: 80,
-              fields: 'Genres,Tags,People,UserData,OfficialRating',
+              limit: 40,
+              fields: 'Genres,Tags,People,UserData,OfficialRating,ProductionYear,CommunityRating,Studios',
             );
             final items = (res['Items'] as List? ?? [])
                 .map((e) => e is Map ? Map<String, dynamic>.from(e) : null)
@@ -1984,9 +2002,9 @@ class RowDataSource {
 
       // Fetch candidates matching any directors, writers, or actors in parallel using a single combined query
       final allPersonIds = [
-        ...directorIds.take(2),
-        ...writerIds.take(2),
-        ...actorIds.take(3),
+        ...directorIds,
+        ...writerIds,
+        ...actorIds.take(10),
       ];
       if (allPersonIds.isNotEmpty) {
         futures.add(() async {
@@ -2004,8 +2022,8 @@ class RowDataSource {
               includeItemTypes: types,
               personIds: allPersonIds,
               recursive: true,
-              limit: 80,
-              fields: 'Genres,Tags,People,UserData,OfficialRating',
+              limit: 40,
+              fields: 'Genres,Tags,People,UserData,OfficialRating,ProductionYear,CommunityRating,Studios',
             );
             final items = (res['Items'] as List? ?? [])
                 .map((e) => e is Map ? Map<String, dynamic>.from(e) : null)
@@ -2023,6 +2041,7 @@ class RowDataSource {
       await Future.wait(futures);
 
       final bool effectiveIncludeWatched = includeWatched ?? prefs.get(UserPreferences.sinceYouWatchedIncludeWatched);
+      final bool applyRatingCap = prefs.get(UserPreferences.recommendationsApplyParentalRatingCap);
       final sourceRating = baseItem.officialRating;
       final sourceRatingLevel = _getRatingLevel(sourceRating);
 
@@ -2038,21 +2057,23 @@ class RowDataSource {
         if (!effectiveIncludeWatched && isPlayed) continue;
 
         // Parental rating constraint upper bound
-        final candRating = candidate['OfficialRating'] as String?;
-        if (_getRatingLevel(candRating) > sourceRatingLevel) continue;
+        if (applyRatingCap) {
+          final candRating = candidate['OfficialRating'] as String?;
+          if (_getRatingLevel(candRating) > sourceRatingLevel) continue;
+        }
 
         double score = 0.0;
 
-        // Score genres (+2.0 each)
+        // Score genres (+3.0 each)
         final cGenres = (candidate['Genres'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
         for (final g in genres) {
-          if (cGenres.contains(g)) score += 2.0;
+          if (cGenres.contains(g)) score += 3.0;
         }
 
-        // Score tags (+1.0 each)
+        // Score tags (+3.0 each)
         final cTags = (candidate['Tags'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
         for (final t in tags) {
-          if (cTags.contains(t)) score += 1.0;
+          if (cTags.contains(t)) score += 3.0;
         }
 
         // Score people
@@ -2062,18 +2083,149 @@ class RowDataSource {
         final cWriters = cPeople.where((p) => p['Type'] == 'Writer').map((p) => p['Name']?.toString()).whereType<String>().toSet();
 
         for (final a in actorNames) {
-          if (cActors.contains(a)) score += 3.0;
+          if (cActors.contains(a)) score += 5.0;
         }
         for (final d in directorNames) {
-          if (cDirectors.contains(d)) score += 4.0;
+          if (cDirectors.contains(d)) score += 6.0;
         }
         for (final w in writerNames) {
-          if (cWriters.contains(w)) score += 4.0;
+          if (cWriters.contains(w)) score += 6.0;
         }
 
-        if (score >= 1.0) {
+        // Score studios (+3.0 each)
+        final cStudios = (candidate['Studios'] as List?)?.map((e) => e is Map ? e['Name']?.toString() : e?.toString()).whereType<String>().toSet() ?? const <String>{};
+        for (final s in baseStudios) {
+          if (cStudios.contains(s)) score += 3.0;
+        }
+
+        // Score production year proximity (+2.0 if exact, +1.0 if within 3 years)
+        final candYear = candidate['ProductionYear'] as int?;
+        if (candYear != null && baseYear != null) {
+          if (candYear == baseYear) {
+            score += 2.0;
+          } else if ((candYear - baseYear).abs() <= 3) {
+            score += 1.0;
+          }
+        }
+
+        // Score similar titles / sequels (+10.0)
+        if (_isSequelOrSimilarTitle(baseItem.name, candidate['Name']?.toString() ?? '')) {
+          score += 10.0;
+        }
+
+        // Score community rating boost (+ community rating / 10.0)
+        final candCommRating = (candidate['CommunityRating'] as num?)?.toDouble();
+        if (candCommRating != null) {
+          score += candCommRating / 10.0;
+        }
+
+        if (score >= 0.0) {
           scoredCandidates.add(MapEntry(candidate, score));
         }
+      }
+
+      // If we have fewer than 15 items after candidate scoring and filtering, fetch filler items
+      if (scoredCandidates.length < 15) {
+        try {
+          final fallbackCacheKey = '$serverId:fallback:${types.join(",")}:${genres.join(",")}';
+          final List<Map<String, dynamic>> items;
+          if (_recommendationCache.containsKey(fallbackCacheKey)) {
+            items = _recommendationCache[fallbackCacheKey]!;
+          } else {
+            final res = await _client.itemsApi.getItems(
+              includeItemTypes: types,
+              genres: genres.isNotEmpty ? genres : null,
+              recursive: true,
+              limit: 30,
+              sortBy: 'ProductionYear,SortName',
+              sortOrder: 'Descending',
+              fields: 'Genres,Tags,People,UserData,OfficialRating,ProductionYear,CommunityRating,Studios',
+            );
+            items = (res['Items'] as List? ?? [])
+                .map((e) => e is Map ? Map<String, dynamic>.from(e) : null)
+                .whereType<Map<String, dynamic>>()
+                .toList();
+            _cacheRecommendations(fallbackCacheKey, items);
+          }
+          for (final item in items) {
+            final id = item['Id']?.toString() ?? '';
+            if (id.isNotEmpty && !candidatesMap.containsKey(id) && id != baseItem.id) {
+              final userData = item['UserData'] as Map?;
+              final isPlayed = userData?['Played'] as bool? ?? false;
+              if (!effectiveIncludeWatched && isPlayed) continue;
+
+              if (applyRatingCap) {
+                final candRating = item['OfficialRating'] as String?;
+                if (_getRatingLevel(candRating) > sourceRatingLevel) continue;
+              }
+
+              double score = 0.0;
+
+              // Score genres (+3.0 each)
+              final cGenres = (item['Genres'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
+              for (final g in genres) {
+                if (cGenres.contains(g)) score += 3.0;
+              }
+
+              // Score tags (+3.0 each)
+              final cTags = (item['Tags'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
+              for (final t in tags) {
+                if (cTags.contains(t)) score += 3.0;
+              }
+
+              // Score people
+              final cPeople = (item['People'] as List?)?.map((e) => e is Map ? Map<String, dynamic>.from(e) : null).whereType<Map<String, dynamic>>().toList() ?? const <Map<String, dynamic>>[];
+              final cActors = cPeople.where((p) => p['Type'] == 'Actor').map((p) => p['Name']?.toString()).whereType<String>().toSet();
+              final cDirectors = cPeople.where((p) => p['Type'] == 'Director').map((p) => p['Name']?.toString()).whereType<String>().toSet();
+              final cWriters = cPeople.where((p) => p['Type'] == 'Writer').map((p) => p['Name']?.toString()).whereType<String>().toSet();
+
+              for (final a in actorNames) {
+                if (cActors.contains(a)) score += 5.0;
+              }
+              for (final d in directorNames) {
+                if (cDirectors.contains(d)) score += 6.0;
+              }
+              for (final w in writerNames) {
+                if (cWriters.contains(w)) score += 6.0;
+              }
+
+              // Score studios (+3.0 each)
+              final cStudios = (item['Studios'] as List?)?.map((e) => e is Map ? e['Name']?.toString() : e?.toString()).whereType<String>().toSet() ?? const <String>{};
+              for (final s in baseStudios) {
+                if (cStudios.contains(s)) score += 3.0;
+              }
+
+              // Score production year proximity (+2.0 if exact, +1.0 if close)
+              final candYear = item['ProductionYear'] as int?;
+              if (candYear != null && baseYear != null) {
+                if (candYear == baseYear) {
+                  score += 2.0;
+                } else if ((candYear - baseYear).abs() <= 3) {
+                  score += 1.0;
+                }
+              }
+
+              // Score similar titles / sequels (+10.0)
+              if (_isSequelOrSimilarTitle(baseItem.name, item['Name']?.toString() ?? '')) {
+                score += 10.0;
+              }
+
+              // Score community rating boost (+ community rating / 10.0)
+              final candCommRating = (item['CommunityRating'] as num?)?.toDouble();
+              if (candCommRating != null) {
+                score += candCommRating / 10.0;
+              }
+
+              candidatesMap[id] = item;
+              scoredCandidates.add(MapEntry(item, score));
+
+              // Cap the extra items to prevent bloating
+              if (scoredCandidates.length >= 30) {
+                break;
+              }
+            }
+          }
+        } catch (_) {}
       }
 
       // Sort by score desc, then by premiere date desc
@@ -2440,6 +2592,30 @@ class RowDataSource {
       rowType: HomeRowType.latestMedia,
       items: resolvedItems,
     );
+  }
+
+  bool _isSequelOrSimilarTitle(String titleA, String titleB) {
+    final wordsA = titleA.toLowerCase().replaceAll(RegExp(r'[^\w\s]'), '').split(RegExp(r'\s+')).where((w) => w.isNotEmpty && w.length >= 4).toSet();
+    final wordsB = titleB.toLowerCase().replaceAll(RegExp(r'[^\w\s]'), '').split(RegExp(r'\s+')).where((w) => w.isNotEmpty && w.length >= 4).toSet();
+
+    // Remove common words
+    final commonWords = const {'with', 'from', 'under', 'over', 'about', 'chapter', 'part', 'movie', 'film'};
+    wordsA.removeAll(commonWords);
+    wordsB.removeAll(commonWords);
+
+    if (wordsA.isEmpty || wordsB.isEmpty) return false;
+
+    // Check if they share any word or starting prefix
+    for (final wA in wordsA) {
+      for (final wB in wordsB) {
+        if (wA == wB) return true;
+        if (wA.startsWith(wB) || wB.startsWith(wA)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }
 
