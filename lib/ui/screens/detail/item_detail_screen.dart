@@ -5351,8 +5351,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final override = widget.maxVisibleButtonsOverride;
     if (override != null) return override > 2 ? override : 2;
     if (PlatformDetection.isTV) {
+      final maxItems = widget.modernStyle ? 11 : 7;
       final desktopScale = _desktopUiScale();
-      final maxTVButtons = (7 / desktopScale).floor();
+      final maxTVButtons = (maxItems / desktopScale).floor();
       return maxTVButtons > 2 ? maxTVButtons : 2;
     }
     final screenWidth = MediaQuery.sizeOf(context).width;
