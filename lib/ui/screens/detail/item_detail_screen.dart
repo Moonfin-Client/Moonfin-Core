@@ -6094,11 +6094,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                   .requestFocus();
             }
           },
-          onArrowDown: isTvShow
-              ? (_expanded
+          onArrowDown: _expanded
                   ? () => _focusSecondRowButton(index, extraButtons.length)
-                  : (widget.downTarget != null ? _focusDownTarget : null))
-              : (widget.downTarget != null ? _focusDownTarget : null),
+                  : (widget.downTarget != null ? _focusDownTarget : null),
         );
       }).toList();
 
@@ -6120,17 +6118,13 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
             _ensureOverflowButtonVisible(context);
             widget.onFocusExtra?.call(true);
           },
-          onArrowUp: isTvShow
-              ? () {
-                  // For both Series and Season: last extra button (Admin) goes up to More button
-                  // All other extra buttons navigate up to the corresponding primary button
+          onArrowUp: () {
                   if (index == extraButtons.length - 1) {
                     (widget.actionRowRightFocusNode ?? _overflowMoreFocusNode).requestFocus();
                   } else {
                     _focusFirstRowButton(index, primaryButtons.length);
                   }
-                }
-              : (NavigationLayout.focusNavbarNotifier.value != null || widget.upTarget != null ? _focusUpTarget : null),
+                },
           onArrowDown: widget.downTarget != null ? _focusDownTarget : null,
           onArrowLeft: index == 0
               ? _focusSidebar
@@ -6164,7 +6158,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         focusNode: widget.actionRowRightFocusNode ?? _overflowMoreFocusNode,
         onFocused: () => widget.onFocusExtra?.call(false),
         onArrowUp: NavigationLayout.focusNavbarNotifier.value != null || widget.upTarget != null ? _focusUpTarget : null,
-        onArrowDown: isTvShow && _expanded && extraButtons.isNotEmpty
+        onArrowDown: _expanded && extraButtons.isNotEmpty
             ? () {
                 _extraFocusNode(extraButtons.length - 1).requestFocus();
               }
