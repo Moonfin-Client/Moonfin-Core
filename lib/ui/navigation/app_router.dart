@@ -9,6 +9,7 @@ import '../../data/services/connectivity_service.dart';
 import '../../di/injection.dart';
 import '../../playback/external_player_policy.dart';
 import '../../preference/user_preferences.dart';
+import '../../preference/preference_constants.dart';
 import '../../syncplay/syncplay_manager.dart';
 import '../../util/platform_detection.dart';
 import '../screens/auth/emby_connect_screen.dart';
@@ -718,6 +719,13 @@ final appRouter = GoRouter(
       path: Destinations.seerrPersonDetail,
       builder: (context, state) {
         final personId = state.pathParameters['personId']!;
+        final prefs = GetIt.instance<UserPreferences>();
+        if (prefs.get(UserPreferences.detailScreenStyle) == DetailScreenStyle.modern) {
+          return ItemDetailScreen(
+            key: ValueKey('tmdb:$personId'),
+            itemId: 'tmdb:$personId',
+          );
+        }
         return SeerrPersonScreen(personId: personId);
       },
     ),

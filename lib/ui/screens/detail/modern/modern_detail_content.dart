@@ -3795,8 +3795,14 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
   String? _imageUrl(AggregatedItem item) {
     final tag = item.primaryImageTag;
-    if (tag == null) return null;
-    return _vm.imageApi.getPrimaryImageUrl(item.id, maxHeight: 360, tag: tag);
+    if (tag != null && !item.id.startsWith('tmdb:')) {
+      return _vm.imageApi.getPrimaryImageUrl(item.id, maxHeight: 360, tag: tag);
+    }
+    final profilePath = item.rawData['ProfilePath'] as String?;
+    if (profilePath != null && profilePath.isNotEmpty) {
+      return 'https://image.tmdb.org/t/p/w500$profilePath';
+    }
+    return null;
   }
 
   void _selectTab(int index) {
