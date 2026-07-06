@@ -135,6 +135,7 @@ class EpgNowNextCard extends StatelessWidget {
       borderRadius: radius,
       child: apple
           ? adaptiveGlass(
+              context: context,
               cornerRadius: radius,
               blur: 18,
               fallbackColor: AppColorScheme.surface.withValues(alpha: 0.42),

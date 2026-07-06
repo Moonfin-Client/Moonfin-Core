@@ -88,7 +88,7 @@ class AdminShellScreen extends StatelessWidget {
                     Container(
                       width: 280,
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surface.withValues(alpha: 0.92),
+                        color: theme.colorScheme.surface.scaleAlpha(0.92),
                         border: Border(
                           right: BorderSide(
                             color: theme.colorScheme.outlineVariant,

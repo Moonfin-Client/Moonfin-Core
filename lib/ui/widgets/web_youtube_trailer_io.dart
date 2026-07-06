@@ -17,6 +17,11 @@ class WebYouTubeTrailer extends StatefulWidget {
   final bool showControls;
   final bool loop;
   final bool ignorePointer;
+
+  /// Dormant mode for a kept-alive player: playback stops and the autoplay
+  /// watchdog disarms, but the WebView stays booted for a fast next swap.
+  /// The widget must first mount unsuspended.
+  final bool suspended;
   final VoidCallback? onPlaybackStarted;
   final VoidCallback? onCompleted;
   final VoidCallback? onAutoplayFailed;
@@ -30,6 +35,7 @@ class WebYouTubeTrailer extends StatefulWidget {
     this.showControls = false,
     this.loop = true,
     this.ignorePointer = false,
+    this.suspended = false,
     this.onPlaybackStarted,
     this.onCompleted,
     this.onAutoplayFailed,
@@ -83,6 +89,38 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
 
     if (_playerMode == _EmbeddedPlayerMode.unsupported) {
       _reportEmbeddedUnavailable();
+      return;
+    }
+
+    // Suspension transitions take priority over other prop changes.
+    if (!oldWidget.suspended && widget.suspended) {
+      _resetPlaybackTracking();
+      final controller = _controller;
+      if (controller != null) {
+        unawaited(
+          controller
+              .runJavaScript('window.$_bridgeName?.stop();')
+              .catchError((_) {}),
+        );
+      }
+      return;
+    }
+    if (oldWidget.suspended && !widget.suspended) {
+      _resetPlaybackTracking();
+      final controller = _controller;
+      if (controller == null) {
+        unawaited(_initializeController());
+        return;
+      }
+      // Always reload here; the player was stopped, and consecutive items
+      // can share a video id.
+      unawaited(_loadVideoById(controller, widget.videoId));
+      if (oldWidget.muted != widget.muted) {
+        unawaited(_setMuted(controller, widget.muted));
+      }
+      return;
+    }
+    if (widget.suspended) {
       return;
     }
 
@@ -239,9 +277,20 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
     final eventName = payload['event']?.toString();
     final data = payload['data'];
 
+    // Events posted by the previous video can arrive after a swap; drop
+    // state and error messages that carry a different video id.
+    final eventVideoId = payload['videoId']?.toString();
+    final isStaleEvent = eventVideoId != null &&
+        eventVideoId.isNotEmpty &&
+        eventVideoId != widget.videoId;
+
     switch (eventName) {
       case 'Ready':
         _restartAutoplayTimer();
+        return;
+
+      case 'StateChange' when isStaleEvent:
+      case 'PlayerError' when isStaleEvent:
         return;
 
       case 'StateChange':
@@ -309,6 +358,11 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
 
   void _restartAutoplayTimer() {
     _autoplayTimer?.cancel();
+    // A dormant player firing a bogus autoplay failure would globally
+    // disable embedded YouTube.
+    if (widget.suspended) {
+      return;
+    }
     if (widget.onAutoplayFailed == null ||
         widget.autoplayTimeout <= Duration.zero) {
       return;
@@ -460,7 +514,13 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
   let currentVideoId = $initialVideoId;
 
   const postMessage = (event, data) => {
-    const payload = JSON.stringify({ event: event, data: data });
+    // videoId is captured at post time so Dart can drop stale events posted
+    // before a loadVideoById swap.
+    const payload = JSON.stringify({
+      event: event,
+      data: data,
+      videoId: currentVideoId
+    });
 
     const channel = window[channelName];
     if (channel && typeof channel.postMessage === 'function') {
@@ -527,6 +587,11 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
     setMuted: function(muted) {
       playerVars.mute = muted ? 1 : 0;
       applyMute();
+    },
+    stop: function() {
+      if (player) {
+        try { player.stopVideo(); } catch (_) {}
+      }
     }
   };
 

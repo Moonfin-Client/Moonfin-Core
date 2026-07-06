@@ -674,6 +674,9 @@ class AppleTvMpvBackend implements PlayerBackend {
   bool get nativelyHandlesStartPosition => true;
 
   @override
+  bool get managesAudioFocus => false;
+
+  @override
   bool get canRenderBitmapSubtitles => true;
 
   @override

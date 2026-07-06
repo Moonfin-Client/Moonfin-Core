@@ -16,6 +16,12 @@ class AppShapes {
   BorderRadius get extraLargeRadius => BorderRadius.circular(extraLarge);
   BorderRadius get circular => BorderRadius.circular(9999);
 
+  /// Apple-style continuous-corner squircle. Renders a true superellipse on
+  /// Impeller and an approximation elsewhere. It stays paint-level with no
+  /// clip ops, so it is safe on every platform.
+  static RoundedSuperellipseBorder squircle(double radius) =>
+      RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(radius));
+
   RoundedRectangleBorder get extraSmallShape =>
       RoundedRectangleBorder(borderRadius: extraSmallRadius);
   RoundedRectangleBorder get smallShape =>

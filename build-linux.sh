@@ -207,6 +207,17 @@ runtime_seed_libs() {
   fi
   seed_libs="$seed_libs"$'\n'"$webkit_path"
 
+  # WebKitGTK links libharfbuzz-icu, a split-out shim that minimal/immutable distros
+  # (SteamOS, Fedora-atomic) do not ship. The main harfbuzz stack is skipped as a
+  # system lib, so bundle the ICU shim explicitly. Best-effort: not every build host
+  # has it, and it is only needed where WebKit is bundled.
+  local harfbuzz_icu_path
+  if harfbuzz_icu_path="$(resolve_shared_lib libharfbuzz-icu.so.0)"; then
+    seed_libs="$seed_libs"$'\n'"$harfbuzz_icu_path"
+  else
+    echo "Warning: libharfbuzz-icu.so.0 not found on build host; AppImage may fail on distros lacking it." >&2
+  fi
+
   printf '%s\n' "$seed_libs" | grep -v '^$' || true
 }
 
@@ -289,7 +300,10 @@ copy_runtime_libs() {
 
     local lib_name
     lib_name="$(basename "$lib_path")"
-    if [[ ! "$lib_name" =~ ^libXpresent[.]so ]]; then
+    # libharfbuzz-icu is matched by the libharfbuzz skip entry but must be bundled
+    # (WebKit needs it; it is absent on minimal/immutable distros). Keep plain
+    # libharfbuzz and the other skips.
+    if [[ ! "$lib_name" =~ ^libXpresent[.]so ]] && [[ ! "$lib_name" =~ ^libharfbuzz-icu[.]so ]]; then
       [[ "$lib_name" =~ $skip_pattern ]] && continue
     fi
 

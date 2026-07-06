@@ -560,6 +560,14 @@ class _DetailContentState extends State<_DetailContent> {
     debugLabel: 'albumPlayButton',
   );
   final Map<String, FocusNode> _trackFocusNodes = <String, FocusNode>{};
+  final Map<String, FocusNode> _featureFocusNodes = <String, FocusNode>{};
+
+  FocusNode _featureFocusNodeFor(String categoryKey) {
+    return _featureFocusNodes.putIfAbsent(
+      categoryKey,
+      () => FocusNode(debugLabel: 'detailFeatureRow_$categoryKey'),
+    );
+  }
 
   FocusNode _getTrackFocusNode(String trackId) {
     return _trackFocusNodes.putIfAbsent(
@@ -980,6 +988,10 @@ class _DetailContentState extends State<_DetailContent> {
       node.dispose();
     }
     _trackFocusNodes.clear();
+    for (final node in _featureFocusNodes.values) {
+      node.dispose();
+    }
+    _featureFocusNodes.clear();
     _nextEpisodeFocusNode.dispose();
     _seriesNextUpFocusNode.dispose();
     super.dispose();
@@ -993,12 +1005,17 @@ class _DetailContentState extends State<_DetailContent> {
     final topOffset = safeTop + 80.0;
 
     String? imageUrl;
-    if (item.primaryImageTag != null) {
+    if (item.primaryImageTag != null && !item.id.startsWith('tmdb:')) {
       imageUrl = viewModel.imageApi.getPrimaryImageUrl(
         item.id,
         maxHeight: 400,
         tag: item.primaryImageTag,
       );
+    } else {
+      final profilePath = item.rawData['ProfilePath'] as String?;
+      if (profilePath != null && profilePath.isNotEmpty) {
+        imageUrl = 'https://image.tmdb.org/t/p/w500$profilePath';
+      }
     }
 
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
@@ -1583,7 +1600,19 @@ class _DetailContentState extends State<_DetailContent> {
   List<Widget> _buildMovieContent(BuildContext context, AggregatedItem item) {
     final l10n = AppLocalizations.of(context);
     final hasChapters = item.chapters.isNotEmpty;
-    final hasFeatures = viewModel.features.isNotEmpty;
+
+    final groupedFeatures = <String, List<AggregatedItem>>{};
+    for (final f in viewModel.features) {
+      final cat = getExtraCategory(f);
+      groupedFeatures.putIfAbsent(cat, () => []).add(f);
+    }
+    final presentCategories = extraCategoriesOrder
+        .where((cat) => groupedFeatures[cat]?.isNotEmpty == true)
+        .toList();
+    final hasFeatures = presentCategories.isNotEmpty;
+    final firstFeatureNode = hasFeatures ? _featureFocusNodeFor(presentCategories.first) : null;
+    final lastFeatureNode = hasFeatures ? _featureFocusNodeFor(presentCategories.last) : null;
+
     final hasCast = viewModel.actors.isNotEmpty;
     final hasCollection = viewModel.parentCollectionItems.isNotEmpty;
     final hasSimilar = viewModel.similar.isNotEmpty;
@@ -1603,10 +1632,10 @@ class _DetailContentState extends State<_DetailContent> {
     final movieDownTarget = hasChapters
         ? _firstChapterFocusNode
         : (hasFeatures
-              ? _firstFeatureFocusNode
+              ? firstFeatureNode!
               : (castFocusNode ?? collectionFocusNode ?? similarFocusNode));
     final chapterFeatureLastNode = hasFeatures
-        ? _firstFeatureFocusNode
+        ? lastFeatureNode!
         : (hasChapters
               ? _firstChapterFocusNode
               : (metadataFocusNode ?? actionButtonsFocusNode));
@@ -1735,7 +1764,18 @@ class _DetailContentState extends State<_DetailContent> {
     final hasSeasons = viewModel.seasons.isNotEmpty;
     final hasCast = viewModel.actors.isNotEmpty;
     final hasSimilar = viewModel.similar.isNotEmpty;
-    final hasFeatures = viewModel.features.isNotEmpty;
+
+    final groupedFeatures = <String, List<AggregatedItem>>{};
+    for (final f in viewModel.features) {
+      final cat = getExtraCategory(f);
+      groupedFeatures.putIfAbsent(cat, () => []).add(f);
+    }
+    final presentCategories = extraCategoriesOrder
+        .where((cat) => groupedFeatures[cat]?.isNotEmpty == true)
+        .toList();
+    final hasFeatures = presentCategories.isNotEmpty;
+    final firstFeatureNode = hasFeatures ? _featureFocusNodeFor(presentCategories.first) : null;
+
     final hasNextUp = viewModel.nextUp != null;
     final seriesNextUpFocusNode = hasNextUp ? _seriesNextUpFocusNode : null;
     final seasonsFocusNode = hasSeasons
@@ -1919,7 +1959,7 @@ class _DetailContentState extends State<_DetailContent> {
                   seriesNextUpFocusNode ??
                   metadataFocusNode ??
                   actionButtonsFocusNode,
-              downTarget: hasFeatures ? _firstFeatureFocusNode : null,
+              downTarget: hasFeatures ? firstFeatureNode : null,
               itemCount: viewModel.similar.length,
               consumeDownWhenNoTarget: !hasFeatures,
             ),
@@ -1982,7 +2022,19 @@ class _DetailContentState extends State<_DetailContent> {
   List<Widget> _buildEpisodeContent(BuildContext context, AggregatedItem item) {
     final l10n = AppLocalizations.of(context);
     final hasChapters = item.chapters.isNotEmpty;
-    final hasFeatures = viewModel.features.isNotEmpty;
+
+    final groupedFeatures = <String, List<AggregatedItem>>{};
+    for (final f in viewModel.features) {
+      final cat = getExtraCategory(f);
+      groupedFeatures.putIfAbsent(cat, () => []).add(f);
+    }
+    final presentCategories = extraCategoriesOrder
+        .where((cat) => groupedFeatures[cat]?.isNotEmpty == true)
+        .toList();
+    final hasFeatures = presentCategories.isNotEmpty;
+    final firstFeatureNode = hasFeatures ? _featureFocusNodeFor(presentCategories.first) : null;
+    final lastFeatureNode = hasFeatures ? _featureFocusNodeFor(presentCategories.last) : null;
+
     final hasSeasonEpisodes = viewModel.episodes.isNotEmpty;
     final hasCast = viewModel.actors.isNotEmpty;
     final hasSimilar = viewModel.similar.isNotEmpty;
@@ -2019,9 +2071,9 @@ class _DetailContentState extends State<_DetailContent> {
         similarFocusNode;
     final episodeDownTarget = hasChapters
         ? _firstChapterFocusNode
-        : (hasFeatures ? _firstFeatureFocusNode : chapterFeatureNextNode);
+        : (hasFeatures ? firstFeatureNode! : chapterFeatureNextNode);
     final chapterFeatureLastNode = hasFeatures
-        ? _firstFeatureFocusNode
+        ? lastFeatureNode!
         : (hasChapters
               ? _firstChapterFocusNode
               : (metadataFocusNode ?? actionButtonsFocusNode));
@@ -2238,15 +2290,27 @@ class _DetailContentState extends State<_DetailContent> {
   }) {
     final l10n = AppLocalizations.of(context);
     final hasChapters = item.chapters.isNotEmpty;
-    final hasFeatures = viewModel.features.isNotEmpty;
-    final chapterDownTarget = hasFeatures
-        ? _firstFeatureFocusNode
-        : nextSectionFocusNode;
-    final featureUpTarget = hasChapters ? _firstChapterFocusNode : null;
 
-    return [
-      if (hasChapters) ...[
-        const SizedBox(height: 32),
+    final groupedFeatures = <String, List<AggregatedItem>>{};
+    for (final f in viewModel.features) {
+      final cat = getExtraCategory(f);
+      groupedFeatures.putIfAbsent(cat, () => []).add(f);
+    }
+
+    final presentCategories = extraCategoriesOrder
+        .where((cat) => groupedFeatures[cat]?.isNotEmpty == true)
+        .toList();
+    final hasFeatures = presentCategories.isNotEmpty;
+
+    final chapterDownTarget = hasFeatures
+        ? _featureFocusNodeFor(presentCategories.first)
+        : nextSectionFocusNode;
+
+    final List<Widget> widgets = [];
+
+    if (hasChapters) {
+      widgets.add(const SizedBox(height: 32));
+      widgets.add(
         HorizontalScrollSection(
           title: l10n.chapters,
           builder: (_, ctrl) => DetailChaptersRow(
@@ -2268,31 +2332,48 @@ class _DetailContentState extends State<_DetailContent> {
             ),
           ),
         ),
-      ],
-      if (hasFeatures) ...[
-        const SizedBox(height: 32),
+      );
+    }
+
+    for (int i = 0; i < presentCategories.length; i++) {
+      final cat = presentCategories[i];
+      final items = groupedFeatures[cat]!;
+      final focusNode = _featureFocusNodeFor(cat);
+
+      final upTarget = (i == 0)
+          ? (hasChapters ? _firstChapterFocusNode : prevSectionFocusNode)
+          : _featureFocusNodeFor(presentCategories[i - 1]);
+
+      final downTarget = (i == presentCategories.length - 1)
+          ? nextSectionFocusNode
+          : _featureFocusNodeFor(presentCategories[i + 1]);
+
+      widgets.add(const SizedBox(height: 32));
+      widgets.add(
         HorizontalScrollSection(
-          title: l10n.features,
+          title: getExtraCategoryLabel(cat, l10n),
           builder: (_, ctrl) => DetailFeaturesRow(
-            items: viewModel.features,
+            items: items,
             imageApi: viewModel.imageApi,
             prefs: prefs,
             onItemLongPress: _showItemContextMenu,
             scrollController: _trackSectionScrollController(
-              _firstFeatureFocusNode,
+              focusNode,
               ctrl,
             ),
-            firstItemFocusNode: _firstFeatureFocusNode,
+            firstItemFocusNode: focusNode,
             onItemKeyEvent: _buildVerticalRowHandler(
-              sourceFocusNode: _firstFeatureFocusNode,
-              upTarget: featureUpTarget ?? prevSectionFocusNode,
-              downTarget: nextSectionFocusNode,
-              itemCount: viewModel.features.length,
+              sourceFocusNode: focusNode,
+              upTarget: upTarget,
+              downTarget: downTarget,
+              itemCount: items.length,
             ),
           ),
         ),
-      ],
-    ];
+      );
+    }
+
+    return widgets;
   }
 
   List<Widget> _buildPersonContent(BuildContext context, AggregatedItem item) {
@@ -3401,11 +3482,12 @@ class _Backdrop extends StatelessWidget {
       errorWidget: (_, _, _) => const SizedBox.shrink(),
     );
     if (!blurred) return image;
+    final sigma = GlassSettings.decorativeSigma(blur);
     return RepaintBoundary(
       child: ImageFiltered(
         imageFilter: ImageFilter.blur(
-          sigmaX: blur,
-          sigmaY: blur,
+          sigmaX: sigma,
+          sigmaY: sigma,
           tileMode: TileMode.decal,
         ),
         child: image,
@@ -5511,20 +5593,6 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     return _mediaStreamsForItem(item, selectedSource);
   }
 
-  void _openAudioSelector(BuildContext context, AggregatedItem item) {
-    final selectedSource = selectedMediaSourceForItem(
-      item,
-      widget.selectedMediaSourceId,
-    );
-    final streams = _streamsForTrackSelectors(
-      item,
-      selectedSource,
-    ).where((s) => s['Type'] == 'Audio').toList();
-    if (streams.length > 1) {
-      _showAudioSelector(context, streams);
-    }
-  }
-
   void _openSubtitleSelector(BuildContext context, AggregatedItem item) {
     final selectedSource = selectedMediaSourceForItem(
       item,
@@ -5680,6 +5748,9 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     final subtitleStreams = mediaStreams
         .where((s) => s['Type'] == 'Subtitle')
         .toList();
+    final audioStreams = _streamsForTrackSelectors(item, selectedSource)
+        .where((s) => s['Type'] == 'Audio')
+        .toList();
 
     final canShowDownloadActions =
         _isDownloadable(item.type) &&
@@ -5811,11 +5882,12 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           activeColor: const Color(0xFF4CAF50),
         ),
       if (isPlayableVideo) ...[
-        _DetailActionButton(
-          label: l10n.audio,
-          icon: Icons.audiotrack,
-          onPressed: () => _openAudioSelector(context, item),
-        ),
+        if (audioStreams.length > 1)
+          _DetailActionButton(
+            label: l10n.audio,
+            icon: Icons.audiotrack,
+            onPressed: () => _showAudioSelector(context, audioStreams),
+          ),
         _DetailActionButton(
           label: l10n.subtitles,
           icon: Icons.subtitles,
@@ -9674,11 +9746,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
               ? (widget.activeColor ?? (isNeon ? neonAccent : Colors.white))
               : (isNeon ? neonAccent : Colors.white));
     final labelColor = showHighlight
-        ? (isNeon
-              ? AppColorScheme.accent
-              : (AppColorScheme.isGlass
-                    ? Colors.white
-                    : AppColorScheme.onButtonFocused))
+        ? (isNeon ? AppColorScheme.accent : AppColorScheme.onButtonFocused)
         : (isNeon ? neonAccent : Colors.white);
 
     return MouseRegion(
@@ -11940,12 +12008,17 @@ class PersonHeader extends StatelessWidget {
     final isMobile = _isCompact(context);
     final safeTop = MediaQuery.of(context).padding.top;
     String? imageUrl;
-    if (item.primaryImageTag != null) {
+    if (item.primaryImageTag != null && !item.id.startsWith('tmdb:')) {
       imageUrl = imageApi.getPrimaryImageUrl(
         item.id,
         maxHeight: 400,
         tag: item.primaryImageTag,
       );
+    } else {
+      final profilePath = item.rawData['ProfilePath'] as String?;
+      if (profilePath != null && profilePath.isNotEmpty) {
+        imageUrl = 'https://image.tmdb.org/t/p/w500$profilePath';
+      }
     }
 
     final avatarRadius = isMobile ? 60.0 : 80.0;

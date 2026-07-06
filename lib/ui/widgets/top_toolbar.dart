@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -1817,12 +1816,15 @@ class _LibrariesDropdownState extends State<_LibrariesDropdown> {
           color: Colors.transparent,
           child: ClipRRect(
             borderRadius: AppRadius.circular(12),
-            child: kIsWeb
-                ? _dropdownContent(maxMenuHeight)
-                : BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: GlassSettings.blursBackdrop
+                ? BackdropFilter(
+                    filter: ImageFilter.blur(
+                      sigmaX: GlassSettings.capSigma(20),
+                      sigmaY: GlassSettings.capSigma(20),
+                    ),
                     child: _dropdownContent(maxMenuHeight),
-                  ),
+                  )
+                : _dropdownContent(maxMenuHeight),
           ),
         ),
       ),

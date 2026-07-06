@@ -35,6 +35,7 @@ class StillWatchingDialog extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 360),
         child: adaptiveGlass(
+          context: context,
           cornerRadius: 24,
           blur: 30,
           fallbackColor: AppColorScheme.surface.withValues(alpha: 0.62),

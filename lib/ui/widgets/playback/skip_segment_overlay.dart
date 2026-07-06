@@ -142,6 +142,7 @@ class _SkipSegmentOverlayState extends State<SkipSegmentOverlay> {
                     color: AppColorScheme.accent,
                   ),
                   child: adaptiveGlass(
+                    context: context,
                     cornerRadius: _capsuleRadius,
                     blur: 24,
                     fallbackColor: AppColorScheme.surface.withValues(alpha: 0.55),

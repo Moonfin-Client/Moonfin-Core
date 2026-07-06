@@ -121,12 +121,13 @@ class AudiobookPlayButton extends StatelessWidget {
           width: _size,
           height: _size,
           child: ClipOval(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-              child: DecoratedBox(
+            child: _withTransportBlur(
+              DecoratedBox(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColorScheme.accent.withValues(alpha: 0.32),
+                  color: AppColorScheme.accent.withValues(
+                    alpha: GlassSettings.blursBackdrop ? 0.32 : 0.55,
+                  ),
                   border: Border.all(
                     color: Colors.white.withValues(alpha: 0.30),
                     width: 0.8,
@@ -215,4 +216,15 @@ class AudiobookSkipButton extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _withTransportBlur(Widget child) {
+  if (!GlassSettings.blursBackdrop) return child;
+  return BackdropFilter(
+    filter: ImageFilter.blur(
+      sigmaX: GlassSettings.capSigma(18),
+      sigmaY: GlassSettings.capSigma(18),
+    ),
+    child: child,
+  );
 }

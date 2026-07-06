@@ -102,10 +102,7 @@ class _TvSettingsListTileState extends State<_TvSettingsListTile> {
       },
       child: TvFocusHighlight(
         builder: (context, focused) {
-          final highlighted =
-              focused &&
-              !AppUiIdiomResolver.isApple &&
-              !AppUiIdiomResolver.appleTvStyle;
+          final highlighted = focused && settingsTileInvertsOnFocus;
           return ListTile(
             focusNode: _focusNode,
             autofocus: widget.autofocus,
@@ -116,7 +113,7 @@ class _TvSettingsListTileState extends State<_TvSettingsListTile> {
                     context,
                     icon: widget.leading!,
                     focused: focused,
-                    iconColor: focused
+                    iconColor: highlighted
                         ? AppColors.black.withValues(alpha: 0.54)
                         : AppColorScheme.onSurface.withValues(alpha: 0.78),
                   )

@@ -857,6 +857,12 @@ class UserPreferences extends ChangeNotifier {
     values: InterfaceStyle.values,
   );
 
+  static final glassQuality = EnumPreference(
+    key: 'pref_glass_quality',
+    defaultValue: GlassQualityMode.auto,
+    values: GlassQualityMode.values,
+  );
+
   /// Structural style for the media detail screen. Global (not scoped per
   /// server/user), so it is deliberately omitted from [_scopedPreferenceKeys].
   static final detailScreenStyle = EnumPreference(
@@ -871,6 +877,12 @@ class UserPreferences extends ChangeNotifier {
     key: 'pref_recommendation_system_source',
     defaultValue: RecommendationSystemSource.local,
     values: RecommendationSystemSource.values,
+  );
+
+  /// Apply parental rating ceiling to Moonfin Recommends suggestions.
+  static final recommendationsApplyParentalRatingCap = Preference(
+    key: 'pref_recommendations_apply_parental_rating_cap',
+    defaultValue: true,
   );
 
   /// Default mobile view for the Live TV guide (Now/Next list vs compact grid).

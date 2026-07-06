@@ -4,9 +4,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/user_preferences.dart';
-import '../../../util/idiom/app_ui_idiom.dart';
 import '../../theme/app_theme_controller.dart';
-import '../../widgets/adaptive/adaptive_segmented.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
 import 'settings_app_bar.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -63,42 +61,7 @@ class _AppearanceThemeScreenState extends State<AppearanceThemeScreen> {
                 controller: _scrollController,
                 padding: const EdgeInsets.all(20),
                 children: [
-                  _SectionHeader(l10n.interfaceStyle, topPadding: 0),
-                  const SizedBox(height: 4),
-                  Text(
-                    l10n.interfaceStyleSubtitle,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(
-                        alpha: 0.74,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Focus(
-                    canRequestFocus: false,
-                    onFocusChange: (hasFocus) {
-                      if (hasFocus) {
-                        _scrollController.animateTo(
-                          0.0,
-                          duration: const Duration(milliseconds: 150),
-                          curve: Curves.easeInOut,
-                        );
-                      }
-                    },
-                    child: adaptiveSegmented<InterfaceStyle>(
-                      context: context,
-                      options: {
-                        InterfaceStyle.automatic: l10n.interfaceStyleAutomatic,
-                        InterfaceStyle.apple: l10n.interfaceStyleApple,
-                        InterfaceStyle.material: l10n.interfaceStyleMaterial,
-                      },
-                      selected: prefs.get(UserPreferences.interfaceStyle),
-                      onChanged: (s) =>
-                          prefs.set(UserPreferences.interfaceStyle, s),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _SectionHeader(l10n.customThemeTitle),
+                  _SectionHeader(l10n.customThemeTitle, topPadding: 0),
                   const SizedBox(height: 4),
                   Text(
                     l10n.customThemeSubtitle,

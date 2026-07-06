@@ -1597,10 +1597,21 @@ class _BlurredBackdrop extends StatelessWidget {
       );
     }
     if (bg == null) return const SizedBox.shrink();
+    final sigma = GlassSettings.capSigma(50);
+    if (sigma <= 0) {
+      return Positioned.fill(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [bg, const ColoredBox(color: Color(0xB3000000))],
+        ),
+      );
+    }
     return Positioned.fill(
-      child: ImageFiltered(
-        imageFilter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
-        child: bg,
+      child: RepaintBoundary(
+        child: ImageFiltered(
+          imageFilter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+          child: bg,
+        ),
       ),
     );
   }

@@ -10,6 +10,7 @@ import '../services/row_data_source.dart';
 import '../repositories/item_mutation_repository.dart';
 import '../repositories/mdblist_repository.dart';
 import '../repositories/tmdb_repository.dart';
+import '../repositories/seerr_repository.dart';
 import '../utils/playlist_utils.dart';
 import '../../util/episode_playability.dart';
 import '../services/plugin_sync_service.dart';
@@ -47,6 +48,9 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   AggregatedItem? _item;
   AggregatedItem? get item => _item;
+
+  String? _localPersonId;
+  String? get localPersonId => _localPersonId;
 
   int? _selectedAudioIndex;
   int? get selectedAudioIndex => _selectedAudioIndex;
@@ -213,12 +217,74 @@ class ItemDetailViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final data = await _client.itemsApi.getItem(itemId, mediaSourceId: mediaSourceId);
-      _item = AggregatedItem(
-        id: itemId,
-        serverId: _serverId ?? _client.baseUrl,
-        rawData: data,
-      );
+      if (itemId.startsWith('tmdb:')) {
+        final tmdbId = itemId.substring(5);
+        final seerrRepo = await GetIt.instance.getAsync<SeerrRepository>();
+        await seerrRepo.ensureInitialized();
+        final tmdbIdInt = int.tryParse(tmdbId);
+        if (tmdbIdInt == null) throw Exception('Invalid TMDB ID');
+        final seerrPerson = await seerrRepo.getPersonDetails(tmdbIdInt);
+
+        final rawData = {
+          'Name': seerrPerson.name,
+          'Overview': seerrPerson.biography,
+          'ProviderIds': {'Tmdb': tmdbId},
+          'Type': 'Person',
+          'PrimaryImageTag': seerrPerson.profilePath,
+          'ProfilePath': seerrPerson.profilePath,
+          'PremiereDate': seerrPerson.birthday,
+          'EndDate': seerrPerson.deathday,
+        };
+
+        _item = AggregatedItem(
+          id: itemId,
+          serverId: _serverId ?? _client.baseUrl,
+          rawData: rawData,
+        );
+
+        try {
+          final localPeople = await _client.itemsApi.getPersons(
+            searchTerm: seerrPerson.name,
+            limit: 20,
+            fields: 'ProviderIds',
+          );
+          final itemsList = (localPeople['Items'] as List? ?? [])
+              .map((e) => e is Map ? Map<String, dynamic>.from(e) : null)
+              .whereType<Map<String, dynamic>>()
+              .toList();
+          for (final localItem in itemsList) {
+            final localPIds = localItem['ProviderIds'] as Map?;
+            if (localPIds?['Tmdb']?.toString() == tmdbId) {
+              _localPersonId = localItem['Id']?.toString();
+              break;
+            }
+          }
+        } catch (_) {}
+
+        if (_localPersonId != null) {
+          try {
+            final localData = await _client.itemsApi.getItem(_localPersonId!);
+            final mergedData = Map<String, dynamic>.from(localData);
+            if (mergedData['Overview'] == null ||
+                (mergedData['Overview'] as String).isEmpty) {
+              mergedData['Overview'] = seerrPerson.biography;
+            }
+            mergedData['ProfilePath'] = seerrPerson.profilePath;
+            _item = AggregatedItem(
+              id: _localPersonId!,
+              serverId: _serverId ?? _client.baseUrl,
+              rawData: mergedData,
+            );
+          } catch (_) {}
+        }
+      } else {
+        final data = await _client.itemsApi.getItem(itemId, mediaSourceId: mediaSourceId);
+        _item = AggregatedItem(
+          id: itemId,
+          serverId: _serverId ?? _client.baseUrl,
+          rawData: data,
+        );
+      }
       _lyrics = LyricsData.empty;
       final prefs = GetIt.instance<UserPreferences>();
       final savedSubIndex = prefs.getItemSubtitleStreamIndex(itemId);
@@ -725,12 +791,16 @@ class ItemDetailViewModel extends ChangeNotifier {
         return;
       }
 
-      final List<ParentCollection> collections = [];
-      final List<Future<void>> fetchFutures = [];
+      // Keep collections in a stable order so the rows and the legacy
+      // single-collection fields don't shuffle around between opens.
+      final entries = boxSetIds.entries.toList();
+      final ordered = List<ParentCollection?>.filled(entries.length, null);
+      final fetchFutures = <Future<void>>[];
 
-      for (final entry in boxSetIds.entries) {
-        final boxSetId = entry.key;
-        final name = entry.value;
+      for (var i = 0; i < entries.length; i++) {
+        final index = i;
+        final boxSetId = entries[i].key;
+        final name = entries[i].value;
 
         fetchFutures.add(() async {
           final data = await _client.itemsApi.getItems(
@@ -741,15 +811,16 @@ class ItemDetailViewModel extends ChangeNotifier {
           );
 
           final items = (data['Items'] as List?) ?? [];
-          collections.add(ParentCollection(
+          ordered[index] = ParentCollection(
             id: boxSetId,
             name: name,
             items: _sortCollectionByReleaseOrder(_mapItems(items)),
-          ));
+          );
         }());
       }
       await Future.wait(fetchFutures);
 
+      final collections = ordered.whereType<ParentCollection>().toList();
       _parentCollections = collections;
       if (collections.isNotEmpty) {
         _parentCollectionName = collections.first.name;
@@ -800,7 +871,7 @@ class ItemDetailViewModel extends ChangeNotifier {
           break;
         }
 
-        final List<Future<void>> checkFutures = [];
+        final candidates = <MapEntry<String, String>>[];
         for (final raw in boxSets.whereType<Map>()) {
           final boxSet = raw.cast<String, dynamic>();
           final boxSetId = boxSet['Id']?.toString();
@@ -808,10 +879,17 @@ class ItemDetailViewModel extends ChangeNotifier {
           if (boxSetId == null || boxSetId.isEmpty || boxSetName == null) {
             continue;
           }
+          candidates.add(MapEntry(boxSetId, boxSetName));
+        }
 
-          checkFutures.add(() async {
+        // Cap how many membership lookups run at once so a large library
+        // doesn't fire a whole page of requests in one burst.
+        const maxConcurrent = 12;
+        for (var i = 0; i < candidates.length; i += maxConcurrent) {
+          final batch = candidates.skip(i).take(maxConcurrent);
+          await Future.wait(batch.map((candidate) async {
             final membership = await _client.itemsApi.getItems(
-              parentId: boxSetId,
+              parentId: candidate.key,
               fields: 'BasicSyncInfo',
             );
             final members = (membership['Items'] as List?) ?? const [];
@@ -820,11 +898,10 @@ class ItemDetailViewModel extends ChangeNotifier {
               return map['Id'] == itemId;
             });
             if (hasItem) {
-              result[boxSetId] = boxSetName;
+              result[candidate.key] = candidate.value;
             }
-          }());
+          }));
         }
-        await Future.wait(checkFutures);
 
         if (boxSets.length < pageSize) {
           break;
@@ -887,8 +964,14 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   Future<void> _loadFilmography() async {
     try {
+      final localId = _localPersonId ?? (itemId.startsWith('tmdb:') ? null : itemId);
+      if (localId == null) {
+        _filmography = const [];
+        notifyListeners();
+        return;
+      }
       final data = await _client.itemsApi.getItems(
-        personIds: [itemId],
+        personIds: [localId],
         includeItemTypes: ['Movie', 'Series', 'MusicVideo', 'Episode'],
         sortBy: 'PremiereDate',
         sortOrder: 'Descending',

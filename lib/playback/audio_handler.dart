@@ -31,10 +31,13 @@ class MoonfinAudioHandler extends BaseAudioHandler
   DateTime? _lastPositionPush;
   DateTime? _lastSessionPersist;
 
-  // iOS claim/release state for the in-app player's `.playback` session.
-  // Android claims at startup; desktop/tvOS never run this handler.
-  bool _iosSessionConfigured = false;
-  bool _iosSessionActive = false;
+  // Claim/release state for the in-app player's audio session (iOS `.playback`
+  // category / Android audio focus). Acquired per-playback, kept through pause,
+  // released on stop/idle. On Android this only applies when the active backend
+  // does not manage focus itself (media3/ExoPlayer does; libmpv does not).
+  bool _sessionConfigured = false;
+  bool _sessionActive = false;
+  bool _resumeAfterInterruption = false;
 
   MoonfinAudioHandler(
     this._manager,
@@ -43,6 +46,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
     this._lastSessionStore,
   ) {
     _bindStreams();
+    unawaited(_attachAndroidInterruptions());
   }
 
   // stop() cancels _subs; car/lock-screen commands can arrive afterwards, so
@@ -58,7 +62,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
     _subs.addAll([
       s.playingStream.listen((_) {
         _pushPlaybackState();
-        _updateIosAudioSession();
+        _updateAudioSession();
       }),
       s.bufferingStream.listen((_) => _pushPlaybackState()),
       // Keep the lock-screen / notification scrubber advancing during steady
@@ -80,8 +84,17 @@ class MoonfinAudioHandler extends BaseAudioHandler
         _pushQueue();
         _pushMediaItemForCurrentTrack();
         _pushPlaybackState();
-        _updateIosAudioSession();
+        _updateAudioSession();
         _persistSession();
+      }),
+      // libmpv<->media3 can switch mid-run; hand focus to ExoPlayer when the
+      // new backend manages it natively, re-acquire when it does not.
+      _manager.backendChangedStream.listen((backend) {
+        if (PlatformDetection.isAndroid && backend.managesAudioFocus) {
+          unawaited(_deactivateSession());
+        } else {
+          _updateAudioSession();
+        }
       }),
     ]);
   }
@@ -136,40 +149,64 @@ class MoonfinAudioHandler extends BaseAudioHandler
     return true;
   }
 
-  // Claimed only once playback is running, so the category is asserted after
-  // libmpv opens its audio output. Kept through pause, released on stop/idle.
-  void _updateIosAudioSession() {
-    if (!PlatformDetection.isIOS) return;
+  // Whether the active backend already requests/holds Android audio focus
+  // itself (media3/ExoPlayer). Grabbing focus from Dart alongside it makes the
+  // two owners fight and ExoPlayer latches a transient AUDIOFOCUS_LOSS.
+  bool get _backendManagesFocus =>
+      _manager.backend?.managesAudioFocus ?? false;
+
+  // Acquire the session when something is playing and release it when the queue
+  // empties. iOS gates on _drivesSession (its session-UI policy). Android gates
+  // on the backend: anything playing on a backend that does not hold focus
+  // itself needs it acquired here, which is what un-mutes Android Auto on libmpv.
+  void _updateAudioSession() {
+    if (PlatformDetection.isAndroid && _backendManagesFocus) return;
+    if (!PlatformDetection.isIOS && !PlatformDetection.isAndroid) return;
     final s = _manager.state;
     final q = _manager.queueService;
-    if (s.isPlaying && _drivesSession(q.currentItem)) {
-      _activateIosSession();
+    final wantActive = s.isPlaying &&
+        (PlatformDetection.isIOS
+            ? _drivesSession(q.currentItem)
+            : q.currentItem != null);
+    if (wantActive) {
+      _activateSession();
     } else if (q.currentItem == null) {
-      _deactivateIosSession();
+      _deactivateSession();
     }
   }
 
-  Future<void> _activateIosSession() async {
-    if (_iosSessionActive) return;
-    _iosSessionActive = true;
+  Future<void> _activateSession() async {
+    if (_sessionActive) return;
+    _sessionActive = true;
     try {
       final session = await AudioSession.instance;
-      if (!_iosSessionConfigured) {
-        await session.configure(const AudioSessionConfiguration(
-          avAudioSessionCategory: AVAudioSessionCategory.playback,
-          avAudioSessionMode: AVAudioSessionMode.moviePlayback,
-        ));
-        _iosSessionConfigured = true;
+      if (!_sessionConfigured) {
+        await session.configure(PlatformDetection.isIOS
+            ? const AudioSessionConfiguration(
+                avAudioSessionCategory: AVAudioSessionCategory.playback,
+                avAudioSessionMode: AVAudioSessionMode.moviePlayback,
+              )
+            : const AudioSessionConfiguration(
+                androidAudioAttributes: AndroidAudioAttributes(
+                  contentType: AndroidAudioContentType.music,
+                  usage: AndroidAudioUsage.media,
+                ),
+              ));
+        _sessionConfigured = true;
       }
-      await session.setActive(true);
+      final granted = await session.setActive(true);
+      if (!granted) {
+        // Focus denied; retry on the next playing/queue/backend event.
+        _sessionActive = false;
+      }
     } catch (_) {
-      _iosSessionActive = false;
+      _sessionActive = false;
     }
   }
 
-  Future<void> _deactivateIosSession() async {
-    if (!_iosSessionActive) return;
-    _iosSessionActive = false;
+  Future<void> _deactivateSession() async {
+    if (!_sessionActive) return;
+    _sessionActive = false;
     try {
       final session = await AudioSession.instance;
       await session.setActive(
@@ -177,6 +214,27 @@ class MoonfinAudioHandler extends BaseAudioHandler
         avAudioSessionSetActiveOptions:
             AVAudioSessionSetActiveOptions.notifyOthersOnDeactivation,
       );
+    } catch (_) {}
+  }
+
+  // Focus-loss handling for backends that do not manage focus themselves
+  // (libmpv): pause when another app takes focus and resume when it returns, if
+  // we were the one who paused. This listener lives for the handler's lifetime,
+  // so it stays attached across stop() unlike the _subs subscriptions.
+  Future<void> _attachAndroidInterruptions() async {
+    if (!PlatformDetection.isAndroid) return;
+    try {
+      final session = await AudioSession.instance;
+      session.interruptionEventStream.listen((event) {
+        if (_backendManagesFocus) return;
+        if (event.begin) {
+          _resumeAfterInterruption = _manager.state.isPlaying;
+          if (_resumeAfterInterruption) _manager.pause();
+        } else if (_resumeAfterInterruption) {
+          _resumeAfterInterruption = false;
+          _manager.resume();
+        }
+      });
     } catch (_) {}
   }
 
@@ -472,7 +530,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
     }
     _subs.clear();
     await _manager.stop(userInitiated: false);
-    await _deactivateIosSession();
+    await _deactivateSession();
     await super.stop();
   }
 

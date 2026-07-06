@@ -166,6 +166,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get recommendationSystemTmdb => 'TMDb Similarity';
 
   @override
+  String get recommendationsApplyParentalRatingCap =>
+      'Apply Parental Rating Cap?';
+
+  @override
+  String get recommendationsApplyParentalRatingCapSubtitle =>
+      'Limit Moonfin Recommends suggestions by parental rating of target media';
+
+  @override
   String get interfaceStyle => '';
 
   @override
@@ -179,6 +187,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get interfaceStyleMaterial => '';
+
+  @override
+  String get glassQuality => 'Glass Quality';
+
+  @override
+  String get glassQualitySubtitle =>
+      'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.';
+
+  @override
+  String get glassQualityAuto => 'Auto';
+
+  @override
+  String get glassQualityFull => 'Full';
+
+  @override
+  String get glassQualityReduced => 'Reduced';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
@@ -894,6 +918,27 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get extras => 'Extras';
+
+  @override
+  String get behindTheScenes => 'Behind the Scenes';
+
+  @override
+  String get deletedScenes => 'Deleted Scenes';
+
+  @override
+  String get featurettes => 'Featurettes';
+
+  @override
+  String get interviews => 'Interviews';
+
+  @override
+  String get scenes => 'Scenes';
+
+  @override
+  String get shorts => 'Shorts';
+
+  @override
+  String get trailers => 'Trailers';
 
   @override
   String timeRemaining(String time) {
@@ -7818,9 +7863,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get videos => 'Videos';
-
-  @override
-  String get trailers => 'Trailers';
 
   @override
   String get programs => 'Programs';

@@ -679,9 +679,7 @@ class CustomKeyboardState extends State<CustomKeyboard> {
       panel: theme.colorScheme.surface,
       panelBorder: borders.cardBorder,
       panelRadius: borders.cardRadius,
-      idleKey: theme.colorScheme.surfaceContainerHighest.withValues(
-        alpha: 0.92,
-      ),
+      idleKey: theme.colorScheme.surfaceContainerHighest.scaleAlpha(0.92),
       idleKeyBorder: borders.chipBorder,
       selectedKey: AppColorScheme.buttonFocused,
       selectedKeyBorder: borders.focusBorder,

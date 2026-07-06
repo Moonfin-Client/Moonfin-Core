@@ -672,7 +672,7 @@ class _CreateGroupSection extends StatelessWidget {
               filled: true,
               fillColor: focused
                   ? colorScheme.primaryContainer
-                  : colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+                  : colorScheme.surfaceContainerHighest.scaleAlpha(0.6),
               borderColor: colorScheme.outline,
               focusedBorderColor: colorScheme.primary,
               hintStyle: TextStyle(
