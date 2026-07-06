@@ -76,24 +76,21 @@ class _AdminTasksScreenState extends ConsumerState<AdminTasksScreen> {
 
         return Column(
           children: [
-            SizedBox(
-              height: 48,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: FilterChip(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    FilterChip(
                       label: Text(l10n.all),
                       selected: _categoryFilter == null,
                       onSelected: (_) => setState(() => _categoryFilter = null),
                     ),
-                  ),
-                  ...categories.map(
-                    (category) => Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: FilterChip(
+                    ...categories.map(
+                      (category) => FilterChip(
                         label: Text(category),
                         selected: _categoryFilter == category,
                         onSelected: (_) => setState(() {
@@ -101,8 +98,8 @@ class _AdminTasksScreenState extends ConsumerState<AdminTasksScreen> {
                         }),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Expanded(
