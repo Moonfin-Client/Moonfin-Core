@@ -16,6 +16,11 @@ class NativeVideoPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, EventC
     private var media3ActivityChannel: MethodChannel? = null
     private var applicationContext: Context? = null
 
+    // The sink this plugin instance registered via onListen. Media3Bridge's sink
+    // is process-global but each FlutterEngine has its own plugin instance, so we
+    // track ownership and only clear the global sink when it is still ours.
+    private var registeredSink: EventChannel.EventSink? = null
+
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         applicationContext = binding.applicationContext
 
@@ -65,7 +70,8 @@ class NativeVideoPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, EventC
 
         applicationContext = null
 
-        Media3Bridge.setEventSink(null)
+        Media3Bridge.clearEventSink(registeredSink)
+        registeredSink = null
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
@@ -73,11 +79,13 @@ class NativeVideoPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, EventC
     }
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+        registeredSink = events
         Media3Bridge.setEventSink(events)
     }
 
     override fun onCancel(arguments: Any?) {
-        Media3Bridge.setEventSink(null)
+        Media3Bridge.clearEventSink(registeredSink)
+        registeredSink = null
     }
 
     private fun handleMedia3ActivityCall(call: MethodCall, result: MethodChannel.Result) {
@@ -125,6 +133,6 @@ private class NativeVideoFactory(
 private class Media3VideoFactory : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
 
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
-        return Media3VideoView(context)
+        return Media3VideoView(context, viewId)
     }
 }

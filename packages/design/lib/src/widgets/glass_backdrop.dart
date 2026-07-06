@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/glass_settings.dart';
+
 class GlassBackdrop extends StatefulWidget {
   const GlassBackdrop({super.key, this.animated = true});
 
@@ -10,31 +12,90 @@ class GlassBackdrop extends StatefulWidget {
 }
 
 class _GlassBackdropState extends State<GlassBackdrop>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   AnimationController? _controller;
   Animation<double>? _t;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     if (widget.animated) {
-      final controller = AnimationController(
-        vsync: this,
-        duration: const Duration(seconds: 16),
-      )..repeat(reverse: true);
-      _controller = controller;
-      _t = CurvedAnimation(parent: controller, curve: Curves.easeInOut);
+      _startAnimation();
+    }
+  }
+
+  void _startAnimation() {
+    final controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 16),
+    )..repeat(reverse: true);
+    _controller = controller;
+    _t = CurvedAnimation(parent: controller, curve: Curves.easeInOut);
+  }
+
+  void _stopAnimation() {
+    _controller?.dispose();
+    _controller = null;
+    _t = null;
+  }
+
+  @override
+  void didUpdateWidget(GlassBackdrop oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.animated == oldWidget.animated) return;
+    if (widget.animated) {
+      _startAnimation();
+    } else {
+      _stopAnimation();
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final controller = _controller;
+    if (controller == null) return;
+    // The drift is decorative; producing frames while backgrounded or hidden
+    // just burns GPU, so park the controller until the app is visible again.
+    if (state == AppLifecycleState.resumed) {
+      if (!controller.isAnimating) controller.repeat(reverse: true);
+    } else {
+      controller.stop();
     }
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // The sheen tier collapses the bloom stack (base fill, three radial
+    // gradients, veil, and darkening gradient) into a single gradient pass.
+    // Six full-screen draws per frame are too expensive for the TV boxes and
+    // web renderers that resolve to sheen, and Impeller re-renders them every
+    // frame because it has no raster cache.
+    if (GlassSettings.tier == GlassTier.sheen) {
+      return const RepaintBoundary(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              stops: [0.0, 0.55, 1.0],
+              colors: [
+                Color(0xFF16395E),
+                Color(0xFF0B0F17),
+                Color(0xFF241E42),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     return RepaintBoundary(
       child: LayoutBuilder(
         builder: (context, constraints) {

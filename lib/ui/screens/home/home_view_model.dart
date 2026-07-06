@@ -2761,16 +2761,18 @@ class HomeViewModel extends ChangeNotifier {
     if (!syncService.seerrAvailable) return;
 
     debugPrint('[DailyRefresh] Day changed or first run. Triggering background cache refresh of enabled lists...');
-    
+
     await _prefs.set(UserPreferences.lastExternalRowsRefreshTime, now.millisecondsSinceEpoch);
 
     unawaited(() async {
       try {
+        // Let the initial home load settle before this network sweep and its
+        // follow-up load() run.
+        await Future.delayed(const Duration(seconds: 15));
+        if (_client.userId != _ownerUserId) return;
+
         final futures = <Future<void>>[];
 
-        // Custom Enabled Rows
-
-        // 3. Custom Enabled Rows
         final customService = GetIt.instance<CustomExternalListsService>();
         final configs = _prefs.homeSectionsConfig;
         for (final config in configs) {

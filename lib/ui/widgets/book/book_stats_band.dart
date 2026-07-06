@@ -29,6 +29,7 @@ class BookStatsBand extends StatelessWidget {
             if (i > 0) const SizedBox(width: 8),
             Expanded(
               child: adaptiveGlass(
+                context: context,
                 cornerRadius: 12,
                 fallbackColor: onSurface.withValues(alpha: 0.06),
                 child: Padding(

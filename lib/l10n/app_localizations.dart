@@ -508,6 +508,18 @@ abstract class AppLocalizations {
   /// **'TMDb Similarity'**
   String get recommendationSystemTmdb;
 
+  /// Label for the toggle that controls whether similar suggestions are capped by target media parental rating
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Parental Rating Cap?'**
+  String get recommendationsApplyParentalRatingCap;
+
+  /// Explanation under the parental rating cap setting toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Limit Moonfin Recommends suggestions by parental rating of target media'**
+  String get recommendationsApplyParentalRatingCapSubtitle;
+
   /// Label for the Automatic/Apple/Material interface style setting
   ///
   /// In en, this message translates to:
@@ -537,6 +549,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Material'**
   String get interfaceStyleMaterial;
+
+  /// Label for the glass rendering quality setting
+  ///
+  /// In en, this message translates to:
+  /// **'Glass Quality'**
+  String get glassQuality;
+
+  /// Explanation under the glass quality setting
+  ///
+  /// In en, this message translates to:
+  /// **'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.'**
+  String get glassQualitySubtitle;
+
+  /// Glass quality option: per-device default
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get glassQualityAuto;
+
+  /// Glass quality option: force real blur
+  ///
+  /// In en, this message translates to:
+  /// **'Full'**
+  String get glassQualityFull;
+
+  /// Glass quality option: lightweight zero-blur glass
+  ///
+  /// In en, this message translates to:
+  /// **'Reduced'**
+  String get glassQualityReduced;
 
   /// Subtitle for the theme selection screen and theme settings entry
   ///
@@ -1833,6 +1875,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Extras'**
   String get extras;
+
+  /// Tab label for behind the scenes special features
+  ///
+  /// In en, this message translates to:
+  /// **'Behind the Scenes'**
+  String get behindTheScenes;
+
+  /// Tab label for deleted scenes special features
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted Scenes'**
+  String get deletedScenes;
+
+  /// Tab label for featurettes special features
+  ///
+  /// In en, this message translates to:
+  /// **'Featurettes'**
+  String get featurettes;
+
+  /// Tab label for interviews special features
+  ///
+  /// In en, this message translates to:
+  /// **'Interviews'**
+  String get interviews;
+
+  /// Tab label for scenes special features
+  ///
+  /// In en, this message translates to:
+  /// **'Scenes'**
+  String get scenes;
+
+  /// Tab label for shorts special features
+  ///
+  /// In en, this message translates to:
+  /// **'Shorts'**
+  String get shorts;
+
+  /// Tab label for trailers special features
+  ///
+  /// In en, this message translates to:
+  /// **'Trailers'**
+  String get trailers;
 
   /// Label showing remaining playback time, e.g. '42m remaining'
   ///
@@ -14301,12 +14385,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Videos'**
   String get videos;
-
-  /// No description provided for @trailers.
-  ///
-  /// In en, this message translates to:
-  /// **'Trailers'**
-  String get trailers;
 
   /// No description provided for @programs.
   ///

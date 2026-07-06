@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:moonfin_design/moonfin_design.dart' show GlassSettings;
 import 'package:server_core/server_core.dart';
 
 import '../../navigation/destinations.dart';
@@ -451,8 +452,15 @@ class _BackdropImage extends StatelessWidget {
           _BackdropImage(steps: steps, index: index + 1),
     );
     if (!step.blur) return image;
+    final sigma = GlassSettings.capSigma(24);
+    if (sigma <= 0) {
+      return ColorFiltered(
+        colorFilter: const ColorFilter.mode(Color(0x8C000000), BlendMode.srcOver),
+        child: image,
+      );
+    }
     return ImageFiltered(
-      imageFilter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+      imageFilter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
       child: image,
     );
   }
@@ -773,6 +781,7 @@ class _DetailsPanel extends StatelessWidget {
     ];
 
     return adaptiveGlass(
+      context: context,
       fallbackColor: const Color(0x14FFFFFF),
       cornerRadius: 14,
       child: Padding(

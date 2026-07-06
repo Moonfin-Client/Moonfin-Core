@@ -337,6 +337,7 @@ private class AdjustableAudioDelayProcessor : BaseAudioProcessor() {
 @UnstableApi
 class Media3VideoView(
     private val context: Context,
+    private val platformViewId: Int = -1,
 ) : PlatformView, MethodChannel.MethodCallHandler {
     companion object {
         private const val TS_SEARCH_BYTES_LOW_RAM = TsExtractor.TS_PACKET_SIZE * 1800
@@ -900,10 +901,29 @@ class Media3VideoView(
         refreshSubtitleRendererMode()
 
         startTicker()
+        Media3Bridge.registerView(platformViewId, this)
         Media3Bridge.attachView(this)
     }
 
     override fun getView(): View = containerView
+
+    fun isReattachable(): Boolean = !isDisposedByFlutter
+
+    // Rebuilds the player after another view's attachView() force-released it
+    // while this widget stayed mounted. This mirrors the init path.
+    fun ensurePlayerAlive() {
+        if (!isPlayerReleased) return
+        isPlayerReleased = false
+        isDisposed = false
+        firstFrameRendered = false
+        firstFrameCover.visibility = View.VISIBLE
+        recreateVideoView()
+        player = createPlayer()
+        playerHasLoadedSource = false
+        applyTrackSelectorForCurrentSource()
+        refreshSubtitleRendererMode()
+        startTicker()
+    }
 
     fun forceReleasePlayer() {
         if (isPlayerReleased) return
@@ -926,6 +946,9 @@ class Media3VideoView(
 
     override fun dispose() {
         isDisposedByFlutter = true
+        // Unregister before the audio early return so a disposed view can
+        // never be re-activated.
+        Media3Bridge.unregisterView(platformViewId, this)
         if (currentMediaType == "audio") {
             player.clearVideoSurface()
             return
@@ -989,9 +1012,8 @@ class Media3VideoView(
                 }
                 it.addListener(listener)
                 it.addAnalyticsListener(analyticsListener)
-                if (currentMediaType != "audio") {
-                    Media3SessionController.attachPlayer(context, it)
-                }
+                // The MediaSession attaches lazily in setSource() so muted
+                // previews never create one.
             }
     }
 
@@ -1081,22 +1103,21 @@ class Media3VideoView(
         containerView.addView(videoView, 0, params)
     }
 
+    // Dart "release" is only issued by preview flows, so stop in place and
+    // keep the player for the next setSource. playerHasLoadedSource stays true
+    // so the next setSource still takes the fresh-player/fresh-surface rebuild
+    // path that works around decoder-reuse hangs on some TVs.
     private fun releaseActivePlayer() {
         if (isDisposed) return
+        cancelPendingSubtitleCue(clearView = true)
         cancelPendingAudioRekick()
         closeExternalAudioEffectSessionIfOpen()
         currentAudioSessionId = C.AUDIO_SESSION_ID_UNSET
         restorePreferredDisplayMode()
         detectedFrameRate = null
-        player.removeListener(listener)
-        player.removeAnalyticsListener(analyticsListener)
-        audioPipeline.release()
-        player.clearVideoSurface()
         Media3SessionController.releaseForPlayer(player)
-        player.release()
-        player = createPlayer()
-        httpDataSourceFactory.setDefaultRequestProperties(currentHeaders)
-        playerHasLoadedSource = false
+        player.stop()
+        player.clearMediaItems()
         firstFrameCover.visibility = View.VISIBLE
         emitState()
     }
@@ -1468,12 +1489,21 @@ class Media3VideoView(
         val nextMediaType = args["mediaType"]?.toString()?.lowercase() ?: "video"
         val isAudio = nextMediaType == "audio"
         val mediaTypeChanged = nextMediaType != currentMediaType
+        val isPreview = args["preview"] as? Boolean ?: false
 
         currentMediaType = nextMediaType
 
         if (mediaTypeChanged || (!isAudio && (decoderPreferenceDirty || playerHasLoadedSource))) {
             rebuildPlayerForDecoderPreference()
             decoderPreferenceDirty = false
+        }
+
+        // Previews must not surface a MediaSession or start the session
+        // service, and audio stays sessionless because audio_service owns the
+        // music session. The session attaches after the rebuild so it binds
+        // the live player.
+        if (!isPreview && !isAudio) {
+            Media3SessionController.attachPlayer(context, player)
         }
 
         closeExternalAudioEffectSessionIfOpen()

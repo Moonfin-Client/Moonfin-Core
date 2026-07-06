@@ -167,6 +167,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get recommendationSystemTmdb => 'TMDb Similarity';
 
   @override
+  String get recommendationsApplyParentalRatingCap =>
+      'Apply Parental Rating Cap?';
+
+  @override
+  String get recommendationsApplyParentalRatingCapSubtitle =>
+      'Limit Moonfin Recommends suggestions by parental rating of target media';
+
+  @override
   String get interfaceStyle => '';
 
   @override
@@ -180,6 +188,22 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get interfaceStyleMaterial => '';
+
+  @override
+  String get glassQuality => 'Glass Quality';
+
+  @override
+  String get glassQualitySubtitle =>
+      'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.';
+
+  @override
+  String get glassQualityAuto => 'Auto';
+
+  @override
+  String get glassQualityFull => 'Full';
+
+  @override
+  String get glassQualityReduced => 'Reduced';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
@@ -924,6 +948,27 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get extras => 'Extras';
+
+  @override
+  String get behindTheScenes => 'Behind the Scenes';
+
+  @override
+  String get deletedScenes => 'Deleted Scenes';
+
+  @override
+  String get featurettes => 'Featurettes';
+
+  @override
+  String get interviews => 'Interviews';
+
+  @override
+  String get scenes => 'Scenes';
+
+  @override
+  String get shorts => 'Shorts';
+
+  @override
+  String get trailers => 'Remolques';
 
   @override
   String timeRemaining(String time) {
@@ -8095,9 +8140,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get videos => 'Vídeos';
 
   @override
-  String get trailers => 'Remolques';
-
-  @override
   String get programs => 'Programas';
 
   @override
@@ -9719,6 +9761,9 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   String endsAt(String time) {
     return 'Termina en $time';
   }
+
+  @override
+  String get trailers => 'Remolques';
 
   @override
   String endsIn(String time) {
@@ -16878,9 +16923,6 @@ class AppLocalizationsEs419 extends AppLocalizationsEs {
   String get videos => 'Vídeos';
 
   @override
-  String get trailers => 'Remolques';
-
-  @override
   String get programs => 'Programas';
 
   @override
@@ -18210,6 +18252,9 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   String endsAt(String time) {
     return 'Termina en $time';
   }
+
+  @override
+  String get trailers => 'Remolques';
 
   @override
   String endsIn(String time) {
@@ -25358,9 +25403,6 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get videos => 'Vídeos';
-
-  @override
-  String get trailers => 'Remolques';
 
   @override
   String get programs => 'Programas';
@@ -26694,6 +26736,9 @@ class AppLocalizationsEsDo extends AppLocalizationsEs {
   }
 
   @override
+  String get trailers => 'Remolques';
+
+  @override
   String endsIn(String time) {
     return '';
   }
@@ -33840,9 +33885,6 @@ class AppLocalizationsEsDo extends AppLocalizationsEs {
 
   @override
   String get videos => 'Vídeos';
-
-  @override
-  String get trailers => 'Remolques';
 
   @override
   String get programs => 'Programas';
@@ -35176,6 +35218,9 @@ class AppLocalizationsEsMx extends AppLocalizationsEs {
   }
 
   @override
+  String get trailers => 'Remolques';
+
+  @override
   String endsIn(String time) {
     return '';
   }
@@ -42322,9 +42367,6 @@ class AppLocalizationsEsMx extends AppLocalizationsEs {
 
   @override
   String get videos => 'Vídeos';
-
-  @override
-  String get trailers => 'Remolques';
 
   @override
   String get programs => 'Programas';

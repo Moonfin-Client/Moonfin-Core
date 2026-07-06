@@ -86,6 +86,7 @@ class EpgHeroPreview extends StatelessWidget {
 
     return apple
         ? adaptiveGlass(
+            context: context,
             cornerRadius: 18,
             blur: 18,
             fallbackColor: AppColorScheme.surface.withValues(alpha: 0.4),

@@ -10,6 +10,7 @@ import '../services/row_data_source.dart';
 import '../repositories/item_mutation_repository.dart';
 import '../repositories/mdblist_repository.dart';
 import '../repositories/tmdb_repository.dart';
+import '../repositories/seerr_repository.dart';
 import '../utils/playlist_utils.dart';
 import '../../util/episode_playability.dart';
 import '../services/plugin_sync_service.dart';
@@ -39,6 +40,9 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   AggregatedItem? _item;
   AggregatedItem? get item => _item;
+
+  String? _localPersonId;
+  String? get localPersonId => _localPersonId;
 
   int? _selectedAudioIndex;
   int? get selectedAudioIndex => _selectedAudioIndex;
@@ -201,12 +205,74 @@ class ItemDetailViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final data = await _client.itemsApi.getItem(itemId, mediaSourceId: mediaSourceId);
-      _item = AggregatedItem(
-        id: itemId,
-        serverId: _serverId ?? _client.baseUrl,
-        rawData: data,
-      );
+      if (itemId.startsWith('tmdb:')) {
+        final tmdbId = itemId.substring(5);
+        final seerrRepo = await GetIt.instance.getAsync<SeerrRepository>();
+        await seerrRepo.ensureInitialized();
+        final tmdbIdInt = int.tryParse(tmdbId);
+        if (tmdbIdInt == null) throw Exception('Invalid TMDB ID');
+        final seerrPerson = await seerrRepo.getPersonDetails(tmdbIdInt);
+
+        final rawData = {
+          'Name': seerrPerson.name,
+          'Overview': seerrPerson.biography,
+          'ProviderIds': {'Tmdb': tmdbId},
+          'Type': 'Person',
+          'PrimaryImageTag': seerrPerson.profilePath,
+          'ProfilePath': seerrPerson.profilePath,
+          'PremiereDate': seerrPerson.birthday,
+          'EndDate': seerrPerson.deathday,
+        };
+
+        _item = AggregatedItem(
+          id: itemId,
+          serverId: _serverId ?? _client.baseUrl,
+          rawData: rawData,
+        );
+
+        try {
+          final localPeople = await _client.itemsApi.getPersons(
+            searchTerm: seerrPerson.name,
+            limit: 20,
+            fields: 'ProviderIds',
+          );
+          final itemsList = (localPeople['Items'] as List? ?? [])
+              .map((e) => e is Map ? Map<String, dynamic>.from(e) : null)
+              .whereType<Map<String, dynamic>>()
+              .toList();
+          for (final localItem in itemsList) {
+            final localPIds = localItem['ProviderIds'] as Map?;
+            if (localPIds?['Tmdb']?.toString() == tmdbId) {
+              _localPersonId = localItem['Id']?.toString();
+              break;
+            }
+          }
+        } catch (_) {}
+
+        if (_localPersonId != null) {
+          try {
+            final localData = await _client.itemsApi.getItem(_localPersonId!);
+            final mergedData = Map<String, dynamic>.from(localData);
+            if (mergedData['Overview'] == null ||
+                (mergedData['Overview'] as String).isEmpty) {
+              mergedData['Overview'] = seerrPerson.biography;
+            }
+            mergedData['ProfilePath'] = seerrPerson.profilePath;
+            _item = AggregatedItem(
+              id: _localPersonId!,
+              serverId: _serverId ?? _client.baseUrl,
+              rawData: mergedData,
+            );
+          } catch (_) {}
+        }
+      } else {
+        final data = await _client.itemsApi.getItem(itemId, mediaSourceId: mediaSourceId);
+        _item = AggregatedItem(
+          id: itemId,
+          serverId: _serverId ?? _client.baseUrl,
+          rawData: data,
+        );
+      }
       _lyrics = LyricsData.empty;
       final prefs = GetIt.instance<UserPreferences>();
       final savedSubIndex = prefs.getItemSubtitleStreamIndex(itemId);
@@ -861,8 +927,14 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   Future<void> _loadFilmography() async {
     try {
+      final localId = _localPersonId ?? (itemId.startsWith('tmdb:') ? null : itemId);
+      if (localId == null) {
+        _filmography = const [];
+        notifyListeners();
+        return;
+      }
       final data = await _client.itemsApi.getItems(
-        personIds: [itemId],
+        personIds: [localId],
         includeItemTypes: ['Movie', 'Series', 'MusicVideo', 'Episode'],
         sortBy: 'PremiereDate',
         sortOrder: 'Descending',

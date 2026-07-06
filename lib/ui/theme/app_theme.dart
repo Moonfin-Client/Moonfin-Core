@@ -60,10 +60,14 @@ class AppTheme {
   static ThemeData buildTheme(ThemeSpec spec) {
     final c = spec.colors;
     // Pixel themes use blocky zero-radius chrome; other themes stay rounded.
+    // Apple idioms get continuous-corner squircles instead of round-rects.
     final pixel = spec.isPixel;
-    final buttonShape = pixel
+    final apple = AppUiIdiomResolver.current != AppUiIdiom.material;
+    final OutlinedBorder buttonShape = pixel
         ? const RoundedRectangleBorder(borderRadius: BorderRadius.zero)
-        : JellyfinTokens.shapes.smallShape;
+        : apple
+            ? AppShapes.squircle(AppShapes.small)
+            : JellyfinTokens.shapes.smallShape;
     final inputRadius =
         pixel ? BorderRadius.zero : JellyfinTokens.shapes.smallRadius;
     return ThemeData(

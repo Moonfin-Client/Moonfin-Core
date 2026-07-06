@@ -91,9 +91,9 @@ jobs:
           sed -i "s|^source=.*|source=(\"\${pkgname}-\${pkgver}.tar.gz::https://github.com/Moonfin-Client/Moonfin-Core/releases/download/\${pkgver}/Moonfin_Linux_v\${pkgver}.tar.gz\")|" PKGBUILD
 
           if grep -q '^depends=' PKGBUILD; then
-            sed -i "s/^depends=.*/depends=('gtk3' 'glib2' 'libsecret' 'webkit2gtk-4.1' 'mpv')/" PKGBUILD
+            sed -i "s/^depends=.*/depends=('gtk3' 'glib2' 'libsecret' 'webkit2gtk-4.1' 'mpv' 'harfbuzz-icu')/" PKGBUILD
           else
-            sed -i "/^pkgrel=/a depends=('gtk3' 'glib2' 'libsecret' 'webkit2gtk-4.1' 'mpv')" PKGBUILD
+            sed -i "/^pkgrel=/a depends=('gtk3' 'glib2' 'libsecret' 'webkit2gtk-4.1' 'mpv' 'harfbuzz-icu')" PKGBUILD
           fi
 
           printf '%s\n' \
@@ -109,6 +109,7 @@ jobs:
             "    depends = libsecret" \
             "    depends = webkit2gtk-4.1" \
             "    depends = mpv" \
+            "    depends = harfbuzz-icu" \
             "    provides = moonfin" \
             "    conflicts = moonfin" \
             "    source = moonfin-bin-${VERSION}.tar.gz::https://github.com/Moonfin-Client/Moonfin-Core/releases/download/${VERSION}/Moonfin_Linux_v${VERSION}.tar.gz" \

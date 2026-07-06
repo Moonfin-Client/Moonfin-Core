@@ -152,6 +152,13 @@ EdgeInsets _settingsTileOuterPadding(BuildContext context) {
   return const EdgeInsets.fromLTRB(12, 4, 12, 4);
 }
 
+/// Focused settings surfaces invert their content to dark only when
+/// [_settingsTileDecoration] fills with the solid light buttonFocused color.
+/// The Apple and leanback styles use translucent or dark fills, so content
+/// must stay light there.
+bool get settingsTileInvertsOnFocus =>
+    !AppUiIdiomResolver.isApple && !AppUiIdiomResolver.appleTvStyle;
+
 BoxDecoration _settingsTileDecoration(
   BuildContext context, {
   required bool focused,
@@ -217,15 +224,16 @@ Widget buildSettingsSelectionBubble(
 ) {
   final theme = Theme.of(context);
   final colorScheme = theme.colorScheme;
+  final invert = focused && settingsTileInvertsOnFocus;
   return Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     decoration: BoxDecoration(
-      color: focused
+      color: invert
           ? AppColors.black.withValues(alpha: 0.12)
           : colorScheme.primary.withValues(alpha: 0.1),
       borderRadius: AppRadius.circular(12),
       border: Border.all(
-        color: focused
+        color: invert
             ? AppColors.black.withValues(alpha: 0.35)
             : colorScheme.primary.withValues(alpha: 0.35),
         width: 1,
@@ -235,7 +243,7 @@ Widget buildSettingsSelectionBubble(
       label,
       textAlign: TextAlign.center,
       style: theme.textTheme.labelMedium?.copyWith(
-        color: focused
+        color: invert
             ? AppColors.black.withValues(alpha: 0.87)
             : colorScheme.primary,
         fontWeight: FontWeight.w600,
@@ -347,7 +355,7 @@ class _SwitchPreferenceTileState extends State<SwitchPreferenceTile> {
     return TvFocusHighlight(
       enabled: widget.enabled,
       builder: (context, focused) {
-        final iconColor = focused
+        final iconColor = focused && settingsTileInvertsOnFocus
             ? AppColors.black.withValues(alpha: 0.54)
             : (Theme.of(context).iconTheme.color ?? AppColorScheme.onSurface);
         final secondary = widget.iconBuilder != null
@@ -403,6 +411,7 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
   final VoidCallback? onChanged;
   final ValueChanged<T>? onChangedValue;
   final List<T>? values;
+  final bool autofocus;
 
   const EnumPreferenceTile({
     super.key,
@@ -416,6 +425,7 @@ class EnumPreferenceTile<T extends Enum> extends StatefulWidget {
     this.onChanged,
     this.onChangedValue,
     this.values,
+    this.autofocus = false,
   });
 
   @override
@@ -452,12 +462,13 @@ class _EnumPreferenceTileState<T extends Enum>
           final current = values.contains(value) ? value : values.first;
           final label = widget.labelOf(current);
           return ListTile(
+            autofocus: widget.autofocus,
             leading: widget.icon != null
                 ? buildSettingsLeadingIconShell(
                     context,
                     icon: Icon(widget.icon),
                     focused: focused,
-                    iconColor: focused
+                    iconColor: focused && settingsTileInvertsOnFocus
                         ? AppColors.black.withValues(alpha: 0.54)
                         : AppColorScheme.onSurface.withValues(alpha: 0.78),
                   )
@@ -499,48 +510,53 @@ class _EnumPreferenceTileState<T extends Enum>
             final v = entry.value;
             final selected = v == current;
             return TvFocusHighlight(
-              builder: (_, focused) => ListTile(
-                autofocus: i == autofocusIndex,
-                focusColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                title: Text(
-                  (widget.dialogLabelOf ?? widget.labelOf)(v),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: focused
-                        ? AppColors.black.withValues(alpha: 0.87)
-                        : AppColorScheme.onSurface,
+              builder: (_, focused) {
+                final invert = focused && settingsTileInvertsOnFocus;
+                return ListTile(
+                  autofocus: i == autofocusIndex,
+                  focusColor: Colors.transparent,
+                  hoverColor: Colors.transparent,
+                  title: Text(
+                    (widget.dialogLabelOf ?? widget.labelOf)(v),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: invert
+                          ? AppColors.black.withValues(alpha: 0.87)
+                          : AppColorScheme.onSurface,
+                    ),
                   ),
-                ),
-                subtitle: widget.dialogSubtitleOf != null
-                    ? Text(
-                        widget.dialogSubtitleOf!(v),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: focused
+                  subtitle: widget.dialogSubtitleOf != null
+                      ? Text(
+                          widget.dialogSubtitleOf!(v),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: invert
+                                ? AppColors.black.withValues(alpha: 0.54)
+                                : AppColorScheme.onSurface.withValues(
+                                    alpha: 0.6,
+                                  ),
+                          ),
+                        )
+                      : null,
+                  isThreeLine: widget.dialogSubtitleOf != null,
+                  trailing: selected
+                      ? Icon(
+                          Icons.check,
+                          color: invert
                               ? AppColors.black.withValues(alpha: 0.54)
-                              : AppColorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
-                      )
-                    : null,
-                isThreeLine: widget.dialogSubtitleOf != null,
-                trailing: selected
-                    ? Icon(
-                        Icons.check,
-                        color: focused
-                            ? AppColors.black.withValues(alpha: 0.54)
-                            : (AppUiIdiomResolver.isApple
-                                ? AppColorScheme.accent
-                                : null),
-                      )
-                    : null,
-                onTap: () {
-                  if (picked) return;
-                  picked = true;
-                  Navigator.pop(ctx, v);
-                },
-              ),
+                              : (AppUiIdiomResolver.isApple
+                                  ? AppColorScheme.accent
+                                  : null),
+                        )
+                      : null,
+                  onTap: () {
+                    if (picked) return;
+                    picked = true;
+                    Navigator.pop(ctx, v);
+                  },
+                );
+              },
             );
           }).toList(),
         ),
@@ -649,6 +665,7 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
 
   @override
   Widget build(BuildContext context) {
+    final invert = _outerFocused && settingsTileInvertsOnFocus;
     return Focus(
       focusNode: _outerFocusNode,
       onKeyEvent: _onKeyEvent,
@@ -667,10 +684,10 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
           curve: Curves.easeOut,
           decoration: _settingsTileDecoration(context, focused: _outerFocused),
           child: ListTileTheme.merge(
-            textColor: _outerFocused && !AppUiIdiomResolver.appleTvStyle
+            textColor: invert
                 ? AppColors.black.withValues(alpha: 0.87)
                 : AppColorScheme.onSurface,
-            iconColor: _outerFocused && !AppUiIdiomResolver.appleTvStyle
+            iconColor: invert
                 ? AppColors.black.withValues(alpha: 0.54)
                 : AppColorScheme.onSurface.withValues(alpha: 0.7),
             titleTextStyle: _kSettingsTitleTextStyle,
@@ -683,7 +700,7 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
                         context,
                         icon: Icon(widget.icon),
                         focused: _outerFocused,
-                        iconColor: _outerFocused
+                        iconColor: invert
                             ? AppColors.black.withValues(alpha: 0.54)
                             : AppColorScheme.onSurface.withValues(alpha: 0.78),
                       )
@@ -697,7 +714,7 @@ class _SliderPreferenceTileState extends State<SliderPreferenceTile> {
                         widget.labelOf!(value),
                         style: TextStyle(
                           fontSize: _kSettingsSubtitleTextStyle.fontSize,
-                          color: _outerFocused
+                          color: invert
                               ? AppColors.black.withValues(alpha: 0.54)
                               : AppColorScheme.onSurface.withValues(alpha: 0.7),
                         ),
@@ -795,7 +812,7 @@ class _StringPickerPreferenceTileState
                     context,
                     icon: Icon(widget.icon),
                     focused: focused,
-                    iconColor: focused
+                    iconColor: focused && settingsTileInvertsOnFocus
                         ? AppColors.black.withValues(alpha: 0.54)
                         : AppColorScheme.onSurface.withValues(alpha: 0.78),
                   )
@@ -915,7 +932,7 @@ class _IntPickerPreferenceTileState extends State<IntPickerPreferenceTile> {
                     context,
                     icon: Icon(widget.icon),
                     focused: focused,
-                    iconColor: focused
+                    iconColor: focused && settingsTileInvertsOnFocus
                         ? AppColors.black.withValues(alpha: 0.54)
                         : AppColorScheme.onSurface.withValues(alpha: 0.78),
                   )
@@ -1026,10 +1043,7 @@ class _TvFocusHighlightState extends State<TvFocusHighlight> {
   Widget build(BuildContext context) {
     // Gate the tile highlight to keyboard/D-pad
     final focusVisible = InputModeTracker.showFocusVisuals(context, _focused);
-    final highlighted =
-        focusVisible &&
-        !AppUiIdiomResolver.isApple &&
-        !AppUiIdiomResolver.appleTvStyle;
+    final highlighted = focusVisible && settingsTileInvertsOnFocus;
     return Focus(
       focusNode: _effectiveFocusNode,
       canRequestFocus: false,

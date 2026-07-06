@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import 'glass_focus_halo.dart';
+
 class FocusTheme {
   static const double scale = 1.02;
   static const double defaultBorderRadius = 8.0;
@@ -32,5 +34,8 @@ class FocusTheme {
   }
 
   static Color resolveColor(BuildContext context, Color? override) =>
-      override ?? Theme.of(context).colorScheme.primary;
+      override ??
+      (GlassFocusHalo.appleStyleActive
+          ? Colors.white
+          : Theme.of(context).colorScheme.primary);
 }

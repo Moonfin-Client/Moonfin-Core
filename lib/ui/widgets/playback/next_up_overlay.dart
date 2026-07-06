@@ -188,6 +188,7 @@ class _NextUpOverlayState extends State<NextUpOverlay>
           ],
         ),
         child: adaptiveGlass(
+          context: context,
           cornerRadius: 18,
           blur: 18,
           fallbackColor: AppColorScheme.surface.withValues(alpha: 0.55),
@@ -282,7 +283,7 @@ class _NextUpOverlayState extends State<NextUpOverlay>
                                 backgroundColor: tvFocusMode
                                     ? (_playFocused
                                         ? AppColorScheme.accent
-                                        : AppColorScheme.surfaceVariant.withValues(alpha: 0.9))
+                                        : AppColorScheme.surfaceVariant.scaleAlpha(0.9))
                                     : AppColorScheme.accent,
                                 foregroundColor: Colors.white,
                                 padding: EdgeInsets.symmetric(

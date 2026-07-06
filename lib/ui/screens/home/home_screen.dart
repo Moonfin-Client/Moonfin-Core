@@ -520,10 +520,11 @@ class _Backdrop extends StatelessWidget {
       errorBuilder: (_, _, _) => const SizedBox.shrink(),
     );
     if (blur <= 0) return image;
+    final sigma = GlassSettings.decorativeSigma(blur);
     return ImageFiltered(
       imageFilter: ui.ImageFilter.blur(
-        sigmaX: blur,
-        sigmaY: blur,
+        sigmaX: sigma,
+        sigmaY: sigma,
         tileMode: TileMode.decal,
       ),
       child: image,
@@ -1387,7 +1388,11 @@ class _ContentRowsState extends State<_ContentRows>
         }
 
         await _media3PreviewBackend
-            .play(<String, dynamic>{'url': previewUrl, 'mediaType': 'video'})
+            .play(<String, dynamic>{
+              'url': previewUrl,
+              'mediaType': 'video',
+              'preview': true,
+            })
             .timeout(_previewOpenTimeout);
         if (!_isPreviewRequestActive(requestId, previewKey)) {
           await _media3PreviewBackend.stop();

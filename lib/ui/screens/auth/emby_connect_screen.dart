@@ -417,7 +417,7 @@ class _EmbyConnectScreenState extends State<EmbyConnectScreen> {
             filled: true,
             fillColor: focused
                 ? AppColorScheme.buttonFocused
-                : AppColorScheme.surfaceVariant.withValues(alpha: 0.6),
+                : AppColorScheme.surfaceVariant.scaleAlpha(0.6),
             borderRadius: 12,
             borderColor: AppColorScheme.onSurface.withValues(alpha: 0.1),
             focusedBorderColor: AppColorScheme.buttonFocused,
@@ -577,7 +577,7 @@ class _EmbyConnectScreenState extends State<EmbyConnectScreen> {
         color: AppColorScheme.onSurface.withValues(alpha: 0.5),
       ),
       filled: true,
-      fillColor: AppColorScheme.surfaceVariant.withValues(alpha: 0.6),
+      fillColor: AppColorScheme.surfaceVariant.scaleAlpha(0.6),
       border: OutlineInputBorder(
         borderRadius: AppRadius.circular(12),
         borderSide: BorderSide(

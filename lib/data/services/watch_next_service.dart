@@ -13,9 +13,12 @@ import 'topshelf_service.dart';
 class WatchNextService {
   static const _channel = MethodChannel('org.moonfin.androidtv/watch_next');
   static const _maxItems = 20;
-  static const _debounceDelay = Duration(seconds: 2);
+  // This window lets the progressive home-section loads on a cold start
+  // coalesce into a single publish.
+  static const _debounceDelay = Duration(seconds: 5);
 
   Timer? _debounce;
+  String? _lastPublishedSignature;
 
   bool get _enabled => PlatformDetection.isAndroid && PlatformDetection.isTV;
 
@@ -27,6 +30,8 @@ class WatchNextService {
 
   void clear() {
     if (!_enabled) return;
+    _debounce?.cancel();
+    _lastPublishedSignature = null;
     unawaited(_channel.invokeMethod('clear').catchError((_) {}));
   }
 
@@ -42,18 +47,51 @@ class WatchNextService {
 
   Future<void> _publish(List<HomeRow> rows) async {
     try {
+      // Built payloads embed DateTime.now() fallbacks, so change detection
+      // uses the source rows instead.
+      final signature = _signatureFor(rows);
+      if (signature == _lastPublishedSignature) return;
+
       await CarArtwork.instance.ensureReady();
       final imageApi = GetIt.instance<MediaServerClient>().imageApi;
       final items = buildItems(rows, imageApi);
 
       if (items.isEmpty) {
         await _channel.invokeMethod('clear');
+        _lastPublishedSignature = signature;
         return;
       }
 
       await CarArtwork.instance.persistHosts();
       await _channel.invokeMethod('publish', {'items': items});
+      _lastPublishedSignature = signature;
     } catch (_) {}
+  }
+
+  /// A stable fingerprint of everything that can change the published payload,
+  /// mirroring the row/item filtering in [buildItems].
+  static String _signatureFor(List<HomeRow> rows) {
+    final buffer = StringBuffer();
+    for (final row in rows.where(
+      (r) => r.rowType == HomeRowType.resume || r.rowType == HomeRowType.nextUp,
+    )) {
+      buffer.write(row.rowType.name);
+      for (final item in row.items) {
+        buffer
+          ..write('|')
+          ..write(item.id)
+          ..write(':')
+          ..write(item.serverId)
+          ..write(':')
+          ..write(item.playbackPositionTicks ?? 0)
+          ..write(':')
+          ..write(item.rawData['UserData']?['LastPlayedDate'] ?? '')
+          ..write(':')
+          ..write(item.primaryImageTag ?? '');
+      }
+      buffer.write(';');
+    }
+    return buffer.toString();
   }
 
   static List<Map<String, dynamic>> buildItems(

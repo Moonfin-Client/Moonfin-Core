@@ -669,6 +669,7 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
           ],
         ),
         child: adaptiveGlass(
+          context: context,
           cornerRadius: _kFloatingRadius,
           blur: 28,
           tint: accent.withValues(alpha: 0.05),
