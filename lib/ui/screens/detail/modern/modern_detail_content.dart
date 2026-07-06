@@ -659,16 +659,15 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       final tabs = _tabsFor(_vm.item!, l10n);
       if (tabIndex >= 0 && tabIndex < tabs.length) {
         final label = tabs[tabIndex].label;
-        bool isExtraLabel = false;
+        String? extraCat;
         for (final cat in extraCategoriesOrder) {
           if (label == getExtraCategoryLabel(cat, l10n)) {
-            _featuresFirstFocusNodes[cat]?.requestFocus();
-            isExtraLabel = true;
+            extraCat = cat;
             break;
           }
         }
-        if (isExtraLabel) {
-          // Handled
+        if (extraCat != null) {
+          _featuresFirstFocusNodes[extraCat]?.requestFocus();
         } else if (label == l10n.cast) {
           _castFirstFocusNode.requestFocus();
         } else if (label == l10n.crewSection) {
@@ -735,7 +734,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
 
     final groupedFeatures = <String, List<AggregatedItem>>{};
     for (final f in _vm.features) {
-      final cat = _getExtraCategory(f);
+      final cat = getExtraCategory(f);
       groupedFeatures.putIfAbsent(cat, () => []).add(f);
     }
 
@@ -745,7 +744,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
       if (items != null && items.isNotEmpty) {
         extraTabs.add(_ModernTab(
           getExtraCategoryLabel(cat, l10n),
-          (context, item) => _extrasTab(context, item, items),
+          (context, item) => _extrasTab(context, item, items, _featuresFirstFocusNodes[cat]),
         ));
       }
     }
@@ -2064,7 +2063,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     );
   }
 
-  Widget _extrasTab(BuildContext context, AggregatedItem item, List<AggregatedItem> items) => SizedBox(
+  Widget _extrasTab(BuildContext context, AggregatedItem item, List<AggregatedItem> items, FocusNode? firstItemFocusNode) => SizedBox(
         height: 200,
         child: Focus(
           canRequestFocus: false,
@@ -2086,6 +2085,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             items: items,
             imageApi: _vm.imageApi,
             prefs: widget.prefs,
+            firstItemFocusNode: firstItemFocusNode,
           ),
         ),
       );
@@ -4240,7 +4240,7 @@ const extraCategoriesOrder = [
   'trailers',
 ];
 
-String _getExtraCategory(AggregatedItem item) {
+String getExtraCategory(AggregatedItem item) {
   final extraType = item.rawData['ExtraType'] as String?;
   if (extraType == null) return 'extras';
   switch (extraType) {
@@ -4266,53 +4266,21 @@ String _getExtraCategory(AggregatedItem item) {
 String getExtraCategoryLabel(String key, AppLocalizations l10n) {
   switch (key) {
     case 'behindTheScenes':
-      try {
-        return l10n.behindTheScenes;
-      } catch (_) {
-        return 'Behind the Scenes';
-      }
+      return l10n.behindTheScenes;
     case 'deletedScenes':
-      try {
-        return l10n.deletedScenes;
-      } catch (_) {
-        return 'Deleted Scenes';
-      }
+      return l10n.deletedScenes;
     case 'featurettes':
-      try {
-        return l10n.featurettes;
-      } catch (_) {
-        return 'Featurettes';
-      }
+      return l10n.featurettes;
     case 'interviews':
-      try {
-        return l10n.interviews;
-      } catch (_) {
-        return 'Interviews';
-      }
+      return l10n.interviews;
     case 'scenes':
-      try {
-        return l10n.scenes;
-      } catch (_) {
-        return 'Scenes';
-      }
+      return l10n.scenes;
     case 'shorts':
-      try {
-        return l10n.shorts;
-      } catch (_) {
-        return 'Shorts';
-      }
+      return l10n.shorts;
     case 'trailers':
-      try {
-        return l10n.trailers;
-      } catch (_) {
-        return 'Trailers';
-      }
+      return l10n.trailers;
     case 'extras':
     default:
-      try {
-        return l10n.extras;
-      } catch (_) {
-        return 'Extras';
-      }
+      return l10n.extras;
   }
 }

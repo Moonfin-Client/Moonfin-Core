@@ -1598,7 +1598,7 @@ class _DetailContentState extends State<_DetailContent> {
 
     final groupedFeatures = <String, List<AggregatedItem>>{};
     for (final f in viewModel.features) {
-      final cat = _getExtraCategory(f);
+      final cat = getExtraCategory(f);
       groupedFeatures.putIfAbsent(cat, () => []).add(f);
     }
     final presentCategories = extraCategoriesOrder
@@ -1762,7 +1762,7 @@ class _DetailContentState extends State<_DetailContent> {
 
     final groupedFeatures = <String, List<AggregatedItem>>{};
     for (final f in viewModel.features) {
-      final cat = _getExtraCategory(f);
+      final cat = getExtraCategory(f);
       groupedFeatures.putIfAbsent(cat, () => []).add(f);
     }
     final presentCategories = extraCategoriesOrder
@@ -1770,7 +1770,6 @@ class _DetailContentState extends State<_DetailContent> {
         .toList();
     final hasFeatures = presentCategories.isNotEmpty;
     final firstFeatureNode = hasFeatures ? _featureFocusNodeFor(presentCategories.first) : null;
-    final lastFeatureNode = hasFeatures ? _featureFocusNodeFor(presentCategories.last) : null;
 
     final hasNextUp = viewModel.nextUp != null;
     final seriesNextUpFocusNode = hasNextUp ? _seriesNextUpFocusNode : null;
@@ -2021,7 +2020,7 @@ class _DetailContentState extends State<_DetailContent> {
 
     final groupedFeatures = <String, List<AggregatedItem>>{};
     for (final f in viewModel.features) {
-      final cat = _getExtraCategory(f);
+      final cat = getExtraCategory(f);
       groupedFeatures.putIfAbsent(cat, () => []).add(f);
     }
     final presentCategories = extraCategoriesOrder
@@ -2289,7 +2288,7 @@ class _DetailContentState extends State<_DetailContent> {
 
     final groupedFeatures = <String, List<AggregatedItem>>{};
     for (final f in viewModel.features) {
-      final cat = _getExtraCategory(f);
+      final cat = getExtraCategory(f);
       groupedFeatures.putIfAbsent(cat, () => []).add(f);
     }
 
@@ -14214,92 +14213,4 @@ class _PersonDisplaySettingsDialogState
 }
 
 typedef PersonDisplaySettingsDialog = _PersonDisplaySettingsDialog;
-
-const extraCategoriesOrder = [
-  'extras',
-  'behindTheScenes',
-  'deletedScenes',
-  'featurettes',
-  'interviews',
-  'scenes',
-  'shorts',
-  'trailers',
-];
-
-String _getExtraCategory(AggregatedItem item) {
-  final extraType = item.rawData['ExtraType'] as String?;
-  if (extraType == null) return 'extras';
-  switch (extraType) {
-    case 'BehindTheScenes':
-      return 'behindTheScenes';
-    case 'DeletedScene':
-      return 'deletedScenes';
-    case 'Featurette':
-      return 'featurettes';
-    case 'Interview':
-      return 'interviews';
-    case 'Scene':
-      return 'scenes';
-    case 'Short':
-      return 'shorts';
-    case 'Trailer':
-      return 'trailers';
-    default:
-      return 'extras';
-  }
-}
-
-String getExtraCategoryLabel(String key, AppLocalizations l10n) {
-  switch (key) {
-    case 'behindTheScenes':
-      try {
-        return l10n.behindTheScenes;
-      } catch (_) {
-        return 'Behind the Scenes';
-      }
-    case 'deletedScenes':
-      try {
-        return l10n.deletedScenes;
-      } catch (_) {
-        return 'Deleted Scenes';
-      }
-    case 'featurettes':
-      try {
-        return l10n.featurettes;
-      } catch (_) {
-        return 'Featurettes';
-      }
-    case 'interviews':
-      try {
-        return l10n.interviews;
-      } catch (_) {
-        return 'Interviews';
-      }
-    case 'scenes':
-      try {
-        return l10n.scenes;
-      } catch (_) {
-        return 'Scenes';
-      }
-    case 'shorts':
-      try {
-        return l10n.shorts;
-      } catch (_) {
-        return 'Shorts';
-      }
-    case 'trailers':
-      try {
-        return l10n.trailers;
-      } catch (_) {
-        return 'Trailers';
-      }
-    case 'extras':
-    default:
-      try {
-        return l10n.extras;
-      } catch (_) {
-        return 'Extras';
-      }
-  }
-}
 
