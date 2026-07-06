@@ -253,7 +253,6 @@ Widget adminSwitchRow({
             ),
           ),
     value: value,
-    activeThumbColor: AppColorScheme.accent,
     contentPadding: const EdgeInsets.symmetric(
       horizontal: AppSpacing.spaceLg,
       vertical: 2,

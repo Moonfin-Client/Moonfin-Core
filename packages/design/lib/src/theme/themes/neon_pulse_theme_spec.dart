@@ -39,6 +39,7 @@ const neonPulseThemeSpec = ThemeSpec(
     badgeWatched: Color(0xFFFF2E92),
     recordingActive: Color(0xFFFF2E92),
     recordingScheduled: Color(0xFF00E5FF),
+    error: Color(0xFFFF003C),
   ),
   borders: ThemeBorderTokens(
     cardBorder: BorderSide(color: Color(0x66FF2E92)),

@@ -31,6 +31,7 @@ class ThemeColorTokens {
   final Color badgeWatched;
   final Color recordingActive;
   final Color recordingScheduled;
+  final Color? error;
 
   const ThemeColorTokens({
     required this.background,
@@ -62,6 +63,7 @@ class ThemeColorTokens {
     required this.badgeWatched,
     required this.recordingActive,
     required this.recordingScheduled,
+    this.error,
   });
 
   factory ThemeColorTokens.fromJson(Map<String, dynamic> json) {
@@ -96,6 +98,7 @@ class ThemeColorTokens {
       badgeWatched: c('badgeWatched'),
       recordingActive: c('recordingActive'),
       recordingScheduled: c('recordingScheduled'),
+      error: json['error'] != null ? c('error') : null,
     );
   }
 
@@ -129,6 +132,7 @@ class ThemeColorTokens {
         'badgeWatched': _encodeColor(badgeWatched),
         'recordingActive': _encodeColor(recordingActive),
         'recordingScheduled': _encodeColor(recordingScheduled),
+        if (error != null) 'error': _encodeColor(error!),
       };
 }
 
