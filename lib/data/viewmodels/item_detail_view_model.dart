@@ -24,6 +24,14 @@ enum CollectionSortOption {
 
 enum ItemDetailState { loading, ready, error }
 
+class ParentCollection {
+  final String id;
+  final String name;
+  final List<AggregatedItem> items;
+
+  ParentCollection({required this.id, required this.name, required this.items});
+}
+
 class ItemDetailViewModel extends ChangeNotifier {
   static const _episodeOverviewFields =
       'Overview,MediaStreams,MediaSources,RunTimeTicks,Trickplay,UserData,Chapters';
@@ -164,6 +172,9 @@ class ItemDetailViewModel extends ChangeNotifier {
   List<AggregatedItem> _parentCollectionItems = const [];
   List<AggregatedItem> get parentCollectionItems => _parentCollectionItems;
 
+  List<ParentCollection> _parentCollections = const [];
+  List<ParentCollection> get parentCollections => _parentCollections;
+
   List<AggregatedItem> _features = const [];
   List<AggregatedItem> get features => _features;
 
@@ -202,6 +213,7 @@ class ItemDetailViewModel extends ChangeNotifier {
     _collectionItems = const [];
     _parentCollectionItems = const [];
     _parentCollectionName = null;
+    _parentCollections = const [];
     notifyListeners();
 
     try {
@@ -301,6 +313,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       futures.add(_loadNextUp());
       futures.add(_loadSimilar());
       futures.add(_loadFeatures());
+      futures.add(_loadParentCollection());
     } else if (type == 'Season') {
       futures.add(_loadRatings());
       futures.add(_loadEpisodes());
@@ -751,60 +764,72 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
 
     try {
+      final Map<String, String> boxSetIds = {};
+
       final ancestors = await _client.itemsApi.getAncestors(item.id);
-      var boxSet = ancestors.firstWhere(
-        (ancestor) => ancestor['Type'] == 'BoxSet',
-        orElse: () => const <String, dynamic>{},
-      );
-
-      if (boxSet.isEmpty) {
-        final collapsed = await _client.itemsApi.getItems(
-          ids: [item.id],
-          includeItemTypes: ['Movie', 'Series', 'BoxSet'],
-          recursive: true,
-          collapseBoxSetItems: true,
-          fields: 'BasicSyncInfo',
-        );
-        final collapsedItems = (collapsed['Items'] as List?) ?? const [];
-        boxSet = collapsedItems
-            .whereType<Map>()
-            .map((entry) => entry.cast<String, dynamic>())
-            .firstWhere(
-              (entry) => entry['Type'] == 'BoxSet',
-              orElse: () => const <String, dynamic>{},
-            );
-      }
-
-      final boxSetId = boxSet['Id']?.toString();
-      String? resolvedBoxSetId;
-      if (boxSetId != null && boxSetId.isNotEmpty) {
-        final isMember = await _boxSetContainsItem(boxSetId, item.id);
-        if (isMember) {
-          resolvedBoxSetId = boxSetId;
+      for (final ancestor in ancestors) {
+        if (ancestor['Type'] == 'BoxSet') {
+          final boxSetId = ancestor['Id']?.toString();
+          final name = ancestor['Name']?.toString();
+          if (boxSetId != null && boxSetId.isNotEmpty && name != null) {
+            final isMember = await _boxSetContainsItem(boxSetId, item.id);
+            if (isMember && !boxSetIds.containsKey(boxSetId)) {
+              boxSetIds[boxSetId] = name;
+            }
+          }
         }
       }
-      resolvedBoxSetId ??= await _findParentCollectionByScanningBoxSets(
-        item.id,
-      );
-      if (resolvedBoxSetId == null || resolvedBoxSetId.isEmpty) {
+
+      final scannedCollections = await _findParentCollectionsByScanningBoxSets(item.id);
+      boxSetIds.addAll(scannedCollections);
+
+      if (boxSetIds.isEmpty) {
+        _parentCollections = const [];
+        _parentCollectionItems = const [];
+        _parentCollectionName = null;
+        notifyListeners();
         return;
       }
 
-      final data = await _client.itemsApi.getItems(
-        parentId: resolvedBoxSetId,
-        sortBy: 'PremiereDate,SortName',
-        sortOrder: 'Ascending',
-        fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
-      );
+      // Keep collections in a stable order so the rows and the legacy
+      // single-collection fields don't shuffle around between opens.
+      final entries = boxSetIds.entries.toList();
+      final ordered = List<ParentCollection?>.filled(entries.length, null);
+      final fetchFutures = <Future<void>>[];
 
-      final items = (data['Items'] as List?) ?? [];
-      final resolvedName = (boxSetId != null && boxSetId == resolvedBoxSetId)
-          ? boxSet['Name'] as String?
-          : null;
-      _parentCollectionName =
-          resolvedName ??
-          (await _client.itemsApi.getItem(resolvedBoxSetId))['Name'] as String?;
-      _parentCollectionItems = _sortCollectionByReleaseOrder(_mapItems(items));
+      for (var i = 0; i < entries.length; i++) {
+        final index = i;
+        final boxSetId = entries[i].key;
+        final name = entries[i].value;
+
+        fetchFutures.add(() async {
+          final data = await _client.itemsApi.getItems(
+            parentId: boxSetId,
+            sortBy: 'PremiereDate,SortName',
+            sortOrder: 'Ascending',
+            fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
+          );
+
+          final items = (data['Items'] as List?) ?? [];
+          ordered[index] = ParentCollection(
+            id: boxSetId,
+            name: name,
+            items: _sortCollectionByReleaseOrder(_mapItems(items)),
+          );
+        }());
+      }
+      await Future.wait(fetchFutures);
+
+      final collections = ordered.whereType<ParentCollection>().toList();
+      _parentCollections = collections;
+      if (collections.isNotEmpty) {
+        _parentCollectionName = collections.first.name;
+        _parentCollectionItems = collections.first.items;
+      } else {
+        _parentCollectionName = null;
+        _parentCollectionItems = const [];
+      }
+
       notifyListeners();
     } catch (_) {}
   }
@@ -825,7 +850,8 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
   }
 
-  Future<String?> _findParentCollectionByScanningBoxSets(String itemId) async {
+  Future<Map<String, String>> _findParentCollectionsByScanningBoxSets(String itemId) async {
+    final Map<String, String> result = {};
     try {
       const pageSize = 200;
       var startIndex = 0;
@@ -845,25 +871,36 @@ class ItemDetailViewModel extends ChangeNotifier {
           break;
         }
 
+        final candidates = <MapEntry<String, String>>[];
         for (final raw in boxSets.whereType<Map>()) {
           final boxSet = raw.cast<String, dynamic>();
           final boxSetId = boxSet['Id']?.toString();
-          if (boxSetId == null || boxSetId.isEmpty) {
+          final boxSetName = boxSet['Name']?.toString();
+          if (boxSetId == null || boxSetId.isEmpty || boxSetName == null) {
             continue;
           }
+          candidates.add(MapEntry(boxSetId, boxSetName));
+        }
 
-          final membership = await _client.itemsApi.getItems(
-            parentId: boxSetId,
-            fields: 'BasicSyncInfo',
-          );
-          final members = (membership['Items'] as List?) ?? const [];
-          final hasItem = members.whereType<Map>().any((entry) {
-            final map = entry.cast<String, dynamic>();
-            return map['Id'] == itemId;
-          });
-          if (hasItem) {
-            return boxSetId;
-          }
+        // Cap how many membership lookups run at once so a large library
+        // doesn't fire a whole page of requests in one burst.
+        const maxConcurrent = 12;
+        for (var i = 0; i < candidates.length; i += maxConcurrent) {
+          final batch = candidates.skip(i).take(maxConcurrent);
+          await Future.wait(batch.map((candidate) async {
+            final membership = await _client.itemsApi.getItems(
+              parentId: candidate.key,
+              fields: 'BasicSyncInfo',
+            );
+            final members = (membership['Items'] as List?) ?? const [];
+            final hasItem = members.whereType<Map>().any((entry) {
+              final map = entry.cast<String, dynamic>();
+              return map['Id'] == itemId;
+            });
+            if (hasItem) {
+              result[candidate.key] = candidate.value;
+            }
+          }));
         }
 
         if (boxSets.length < pageSize) {
@@ -873,7 +910,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       }
     } catch (_) {}
 
-    return null;
+    return result;
   }
 
   List<AggregatedItem> _sortCollectionByReleaseOrder(

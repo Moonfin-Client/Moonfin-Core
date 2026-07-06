@@ -38,6 +38,7 @@ import '../item_detail_screen.dart'
         DetailChaptersRow,
         DetailFeaturesRow,
         DetailEpisodeCard,
+        DetailSimilarRow,
         DetailTrackList,
         ExpandableBiography,
         selectedMediaSourceForItem,
@@ -120,6 +121,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   final FocusNode _collectionSortFocusNode = FocusNode(debugLabel: 'collectionSort');
   final FocusNode _moviesFirstFocusNode = FocusNode(debugLabel: 'moviesFirst');
   final FocusNode _seriesFirstFocusNode = FocusNode(debugLabel: 'seriesFirst');
+  final FocusNode _collectionFirstFocusNode = FocusNode(debugLabel: 'collectionFirst');
   final FocusNode _seasonsFirstFocusNode = FocusNode(debugLabel: 'seasonsFirst');
   final FocusNode _episodesFirstFocusNode = FocusNode(debugLabel: 'episodesFirst');
   final FocusNode _overviewFocusNode = FocusNode(debugLabel: 'overview');
@@ -129,7 +131,15 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
   final FocusNode _personSeerrCrewCreditsFirstFocusNode = FocusNode(debugLabel: 'personSeerrCrewCreditsFirst');
   final Map<String, FocusNode> _boxSetHeadingFocusNodes = {};
   final Map<String, FocusNode> _boxSetRowFirstFocusNodes = {};
+  final Map<String, FocusNode> _collectionRowFocusNodes = {};
   final Map<String, FocusNode> _featuresFirstFocusNodes = {};
+
+  FocusNode _collectionRowFocusNodeFor(String colId) {
+    return _collectionRowFocusNodes.putIfAbsent(
+      colId,
+      () => FocusNode(debugLabel: 'modernCollectionRow_$colId'),
+    );
+  }
   late final ScrollController _scrollController = ScrollController();
   String? _seriesLogoTag;
   String? _seriesLogoId;
@@ -456,6 +466,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _gridFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _moviesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
     _seriesFirstFocusNode.onKeyEvent = leftToSidebarHandler;
+    _collectionFirstFocusNode.onKeyEvent = leftToSidebarHandler;
 
     for (final cat in extraCategoriesOrder) {
       final node = FocusNode(debugLabel: 'modernFeatureFirst_$cat');
@@ -567,6 +578,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     _collectionSortFocusNode.dispose();
     _moviesFirstFocusNode.dispose();
     _seriesFirstFocusNode.dispose();
+    _collectionFirstFocusNode.dispose();
     _seasonsFirstFocusNode.dispose();
     _episodesFirstFocusNode.dispose();
     _overviewFocusNode.dispose();
@@ -580,6 +592,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     for (final node in _boxSetRowFirstFocusNodes.values) {
       node.dispose();
     }
+    for (final node in _collectionRowFocusNodes.values) {
+      node.dispose();
+    }
+    _collectionRowFocusNodes.clear();
     for (final node in _featuresFirstFocusNodes.values) {
       node.dispose();
     }
@@ -680,6 +696,12 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           _detailsTabFocusNode.requestFocus();
         } else if (label == l10n.similar) {
           _similarFirstFocusNode.requestFocus();
+        } else if (label == l10n.collections) {
+          if (_vm.parentCollections.length == 1) {
+            _collectionFirstFocusNode.requestFocus();
+          } else if (_vm.parentCollections.isNotEmpty) {
+            _collectionRowFocusNodeFor(_vm.parentCollections.first.id).requestFocus();
+          }
         } else if (label == l10n.seasons) {
           _seasonsFirstFocusNode.requestFocus();
         } else if (label == l10n.episodes) {
@@ -767,6 +789,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (item.chapters.isNotEmpty) chapters,
           details,
           ...extraTabs,
+          if (_vm.parentCollections.isNotEmpty)
+            _ModernTab(
+              l10n.collections,
+              (context, item) => _collectionsTab(context, item),
+            ),
           if (hasSimilar) similar,
         ];
       case 'Season':
@@ -936,6 +963,11 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           if (item.chapters.isNotEmpty) chapters,
           details,
           ...extraTabs,
+          if (_vm.parentCollections.isNotEmpty)
+            _ModernTab(
+              l10n.collections,
+              (context, item) => _collectionsTab(context, item),
+            ),
           if (hasSimilar) similar,
         ];
     }
@@ -2089,6 +2121,126 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           ),
         ),
       );
+
+  Widget _collectionsTab(BuildContext context, AggregatedItem item) {
+    final collections = _vm.parentCollections;
+    if (collections.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    if (collections.length == 1) {
+      return _mediaGrid(context, collections.first.items,
+          firstFocusNode: _collectionFirstFocusNode);
+    }
+
+    final isMobile = _landscape == false;
+    final desktopScale = _desktopUiScale(prefs: widget.prefs);
+
+    return Focus(
+      canRequestFocus: false,
+      onFocusChange: (focused) {
+        if (focused && mounted) {
+          widget.onToggleNavbar?.call(false);
+        } else if (!focused && mounted) {
+          widget.onToggleNavbar?.call(true);
+        }
+      },
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent &&
+            event.logicalKey == LogicalKeyboardKey.arrowUp) {
+          _focusSelectedTab();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: collections.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 32),
+        itemBuilder: (context, index) {
+          final col = collections[index];
+          final rowFocusNode = _collectionRowFocusNodeFor(col.id);
+
+          return Builder(
+            builder: (rowContext) {
+              return Focus(
+                canRequestFocus: false,
+                onFocusChange: (focused) {
+                  if (focused) {
+                    Scrollable.ensureVisible(
+                      rowContext,
+                      alignment: 0.20,
+                      duration: const Duration(milliseconds: 150),
+                    );
+                  }
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      col.name,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    const SizedBox(height: 12),
+                    DetailSimilarRow(
+                      items: col.items,
+                      imageApi: _vm.imageApi,
+                      prefs: widget.prefs,
+                      customCardWidth: isMobile ? 96.0 : 120.0 * desktopScale,
+                      customHeight: isMobile ? 182.0 : 225.0 * desktopScale,
+                      onItemLongPress: widget.onBackdropItemFocused,
+                      firstItemFocusNode: rowFocusNode,
+                      onItemKeyEvent: (itemIndex, event) {
+                        if (event is KeyDownEvent) {
+                          if (event.logicalKey == LogicalKeyboardKey.arrowLeft &&
+                              itemIndex == 0) {
+                            final navbarPosition =
+                                widget.prefs.get(UserPreferences.navbarPosition);
+                            if (navbarPosition == NavbarPosition.left) {
+                              final focusNavbar =
+                                  NavigationLayout.focusNavbarNotifier.value;
+                              if (focusNavbar != null) {
+                                focusNavbar();
+                                return KeyEventResult.handled;
+                              }
+                            }
+                          }
+                          if (event.logicalKey == LogicalKeyboardKey.arrowRight &&
+                              itemIndex == col.items.length - 1) {
+                            return KeyEventResult.handled;
+                          }
+                          if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                            if (index > 0) {
+                              _collectionRowFocusNodeFor(collections[index - 1].id).requestFocus();
+                              return KeyEventResult.handled;
+                            } else {
+                              _focusSelectedTab();
+                              return KeyEventResult.handled;
+                            }
+                          }
+                          if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                            if (index < collections.length - 1) {
+                              _collectionRowFocusNodeFor(collections[index + 1].id).requestFocus();
+                              return KeyEventResult.handled;
+                            }
+                          }
+                        }
+                        return KeyEventResult.ignored;
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
 
   AggregatedItem? _getRelevantEpisode(AggregatedItem item) {
     if (item.type == 'Episode') return item;
