@@ -15,7 +15,6 @@ import io.flutter.FlutterInjector
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugins.GeneratedPluginRegistrant
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -48,9 +47,10 @@ class WatchNextWorker(
                     loader.ensureInitializationComplete(applicationContext, null)
                 }
 
+                // FlutterEngine(context) already registers all generated plugins;
+                // do not call GeneratedPluginRegistrant.registerWith() again.
                 val flutterEngine = FlutterEngine(applicationContext)
                 engine = flutterEngine
-                GeneratedPluginRegistrant.registerWith(flutterEngine)
 
                 MethodChannel(
                     flutterEngine.dartExecutor.binaryMessenger,
@@ -111,6 +111,9 @@ class WatchNextWorker(
                 UNIQUE_NAME,
                 ExistingPeriodicWorkPolicy.KEEP,
                 PeriodicWorkRequestBuilder<WatchNextWorker>(1, TimeUnit.HOURS)
+                    // The delay keeps the background engine from racing app
+                    // startup; the foreground app publishes directly.
+                    .setInitialDelay(15, TimeUnit.MINUTES)
                     .setConstraints(
                         Constraints.Builder()
                             .setRequiredNetworkType(NetworkType.CONNECTED)

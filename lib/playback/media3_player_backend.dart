@@ -102,6 +102,12 @@ class Media3PlayerBackend extends PlayerBackend {
     _activityStarted = true;
   }
 
+  /// Re-activates a persistent (still-mounted) platform view for control
+  /// routing. Returns false when the native side does not know the view;
+  /// callers then rely on the default attach semantics.
+  Future<bool> activateView(int viewId) async =>
+      await _invoke<bool>('activateView', {'viewId': viewId}) ?? false;
+
   Future<void> _stopActivity() async {
     if (!_activityStarted) return;
     _activityStarted = false;
@@ -431,16 +437,24 @@ class Media3PlayerBackend extends PlayerBackend {
           )
         : <String, String>{};
 
+    final isPreview = payload['preview'] == true;
+
     _completed = false;
     _tracksKnown = false;
     _textTrackCount = 0;
     _tracksReadyCompleter = null;
     _discontinuityTimestamps.clear();
-    _resetPlaybackWatchdogs(
-      payload['itemName']?.toString() ??
-          payload['title']?.toString() ??
-          'item',
-    );
+    if (isPreview) {
+      // Muted previews/trailers are routinely canceled mid-load; disarm the
+      // never-started watchdog instead of re-arming it and logging warnings.
+      _loadRequestedAtMs = 0;
+    } else {
+      _resetPlaybackWatchdogs(
+        payload['itemName']?.toString() ??
+            payload['title']?.toString() ??
+            'item',
+      );
+    }
     _skipSilenceEnabled = _prefs.get(UserPreferences.media3SkipSilence);
     _volumeBoostLevel = 0;
     final preferredAudioLanguage = _normalizeTrackLanguagePref(
@@ -494,6 +508,7 @@ class Media3PlayerBackend extends PlayerBackend {
       'audioDelayMs': (_audioDelaySeconds * 1000).round(),
       'subtitleDelayMs': (_subtitleDelaySeconds * 1000).round(),
       'volumeBoostLevel': _volumeBoostLevel,
+      'preview': isPreview,
     });
     await _invoke<void>('setRepeatMode', {
       'mode': _repeatModeToWire(_repeatMode),

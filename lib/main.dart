@@ -376,18 +376,6 @@ void main() async {
 
   await configureDependencies();
 
-  if (PlatformDetection.isMobile ||
-      (PlatformDetection.isAndroid && PlatformDetection.isTV)) {
-    try {
-      await initAudioService(
-        manager: GetIt.instance<PlaybackManager>(),
-        clientFactory: GetIt.instance<MediaServerClientFactory>(),
-      );
-    } catch (e, st) {
-      debugPrint('initAudioService failed (lock-screen controls disabled): $e\n$st');
-    }
-  }
-
   // Registered before runApp so a CarPlay-only launch (no window scene, no
   // widgets) can browse and start playback.
   if (PlatformDetection.isIOS && !GetIt.instance.isRegistered<CarPlayService>()) {
@@ -402,7 +390,6 @@ void main() async {
 
   final prefs = GetIt.instance<UserPreferences>();
   WidgetsBinding.instance.addObserver(_PreferenceWriteFlushObserver(prefs));
-  await _detectAndApplyAudioCapabilities(prefs);
 
   // Register Theme Store themes before the active theme is resolved so a
   // store-saved theme applies on launch.
@@ -414,9 +401,58 @@ void main() async {
     await _restoreWindowGeometry();
   }
 
-  final notificationService = GetIt.instance<DownloadNotificationService>();
+  // Audio and notification services are only needed once playback or a
+  // download can happen, so they initialize after the first frame.
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    unawaited(_initDeferredStartupServices(prefs));
+  });
+
+  // tvOS: keep the system Now Playing card fed for music (the native
+  // NowPlayingController handles video; audio has no view controller to feed it).
+  if (PlatformDetection.isAppleTV &&
+      !GetIt.instance.isRegistered<AppleTvAudioNowPlayingFeeder>()) {
+    try {
+      final feeder = AppleTvAudioNowPlayingFeeder(
+        manager: GetIt.instance<PlaybackManager>(),
+        clientFactory: GetIt.instance<MediaServerClientFactory>(),
+        backend: GetIt.instance<AppleTvMpvBackend>(),
+      )..start();
+      GetIt.instance.registerSingleton<AppleTvAudioNowPlayingFeeder>(feeder);
+    } catch (_) {}
+  }
+
+  if (!GetIt.instance.isRegistered<PlaybackLifecycleHandler>()) {
+    GetIt.instance.registerSingleton<PlaybackLifecycleHandler>(
+      PlaybackLifecycleHandler(GetIt.instance<PlaybackManager>()),
+    );
+  }
+
   try {
-    await notificationService.initialize();
+    GetIt.instance<AirPlayCommandBridge>().start();
+  } catch (_) {}
+
+  runApp(const MoonfinApp());
+}
+
+/// Startup work that runs after the first frame. The internal order matters:
+/// the Android audio session configuration must follow initAudioService.
+Future<void> _initDeferredStartupServices(UserPreferences prefs) async {
+  if (PlatformDetection.isMobile ||
+      (PlatformDetection.isAndroid && PlatformDetection.isTV)) {
+    try {
+      await initAudioService(
+        manager: GetIt.instance<PlaybackManager>(),
+        clientFactory: GetIt.instance<MediaServerClientFactory>(),
+      );
+    } catch (e, st) {
+      debugPrint('initAudioService failed (lock-screen controls disabled): $e\n$st');
+    }
+  }
+
+  await _detectAndApplyAudioCapabilities(prefs);
+
+  try {
+    await GetIt.instance<DownloadNotificationService>().initialize();
   } catch (_) {}
 
   // Audio session ownership differs per platform:
@@ -445,30 +481,4 @@ void main() async {
       _attachIosAudioRouteHandling();
     } catch (_) {}
   }
-
-  // tvOS: keep the system Now Playing card fed for music (the native
-  // NowPlayingController handles video; audio has no view controller to feed it).
-  if (PlatformDetection.isAppleTV &&
-      !GetIt.instance.isRegistered<AppleTvAudioNowPlayingFeeder>()) {
-    try {
-      final feeder = AppleTvAudioNowPlayingFeeder(
-        manager: GetIt.instance<PlaybackManager>(),
-        clientFactory: GetIt.instance<MediaServerClientFactory>(),
-        backend: GetIt.instance<AppleTvMpvBackend>(),
-      )..start();
-      GetIt.instance.registerSingleton<AppleTvAudioNowPlayingFeeder>(feeder);
-    } catch (_) {}
-  }
-
-  if (!GetIt.instance.isRegistered<PlaybackLifecycleHandler>()) {
-    GetIt.instance.registerSingleton<PlaybackLifecycleHandler>(
-      PlaybackLifecycleHandler(GetIt.instance<PlaybackManager>()),
-    );
-  }
-
-  try {
-    GetIt.instance<AirPlayCommandBridge>().start();
-  } catch (_) {}
-
-  runApp(const MoonfinApp());
 }

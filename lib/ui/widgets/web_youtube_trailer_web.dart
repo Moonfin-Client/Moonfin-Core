@@ -25,6 +25,10 @@ class WebYouTubeTrailer extends StatefulWidget {
   final bool showControls;
   final bool loop;
   final bool ignorePointer;
+
+  /// Exists for API parity with the io implementation. The web widget is
+  /// recreated per video, so suspension never applies here.
+  final bool suspended;
   final VoidCallback? onPlaybackStarted;
   final VoidCallback? onCompleted;
   final VoidCallback? onAutoplayFailed;
@@ -38,6 +42,7 @@ class WebYouTubeTrailer extends StatefulWidget {
     this.showControls = false,
     this.loop = true,
     this.ignorePointer = false,
+    this.suspended = false,
     this.onPlaybackStarted,
     this.onCompleted,
     this.onAutoplayFailed,

@@ -125,6 +125,6 @@ private class NativeVideoFactory(
 private class Media3VideoFactory : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
 
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
-        return Media3VideoView(context)
+        return Media3VideoView(context, viewId)
     }
 }
