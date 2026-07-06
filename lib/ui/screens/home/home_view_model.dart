@@ -2591,8 +2591,6 @@ class HomeViewModel extends ChangeNotifier {
       }
 
       final results = response.data as List;
-      final showDate = _prefs.get(UserPreferences.sonarrCalendarShowDate);
-      final showEpisodeInfo = _prefs.get(UserPreferences.sonarrCalendarShowEpisodeInfo);
 
       final groupedEpisodes = <int, Map<String, dynamic>>{};
       for (final res in results) {
@@ -2678,18 +2676,8 @@ class HomeViewModel extends ChangeNotifier {
             } catch (_) {}
           }
 
-          String? subtitleText;
           final sNum = (episodeInfo['seasonNumber'] ?? 0).toString();
           final eNum = (episodeInfo['episodeNumber'] ?? 0).toString();
-          if (showDate && showEpisodeInfo) {
-            final dateStr = _formatDateHuman(airDateUtc);
-            subtitleText = 'Next Episode: $dateStr (S$sNum:E$eNum)';
-          } else if (showDate) {
-            final dateStr = _formatDateHuman(airDateUtc);
-            subtitleText = 'Next Episode: $dateStr';
-          } else if (showEpisodeInfo) {
-            subtitleText = 'Next Episode: (S$sNum:E$eNum)';
-          }
 
           return _CalendarItemWithDate(
             item: AggregatedItem(
@@ -2702,7 +2690,6 @@ class HomeViewModel extends ChangeNotifier {
                 'PosterPath': posterPath,
                 'BackdropPath': backdropPath,
                 'SeerrMediaType': 'tv',
-                'Subtitle': subtitleText,
                 'SeasonNumber': sNum,
                 'EpisodeNumber': eNum,
                 'CalendarDate': airDateUtc.toIso8601String(),
