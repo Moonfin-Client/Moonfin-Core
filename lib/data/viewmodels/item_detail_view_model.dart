@@ -698,27 +698,24 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
 
     try {
-      final List<String> boxSetIds = [];
+      final Map<String, String> boxSetIds = {};
 
       final ancestors = await _client.itemsApi.getAncestors(item.id);
       for (final ancestor in ancestors) {
         if (ancestor['Type'] == 'BoxSet') {
           final boxSetId = ancestor['Id']?.toString();
-          if (boxSetId != null && boxSetId.isNotEmpty) {
+          final name = ancestor['Name']?.toString();
+          if (boxSetId != null && boxSetId.isNotEmpty && name != null) {
             final isMember = await _boxSetContainsItem(boxSetId, item.id);
-            if (isMember && !boxSetIds.contains(boxSetId)) {
-              boxSetIds.add(boxSetId);
+            if (isMember && !boxSetIds.containsKey(boxSetId)) {
+              boxSetIds[boxSetId] = name;
             }
           }
         }
       }
 
-      final scannedIds = await _findParentCollectionsByScanningBoxSets(item.id);
-      for (final id in scannedIds) {
-        if (!boxSetIds.contains(id)) {
-          boxSetIds.add(id);
-        }
-      }
+      final scannedCollections = await _findParentCollectionsByScanningBoxSets(item.id);
+      boxSetIds.addAll(scannedCollections);
 
       if (boxSetIds.isEmpty) {
         _parentCollections = const [];
@@ -729,24 +726,29 @@ class ItemDetailViewModel extends ChangeNotifier {
       }
 
       final List<ParentCollection> collections = [];
-      for (final boxSetId in boxSetIds) {
-        final data = await _client.itemsApi.getItems(
-          parentId: boxSetId,
-          sortBy: 'PremiereDate,SortName',
-          sortOrder: 'Ascending',
-          fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
-        );
+      final List<Future<void>> fetchFutures = [];
 
-        final items = (data['Items'] as List?) ?? [];
-        final name = (await _client.itemsApi.getItem(boxSetId))['Name'] as String?;
-        if (name != null) {
+      for (final entry in boxSetIds.entries) {
+        final boxSetId = entry.key;
+        final name = entry.value;
+
+        fetchFutures.add(() async {
+          final data = await _client.itemsApi.getItems(
+            parentId: boxSetId,
+            sortBy: 'PremiereDate,SortName',
+            sortOrder: 'Ascending',
+            fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
+          );
+
+          final items = (data['Items'] as List?) ?? [];
           collections.add(ParentCollection(
             id: boxSetId,
             name: name,
             items: _sortCollectionByReleaseOrder(_mapItems(items)),
           ));
-        }
+        }());
       }
+      await Future.wait(fetchFutures);
 
       _parentCollections = collections;
       if (collections.isNotEmpty) {
@@ -777,8 +779,8 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
   }
 
-  Future<List<String>> _findParentCollectionsByScanningBoxSets(String itemId) async {
-    final List<String> result = [];
+  Future<Map<String, String>> _findParentCollectionsByScanningBoxSets(String itemId) async {
+    final Map<String, String> result = {};
     try {
       const pageSize = 200;
       var startIndex = 0;
@@ -798,26 +800,31 @@ class ItemDetailViewModel extends ChangeNotifier {
           break;
         }
 
+        final List<Future<void>> checkFutures = [];
         for (final raw in boxSets.whereType<Map>()) {
           final boxSet = raw.cast<String, dynamic>();
           final boxSetId = boxSet['Id']?.toString();
-          if (boxSetId == null || boxSetId.isEmpty) {
+          final boxSetName = boxSet['Name']?.toString();
+          if (boxSetId == null || boxSetId.isEmpty || boxSetName == null) {
             continue;
           }
 
-          final membership = await _client.itemsApi.getItems(
-            parentId: boxSetId,
-            fields: 'BasicSyncInfo',
-          );
-          final members = (membership['Items'] as List?) ?? const [];
-          final hasItem = members.whereType<Map>().any((entry) {
-            final map = entry.cast<String, dynamic>();
-            return map['Id'] == itemId;
-          });
-          if (hasItem) {
-            result.add(boxSetId);
-          }
+          checkFutures.add(() async {
+            final membership = await _client.itemsApi.getItems(
+              parentId: boxSetId,
+              fields: 'BasicSyncInfo',
+            );
+            final members = (membership['Items'] as List?) ?? const [];
+            final hasItem = members.whereType<Map>().any((entry) {
+              final map = entry.cast<String, dynamic>();
+              return map['Id'] == itemId;
+            });
+            if (hasItem) {
+              result[boxSetId] = boxSetName;
+            }
+          }());
         }
+        await Future.wait(checkFutures);
 
         if (boxSets.length < pageSize) {
           break;
