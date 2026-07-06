@@ -9,6 +9,13 @@ import '../../../widgets/adaptive/adaptive_dialog.dart';
 import '../providers/admin_user_providers.dart';
 import '../widgets/admin_form_styles.dart';
 
+enum RepoSortOption {
+  dateAddedOldest,
+  dateAddedNewest,
+  alphabeticalAsc,
+  alphabeticalDesc,
+}
+
 class AdminRepositoriesScreen extends ConsumerStatefulWidget {
   const AdminRepositoriesScreen({super.key});
 
@@ -20,6 +27,7 @@ class AdminRepositoriesScreen extends ConsumerStatefulWidget {
 class _AdminRepositoriesScreenState
     extends ConsumerState<AdminRepositoriesScreen> {
   bool _saving = false;
+  RepoSortOption _sortOption = RepoSortOption.dateAddedOldest;
 
   AdminPluginsApi get _api =>
       GetIt.instance<MediaServerClient>().adminPluginsApi;
@@ -142,6 +150,22 @@ class _AdminRepositoriesScreenState
     final fabBottom = bottomSafe + 16;
 
     final l10n = AppLocalizations.of(context);
+
+    final sortedRepos = List.generate(repos.length, (i) => (originalIndex: i, repo: repos[i]));
+    switch (_sortOption) {
+      case RepoSortOption.dateAddedOldest:
+        break;
+      case RepoSortOption.dateAddedNewest:
+        sortedRepos.sort((a, b) => b.originalIndex.compareTo(a.originalIndex));
+        break;
+      case RepoSortOption.alphabeticalAsc:
+        sortedRepos.sort((a, b) => _compareAlphabetical(a.repo, b.repo));
+        break;
+      case RepoSortOption.alphabeticalDesc:
+        sortedRepos.sort((a, b) => _compareAlphabetical(b.repo, a.repo));
+        break;
+    }
+
     return Stack(
       children: [
         if (repos.isEmpty)
@@ -173,15 +197,16 @@ class _AdminRepositoriesScreenState
                 title: l10n.adminDrawerRepositories,
                 icon: Icons.source_outlined,
               ),
+              _buildSortDropdown(),
               adminGlassGroup(
                 context,
                 children: [
-                  for (var index = 0; index < repos.length; index++)
+                  for (var index = 0; index < sortedRepos.length; index++)
                     _RepositoryTile(
-                      repo: repos[index],
-                      onEdit: () => _editRepository(index, repos[index]),
-                      onRemove: () => _removeRepository(index, repos[index]),
-                      onToggle: () => _toggleRepository(index),
+                      repo: sortedRepos[index].repo,
+                      onEdit: () => _editRepository(sortedRepos[index].originalIndex, sortedRepos[index].repo),
+                      onRemove: () => _removeRepository(sortedRepos[index].originalIndex, sortedRepos[index].repo),
+                      onToggle: () => _toggleRepository(sortedRepos[index].originalIndex),
                     ),
                 ],
               ),
@@ -197,6 +222,58 @@ class _AdminRepositoriesScreenState
           ),
         ),
       ],
+    );
+  }
+
+  int _compareAlphabetical(RepositoryInfo a, RepositoryInfo b) {
+    final nameA = (a.name.isNotEmpty ? a.name : a.url).toLowerCase();
+    final nameB = (b.name.isNotEmpty ? b.name : b.url).toLowerCase();
+    return nameA.compareTo(nameB);
+  }
+
+  Widget _buildSortDropdown() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.spaceMd),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Icon(Icons.sort, size: 18, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 8),
+          DropdownButton<RepoSortOption>(
+            value: _sortOption,
+            underline: const SizedBox(),
+            style: TextStyle(
+              fontSize: 14,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+            dropdownColor: Theme.of(context).colorScheme.surface,
+            borderRadius: AppRadius.circular(8),
+            items: const [
+              DropdownMenuItem(
+                value: RepoSortOption.dateAddedOldest,
+                child: Text('Date Added (Oldest First)'),
+              ),
+              DropdownMenuItem(
+                value: RepoSortOption.dateAddedNewest,
+                child: Text('Date Added (Newest First)'),
+              ),
+              DropdownMenuItem(
+                value: RepoSortOption.alphabeticalAsc,
+                child: Text('Alphabetical (A to Z)'),
+              ),
+              DropdownMenuItem(
+                value: RepoSortOption.alphabeticalDesc,
+                child: Text('Alphabetical (Z to A)'),
+              ),
+            ],
+            onChanged: (value) {
+              if (value != null) {
+                setState(() => _sortOption = value);
+              }
+            },
+          ),
+        ],
+      ),
     );
   }
 }
