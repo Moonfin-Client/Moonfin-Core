@@ -114,6 +114,16 @@ class _HomeShellState extends State<_HomeShell>
   String? _lastObservedPath;
   ModalRoute<dynamic>? _observedRoute;
 
+  bool _lastEnableRadarrCalendar = false;
+  bool _lastEnableSonarrCalendar = false;
+  bool _lastMergeRadarrSonarrCalendars = false;
+  bool _lastRadarrCalendarShowCinema = true;
+  bool _lastRadarrCalendarShowDigital = true;
+  bool _lastRadarrCalendarShowPhysical = true;
+  bool _lastRadarrCalendarShowDate = true;
+  bool _lastSonarrCalendarShowEpisodeInfo = true;
+  bool _lastSonarrCalendarShowDate = true;
+
   static const _selectionDelay = Duration(milliseconds: 150);
   static const _backdropDelay = Duration(milliseconds: 200);
 
@@ -144,6 +154,16 @@ class _HomeShellState extends State<_HomeShell>
       UserPreferences.blockedParentalRatings,
     );
     _lastSeerrAvailable = _pluginSyncService.seerrAvailable;
+    _lastEnableRadarrCalendar = _userPrefs.get(UserPreferences.enableRadarrCalendar);
+    _lastEnableSonarrCalendar = _userPrefs.get(UserPreferences.enableSonarrCalendar);
+    _lastMergeRadarrSonarrCalendars = _userPrefs.get(UserPreferences.mergeRadarrSonarrCalendars);
+    _lastRadarrCalendarShowCinema = _userPrefs.get(UserPreferences.radarrCalendarShowCinema);
+    _lastRadarrCalendarShowDigital = _userPrefs.get(UserPreferences.radarrCalendarShowDigital);
+    _lastRadarrCalendarShowPhysical = _userPrefs.get(UserPreferences.radarrCalendarShowPhysical);
+    _lastRadarrCalendarShowDate = _userPrefs.get(UserPreferences.radarrCalendarShowDate);
+    _lastSonarrCalendarShowEpisodeInfo = _userPrefs.get(UserPreferences.sonarrCalendarShowEpisodeInfo);
+    _lastSonarrCalendarShowDate = _userPrefs.get(UserPreferences.sonarrCalendarShowDate);
+
     _pluginSyncService.addListener(_onPluginSyncChanged);
     _userPrefs.addListener(_onPrefsChanged);
     _maybeRegisterThemeMusic();
@@ -227,15 +247,43 @@ class _HomeShellState extends State<_HomeShell>
     final currentBlocked = _userPrefs.get(
       UserPreferences.blockedParentalRatings,
     );
+    final currentEnableRadarr = _userPrefs.get(UserPreferences.enableRadarrCalendar);
+    final currentEnableSonarr = _userPrefs.get(UserPreferences.enableSonarrCalendar);
+    final currentMerge = _userPrefs.get(UserPreferences.mergeRadarrSonarrCalendars);
+    final currentShowCinema = _userPrefs.get(UserPreferences.radarrCalendarShowCinema);
+    final currentShowDigital = _userPrefs.get(UserPreferences.radarrCalendarShowDigital);
+    final currentShowPhysical = _userPrefs.get(UserPreferences.radarrCalendarShowPhysical);
+    final currentShowDate = _userPrefs.get(UserPreferences.radarrCalendarShowDate);
+    final currentShowEpisodeInfo = _userPrefs.get(UserPreferences.sonarrCalendarShowEpisodeInfo);
+    final currentShowSonarrDate = _userPrefs.get(UserPreferences.sonarrCalendarShowDate);
+
     if (currentJson != _lastSectionsJson ||
         currentMultiServer != _lastMultiServer ||
-        currentMergeContinueWatchingNextUp !=
-            _lastMergeContinueWatchingNextUp ||
-        currentBlocked != _lastBlockedParentalRatings) {
+        currentMergeContinueWatchingNextUp != _lastMergeContinueWatchingNextUp ||
+        currentBlocked != _lastBlockedParentalRatings ||
+        currentEnableRadarr != _lastEnableRadarrCalendar ||
+        currentEnableSonarr != _lastEnableSonarrCalendar ||
+        currentMerge != _lastMergeRadarrSonarrCalendars ||
+        currentShowCinema != _lastRadarrCalendarShowCinema ||
+        currentShowDigital != _lastRadarrCalendarShowDigital ||
+        currentShowPhysical != _lastRadarrCalendarShowPhysical ||
+        currentShowDate != _lastRadarrCalendarShowDate ||
+        currentShowEpisodeInfo != _lastSonarrCalendarShowEpisodeInfo ||
+        currentShowSonarrDate != _lastSonarrCalendarShowDate) {
       _lastSectionsJson = currentJson;
       _lastMultiServer = currentMultiServer;
       _lastMergeContinueWatchingNextUp = currentMergeContinueWatchingNextUp;
       _lastBlockedParentalRatings = currentBlocked;
+      _lastEnableRadarrCalendar = currentEnableRadarr;
+      _lastEnableSonarrCalendar = currentEnableSonarr;
+      _lastMergeRadarrSonarrCalendars = currentMerge;
+      _lastRadarrCalendarShowCinema = currentShowCinema;
+      _lastRadarrCalendarShowDigital = currentShowDigital;
+      _lastRadarrCalendarShowPhysical = currentShowPhysical;
+      _lastRadarrCalendarShowDate = currentShowDate;
+      _lastSonarrCalendarShowEpisodeInfo = currentShowEpisodeInfo;
+      _lastSonarrCalendarShowDate = currentShowSonarrDate;
+
       _viewModel.refresh();
     }
     _maybeRegisterThemeMusic();

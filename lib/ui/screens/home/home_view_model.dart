@@ -2143,6 +2143,101 @@ class HomeViewModel extends ChangeNotifier {
     return null;
   }
 
+  List<AggregatedItem> _filterAndFormatRadarrItems(List<AggregatedItem> rawItems) {
+    final now = DateTime.now();
+    final showCinema = _prefs.get(UserPreferences.radarrCalendarShowCinema);
+    final showDigital = _prefs.get(UserPreferences.radarrCalendarShowDigital);
+    final showPhysical = _prefs.get(UserPreferences.radarrCalendarShowPhysical);
+    final showDate = _prefs.get(UserPreferences.radarrCalendarShowDate);
+
+    final List<AggregatedItem> filtered = [];
+
+    for (final item in rawItems) {
+      final inCinemasStr = item.rawData['InCinemas'] as String?;
+      final digitalReleaseStr = item.rawData['DigitalRelease'] as String?;
+      final physicalReleaseStr = item.rawData['PhysicalRelease'] as String?;
+
+      final inCinemas = inCinemasStr != null ? DateTime.tryParse(inCinemasStr) : null;
+      final digitalRelease = digitalReleaseStr != null ? DateTime.tryParse(digitalReleaseStr) : null;
+      final physicalRelease = physicalReleaseStr != null ? DateTime.tryParse(physicalReleaseStr) : null;
+
+      final enabledReleases = <DateTime, String>{};
+      if (showCinema && inCinemas != null && inCinemas.isAfter(now.subtract(const Duration(days: 1)))) {
+        enabledReleases[inCinemas] = 'Cinema: ';
+      }
+      if (showDigital && digitalRelease != null && digitalRelease.isAfter(now.subtract(const Duration(days: 1)))) {
+        enabledReleases[digitalRelease] = 'Digital: ';
+      }
+      if (showPhysical && physicalRelease != null && physicalRelease.isAfter(now.subtract(const Duration(days: 1)))) {
+        enabledReleases[physicalRelease] = 'Physical: ';
+      }
+
+      if (enabledReleases.isEmpty) continue;
+
+      final sortedDates = enabledReleases.keys.toList()..sort();
+      final targetReleaseDate = sortedDates.first;
+      final releaseType = enabledReleases[targetReleaseDate]!;
+
+      String? subtitleText;
+      if (showDate) {
+        final dateStr = _formatDateHuman(targetReleaseDate);
+        subtitleText = '$releaseType$dateStr';
+      }
+
+      final newRawData = Map<String, dynamic>.from(item.rawData);
+      newRawData['Subtitle'] = subtitleText;
+      newRawData['CalendarDate'] = targetReleaseDate.toIso8601String();
+
+      filtered.add(AggregatedItem(
+        id: item.id,
+        serverId: item.serverId,
+        rawData: newRawData,
+      ));
+    }
+
+    filtered.sort((a, b) {
+      final dateA = a.rawData['CalendarDate'] as String? ?? '';
+      final dateB = b.rawData['CalendarDate'] as String? ?? '';
+      return dateA.compareTo(dateB);
+    });
+
+    return filtered;
+  }
+
+  List<AggregatedItem> _formatSonarrItems(List<AggregatedItem> rawItems) {
+    final showDate = _prefs.get(UserPreferences.sonarrCalendarShowDate);
+    final showEpisodeInfo = _prefs.get(UserPreferences.sonarrCalendarShowEpisodeInfo);
+
+    return rawItems.map((item) {
+      final airDateUtcStr = item.rawData['CalendarDate'] as String?;
+      final airDateUtc = airDateUtcStr != null ? DateTime.tryParse(airDateUtcStr) : null;
+      if (airDateUtc == null) return item;
+
+      final sNum = item.rawData['SeasonNumber'] as String? ?? '0';
+      final eNum = item.rawData['EpisodeNumber'] as String? ?? '0';
+
+      String? subtitleText;
+      if (showDate && showEpisodeInfo) {
+        final dateStr = _formatDateHuman(airDateUtc);
+        subtitleText = 'Next Episode: $dateStr (S$sNum:E$eNum)';
+      } else if (showDate) {
+        final dateStr = _formatDateHuman(airDateUtc);
+        subtitleText = 'Next Episode: $dateStr';
+      } else if (showEpisodeInfo) {
+        subtitleText = 'Next Episode: (S$sNum:E$eNum)';
+      }
+
+      final newRawData = Map<String, dynamic>.from(item.rawData);
+      newRawData['Subtitle'] = subtitleText;
+
+      return AggregatedItem(
+        id: item.id,
+        serverId: item.serverId,
+        rawData: newRawData,
+      );
+    }).toList();
+  }
+
   Future<List<HomeRow>> _loadRadarrCalendarRow({bool forceRefresh = false}) async {
     final merge = _prefs.get(UserPreferences.mergeRadarrSonarrCalendars);
     if (merge) {
@@ -2158,20 +2253,22 @@ class HomeViewModel extends ChangeNotifier {
       if (shouldFetch) {
         final fetchedItems = await _fetchRadarrCalendarFromApi();
         if (fetchedItems != null) {
-          items = fetchedItems;
-          await _saveRadarrCalendarToCache(items);
+          await _saveRadarrCalendarToCache(fetchedItems);
           await _prefs.set(UserPreferences.lastRadarrCalendarFetchTime, nowMs);
+          items = _filterAndFormatRadarrItems(fetchedItems);
         } else {
-          items = await _loadRadarrCalendarFromCache();
+          final cached = await _loadRadarrCalendarFromCache();
+          items = _filterAndFormatRadarrItems(cached);
         }
       } else {
-        items = await _loadRadarrCalendarFromCache();
+        final cached = await _loadRadarrCalendarFromCache();
+        items = _filterAndFormatRadarrItems(cached);
         if (items.isEmpty) {
           final fetchedItems = await _fetchRadarrCalendarFromApi();
           if (fetchedItems != null) {
-            items = fetchedItems;
-            await _saveRadarrCalendarToCache(items);
+            await _saveRadarrCalendarToCache(fetchedItems);
             await _prefs.set(UserPreferences.lastRadarrCalendarFetchTime, nowMs);
+            items = _filterAndFormatRadarrItems(fetchedItems);
           }
         }
       }
@@ -2210,20 +2307,22 @@ class HomeViewModel extends ChangeNotifier {
       if (shouldFetch) {
         final fetchedItems = await _fetchSonarrCalendarFromApi();
         if (fetchedItems != null) {
-          items = fetchedItems;
-          await _saveSonarrCalendarToCache(items);
+          await _saveSonarrCalendarToCache(fetchedItems);
           await _prefs.set(UserPreferences.lastSonarrCalendarFetchTime, nowMs);
+          items = _formatSonarrItems(fetchedItems);
         } else {
-          items = await _loadSonarrCalendarFromCache();
+          final cached = await _loadSonarrCalendarFromCache();
+          items = _formatSonarrItems(cached);
         }
       } else {
-        items = await _loadSonarrCalendarFromCache();
+        final cached = await _loadSonarrCalendarFromCache();
+        items = _formatSonarrItems(cached);
         if (items.isEmpty) {
           final fetchedItems = await _fetchSonarrCalendarFromApi();
           if (fetchedItems != null) {
-            items = fetchedItems;
-            await _saveSonarrCalendarToCache(items);
+            await _saveSonarrCalendarToCache(fetchedItems);
             await _prefs.set(UserPreferences.lastSonarrCalendarFetchTime, nowMs);
+            items = _formatSonarrItems(fetchedItems);
           }
         }
       }
@@ -2357,11 +2456,6 @@ class HomeViewModel extends ChangeNotifier {
 
       final results = response.data as List;
 
-      final showCinema = _prefs.get(UserPreferences.radarrCalendarShowCinema);
-      final showDigital = _prefs.get(UserPreferences.radarrCalendarShowDigital);
-      final showPhysical = _prefs.get(UserPreferences.radarrCalendarShowPhysical);
-      final showDate = _prefs.get(UserPreferences.radarrCalendarShowDate);
-
       final enrichCompleters = await mapBounded(
         results,
         5,
@@ -2383,22 +2477,21 @@ class HomeViewModel extends ChangeNotifier {
           final digitalRelease = digitalReleaseStr != null ? DateTime.tryParse(digitalReleaseStr) : null;
           final physicalRelease = physicalReleaseStr != null ? DateTime.tryParse(physicalReleaseStr) : null;
 
-          final enabledReleases = <DateTime, String>{};
-          if (showCinema && inCinemas != null && inCinemas.isAfter(now.subtract(const Duration(days: 1)))) {
-            enabledReleases[inCinemas] = 'Cinema: ';
+          final allReleases = <DateTime>[];
+          if (inCinemas != null && inCinemas.isAfter(now.subtract(const Duration(days: 1)))) {
+            allReleases.add(inCinemas);
           }
-          if (showDigital && digitalRelease != null && digitalRelease.isAfter(now.subtract(const Duration(days: 1)))) {
-            enabledReleases[digitalRelease] = 'Digital: ';
+          if (digitalRelease != null && digitalRelease.isAfter(now.subtract(const Duration(days: 1)))) {
+            allReleases.add(digitalRelease);
           }
-          if (showPhysical && physicalRelease != null && physicalRelease.isAfter(now.subtract(const Duration(days: 1)))) {
-            enabledReleases[physicalRelease] = 'Physical: ';
+          if (physicalRelease != null && physicalRelease.isAfter(now.subtract(const Duration(days: 1)))) {
+            allReleases.add(physicalRelease);
           }
 
-          if (enabledReleases.isEmpty) return null;
+          if (allReleases.isEmpty) return null;
 
-          final sortedDates = enabledReleases.keys.toList()..sort();
-          final targetReleaseDate = sortedDates.first;
-          final releaseType = enabledReleases[targetReleaseDate]!;
+          final sortedDates = allReleases..sort();
+          final defaultReleaseDate = sortedDates.first;
 
           String? posterPath;
           String? backdropPath;
@@ -2429,12 +2522,6 @@ class HomeViewModel extends ChangeNotifier {
             } catch (_) {}
           }
 
-          String? subtitleText;
-          if (showDate) {
-            final dateStr = _formatDateHuman(targetReleaseDate);
-            subtitleText = '$releaseType$dateStr';
-          }
-
           return _CalendarItemWithDate(
             item: AggregatedItem(
               id: tmdbId,
@@ -2447,12 +2534,14 @@ class HomeViewModel extends ChangeNotifier {
                 'BackdropPath': backdropPath,
                 'ProductionYear': year,
                 'SeerrMediaType': 'movie',
-                'Subtitle': subtitleText,
-                'CalendarDate': targetReleaseDate.toIso8601String(),
+                'InCinemas': inCinemasStr,
+                'DigitalRelease': digitalReleaseStr,
+                'PhysicalRelease': physicalReleaseStr,
+                'CalendarDate': defaultReleaseDate.toIso8601String(),
                 'CacheVerV2': true,
               },
             ),
-            date: targetReleaseDate,
+            date: defaultReleaseDate,
           );
         },
       );
@@ -2614,6 +2703,8 @@ class HomeViewModel extends ChangeNotifier {
                 'BackdropPath': backdropPath,
                 'SeerrMediaType': 'tv',
                 'Subtitle': subtitleText,
+                'SeasonNumber': sNum,
+                'EpisodeNumber': eNum,
                 'CalendarDate': airDateUtc.toIso8601String(),
                 'CacheVerV2': true,
               },
@@ -2724,7 +2815,9 @@ class HomeViewModel extends ChangeNotifier {
       }
 
       // 3. Merge and sort
-      final mergedItems = [...radarrItems, ...sonarrItems];
+      final filteredRadarr = _filterAndFormatRadarrItems(radarrItems);
+      final filteredSonarr = _formatSonarrItems(sonarrItems);
+      final mergedItems = [...filteredRadarr, ...filteredSonarr];
       mergedItems.sort((a, b) {
         final dateA = a.rawData['CalendarDate'] as String? ?? '';
         final dateB = b.rawData['CalendarDate'] as String? ?? '';
