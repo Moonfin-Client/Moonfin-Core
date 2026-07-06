@@ -34,4 +34,7 @@ abstract class AdminSystemApi {
   /// Uploads or removes the custom login splashscreen image.
   Future<void> uploadSplashscreen(List<int> bytes, String contentType);
   Future<void> deleteSplashscreen();
+
+  /// Gets server-wide item counts grouped by type.
+  Future<Map<String, dynamic>> getItemCounts();
 }

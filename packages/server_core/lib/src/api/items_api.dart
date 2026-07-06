@@ -1,5 +1,6 @@
 abstract class ItemsApi {
   Future<Map<String, dynamic>> getItems({
+    bool? serverWide,
     String? parentId,
     List<String>? ids,
     List<String>? includeItemTypes,

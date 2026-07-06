@@ -125,4 +125,10 @@ class JellyfinAdminSystemApi implements AdminSystemApi {
   Future<void> deleteSplashscreen() async {
     await _dio.delete('/Branding/Splashscreen');
   }
+
+  @override
+  Future<Map<String, dynamic>> getItemCounts() async {
+    final response = await _dio.get('/Items/Counts');
+    return response.data as Map<String, dynamic>;
+  }
 }

@@ -18,6 +18,7 @@ class JellyfinItemsApi implements ItemsApi {
 
   @override
   Future<Map<String, dynamic>> getItems({
+    bool? serverWide,
     String? parentId,
     List<String>? ids,
     List<String>? includeItemTypes,
@@ -49,7 +50,6 @@ class JellyfinItemsApi implements ItemsApi {
     bool? hasParentalRating,
     String? anyProviderIdEquals,
   }) async {
-    final userId = _getUserId();
     final queryParams = {
       'ParentId': ?parentId,
       if (ids != null) 'Ids': ids.join(','),
@@ -85,8 +85,15 @@ class JellyfinItemsApi implements ItemsApi {
       'HasParentalRating': ?hasParentalRating,
       'AnyProviderIdEquals': ?anyProviderIdEquals,
     };
+    final String path;
+    if (serverWide == true) {
+      path = '/Items';
+    } else {
+      final userId = _getUserId();
+      path = '/Users/$userId/Items';
+    }
     final response = await _dio.get(
-      '/Users/$userId/Items',
+      path,
       queryParameters: queryParams,
     );
     return response.data as Map<String, dynamic>;

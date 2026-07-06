@@ -17,6 +17,7 @@ class EmbyItemsApi implements ItemsApi {
 
   @override
   Future<Map<String, dynamic>> getItems({
+    bool? serverWide,
     String? parentId,
     List<String>? ids,
     List<String>? includeItemTypes,
@@ -48,44 +49,51 @@ class EmbyItemsApi implements ItemsApi {
     bool? hasParentalRating,
     String? anyProviderIdEquals,
   }) async {
-    final userId = _getUserId();
+    final queryParams = {
+      'ParentId': ?parentId,
+      if (ids != null) 'Ids': ids.join(','),
+      if (includeItemTypes != null)
+        'IncludeItemTypes': includeItemTypes.join(','),
+      if (excludeItemTypes != null)
+        'ExcludeItemTypes': excludeItemTypes.join(','),
+      'SortBy': ?sortBy,
+      'SortOrder': ?sortOrder,
+      'StartIndex': ?startIndex,
+      'Limit': ?limit,
+      'Recursive': ?recursive,
+      'SearchTerm': ?searchTerm,
+      'Fields': ?fields,
+      if (personIds != null) 'PersonIds': personIds.join(','),
+      if (artistIds != null) 'ArtistIds': artistIds.join(','),
+      if (filters != null) 'Filters': filters.join(','),
+      if (seriesStatus != null) 'SeriesStatus': seriesStatus.join(','),
+      'NameStartsWith': ?nameStartsWith,
+      'NameLessThan': ?nameLessThan,
+      if (genreIds != null) 'GenreIds': genreIds.join(','),
+      if (genres != null) 'Genres': genres.join(','),
+      'IsFavorite': ?isFavorite,
+      'CollapseBoxSetItems': ?collapseBoxSetItems,
+      'EnableTotalRecordCount': ?enableTotalRecordCount,
+      'EnableImageTypes': ?enableImageTypes,
+      'ImageTypeLimit': ?imageTypeLimit,
+      if (tags != null && tags.isNotEmpty) 'Tags': tags.join('|'),
+      if (studios != null && studios.isNotEmpty) 'Studios': studios.join('|'),
+      if (minPremiereDate != null)
+        'MinPremiereDate': minPremiereDate.toUtc().toIso8601String(),
+      'MaxOfficialRating': ?maxOfficialRating,
+      'HasParentalRating': ?hasParentalRating,
+      'AnyProviderIdEquals': ?anyProviderIdEquals,
+    };
+    final String path;
+    if (serverWide == true) {
+      path = '/Items';
+    } else {
+      final userId = _getUserId();
+      path = '/Users/$userId/Items';
+    }
     final response = await _dio.get(
-      '/Users/$userId/Items',
-      queryParameters: {
-        'ParentId': ?parentId,
-        if (ids != null) 'Ids': ids.join(','),
-        if (includeItemTypes != null)
-          'IncludeItemTypes': includeItemTypes.join(','),
-        if (excludeItemTypes != null)
-          'ExcludeItemTypes': excludeItemTypes.join(','),
-        'SortBy': ?sortBy,
-        'SortOrder': ?sortOrder,
-        'StartIndex': ?startIndex,
-        'Limit': ?limit,
-        'Recursive': ?recursive,
-        'SearchTerm': ?searchTerm,
-        'Fields': ?fields,
-        if (personIds != null) 'PersonIds': personIds.join(','),
-        if (artistIds != null) 'ArtistIds': artistIds.join(','),
-        if (filters != null) 'Filters': filters.join(','),
-        if (seriesStatus != null) 'SeriesStatus': seriesStatus.join(','),
-        'NameStartsWith': ?nameStartsWith,
-        'NameLessThan': ?nameLessThan,
-        if (genreIds != null) 'GenreIds': genreIds.join(','),
-        if (genres != null) 'Genres': genres.join(','),
-        'IsFavorite': ?isFavorite,
-        'CollapseBoxSetItems': ?collapseBoxSetItems,
-        'EnableTotalRecordCount': ?enableTotalRecordCount,
-        'EnableImageTypes': ?enableImageTypes,
-        'ImageTypeLimit': ?imageTypeLimit,
-        if (tags != null && tags.isNotEmpty) 'Tags': tags.join('|'),
-        if (studios != null && studios.isNotEmpty) 'Studios': studios.join('|'),
-        if (minPremiereDate != null)
-          'MinPremiereDate': minPremiereDate.toUtc().toIso8601String(),
-        'MaxOfficialRating': ?maxOfficialRating,
-        'HasParentalRating': ?hasParentalRating,
-        'AnyProviderIdEquals': ?anyProviderIdEquals,
-      },
+      path,
+      queryParameters: queryParams,
     );
     return response.data as Map<String, dynamic>;
   }

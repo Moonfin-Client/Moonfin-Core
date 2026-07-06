@@ -189,22 +189,69 @@ final adminMediaAnalyticsProvider = FutureProvider<AdminMediaAnalyticsDetail>((r
   );
 });
 
-Future<AdminMediaCountSummary> _loadSummary(MediaServerClient client) async {
-  final entries = await Future.wait(
-    adminMediaMetrics.map((metric) async {
-      final count = await _safeFetchCount(
-        client,
-        includeItemTypes: metric.includeItemTypes,
-      );
-      return MapEntry(metric.key, count);
-    }),
-  );
+String _countsKeyForMetricKey(String key) {
+  switch (key) {
+    case 'movies':
+      return 'MovieCount';
+    case 'series':
+      return 'SeriesCount';
+    case 'episodes':
+      return 'EpisodeCount';
+    case 'albums':
+      return 'AlbumCount';
+    case 'songs':
+      return 'SongCount';
+    case 'books':
+      return 'BookCount';
+    case 'audiobooks':
+      return 'AudioBookCount';
+    case 'collections':
+      return 'CollectionCount';
+    case 'musicVideos':
+      return 'MusicVideoCount';
+    case 'photos':
+      return 'PhotoCount';
+    case 'videos':
+      return 'VideoCount';
+    default:
+      return '';
+  }
+}
 
-  return AdminMediaCountSummary(
-    totals: {
-      for (final entry in entries) entry.key: entry.value,
-    },
-  );
+Future<AdminMediaCountSummary> _loadSummary(MediaServerClient client) async {
+  try {
+    final counts = await client.adminSystemApi.getItemCounts();
+    final totals = <String, int>{};
+    for (final metric in adminMediaMetrics) {
+      final serverKey = _countsKeyForMetricKey(metric.key);
+      final count = counts[serverKey];
+      if (count is num) {
+        totals[metric.key] = count.toInt();
+      } else {
+        totals[metric.key] = await _safeFetchCount(
+          client,
+          includeItemTypes: metric.includeItemTypes,
+        );
+      }
+    }
+    return AdminMediaCountSummary(totals: totals);
+  } catch (_) {
+    final entries = await Future.wait(
+      adminMediaMetrics.map((metric) async {
+        final count = await _safeFetchCount(
+          client,
+          includeItemTypes: metric.includeItemTypes,
+        );
+        return MapEntry(metric.key, count);
+      }),
+    );
+
+    return AdminMediaCountSummary(
+      totals: {
+        for (final entry in entries) entry.key: entry.value,
+      },
+    );
+  }
 }
 
 Future<AdminLibraryMediaAnalytics> _loadLibraryAnalytics(
@@ -271,6 +318,7 @@ Future<int> _fetchCount(
   required List<String> includeItemTypes,
 }) async {
   final response = await client.itemsApi.getItems(
+    serverWide: parentId == null,
     parentId: parentId,
     includeItemTypes: includeItemTypes,
     recursive: true,
@@ -550,6 +598,7 @@ String _runtimeBucket(Duration runtime) {
 Future<AdminTechnicalProfile> _loadTechnicalProfile(MediaServerClient client) async {
   try {
     final response = await client.itemsApi.getItems(
+      serverWide: true,
       includeItemTypes: const ['Movie', 'Episode', 'Video', 'MusicVideo', 'Audio'],
       recursive: true,
       fields: 'MediaSources,MediaStreams,RunTimeTicks,Container',
