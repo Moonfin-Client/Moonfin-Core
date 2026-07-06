@@ -993,12 +993,17 @@ class _DetailContentState extends State<_DetailContent> {
     final topOffset = safeTop + 80.0;
 
     String? imageUrl;
-    if (item.primaryImageTag != null) {
+    if (item.primaryImageTag != null && !item.id.startsWith('tmdb:')) {
       imageUrl = viewModel.imageApi.getPrimaryImageUrl(
         item.id,
         maxHeight: 400,
         tag: item.primaryImageTag,
       );
+    } else {
+      final profilePath = item.rawData['ProfilePath'] as String?;
+      if (profilePath != null && profilePath.isNotEmpty) {
+        imageUrl = 'https://image.tmdb.org/t/p/w500$profilePath';
+      }
     }
 
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
@@ -11923,12 +11928,17 @@ class PersonHeader extends StatelessWidget {
     final isMobile = _isCompact(context);
     final safeTop = MediaQuery.of(context).padding.top;
     String? imageUrl;
-    if (item.primaryImageTag != null) {
+    if (item.primaryImageTag != null && !item.id.startsWith('tmdb:')) {
       imageUrl = imageApi.getPrimaryImageUrl(
         item.id,
         maxHeight: 400,
         tag: item.primaryImageTag,
       );
+    } else {
+      final profilePath = item.rawData['ProfilePath'] as String?;
+      if (profilePath != null && profilePath.isNotEmpty) {
+        imageUrl = 'https://image.tmdb.org/t/p/w500$profilePath';
+      }
     }
 
     final avatarRadius = isMobile ? 60.0 : 80.0;
