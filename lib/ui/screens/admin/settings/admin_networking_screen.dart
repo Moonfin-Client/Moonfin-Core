@@ -126,9 +126,9 @@ class _AdminNetworkingScreenState extends State<AdminNetworkingScreen> {
         ),
         adminSectionLabel(context, l10n.adminNetworkingPorts,
             icon: Icons.settings_ethernet),
-        _intField('HttpServerPortNumber', l10n.adminNetworkingHttpPort),
+        _portField('HttpServerPortNumber', 'InternalHttpPort', l10n.adminNetworkingHttpPort),
         const SizedBox(height: AppSpacing.spaceMd),
-        _intField('HttpsPortNumber', l10n.adminNetworkingHttpsPort),
+        _portField('HttpsPortNumber', 'InternalHttpsPort', l10n.adminNetworkingHttpsPort),
         const SizedBox(height: AppSpacing.spaceMd),
         _intField('PublicHttpPort', l10n.adminNetworkingPublicHttpPort),
         const SizedBox(height: AppSpacing.spaceMd),
@@ -218,6 +218,25 @@ class _AdminNetworkingScreenState extends State<AdminNetworkingScreen> {
       decoration: adminInputDecoration(label: label),
       keyboardType: TextInputType.number,
       onChanged: (v) => _config![key] = int.tryParse(v) ?? 0,
+    );
+  }
+
+  Widget _portField(String legacyKey, String modernKey, String label) {
+    final String key = _config!.containsKey(modernKey) ? modernKey : legacyKey;
+    return TextFormField(
+      initialValue: (_config![key] as num?)?.toString() ?? '0',
+      decoration: adminInputDecoration(label: label),
+      keyboardType: TextInputType.number,
+      onChanged: (v) {
+        final val = int.tryParse(v) ?? 0;
+        _config![key] = val;
+        if (_config!.containsKey(modernKey)) {
+          _config![modernKey] = val;
+        }
+        if (_config!.containsKey(legacyKey)) {
+          _config![legacyKey] = val;
+        }
+      },
     );
   }
 
