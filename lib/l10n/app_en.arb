@@ -8265,5 +8265,13 @@
   "impellerCloseNow": "Close app now",
   "@impellerCloseNow": {
     "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+  },
+  "adminRefreshLibrary": "Refresh Library",
+  "@adminRefreshLibrary": {
+    "description": "Dropdown option to refresh/rescan a single library"
+  },
+  "adminRefreshAllLibraries": "Refresh All Libraries",
+  "@adminRefreshAllLibraries": {
+    "description": "Floating action button text to refresh all libraries"
   }
 }

@@ -9504,4 +9504,10 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get impellerCloseNow => 'Close app now';
+
+  @override
+  String get adminRefreshLibrary => 'Refresh Library';
+
+  @override
+  String get adminRefreshAllLibraries => 'Refresh All Libraries';
 }

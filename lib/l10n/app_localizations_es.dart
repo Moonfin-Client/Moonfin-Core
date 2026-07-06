@@ -9540,6 +9540,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get impellerCloseNow => 'Close app now';
+
+  @override
+  String get adminRefreshLibrary => 'Refresh Library';
+
+  @override
+  String get adminRefreshAllLibraries => 'Refresh All Libraries';
 }
 
 /// The translations for Spanish Castilian, as used in Latin America and the Caribbean (`es_419`).

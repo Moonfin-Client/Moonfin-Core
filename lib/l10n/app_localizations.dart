@@ -16899,6 +16899,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close app now'**
   String get impellerCloseNow;
+
+  /// Dropdown option to refresh/rescan a single library
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh Library'**
+  String get adminRefreshLibrary;
+
+  /// Floating action button text to refresh all libraries
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh All Libraries'**
+  String get adminRefreshAllLibraries;
 }
 
 class _AppLocalizationsDelegate
