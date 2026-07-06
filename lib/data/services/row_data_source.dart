@@ -2062,66 +2062,18 @@ class RowDataSource {
           if (_getRatingLevel(candRating) > sourceRatingLevel) continue;
         }
 
-        double score = 0.0;
-
-        // Score genres (+3.0 each)
-        final cGenres = (candidate['Genres'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
-        for (final g in genres) {
-          if (cGenres.contains(g)) score += 3.0;
-        }
-
-        // Score tags (+3.0 each)
-        final cTags = (candidate['Tags'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
-        for (final t in tags) {
-          if (cTags.contains(t)) score += 3.0;
-        }
-
-        // Score people
-        final cPeople = (candidate['People'] as List?)?.map((e) => e is Map ? Map<String, dynamic>.from(e) : null).whereType<Map<String, dynamic>>().toList() ?? const <Map<String, dynamic>>[];
-        final cActors = cPeople.where((p) => p['Type'] == 'Actor').map((p) => p['Name']?.toString()).whereType<String>().toSet();
-        final cDirectors = cPeople.where((p) => p['Type'] == 'Director').map((p) => p['Name']?.toString()).whereType<String>().toSet();
-        final cWriters = cPeople.where((p) => p['Type'] == 'Writer').map((p) => p['Name']?.toString()).whereType<String>().toSet();
-
-        for (final a in actorNames) {
-          if (cActors.contains(a)) score += 5.0;
-        }
-        for (final d in directorNames) {
-          if (cDirectors.contains(d)) score += 6.0;
-        }
-        for (final w in writerNames) {
-          if (cWriters.contains(w)) score += 6.0;
-        }
-
-        // Score studios (+3.0 each)
-        final cStudios = (candidate['Studios'] as List?)?.map((e) => e is Map ? e['Name']?.toString() : e?.toString()).whereType<String>().toSet() ?? const <String>{};
-        for (final s in baseStudios) {
-          if (cStudios.contains(s)) score += 3.0;
-        }
-
-        // Score production year proximity (+2.0 if exact, +1.0 if within 3 years)
-        final candYear = candidate['ProductionYear'] as int?;
-        if (candYear != null && baseYear != null) {
-          if (candYear == baseYear) {
-            score += 2.0;
-          } else if ((candYear - baseYear).abs() <= 3) {
-            score += 1.0;
-          }
-        }
-
-        // Score similar titles / sequels (+10.0)
-        if (_isSequelOrSimilarTitle(baseItem.name, candidate['Name']?.toString() ?? '')) {
-          score += 10.0;
-        }
-
-        // Score community rating boost (+ community rating / 10.0)
-        final candCommRating = (candidate['CommunityRating'] as num?)?.toDouble();
-        if (candCommRating != null) {
-          score += candCommRating / 10.0;
-        }
-
-        if (score >= 0.0) {
-          scoredCandidates.add(MapEntry(candidate, score));
-        }
+        final score = _scoreCandidate(
+          candidate,
+          genres: genres,
+          tags: tags,
+          actorNames: actorNames,
+          directorNames: directorNames,
+          writerNames: writerNames,
+          baseStudios: baseStudios,
+          baseYear: baseYear,
+          baseName: baseItem.name,
+        );
+        scoredCandidates.add(MapEntry(candidate, score));
       }
 
       // If we have fewer than 15 items after candidate scoring and filtering, fetch filler items
@@ -2159,62 +2111,17 @@ class RowDataSource {
                 if (_getRatingLevel(candRating) > sourceRatingLevel) continue;
               }
 
-              double score = 0.0;
-
-              // Score genres (+3.0 each)
-              final cGenres = (item['Genres'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
-              for (final g in genres) {
-                if (cGenres.contains(g)) score += 3.0;
-              }
-
-              // Score tags (+3.0 each)
-              final cTags = (item['Tags'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
-              for (final t in tags) {
-                if (cTags.contains(t)) score += 3.0;
-              }
-
-              // Score people
-              final cPeople = (item['People'] as List?)?.map((e) => e is Map ? Map<String, dynamic>.from(e) : null).whereType<Map<String, dynamic>>().toList() ?? const <Map<String, dynamic>>[];
-              final cActors = cPeople.where((p) => p['Type'] == 'Actor').map((p) => p['Name']?.toString()).whereType<String>().toSet();
-              final cDirectors = cPeople.where((p) => p['Type'] == 'Director').map((p) => p['Name']?.toString()).whereType<String>().toSet();
-              final cWriters = cPeople.where((p) => p['Type'] == 'Writer').map((p) => p['Name']?.toString()).whereType<String>().toSet();
-
-              for (final a in actorNames) {
-                if (cActors.contains(a)) score += 5.0;
-              }
-              for (final d in directorNames) {
-                if (cDirectors.contains(d)) score += 6.0;
-              }
-              for (final w in writerNames) {
-                if (cWriters.contains(w)) score += 6.0;
-              }
-
-              // Score studios (+3.0 each)
-              final cStudios = (item['Studios'] as List?)?.map((e) => e is Map ? e['Name']?.toString() : e?.toString()).whereType<String>().toSet() ?? const <String>{};
-              for (final s in baseStudios) {
-                if (cStudios.contains(s)) score += 3.0;
-              }
-
-              // Score production year proximity (+2.0 if exact, +1.0 if close)
-              final candYear = item['ProductionYear'] as int?;
-              if (candYear != null && baseYear != null) {
-                if (candYear == baseYear) {
-                  score += 2.0;
-                } else if ((candYear - baseYear).abs() <= 3) {
-                  score += 1.0;
-                }
-              }
-
-              // Score similar titles / sequels (+10.0)
-              if (_isSequelOrSimilarTitle(baseItem.name, item['Name']?.toString() ?? '')) {
-                score += 10.0;
-              }
-
-              // Score community rating boost (+ community rating / 10.0)
-              final candCommRating = (item['CommunityRating'] as num?)?.toDouble();
-              if (candCommRating != null) {
-                score += candCommRating / 10.0;
-              }
+              final score = _scoreCandidate(
+                item,
+                genres: genres,
+                tags: tags,
+                actorNames: actorNames,
+                directorNames: directorNames,
+                writerNames: writerNames,
+                baseStudios: baseStudios,
+                baseYear: baseYear,
+                baseName: baseItem.name,
+              );
 
               candidatesMap[id] = item;
               scoredCandidates.add(MapEntry(item, score));
@@ -2594,28 +2501,97 @@ class RowDataSource {
     );
   }
 
-  bool _isSequelOrSimilarTitle(String titleA, String titleB) {
-    final wordsA = titleA.toLowerCase().replaceAll(RegExp(r'[^\w\s]'), '').split(RegExp(r'\s+')).where((w) => w.isNotEmpty && w.length >= 4).toSet();
-    final wordsB = titleB.toLowerCase().replaceAll(RegExp(r'[^\w\s]'), '').split(RegExp(r'\s+')).where((w) => w.isNotEmpty && w.length >= 4).toSet();
+  double _scoreCandidate(
+    Map<String, dynamic> candidate, {
+    required List<String> genres,
+    required List<String> tags,
+    required List<String> actorNames,
+    required List<String> directorNames,
+    required List<String> writerNames,
+    required List<String> baseStudios,
+    required int? baseYear,
+    required String baseName,
+  }) {
+    double score = 0.0;
 
-    // Remove common words
-    final commonWords = const {'with', 'from', 'under', 'over', 'about', 'chapter', 'part', 'movie', 'film'};
-    wordsA.removeAll(commonWords);
-    wordsB.removeAll(commonWords);
+    final cGenres = (candidate['Genres'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
+    for (final g in genres) {
+      if (cGenres.contains(g)) score += 3.0;
+    }
 
-    if (wordsA.isEmpty || wordsB.isEmpty) return false;
+    final cTags = (candidate['Tags'] as List?)?.map((e) => e?.toString()).whereType<String>().toList() ?? const <String>[];
+    for (final t in tags) {
+      if (cTags.contains(t)) score += 3.0;
+    }
 
-    // Check if they share any word or starting prefix
-    for (final wA in wordsA) {
-      for (final wB in wordsB) {
-        if (wA == wB) return true;
-        if (wA.startsWith(wB) || wB.startsWith(wA)) {
-          return true;
-        }
+    final cPeople = (candidate['People'] as List?)?.map((e) => e is Map ? Map<String, dynamic>.from(e) : null).whereType<Map<String, dynamic>>().toList() ?? const <Map<String, dynamic>>[];
+    final cActors = cPeople.where((p) => p['Type'] == 'Actor').map((p) => p['Name']?.toString()).whereType<String>().toSet();
+    final cDirectors = cPeople.where((p) => p['Type'] == 'Director').map((p) => p['Name']?.toString()).whereType<String>().toSet();
+    final cWriters = cPeople.where((p) => p['Type'] == 'Writer').map((p) => p['Name']?.toString()).whereType<String>().toSet();
+    for (final a in actorNames) {
+      if (cActors.contains(a)) score += 5.0;
+    }
+    for (final d in directorNames) {
+      if (cDirectors.contains(d)) score += 6.0;
+    }
+    for (final w in writerNames) {
+      if (cWriters.contains(w)) score += 6.0;
+    }
+
+    final cStudios = (candidate['Studios'] as List?)?.map((e) => e is Map ? e['Name']?.toString() : e?.toString()).whereType<String>().toSet() ?? const <String>{};
+    for (final s in baseStudios) {
+      if (cStudios.contains(s)) score += 3.0;
+    }
+
+    final candYear = candidate['ProductionYear'] as int?;
+    if (candYear != null && baseYear != null) {
+      if (candYear == baseYear) {
+        score += 2.0;
+      } else if ((candYear - baseYear).abs() <= 3) {
+        score += 1.0;
       }
     }
 
-    return false;
+    if (_isSequelOrSimilarTitle(baseName, candidate['Name']?.toString() ?? '')) {
+      score += 10.0;
+    }
+
+    final candCommRating = (candidate['CommunityRating'] as num?)?.toDouble();
+    if (candCommRating != null) {
+      score += candCommRating / 10.0;
+    }
+
+    return score;
+  }
+
+  bool _isSequelOrSimilarTitle(String titleA, String titleB) {
+    String normalize(String s) => s
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^\w\s]'), ' ')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+
+    final a = normalize(titleA);
+    final b = normalize(titleB);
+    if (a.isEmpty || b.isEmpty) return false;
+
+    final shorter = a.length <= b.length ? a : b;
+    final longer = a.length <= b.length ? b : a;
+
+    // Real sequels tend to extend the base title, like "Iron Man" to
+    // "Iron Man 2" or "The Dark Knight" to "The Dark Knight Rises".
+    if (longer == shorter || longer.startsWith('$shorter ')) return true;
+
+    // Otherwise only count it when every meaningful word of the shorter title
+    // shows up in the longer one, so a single shared word like "dark" is not enough.
+    const stopWords = {'the', 'and', 'with', 'from', 'under', 'over', 'about', 'chapter', 'part', 'movie', 'film'};
+    Set<String> significant(String s) => s
+        .split(' ')
+        .where((w) => w.length >= 4 && !stopWords.contains(w))
+        .toSet();
+
+    final wordsShort = significant(shorter);
+    return wordsShort.length >= 2 && significant(longer).containsAll(wordsShort);
   }
 }
 

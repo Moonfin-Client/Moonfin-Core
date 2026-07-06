@@ -508,6 +508,18 @@ abstract class AppLocalizations {
   /// **'TMDb Similarity'**
   String get recommendationSystemTmdb;
 
+  /// Label for the toggle that controls whether similar suggestions are capped by target media parental rating
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Parental Rating Cap?'**
+  String get recommendationsApplyParentalRatingCap;
+
+  /// Explanation under the parental rating cap setting toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Limit Moonfin Recommends suggestions by parental rating of target media'**
+  String get recommendationsApplyParentalRatingCapSubtitle;
+
   /// Label for the Automatic/Apple/Material interface style setting
   ///
   /// In en, this message translates to:

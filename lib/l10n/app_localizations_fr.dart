@@ -167,6 +167,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get recommendationSystemTmdb => 'TMDb Similarity';
 
   @override
+  String get recommendationsApplyParentalRatingCap =>
+      'Apply Parental Rating Cap?';
+
+  @override
+  String get recommendationsApplyParentalRatingCapSubtitle =>
+      'Limit Moonfin Recommends suggestions by parental rating of target media';
+
+  @override
   String get interfaceStyle => 'Style d\'interface';
 
   @override
