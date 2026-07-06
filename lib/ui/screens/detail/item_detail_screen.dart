@@ -10103,6 +10103,8 @@ class DetailSimilarRow extends StatelessWidget {
   final FocusNode? firstItemFocusNode;
   final KeyEventResult Function(int index, KeyEvent event)? onItemKeyEvent;
   final ValueChanged<AggregatedItem>? onItemLongPress;
+  final double? customCardWidth;
+  final double? customHeight;
 
   const DetailSimilarRow({
     required this.items,
@@ -10112,6 +10114,8 @@ class DetailSimilarRow extends StatelessWidget {
     this.firstItemFocusNode,
     this.onItemKeyEvent,
     this.onItemLongPress,
+    this.customCardWidth,
+    this.customHeight,
   });
 
   @override
@@ -10121,10 +10125,10 @@ class DetailSimilarRow extends StatelessWidget {
     final cardExpansion = prefs.get(UserPreferences.cardFocusExpansion);
     final isMobile = _isCompact(context);
     final desktopScale = _desktopUiScale(prefs: prefs);
-    final cardWidth = isMobile ? 120.0 : 150.0 * desktopScale;
+    final cardWidth = customCardWidth ?? (isMobile ? 120.0 : 150.0 * desktopScale);
 
     return SizedBox(
-      height: isMobile ? 228 : 282 * desktopScale,
+      height: customHeight ?? (isMobile ? 228 : 282 * desktopScale),
       child: ListView.separated(
         controller: scrollController,
         scrollDirection: Axis.horizontal,

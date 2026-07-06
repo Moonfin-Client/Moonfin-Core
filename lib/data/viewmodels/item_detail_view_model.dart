@@ -23,6 +23,14 @@ enum CollectionSortOption {
 
 enum ItemDetailState { loading, ready, error }
 
+class ParentCollection {
+  final String id;
+  final String name;
+  final List<AggregatedItem> items;
+
+  ParentCollection({required this.id, required this.name, required this.items});
+}
+
 class ItemDetailViewModel extends ChangeNotifier {
   static const _episodeOverviewFields =
       'Overview,MediaStreams,MediaSources,RunTimeTicks,Trickplay,UserData,Chapters';
@@ -160,6 +168,9 @@ class ItemDetailViewModel extends ChangeNotifier {
   List<AggregatedItem> _parentCollectionItems = const [];
   List<AggregatedItem> get parentCollectionItems => _parentCollectionItems;
 
+  List<ParentCollection> _parentCollections = const [];
+  List<ParentCollection> get parentCollections => _parentCollections;
+
   List<AggregatedItem> _features = const [];
   List<AggregatedItem> get features => _features;
 
@@ -198,6 +209,7 @@ class ItemDetailViewModel extends ChangeNotifier {
     _collectionItems = const [];
     _parentCollectionItems = const [];
     _parentCollectionName = null;
+    _parentCollections = const [];
     notifyListeners();
 
     try {
@@ -235,6 +247,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       futures.add(_loadNextUp());
       futures.add(_loadSimilar());
       futures.add(_loadFeatures());
+      futures.add(_loadParentCollection());
     } else if (type == 'Season') {
       futures.add(_loadRatings());
       futures.add(_loadEpisodes());
@@ -685,60 +698,65 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
 
     try {
+      final List<String> boxSetIds = [];
+
       final ancestors = await _client.itemsApi.getAncestors(item.id);
-      var boxSet = ancestors.firstWhere(
-        (ancestor) => ancestor['Type'] == 'BoxSet',
-        orElse: () => const <String, dynamic>{},
-      );
-
-      if (boxSet.isEmpty) {
-        final collapsed = await _client.itemsApi.getItems(
-          ids: [item.id],
-          includeItemTypes: ['Movie', 'Series', 'BoxSet'],
-          recursive: true,
-          collapseBoxSetItems: true,
-          fields: 'BasicSyncInfo',
-        );
-        final collapsedItems = (collapsed['Items'] as List?) ?? const [];
-        boxSet = collapsedItems
-            .whereType<Map>()
-            .map((entry) => entry.cast<String, dynamic>())
-            .firstWhere(
-              (entry) => entry['Type'] == 'BoxSet',
-              orElse: () => const <String, dynamic>{},
-            );
-      }
-
-      final boxSetId = boxSet['Id']?.toString();
-      String? resolvedBoxSetId;
-      if (boxSetId != null && boxSetId.isNotEmpty) {
-        final isMember = await _boxSetContainsItem(boxSetId, item.id);
-        if (isMember) {
-          resolvedBoxSetId = boxSetId;
+      for (final ancestor in ancestors) {
+        if (ancestor['Type'] == 'BoxSet') {
+          final boxSetId = ancestor['Id']?.toString();
+          if (boxSetId != null && boxSetId.isNotEmpty) {
+            final isMember = await _boxSetContainsItem(boxSetId, item.id);
+            if (isMember && !boxSetIds.contains(boxSetId)) {
+              boxSetIds.add(boxSetId);
+            }
+          }
         }
       }
-      resolvedBoxSetId ??= await _findParentCollectionByScanningBoxSets(
-        item.id,
-      );
-      if (resolvedBoxSetId == null || resolvedBoxSetId.isEmpty) {
+
+      final scannedIds = await _findParentCollectionsByScanningBoxSets(item.id);
+      for (final id in scannedIds) {
+        if (!boxSetIds.contains(id)) {
+          boxSetIds.add(id);
+        }
+      }
+
+      if (boxSetIds.isEmpty) {
+        _parentCollections = const [];
+        _parentCollectionItems = const [];
+        _parentCollectionName = null;
+        notifyListeners();
         return;
       }
 
-      final data = await _client.itemsApi.getItems(
-        parentId: resolvedBoxSetId,
-        sortBy: 'PremiereDate,SortName',
-        sortOrder: 'Ascending',
-        fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
-      );
+      final List<ParentCollection> collections = [];
+      for (final boxSetId in boxSetIds) {
+        final data = await _client.itemsApi.getItems(
+          parentId: boxSetId,
+          sortBy: 'PremiereDate,SortName',
+          sortOrder: 'Ascending',
+          fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
+        );
 
-      final items = (data['Items'] as List?) ?? [];
-      final resolvedName = (boxSetId != null && boxSetId == resolvedBoxSetId)
-          ? boxSet['Name'] as String?
-          : null;
-      _parentCollectionName =
-          resolvedName ??
-          (await _client.itemsApi.getItem(resolvedBoxSetId))['Name'] as String?;
-      _parentCollectionItems = _sortCollectionByReleaseOrder(_mapItems(items));
+        final items = (data['Items'] as List?) ?? [];
+        final name = (await _client.itemsApi.getItem(boxSetId))['Name'] as String?;
+        if (name != null) {
+          collections.add(ParentCollection(
+            id: boxSetId,
+            name: name,
+            items: _sortCollectionByReleaseOrder(_mapItems(items)),
+          ));
+        }
+      }
+
+      _parentCollections = collections;
+      if (collections.isNotEmpty) {
+        _parentCollectionName = collections.first.name;
+        _parentCollectionItems = collections.first.items;
+      } else {
+        _parentCollectionName = null;
+        _parentCollectionItems = const [];
+      }
+
       notifyListeners();
     } catch (_) {}
   }
@@ -759,7 +777,8 @@ class ItemDetailViewModel extends ChangeNotifier {
     }
   }
 
-  Future<String?> _findParentCollectionByScanningBoxSets(String itemId) async {
+  Future<List<String>> _findParentCollectionsByScanningBoxSets(String itemId) async {
+    final List<String> result = [];
     try {
       const pageSize = 200;
       var startIndex = 0;
@@ -796,7 +815,7 @@ class ItemDetailViewModel extends ChangeNotifier {
             return map['Id'] == itemId;
           });
           if (hasItem) {
-            return boxSetId;
+            result.add(boxSetId);
           }
         }
 
@@ -807,7 +826,7 @@ class ItemDetailViewModel extends ChangeNotifier {
       }
     } catch (_) {}
 
-    return null;
+    return result;
   }
 
   List<AggregatedItem> _sortCollectionByReleaseOrder(
