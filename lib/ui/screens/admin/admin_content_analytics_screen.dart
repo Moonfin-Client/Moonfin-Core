@@ -45,14 +45,56 @@ class _AdminContentAnalyticsScreenState
           ],
         ),
       ),
-      data: (analytics) => RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(adminMediaSummaryProvider);
-          ref.invalidate(adminMediaAnalyticsProvider);
-          await ref.read(adminMediaAnalyticsProvider.future);
-        },
-        child: _buildBody(context, analytics),
-      ),
+      data: (state) {
+        final data = state.data;
+        if (data == null) {
+          final percentage = (state.progress * 100).toInt();
+          return Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 320),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Loading Server Analytics... $percentage%',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: LinearProgressIndicator(
+                      value: state.progress,
+                      minHeight: 6,
+                      backgroundColor: Theme.of(context)
+                          .colorScheme
+                          .surfaceContainerHighest
+                          .withValues(alpha: 0.4),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        return RefreshIndicator(
+          onRefresh: () async {
+            ref.invalidate(adminMediaSummaryProvider);
+            ref.invalidate(adminMediaAnalyticsProvider);
+            await ref.read(adminMediaAnalyticsProvider.future);
+          },
+          child: _buildBody(context, data),
+        );
+      },
     );
   }
 

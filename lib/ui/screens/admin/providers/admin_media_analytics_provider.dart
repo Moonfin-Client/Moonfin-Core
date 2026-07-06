@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import 'admin_user_providers.dart';
@@ -122,6 +124,16 @@ class AdminLibraryInsights {
       audioCodecs.isNotEmpty;
 }
 
+class AdminAnalyticsLoadingState {
+  final double progress;
+  final AdminMediaAnalyticsDetail? data;
+
+  const AdminAnalyticsLoadingState({
+    required this.progress,
+    this.data,
+  });
+}
+
 class AdminMediaAnalyticsDetail {
   final AdminMediaCountSummary summary;
   final List<AdminLibraryMediaAnalytics> libraries;
@@ -159,34 +171,122 @@ final adminMediaSummaryProvider = FutureProvider<AdminMediaCountSummary>((ref) a
   return _loadSummary(client);
 });
 
-final adminMediaAnalyticsProvider = FutureProvider<AdminMediaAnalyticsDetail>((ref) async {
+final adminMediaAnalyticsProvider = StreamProvider<AdminAnalyticsLoadingState>((ref) async* {
   final client = GetIt.instance<MediaServerClient>();
-  final librariesFuture = ref.watch(adminLibrariesProvider.future);
-  final summaryFuture = _loadSummary(client);
-  final technicalFuture = _loadTechnicalProfile(client);
+  final cacheKey = 'admin_media_analytics_${client.baseUrl}_${client.userId}';
 
-  final libraries = await librariesFuture;
-  final summary = await summaryFuture;
-  final technicalProfile = await technicalFuture;
+  SharedPreferences? prefs;
+  AdminMediaAnalyticsDetail? cachedData;
+  try {
+    prefs = await SharedPreferences.getInstance();
+    final cachedJsonStr = prefs.getString(cacheKey);
+    if (cachedJsonStr != null) {
+      final decoded = jsonDecode(cachedJsonStr);
+      if (decoded is Map<String, dynamic>) {
+        cachedData = _detailFromJson(decoded);
+      }
+    }
+  } catch (e) {
+    print('Failed to read cached analytics: $e');
+  }
 
-  final libraryAnalytics = await Future.wait(
-    libraries.map((library) => _loadLibraryAnalytics(client, library)),
-  );
+  if (cachedData != null) {
+    yield AdminAnalyticsLoadingState(
+      progress: 1.0,
+      data: cachedData,
+    );
+  } else {
+    yield const AdminAnalyticsLoadingState(progress: 0.05);
+  }
 
-  libraryAnalytics.sort((a, b) {
-    final totalCompare = b.totalTrackedItems.compareTo(a.totalTrackedItems);
-    if (totalCompare != 0) {
-      return totalCompare;
+  try {
+    final libraries = await ref.read(adminLibrariesProvider.future);
+    if (cachedData == null) {
+      yield const AdminAnalyticsLoadingState(progress: 0.15);
     }
 
-    return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-  });
+    final summaryFuture = _loadSummary(client);
+    final summary = await summaryFuture;
+    if (cachedData == null) {
+      yield const AdminAnalyticsLoadingState(progress: 0.25);
+    }
 
-  return AdminMediaAnalyticsDetail(
-    summary: summary,
-    libraries: libraryAnalytics,
-    technicalProfile: technicalProfile,
-  );
+    final List<AdminLibraryMediaAnalytics> libraryAnalytics = [];
+    final double progressStep = 0.70 / (libraries.isEmpty ? 1 : libraries.length);
+
+    for (int i = 0; i < libraries.length; i++) {
+      final library = libraries[i];
+      final analytics = await _loadLibraryAnalytics(client, library);
+      libraryAnalytics.add(analytics);
+      if (cachedData == null) {
+        yield AdminAnalyticsLoadingState(progress: 0.25 + (i + 1) * progressStep);
+      }
+    }
+
+    int totalSampled = 0;
+    int totalRecord = 0;
+    final aggregatedContainers = <String, int>{};
+    final aggregatedVideoCodecs = <String, int>{};
+    final aggregatedAudioCodecs = <String, int>{};
+
+    for (final lib in libraryAnalytics) {
+      final insights = lib.insights;
+      totalRecord += lib.totalTrackedItems;
+      totalSampled += insights.videoCodecs.values.fold(0, (sum, val) => sum + val);
+
+      insights.containers.forEach((key, val) {
+        aggregatedContainers[key] = (aggregatedContainers[key] ?? 0) + val;
+      });
+      insights.videoCodecs.forEach((key, val) {
+        aggregatedVideoCodecs[key] = (aggregatedVideoCodecs[key] ?? 0) + val;
+      });
+      insights.audioCodecs.forEach((key, val) {
+        aggregatedAudioCodecs[key] = (aggregatedAudioCodecs[key] ?? 0) + val;
+      });
+    }
+
+    final technicalProfile = AdminTechnicalProfile(
+      sampledItems: totalSampled,
+      totalRecordCount: totalRecord,
+      sampledRuntime: Duration.zero,
+      containers: aggregatedContainers,
+      videoCodecs: aggregatedVideoCodecs,
+      audioCodecs: aggregatedAudioCodecs,
+    );
+
+    libraryAnalytics.sort((a, b) {
+      final totalCompare = b.totalTrackedItems.compareTo(a.totalTrackedItems);
+      if (totalCompare != 0) {
+        return totalCompare;
+      }
+      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    });
+
+    final detail = AdminMediaAnalyticsDetail(
+      summary: summary,
+      libraries: libraryAnalytics,
+      technicalProfile: technicalProfile,
+    );
+
+    if (prefs != null) {
+      try {
+        final serialized = jsonEncode(_detailToJson(detail));
+        await prefs.setString(cacheKey, serialized);
+      } catch (e) {
+        print('Failed to save cached analytics: $e');
+      }
+    }
+
+    yield AdminAnalyticsLoadingState(
+      progress: 1.0,
+      data: detail,
+    );
+  } catch (e, stack) {
+    print('Failed to fetch analytics: $e\n$stack');
+    if (cachedData == null) {
+      rethrow;
+    }
+  }
 });
 
 String _countsKeyForMetricKey(String key) {
@@ -318,7 +418,7 @@ Future<int> _fetchCount(
   required List<String> includeItemTypes,
 }) async {
   final response = await client.itemsApi.getItems(
-    serverWide: parentId == null,
+    serverWide: true,
     parentId: parentId,
     includeItemTypes: includeItemTypes,
     recursive: true,
@@ -376,43 +476,66 @@ Future<AdminLibraryInsights> _loadLibraryInsights(
   List<String> includeItemTypes;
   String fields;
 
+  int pageSize = 1000;
   switch (collectionType) {
     case 'movies':
       includeItemTypes = const ['Movie'];
       fields =
           'Genres,ProductionYear,OfficialRating,RunTimeTicks,Container,MediaSources,MediaStreams';
+      pageSize = 1000;
     case 'tvshows':
       includeItemTypes = const ['Series', 'Episode'];
       fields =
           'Genres,ProductionYear,OfficialRating,RunTimeTicks,Container,MediaSources,MediaStreams';
+      pageSize = 1000;
     case 'music':
       includeItemTypes = const ['Audio', 'MusicAlbum'];
       fields =
           'Genres,Artists,AlbumArtists,ProductionYear,Container,MediaSources,MediaStreams';
+      pageSize = 1000;
     case 'books':
       includeItemTypes = const ['Book', 'AudioBook'];
       fields =
           'Genres,People,Authors,ProductionYear,Path,Container,MediaSources,MediaStreams';
+      pageSize = 1000;
     default:
       return const AdminLibraryInsights();
   }
 
-  try {
-    final response = await client.itemsApi.getItems(
-      parentId: library.itemId,
-      includeItemTypes: includeItemTypes,
-      recursive: true,
-      fields: fields,
-      sortBy: 'DateCreated',
-      sortOrder: 'Descending',
-      limit: 500,
-      enableTotalRecordCount: false,
-    );
+  final List<Map<String, dynamic>> items = [];
+  int startIndex = 0;
 
-    final rawItems = response['Items'];
-    final items = rawItems is List
-        ? rawItems.whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList()
-        : const <Map<String, dynamic>>[];
+  try {
+    while (true) {
+      final response = await client.itemsApi.getItems(
+        serverWide: false,
+        parentId: library.itemId,
+        includeItemTypes: includeItemTypes,
+        recursive: true,
+        fields: fields,
+        sortBy: 'SortName',
+        sortOrder: 'Ascending',
+        startIndex: startIndex,
+        limit: pageSize,
+        enableTotalRecordCount: true,
+      );
+
+      final rawItems = response['Items'];
+      final fetchedItems = rawItems is List
+          ? rawItems.whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList()
+          : const <Map<String, dynamic>>[];
+
+      items.addAll(fetchedItems);
+
+      final totalCount = response['TotalRecordCount'] is num
+          ? (response['TotalRecordCount'] as num).toInt()
+          : 0;
+
+      if (fetchedItems.length < pageSize || totalCount <= 0 || items.length >= totalCount) {
+        break;
+      }
+      startIndex += pageSize;
+    }
 
     final genres = <String, int>{};
     final contributors = <String, int>{};
@@ -567,8 +690,9 @@ Future<AdminLibraryInsights> _loadLibraryInsights(
       videoCodecs: videoCodecs,
       audioCodecs: audioCodecs,
     );
-  } catch (_) {
-    return const AdminLibraryInsights();
+  } catch (e, stack) {
+    print('Error in _loadLibraryInsights: $e\n$stack');
+    rethrow;
   }
 }
 
@@ -598,14 +722,14 @@ String _runtimeBucket(Duration runtime) {
 Future<AdminTechnicalProfile> _loadTechnicalProfile(MediaServerClient client) async {
   try {
     final response = await client.itemsApi.getItems(
-      serverWide: true,
+      serverWide: false,
       includeItemTypes: const ['Movie', 'Episode', 'Video', 'MusicVideo', 'Audio'],
       recursive: true,
       fields: 'MediaSources,MediaStreams,RunTimeTicks,Container',
-      sortBy: 'DateCreated',
-      sortOrder: 'Descending',
-      limit: 500,
-      enableTotalRecordCount: true,
+      sortBy: 'SortName',
+      sortOrder: 'Ascending',
+      limit: 200,
+      enableTotalRecordCount: false,
     );
 
     final rawItems = response['Items'];
@@ -686,8 +810,9 @@ Future<AdminTechnicalProfile> _loadTechnicalProfile(MediaServerClient client) as
       videoCodecs: videoCodecs,
       audioCodecs: audioCodecs,
     );
-  } catch (_) {
-    return const AdminTechnicalProfile();
+  } catch (e, stack) {
+    print('Error in _loadTechnicalProfile: $e\n$stack');
+    rethrow;
   }
 }
 
@@ -802,4 +927,101 @@ String? _fileExtensionFromPath(Object? pathValue) {
   }
 
   return filename.substring(dot + 1);
+}
+
+Map<String, dynamic> _summaryToJson(AdminMediaCountSummary summary) {
+  return {'totals': summary.totals};
+}
+
+AdminMediaCountSummary _summaryFromJson(Map<String, dynamic> json) {
+  final totals = Map<String, dynamic>.from(json['totals'] ?? {});
+  return AdminMediaCountSummary(
+    totals: totals.map((k, v) => MapEntry(k, (v as num).toInt())),
+  );
+}
+
+Map<String, dynamic> _technicalToJson(AdminTechnicalProfile profile) {
+  return {
+    'sampledItems': profile.sampledItems,
+    'totalRecordCount': profile.totalRecordCount,
+    'sampledRuntime': profile.sampledRuntime.inMicroseconds,
+    'containers': profile.containers,
+    'videoCodecs': profile.videoCodecs,
+    'audioCodecs': profile.audioCodecs,
+  };
+}
+
+AdminTechnicalProfile _technicalFromJson(Map<String, dynamic> json) {
+  return AdminTechnicalProfile(
+    sampledItems: (json['sampledItems'] as num?)?.toInt() ?? 0,
+    totalRecordCount: (json['totalRecordCount'] as num?)?.toInt() ?? 0,
+    sampledRuntime: Duration(microseconds: (json['sampledRuntime'] as num?)?.toInt() ?? 0),
+    containers: Map<String, dynamic>.from(json['containers'] ?? {}).map((k, v) => MapEntry(k, (v as num).toInt())),
+    videoCodecs: Map<String, dynamic>.from(json['videoCodecs'] ?? {}).map((k, v) => MapEntry(k, (v as num).toInt())),
+    audioCodecs: Map<String, dynamic>.from(json['audioCodecs'] ?? {}).map((k, v) => MapEntry(k, (v as num).toInt())),
+  );
+}
+
+Map<String, dynamic> _insightsToJson(AdminLibraryInsights insights) {
+  return {
+    'genres': insights.genres,
+    'contributors': insights.contributors,
+    'years': insights.years,
+    'ratings': insights.ratings,
+    'runtimeBuckets': insights.runtimeBuckets,
+    'containers': insights.containers,
+    'videoCodecs': insights.videoCodecs,
+    'audioCodecs': insights.audioCodecs,
+  };
+}
+
+AdminLibraryInsights _insightsFromJson(Map<String, dynamic> json) {
+  return AdminLibraryInsights(
+    genres: Map<String, dynamic>.from(json['genres'] ?? {}).map((k, v) => MapEntry(k, (v as num).toInt())),
+    contributors: Map<String, dynamic>.from(json['contributors'] ?? {}).map((k, v) => MapEntry(k, (v as num).toInt())),
+    years: Map<String, dynamic>.from(json['years'] ?? {}).map((k, v) => MapEntry(k, (v as num).toInt())),
+    ratings: Map<String, dynamic>.from(json['ratings'] ?? {}).map((k, v) => MapEntry(k, (v as num).toInt())),
+    runtimeBuckets: Map<String, dynamic>.from(json['runtimeBuckets'] ?? {}).map((k, v) => MapEntry(k, (v as num).toInt())),
+    containers: Map<String, dynamic>.from(json['containers'] ?? {}).map((k, v) => MapEntry(k, (v as num).toInt())),
+    videoCodecs: Map<String, dynamic>.from(json['videoCodecs'] ?? {}).map((k, v) => MapEntry(k, (v as num).toInt())),
+    audioCodecs: Map<String, dynamic>.from(json['audioCodecs'] ?? {}).map((k, v) => MapEntry(k, (v as num).toInt())),
+  );
+}
+
+Map<String, dynamic> _libraryToJson(AdminLibraryMediaAnalytics lib) {
+  return {
+    'name': lib.name,
+    'itemId': lib.itemId,
+    'collectionType': lib.collectionType,
+    'counts': lib.counts,
+    'insights': _insightsToJson(lib.insights),
+  };
+}
+
+AdminLibraryMediaAnalytics _libraryFromJson(Map<String, dynamic> json) {
+  return AdminLibraryMediaAnalytics(
+    name: (json['name'] ?? '').toString(),
+    itemId: (json['itemId'] ?? '').toString(),
+    collectionType: json['collectionType']?.toString(),
+    counts: Map<String, dynamic>.from(json['counts'] ?? {}).map((k, v) => MapEntry(k, (v as num).toInt())),
+    insights: _insightsFromJson(Map<String, dynamic>.from(json['insights'] ?? {})),
+  );
+}
+
+Map<String, dynamic> _detailToJson(AdminMediaAnalyticsDetail detail) {
+  return {
+    'summary': _summaryToJson(detail.summary),
+    'libraries': detail.libraries.map(_libraryToJson).toList(),
+    'technicalProfile': _technicalToJson(detail.technicalProfile),
+  };
+}
+
+AdminMediaAnalyticsDetail _detailFromJson(Map<String, dynamic> json) {
+  return AdminMediaAnalyticsDetail(
+    summary: _summaryFromJson(Map<String, dynamic>.from(json['summary'] ?? {})),
+    libraries: (json['libraries'] as List? ?? [])
+        .map((e) => _libraryFromJson(Map<String, dynamic>.from(e)))
+        .toList(),
+    technicalProfile: _technicalFromJson(Map<String, dynamic>.from(json['technicalProfile'] ?? {})),
+  );
 }
