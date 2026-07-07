@@ -200,10 +200,13 @@ class AdminLibrariesScreen extends ConsumerWidget {
                   },
                 ),
           Positioned(
+            left: 16,
             right: 16,
             bottom: actionsBottom,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+            child: Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 FloatingActionButton.extended(
                   heroTag: 'scan',
@@ -211,7 +214,6 @@ class AdminLibrariesScreen extends ConsumerWidget {
                   icon: const Icon(Icons.refresh),
                   label: Text(l10n.adminRefreshAllLibraries),
                 ),
-                const SizedBox(width: 8),
                 FloatingActionButton.extended(
                   heroTag: 'add',
                   onPressed: () => context.push(Destinations.adminLibrariesAdd),

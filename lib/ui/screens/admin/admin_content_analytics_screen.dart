@@ -59,7 +59,7 @@ class _AdminContentAnalyticsScreenState
                   const CircularProgressIndicator(),
                   const SizedBox(height: 24),
                   Text(
-                    'Loading Server Analytics... $percentage%',
+                    l10n.adminAnalyticsLoadingProgress(percentage),
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,

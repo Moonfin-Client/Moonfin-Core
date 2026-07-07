@@ -9493,4 +9493,21 @@ class AppLocalizationsCy extends AppLocalizations {
 
   @override
   String get adminRefreshAllLibraries => 'Refresh All Libraries';
+
+  @override
+  String get adminRepoSortDateOldest => 'Date Added (Oldest First)';
+
+  @override
+  String get adminRepoSortDateNewest => 'Date Added (Newest First)';
+
+  @override
+  String get adminRepoSortNameAsc => 'Alphabetical (A to Z)';
+
+  @override
+  String get adminRepoSortNameDesc => 'Alphabetical (Z to A)';
+
+  @override
+  String adminAnalyticsLoadingProgress(int percentage) {
+    return 'Loading Server Analytics... $percentage%';
+  }
 }

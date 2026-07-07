@@ -16911,6 +16911,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Refresh All Libraries'**
   String get adminRefreshAllLibraries;
+
+  /// Repository sort option, oldest added first
+  ///
+  /// In en, this message translates to:
+  /// **'Date Added (Oldest First)'**
+  String get adminRepoSortDateOldest;
+
+  /// Repository sort option, newest added first
+  ///
+  /// In en, this message translates to:
+  /// **'Date Added (Newest First)'**
+  String get adminRepoSortDateNewest;
+
+  /// Repository sort option, alphabetical ascending
+  ///
+  /// In en, this message translates to:
+  /// **'Alphabetical (A to Z)'**
+  String get adminRepoSortNameAsc;
+
+  /// Repository sort option, alphabetical descending
+  ///
+  /// In en, this message translates to:
+  /// **'Alphabetical (Z to A)'**
+  String get adminRepoSortNameDesc;
+
+  /// Progress label shown while server analytics load
+  ///
+  /// In en, this message translates to:
+  /// **'Loading Server Analytics... {percentage}%'**
+  String adminAnalyticsLoadingProgress(int percentage);
 }
 
 class _AppLocalizationsDelegate

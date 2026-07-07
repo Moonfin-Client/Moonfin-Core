@@ -186,9 +186,7 @@ final adminMediaAnalyticsProvider = StreamProvider<AdminAnalyticsLoadingState>((
         cachedData = _detailFromJson(decoded);
       }
     }
-  } catch (e) {
-    print('Failed to read cached analytics: $e');
-  }
+  } catch (_) {}
 
   if (cachedData != null) {
     yield AdminAnalyticsLoadingState(
@@ -272,17 +270,14 @@ final adminMediaAnalyticsProvider = StreamProvider<AdminAnalyticsLoadingState>((
       try {
         final serialized = jsonEncode(_detailToJson(detail));
         await prefs.setString(cacheKey, serialized);
-      } catch (e) {
-        print('Failed to save cached analytics: $e');
-      }
+      } catch (_) {}
     }
 
     yield AdminAnalyticsLoadingState(
       progress: 1.0,
       data: detail,
     );
-  } catch (e, stack) {
-    print('Failed to fetch analytics: $e\n$stack');
+  } catch (_) {
     if (cachedData == null) {
       rethrow;
     }
@@ -690,8 +685,7 @@ Future<AdminLibraryInsights> _loadLibraryInsights(
       videoCodecs: videoCodecs,
       audioCodecs: audioCodecs,
     );
-  } catch (e, stack) {
-    print('Error in _loadLibraryInsights: $e\n$stack');
+  } catch (_) {
     rethrow;
   }
 }
@@ -717,103 +711,6 @@ String _runtimeBucket(Duration runtime) {
     return '90-119m';
   }
   return '120m+';
-}
-
-Future<AdminTechnicalProfile> _loadTechnicalProfile(MediaServerClient client) async {
-  try {
-    final response = await client.itemsApi.getItems(
-      serverWide: false,
-      includeItemTypes: const ['Movie', 'Episode', 'Video', 'MusicVideo', 'Audio'],
-      recursive: true,
-      fields: 'MediaSources,MediaStreams,RunTimeTicks,Container',
-      sortBy: 'SortName',
-      sortOrder: 'Ascending',
-      limit: 200,
-      enableTotalRecordCount: false,
-    );
-
-    final rawItems = response['Items'];
-    final items = rawItems is List
-        ? rawItems.whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList()
-        : const <Map<String, dynamic>>[];
-    final total = response['TotalRecordCount'] is num
-        ? (response['TotalRecordCount'] as num).toInt()
-        : items.length;
-
-    final containers = <String, int>{};
-    final videoCodecs = <String, int>{};
-    final audioCodecs = <String, int>{};
-    var sampledRuntimeMicros = 0;
-
-    for (final item in items) {
-      final runTimeTicks = item['RunTimeTicks'];
-      if (runTimeTicks is num && runTimeTicks > 0) {
-        sampledRuntimeMicros += runTimeTicks.toInt() ~/ 10;
-      }
-
-      var containerAdded = false;
-      final mediaSources = _mapList(item['MediaSources']);
-      for (final source in mediaSources) {
-        final sourceContainer = _normalizeToken(source['Container']);
-        if (sourceContainer != null) {
-          _incrementCount(containers, sourceContainer);
-          containerAdded = true;
-        }
-
-        final mediaStreams = _mapList(source['MediaStreams']);
-        var hasVideoStream = false;
-        var hasAudioStream = false;
-        for (final stream in mediaStreams) {
-          final type = _normalizeToken(stream['Type']);
-          final codec = _normalizeToken(stream['Codec']);
-          if (codec == null) {
-            continue;
-          }
-
-          if (type == 'video') {
-            _incrementCount(videoCodecs, codec);
-            hasVideoStream = true;
-          } else if (type == 'audio') {
-            _incrementCount(audioCodecs, codec);
-            hasAudioStream = true;
-          }
-        }
-
-        if (!hasVideoStream) {
-          final sourceVideoCodec = _normalizeToken(source['VideoCodec']);
-          if (sourceVideoCodec != null) {
-            _incrementCount(videoCodecs, sourceVideoCodec);
-          }
-        }
-
-        if (!hasAudioStream) {
-          final sourceAudioCodec = _normalizeToken(source['AudioCodec']);
-          if (sourceAudioCodec != null) {
-            _incrementCount(audioCodecs, sourceAudioCodec);
-          }
-        }
-      }
-
-      if (!containerAdded) {
-        final itemContainer = _normalizeToken(item['Container']);
-        if (itemContainer != null) {
-          _incrementCount(containers, itemContainer);
-        }
-      }
-    }
-
-    return AdminTechnicalProfile(
-      sampledItems: items.length,
-      totalRecordCount: total,
-      sampledRuntime: Duration(microseconds: sampledRuntimeMicros),
-      containers: containers,
-      videoCodecs: videoCodecs,
-      audioCodecs: audioCodecs,
-    );
-  } catch (e, stack) {
-    print('Error in _loadTechnicalProfile: $e\n$stack');
-    rethrow;
-  }
 }
 
 List<Map<String, dynamic>> _mapList(dynamic value) {

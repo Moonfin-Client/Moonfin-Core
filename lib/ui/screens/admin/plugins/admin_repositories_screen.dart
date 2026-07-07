@@ -232,6 +232,7 @@ class _AdminRepositoriesScreenState
   }
 
   Widget _buildSortDropdown() {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.spaceMd),
       child: Row(
@@ -248,22 +249,22 @@ class _AdminRepositoriesScreenState
             ),
             dropdownColor: Theme.of(context).colorScheme.surface,
             borderRadius: AppRadius.circular(8),
-            items: const [
+            items: [
               DropdownMenuItem(
                 value: RepoSortOption.dateAddedOldest,
-                child: Text('Date Added (Oldest First)'),
+                child: Text(l10n.adminRepoSortDateOldest),
               ),
               DropdownMenuItem(
                 value: RepoSortOption.dateAddedNewest,
-                child: Text('Date Added (Newest First)'),
+                child: Text(l10n.adminRepoSortDateNewest),
               ),
               DropdownMenuItem(
                 value: RepoSortOption.alphabeticalAsc,
-                child: Text('Alphabetical (A to Z)'),
+                child: Text(l10n.adminRepoSortNameAsc),
               ),
               DropdownMenuItem(
                 value: RepoSortOption.alphabeticalDesc,
-                child: Text('Alphabetical (Z to A)'),
+                child: Text(l10n.adminRepoSortNameDesc),
               ),
             ],
             onChanged: (value) {
