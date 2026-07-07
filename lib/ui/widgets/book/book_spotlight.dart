@@ -45,15 +45,7 @@ class BookSpotlight extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          if (imageUrl != null)
-            ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 36, sigmaY: 36),
-              child: CachedNetworkImage(
-                imageUrl: imageUrl!,
-                fit: BoxFit.cover,
-                errorWidget: (_, _, _) => ColoredBox(color: background),
-              ),
-            ),
+          if (imageUrl != null) _art(background),
           DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -141,6 +133,29 @@ class BookSpotlight extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _art(Color background) {
+    final image = CachedNetworkImage(
+      imageUrl: imageUrl!,
+      fit: BoxFit.cover,
+      errorWidget: (_, _, _) => ColoredBox(color: background),
+    );
+    final sigma = GlassSettings.capSigma(36);
+    if (sigma <= 0) {
+      // No blur on this tier, so darken the artwork to keep the text readable.
+      return ColorFiltered(
+        colorFilter: ColorFilter.mode(
+          background.withValues(alpha: 0.55),
+          BlendMode.srcOver,
+        ),
+        child: image,
+      );
+    }
+    return ImageFiltered(
+      imageFilter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+      child: image,
     );
   }
 }

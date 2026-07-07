@@ -152,6 +152,8 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     implementation("com.google.android.gms:play-services-cast-framework:22.0.0")
     implementation("eu.simonbinder:sqlite3-native-library:3.52.0")
+    implementation("androidx.tvprovider:tvprovider:1.1.0")
+    implementation("androidx.work:work-runtime-ktx:2.10.1")
 }
 
 val flutterApkOutputDir = layout.buildDirectory.dir("app/outputs/flutter-apk")

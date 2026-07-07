@@ -167,6 +167,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get recommendationSystemTmdb => 'TMDb Similarity';
 
   @override
+  String get recommendationsApplyParentalRatingCap =>
+      'Apply Parental Rating Cap?';
+
+  @override
+  String get recommendationsApplyParentalRatingCapSubtitle =>
+      'Limit Moonfin Recommends suggestions by parental rating of target media';
+
+  @override
   String get interfaceStyle => 'Style d\'interface';
 
   @override
@@ -181,6 +189,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get interfaceStyleMaterial => 'Material';
+
+  @override
+  String get glassQuality => 'Glass Quality';
+
+  @override
+  String get glassQualitySubtitle =>
+      'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.';
+
+  @override
+  String get glassQualityAuto => 'Auto';
+
+  @override
+  String get glassQualityFull => 'Full';
+
+  @override
+  String get glassQualityReduced => 'Reduced';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
@@ -929,6 +953,27 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get extras => 'Extras';
+
+  @override
+  String get behindTheScenes => 'Behind the Scenes';
+
+  @override
+  String get deletedScenes => 'Deleted Scenes';
+
+  @override
+  String get featurettes => 'Featurettes';
+
+  @override
+  String get interviews => 'Interviews';
+
+  @override
+  String get scenes => 'Scenes';
+
+  @override
+  String get shorts => 'Shorts';
+
+  @override
+  String get trailers => 'Remorques';
 
   @override
   String timeRemaining(String time) {
@@ -8814,9 +8859,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get videos => 'Vidéos';
 
   @override
-  String get trailers => 'Remorques';
-
-  @override
   String get programs => 'Programmes';
 
   @override
@@ -9272,12 +9314,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Timeline is empty';
 
   @override
-  String get audiobookWholeBook => 'Whole book';
-
-  @override
-  String audiobookWholeBookProgress(String percent, String time) {
-    return '$percent% · $time left';
-  }
+  String get audiobookWholeBook => 'Whole Book';
 
   @override
   String get audiobookFocusedTimeline => 'Focused Timeline';

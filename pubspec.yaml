@@ -69,6 +69,7 @@ dependencies:
   flutter_local_notifications: ^21.0.0
   audio_service: ^0.18.18
   audio_session: ^0.2.3
+  rxdart: ^0.28.0
 
   # Utilities
   device_info_plus: ^11.5.0

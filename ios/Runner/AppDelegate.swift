@@ -50,7 +50,7 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
 }
 
 @main
-@objc class AppDelegate: FlutterAppDelegate, GCKSessionManagerListener, FlutterImplicitEngineDelegate {
+@objc class AppDelegate: FlutterAppDelegate, GCKSessionManagerListener {
   private static let isSimulator: Bool = {
     #if targetEnvironment(simulator)
       return true
@@ -119,23 +119,29 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
     return root
   }
 
+  // One explicit engine for the whole app. The phone UI scene and the CarPlay
+  // scene both use it, and starting it in didFinishLaunchingWithOptions makes
+  // Dart run even when iOS launches the app for CarPlay only (no window scene,
+  // so a storyboard-created implicit engine would never exist).
+  let sharedEngine = FlutterEngine(name: "moonfin")
+  private var engineStarted = false
+
+  func startEngineIfNeeded() {
+    guard !engineStarted else { return }
+    engineStarted = true
+    sharedEngine.run()
+    GeneratedPluginRegistrant.register(with: sharedEngine)
+    setUpPlatformChannels(messenger: sharedEngine.binaryMessenger)
+  }
+
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     configureGoogleCast()
+    startEngineIfNeeded()
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-  }
-
-  // Called once the implicit FlutterEngine (created by the storyboard's
-  // FlutterViewController under the UIScene lifecycle) is initialized. Plugin
-  // registration and application-level channels are wired up here against the
-  // engine's messenger instead of `window.rootViewController`, which is not yet
-  // available at `didFinishLaunchingWithOptions` time when scenes are in use.
-  func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
-    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
-    setUpPlatformChannels(messenger: engineBridge.applicationRegistrar.messenger())
   }
 
   private func setUpPlatformChannels(messenger: FlutterBinaryMessenger) {
@@ -713,6 +719,10 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
       default:
         result(FlutterMethodNotImplemented)
       }
+    }
+
+    if #available(iOS 14.0, *) {
+      CarPlayBridge.shared.attach(messenger: messenger)
     }
   }
 

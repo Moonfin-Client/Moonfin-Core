@@ -1,3 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  These drawables are referenced only by string name at runtime (audio_service
+  resolves them via Resources.getIdentifier for the media notification's small
+  icon and the Android Auto shuffle/repeat custom actions). R8 resource
+  shrinking can't see those references, so without this keep list it strips
+  them from minified builds. A missing action icon makes audio_service throw on
+  every playback-state push, which aborts before the foreground service starts:
+  no media notification, no Android Auto controls, and background audio gets
+  killed a few seconds after the app is suspended.
+-->
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@drawable/ic_notification" />
+    tools:keep="@drawable/ic_notification,@drawable/ic_shuffle,@drawable/ic_repeat,@drawable/ic_repeat_one" />

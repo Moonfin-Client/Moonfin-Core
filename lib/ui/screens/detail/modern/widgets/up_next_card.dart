@@ -101,6 +101,7 @@ class _UpNextCardState extends State<UpNextCard> {
             child: ClipRRect(
               borderRadius: AppRadius.circular(radius.topLeft.x - 1.25),
               child: adaptiveGlass(
+                context: context,
                 cornerRadius: radius.topLeft.x - 1.25,
                 blur: 18,
                 fallbackColor: AppColorScheme.surface.withValues(alpha: 0.42),
@@ -175,6 +176,7 @@ class _UpNextCardState extends State<UpNextCard> {
             child: ClipRRect(
               borderRadius: AppRadius.circular(radius.topLeft.x - 1.25),
               child: adaptiveGlass(
+                context: context,
                 cornerRadius: radius.topLeft.x - 1.25,
                 blur: 18,
                 fallbackColor: AppColorScheme.surface.withValues(alpha: 0.42),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:moonfin_design/moonfin_design.dart';
 
+import '../focus/glass_focus_halo.dart';
+
+/// Thin shim over [GlassFocusHalo] kept for the existing audiobook call
+/// sites.
 class AudiobookFocusRing extends StatelessWidget {
   const AudiobookFocusRing({
     super.key,
@@ -21,24 +24,13 @@ class AudiobookFocusRing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = borderRadius ?? BorderRadius.circular(12);
-    final borderCol = borderColor ?? AppColorScheme.accent;
-    final bgCol = backgroundColor ??
-        (focused
-            ? AppColorScheme.accent.withValues(alpha: 0.18)
-            : Colors.transparent);
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 120),
-      padding: padding ?? EdgeInsets.zero,
-      decoration: BoxDecoration(
-        borderRadius: radius,
-        border: Border.all(
-          color: focused ? borderCol : Colors.transparent,
-          width: 2.4,
-        ),
-        color: focused ? bgCol : Colors.transparent,
-      ),
+    return GlassFocusHalo(
+      focused: focused,
+      borderRadius: borderRadius,
+      ringColor: borderColor,
+      backgroundColor: backgroundColor,
+      padding: padding,
+      scale: 1.0,
       child: child,
     );
   }

@@ -4,14 +4,12 @@ import android.app.Activity
 import android.app.PendingIntent
 import android.app.PictureInPictureParams
 import android.app.RemoteAction
-import android.app.UiModeManager
 import android.content.ActivityNotFoundException
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
@@ -72,6 +70,9 @@ class MainActivity : AudioServiceActivity() {
     private var externalPlayerChannel: MethodChannel? = null
     private var externalPlayerPendingResult: MethodChannel.Result? = null
     private var gamepadChannel: MethodChannel? = null
+    private var watchNextChannel: MethodChannel? = null
+    private var watchNextPublisher: WatchNextPublisher? = null
+    private var pendingDeepLink: String? = null
     private var gameActive = false
     private var hatX = 0
     private var hatY = 0
@@ -108,6 +109,7 @@ class MainActivity : AudioServiceActivity() {
         private const val DISMISS_DELAY_MS = 300L
         private const val PLATFORM_CHANNEL = "org.moonfin.androidtv/platform"
         private const val GAMEPAD_CHANNEL = "org.moonfin.androidtv/gamepad"
+        private const val WATCH_NEXT_CHANNEL = WatchNextWorker.CHANNEL
         private const val AUDIO_CAPS_EVENTS_CHANNEL =
             "org.moonfin.androidtv/audioCapabilitiesEvents"
         private const val EXTERNAL_PLAYER_PROXY_REQUEST_CODE = 17115
@@ -177,15 +179,27 @@ class MainActivity : AudioServiceActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             runCatching { window.colorMode = ActivityInfo.COLOR_MODE_HDR }
         }
+        deepLinkFrom(intent)?.let { pendingDeepLink = it }
     }
 
-    private fun isTvDevice(): Boolean {
-        val uiModeManager = getSystemService(UI_MODE_SERVICE) as UiModeManager
-        val pm = packageManager
-        return uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION ||
-            pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK) ||
-            pm.hasSystemFeature("amazon.hardware.fire_tv")
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        deepLinkFrom(intent)?.let { watchNextChannel?.invokeMethod("onDeepLink", it) }
     }
+
+    private fun deepLinkFrom(intent: Intent?): String? {
+        val itemId = intent?.getStringExtra(WatchNextPublisher.EXTRA_ITEM_ID) ?: return null
+        val serverId = intent.getStringExtra(WatchNextPublisher.EXTRA_SERVER_ID)
+        val query = if (serverId.isNullOrEmpty()) {
+            "id=${Uri.encode(itemId)}"
+        } else {
+            "id=${Uri.encode(itemId)}&serverId=${Uri.encode(serverId)}"
+        }
+        return "moonfin://play?$query"
+    }
+
+    private fun isTvDevice(): Boolean = isTelevision(this)
 
     // Selects the renderer at engine startup (before Dart) from the persisted
     // preference. Single source of truth: no static EnableImpeller manifest flag.
@@ -512,6 +526,44 @@ class MainActivity : AudioServiceActivity() {
             }
         })
 
+        val publisher = watchNextPublisher ?: WatchNextPublisher(applicationContext)
+            .also { watchNextPublisher = it }
+        watchNextChannel = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            WATCH_NEXT_CHANNEL,
+        )
+        watchNextChannel?.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "publish" -> {
+                    @Suppress("UNCHECKED_CAST")
+                    val items = call.argument<List<Map<String, Any?>>>("items") ?: emptyList()
+                    publisher.publish(items)
+                    result.success(null)
+                }
+                "clear" -> {
+                    publisher.clear()
+                    result.success(null)
+                }
+                "getInitialDeepLink" -> {
+                    result.success(pendingDeepLink)
+                    pendingDeepLink = null
+                }
+                "schedulePeriodic" -> {
+                    WatchNextWorker.schedule(applicationContext)
+                    result.success(null)
+                }
+                "cancelPeriodic" -> {
+                    WatchNextWorker.cancel(applicationContext)
+                    result.success(null)
+                }
+                "runRefreshNow" -> {
+                    WatchNextWorker.runNow(applicationContext)
+                    result.success(null)
+                }
+                else -> result.notImplemented()
+            }
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(
                 pipReceiver,
@@ -744,6 +796,7 @@ class MainActivity : AudioServiceActivity() {
         dlnaEventsChannel?.setStreamHandler(null)
         externalPlayerChannel?.setMethodCallHandler(null)
         gamepadChannel?.setMethodCallHandler(null)
+        watchNextChannel?.setMethodCallHandler(null)
         externalPlayerPendingResult?.error(
             "ACTIVITY_DESTROYED",
             "Main activity was destroyed before external playback returned.",

@@ -114,6 +114,16 @@ class _HomeShellState extends State<_HomeShell>
   String? _lastObservedPath;
   ModalRoute<dynamic>? _observedRoute;
 
+  bool _lastEnableRadarrCalendar = false;
+  bool _lastEnableSonarrCalendar = false;
+  bool _lastMergeRadarrSonarrCalendars = false;
+  bool _lastRadarrCalendarShowCinema = true;
+  bool _lastRadarrCalendarShowDigital = true;
+  bool _lastRadarrCalendarShowPhysical = true;
+  bool _lastRadarrCalendarShowDate = true;
+  bool _lastSonarrCalendarShowEpisodeInfo = true;
+  bool _lastSonarrCalendarShowDate = true;
+
   static const _selectionDelay = Duration(milliseconds: 150);
   static const _backdropDelay = Duration(milliseconds: 200);
 
@@ -144,6 +154,16 @@ class _HomeShellState extends State<_HomeShell>
       UserPreferences.blockedParentalRatings,
     );
     _lastSeerrAvailable = _pluginSyncService.seerrAvailable;
+    _lastEnableRadarrCalendar = _userPrefs.get(UserPreferences.enableRadarrCalendar);
+    _lastEnableSonarrCalendar = _userPrefs.get(UserPreferences.enableSonarrCalendar);
+    _lastMergeRadarrSonarrCalendars = _userPrefs.get(UserPreferences.mergeRadarrSonarrCalendars);
+    _lastRadarrCalendarShowCinema = _userPrefs.get(UserPreferences.radarrCalendarShowCinema);
+    _lastRadarrCalendarShowDigital = _userPrefs.get(UserPreferences.radarrCalendarShowDigital);
+    _lastRadarrCalendarShowPhysical = _userPrefs.get(UserPreferences.radarrCalendarShowPhysical);
+    _lastRadarrCalendarShowDate = _userPrefs.get(UserPreferences.radarrCalendarShowDate);
+    _lastSonarrCalendarShowEpisodeInfo = _userPrefs.get(UserPreferences.sonarrCalendarShowEpisodeInfo);
+    _lastSonarrCalendarShowDate = _userPrefs.get(UserPreferences.sonarrCalendarShowDate);
+
     _pluginSyncService.addListener(_onPluginSyncChanged);
     _userPrefs.addListener(_onPrefsChanged);
     _maybeRegisterThemeMusic();
@@ -227,15 +247,43 @@ class _HomeShellState extends State<_HomeShell>
     final currentBlocked = _userPrefs.get(
       UserPreferences.blockedParentalRatings,
     );
+    final currentEnableRadarr = _userPrefs.get(UserPreferences.enableRadarrCalendar);
+    final currentEnableSonarr = _userPrefs.get(UserPreferences.enableSonarrCalendar);
+    final currentMerge = _userPrefs.get(UserPreferences.mergeRadarrSonarrCalendars);
+    final currentShowCinema = _userPrefs.get(UserPreferences.radarrCalendarShowCinema);
+    final currentShowDigital = _userPrefs.get(UserPreferences.radarrCalendarShowDigital);
+    final currentShowPhysical = _userPrefs.get(UserPreferences.radarrCalendarShowPhysical);
+    final currentShowDate = _userPrefs.get(UserPreferences.radarrCalendarShowDate);
+    final currentShowEpisodeInfo = _userPrefs.get(UserPreferences.sonarrCalendarShowEpisodeInfo);
+    final currentShowSonarrDate = _userPrefs.get(UserPreferences.sonarrCalendarShowDate);
+
     if (currentJson != _lastSectionsJson ||
         currentMultiServer != _lastMultiServer ||
-        currentMergeContinueWatchingNextUp !=
-            _lastMergeContinueWatchingNextUp ||
-        currentBlocked != _lastBlockedParentalRatings) {
+        currentMergeContinueWatchingNextUp != _lastMergeContinueWatchingNextUp ||
+        currentBlocked != _lastBlockedParentalRatings ||
+        currentEnableRadarr != _lastEnableRadarrCalendar ||
+        currentEnableSonarr != _lastEnableSonarrCalendar ||
+        currentMerge != _lastMergeRadarrSonarrCalendars ||
+        currentShowCinema != _lastRadarrCalendarShowCinema ||
+        currentShowDigital != _lastRadarrCalendarShowDigital ||
+        currentShowPhysical != _lastRadarrCalendarShowPhysical ||
+        currentShowDate != _lastRadarrCalendarShowDate ||
+        currentShowEpisodeInfo != _lastSonarrCalendarShowEpisodeInfo ||
+        currentShowSonarrDate != _lastSonarrCalendarShowDate) {
       _lastSectionsJson = currentJson;
       _lastMultiServer = currentMultiServer;
       _lastMergeContinueWatchingNextUp = currentMergeContinueWatchingNextUp;
       _lastBlockedParentalRatings = currentBlocked;
+      _lastEnableRadarrCalendar = currentEnableRadarr;
+      _lastEnableSonarrCalendar = currentEnableSonarr;
+      _lastMergeRadarrSonarrCalendars = currentMerge;
+      _lastRadarrCalendarShowCinema = currentShowCinema;
+      _lastRadarrCalendarShowDigital = currentShowDigital;
+      _lastRadarrCalendarShowPhysical = currentShowPhysical;
+      _lastRadarrCalendarShowDate = currentShowDate;
+      _lastSonarrCalendarShowEpisodeInfo = currentShowEpisodeInfo;
+      _lastSonarrCalendarShowDate = currentShowSonarrDate;
+
       _viewModel.refresh();
     }
     _maybeRegisterThemeMusic();
@@ -520,10 +568,11 @@ class _Backdrop extends StatelessWidget {
       errorBuilder: (_, _, _) => const SizedBox.shrink(),
     );
     if (blur <= 0) return image;
+    final sigma = GlassSettings.decorativeSigma(blur);
     return ImageFiltered(
       imageFilter: ui.ImageFilter.blur(
-        sigmaX: blur,
-        sigmaY: blur,
+        sigmaX: sigma,
+        sigmaY: sigma,
         tileMode: TileMode.decal,
       ),
       child: image,
@@ -1387,7 +1436,11 @@ class _ContentRowsState extends State<_ContentRows>
         }
 
         await _media3PreviewBackend
-            .play(<String, dynamic>{'url': previewUrl, 'mediaType': 'video'})
+            .play(<String, dynamic>{
+              'url': previewUrl,
+              'mediaType': 'video',
+              'preview': true,
+            })
             .timeout(_previewOpenTimeout);
         if (!_isPreviewRequestActive(requestId, previewKey)) {
           await _media3PreviewBackend.stop();
@@ -3115,71 +3168,61 @@ class _ContentRowsState extends State<_ContentRows>
         widget.prefs.get(UserPreferences.fullScreenRows);
     final isRowsV2 =
         widget.prefs.get(UserPreferences.homeRowsStyle) == HomeRowsStyle.v2;
+    // If overlay isn't active, return child unchanged
     if ((!showInfoOverlay || !_infoRevealed) && !(isRowsV2 && fullScreenRows)) {
       return child;
     }
 
+    // If media bar isn't included, no shifting
     if (!PlatformDetection.isTV && !fullScreenRows && !_isMediaBarIncluded()) {
       return child;
     }
 
-    if (PlatformDetection.isTV || fullScreenRows) {
-      final focusedRowIndex = _focusedRowIndex(
-        FocusManager.instance.primaryFocus,
-      );
-      final rowViewportTop = rowTopOffsets[rowIndex] - _scrollOffset;
-      final rowBottom = rowViewportTop + rowExtents[rowIndex];
-      if (focusedRowIndex != null) {
-        if (fullScreenRows) {
-          final distance = (rowIndex - focusedRowIndex).abs();
-          if (distance > 1) {
-            return IgnorePointer(
-              child: Visibility(visible: false, child: child),
-            );
-          }
-          // Keep immediate neighbors in the tree so they are focusable
-          if (distance == 1) {
-            return IgnorePointer(
-              child: Opacity(opacity: 0.0, child: child),
-            );
-          }
-        } else if (rowIndex < focusedRowIndex) {
-          return IgnorePointer(
-            child: Visibility(visible: false, child: child),
-          );
-        }
-      }
-      if (rowBottom < overlayBottom - 80) {
-        return IgnorePointer(
-          child: Visibility(visible: false, child: child),
-        );
-      }
-      return child;
-    }
+    final focusedRowIndex = _focusedRowIndex(FocusManager.instance.primaryFocus);
 
-    final focusedRowIndex = _focusedRowIndex(
-      FocusManager.instance.primaryFocus,
-    );
-    if (focusedRowIndex != null && rowIndex >= focusedRowIndex) {
-      return child;
-    }
-
+    // Compute viewport geometry
     final rowViewportTop = rowTopOffsets[rowIndex] - _scrollOffset;
     final rowViewportBottom = rowViewportTop + rowExtents[rowIndex];
 
-    if (rowViewportBottom <= overlayBottom + 8) {
+    // Get viewport height from scroll controller
+    final viewportHeight = _scrollController.position.viewportDimension;
+
+    // Classifier inputs
+    final isVisibleOnScreen = rowViewportBottom > 0 && rowViewportTop < viewportHeight;
+    final isUnderOverlay = rowViewportBottom <= overlayBottom + 8;
+    final isNeighbor = focusedRowIndex != null &&
+        (rowIndex - focusedRowIndex).abs() == 1;
+    final isFocusedRow = focusedRowIndex == rowIndex;
+    final isFarAway = focusedRowIndex != null &&
+        (rowIndex - focusedRowIndex).abs() > 1;
+
+    // Focused row: always visible
+    if (isFocusedRow) {
+      return child;
+    }
+
+    // Neighbor rows: always kept in tree (opacity fade)
+    if (isNeighbor) {
+      return IgnorePointer(
+        child: Opacity(opacity: 0.0, child: child),
+      );
+    }
+
+    // Far-away rows: hide only if offscreen
+    if (isFarAway && !isVisibleOnScreen) {
       return IgnorePointer(
         child: Visibility(visible: false, child: child),
       );
     }
 
-    if (focusedRowIndex != null &&
-        focusedRowIndex < rowTopOffsets.length &&
-        (rowTopOffsets[focusedRowIndex] - _scrollOffset) >=
-            overlayBottom + 20) {
-      return child;
+    // Rows under overlay: fade out but keep focusable
+    if (isUnderOverlay) {
+      return IgnorePointer(
+        child: Opacity(opacity: 0.0, child: child),
+      );
     }
 
+    // Overlay shift logic
     final shift = _overlayRowShift(
       rowViewportTop: rowViewportTop,
       rowExtent: rowExtents[rowIndex],
@@ -4107,7 +4150,55 @@ class _ContentRowsState extends State<_ContentRows>
                 color: subtitleColor,
                 shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
               );
-              cardSubtitleWidget = Column(
+
+              Widget? ratingWidget;
+              final enableEpisodeRatings = widget.prefs.get(UserPreferences.enableEpisodeRatings);
+              if (enableEpisodeRatings) {
+                final ratingVal = item.communityRating;
+                if (ratingVal != null && ratingVal > 0) {
+                  final displayVal = ratingVal <= 10.0 ? ratingVal * 10 : ratingVal;
+                  final ratingText = '${displayVal.toInt()}%';
+                  final ratingColor = isNeon
+                      ? AppColorScheme.accent
+                      : const Color(0xFF00B0FF); // matching TMDb theme color or active neon color
+                  ratingWidget = Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: ratingColor.withValues(alpha: 0.15),
+                      border: Border.all(
+                        color: ratingColor.withValues(alpha: 0.8),
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'assets/icons/ratings/tmdb.png',
+                          height: 18,
+                          filterQuality: FilterQuality.medium,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          ratingText,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            height: 1.1,
+                            shadows: [
+                              Shadow(blurRadius: 4, color: Colors.black54)
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              }
+
+              final infoColumn = Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -4126,6 +4217,20 @@ class _ContentRowsState extends State<_ContentRows>
                   ),
                 ],
               );
+
+              if (ratingWidget != null) {
+                cardSubtitleWidget = Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ratingWidget,
+                    const SizedBox(width: 8),
+                    Expanded(child: infoColumn),
+                  ],
+                );
+              } else {
+                cardSubtitleWidget = infoColumn;
+              }
             } else {
               cardSubtitle = episodeInfo ?? item.name;
               cardSubtitleWidget = null;
@@ -4329,7 +4434,7 @@ class _ContentRowsState extends State<_ContentRows>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (hasAnyRating)
+                    if (hasAnyRating && item.type != 'Episode')
                       RatingsRow(
                         ratings: additionalRatings,
                         communityRating: item.communityRating,

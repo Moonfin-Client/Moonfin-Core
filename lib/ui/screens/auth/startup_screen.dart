@@ -9,6 +9,7 @@ import '../../../auth/repositories/server_repository.dart';
 import '../../../auth/repositories/session_repository.dart';
 import '../../../auth/store/authentication_preferences.dart';
 import '../../../auth/store/credential_store.dart';
+import '../../../data/services/connectivity_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../util/pin_code_util.dart';
 import '../../../preference/preference_constants.dart';
@@ -56,6 +57,15 @@ class _StartupScreenState extends State<StartupScreen>
     super.dispose();
   }
 
+  /// On a cold boot the app can win the race against Wi-Fi association and
+  /// see the device as offline for a few seconds. Waiting here keeps the
+  /// splash up briefly instead of bouncing the user to the offline fallback.
+  Future<void> _waitForNetworkSettle() async {
+    final connectivity = GetIt.instance<ConnectivityService>();
+    if (connectivity.isOnline) return;
+    await connectivity.waitForOnline(const Duration(seconds: 5));
+  }
+
   Future<void> _initialize() async {
     final session = GetIt.instance<SessionRepository>();
     final serverRepo = GetIt.instance<ServerRepository>();
@@ -69,6 +79,7 @@ class _StartupScreenState extends State<StartupScreen>
     await serverRepo.loadStoredServers();
 
     if (widget.bootstrapActiveSession && session.activeUserId != null) {
+      await _waitForNetworkSettle();
       if (mounted) context.go(Destinations.home);
       return;
     }
@@ -129,6 +140,7 @@ class _StartupScreenState extends State<StartupScreen>
         }
       }
 
+      await _waitForNetworkSettle();
       if (mounted) context.go(Destinations.home);
     } else {
       if (mounted) {

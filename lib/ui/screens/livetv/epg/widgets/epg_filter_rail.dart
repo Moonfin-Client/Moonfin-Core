@@ -62,6 +62,7 @@ class EpgFilterRail extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: apple
           ? adaptiveGlass(
+              context: context,
               cornerRadius: 15,
               blur: 14,
               fallbackColor: AppColorScheme.surface.withValues(alpha: 0.35),

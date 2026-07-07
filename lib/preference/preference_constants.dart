@@ -166,6 +166,11 @@ enum DesktopScrollWheelAction {
 /// so these enum names must stay stable. `auto` keeps the per-device default.
 enum ImpellerMode { auto, on, off }
 
+/// Glass rendering budget. `auto` picks per-device (real blur on capable
+/// hardware, zero-blur sheen on TV boxes/web); `full` forces real blur;
+/// `reduced` forces the zero-blur sheen everywhere.
+enum GlassQualityMode { auto, full, reduced }
+
 enum AppTheme {
   white(0xFFFFFFFF),
   black(0xFF000000),

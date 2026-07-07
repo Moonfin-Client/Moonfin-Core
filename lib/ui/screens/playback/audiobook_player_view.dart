@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:path_provider/path_provider.dart';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -76,7 +74,6 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
 
   AudiobookDrawerTab _drawerTab = AudiobookDrawerTab.chapters;
   bool _drawerOpen = false;
-  bool _showRemaining = false;
   bool? _localFavorite;
   String? _favoriteItemId;
 
@@ -104,7 +101,6 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
   @override
   void initState() {
     super.initState();
-    _showRemaining = _prefs.get(UserPreferences.audiobookShowRemaining);
     _drawerOpen = _dpadNav;
     final savedTab = _prefs.get(UserPreferences.audiobookDrawerTab);
     _drawerTab = AudiobookDrawerTab.values.firstWhere(
@@ -516,27 +512,12 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
     }
   }
 
-  String _formatRemaining(Duration position, Duration total) {
-    final remaining = total - position;
-    final speed = _state.playbackSpeed;
-    if (speed <= 0) return '-${formatAudiobookClock(remaining)}';
-    final scaled = Duration(
-      milliseconds: (remaining.inMilliseconds / speed).round(),
-    );
-    return '-${formatAudiobookClock(scaled)}';
-  }
-
   Future<void> _setDrawerTab(AudiobookDrawerTab tab) async {
     setState(() {
       _drawerTab = tab;
       _tvSubIndex = 0;
     });
     await _prefs.set(UserPreferences.audiobookDrawerTab, tab.name);
-  }
-
-  Future<void> _setShowRemaining(bool value) async {
-    setState(() => _showRemaining = value);
-    await _prefs.set(UserPreferences.audiobookShowRemaining, value);
   }
 
   Future<void> _skipBack() async {
@@ -889,11 +870,7 @@ class _AudiobookPlayerViewState extends State<AudiobookPlayerView> {
                   notes: _notesList,
                   isTvFocused: _dpadNav &&
                       _tvArea == _AudiobookFocusArea.progress,
-                  showRemaining: _showRemaining,
                   onSeek: (d) => _manager.seekTo(d),
-                  onToggleRemaining: () => _setShowRemaining(!_showRemaining),
-                  formatPosition: formatAudiobookClock,
-                  formatRemaining: _formatRemaining,
                 ),
                 const SizedBox(height: AppSpacing.spaceXs),
                 AudiobookBookOverview(
@@ -1620,10 +1597,21 @@ class _BlurredBackdrop extends StatelessWidget {
       );
     }
     if (bg == null) return const SizedBox.shrink();
+    final sigma = GlassSettings.capSigma(50);
+    if (sigma <= 0) {
+      return Positioned.fill(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [bg, const ColoredBox(color: Color(0xB3000000))],
+        ),
+      );
+    }
     return Positioned.fill(
-      child: ImageFiltered(
-        imageFilter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
-        child: bg,
+      child: RepaintBoundary(
+        child: ImageFiltered(
+          imageFilter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+          child: bg,
+        ),
       ),
     );
   }

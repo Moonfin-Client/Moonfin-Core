@@ -22,14 +22,17 @@ Widget adaptiveListSection({required List<Widget> children}) {
     }
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 0),
-      child: adaptiveGlass(
-        cornerRadius: 12,
-        blur: 18,
-        tint: AppColorScheme.onSurface.withValues(alpha: 0.05),
-        fallbackColor: AppColorScheme.onSurface.withValues(alpha: 0.12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: rows,
+      child: Builder(
+        builder: (context) => adaptiveGlass(
+          context: context,
+          cornerRadius: 12,
+          blur: 18,
+          tint: AppColorScheme.onSurface.withValues(alpha: 0.05),
+          fallbackColor: AppColorScheme.onSurface.withValues(alpha: 0.12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: rows,
+          ),
         ),
       ),
     );

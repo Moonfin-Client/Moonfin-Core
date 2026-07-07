@@ -993,7 +993,7 @@ class _SeerrRowSwitchTile extends StatelessWidget {
     return TvFocusHighlight(
       enabled: true,
       builder: (context, focused) {
-        final iconColor = focused
+        final iconColor = focused && settingsTileInvertsOnFocus
             ? AppColors.black.withValues(alpha: 0.54)
             : (Theme.of(context).iconTheme.color ?? AppColorScheme.onSurface);
         final secondary = buildSettingsLeadingIconShell(
@@ -1201,7 +1201,7 @@ class _CustomListsScreenState extends State<_CustomListsScreen> {
                       return TvFocusHighlight(
                         enabled: true,
                         builder: (ctx, focused) {
-                          final iconColor = focused
+                          final iconColor = focused && settingsTileInvertsOnFocus
                               ? AppColors.black.withValues(alpha: 0.54)
                               : (Theme.of(ctx).iconTheme.color ??
                                   AppColorScheme.onSurface);
@@ -1714,7 +1714,9 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
                            style: const TextStyle(color: Colors.white, fontSize: 14),
                            decoration: InputDecoration(
                              filled: true,
-                             fillColor: hasFocus ? AppColorScheme.buttonFocused : Colors.black26,
+                             fillColor: hasFocus
+                                 ? AppColorScheme.buttonFocused.withValues(alpha: 0.22)
+                                 : Colors.black26,
                              border: OutlineInputBorder(
                                borderRadius: AppRadius.circular(8),
                                borderSide: BorderSide(
@@ -1779,7 +1781,9 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
                                style: const TextStyle(color: Colors.white, fontSize: 14),
                                decoration: InputDecoration(
                                  filled: true,
-                                 fillColor: hasFocus ? AppColorScheme.buttonFocused : Colors.black26,
+                                 fillColor: hasFocus
+                                     ? AppColorScheme.buttonFocused.withValues(alpha: 0.22)
+                                     : Colors.black26,
                                  border: OutlineInputBorder(
                                    borderRadius: AppRadius.circular(8),
                                    borderSide: BorderSide(
@@ -1916,7 +1920,9 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
                            style: const TextStyle(color: Colors.white, fontSize: 14),
                            decoration: InputDecoration(
                              filled: true,
-                             fillColor: hasFocus ? AppColorScheme.buttonFocused : Colors.black26,
+                             fillColor: hasFocus
+                                 ? AppColorScheme.buttonFocused.withValues(alpha: 0.22)
+                                 : Colors.black26,
                              border: OutlineInputBorder(
                                borderRadius: AppRadius.circular(8),
                                borderSide: BorderSide(
@@ -1988,7 +1994,9 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
                              style: const TextStyle(color: Colors.white, fontSize: 14),
                              decoration: InputDecoration(
                                filled: true,
-                               fillColor: hasFocus ? AppColorScheme.buttonFocused : Colors.black26,
+                               fillColor: hasFocus
+                                 ? AppColorScheme.buttonFocused.withValues(alpha: 0.22)
+                                 : Colors.black26,
                                border: OutlineInputBorder(
                                  borderRadius: AppRadius.circular(8),
                                  borderSide: BorderSide(
@@ -2065,7 +2073,7 @@ class _AddEditCustomRowDialogState extends State<_AddEditCustomRowDialog> {
                                 title: Text(
                                   'Show User Ratings?',
                                   style: TextStyle(
-                                    color: focused
+                                    color: focused && settingsTileInvertsOnFocus
                                         ? AppColors.black.withValues(alpha: 0.87)
                                         : Colors.white,
                                     fontSize: 14,
@@ -2217,7 +2225,7 @@ class _SettingsTextFieldState extends State<_SettingsTextField> {
               ),
               filled: true,
               fillColor: focused
-                  ? AppColorScheme.buttonFocused
+                  ? AppColorScheme.buttonFocused.withValues(alpha: 0.22)
                   : Colors.black26,
               borderRadius: 8,
               borderColor: focused

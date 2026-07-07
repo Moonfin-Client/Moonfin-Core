@@ -735,7 +735,12 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   bool isNavigableFolder(AggregatedItem item) {
     final type = item.type;
-    if (type == 'Series' || type == 'BoxSet' || type == 'Playlist') {
+    if (type == 'Series' ||
+        type == 'BoxSet' ||
+        type == 'Playlist' ||
+        type == 'MusicArtist' ||
+        type == 'MusicAlbum' ||
+        type == 'AlbumArtist') {
       return false;
     }
 

@@ -75,18 +75,23 @@ class SettingsPanel extends StatelessWidget {
         child: body,
       );
     } else if (frostedForTv) {
-      content = BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 32, sigmaY: 32),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: surface.withValues(alpha: 0.62),
-            border: Border(
-              left: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
-            ),
+      final sigma = GlassSettings.capSigma(32);
+      final panel = DecoratedBox(
+        decoration: BoxDecoration(
+          // Without blur behind it the panel needs more opacity to read.
+          color: surface.withValues(alpha: sigma > 0 ? 0.62 : 0.86),
+          border: Border(
+            left: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
           ),
-          child: body,
         ),
+        child: body,
       );
+      content = sigma > 0
+          ? BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
+              child: panel,
+            )
+          : panel;
     } else {
       content = body;
     }

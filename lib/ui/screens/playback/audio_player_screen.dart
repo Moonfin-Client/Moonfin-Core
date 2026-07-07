@@ -85,6 +85,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   @override
   void initState() {
     super.initState();
+    _tvQueueFocusIndex = _initialTvQueueFocusIndex();
     _subs.addAll([
       _manager.backendChangedStream.listen((_) => _rebuild()),
       _state.playingStream.listen((_) => _rebuild()),
@@ -110,6 +111,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         _tvOverlayFocus.requestFocus();
+        _scrollTvQueueIntoView(_tvQueueFocusIndex, animate: false);
       });
     }
     _loadLyricsIfNeeded();

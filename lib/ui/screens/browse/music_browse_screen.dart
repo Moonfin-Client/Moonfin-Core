@@ -6,6 +6,8 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart';
+import 'package:playback_core/playback_core.dart';
+import '../../../data/services/media_server_client_factory.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/services/background_service.dart';
@@ -120,6 +122,10 @@ class _MusicBrowseScreenState extends State<MusicBrowseScreen> {
   }
 
   void _onItemTap(AggregatedItem item) {
+    if (item.type == 'Audio') {
+      unawaited(_playTrackDirectly(context, item));
+      return;
+    }
     context.push(Destinations.item(item.id, serverId: item.serverId));
   }
 
@@ -436,7 +442,11 @@ class _MusicHero extends StatefulWidget {
 }
 
 class _MusicHeroState extends State<_MusicHero> with FocusStateMixin {
-  void _open({bool play = false}) {
+  void _open({bool play = true}) {
+    if (widget.item.type == 'Audio') {
+      unawaited(_playTrackDirectly(context, widget.item));
+      return;
+    }
     context.push(
       Destinations.item(
         widget.item.id,
@@ -1513,5 +1523,78 @@ class _DialogCheckboxTileState extends State<_DialogCheckboxTile> {
         ),
       ),
     );
+  }
+}
+
+Future<void> _playTrackDirectly(BuildContext context, AggregatedItem item) async {
+  final navigator = Navigator.of(context, rootNavigator: true);
+  final manager = GetIt.instance<PlaybackManager>();
+  var loadingVisible = true;
+  void dismissLoading() {
+    if (loadingVisible) {
+      loadingVisible = false;
+      navigator.pop();
+    }
+  }
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => const Center(child: CircularProgressIndicator()),
+  );
+
+  final albumId =
+      item.albumId?.isNotEmpty == true ? item.albumId : item.parentId;
+
+  try {
+    var tracks = <AggregatedItem>[item];
+    var startIndex = 0;
+
+    if (albumId != null && albumId.isNotEmpty) {
+      final factory = GetIt.instance<MediaServerClientFactory>();
+      final client = item.serverId != null
+          ? factory.getClientIfExists(item.serverId!) ??
+                GetIt.instance<MediaServerClient>()
+          : GetIt.instance<MediaServerClient>();
+
+      final data = await client.itemsApi.getItems(
+        parentId: albumId,
+        includeItemTypes: const ['Audio'],
+        sortBy: 'ParentIndexNumber,IndexNumber,SortName',
+        fields: 'PrimaryImageAspectRatio,BasicSyncInfo',
+      );
+
+      final loadedTracks = (data['Items'] as List?)
+              ?.whereType<Map>()
+              .map((raw) => raw.cast<String, dynamic>())
+              .where((raw) => raw['Id']?.toString().isNotEmpty == true)
+              .map((raw) => AggregatedItem(
+                    id: raw['Id'].toString(),
+                    serverId: item.serverId,
+                    rawData: raw,
+                  ))
+              .toList() ??
+          const <AggregatedItem>[];
+
+      if (loadedTracks.isNotEmpty) {
+        tracks = loadedTracks;
+        final idx = tracks.indexWhere((t) => t.id == item.id);
+        if (idx >= 0) {
+          startIndex = idx;
+        }
+      }
+    }
+
+    await manager.playItems(tracks, startIndex: startIndex);
+    dismissLoading();
+    if (context.mounted) {
+      context.push(Destinations.audioPlayer);
+    }
+  } catch (_) {
+    dismissLoading();
+    await manager.playItems([item]);
+    if (context.mounted) {
+      context.push(Destinations.audioPlayer);
+    }
   }
 }

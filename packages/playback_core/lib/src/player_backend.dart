@@ -69,6 +69,12 @@ abstract class PlayerBackend {
 
   bool get nativelyHandlesStartPosition => false;
 
+  /// Whether this backend requests and holds Android audio focus itself, like
+  /// media3/ExoPlayer built with handleAudioFocus=true. When true, the Dart
+  /// audio_session layer stays out of the way so the two do not fight over focus
+  /// and pause each other.
+  bool get managesAudioFocus => false;
+
   bool get canRenderBitmapSubtitles;
 
   void dispose();

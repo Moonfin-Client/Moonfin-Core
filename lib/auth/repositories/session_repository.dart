@@ -11,13 +11,19 @@ import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
 
 import '../../data/models/aggregated_item.dart';
+import '../../data/services/carplay_service.dart';
 import '../../data/services/download_notification_service.dart';
+import '../../data/services/watch_next_service.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/plugin_sync_service.dart';
 import '../../data/services/socket_handler.dart';
 import '../../di/modules/app_module.dart';
 import '../../di/modules/playback_module.dart';
 import '../../di/modules/server_module.dart';
+import '../../playback/audio_handler.dart';
+import '../../playback/headless_session_bootstrap.dart';
+import '../../playback/last_playback_session_store.dart';
+import '../../playback/media_browse_service.dart';
 import '../../preference/preference_constants.dart';
 import '../../preference/user_preferences.dart';
 import '../store/authentication_preferences.dart';
@@ -188,6 +194,7 @@ class SessionRepository {
     setActiveStreamResolver(client);
     _socketHandler.connectTo(client);
     _bindRemoteCommandHandling();
+    _refreshCarBrowseTree(signedIn: true);
 
     _activeServerId = serverId;
     _activeUserId = userId;
@@ -318,7 +325,31 @@ class SessionRepository {
     _activeUserId = null;
     _hasCheckedWriteAccess = false;
     _userRepository.setCurrentUser(null);
+    _refreshCarBrowseTree(signedIn: false);
     _setState(SessionState.ready);
+  }
+
+  // Keep car clients (Android Auto / CarPlay) in sync with sign-in changes:
+  // drop cached browse data and make the car re-query its root. On sign-out
+  // the persisted resumption queue is cleared too.
+  void _refreshCarBrowseTree({required bool signedIn}) {
+    try {
+      GetIt.instance<HeadlessSessionBootstrap>().invalidate();
+      GetIt.instance<MediaBrowseService>().clearCache();
+      if (signedIn) {
+        WatchNextService().schedulePeriodicRefresh();
+      } else {
+        unawaited(GetIt.instance<LastPlaybackSessionStore>().clear());
+        WatchNextService().clear();
+        WatchNextService().cancelPeriodicRefresh();
+      }
+      if (GetIt.instance.isRegistered<MoonfinAudioHandler>()) {
+        GetIt.instance<MoonfinAudioHandler>().notifyChildrenChanged();
+      }
+      if (GetIt.instance.isRegistered<CarPlayService>()) {
+        GetIt.instance<CarPlayService>().notifySignInChanged(signedIn: signedIn);
+      }
+    } catch (_) {}
   }
 
   void _setState(SessionState state) {

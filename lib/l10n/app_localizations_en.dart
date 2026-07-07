@@ -167,6 +167,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recommendationSystemTmdb => 'TMDb Similarity';
 
   @override
+  String get recommendationsApplyParentalRatingCap =>
+      'Apply Parental Rating Cap?';
+
+  @override
+  String get recommendationsApplyParentalRatingCapSubtitle =>
+      'Limit Moonfin Recommends suggestions by parental rating of target media';
+
+  @override
   String get interfaceStyle => 'Interface Style';
 
   @override
@@ -181,6 +189,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get interfaceStyleMaterial => 'Material';
+
+  @override
+  String get glassQuality => 'Glass Quality';
+
+  @override
+  String get glassQualitySubtitle =>
+      'Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.';
+
+  @override
+  String get glassQualityAuto => 'Auto';
+
+  @override
+  String get glassQualityFull => 'Full';
+
+  @override
+  String get glassQualityReduced => 'Reduced';
 
   @override
   String get settingsAppearanceThemeSubtitle =>
@@ -916,6 +940,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get extras => 'Extras';
+
+  @override
+  String get behindTheScenes => 'Behind the Scenes';
+
+  @override
+  String get deletedScenes => 'Deleted Scenes';
+
+  @override
+  String get featurettes => 'Featurettes';
+
+  @override
+  String get interviews => 'Interviews';
+
+  @override
+  String get scenes => 'Scenes';
+
+  @override
+  String get shorts => 'Shorts';
+
+  @override
+  String get trailers => 'Trailers';
 
   @override
   String timeRemaining(String time) {
@@ -8651,9 +8696,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get videos => 'Videos';
 
   @override
-  String get trailers => 'Trailers';
-
-  @override
   String get programs => 'Programs';
 
   @override
@@ -9105,12 +9147,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get audiobookTimelineEmpty => 'Timeline is empty';
 
   @override
-  String get audiobookWholeBook => 'Whole book';
-
-  @override
-  String audiobookWholeBookProgress(String percent, String time) {
-    return '$percent% · $time left';
-  }
+  String get audiobookWholeBook => 'Whole Book';
 
   @override
   String get audiobookFocusedTimeline => 'Focused Timeline';
@@ -10294,6 +10331,9 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
   String endsAt(String time) {
     return 'Ends at $time';
   }
+
+  @override
+  String get trailers => 'Trailers';
 
   @override
   String endsIn(String time) {
@@ -17298,9 +17338,6 @@ class AppLocalizationsEnGb extends AppLocalizationsEn {
 
   @override
   String get videos => 'Videos';
-
-  @override
-  String get trailers => 'Trailers';
 
   @override
   String get programs => 'Programs';

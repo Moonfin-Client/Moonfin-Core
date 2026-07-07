@@ -11,6 +11,8 @@ import 'package:playback_core/playback_core.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'app.dart';
+import 'background/watch_next_background.dart' as watch_next_bg;
+import 'data/services/carplay_service.dart';
 import 'data/services/cast/airplay_command_bridge.dart';
 import 'data/services/download_notification_service.dart';
 import 'data/services/media_server_client_factory.dart';
@@ -23,6 +25,7 @@ import 'playback/appletv_mpv_backend.dart';
 import 'playback/audio_capability_profile.dart';
 import 'playback/audio_capability_probe.dart';
 import 'playback/audio_handler.dart';
+import 'playback/media_browse_service.dart';
 import 'playback/playback_lifecycle_handler.dart';
 import 'platform/web_runtime_config.dart';
 import 'preference/user_preferences.dart';
@@ -304,6 +307,9 @@ class _PreferenceWriteFlushObserver with WidgetsBindingObserver {
   }
 }
 
+@pragma('vm:entry-point')
+Future<void> watchNextBackgroundMain() => watch_next_bg.watchNextBackgroundMain();
+
 void main() async {
   configureHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
@@ -383,9 +389,20 @@ void main() async {
 
   await configureDependencies();
 
+  // Registered before runApp so a CarPlay-only launch (no window scene, no
+  // widgets) can browse and start playback.
+  if (PlatformDetection.isIOS && !GetIt.instance.isRegistered<CarPlayService>()) {
+    try {
+      final carPlayService = CarPlayService(
+        browse: GetIt.instance<MediaBrowseService>(),
+        manager: GetIt.instance<PlaybackManager>(),
+      )..start();
+      GetIt.instance.registerSingleton<CarPlayService>(carPlayService);
+    } catch (_) {}
+  }
+
   final prefs = GetIt.instance<UserPreferences>();
   WidgetsBinding.instance.addObserver(_PreferenceWriteFlushObserver(prefs));
-  await _detectAndApplyAudioCapabilities(prefs);
 
   // Register Theme Store themes before the active theme is resolved so a
   // store-saved theme applies on launch.
@@ -397,53 +414,11 @@ void main() async {
     await _restoreWindowGeometry();
   }
 
-  final notificationService = GetIt.instance<DownloadNotificationService>();
-  try {
-    await notificationService.initialize();
-  } catch (_) {}
-
-  // Android TV also gets the MediaSession so music is controllable from the
-  // system quick-access / screensaver after leaving the app. Apple
-  // TV and Tizen are excluded: they have no audio_service backend (tvOS uses the
-  // native NowPlayingController instead).
-  if (PlatformDetection.isMobile ||
-      (PlatformDetection.isAndroid && PlatformDetection.isTV)) {
-    try {
-      await initAudioService(
-        manager: GetIt.instance<PlaybackManager>(),
-        clientFactory: GetIt.instance<MediaServerClientFactory>(),
-      );
-    } catch (e, st) {
-      debugPrint('initAudioService failed (lock-screen controls disabled): $e\n$st');
-    }
-  }
-
-  // Audio session ownership differs per platform:
-  // - Android: the audio_session package configures and activates the session for
-  //   the foreground media notification.
-  // - iOS: MoonfinAudioHandler claims a non-mixing `.playback` session when
-  //   playback starts and releases it on stop, so the in-app player owns Control
-  //   Center / lock-screen Now Playing and AirPods/remote controls. Here we only
-  //   attach route handling (pause on disconnect, A/V re-sync on connect).
-  if (PlatformDetection.isAndroid) {
-    try {
-      final session = await AudioSession.instance;
-      await session.configure(AudioSessionConfiguration(
-        androidAudioAttributes: AndroidAudioAttributes(
-          contentType: AndroidAudioContentType.music,
-          usage: AndroidAudioUsage.media,
-        ),
-      ));
-      await session.setActive(true);
-      session.becomingNoisyEventStream.listen((_) {
-        GetIt.instance<PlaybackManager>().pause();
-      });
-    } catch (_) {}
-  } else if (PlatformDetection.isIOS) {
-    try {
-      _attachIosAudioRouteHandling();
-    } catch (_) {}
-  }
+  // Audio and notification services are only needed once playback or a
+  // download can happen, so they initialize after the first frame.
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    unawaited(_initDeferredStartupServices(prefs));
+  });
 
   // tvOS: keep the system Now Playing card fed for music (the native
   // NowPlayingController handles video; audio has no view controller to feed it).
@@ -470,4 +445,56 @@ void main() async {
   } catch (_) {}
 
   runApp(const MoonfinApp());
+}
+
+/// Startup work that runs after the first frame. The internal order matters:
+/// the Android audio session configuration must follow initAudioService.
+Future<void> _initDeferredStartupServices(UserPreferences prefs) async {
+  if (PlatformDetection.isMobile ||
+      (PlatformDetection.isAndroid && PlatformDetection.isTV)) {
+    try {
+      await initAudioService(
+        manager: GetIt.instance<PlaybackManager>(),
+        clientFactory: GetIt.instance<MediaServerClientFactory>(),
+      );
+    } catch (e, st) {
+      debugPrint('initAudioService failed (lock-screen controls disabled): $e\n$st');
+    }
+  }
+
+  await _detectAndApplyAudioCapabilities(prefs);
+
+  try {
+    await GetIt.instance<DownloadNotificationService>().initialize();
+  } catch (_) {}
+
+  // Audio session ownership differs per platform:
+  // - Android: MoonfinAudioHandler acquires audio focus per playback, and skips
+  //   it when the backend manages focus itself like media3. We only configure
+  //   the attributes here so the becomingNoisy handler below can pause on
+  //   headphone unplug. We deliberately do not setActive(true) at startup: that
+  //   focus grab goes stale before playback begins, which left Android Auto
+  //   music muted, and it fights ExoPlayer's own focus.
+  // - iOS: MoonfinAudioHandler claims a non-mixing `.playback` session when
+  //   playback starts and releases it on stop, so the in-app player owns Control
+  //   Center / lock-screen Now Playing and AirPods/remote controls. Here we only
+  //   attach route handling (pause on disconnect, A/V re-sync on connect).
+  if (PlatformDetection.isAndroid) {
+    try {
+      final session = await AudioSession.instance;
+      await session.configure(AudioSessionConfiguration(
+        androidAudioAttributes: AndroidAudioAttributes(
+          contentType: AndroidAudioContentType.music,
+          usage: AndroidAudioUsage.media,
+        ),
+      ));
+      session.becomingNoisyEventStream.listen((_) {
+        GetIt.instance<PlaybackManager>().pause();
+      });
+    } catch (_) {}
+  } else if (PlatformDetection.isIOS) {
+    try {
+      _attachIosAudioRouteHandling();
+    } catch (_) {}
+  }
 }

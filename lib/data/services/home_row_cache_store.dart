@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:path_provider/path_provider.dart';
 
@@ -31,7 +32,9 @@ class HomeRowCacheStore {
     try {
       final file = await _file();
       if (!file.existsSync()) return null;
-      final decoded = jsonDecode(await file.readAsString());
+      final raw = await file.readAsString();
+      // The cache file can be hundreds of KB; keep JSON off the UI isolate.
+      final decoded = await Isolate.run(() => jsonDecode(raw));
       if (decoded is! Map<String, dynamic>) return null;
       if (decoded['key'] != cacheKey) return null;
       final savedAt = decoded['savedAt'];
@@ -61,11 +64,12 @@ class HomeRowCacheStore {
           .map(_rowToJson)
           .toList(growable: false);
       if (serializable.isEmpty) return;
-      final payload = jsonEncode({
+      final envelope = {
         'key': cacheKey,
         'savedAt': DateTime.now().millisecondsSinceEpoch,
         'rows': serializable,
-      });
+      };
+      final payload = await Isolate.run(() => jsonEncode(envelope));
       final file = await _file();
       await file.writeAsString(payload, flush: true);
     } catch (_) {}

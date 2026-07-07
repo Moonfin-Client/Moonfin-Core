@@ -13,6 +13,9 @@ import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/offline_playback_tracker.dart';
 
 import '../../playback/hdr_stream_capability.dart';
+import '../../playback/headless_session_bootstrap.dart';
+import '../../playback/last_playback_session_store.dart';
+import '../../playback/media_browse_service.dart';
 import '../../playback/html_video_backend.dart';
 import '../../playback/known_defects.dart';
 import '../../playback/external_player_policy.dart';
@@ -587,6 +590,20 @@ void registerPlaybackModule() {
   );
   _getIt.registerLazySingleton<AudiobookResumeService>(
     () => AudiobookResumeService(),
+  );
+  _getIt.registerLazySingleton<HeadlessSessionBootstrap>(
+    () => HeadlessSessionBootstrap(),
+  );
+  _getIt.registerLazySingleton<LastPlaybackSessionStore>(
+    () => LastPlaybackSessionStore(),
+  );
+  _getIt.registerLazySingleton<MediaBrowseService>(
+    () => MediaBrowseService(
+      _getIt<MediaServerClientFactory>(),
+      _getIt<HeadlessSessionBootstrap>(),
+      _getIt<AudiobookResumeService>(),
+      _getIt<LastPlaybackSessionStore>(),
+    ),
   );
   _getIt.registerLazySingleton<SleepTimerController>(
     () => SleepTimerController(_getIt<PlaybackManager>()),

@@ -617,8 +617,10 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     _sections = all.where((s) => s.type != HomeSectionType.mediaBar).toList();
     final addedBuiltins = _ensureBuiltinSectionsPresent();
     _mergeDiscoveredPluginSections();
-    _enforceMergeAdjacency();
+    // _enforceMergeAdjacency reorders _focusNodes in lockstep with _sections,
+    // so the nodes must exist before it runs.
     _rebuildFocusNodes();
+    _enforceMergeAdjacency();
     if (addedBuiltins) {
       _persistSections(pushSync: false);
     }

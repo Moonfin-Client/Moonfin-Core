@@ -82,6 +82,12 @@
             </intent-filter>
         </receiver>
 
+        <provider
+            android:name="org.moonfin.androidtv.MoonfinArtProvider"
+            android:authorities="${applicationId}.artwork"
+            android:exported="true"
+            android:grantUriPermissions="true" />
+
         <meta-data android:name="com.google.android.gms.car.application"
                    android:resource="@xml/automotive_app_desc"/>
     </application>

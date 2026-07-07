@@ -636,6 +636,7 @@ class _GameEmulatorScreenState extends State<GameEmulatorScreen> {
                     return ConstrainedBox(
                       constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: cap),
                       child: adaptiveGlass(
+                        context: context,
                         fallbackColor: const Color(0xE6141A22),
                         cornerRadius: 18,
                         child: child,

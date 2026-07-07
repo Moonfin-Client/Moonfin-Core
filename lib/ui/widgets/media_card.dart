@@ -9,6 +9,7 @@ import '../../util/platform_detection.dart';
 import '../../util/focus/dpad_keys.dart';
 import '../../util/focus/key_event_utils.dart';
 import 'bounded_network_image.dart';
+import 'focus/glass_focus_halo.dart';
 import 'marquee_text.dart';
 import '../mixins/focus_state_mixin.dart';
 
@@ -488,7 +489,10 @@ class _CardImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final radius = isCircular ? 999.0 : 8.0;
     final showBorder = !suppressFocusBorder && (focused || hovered);
-    final borderColor = focusColor ?? Theme.of(context).colorScheme.primary;
+    final borderColor = focusColor ??
+        (GlassFocusHalo.appleStyleActive
+            ? Colors.white
+            : Theme.of(context).colorScheme.primary);
     final borders = ThemeRegistry.active.borders;
     final showGlow =
         showBorder && !suppressFocusGlow && borders.focusGlow.isNotEmpty;

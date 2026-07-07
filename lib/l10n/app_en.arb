@@ -220,6 +220,14 @@
   "@recommendationSystemTmdb": {
     "description": "Recommendation system option: TMDb Similarity"
   },
+  "recommendationsApplyParentalRatingCap": "Apply Parental Rating Cap?",
+  "@recommendationsApplyParentalRatingCap": {
+    "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+  },
+  "recommendationsApplyParentalRatingCapSubtitle": "Limit Moonfin Recommends suggestions by parental rating of target media",
+  "@recommendationsApplyParentalRatingCapSubtitle": {
+    "description": "Explanation under the parental rating cap setting toggle"
+  },
   "interfaceStyle": "Interface Style",
   "@interfaceStyle": {
     "description": "Label for the Automatic/Apple/Material interface style setting"
@@ -239,6 +247,26 @@
   "interfaceStyleMaterial": "Material",
   "@interfaceStyleMaterial": {
     "description": "Interface style option: Material look"
+  },
+  "glassQuality": "Glass Quality",
+  "@glassQuality": {
+    "description": "Label for the glass rendering quality setting"
+  },
+  "glassQualitySubtitle": "Auto picks the best glass effect for this device. Full forces real blur; Reduced uses a lightweight glass that saves GPU power.",
+  "@glassQualitySubtitle": {
+    "description": "Explanation under the glass quality setting"
+  },
+  "glassQualityAuto": "Auto",
+  "@glassQualityAuto": {
+    "description": "Glass quality option: per-device default"
+  },
+  "glassQualityFull": "Full",
+  "@glassQualityFull": {
+    "description": "Glass quality option: force real blur"
+  },
+  "glassQualityReduced": "Reduced",
+  "@glassQualityReduced": {
+    "description": "Glass quality option: lightweight zero-blur glass"
   },
   "settingsAppearanceThemeSubtitle": "Apply a fully custom theme and switch between an Apple or Material inspired user interface.",
   "@settingsAppearanceThemeSubtitle": {
@@ -1231,6 +1259,34 @@
   "extras": "Extras",
   "@extras": {
     "description": "Tab label for special features / extras"
+  },
+  "behindTheScenes": "Behind the Scenes",
+  "@behindTheScenes": {
+    "description": "Tab label for behind the scenes special features"
+  },
+  "deletedScenes": "Deleted Scenes",
+  "@deletedScenes": {
+    "description": "Tab label for deleted scenes special features"
+  },
+  "featurettes": "Featurettes",
+  "@featurettes": {
+    "description": "Tab label for featurettes special features"
+  },
+  "interviews": "Interviews",
+  "@interviews": {
+    "description": "Tab label for interviews special features"
+  },
+  "scenes": "Scenes",
+  "@scenes": {
+    "description": "Tab label for scenes special features"
+  },
+  "shorts": "Shorts",
+  "@shorts": {
+    "description": "Tab label for shorts special features"
+  },
+  "trailers": "Trailers",
+  "@trailers": {
+    "description": "Tab label for trailers special features"
   },
   "timeRemaining": "{time} remaining",
   "@timeRemaining": {
@@ -8065,11 +8121,7 @@
   "audiobookQueue": "Queue",
   "audiobookTimeline": "Timeline",
   "audiobookTimelineEmpty": "Timeline is empty",
-  "audiobookWholeBook": "Whole book",
-  "audiobookWholeBookProgress": "{percent}% · {time} left",
-  "@audiobookWholeBookProgress": {
-    "placeholders": {"percent": {"type": "String"}, "time": {"type": "String"}}
-  },
+  "audiobookWholeBook": "Whole Book",
   "audiobookFocusedTimeline": "Focused Timeline",
   "audiobookExportBookmarks": "Export Bookmarks",
   "audiobookExportNotes": "Export Notes",

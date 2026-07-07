@@ -5,11 +5,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 class Media3VideoView extends StatelessWidget {
-  const Media3VideoView({super.key, this.fill = const Color(0xFF000000)});
+  const Media3VideoView({
+    super.key,
+    this.fill = const Color(0xFF000000),
+    this.onPlatformViewCreated,
+  });
 
   static const String _viewType = 'moonfin/media3_video';
 
   final Color fill;
+
+  /// Reports the Android platform-view id so a persistent host (media bar)
+  /// can re-activate this view via Media3PlayerBackend.activateView().
+  final ValueChanged<int>? onPlatformViewCreated;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +37,7 @@ class Media3VideoView extends StatelessWidget {
           );
         },
         onCreatePlatformView: (params) {
+          onPlatformViewCreated?.call(params.id);
           return PlatformViewsService.initExpensiveAndroidView(
             id: params.id,
             viewType: _viewType,
