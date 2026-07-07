@@ -14,6 +14,8 @@ import '../../../data/services/plugin_sync_service.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../preference/seerr_preferences.dart';
+import '../../../preference/seerr_row_config.dart';
 import '../../../util/extensions.dart';
 import '../../../util/platform_detection.dart';
 import '../../widgets/overlay_sheet.dart';
@@ -523,6 +525,50 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     return _prefs.get(prefKey);
   }
 
+  SeerrRowType? _mapHomeSectionToSeerrRowType(HomeSectionType type) {
+    return switch (type) {
+      HomeSectionType.seerrRecentRequests => SeerrRowType.recentRequests,
+      HomeSectionType.seerrRecentlyAdded => SeerrRowType.recentlyAdded,
+      HomeSectionType.seerrTrending => SeerrRowType.trending,
+      HomeSectionType.seerrPopularMovies => SeerrRowType.popularMovies,
+      HomeSectionType.seerrMovieGenres => SeerrRowType.movieGenres,
+      HomeSectionType.seerrUpcomingMovies => SeerrRowType.upcomingMovies,
+      HomeSectionType.seerrStudios => SeerrRowType.studios,
+      HomeSectionType.seerrPopularSeries => SeerrRowType.popularSeries,
+      HomeSectionType.seerrSeriesGenres => SeerrRowType.seriesGenres,
+      HomeSectionType.seerrUpcomingSeries => SeerrRowType.upcomingSeries,
+      HomeSectionType.seerrNetworks => SeerrRowType.networks,
+      _ => null,
+    };
+  }
+
+  bool _isSeerrRowEnabled(HomeSectionType type) {
+    final seerrType = _mapHomeSectionToSeerrRowType(type);
+    if (seerrType == null) return false;
+    final seerrPrefs = GetIt.instance<SeerrPreferences>();
+    if (!seerrPrefs.enabled) return false;
+    final configs = seerrPrefs.homeRowsConfig;
+    final config = configs.firstWhere(
+      (c) => c.type == seerrType,
+      orElse: () => SeerrRowConfig(type: seerrType, enabled: true, order: 0),
+    );
+    return config.enabled;
+  }
+
+  void _disableSeerrHomeRow(HomeSectionType type) {
+    final seerrType = _mapHomeSectionToSeerrRowType(type);
+    if (seerrType == null) return;
+    final seerrPrefs = GetIt.instance<SeerrPreferences>();
+    final configs = List<SeerrRowConfig>.from(seerrPrefs.homeRowsConfig);
+    final idx = configs.indexWhere((c) => c.type == seerrType);
+    if (idx >= 0) {
+      configs[idx] = configs[idx].copyWith(enabled: false);
+      seerrPrefs.setHomeRowsConfig(configs);
+    } else {
+      configs.add(SeerrRowConfig(type: seerrType, enabled: false, order: configs.length));
+      seerrPrefs.setHomeRowsConfig(configs);
+    }
+  }
 
   bool _isTmdbSectionType(HomeSectionType type) {
     return type == HomeSectionType.tmdbPopularMovies ||
@@ -567,8 +613,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         ((section.isBuiltin && _isPlaylistsSectionType(section.type)) ||
             (section.isPluginDynamic &&
                 section.pluginSource == HomeSectionPluginSource.playlists));
-    final hiddenBySeerr =
-        _isSeerrSectionType(section.type) && !showSeerrRows;
+    final hiddenBySeerr = _isSeerrSectionType(section.type) &&
+        (!showSeerrRows || !_isSeerrRowEnabled(section.type));
     final hiddenByTmdb = _isTmdbSectionType(section.type) &&
         (!showTmdbRows || !_isTmdbRowEnabled(section.type));
 
@@ -1210,6 +1256,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
   }
 
   void _toggleSection(int index, bool enabled) {
+    if (!enabled && _isSeerrSectionType(_sections[index].type)) {
+      _disableSeerrHomeRow(_sections[index].type);
+    }
     final visibleIndicesBefore = _visibleSectionIndices();
     final visibleIndex = visibleIndicesBefore.indexOf(index);
     final toggledStableId = _sections[index].stableId;

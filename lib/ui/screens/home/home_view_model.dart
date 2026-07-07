@@ -26,6 +26,7 @@ import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/utils/bounded_concurrency.dart';
 import '../../../preference/seerr_preferences.dart';
+import '../../../preference/seerr_row_config.dart';
 import '../../../data/viewmodels/seerr_discover_view_model.dart';
 import '../../../data/repositories/mdblist_repository.dart';
 import 'package:dio/dio.dart';
@@ -103,6 +104,36 @@ class HomeViewModel extends ChangeNotifier {
       HomeSectionType.audioPlaylists => true,
       _ => false,
     };
+  }
+
+  static SeerrRowType? _mapHomeSectionToSeerrRowType(HomeSectionType type) {
+    return switch (type) {
+      HomeSectionType.seerrRecentRequests => SeerrRowType.recentRequests,
+      HomeSectionType.seerrRecentlyAdded => SeerrRowType.recentlyAdded,
+      HomeSectionType.seerrTrending => SeerrRowType.trending,
+      HomeSectionType.seerrPopularMovies => SeerrRowType.popularMovies,
+      HomeSectionType.seerrMovieGenres => SeerrRowType.movieGenres,
+      HomeSectionType.seerrUpcomingMovies => SeerrRowType.upcomingMovies,
+      HomeSectionType.seerrStudios => SeerrRowType.studios,
+      HomeSectionType.seerrPopularSeries => SeerrRowType.popularSeries,
+      HomeSectionType.seerrSeriesGenres => SeerrRowType.seriesGenres,
+      HomeSectionType.seerrUpcomingSeries => SeerrRowType.upcomingSeries,
+      HomeSectionType.seerrNetworks => SeerrRowType.networks,
+      _ => null,
+    };
+  }
+
+  bool _isSeerrRowEnabled(HomeSectionType type) {
+    final seerrType = _mapHomeSectionToSeerrRowType(type);
+    if (seerrType == null) return false;
+    final seerrPrefs = GetIt.instance<SeerrPreferences>();
+    if (!seerrPrefs.enabled) return false;
+    final configs = seerrPrefs.homeRowsConfig;
+    final config = configs.firstWhere(
+      (c) => c.type == seerrType,
+      orElse: () => SeerrRowConfig(type: seerrType, enabled: true, order: 0),
+    );
+    return config.enabled;
   }
 
   static bool _isSeerrSectionType(HomeSectionType type) {
@@ -307,7 +338,7 @@ class HomeViewModel extends ChangeNotifier {
                             c.pluginSource ==
                                 HomeSectionPluginSource.playlists))) &&
                 (showAudioRows || !_isAudioSectionType(c.type)) &&
-                (showSeerrRows || !_isSeerrSectionType(c.type)) &&
+                (!_isSeerrSectionType(c.type) || (showSeerrRows && _isSeerrRowEnabled(c.type))) &&
                 (!_isTmdbSectionType(c.type) || (showTmdbRows && _isTmdbSectionEnabled(c.type))) &&
                 (c.type != HomeSectionType.radarrCalendar || _prefs.get(UserPreferences.enableRadarrCalendar)) &&
                 (c.type != HomeSectionType.sonarrCalendar || _prefs.get(UserPreferences.enableSonarrCalendar)) &&

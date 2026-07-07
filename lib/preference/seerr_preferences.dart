@@ -97,6 +97,12 @@ class SeerrPreferences {
   Future<void> setRowsConfig(List<SeerrRowConfig> value) =>
       _store.setString(_userKey('rows_config'), SeerrRowConfig.toJsonString(value));
 
+  List<SeerrRowConfig> get homeRowsConfig =>
+      SeerrRowConfig.fromJsonString(_store.getString(_userKey('home_rows_config')) ?? '');
+
+  Future<void> setHomeRowsConfig(List<SeerrRowConfig> value) =>
+      _store.setString(_userKey('home_rows_config'), SeerrRowConfig.toJsonString(value));
+
   List<SeerrRowType> get activeRows {
     final configs = rowsConfig.where((c) => c.enabled).toList()
       ..sort((a, b) => a.order.compareTo(b.order));
@@ -159,7 +165,7 @@ class SeerrPreferences {
       'last_connection_success',
       'show_in_navigation', 'show_in_toolbar', 'show_request_status',
       'block_nsfw', 'notify_new_requests', 'notify_library_added',
-      'fetch_limit', 'rows_config',
+      'fetch_limit', 'rows_config', 'home_rows_config',
       'hd_movie_profile_id', '4k_movie_profile_id',
       'hd_tv_profile_id', '4k_tv_profile_id',
       'hd_movie_root_folder_id', '4k_movie_root_folder_id',
