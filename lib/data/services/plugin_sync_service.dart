@@ -1066,6 +1066,26 @@ class PluginSyncService extends ChangeNotifier {
       );
       _applyBool(
         resolved,
+        'displayAudioRows',
+        UserPreferences.displayAudioRows,
+      );
+      _applyBool(
+        resolved,
+        'displaySinceYouWatchedRows',
+        UserPreferences.displaySinceYouWatchedRows,
+      );
+      _applyBool(
+        resoved,
+        'displayPlaylistRows',
+        UserPreferences.displayPlaylistRows,
+      );
+      _applyBool(
+        resolved,
+        'displayRewatchRow',
+        UserPreferences.displayRewatchRow,
+      );
+      _applyBool(
+        resolved,
         'useDetailedSubHeadings',
         UserPreferences.useDetailedSubHeadings,
       );
@@ -1167,6 +1187,7 @@ class PluginSyncService extends ChangeNotifier {
       );
       _applyInt(resolved, 'navbarOpacity', UserPreferences.navbarOpacity);
       _applyString(resolved, 'navbarColor', UserPreferences.navbarColor);
+      _applyBool(resolved, 'navbarAlwaysExpanded', UserPreferences.navbarAlwaysExpanded);
       _applyBool(
         resolved,
         'mediaBarAutoAdvance',
@@ -1676,6 +1697,10 @@ class PluginSyncService extends ChangeNotifier {
         UserPreferences.displayCollectionsRows,
       ),
       'displayGenresRows': _prefs.get(UserPreferences.displayGenresRows),
+      'displayAudioRows': _prefs.get(UserPreferences.displayAudioRows),
+      'displaySinceYouWatchedRows': _prefs.get(UserPreferences.displaySinceYouWatchedRows),
+      'displayPlaylistRows': _prefs.get(UserPreferences.displayPlaylistRows),
+      'displayRewatchRow': _prefs.get(UserPreferences.displayRewatchRow),
       'fullScreenRows': _prefs.get(UserPreferences.fullScreenRows),
       'useDetailedSubHeadings': _prefs.get(
         UserPreferences.useDetailedSubHeadings,
@@ -1713,6 +1738,7 @@ class PluginSyncService extends ChangeNotifier {
       'mediaBarOverlayColor': _prefs.get(UserPreferences.mediaBarOverlayColor),
       'navbarOpacity': _prefs.get(UserPreferences.navbarOpacity),
       'navbarColor': _prefs.get(UserPreferences.navbarColor),
+      'navbarAlwaysExpanded': _prefs.get(UserPreferences.navbarAlwaysExpanded),
       'mediaBarAutoAdvance': _prefs.get(UserPreferences.mediaBarAutoAdvance),
       'mediaBarIntervalMs': _prefs.get(UserPreferences.mediaBarIntervalMs),
       'mediaBarTrailerPreview': _prefs.get(
