@@ -55,8 +55,15 @@ class CarPlayService {
       case 'getChildren':
         final nodeId =
             (call.arguments as Map?)?['nodeId'] as String? ?? 'root';
-        final items = await _browse.getChildren(nodeId);
-        return {'items': items.map(_toBrowseJson).toList()};
+        // No page options: this returns the complete node listing; the Swift
+        // bridge truncates at CPListTemplate.maximumItemCount. Never throw,
+        // or the CarPlay template is left waiting.
+        try {
+          final items = await _browse.getChildren(nodeId);
+          return {'items': items.map(_toBrowseJson).toList()};
+        } catch (_) {
+          return {'items': const []};
+        }
       case 'playItem':
         final mediaId = (call.arguments as Map?)?['mediaId'] as String?;
         if (mediaId == null || mediaId.startsWith('msg|')) {

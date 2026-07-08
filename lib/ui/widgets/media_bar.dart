@@ -211,6 +211,8 @@ class _MediaBarState extends State<MediaBar>
       appRouter.routerDelegate.currentConfiguration.uri.path,
     );
     appRouter.routerDelegate.addListener(_onRouteChanged);
+    PlayerRouteObserver.instance.isPlayerActive
+        .addListener(_onPlayerRouteChanged);
     widget.viewModel.addListener(_onStateChanged);
     widget.prefs.addListener(_onPrefsChanged);
     WidgetsBinding.instance.addObserver(this);
@@ -257,7 +259,15 @@ class _MediaBarState extends State<MediaBar>
     widget.prefs.removeListener(_onPrefsChanged);
     WidgetsBinding.instance.removeObserver(this);
     appRouter.routerDelegate.removeListener(_onRouteChanged);
+    PlayerRouteObserver.instance.isPlayerActive
+        .removeListener(_onPlayerRouteChanged);
     super.dispose();
+  }
+
+  // Re-evaluate the persistent Media3 view's mount condition when a player
+  // route is pushed or popped.
+  void _onPlayerRouteChanged() {
+    if (mounted) setState(() {});
   }
 
   bool _isHomePath(String path) {
@@ -286,11 +296,17 @@ class _MediaBarState extends State<MediaBar>
   /// Whether the Media3 platform view stays mounted between trailers so each
   /// trailer reuses the same native view via setSource. It is not gated on the home
   /// route because an unpainted view under an opaque route costs nothing and skips
-  /// the expensive teardown/create cycle on every detail push.
+  /// the expensive teardown/create cycle on every detail push. It MUST stay
+  /// unmounted while a player route is up, though: a freshly mounted view's
+  /// native init takes over Media3Bridge.activeView and force-releases the
+  /// fullscreen player's surface. Auto-advance between queue items emits a
+  /// brief isPlaying=false, so gating on playback state alone lets the preview
+  /// view mount mid-session and black-screen the next item.
   bool get _shouldMountPersistentMedia3View =>
       _useMedia3TrailerEngine() &&
       widget.prefs.get(UserPreferences.mediaBarTrailerPreview) &&
-      !_mainPlaybackActive;
+      !_mainPlaybackActive &&
+      !PlayerRouteObserver.instance.isPlayerActive.value;
 
   void _onMainPlaybackChanged(bool isPlaying) {
     if (isPlaying &&

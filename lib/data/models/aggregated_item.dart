@@ -23,6 +23,7 @@ class AggregatedItem {
   }
 
   String get name => rawData['Name'] as String? ?? '';
+  String? get sortName => rawData['SortName'] as String?;
   String? get type => rawData['Type'] as String?;
 
   /// Whether this item is music/audio content (track, audiobook, or any item

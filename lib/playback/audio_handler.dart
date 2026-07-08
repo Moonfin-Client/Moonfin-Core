@@ -13,6 +13,7 @@ import '../data/services/audiobook_resume_service.dart';
 import '../data/services/media_server_client_factory.dart';
 import '../util/platform_detection.dart';
 import '../preference/user_preferences.dart';
+import 'car_artwork.dart';
 import 'headless_session_bootstrap.dart';
 import 'last_playback_session_store.dart';
 import 'media_browse_service.dart';
@@ -28,7 +29,8 @@ class MoonfinAudioHandler extends BaseAudioHandler
   final Map<String, BehaviorSubject<Map<String, dynamic>>> _childrenSubjects =
       {};
 
-  DateTime? _lastPositionPush;
+  Duration? _lastPushedPosition;
+  DateTime? _lastPushedAt;
   DateTime? _lastSessionPersist;
 
   // Claim/release state for the in-app player's audio session (iOS `.playback`
@@ -47,6 +49,9 @@ class MoonfinAudioHandler extends BaseAudioHandler
   ) {
     _bindStreams();
     unawaited(_attachAndroidInterruptions());
+    // Resolve the artwork provider authority before the first now-playing push
+    // so its artUri can be wrapped; harmless no-op off Android.
+    unawaited(CarArtwork.instance.ensureReady());
   }
 
   // stop() cancels _subs; car/lock-screen commands can arrive afterwards, so
@@ -65,19 +70,15 @@ class MoonfinAudioHandler extends BaseAudioHandler
         _updateAudioSession();
       }),
       s.bufferingStream.listen((_) => _pushPlaybackState()),
-      // Keep the lock-screen / notification scrubber advancing during steady
-      // playback. positionStream fires several times a second, so throttle the
-      // pushes to ~1 Hz to avoid flooding the platform channel.
+      // The MediaSession interpolates the scrubber from the last pushed
+      // position, its timestamp and the speed, so steady linear playback needs
+      // no per-tick update. Re-pushing every second would re-assert the active
+      // queue item and make Android Auto yank the queue list back to the
+      // current track while the user is scrolling it. Only a jump (seek or
+      // skip) diverges from the interpolation and is worth a fresh push.
       s.positionStream.listen((_) {
-        final now = DateTime.now();
-        final last = _lastPositionPush;
-        if (last != null &&
-            now.difference(last) < const Duration(seconds: 1)) {
-          return;
-        }
-        _lastPositionPush = now;
-        _pushPlaybackState();
         _maybePersistSession();
+        if (_positionJumped()) _pushPlaybackState();
       }),
       s.durationStream.listen((_) => _pushMediaItemForCurrentTrack()),
       q.queueChangedStream.listen((_) {
@@ -106,6 +107,20 @@ class MoonfinAudioHandler extends BaseAudioHandler
       return;
     }
     _persistSession();
+  }
+
+  // True when the reported position has diverged from the linear playback the
+  // MediaSession is already interpolating, i.e. a seek or skip happened. Steady
+  // playback stays within the tolerance and needs no push.
+  bool _positionJumped() {
+    final base = _lastPushedPosition;
+    final at = _lastPushedAt;
+    final s = _manager.state;
+    if (base == null || at == null || !s.isPlaying) return true;
+    final elapsedMs = DateTime.now().difference(at).inMilliseconds;
+    final expectedMs =
+        base.inMilliseconds + (elapsedMs * s.playbackSpeed).round();
+    return (s.position.inMilliseconds - expectedMs).abs() > 3000;
   }
 
   // Snapshot the audio queue for the media resumption card and empty queue
@@ -270,17 +285,21 @@ class MoonfinAudioHandler extends BaseAudioHandler
             MediaControl.skipToNext,
             // Android Auto only renders buttons from the controls list, not from
             // the repeat/shuffle mode fields, so shuffle and repeat are custom
-            // actions. The icon and label carry the current state since the car
-            // tints custom icons uniformly and can't show an active highlight.
+            // actions. The car tints every custom icon the same color, so the
+            // active state is carried by a distinct glyph: the "on" variants add
+            // a dot below, the Material convention users already recognize.
             MediaControl.custom(
-              androidIcon: 'drawable/ic_shuffle',
+              androidIcon:
+                  s.isShuffled ? 'drawable/ic_shuffle_on' : 'drawable/ic_shuffle',
               label: s.isShuffled ? 'Shuffle on' : 'Shuffle',
               name: 'toggle_shuffle',
             ),
             MediaControl.custom(
-              androidIcon: q.repeatMode == RepeatMode.repeatOne
-                  ? 'drawable/ic_repeat_one'
-                  : 'drawable/ic_repeat',
+              androidIcon: switch (q.repeatMode) {
+                RepeatMode.none => 'drawable/ic_repeat',
+                RepeatMode.repeatAll => 'drawable/ic_repeat_on',
+                RepeatMode.repeatOne => 'drawable/ic_repeat_one',
+              },
               label: switch (q.repeatMode) {
                 RepeatMode.none => 'Repeat off',
                 RepeatMode.repeatAll => 'Repeat all',
@@ -290,6 +309,8 @@ class MoonfinAudioHandler extends BaseAudioHandler
             ),
           ];
 
+    _lastPushedPosition = s.position;
+    _lastPushedAt = DateTime.now();
     playbackState.add(PlaybackState(
       controls: controls,
       systemActions: {
@@ -338,6 +359,9 @@ class MoonfinAudioHandler extends BaseAudioHandler
       return;
     }
     mediaItem.add(_mediaItemFor(raw));
+    // The wrapped artUri is only readable once its host is on the provider's
+    // allowlist.
+    unawaited(CarArtwork.instance.persistHosts());
   }
 
   void _pushQueue() {
@@ -346,6 +370,7 @@ class MoonfinAudioHandler extends BaseAudioHandler
         .whereType<AggregatedItem>()
         .map(_mediaItemFor)
         .toList());
+    unawaited(CarArtwork.instance.persistHosts());
   }
 
   MediaItem _mediaItemFor(AggregatedItem item) {
@@ -389,13 +414,15 @@ class MoonfinAudioHandler extends BaseAudioHandler
           : item.albumArtist;
     }
 
+    // Wrapped and self-authenticating like the browse art: the car host (and
+    // notification loaders) fetch this without the app's Authorization header.
     return MediaItem(
       id: item.id,
       title: item.name,
       artist: artistName,
       album: item.album,
       duration: item.runtime,
-      artUri: artUri != null ? Uri.parse(artUri) : null,
+      artUri: CarArtwork.instance.wrap(carAuthedImageUrl(client, artUri)),
       extras: {'serverId': item.serverId},
     );
   }
@@ -433,8 +460,15 @@ class MoonfinAudioHandler extends BaseAudioHandler
   Future<List<MediaItem>> getChildren(
     String parentMediaId, [
     Map<String, dynamic>? options,
-  ]) =>
-      _browse.getChildren(parentMediaId, options);
+  ]) async {
+    // An uncaught throw here means onLoadChildren never answers and the car
+    // shows an endless spinner, so always return something.
+    try {
+      return await _browse.getChildren(parentMediaId, options);
+    } catch (_) {
+      return const [];
+    }
+  }
 
   @override
   ValueStream<Map<String, dynamic>> subscribeToChildren(

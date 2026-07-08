@@ -7349,10 +7349,16 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     }
 
     final mediaType = item.rawData['MediaType'] as String?;
+    // Route by what the queue will contain, not just the tapped item: artists
+    // are containers whose Type is not 'Audio' and whose MediaType is null,
+    // but their play queue is all tracks. Without them here the queue opened
+    // in the video player, which formats disc/track as "S1:E2".
     final isAudio =
         item.type == 'Audio' ||
         item.type == 'MusicAlbum' ||
         item.type == 'AudioBook' ||
+        item.type == 'MusicArtist' ||
+        item.type == 'AlbumArtist' ||
         mediaType == 'Audio';
 
     final startupFuture = _runWithDolbyVisionStartupFallbackPrompt(

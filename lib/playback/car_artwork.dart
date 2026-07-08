@@ -1,6 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:server_core/server_core.dart' show MediaServerClient;
 import 'package:shared_preferences/shared_preferences.dart';
+
+/// Appends the access token as api_key so the URL authenticates itself. Car
+/// hosts and the artwork provider fetch images without the app's Authorization
+/// header; Emby URLs already carry api_key, Jellyfin's do not.
+String? carAuthedImageUrl(MediaServerClient client, String? url) {
+  if (url == null) return null;
+  final token = client.accessToken;
+  if (token == null || token.isEmpty) return url;
+  if (url.contains('api_key=') || url.contains('X-Emby-Token=')) return url;
+  final sep = url.contains('?') ? '&' : '?';
+  return '$url${sep}api_key=${Uri.encodeQueryComponent(token)}';
+}
 
 /// Rewrites remote artwork URLs into content:// URIs backed by the native
 /// MoonfinArtProvider.
@@ -39,13 +52,21 @@ class CarArtwork {
 
   Future<void> _resolve() async {
     try {
-      final info = await PackageInfo.fromPlatform();
+      final info =
+          await PackageInfo.fromPlatform().timeout(const Duration(seconds: 5));
       _authority = '${info.packageName}.artwork';
-    } catch (_) {}
+    } catch (_) {
+      // Do not memoize the failure: with a null authority every wrap() degrades
+      // to a raw URL the car host refuses, killing all art for the session.
+      // Clearing _init lets the next ensureReady try again.
+      _init = null;
+    }
   }
 
   Uri? wrap(String? url) {
     if (url == null) return null;
+    // Idempotent: the persisted last-session artUri is already wrapped.
+    if (url.startsWith('content://')) return Uri.tryParse(url);
     final authority = _authority;
     if (authority == null) return Uri.tryParse(url);
     final host = Uri.tryParse(url)?.host;

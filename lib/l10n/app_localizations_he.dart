@@ -1317,6 +1317,15 @@ class AppLocalizationsHe extends AppLocalizations {
   String get shuffle => 'לְעַרְבֵּב';
 
   @override
+  String get shuffleAllMusic => 'Shuffle all music';
+
+  @override
+  String get carSignInPrompt => 'Sign in to Moonfin on your phone';
+
+  @override
+  String get carServerUnreachable => 'Can\'t reach your server';
+
+  @override
   String downloadsCount(int count) {
     return '$count downloads';
   }

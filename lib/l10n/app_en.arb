@@ -1819,6 +1819,18 @@
   "@shuffle": {
     "description": "Action button label for shuffle playback"
   },
+  "shuffleAllMusic": "Shuffle all music",
+  "@shuffleAllMusic": {
+    "description": "Car browse action that shuffles the whole music library"
+  },
+  "carSignInPrompt": "Sign in to Moonfin on your phone",
+  "@carSignInPrompt": {
+    "description": "Shown in the car when no account is signed in"
+  },
+  "carServerUnreachable": "Can't reach your server",
+  "@carServerUnreachable": {
+    "description": "Shown in the car when the media server can't be reached"
+  },
   "downloadsCount": "{count} downloads",
   "@downloadsCount": {
     "description": "Subtitle showing number of downloads for a remote subtitle",

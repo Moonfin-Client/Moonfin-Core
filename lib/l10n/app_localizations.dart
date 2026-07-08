@@ -2500,6 +2500,24 @@ abstract class AppLocalizations {
   /// **'Shuffle'**
   String get shuffle;
 
+  /// Car browse action that shuffles the whole music library
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffle all music'**
+  String get shuffleAllMusic;
+
+  /// Shown in the car when no account is signed in
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to Moonfin on your phone'**
+  String get carSignInPrompt;
+
+  /// Shown in the car when the media server can't be reached
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t reach your server'**
+  String get carServerUnreachable;
+
   /// Subtitle showing number of downloads for a remote subtitle
   ///
   /// In en, this message translates to:
