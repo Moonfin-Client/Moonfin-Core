@@ -7491,6 +7491,18 @@
   "@contextMenuGoToSeries": {
     "description": "Context menu action to navigate to the parent series of an episode"
   },
+  "contextMenuHideFromContinueWatching": "Hide from Continue Watching",
+  "@contextMenuHideFromContinueWatching": {
+    "description": "Context menu action to hide an item from the Continue Watching section"
+  },
+  "contextMenuHideFromNextUp": "Hide from Next Up",
+  "@contextMenuHideFromNextUp": {
+    "description": "Context menu action to hide a show from the Next Up section"
+  },
+  "contextMenuAddToCollection": "Add to Collection",
+  "@contextMenuAddToCollection": {
+    "description": "Context menu action to add an item to a collection"
+  },
   "settingsAdministrationSubtitle": "Access the server administration panel",
   "settingsAccountSecurity": "Account & Security",
   "settingsAccountSecuritySubtitle": "Authentication, PIN code, and parental controls",

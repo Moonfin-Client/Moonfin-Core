@@ -87,7 +87,7 @@ class _ActionRow extends StatelessWidget {
     return FocusableButton(
       autofocus: autofocus,
       borderRadius: 6,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       onPressed: () async {
         await OverlaySheetController.closeAdaptive<void>(
           context,

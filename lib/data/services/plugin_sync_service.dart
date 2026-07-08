@@ -986,6 +986,17 @@ class PluginSyncService extends ChangeNotifier {
 
       _applyString(
         resolved,
+        'hiddenContinueWatchingItems',
+        UserPreferences.hiddenContinueWatchingItems,
+      );
+      _applyString(
+        resolved,
+        'hiddenNextUpSeries',
+        UserPreferences.hiddenNextUpSeries,
+      );
+
+      _applyString(
+        resolved,
         'visualTheme',
         UserPreferences.visualTheme,
         enumValues: prefs.VisualThemeId.values,
@@ -1775,6 +1786,8 @@ class PluginSyncService extends ChangeNotifier {
             .map((t) => t.serializedName)
             .toList(),
       },
+      'hiddenContinueWatchingItems': _prefs.get(UserPreferences.hiddenContinueWatchingItems),
+      'hiddenNextUpSeries': _prefs.get(UserPreferences.hiddenNextUpSeries),
     };
 
     final mdblistKey = _prefs.get(UserPreferences.mdblistApiKey);

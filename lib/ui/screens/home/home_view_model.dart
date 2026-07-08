@@ -864,23 +864,20 @@ class HomeViewModel extends ChangeNotifier {
     const sortOrder = 'Ascending';
     switch (section) {
       case HomeSectionType.resume:
-        return [
-          _multiServerEnabled
-              ? await _multiServerRepo.getAggregatedResume()
-              : await _dataSource.loadResume(_serverId),
-        ];
+        final row = _multiServerEnabled
+            ? await _multiServerRepo.getAggregatedResume()
+            : await _dataSource.loadResume(_serverId);
+        return [row.copyWith(items: _prefs.filterContinueWatching(row.items))];
       case HomeSectionType.resumeAudio:
-        return [
-          _multiServerEnabled
-              ? await _multiServerRepo.getAggregatedResumeAudio()
-              : await _dataSource.loadResumeAudio(_serverId),
-        ];
+        final row = _multiServerEnabled
+            ? await _multiServerRepo.getAggregatedResumeAudio()
+            : await _dataSource.loadResumeAudio(_serverId);
+        return [row.copyWith(items: _prefs.filterContinueWatching(row.items))];
       case HomeSectionType.nextUp:
-        return [
-          _multiServerEnabled
-              ? await _multiServerRepo.getAggregatedNextUp()
-              : await _dataSource.loadNextUp(_serverId),
-        ];
+        final row = _multiServerEnabled
+            ? await _multiServerRepo.getAggregatedNextUp()
+            : await _dataSource.loadNextUp(_serverId);
+        return [row.copyWith(items: _prefs.filterNextUp(row.items))];
       case HomeSectionType.latestMedia:
         return _multiServerEnabled
             ? await _multiServerRepo.getAggregatedLatestMediaRows()
@@ -1634,11 +1631,13 @@ class HomeViewModel extends ChangeNotifier {
           }();
           final resumeRow = await resumeFuture;
           final nextUpRow = await nextUpFuture;
+          final filteredResume = _prefs.filterContinueWatching(resumeRow.items);
+          final filteredNextUp = _prefs.filterNextUp(nextUpRow?.items ?? []);
           final mergedItemsMap = <String, AggregatedItem>{};
-          for (final item in resumeRow.items) {
+          for (final item in filteredResume) {
             mergedItemsMap[item.id] = item;
           }
-          for (final item in nextUpRow?.items ?? []) {
+          for (final item in filteredNextUp) {
             mergedItemsMap.putIfAbsent(item.id, () => item);
           }
           int byLastPlayedDate(AggregatedItem a, AggregatedItem b) {
@@ -1656,11 +1655,13 @@ class HomeViewModel extends ChangeNotifier {
             _dataSource.loadResume(_serverId),
             _dataSource.loadNextUp(_serverId),
           ]);
+          final filteredResume = _prefs.filterContinueWatching(results[0].items);
+          final filteredNextUp = _prefs.filterNextUp(results[1].items);
           final mergedItemsMap = <String, AggregatedItem>{};
-          for (final item in results[0].items) {
+          for (final item in filteredResume) {
             mergedItemsMap[item.id] = item;
           }
-          for (final item in results[1].items) {
+          for (final item in filteredNextUp) {
             mergedItemsMap.putIfAbsent(item.id, () => item);
           }
           int byLastPlayedDate(AggregatedItem a, AggregatedItem b) {

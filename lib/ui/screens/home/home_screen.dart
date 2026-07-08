@@ -108,6 +108,8 @@ class _HomeShellState extends State<_HomeShell>
   String _lastSectionsJson = '';
   bool _lastMultiServer = false;
   bool _lastMergeContinueWatchingNextUp = false;
+  String _lastHiddenCW = '{}';
+  String _lastHiddenNU = '{}';
   String _lastBlockedParentalRatings = '';
   bool _lastSeerrAvailable = false;
   bool _themeMusicRegistered = false;
@@ -150,6 +152,8 @@ class _HomeShellState extends State<_HomeShell>
     _lastMergeContinueWatchingNextUp = _userPrefs.get(
       UserPreferences.mergeContinueWatchingNextUp,
     );
+    _lastHiddenCW = _userPrefs.get(UserPreferences.hiddenContinueWatchingItems);
+    _lastHiddenNU = _userPrefs.get(UserPreferences.hiddenNextUpSeries);
     _lastBlockedParentalRatings = _userPrefs.get(
       UserPreferences.blockedParentalRatings,
     );
@@ -247,6 +251,8 @@ class _HomeShellState extends State<_HomeShell>
     final currentBlocked = _userPrefs.get(
       UserPreferences.blockedParentalRatings,
     );
+    final currentHiddenCW = _userPrefs.get(UserPreferences.hiddenContinueWatchingItems);
+    final currentHiddenNU = _userPrefs.get(UserPreferences.hiddenNextUpSeries);
     final currentEnableRadarr = _userPrefs.get(UserPreferences.enableRadarrCalendar);
     final currentEnableSonarr = _userPrefs.get(UserPreferences.enableSonarrCalendar);
     final currentMerge = _userPrefs.get(UserPreferences.mergeRadarrSonarrCalendars);
@@ -261,6 +267,8 @@ class _HomeShellState extends State<_HomeShell>
         currentMultiServer != _lastMultiServer ||
         currentMergeContinueWatchingNextUp != _lastMergeContinueWatchingNextUp ||
         currentBlocked != _lastBlockedParentalRatings ||
+        currentHiddenCW != _lastHiddenCW ||
+        currentHiddenNU != _lastHiddenNU ||
         currentEnableRadarr != _lastEnableRadarrCalendar ||
         currentEnableSonarr != _lastEnableSonarrCalendar ||
         currentMerge != _lastMergeRadarrSonarrCalendars ||
@@ -274,6 +282,8 @@ class _HomeShellState extends State<_HomeShell>
       _lastMultiServer = currentMultiServer;
       _lastMergeContinueWatchingNextUp = currentMergeContinueWatchingNextUp;
       _lastBlockedParentalRatings = currentBlocked;
+      _lastHiddenCW = currentHiddenCW;
+      _lastHiddenNU = currentHiddenNU;
       _lastEnableRadarrCalendar = currentEnableRadarr;
       _lastEnableSonarrCalendar = currentEnableSonarr;
       _lastMergeRadarrSonarrCalendars = currentMerge;
@@ -823,6 +833,9 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   int? _focusedRowIndex(FocusNode? node) {
+    if (OverlaySheetController.hasOpenSheet || SettingsPanel.isOpenNotifier.value) {
+      return _activeFocusedRowIndex;
+    }
     if (node == null) return null;
     if (identical(node, _mediaBarFocusNode)) return null;
     return _activeFocusedRowIndex;
@@ -2677,6 +2690,9 @@ class _ContentRowsState extends State<_ContentRows>
       }
     } else if (_activeFocusedRowIndex == rowIndex) {
       if (_isSidebarFocus) {
+        return;
+      }
+      if (OverlaySheetController.hasOpenSheet || SettingsPanel.isOpenNotifier.value) {
         return;
       }
       if (_activePreviewKey != null) {
