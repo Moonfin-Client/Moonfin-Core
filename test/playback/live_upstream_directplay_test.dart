@@ -40,4 +40,51 @@ void main() {
       expect(eligible(path: ''), isFalse);
     });
   });
+
+  group('MediaStreamResolver.rebaseLiveServerPath', () {
+    const base = 'https://emby.example.net';
+
+    test('rebases a loopback LiveStreamFiles path onto the server base', () {
+      // Emby behind a reverse proxy hands back its own remux endpoint with the
+      // internal loopback bind address; it must be dialed on the connected base.
+      expect(
+        MediaStreamResolver.rebaseLiveServerPath(
+          'http://127.0.0.1:8096/LiveTv/LiveStreamFiles/abc/stream.ts',
+          base,
+        ),
+        'https://emby.example.net/LiveTv/LiveStreamFiles/abc/stream.ts',
+      );
+    });
+
+    test('rebases a container-private LiveStreamFiles host and keeps query', () {
+      expect(
+        MediaStreamResolver.rebaseLiveServerPath(
+          'http://172.19.0.9:8096/LiveTv/LiveStreamFiles/abc/stream.ts?tag=1',
+          base,
+        ),
+        'https://emby.example.net/LiveTv/LiveStreamFiles/abc/stream.ts?tag=1',
+      );
+    });
+
+    test('rebases any loopback host even without a LiveStreamFiles path', () {
+      expect(
+        MediaStreamResolver.rebaseLiveServerPath(
+          'http://localhost:8096/videos/1/stream.ts',
+          base,
+        ),
+        'https://emby.example.net/videos/1/stream.ts',
+      );
+    });
+
+    test('leaves a genuine remote upstream URL unchanged', () {
+      const upstream = 'https://provider.example/live/1';
+      expect(MediaStreamResolver.rebaseLiveServerPath(upstream, base), upstream);
+    });
+
+    test('is idempotent when the host is already the published base', () {
+      const already =
+          'https://emby.example.net/LiveTv/LiveStreamFiles/abc/stream.ts';
+      expect(MediaStreamResolver.rebaseLiveServerPath(already, base), already);
+    });
+  });
 }
