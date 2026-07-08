@@ -190,8 +190,8 @@ class JellyfinMediaServerClient extends MediaServerClient {
   late final ClientLogApi clientLogApi = JellyfinClientLogApi(_dio);
 
   @override
-  late final GamesApi gamesApi =
-      MoonbaseGamesApi(_dio, () => _baseUrl, () => _accessToken);
+  late final GamesApi gamesApi = MoonbaseGamesApi(
+      _dio, () => _baseUrl, () => _accessToken, ServerType.jellyfin);
 
   @override
   void dispose() {

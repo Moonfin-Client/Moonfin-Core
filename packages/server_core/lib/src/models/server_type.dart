@@ -2,6 +2,9 @@ enum ServerType {
   jellyfin,
   emby;
 
+  /// Jellyfin 12 drops the lowercase api_key param while Emby still requires it.
+  String get tokenQueryParam => this == ServerType.emby ? 'api_key' : 'ApiKey';
+
   static ServerType detect(String? productName, String? version) {
     if (productName != null) {
       final lower = productName.toLowerCase();

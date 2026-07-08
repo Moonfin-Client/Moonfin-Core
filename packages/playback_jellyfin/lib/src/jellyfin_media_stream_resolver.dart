@@ -233,7 +233,7 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
     final lowerUrl = url.toLowerCase();
     if (lowerUrl.contains('api_key=') || lowerUrl.contains('apikey=')) return url;
     final separator = url.contains('?') ? '&' : '?';
-    return '$url${separator}api_key=${Uri.encodeComponent(token)}';
+    return '$url${separator}ApiKey=${Uri.encodeComponent(token)}';
   }
 
   StreamResolutionResult _buildAudioUniversalFallback(

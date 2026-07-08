@@ -379,7 +379,7 @@ class _InstalledTab extends ConsumerWidget {
     final version = Uri.encodeComponent(plugin.version);
     final apiKeySuffix = token == null || token.isEmpty
         ? ''
-        : '?api_key=${Uri.encodeQueryComponent(token)}';
+        : '?${client.serverType.tokenQueryParam}=${Uri.encodeQueryComponent(token)}';
     return '$base/Plugins/$pluginId/$version/Image$apiKeySuffix';
   }
 }

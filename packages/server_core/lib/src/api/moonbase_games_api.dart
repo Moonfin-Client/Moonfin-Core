@@ -2,26 +2,31 @@ import 'package:dio/dio.dart';
 
 import 'games_api.dart';
 import '../models/games_models.dart';
+import '../models/server_type.dart';
 
 /// Talks to the Moonbase plugin retro-games (EmulatorJS) endpoints under /Moonfin/Games and
 /// /Moonfin/EmulatorJS. These endpoints are identical on Jellyfin and Emby (the Moonbase
 /// plugin exposes the same routes on both), so this implementation is server-agnostic; the
 /// Jellyfin and Emby clients each construct it with their own Dio + base URL + token.
 ///
-/// ROM / BIOS / save / player URLs embed the access token as an `api_key` query parameter so
-/// the WebView's plain requests authenticate (both Jellyfin and Emby honor `api_key`).
+/// ROM / BIOS / save / player URLs embed the access token as a query parameter (ApiKey on
+/// Jellyfin, api_key on Emby) so the WebView's plain requests authenticate.
 class MoonbaseGamesApi implements GamesApi {
   final Dio _dio;
   final String Function() _baseUrlProvider;
   final String? Function() _tokenProvider;
+  final ServerType _serverType;
 
-  MoonbaseGamesApi(this._dio, this._baseUrlProvider, this._tokenProvider);
+  MoonbaseGamesApi(
+      this._dio, this._baseUrlProvider, this._tokenProvider, this._serverType);
 
   String get _base => _baseUrlProvider().replaceAll(RegExp(r'/+$'), '');
 
   String get _apiKeyQuery {
     final token = _tokenProvider();
-    return token == null ? '' : 'api_key=${Uri.encodeQueryComponent(token)}';
+    return token == null
+        ? ''
+        : '${_serverType.tokenQueryParam}=${Uri.encodeQueryComponent(token)}';
   }
 
   @override

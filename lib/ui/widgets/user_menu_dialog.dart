@@ -101,7 +101,7 @@ class _AccountDialogState extends State<_AccountDialog> {
     if (apiKey.isEmpty) return null;
 
     final base =
-        '${account.server.address}/Users/${account.user.id}/Images/Primary?quality=90&maxHeight=180&api_key=$apiKey';
+        '${account.server.address}/Users/${account.user.id}/Images/Primary?quality=90&maxHeight=180&${account.server.serverType.tokenQueryParam}=$apiKey';
     final tag = account.user.imageTag;
     if (tag == null || tag.isEmpty) {
       return base;

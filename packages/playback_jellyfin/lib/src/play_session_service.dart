@@ -110,7 +110,7 @@ class PlaySessionService implements PlayerService {
     }
     final report = _stopReport(mediaItem, resolution, positionTicks);
     PlaybackExitBeacon.arm(
-      url: '${_client.baseUrl}/Sessions/Playing/Stopped?api_key=$token',
+      url: '${_client.baseUrl}/Sessions/Playing/Stopped?ApiKey=$token',
       body: jsonEncode(report.toJson()),
     );
   }

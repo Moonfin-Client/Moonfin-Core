@@ -55,7 +55,7 @@ class JellyfinWebSocketClient implements ServerWebSocketClient {
 
     try {
       _channel = WebSocketChannel.connect(
-        Uri.parse('$wsUrl/socket?api_key=$token'),
+        Uri.parse('$wsUrl/socket?ApiKey=$token'),
       );
       await _channel!.ready;
       _reconnectAttempt = 0;

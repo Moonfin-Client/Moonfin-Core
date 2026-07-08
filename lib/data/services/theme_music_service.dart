@@ -157,7 +157,7 @@ class ThemeMusicService {
 
   String _buildAudioUrl(String songId) {
     final token = _client.accessToken ?? '';
-    return '${_client.baseUrl}/Audio/$songId/stream?static=true&audioCodec=mp3&audioBitrate=128000&api_key=$token';
+    return '${_client.baseUrl}/Audio/$songId/stream?static=true&audioCodec=mp3&audioBitrate=128000&${_client.serverType.tokenQueryParam}=$token';
   }
 
   void _fadeIn(int generation) {

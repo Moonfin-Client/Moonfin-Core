@@ -94,7 +94,8 @@ class AirPlayProvider implements CastProvider, CastTransportControls {
         !streamUrl.toLowerCase().contains('api_key=') &&
         !streamUrl.toLowerCase().contains('apikey=')) {
       final separator = streamUrl.contains('?') ? '&' : '?';
-      streamUrl = '$streamUrl${separator}api_key=${Uri.encodeComponent(token)}';
+      streamUrl =
+          '$streamUrl$separator${client.serverType.tokenQueryParam}=${Uri.encodeComponent(token)}';
     }
 
     streamUrl = streamUrl.replaceFirst('?&', '?');
