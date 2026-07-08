@@ -22,6 +22,8 @@ import '../../theme/app_theme_controller.dart';
 import '../../screensaver/screensaver_controller.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../util/play_method_label.dart';
 
 class AppleTvPlayerHostScreen extends StatefulWidget {
   const AppleTvPlayerHostScreen({super.key});
@@ -207,18 +209,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
     }
   }
 
-  String _prettyPlayMethod(String name) {
-    switch (name) {
-      case 'directPlay':
-        return 'Direct Play';
-      case 'directStream':
-        return 'Direct Stream (Remux)';
-      case 'transcode':
-        return 'Transcode';
-      default:
-        return name;
-    }
-  }
+
 
   Map<String, dynamic>? _rawDataForQueueItem(dynamic item) {
     if (item is AggregatedItem) return item.rawData;
@@ -396,7 +387,11 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
       rowEntry('File Name', fileName()),
       rowEntry(
         'Play Method',
-        res != null ? _prettyPlayMethod(res.playMethod.name) : 'Unknown',
+        playbackMethodLabel(
+          l10n: AppLocalizations.of(context),
+          playMethod: res?.playMethod,
+          transcodingReasons: res?.transcodingReasons ?? const [],
+        ),
       ),
       if (res != null && res.transcodingReasons.isNotEmpty)
         rowEntry('Transcode Reasons', res.transcodingReasons.join(', ')),

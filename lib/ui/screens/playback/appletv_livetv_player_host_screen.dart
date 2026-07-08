@@ -14,6 +14,7 @@ import '../../../playback/appletv_mpv_backend.dart';
 import '../../../playback/appletv_preview_player.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../util/play_method_label.dart';
 import '../livetv/live_tv_guide_screen.dart';
 import '../../theme/app_theme_controller.dart';
 
@@ -514,9 +515,11 @@ class _AppleTvLiveTvPlayerHostScreenState
     final videoStream = streams.where((s) => s['Type'] == 'Video').firstOrNull;
     final audioStream = pickStream('Audio', _manager.audioStreamIndex);
 
-    final playMethod = resolution != null
-        ? _prettyPlayMethod(resolution.playMethod.name)
-        : 'Unknown';
+    final playMethod = playbackMethodLabel(
+          l10n: AppLocalizations.of(context),
+          playMethod: resolution?.playMethod,
+          transcodingReasons: resolution?.transcodingReasons ?? const [],
+        );
     final container = (resolution?.container ?? '').trim().toUpperCase().isEmpty
         ? 'Unknown'
         : (resolution?.container ?? '').trim().toUpperCase();
@@ -572,18 +575,7 @@ class _AppleTvLiveTvPlayerHostScreenState
     return sections;
   }
 
-  String _prettyPlayMethod(String name) {
-    switch (name) {
-      case 'directPlay':
-        return 'Direct Play';
-      case 'directStream':
-        return 'Direct Stream (Remux)';
-      case 'transcode':
-        return 'Transcode';
-      default:
-        return name;
-    }
-  }
+
 
   void _pushMetadata() {
     final backend = _backend;
