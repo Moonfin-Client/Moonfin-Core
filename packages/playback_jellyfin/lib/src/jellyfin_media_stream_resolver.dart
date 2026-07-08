@@ -332,10 +332,12 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       isManagedLiveStream: isManagedLiveStream,
       path: remotePath,
     )) {
-      final method = _isServerUrl(remotePath!)
+      final resolvedPath =
+          MediaStreamResolver.rebaseLiveServerPath(remotePath!, _client.baseUrl);
+      final method = _isServerUrl(resolvedPath)
           ? StreamPlayMethod.directStream
           : StreamPlayMethod.directPlay;
-      return (remotePath, method);
+      return (resolvedPath, method);
     }
 
     final serverPlayMethod = source.defaultPlayMethod;
