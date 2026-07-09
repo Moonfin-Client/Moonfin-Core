@@ -841,6 +841,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
                                   horizontal: 14,
                                   vertical: 12,
                                 ),
+                                popParentOnKeyboardClose: false,
                                 onFieldSubmitted: _onSearchSubmitted,
                               ),
                             )
