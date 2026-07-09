@@ -24,6 +24,10 @@ class NavigationLayout extends StatefulWidget {
   final bool showBackButton;
   final bool showNavigationChrome;
 
+  /// Keep the top toolbar fixed instead of letting it translate away as the
+  /// content scrolls. No effect off-TV, where the toolbar is already fixed.
+  final bool pinTopToolbar;
+
   static bool get allowBottomNavbar =>
       PlatformDetection.useMobileUi && !PlatformDetection.isWeb;
 
@@ -63,6 +67,7 @@ class NavigationLayout extends StatefulWidget {
     required this.child,
     this.showBackButton = false,
     this.showNavigationChrome = true,
+    this.pinTopToolbar = false,
   });
 
   @override
@@ -191,7 +196,7 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
   }
 
   Widget _buildToolbar() {
-    final translateWithScroll = PlatformDetection.isTV;
+    final translateWithScroll = PlatformDetection.isTV && !widget.pinTopToolbar;
     final content = Focus(
       focusNode: _contentFocusNode,
       skipTraversal: true,

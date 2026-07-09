@@ -23,11 +23,13 @@ import '../../../util/focus/dpad_keys.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/search_group_title_localizer.dart';
 import '../../../util/focus/grid_focus_node_mixin.dart';
+import '../../../util/focus/row_focus_coordinator.dart';
 import '../../widgets/library_row.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
-import '../detail/modern/widgets/details_tab_bar.dart';
+import '../../widgets/focus/request_initial_focus.dart';
+import '../../widgets/sliding_pill_tabs.dart';
 
 class SearchScreen extends StatefulWidget {
   final String? initialQuery;
@@ -48,7 +50,13 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
   final _resultsScrollController = ScrollController();
   // Per-card focus nodes for the All tab's row layout, keyed 'row:col'.
   final Map<String, FocusNode> _allRowNodes = <String, FocusNode>{};
-  final Map<int, FocusNode> _tabFocusNodes = <int, FocusNode>{};
+  // Per-row keys so focusing a card can scroll its whole row (title included)
+  // into view rather than just the card.
+  final Map<int, GlobalKey> _allRowKeys = <int, GlobalKey>{};
+  // The results tab pill is a single focus stop.
+  final _tabsFocusNode = FocusNode(debugLabel: 'search_tabs');
+  // Vertical focus model: search field, then the tabs pill. Rebuilt each build.
+  final _coordinator = RowFocusCoordinator();
   final _voiceController = VoiceSearchController();
   late final SearchViewModel _vm;
   late final SearchRepository _searchRepository;
@@ -58,9 +66,18 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
   static const _tmdbPosterBase = 'https://image.tmdb.org/t/p/w342';
   int _selectedTab = 0;
 
+  // Tracks the current grid tab's content so async refreshes can restore focus
+  // without stealing it from the search field.
+  int _lastGridCount = -1;
+  Object? _lastGridFirstId;
+
   /// D-pad/keyboard focus navigation applies on TV and desktop; mobile is touch.
   bool get _usesDpad =>
       PlatformDetection.isTV || PlatformDetection.useDesktopUi;
+
+  /// The focus node that owns the search field on this platform.
+  FocusNode get _fieldNode =>
+      PlatformDetection.isTV ? _searchFocus : _searchInputFocus;
 
   @override
   void initState() {
@@ -89,11 +106,11 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     _searchInputFocus.addListener(_onFocusChanged);
     _voiceController.addListener(_onVoiceControllerChanged);
 
-    if (PlatformDetection.isTV) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _searchFocus.requestFocus();
-      });
+    // Desktop keyboard/d-pad: let arrow Down/Up leave the plain text field.
+    if (PlatformDetection.useDesktopUi) {
+      _searchInputFocus.onKeyEvent = _onSearchInputKey;
     }
+    // Initial focus is granted by the RequestInitialFocus wrapper in build().
   }
 
   Future<void> _initSeerr() async {
@@ -111,8 +128,45 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
 
   void _onViewModelChanged() {
     if (_selectedTab >= _tabCount) _selectedTab = 0;
-    cleanupGridFocusNodes(_currentTabItemCount());
+    _maybeBumpGridVersion();
     if (mounted) setState(() {});
+  }
+
+  // Detect when the current grid tab's content changed (async results arriving)
+  // and restore focus into the grid, mirroring library_browse_screen. The guard
+  // keeps a debounced refresh from yanking focus off the search field while the
+  // user is still typing.
+  void _maybeBumpGridVersion() {
+    final count = _currentTabItemCount();
+    final firstId = _currentGridFirstId();
+    if (count == _lastGridCount && firstId == _lastGridFirstId) return;
+    _lastGridCount = count;
+    _lastGridFirstId = firstId;
+    gridContentVersion++;
+    cleanupGridFocusNodes(count);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final primary = FocusManager.instance.primaryFocus;
+      final inGrid =
+          primary != null &&
+          gridItemFocusNodes.values.any((n) => identical(n, primary));
+      if (primary == null || inGrid) {
+        restoreGridFocusIfNeeded();
+      }
+    });
+  }
+
+  Object? _currentGridFirstId() {
+    if (_tabIsAll(_selectedTab)) return null;
+    if (_tabIsSeerr(_selectedTab)) {
+      return _vm.seerrResults.isEmpty ? null : _vm.seerrResults.first.id;
+    }
+    final gi = _groupIndex(_selectedTab);
+    if (gi >= 0 && gi < _vm.results.length) {
+      final items = _vm.results[gi].items;
+      return items.isEmpty ? null : items.first.id;
+    }
+    return null;
   }
 
   void _onSearchTextChanged() {
@@ -198,21 +252,36 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     if (index == _selectedTab) return;
     setState(() => _selectedTab = index);
     cleanupGridFocusNodes(_currentTabItemCount());
+    _lastGridCount = -1;
+    _lastGridFirstId = null;
     if (_resultsScrollController.hasClients) {
       _resultsScrollController.jumpTo(0);
     }
   }
 
-  FocusNode _tabNode(int index) {
-    return _tabFocusNodes.putIfAbsent(index, () {
-      final node = FocusNode(debugLabel: 'search_tab_$index');
-      node.addListener(() {
-        if (!mounted || !node.hasFocus) return;
-        _selectTab(index);
-        _ensureVisibleNode(node);
-      });
-      return node;
-    });
+  // Moves focus up/down between the search field and the tabs pill, falling
+  // back to the navbar at the top edge. Mirrors book_browse_screen.
+  bool _moveVertical(int fromIndex, bool isUp) {
+    if (_coordinator.moveVertical(fromIndex: fromIndex, isUp: isUp)) {
+      return true;
+    }
+    if (isUp) {
+      final focusNavbar = NavigationLayout.focusNavbarNotifier.value;
+      if (focusNavbar != null) {
+        focusNavbar();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void _focusFirstResult() {
+    if (!_usesDpad) return;
+    if (_tabIsAll(_selectedTab)) {
+      _focusAllCard(0, 0);
+    } else {
+      _focusGridCell(0);
+    }
   }
 
   void _ensureVisibleNode(FocusNode node) {
@@ -282,7 +351,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     }
     if (key.isUpKey) {
       if (index < columns) {
-        _tabNode(_selectedTab).requestFocus();
+        _tabsFocusNode.requestFocus();
         return KeyEventResult.handled;
       }
       _focusGridCell(index - columns);
@@ -377,10 +446,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     _searchFocus.dispose();
     _searchInputFocus.dispose();
     _resultsScrollController.dispose();
-    for (final node in _tabFocusNodes.values) {
-      node.dispose();
-    }
-    _tabFocusNodes.clear();
+    _tabsFocusNode.dispose();
     for (final node in _allRowNodes.values) {
       node.dispose();
     }
@@ -531,7 +597,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
       if (_tabCount == 0) {
         return KeyEventResult.ignored;
       }
-      _tabNode(_selectedTab).requestFocus();
+      _tabsFocusNode.requestFocus();
       return KeyEventResult.handled;
     }
     if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
@@ -552,11 +618,31 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     return KeyEventResult.ignored;
   }
 
-  String? _imageUrl(
-    AggregatedItem item, {
-    int? maxWidth,
-    int? maxHeight,
-  }) {
+  // Desktop key handling for the plain TextField, attached directly to
+  // _searchInputFocus (the login-screen pattern) so it fires before the field
+  // consumes the key. Only Up/Down leave the field; Left/Right stay caret moves.
+  KeyEventResult _onSearchInputKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+    if (event.logicalKey.isDownKey) {
+      if (_tabCount == 0) return KeyEventResult.ignored;
+      _tabsFocusNode.requestFocus();
+      return KeyEventResult.handled;
+    }
+    if (event.logicalKey.isUpKey) {
+      if (_userPreferences.get(UserPreferences.navbarPosition) ==
+          NavbarPosition.top) {
+        return _tryFocusNavbar()
+            ? KeyEventResult.handled
+            : KeyEventResult.ignored;
+      }
+      return KeyEventResult.ignored;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  String? _imageUrl(AggregatedItem item, {int? maxWidth, int? maxHeight}) {
     final api = _vm.imageApi;
     final type = item.type;
     if (type == 'Episode' || type == 'Program' || type == 'Recording') {
@@ -594,7 +680,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
   }
 
   Widget _buildVoiceActivation() {
-    final hasFocus = PlatformDetection.isTV && _voiceFocus.hasFocus;
+    final hasFocus = _usesDpad && _voiceFocus.hasFocus;
     final isListening = _voiceController.isListening;
     final isInitializing = _voiceController.isInitializing;
     final backgroundColor = isListening
@@ -651,10 +737,12 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
       ),
     );
 
-    if (!PlatformDetection.isTV) {
+    if (!_usesDpad) {
       return button;
     }
 
+    // On TV, _onVoiceKey drives directional focus; on desktop the button just
+    // joins the Tab traversal order (the handler no-ops off-TV).
     return Focus(
       focusNode: _voiceFocus,
       onKeyEvent: _onVoiceKey,
@@ -682,10 +770,18 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
         : AppColorScheme.onSurface.withValues(alpha: 0.7);
     const searchBorderRadius = 28.0;
 
-    return Scaffold(
+    // Vertical focus order: search field, then the tabs pill when results exist.
+    // Results themselves are a 2D grid handled by their own key handlers.
+    _coordinator.entries = [
+      RowFocusEntry.node(_fieldNode),
+      if (_tabCount > 0) RowFocusEntry.node(_tabsFocusNode),
+    ];
+
+    final scaffold = Scaffold(
       backgroundColor: AppColorScheme.background,
       body: NavigationLayout(
         showBackButton: true,
+        pinTopToolbar: true,
         child: SafeArea(
           child: Column(
             children: [
@@ -818,6 +914,8 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
         ),
       ),
     );
+
+    return RequestInitialFocus(targetNode: _fieldNode, child: scaffold);
   }
 
   Widget _buildBody() {
@@ -868,7 +966,8 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     if (_selectedTab >= tabCount) _selectedTab = tabCount - 1;
 
     final l10n = AppLocalizations.of(context);
-    final totalCount = _vm.results.fold<int>(0, (s, g) => s + g.items.length) +
+    final totalCount =
+        _vm.results.fold<int>(0, (s, g) => s + g.items.length) +
         _vm.seerrResults.length;
     final labels = <String>[
       '${l10n.all}: $totalCount',
@@ -880,6 +979,8 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
 
     final isMobile = PlatformDetection.useMobileUi;
     final horizontalPadding = isMobile ? 20.0 : 48.0;
+    // Index of the tabs pill in the coordinator's entries (field is 0).
+    const tabsIndex = 1;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -891,28 +992,19 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
             horizontalPadding,
             4,
           ),
-          child: DetailsTabBar(
-            segmented: true,
-            wrap: isMobile,
+          child: SlidingPillTabs(
             labels: labels,
             selectedIndex: _selectedTab,
-            onSelect: _selectTab,
-            focusNodeFor: _tabNode,
+            onChanged: _selectTab,
+            focusNode: _tabsFocusNode,
             onExitLeft: _tryFocusSidebar,
-            onExitUp: () {
-              if (PlatformDetection.isTV) {
-                _searchFocus.requestFocus();
-              } else {
-                _searchInputFocus.requestFocus();
+            onVerticalNavigation: (isUp) {
+              if (_moveVertical(tabsIndex, isUp)) return true;
+              if (!isUp) {
+                _focusFirstResult();
+                return true;
               }
-            },
-            onNavigateDown: (_) {
-              if (!_usesDpad) return;
-              if (_tabIsAll(_selectedTab)) {
-                _focusAllCard(0, 0);
-              } else {
-                _focusGridCell(0);
-              }
+              return false;
             },
           ),
         ),
@@ -926,15 +1018,18 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
   }
 
   FocusNode _allCardNode(int row, int col) => _allRowNodes.putIfAbsent(
-        '$row:$col',
-        () => FocusNode(debugLabel: 'search_all_$row:$col'),
-      );
+    '$row:$col',
+    () => FocusNode(debugLabel: 'search_all_$row:$col'),
+  );
+
+  GlobalKey _allRowKey(int row) =>
+      _allRowKeys.putIfAbsent(row, () => GlobalKey());
 
   void _focusAllCard(int row, int col) {
     final node = _allCardNode(row, col);
     if (node.context != null) {
       node.requestFocus();
-      _ensureVisibleNode(node);
+      _ensureAllCardVisible(row, node);
       return;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -942,9 +1037,37 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
       final target = _allCardNode(row, col);
       if (target.canRequestFocus) {
         target.requestFocus();
-        _ensureVisibleNode(target);
+        _ensureAllCardVisible(row, target);
       }
     });
+  }
+
+  // Scroll the focused card into view horizontally within its row, then scroll
+  // the whole row (title first) into view vertically. The vertical call is last
+  // so the row title stays visible instead of being pushed above the fold.
+  void _ensureAllCardVisible(int row, FocusNode node) {
+    final cardContext = node.context;
+    if (cardContext != null) {
+      unawaited(
+        Scrollable.ensureVisible(
+          cardContext,
+          alignment: 0.5,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        ),
+      );
+    }
+    final rowContext = _allRowKey(row).currentContext;
+    if (rowContext != null) {
+      unawaited(
+        Scrollable.ensureVisible(
+          rowContext,
+          alignment: 0.05,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        ),
+      );
+    }
   }
 
   KeyEventResult _onAllCardKey(
@@ -973,7 +1096,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     }
     if (key.isUpKey) {
       if (row == 0) {
-        _tabNode(_selectedTab).requestFocus();
+        _tabsFocusNode.requestFocus();
       } else {
         _focusAllCard(row - 1, col.clamp(0, rowLens[row - 1] - 1));
       }
@@ -994,8 +1117,9 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     final cardFocusExpansion = prefs.get(UserPreferences.cardFocusExpansion);
     final l10n = AppLocalizations.of(context);
     final isMobile = PlatformDetection.useMobileUi;
-    final cardWidth =
-        isMobile ? 108.0 : (PlatformDetection.isTV ? 168.0 : 150.0);
+    // Match the modern detail Similar grid (150) so posters read at the same
+    // scale as the season/similar tabs on TV and desktop.
+    final cardWidth = isMobile ? 108.0 : 150.0;
 
     final groups = _vm.results;
     final hasSeerr = _vm.seerrResults.isNotEmpty;
@@ -1008,26 +1132,45 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     for (var r = 0; r < groups.length; r++) {
       final group = groups[r];
       final ar = MediaCard.aspectRatioForType(group.items.first.type);
-      rows.add(LibraryRow(
-        title: localizeSearchGroupTitle(group.title, l10n),
-        rowHeight: cardWidth / ar + 56,
-        children: [
-          for (var c = 0; c < group.items.length; c++)
-            _buildAllItemCard(
-                r, c, cardWidth, ar, rowLens, focusColor, cardFocusExpansion),
-        ],
-      ));
+      rows.add(
+        LibraryRow(
+          key: _allRowKey(r),
+          title: localizeSearchGroupTitle(group.title, l10n),
+          rowHeight: cardWidth / ar + 56,
+          children: [
+            for (var c = 0; c < group.items.length; c++)
+              _buildAllItemCard(
+                r,
+                c,
+                cardWidth,
+                ar,
+                rowLens,
+                focusColor,
+                cardFocusExpansion,
+              ),
+          ],
+        ),
+      );
     }
     if (hasSeerr) {
-      rows.add(LibraryRow(
-        title: l10n.seerr,
-        rowHeight: cardWidth / (2 / 3) + 56,
-        children: [
-          for (var c = 0; c < _vm.seerrResults.length; c++)
-            _buildAllSeerrCard(groups.length, c, cardWidth, rowLens, focusColor,
-                cardFocusExpansion),
-        ],
-      ));
+      rows.add(
+        LibraryRow(
+          key: _allRowKey(groups.length),
+          title: l10n.seerr,
+          rowHeight: cardWidth / (2 / 3) + 56,
+          children: [
+            for (var c = 0; c < _vm.seerrResults.length; c++)
+              _buildAllSeerrCard(
+                groups.length,
+                c,
+                cardWidth,
+                rowLens,
+                focusColor,
+                cardFocusExpansion,
+              ),
+          ],
+        ),
+      );
     }
 
     return ListView(
@@ -1113,11 +1256,13 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
           : (node, event) {
               if (event.isActionable && _isPlayKey(event.logicalKey)) {
                 if (event is KeyDownEvent) {
-                  context.push(Destinations.item(
-                    item.id,
-                    serverId: item.serverId,
-                    autoPlay: true,
-                  ));
+                  context.push(
+                    Destinations.item(
+                      item.id,
+                      serverId: item.serverId,
+                      autoPlay: true,
+                    ),
+                  );
                 }
                 return KeyEventResult.handled;
               }
@@ -1151,8 +1296,9 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
   }) {
     final item = _vm.seerrResults[index];
     final year = item.releaseDate ?? item.firstAirDate;
-    final yearStr =
-        (year != null && year.length >= 4) ? year.substring(0, 4) : null;
+    final yearStr = (year != null && year.length >= 4)
+        ? year.substring(0, 4)
+        : null;
     return MediaCard(
       title: item.displayTitle,
       subtitle: yearStr,
@@ -1192,14 +1338,14 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final spacing = isMobile ? 12.0 : 20.0;
-        final targetWidth = isMobile
-            ? 108.0
-            : (PlatformDetection.isTV ? 168.0 : 150.0);
+        // Match the modern detail Similar grid geometry (target 150, spacing 12,
+        // 3-8 columns) so search posters scale identically on TV/desktop.
+        const spacing = 12.0;
+        final targetWidth = isMobile ? 108.0 : 150.0;
         final available = constraints.maxWidth - horizontalPadding * 2;
         final columns = ((available + spacing) / (targetWidth + spacing))
             .floor()
-            .clamp(isMobile ? 3 : 2, 8);
+            .clamp(3, 8);
         final cellWidth = (available - (columns - 1) * spacing) / columns;
         final imageHeight = cellWidth / imageAspect;
         final childAspectRatio = cellWidth / (imageHeight + 48);
@@ -1260,11 +1406,11 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
       focusNode: _usesDpad ? getGridItemFocusNode(index) : null,
       onNavKey: _usesDpad
           ? (node, event) => _onGridKey(
-                index: index,
-                columns: columns,
-                count: count,
-                event: event,
-              )
+              index: index,
+              columns: columns,
+              count: count,
+              event: event,
+            )
           : null,
     );
   }
@@ -1285,13 +1431,12 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
       focusNode: _usesDpad ? getGridItemFocusNode(index) : null,
       onNavKey: _usesDpad
           ? (node, event) => _onGridKey(
-                index: index,
-                columns: columns,
-                count: count,
-                event: event,
-              )
+              index: index,
+              columns: columns,
+              count: count,
+              event: event,
+            )
           : null,
     );
   }
 }
-
