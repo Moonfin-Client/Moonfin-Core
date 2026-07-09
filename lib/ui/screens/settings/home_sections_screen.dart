@@ -14,6 +14,7 @@ import '../../../data/services/plugin_sync_service.dart';
 import '../../../preference/home_section_config.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/extensions.dart';
 import '../../../util/platform_detection.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/poster_size_settings_dialog.dart';
@@ -597,9 +598,13 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
   List<int> _visibleSectionIndices() {
     final visible = <int>[];
     final mergeEnabled = _prefs.get(UserPreferences.mergeContinueWatchingNextUp);
+    final mergeCalendarsEnabled = _prefs.get(UserPreferences.mergeRadarrSonarrCalendars);
     for (var i = 0; i < _sections.length; i++) {
       if (_isHiddenByRowVisibilityGates(_sections[i])) continue;
       if (mergeEnabled && _sections[i].type == HomeSectionType.nextUp) {
+        continue;
+      }
+      if (mergeCalendarsEnabled && _sections[i].type == HomeSectionType.sonarrCalendar) {
         continue;
       }
       visible.add(i);
@@ -614,14 +619,26 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     _mediaBarConfig = all
         .where((s) => s.type == HomeSectionType.mediaBar)
         .firstOrNull;
-    _sections = all.where((s) => s.type != HomeSectionType.mediaBar).toList();
+    _sections = all.where((s) => s.type != HomeSectionType.mediaBar).toList()
+        ..sort((a, b) => a.order.compareTo(b.order));
     final addedBuiltins = _ensureBuiltinSectionsPresent();
     _mergeDiscoveredPluginSections();
+
+    final beforeIds = _sections.map((s) => s.stableId).toList();
+    _sortSectionsEnabledAboveDisabled();
+    var orderChanged = false;
+    for (var i = 0; i < beforeIds.length; i++) {
+      if (beforeIds[i] != _sections[i].stableId) {
+        orderChanged = true;
+        break;
+      }
+    }
+
     // _enforceMergeAdjacency reorders _focusNodes in lockstep with _sections,
     // so the nodes must exist before it runs.
     _rebuildFocusNodes();
     _enforceMergeAdjacency();
-    if (addedBuiltins) {
+    if (addedBuiltins || orderChanged) {
       _persistSections(pushSync: false);
     }
     _refreshPluginSections();
@@ -677,11 +694,23 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         final mergedPlaylistSections = _mergePlaylistSections(
           discoveredPlaylists,
         );
+
+        final beforeIds = _sections.map((s) => s.stableId).toList();
+        _sortSectionsEnabledAboveDisabled();
+        var sortChanged = false;
+        for (var i = 0; i < beforeIds.length; i++) {
+          if (beforeIds[i] != _sections[i].stableId) {
+            sortChanged = true;
+            break;
+          }
+        }
+
         changed =
             mergedPluginSections ||
             mergedCollectionSections ||
             mergedGenreSections ||
-            mergedPlaylistSections;
+            mergedPlaylistSections ||
+            sortChanged;
         _rebuildFocusNodes();
       });
       if (changed) {
@@ -1153,15 +1182,19 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     _persistSections(pushSync: true);
   }
 
-  void _focusSectionAndEnsureVisible(int index, {int attempt = 0}) {
+  void _focusSectionAndEnsureVisible(int index) {
     if (!mounted || index < 0 || index >= _focusNodes.length) return;
     final node = _focusNodes[index];
     if (!node.hasFocus) {
       node.requestFocus();
     }
 
-    final targetContext = _focusNodes[index].context;
-    if (targetContext != null) {
+    // Defer the scroll until the reorder rebuild commits, so the target row's
+    // context exists.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || index < 0 || index >= _focusNodes.length) return;
+      final targetContext = _focusNodes[index].context;
+      if (targetContext == null) return;
       Scrollable.ensureVisible(
         targetContext,
         duration: const Duration(milliseconds: 140),
@@ -1169,32 +1202,90 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         alignment: 0.2,
         alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
       );
-      return;
-    }
-
-    if (attempt >= 3) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusSectionAndEnsureVisible(index, attempt: attempt + 1);
     });
   }
 
-  void _enforceMergeAdjacency() {
-    final merge = _prefs.get(UserPreferences.mergeContinueWatchingNextUp);
-    if (!merge) return;
-    final resumeIdx = _sections.indexWhere((s) => s.type == HomeSectionType.resume);
-    final nextUpIdx = _sections.indexWhere((s) => s.type == HomeSectionType.nextUp);
-    if (resumeIdx < 0 || nextUpIdx < 0) return;
-    if ((resumeIdx - nextUpIdx).abs() == 1) return;
+  void _sortSectionsEnabledAboveDisabled() {
+    _sections = _sections.sortedEnabledAboveDisabled((s) => s.enabled);
+  }
+
+  void _toggleSection(int index, bool enabled) {
+    final visibleIndicesBefore = _visibleSectionIndices();
+    final visibleIndex = visibleIndicesBefore.indexOf(index);
+    final toggledStableId = _sections[index].stableId;
+
+    final nodeMap = <String, FocusNode>{};
+    for (var i = 0; i < _sections.length; i++) {
+      nodeMap[_sections[i].stableId] = _focusNodes[i];
+    }
 
     setState(() {
-      final nextUpItem = _sections.removeAt(nextUpIdx);
-      final nextUpNode = _focusNodes.removeAt(nextUpIdx);
+      _sections[index] = _sections[index].copyWith(enabled: enabled);
+      _sortSectionsEnabledAboveDisabled();
+      _enforceMergeAdjacency();
 
-      final newResumeIdx = _sections.indexWhere((s) => s.type == HomeSectionType.resume);
-      _sections.insert(newResumeIdx + 1, nextUpItem);
-      _focusNodes.insert(newResumeIdx + 1, nextUpNode);
+      final newNodes = <FocusNode>[];
+      for (final section in _sections) {
+        final node = nodeMap[section.stableId];
+        if (node != null) {
+          newNodes.add(node);
+        } else {
+          newNodes.add(FocusNode(debugLabel: 'home_section_new'));
+        }
+      }
+      _focusNodes.clear();
+      _focusNodes.addAll(newNodes);
     });
+
     _save();
+
+    // Keep focus on the neighbor that slid into the toggled row's visible slot
+    // so the viewport stays put. If the toggled row didn't vacate its slot (it
+    // was the last visible row), step to the previous neighbor instead.
+    final visibleIndicesAfter = _visibleSectionIndices();
+    if (visibleIndex >= 0 && visibleIndicesAfter.isNotEmpty) {
+      var targetVisibleIndex = visibleIndex.clamp(0, visibleIndicesAfter.length - 1);
+      final toggledActualAfter = _sections.indexWhere((s) => s.stableId == toggledStableId);
+      final toggledVisibleAfter = visibleIndicesAfter.indexOf(toggledActualAfter);
+      if (toggledVisibleAfter == targetVisibleIndex && targetVisibleIndex > 0) {
+        targetVisibleIndex -= 1;
+      }
+      final targetActualIndex = visibleIndicesAfter[targetVisibleIndex];
+      _focusSectionAndEnsureVisible(targetActualIndex);
+    }
+  }
+
+  /// Mutates [_sections] and [_focusNodes] in place. Callers own the surrounding
+  /// setState and persistence so this can run inside another setState without
+  /// re-entrancy or double saving.
+  void _enforceMergeAdjacency() {
+    final merge = _prefs.get(UserPreferences.mergeContinueWatchingNextUp);
+    if (merge) {
+      final resumeIdx = _sections.indexWhere((s) => s.type == HomeSectionType.resume);
+      final nextUpIdx = _sections.indexWhere((s) => s.type == HomeSectionType.nextUp);
+      if (resumeIdx >= 0 && nextUpIdx >= 0 && (resumeIdx - nextUpIdx).abs() != 1) {
+        final nextUpItem = _sections.removeAt(nextUpIdx);
+        final nextUpNode = _focusNodes.removeAt(nextUpIdx);
+
+        final newResumeIdx = _sections.indexWhere((s) => s.type == HomeSectionType.resume);
+        _sections.insert(newResumeIdx + 1, nextUpItem);
+        _focusNodes.insert(newResumeIdx + 1, nextUpNode);
+      }
+    }
+
+    final mergeCalendars = _prefs.get(UserPreferences.mergeRadarrSonarrCalendars);
+    if (mergeCalendars) {
+      final radarrIdx = _sections.indexWhere((s) => s.type == HomeSectionType.radarrCalendar);
+      final sonarrIdx = _sections.indexWhere((s) => s.type == HomeSectionType.sonarrCalendar);
+      if (radarrIdx >= 0 && sonarrIdx >= 0 && (radarrIdx - sonarrIdx).abs() != 1) {
+        final sonarrItem = _sections.removeAt(sonarrIdx);
+        final sonarrNode = _focusNodes.removeAt(sonarrIdx);
+
+        final newRadarrIdx = _sections.indexWhere((s) => s.type == HomeSectionType.radarrCalendar);
+        _sections.insert(newRadarrIdx + 1, sonarrItem);
+        _focusNodes.insert(newRadarrIdx + 1, sonarrNode);
+      }
+    }
   }
 
   void _moveSection(int fromIndex, int toIndex) {
@@ -1205,12 +1296,32 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     final merge = _prefs.get(UserPreferences.mergeContinueWatchingNextUp);
     final resumeIdx = _sections.indexWhere((s) => s.type == HomeSectionType.resume);
     final nextUpIdx = _sections.indexWhere((s) => s.type == HomeSectionType.nextUp);
-
     final isMergeActive = merge && resumeIdx >= 0 && nextUpIdx >= 0 && (resumeIdx - nextUpIdx).abs() == 1;
+
+    final mergeCalendars = _prefs.get(UserPreferences.mergeRadarrSonarrCalendars);
+    final radarrIdx = _sections.indexWhere((s) => s.type == HomeSectionType.radarrCalendar);
+    final sonarrIdx = _sections.indexWhere((s) => s.type == HomeSectionType.sonarrCalendar);
+    final isMergeCalendarsActive = mergeCalendars && radarrIdx >= 0 && sonarrIdx >= 0 && (radarrIdx - sonarrIdx).abs() == 1;
 
     setState(() {
       if (isMergeActive && (fromIndex == resumeIdx || fromIndex == nextUpIdx)) {
         final first = resumeIdx < nextUpIdx ? resumeIdx : nextUpIdx;
+        final item1 = _sections.removeAt(first);
+        final node1 = _focusNodes.removeAt(first);
+        final item2 = _sections.removeAt(first);
+        final node2 = _focusNodes.removeAt(first);
+
+        var targetIndex = toIndex;
+        if (targetIndex > first) {
+          targetIndex -= 1;
+        }
+
+        _sections.insert(targetIndex, item1);
+        _focusNodes.insert(targetIndex, node1);
+        _sections.insert(targetIndex + 1, item2);
+        _focusNodes.insert(targetIndex + 1, node2);
+      } else if (isMergeCalendarsActive && (fromIndex == radarrIdx || fromIndex == sonarrIdx)) {
+        final first = radarrIdx < sonarrIdx ? radarrIdx : sonarrIdx;
         final item1 = _sections.removeAt(first);
         final node1 = _focusNodes.removeAt(first);
         final item2 = _sections.removeAt(first);
@@ -1233,6 +1344,12 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
             targetIndex = first + 2;
           }
         }
+        if (isMergeCalendarsActive) {
+          final first = radarrIdx < sonarrIdx ? radarrIdx : sonarrIdx;
+          if (targetIndex == first + 1) {
+            targetIndex = first + 2;
+          }
+        }
 
         final item = _sections.removeAt(fromIndex);
         final node = _focusNodes.removeAt(fromIndex);
@@ -1246,6 +1363,13 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       var focusIndex = toIndex;
       if (isMergeActive && (fromIndex == resumeIdx || fromIndex == nextUpIdx)) {
         final first = resumeIdx < nextUpIdx ? resumeIdx : nextUpIdx;
+        var targetIndex = toIndex;
+        if (targetIndex > first) {
+          targetIndex -= 1;
+        }
+        focusIndex = targetIndex;
+      } else if (isMergeCalendarsActive && (fromIndex == radarrIdx || fromIndex == sonarrIdx)) {
+        final first = radarrIdx < sonarrIdx ? radarrIdx : sonarrIdx;
         var targetIndex = toIndex;
         if (targetIndex > first) {
           targetIndex -= 1;
@@ -1402,8 +1526,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
               onPressed: () {
                 setState(() {
                   _sections = HomeSectionConfig.defaults();
+                  _sortSectionsEnabledAboveDisabled();
                   _rebuildFocusNodes();
-                  _setMergeContinueWatchingNextUp(
+                   _setMergeContinueWatchingNextUp(
                     UserPreferences.mergeContinueWatchingNextUp.defaultValue,
                     pushSync: false,
                   );
@@ -1464,12 +1589,14 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
           onChanged: (value) {
             _setMergeContinueWatchingNextUp(value);
             if (value) {
-              _enforceMergeAdjacency();
+              setState(_enforceMergeAdjacency);
+              _save();
+            } else {
+              setState(() {});
             }
-            setState(() {});
           },
         ),
-        const Divider(),
+
       ],
     );
   }
@@ -1559,14 +1686,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                               ),
                               onTap: isEmpty
                                   ? null
-                                  : () {
-                                      setState(() {
-                                        _sections[sectionIndex] = section.copyWith(
-                                          enabled: !section.enabled,
-                                        );
-                                      });
-                                      _save();
-                                    },
+                                  : () => _toggleSection(sectionIndex, !section.enabled),
                             ),
                           ),
                           const Divider(height: 1, color: Color(0xFF00F0FF), indent: 16, endIndent: 16),
@@ -1599,14 +1719,120 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                               ),
                               onTap: isNextUpEmpty
                                   ? null
-                                  : () {
-                                      setState(() {
-                                        _sections[nextUpIndex] = nextUpSection.copyWith(
-                                          enabled: !nextUpSection.enabled,
-                                        );
-                                      });
-                                      _save();
-                                    },
+                                  : () => _toggleSection(nextUpIndex, !nextUpSection.enabled),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Centered unified drag handle
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16),
+                      child: ReorderableDragStartListener(
+                        index: index,
+                        child: const Icon(
+                          Icons.drag_handle,
+                          color: Color(0xFF00F0FF), // Neon cyan handle
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+        }
+
+        final mergeCalendarsEnabled = _prefs.get(UserPreferences.mergeRadarrSonarrCalendars);
+        final isMergedCalendars = mergeCalendarsEnabled && section.type == HomeSectionType.radarrCalendar;
+
+        if (isMergedCalendars) {
+          final sonarrIndex = _sections.indexWhere((s) => s.type == HomeSectionType.sonarrCalendar);
+          if (sonarrIndex >= 0) {
+            final sonarrSection = _sections[sonarrIndex];
+            final isSonarrEmpty = _emptySectionIds.contains(sonarrSection.stableId);
+
+            return Padding(
+              key: const ValueKey('merged_radarr_sonarr_calendars'),
+              padding: _kHomeSectionTileOuterPadding,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerLow.withValues(alpha: 0.82),
+                  borderRadius: AppRadius.circular(_kHomeSectionTileRadius),
+                  border: Border.all(
+                    color: const Color(0xFF00F0FF), // Neon cyan border
+                    width: 1.5,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // 1. Radarr Calendar Tile
+                          Opacity(
+                            opacity: isEmpty ? 0.45 : 1.0,
+                            child: ListTile(
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              contentPadding: const EdgeInsets.only(left: 16, right: 8, top: 4, bottom: 4),
+                              minLeadingWidth: 44,
+                              horizontalTitleGap: 14,
+                              leading: buildSettingsLeadingIconShell(
+                                context,
+                                icon: Icon(
+                                  (section.enabled && !isEmpty)
+                                      ? Icons.check_box
+                                      : Icons.check_box_outline_blank,
+                                ),
+                                focused: false,
+                                iconColor: AppColorScheme.onSurface.withValues(alpha: 0.78),
+                              ),
+                              title: Text(
+                                _labelFor(section, l10n),
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: kCleanSettingsFontFamily,
+                                ),
+                              ),
+                              onTap: isEmpty
+                                  ? null
+                                  : () => _toggleSection(sectionIndex, !section.enabled),
+                            ),
+                          ),
+                          const Divider(height: 1, color: Color(0xFF00F0FF), indent: 16, endIndent: 16),
+                          // 2. Sonarr Calendar Tile
+                          Opacity(
+                            opacity: isSonarrEmpty ? 0.45 : 1.0,
+                            child: ListTile(
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              contentPadding: const EdgeInsets.only(left: 16, right: 8, top: 4, bottom: 4),
+                              minLeadingWidth: 44,
+                              horizontalTitleGap: 14,
+                              leading: buildSettingsLeadingIconShell(
+                                context,
+                                icon: Icon(
+                                  (sonarrSection.enabled && !isSonarrEmpty)
+                                      ? Icons.check_box
+                                      : Icons.check_box_outline_blank,
+                                ),
+                                focused: false,
+                                iconColor: AppColorScheme.onSurface.withValues(alpha: 0.78),
+                              ),
+                              title: Text(
+                                _labelFor(sonarrSection, l10n),
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: kCleanSettingsFontFamily,
+                                ),
+                              ),
+                              onTap: isSonarrEmpty
+                                  ? null
+                                  : () => _toggleSection(sonarrIndex, !sonarrSection.enabled),
                             ),
                           ),
                         ],
@@ -1736,14 +1962,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                                       : null))),
                 onTap: isEmpty
                     ? null
-                    : () {
-                        setState(() {
-                          _sections[sectionIndex] = section.copyWith(
-                            enabled: !section.enabled,
-                          );
-                        });
-                        _save();
-                      },
+                    : () => _toggleSection(sectionIndex, !section.enabled),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -1778,6 +1997,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         final section = _sections[sectionIndex];
         final isEmpty = _emptySectionIds.contains(section.stableId);
         final mergeEnabled = _prefs.get(UserPreferences.mergeContinueWatchingNextUp);
+        final mergeCalendarsEnabled = _prefs.get(UserPreferences.mergeRadarrSonarrCalendars);
 
         if (mergeEnabled && section.type == HomeSectionType.resume) {
           final nextUpIndex = _sections.indexWhere((s) => s.type == HomeSectionType.nextUp);
@@ -1786,6 +2006,20 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
               context,
               sectionIndex,
               nextUpIndex,
+              l10n,
+              visibleIndex == 0,
+              visibleIndex == visibleIndices.length - 1,
+            );
+          }
+        }
+
+        if (mergeCalendarsEnabled && section.type == HomeSectionType.radarrCalendar) {
+          final sonarrIndex = _sections.indexWhere((s) => s.type == HomeSectionType.sonarrCalendar);
+          if (sonarrIndex >= 0) {
+            return _buildMergedTvTile(
+              context,
+              sectionIndex,
+              sonarrIndex,
               l10n,
               visibleIndex == 0,
               visibleIndex == visibleIndices.length - 1,
@@ -1812,12 +2046,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
           isFirst: visibleIndex == 0,
           isLast: visibleIndex == visibleIndices.length - 1,
           isEmpty: isEmpty,
-          onToggle: (enabled) {
-            setState(() {
-              _sections[sectionIndex] = section.copyWith(enabled: enabled);
-            });
-            _save();
-          },
+          onToggle: (enabled) => _toggleSection(sectionIndex, enabled),
           onMoveUp: () {
             if (visibleIndex == 0) return;
             _moveSection(
@@ -1908,12 +2137,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                   isLast: isLast,
                   autofocus: isFirst,
                   showArrows: resumeFocused || (!resumeFocused && !nextUpFocused),
-                  onToggle: (enabled) {
-                    setState(() {
-                      _sections[resumeSectionIndex] = resumeSection.copyWith(enabled: enabled);
-                    });
-                    _save();
-                  },
+                  onToggle: (enabled) => _toggleSection(resumeSectionIndex, enabled),
                   onMoveUp: () {
                     if (isFirst) return;
                     final visibleIndices = _visibleSectionIndices();
@@ -1944,12 +2168,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                   isFirst: isFirst,
                   isLast: isLast,
                   showArrows: nextUpFocused,
-                  onToggle: (enabled) {
-                    setState(() {
-                      _sections[nextUpSectionIndex] = nextUpSection.copyWith(enabled: enabled);
-                    });
-                    _save();
-                  },
+                  onToggle: (enabled) => _toggleSection(nextUpSectionIndex, enabled),
                   onMoveUp: () {
                     if (isFirst) return;
                     final visibleIndices = _visibleSectionIndices();

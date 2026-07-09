@@ -19,3 +19,14 @@ extension DurationExtensions on Duration {
         '${seconds.toString().padLeft(2, '0')}';
   }
 }
+
+extension ListExtensions<T> on List<T> {
+  /// Pulls all items matching [test] (enabled) above items that don't (disabled),
+  /// preserving their relative order.
+  List<T> sortedEnabledAboveDisabled(bool Function(T) test) {
+    final enabled = where(test).toList();
+    final disabled = where((x) => !test(x)).toList();
+    return [...enabled, ...disabled];
+  }
+}
+

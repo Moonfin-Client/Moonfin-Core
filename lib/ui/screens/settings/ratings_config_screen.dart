@@ -7,6 +7,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../util/extensions.dart';
 import '../../../util/platform_detection.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/settings/clean_settings_typography.dart';
@@ -94,17 +95,19 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
     final enabled = csv.split(',').where((s) => s.isNotEmpty).toList();
 
     final items = <_RatingItem>[];
-    for (final key in enabled) {
-      if (_allSources.contains(key)) {
-        items.add(_RatingItem(key: key, enabled: true));
-      }
-    }
-    final addedKeys = items.map((i) => i.key).toSet();
     for (final key in _allSources) {
-      if (!addedKeys.contains(key)) {
-        items.add(_RatingItem(key: key, enabled: false));
-      }
+      items.add(_RatingItem(key: key, enabled: enabled.contains(key)));
     }
+    // Sorting by position in the enabled CSV already yields enabled-first
+    // (disabled keys resolve to -1 and sink to the bottom) in saved order.
+    items.sort((a, b) {
+      final indexA = enabled.indexOf(a.key);
+      final indexB = enabled.indexOf(b.key);
+      if (indexA == -1 && indexB == -1) return 0;
+      if (indexA == -1) return 1;
+      if (indexB == -1) return -1;
+      return indexA.compareTo(indexB);
+    });
     _items = items;
     _rebuildFocusNodes();
   }
@@ -216,10 +219,7 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
                   ).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
-              onToggle: (enabled) {
-                setState(() => item.enabled = enabled);
-                _save();
-              },
+              onToggle: (enabled) => _toggleRatingItem(index, enabled),
               onMoveUp: () => _moveItemTo(index, index - 1),
               onMoveDown: () => _moveItemTo(index, index + 1),
             );
@@ -253,15 +253,69 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
                 const Icon(Icons.arrow_right, size: 18),
             ],
           ),
-          onToggle: (enabled) {
-            setState(() => item.enabled = enabled);
-            _save();
-          },
+          onToggle: (enabled) => _toggleRatingItem(itemIndex, enabled),
           onMoveUp: () => _moveItemTo(itemIndex, itemIndex - 1),
           onMoveDown: () => _moveItemTo(itemIndex, itemIndex + 1),
         );
       },
     );
+  }
+
+  void _toggleRatingItem(int index, bool enabled) {
+    final toggledKey = _items[index].key;
+    final nodeMap = <String, FocusNode>{};
+    for (var i = 0; i < _items.length; i++) {
+      nodeMap[_items[i].key] = _focusNodes[i];
+    }
+
+    setState(() {
+      _items[index].enabled = enabled;
+      _items = _items.sortedEnabledAboveDisabled((i) => i.enabled);
+
+      final newNodes = <FocusNode>[];
+      for (final item in _items) {
+        final node = nodeMap[item.key];
+        if (node != null) {
+          newNodes.add(node);
+        } else {
+          newNodes.add(FocusNode(debugLabel: 'rating_new'));
+        }
+      }
+      _focusNodes.clear();
+      _focusNodes.addAll(newNodes);
+    });
+
+    _save();
+
+    // Keep focus on the neighbor that slid into the toggled row's old slot so
+    // the viewport stays put. If the item didn't move (it was the last row),
+    // step to the previous neighbor instead.
+    final newIndex = _items.indexWhere((i) => i.key == toggledKey);
+    final targetIndex = (newIndex == index && index > 0) ? index - 1 : index;
+    _focusItemAndEnsureVisible(targetIndex);
+  }
+
+  void _focusItemAndEnsureVisible(int index) {
+    if (!mounted || index < 0 || index >= _focusNodes.length) return;
+    final node = _focusNodes[index];
+    if (!node.hasFocus) {
+      node.requestFocus();
+    }
+
+    // Defer the scroll until the reorder rebuild commits, so the target row's
+    // context exists.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || index < 0 || index >= _focusNodes.length) return;
+      final targetContext = _focusNodes[index].context;
+      if (targetContext == null) return;
+      Scrollable.ensureVisible(
+        targetContext,
+        duration: const Duration(milliseconds: 140),
+        curve: Curves.easeOut,
+        alignment: 0.2,
+        alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+      );
+    });
   }
 
   void _moveItemTo(int index, int newIndex) {
