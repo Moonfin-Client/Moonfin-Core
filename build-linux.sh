@@ -161,6 +161,17 @@ resolve_shared_lib() {
     fi
   done
 
+  # Last resort for hosts without distro mpv packages, such as immutable distros
+  # where libmpv comes from Homebrew. Transitive deps are bundled via ldd, so a
+  # brew lib resolves into a self-contained bundle the same way a distro lib does.
+  if command -v brew >/dev/null 2>&1; then
+    candidate="$(brew --prefix 2>/dev/null)/lib/$soname"
+    if [ -f "$candidate" ]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  fi
+
   return 1
 }
 
@@ -265,7 +276,11 @@ collect_transitive_libs() {
 
     local deps
     deps="$(ldd "$seed" 2>/dev/null | grep -oP '=> \K/[^ ]+' || true)"
-    all_deps="$(printf '%s\n%s\n%s' "$all_deps" "$deps" "$seed")"
+    # Libraries built without a SONAME (brew mujs) appear in ldd as a bare
+    # absolute path with no arrow, so collect those too.
+    local abs_deps
+    abs_deps="$(ldd "$seed" 2>/dev/null | grep -oP '^\s*\K/\S+(?=\s+\(0x)' || true)"
+    all_deps="$(printf '%s\n%s\n%s\n%s' "$all_deps" "$deps" "$abs_deps" "$seed")"
   done <<< "$seed_libs"
 
   printf '%s\n' "$all_deps" | sort -u | grep -v '^$' || true
@@ -282,8 +297,36 @@ runtime_skip_pattern() {
   skip="$skip"'|libfontconfig|libfreetype|libharfbuzz|libcairo|libpango|libpixman'
   skip="$skip"'|libatk|libgdk|libgtk|libepoxy|libgdk_pixbuf|librsvg'
   skip="$skip"'|libmount|libblkid|libselinux|libuuid|libresolv|libnss|libnsl|libcrypt'
-  skip="$skip"'|libsystemd'
+  skip="$skip"'|libsystemd|libncurses|libtinfo'
   printf '%s\n' "$skip"
+}
+
+# Libraries linked against a no-SONAME dependency carry its absolute build-host
+# path in DT_NEEDED, which the loader uses verbatim on the target machine.
+# Rewrite those entries to bare basenames so the bundled copy is found instead.
+fix_absolute_needed() {
+  local dest_lib="$1"
+
+  if ! command -v patchelf >/dev/null 2>&1; then
+    echo "Warning: patchelf not found; absolute DT_NEEDED paths were not rewritten." >&2
+    return 0
+  fi
+
+  local lib abs base
+  for lib in "$dest_lib"/*.so*; do
+    [ -f "$lib" ] || continue
+    [ -L "$lib" ] && continue
+    while IFS= read -r abs; do
+      [ -z "$abs" ] && continue
+      base="$(basename "$abs")"
+      # Brew ships libraries read-only and cp -L keeps that mode.
+      chmod u+w "$lib" 2>/dev/null || true
+      patchelf --replace-needed "$abs" "$base" "$lib" 2>/dev/null || true
+      if [ ! -e "$dest_lib/$base" ] && [ -f "$abs" ]; then
+        cp -L "$abs" "$dest_lib/$base"
+      fi
+    done < <(readelf -d "$lib" 2>/dev/null | sed -n 's/.*(NEEDED).*\[\(\/[^]]*\)\].*/\1/p')
+  done
 }
 
 copy_runtime_libs() {
@@ -351,6 +394,7 @@ inject_linux_runtime_libs() {
 
   local bundled_count
   bundled_count="$(copy_runtime_libs "$bundle_dir/lib" "$all_deps" "$skip")"
+  fix_absolute_needed "$bundle_dir/lib"
   ensure_sqlite_unversioned_link "$bundle_dir/lib"
   ensure_mpv_compat_symlinks "$bundle_dir/lib"
   echo "Bundled $bundled_count runtime libraries for AppImage/Tarball"
@@ -377,6 +421,7 @@ inject_flatpak_libs() {
 
   local count
   count="$(copy_runtime_libs "$dest_lib" "$all_deps" "$skip")"
+  fix_absolute_needed "$dest_lib"
   ensure_sqlite_unversioned_link "$dest_lib"
   ensure_mpv_compat_symlinks "$dest_lib"
 
