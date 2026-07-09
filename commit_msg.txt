@@ -1,0 +1,7 @@
+fix(tmdb): correct tmdb charts list parsing, cash casing, focus clipping and centering
+
+- Fix tmdb list parser keys to be case-insensitive (TMDB/tmdb/Tmdb).
+- Fix _loadTmdbChartRow fallback to tmdbId and map to providerIds in rawData.
+- Delete json cache files when loaded items have empty IDs.
+- Wrap titled row layout Column in non-scrolling, non-clipping SingleChildScrollView to suppress RenderFlex overflow warnings without changing layouts or margins.
+- Restore vertical centering layout calculation for focused V2 rows on TV.

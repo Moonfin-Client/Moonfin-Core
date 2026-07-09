@@ -27,7 +27,6 @@ import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/utils/bounded_concurrency.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../data/viewmodels/seerr_discover_view_model.dart';
-import '../../../data/repositories/mdblist_repository.dart';
 import 'package:dio/dio.dart';
 import '../../../data/services/custom_external_lists_service.dart';
 
@@ -2004,59 +2003,6 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<List<HomeRow>> _loadMdbListRow(
-    HomeSectionType type,
-    String title,
-    String rowId,
-    String slug,
-    String mediatype,
-  ) async {
-    try {
-      final mdbListRepo = GetIt.instance<MdbListRepository>();
-      final items = await mdbListRepo.getListItems(slug, mediaType: mediatype);
-      if (items == null || items.isEmpty) {
-        return const [];
-      }
-
-      final aggregatedItems = items.map((item) {
-        final imdbId = item.providerIds.imdb ?? '';
-        final tmdbId = item.providerIds.tmdb ?? item.id?.toString() ?? '';
-        final type = item.type; // 'movie' or 'show'
-        final displayType = type == 'show' ? 'Series' : 'Movie';
-        final seerrMediaType = type == 'show' ? 'tv' : 'movie';
-
-        return AggregatedItem(
-          id: imdbId.isNotEmpty ? imdbId : tmdbId,
-          serverId: 'seerr',
-          rawData: {
-            'Name': item.name,
-            'Type': displayType,
-            'Overview': '',
-            'PosterPath': item.poster ?? '',
-            'BackdropPath': '',
-            'ProductionYear': item.productionYear,
-            'SeerrMediaType': seerrMediaType,
-            'ProviderIds': {
-              if (imdbId.isNotEmpty) 'Imdb': imdbId,
-              if (tmdbId.isNotEmpty) 'Tmdb': tmdbId,
-            },
-          },
-        );
-      }).toList();
-
-      return [
-        HomeRow(
-          id: rowId,
-          title: title,
-          rowType: HomeRowType.pluginDynamic,
-          items: aggregatedItems,
-        )
-      ];
-    } catch (e) {
-      debugPrint('[MdbListHomeRow] Failed to load MdbList row $type ($slug): $e');
-      return const [];
-    }
-  }
 
   Future<List<HomeRow>> _loadTmdbChartRow(
     HomeSectionType sectionType,
@@ -2086,8 +2032,9 @@ class HomeViewModel extends ChangeNotifier {
       }
 
       final aggregatedItems = items.map((item) {
+        final itemId = item.imdbId.isNotEmpty ? item.imdbId : item.tmdbId;
         return AggregatedItem(
-          id: item.imdbId,
+          id: itemId,
           serverId: 'seerr',
           rawData: {
             'Name': item.title,
@@ -2097,6 +2044,10 @@ class HomeViewModel extends ChangeNotifier {
             'BackdropPath': item.backdropUrl ?? item.posterUrl ?? '',
             'ProductionYear': item.year,
             'SeerrMediaType': item.type == 'Series' ? 'tv' : 'movie',
+            'ProviderIds': {
+              if (item.imdbId.isNotEmpty) 'Imdb': item.imdbId,
+              if (item.tmdbId.isNotEmpty) 'Tmdb': item.tmdbId,
+            },
           },
         );
       }).toList();

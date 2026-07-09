@@ -971,6 +971,13 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   @override
+  void reassemble() {
+    super.reassemble();
+    _invalidateStaticRowHeightCache();
+    _cachedRowExtents = null;
+  }
+
+  @override
   void initState() {
     super.initState();
     HardwareKeyboard.instance.addHandler(_handleGlobalHardwareKey);
@@ -2371,16 +2378,8 @@ class _ContentRowsState extends State<_ContentRows>
     }
 
     if (isRowsV2) {
-      final safeBottomMargin = 40.0 * desktopScale;
-      final remainingHeight = viewportHeight - defaultTop;
-      if (rowHeight + safeBottomMargin > remainingHeight) {
-        double targetTop = viewportHeight - rowHeight - safeBottomMargin;
-        const minTargetTop = 8.0;
-        if (targetTop < minTargetTop) {
-          targetTop = minTargetTop;
-        }
-        return targetTop;
-      }
+      final targetTop = (viewportHeight - rowHeight) / 2.0;
+      return targetTop.clamp(defaultTop, double.infinity);
     }
     return defaultTop;
   }
@@ -4568,11 +4567,14 @@ class _ContentRowsState extends State<_ContentRows>
     final showHeaderControls =
         hasItems && PlatformDetection.useDesktopUi && !PlatformDetection.isTV;
     return RepaintBoundary(
-      child: Column(
-        key: key,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        clipBehavior: Clip.none,
+        child: Column(
+          key: key,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
           Padding(
             padding: EdgeInsets.fromLTRB(
               _kHomeRowLabelInset,
@@ -4635,6 +4637,7 @@ class _ContentRowsState extends State<_ContentRows>
           ),
           child,
         ],
+      ),
       ),
     );
   }

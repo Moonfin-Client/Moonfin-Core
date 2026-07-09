@@ -119,9 +119,6 @@ class CustomExternalListsService {
     final params = rowConfig['params'] as Map<String, dynamic>? ?? {};
     final modifiableParams = Map<String, dynamic>.from(params);
     if (forceRefresh) {
-      // The plugin keys its cache on source:type:sha256(params), so changing params
-      // is what actually forces a fresh fetch. This is an authed Dio call with no HTTP
-      // cache in between, so cache-control headers and query flags would do nothing.
       modifiableParams['_nocache'] = DateTime.now().millisecondsSinceEpoch.toString();
     }
 
@@ -175,15 +172,15 @@ class CustomExternalListsService {
 
       final List<ImdbExternalListItem> items = [];
       for (final rawItem in rawItems) {
-        final providerIds = rawItem['providerIds'] as Map<String, dynamic>? ?? {};
-        final imdbId = providerIds['Imdb'] as String? ?? '';
-        final tmdbId = providerIds['Tmdb'] as String? ?? '';
-        final title = rawItem['name'] as String? ?? 'Unknown';
-        final posterUrl = rawItem['posterUrl'] as String?;
-        final backdropUrl = rawItem['backdropUrl'] as String?;
-        final year = rawItem['productionYear'] as int?;
-        final itemType = rawItem['type'] as String? ?? 'Movie';
-        final userRating = rawItem['userRating'] as String?;
+        final providerIds = (rawItem['providerIds'] ?? rawItem['ProviderIds']) as Map<String, dynamic>? ?? {};
+        final imdbId = (providerIds['Imdb'] ?? providerIds['imdb'] ?? providerIds['IMDB'])?.toString() ?? '';
+        final tmdbId = (providerIds['Tmdb'] ?? providerIds['tmdb'] ?? providerIds['TMDB'])?.toString() ?? '';
+        final title = (rawItem['name'] ?? rawItem['Name']) as String? ?? 'Unknown';
+        final posterUrl = (rawItem['posterUrl'] ?? rawItem['PosterUrl'] ?? rawItem['poster_path']) as String?;
+        final backdropUrl = (rawItem['backdropUrl'] ?? rawItem['BackdropUrl'] ?? rawItem['backdrop_path']) as String?;
+        final year = (rawItem['productionYear'] ?? rawItem['ProductionYear'] ?? rawItem['year'] ?? rawItem['Year']) as int?;
+        final itemType = (rawItem['type'] ?? rawItem['Type']) as String? ?? 'Movie';
+        final userRating = (rawItem['userRating'] ?? rawItem['UserRating']) as String?;
 
         if (imdbId.isNotEmpty || tmdbId.isNotEmpty) {
           items.add(ImdbExternalListItem(
@@ -239,8 +236,9 @@ class CustomExternalListsService {
             .map((item) => ImdbExternalListItem.fromJson(item as Map<String, dynamic>))
             .toList();
         final hasOldCache = decoded.any((item) => item is Map && !item.containsKey('backdropUrl'));
-        if (hasOldCache) {
-          debugPrint('[CustomService] Old custom row cache detected without backdropUrl, invalidating...');
+        final hasBuggyCache = items.any((item) => item.imdbId.isEmpty && item.tmdbId.isEmpty);
+        if (hasOldCache || hasBuggyCache) {
+          debugPrint('[CustomService] Invalid or buggy custom row cache detected, invalidating...');
           try {
             await file.delete();
           } catch (_) {}
