@@ -971,13 +971,6 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   @override
-  void reassemble() {
-    super.reassemble();
-    _invalidateStaticRowHeightCache();
-    _cachedRowExtents = null;
-  }
-
-  @override
   void initState() {
     super.initState();
     HardwareKeyboard.instance.addHandler(_handleGlobalHardwareKey);
