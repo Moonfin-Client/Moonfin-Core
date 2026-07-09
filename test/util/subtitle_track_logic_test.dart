@@ -37,6 +37,20 @@ void main() {
       expect(isSdhSubtitleStream(stream), isFalse);
     });
   });
+  group('isSpecialSubtitleStream', () {
+    test('returns true when IsCommentary flag is true', () {
+      expect(isSpecialSubtitleStream({'IsCommentary': true}), isTrue);
+    });
+
+    test('returns true when title contains commentary/jump scare keywords', () {
+      expect(isSpecialSubtitleStream({'Title': 'Director\'s Commentary'}), isTrue);
+      expect(isSpecialSubtitleStream({'DisplayTitle': 'Jump scare warnings'}), isTrue);
+    });
+
+    test('returns false for normal tracks', () {
+      expect(isSpecialSubtitleStream({'Title': 'English (SDH)'}), isFalse);
+    });
+  });
   group('sortedSubtitleStream', () {
     test('places internal streams before external streams', () {
       final sorted = sortedSubtitleStreams(streams);
@@ -200,6 +214,86 @@ void main() {
           activeAudioLanguage: null,
         ),
         1,
+      );
+    });
+    test('prefers internal SDH track over external non-SDH track when preferSdh is false', () {
+      final customStreams = [
+        {
+          "Codec": "subrip",
+          "Language": "eng",
+          "DisplayTitle": "English - External Non-SDH",
+          "IsDefault": false,
+          "IsForced": false,
+          "IsHearingImpaired": false,
+          "IsExternal": true,
+          "Index": 1
+        },
+        {
+          "Codec": "subrip",
+          "Language": "eng",
+          "DisplayTitle": "English - Internal SDH",
+          "IsDefault": false,
+          "IsForced": false,
+          "IsHearingImpaired": true,
+          "IsExternal": false,
+          "Index": 2
+        },
+      ];
+      expect(
+        computeEffectiveSubtitleIndex(
+          subtitleStreams: customStreams,
+          selectedSubtitleIndex: null,
+          activePlaybackSubtitleIndex: null,
+          subtitleMode: SubtitleMode.always,
+          preferredLanguage: 'eng',
+          fallbackLanguage: '',
+          preferSdh: false,
+          pgsDirectPlay: true,
+          assDirectPlay: true,
+          preferredAudioLanguage: '',
+          activeAudioLanguage: null,
+        ),
+        2,
+      );
+    });
+    test('prefers normal English SDH track over English Jump scare warnings track', () {
+      final customStreams = [
+        {
+          "Codec": "subrip",
+          "Language": "eng",
+          "DisplayTitle": "Jump scare warnings",
+          "IsDefault": false,
+          "IsForced": false,
+          "IsHearingImpaired": false,
+          "IsExternal": false,
+          "Index": 1
+        },
+        {
+          "Codec": "subrip",
+          "Language": "eng",
+          "DisplayTitle": "English (SDH)",
+          "IsDefault": false,
+          "IsForced": false,
+          "IsHearingImpaired": true,
+          "IsExternal": false,
+          "Index": 2
+        },
+      ];
+      expect(
+        computeEffectiveSubtitleIndex(
+          subtitleStreams: customStreams,
+          selectedSubtitleIndex: null,
+          activePlaybackSubtitleIndex: null,
+          subtitleMode: SubtitleMode.always,
+          preferredLanguage: 'eng',
+          fallbackLanguage: '',
+          preferSdh: false,
+          pgsDirectPlay: true,
+          assDirectPlay: true,
+          preferredAudioLanguage: '',
+          activeAudioLanguage: null,
+        ),
+        2,
       );
     });
     test('falls back to English when both preferred and fallback languages are not found', () {
