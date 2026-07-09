@@ -21,6 +21,18 @@ bool isSdhSubtitleStream(Map<String, dynamic> stream) {
   ).hasMatch(titleParts);
 }
 
+bool isSpecialSubtitleStream(Map<String, dynamic> stream) {
+  if (stream['IsCommentary'] == true) return true;
+  final titleParts = [
+    stream['DisplayTitle'] as String?,
+    stream['Title'] as String?,
+    stream['Name'] as String?,
+  ].whereType<String>().map((s) => s.toLowerCase()).join(' ');
+  return RegExp(
+    r'\b(commentary|director\s*commentary|commentaries|directors\s*commentary|jump\s*scare)\b',
+  ).hasMatch(titleParts);
+}
+
 bool shouldRenderSubtitleNatively(String? codec) {
   if (codec == null) return false;
   final normalized = codec.trim().toLowerCase();
@@ -175,18 +187,42 @@ int? computeEffectiveSubtitleIndex({
       return aEngMatch ? -1 : 1;
     }
 
-    // 2. SDH Match
-    final aSdhMatch = isSdhSubtitleStream(streamA) == preferSdh;
-    final bSdhMatch = isSdhSubtitleStream(streamB) == preferSdh;
-    if (aSdhMatch != bSdhMatch) {
-      return aSdhMatch ? -1 : 1;
+    // 1.6. Special/Commentary/Warnings check (prefer non-special over special)
+    final aSpecial = isSpecialSubtitleStream(streamA);
+    final bSpecial = isSpecialSubtitleStream(streamB);
+    if (aSpecial != bSpecial) {
+      return aSpecial ? 1 : -1;
     }
 
-    // 3. Internal vs External (internal over external)
-    final aInternal = !isExternalSubtitleStream(streamA);
-    final bInternal = !isExternalSubtitleStream(streamB);
-    if (aInternal != bInternal) {
-      return aInternal ? -1 : 1;
+    // 2. SDH Match vs 3. Internal vs External depending on preferSdh
+    if (preferSdh) {
+      // SDH Match first
+      final aSdhMatch = isSdhSubtitleStream(streamA) == preferSdh;
+      final bSdhMatch = isSdhSubtitleStream(streamB) == preferSdh;
+      if (aSdhMatch != bSdhMatch) {
+        return aSdhMatch ? -1 : 1;
+      }
+
+      // Internal vs External second
+      final aInternal = !isExternalSubtitleStream(streamA);
+      final bInternal = !isExternalSubtitleStream(streamB);
+      if (aInternal != bInternal) {
+        return aInternal ? -1 : 1;
+      }
+    } else {
+      // Internal vs External first
+      final aInternal = !isExternalSubtitleStream(streamA);
+      final bInternal = !isExternalSubtitleStream(streamB);
+      if (aInternal != bInternal) {
+        return aInternal ? -1 : 1;
+      }
+
+      // SDH Match second
+      final aSdhMatch = isSdhSubtitleStream(streamA) == preferSdh;
+      final bSdhMatch = isSdhSubtitleStream(streamB) == preferSdh;
+      if (aSdhMatch != bSdhMatch) {
+        return aSdhMatch ? -1 : 1;
+      }
     }
 
     // 4. Fancy vs Normal
