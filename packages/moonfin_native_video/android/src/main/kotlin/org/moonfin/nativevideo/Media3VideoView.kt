@@ -1503,13 +1503,7 @@ class Media3VideoView(
             decoderPreferenceDirty = false
         }
 
-        // Previews must not surface a MediaSession or start the session
-        // service, and audio stays sessionless because audio_service owns the
-        // music session. The session attaches after the rebuild so it binds
-        // the live player.
-        if (!isPreview && !isAudio) {
-            Media3SessionController.attachPlayer(context, player)
-        }
+        val shouldAttachMediaSession = !isPreview && !isAudio
 
         closeExternalAudioEffectSessionIfOpen()
 
@@ -1577,7 +1571,11 @@ class Media3VideoView(
         player.skipSilenceEnabled = skipSilenceEnabled
         emitSyncDelayState()
         emitVolumeBoostState()
-        setMediaItem(startPositionMs, playWhenReady = autoPlay)
+        setMediaItem(
+            startPositionMs,
+            playWhenReady = autoPlay,
+            attachMediaSession = shouldAttachMediaSession,
+        )
         playerHasLoadedSource = true
     }
 
@@ -2465,7 +2463,11 @@ class Media3VideoView(
         }
     }
 
-    private fun setMediaItem(startPositionMs: Long, playWhenReady: Boolean) {
+    private fun setMediaItem(
+        startPositionMs: Long,
+        playWhenReady: Boolean,
+        attachMediaSession: Boolean = false,
+    ) {
         val url = currentUrl ?: return
 
         val subtitleConfigurations = externalSubtitleConfigurations.toList()
@@ -2485,6 +2487,14 @@ class Media3VideoView(
             player.play()
         } else {
             player.playWhenReady = false
+        }
+        if (attachMediaSession) {
+            // Build/advertise the Android MediaSession only after the player has
+            // a real MediaItem and playback intent. Remote PlayNow can hit this
+            // path before the fullscreen view has fully attached; advertising
+            // the session against an empty player leaves Android/Fire TV clients
+            // with STATE_NONE/stale metadata even though ExoPlayer is rendering.
+            Media3SessionController.attachPlayer(context, player)
         }
         emitState()
     }
