@@ -1250,7 +1250,10 @@ class _ContentRowsState extends State<_ContentRows>
         item.type == 'MusicVideo';
   }
 
-  static String _previewKeyFor(AggregatedItem item) {
+  static String _previewKeyFor(AggregatedItem item, [int? rowIndex]) {
+    if (rowIndex != null) {
+      return '${item.serverId}:${item.id}:$rowIndex';
+    }
     return '${item.serverId}:${item.id}';
   }
 
@@ -1273,8 +1276,12 @@ class _ContentRowsState extends State<_ContentRows>
     return null;
   }
 
-  void _schedulePreview(AggregatedItem item, {required Duration delay}) {
-    final previewKey = _previewKeyFor(item);
+  void _schedulePreview(
+    AggregatedItem item, {
+    required Duration delay,
+    int? rowIndex,
+  }) {
+    final previewKey = _previewKeyFor(item, rowIndex);
     if (_activePreviewKey == previewKey) {
       return;
     }
@@ -1315,8 +1322,8 @@ class _ContentRowsState extends State<_ContentRows>
         _isHomeRouteActive();
   }
 
-  void _stopPreviewFor(AggregatedItem item) {
-    final previewKey = _previewKeyFor(item);
+  void _stopPreviewFor(AggregatedItem item, [int? rowIndex]) {
+    final previewKey = _previewKeyFor(item, rowIndex);
     _previewDelayTimer?.cancel();
     _previewDelayTimer = null;
     if (_activePreviewKey == previewKey && mounted) {
@@ -3993,7 +4000,7 @@ class _ContentRowsState extends State<_ContentRows>
           }
           final canPreview = _supportsEpisodePreview(item);
           if (!PlatformDetection.useMobileUi && canPreview) {
-            _schedulePreview(item, delay: _previewStartDelay);
+            _schedulePreview(item, delay: _previewStartDelay, rowIndex: rowIndex);
           } else {
             _finishSharedPreview();
           }
@@ -4029,7 +4036,7 @@ class _ContentRowsState extends State<_ContentRows>
           late final double ar;
           late final double width;
           late final String? imageUrl;
-          final previewKey = _previewKeyFor(item);
+          final previewKey = _previewKeyFor(item, rowIndex);
           final isV2MobileTouch = isRowsV2 && PlatformDetection.useMobileUi;
           final isV2MouseHover = isRowsV2 && !PlatformDetection.useMobileUi;
           final isTouchFocused =
@@ -4286,7 +4293,7 @@ class _ContentRowsState extends State<_ContentRows>
                         }
                       }
                       if (!PlatformDetection.useMobileUi && canPreview) {
-                        _schedulePreview(item, delay: _previewStartDelay);
+                        _schedulePreview(item, delay: _previewStartDelay, rowIndex: rowIndex);
                       } else {
                         _finishSharedPreview();
                       }
@@ -4298,7 +4305,7 @@ class _ContentRowsState extends State<_ContentRows>
                         }
                         _finishSharedPreview();
                       } else {
-                        _stopPreviewFor(item);
+                        _stopPreviewFor(item, rowIndex);
                       }
                     },
                     onLongPress: () => showContextMenu(
@@ -4356,7 +4363,9 @@ class _ContentRowsState extends State<_ContentRows>
                         ? _buildV2ExtendedSection(
                             ctx,
                             item,
-                            previewKey,
+                            // Ratings are cached under the global item key, so
+                            // look them up without the row index.
+                            _previewKeyFor(item),
                             cardWidth: width,
                             extendedWidth: v2ExtendedWidth,
                             isAudioRow: row.isAudio,
