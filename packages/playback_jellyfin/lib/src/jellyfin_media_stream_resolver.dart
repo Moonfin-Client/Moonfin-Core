@@ -110,7 +110,22 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       source,
       isAudio: isAudio,
       enableDirectPlay: enableDirectPlay,
+      maxStreamingBitrate: maxStreamingBitrate,
     );
+
+    final reasons = List<String>.from(source.transcodingReasons);
+    if (playMethod == StreamPlayMethod.transcode) {
+      final mediaBitrate = source.bitrate;
+      if (maxStreamingBitrate != null &&
+          mediaBitrate != null &&
+          mediaBitrate > maxStreamingBitrate) {
+        final lowerReasons = reasons.map((r) => r.toLowerCase()).toSet();
+        if (!lowerReasons.contains('videobitratenotsupported') &&
+            !lowerReasons.contains('containerbitrateexceedslimit')) {
+          reasons.add('VideoBitrateNotSupported');
+        }
+      }
+    }
 
     if (playMethod == StreamPlayMethod.transcode || playMethod == StreamPlayMethod.directStream) {
       url = MediaStreamResolver.applyStreamIndices(url, audioStreamIndex, subtitleStreamIndex);
@@ -173,7 +188,7 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       externalSubtitles: authedSubs,
       mediaStreams: source.mediaStreams,
       selectedAudioStreamIndex: source.defaultAudioStreamIndex,
-      transcodingReasons: source.transcodingReasons,
+      transcodingReasons: reasons,
       hybridAudioUrl: hybridAudioUrl,
     );
   }
@@ -294,6 +309,7 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
     PlaybackMediaSource source, {
     bool isAudio = false,
     bool enableDirectPlay = true,
+    int? maxStreamingBitrate,
   }) {
     final remotePath = source.path;
     final isManagedLiveStream =
@@ -322,6 +338,62 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
       return (remotePath, method);
     }
 
+    final serverPlayMethod = source.defaultPlayMethod;
+    if (serverPlayMethod != null) {
+      if (serverPlayMethod == PlayMethod.directPlay && source.supportsDirectPlay) {
+        if (isAudio) {
+          return (
+            _buildDirectPlayAudioUrl(itemId, source),
+            StreamPlayMethod.directPlay,
+          );
+        }
+        return (
+          _client.playbackApi.getStreamUrl(itemId, mediaSourceId: source.id, liveStreamId: source.liveStreamId),
+          StreamPlayMethod.directPlay,
+        );
+      }
+      if (serverPlayMethod == PlayMethod.directStream && source.supportsDirectStream && source.directStreamUrl != null) {
+        var dsUrl = '${_client.baseUrl}${source.directStreamUrl}';
+        if (source.liveStreamId != null) {
+          dsUrl = '$dsUrl${dsUrl.contains('?') ? '&' : '?'}LiveStreamId=${Uri.encodeComponent(source.liveStreamId!)}';
+        }
+        return (dsUrl, StreamPlayMethod.directStream);
+      }
+      if (serverPlayMethod == PlayMethod.transcode && source.supportsTranscoding && source.transcodingUrl != null) {
+        var tcUrl = '${_client.baseUrl}${source.transcodingUrl}';
+        if (source.liveStreamId != null) {
+          tcUrl = '$tcUrl${tcUrl.contains('?') ? '&' : '?'}LiveStreamId=${Uri.encodeComponent(source.liveStreamId!)}';
+        }
+        return (tcUrl, StreamPlayMethod.transcode);
+      }
+    }
+
+    const videoReEncodeReasons = <String>{
+      'videocodecnotsupported',
+      'videoprofilenotsupported',
+      'videolevelnotsupported',
+      'videoresolutionnotsupported',
+      'videobitratenotsupported',
+      'videoframeratenotsupported',
+      'videorangenotsupported',
+      'videorangetypenotsupported',
+      'videobitdepthnotsupported',
+      'anamorphicvideonotsupported',
+      'interlacedvideonotsupported',
+      'refframesnotsupported',
+      'containerbitrateexceedslimit',
+      'videobitrateexceedslimit',
+      'bitratelimitexceeded',
+      'containerbitratenotsupported',
+      'resolutionnotsupported',
+    };
+    final lowerReasons = source.transcodingReasons.map((e) => e.toLowerCase()).toSet();
+    var requiresVideoTranscode = lowerReasons.any(videoReEncodeReasons.contains);
+    final mediaBitrate = source.bitrate;
+    if (maxStreamingBitrate != null && mediaBitrate != null && mediaBitrate > maxStreamingBitrate) {
+      requiresVideoTranscode = true;
+    }
+
     if (source.supportsDirectPlay && isAudio) {
       return (
         _buildDirectPlayAudioUrl(itemId, source),
@@ -335,7 +407,7 @@ class JellyfinMediaStreamResolver implements MediaStreamResolver {
         StreamPlayMethod.directPlay,
       );
     }
-    if (source.supportsDirectStream && source.directStreamUrl != null) {
+    if (source.supportsDirectStream && source.directStreamUrl != null && !requiresVideoTranscode) {
       var dsUrl = '${_client.baseUrl}${source.directStreamUrl}';
       if (source.liveStreamId != null) {
         dsUrl = '$dsUrl${dsUrl.contains('?') ? '&' : '?'}LiveStreamId=${Uri.encodeComponent(source.liveStreamId!)}';

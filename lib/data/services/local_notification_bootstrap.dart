@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:isolate';
+import 'dart:ui' show IsolateNameServer;
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -17,6 +19,10 @@ const String seerrRequestCategoryId = 'seerr_request';
 /// Action ids shared with the plugin's push payloads.
 const String seerrApproveActionId = 'approve';
 const String seerrDeclineActionId = 'decline';
+
+/// IsolateNameServer name for forwarding request actions from the
+/// notification background isolate to the running app's main isolate.
+const String seerrActionPortName = 'moonfin.seerr.request_action';
 
 /// Notification tapped or actioned while the app is backgrounded/terminated.
 /// Runs in its own isolate, so it re-resolves everything it needs.
@@ -74,8 +80,9 @@ void _navigate(String? route) {
   appRouter.go(route.trim());
 }
 
-/// Approves or declines a request without any UI. Restores the saved session
-/// headlessly, calls the proxy endpoint, and cleans up the notification.
+/// Approves or declines a request without any UI. Prefers the running app's
+/// live session (directly, or handed off to the main isolate), and only
+/// rebuilds a session headlessly when the process hosting the app is gone.
 Future<void> _runRequestAction({
   required bool approve,
   required String requestId,
@@ -89,33 +96,43 @@ Future<void> _runRequestAction({
     WidgetsFlutterBinding.ensureInitialized();
 
     if (getIt.isRegistered<SeerrRepository>()) {
-      // The app is running, so use the live authenticated repository, the same
-      // path the in-app approve button uses.
-      final repo = await getIt.getAsync<SeerrRepository>();
-      if (approve) {
-        await repo.approveRequest(parsedId);
-      } else {
-        await repo.declineRequest(parsedId);
-      }
-    } else {
-      // A background isolate has no session, so rebuild one from storage.
-      await configureBackgroundDependencies();
-      final client = await HeadlessSessionBootstrap().restoreClient();
-      final token = client?.accessToken;
-      if (client == null || token == null || token.isEmpty) {
-        throw StateError('no session');
-      }
-      seerr = SeerrHttpClient(
-        proxyConfig: MoonfinProxyConfig(
-          jellyfinBaseUrl: client.baseUrl,
-          jellyfinToken: token,
-        ),
+      await _submitViaLiveRepo(
+        approve: approve,
+        requestId: parsedId,
+        notificationId: notificationId,
       );
-      if (approve) {
-        await seerr.approveRequest(parsedId);
-      } else {
-        await seerr.declineRequest(parsedId);
-      }
+      return;
+    }
+
+    if (await _forwardToMainIsolate(
+      approve: approve,
+      requestId: parsedId,
+      notificationId: notificationId,
+    )) {
+      // The running app claimed the action; it owns cancel and error
+      // reporting from here.
+      return;
+    }
+
+    // No live app, so rebuild a session from storage. The action is explicit
+    // user intent, so restoring past a disabled auto sign-in is safe.
+    await configureBackgroundDependencies();
+    final client = await HeadlessSessionBootstrap()
+        .restoreClientOrThrow(ignoreDisabledLoginBehavior: true);
+    final token = client.accessToken;
+    if (token == null || token.isEmpty) {
+      throw StateError('no stored access token');
+    }
+    seerr = SeerrHttpClient(
+      proxyConfig: MoonfinProxyConfig(
+        jellyfinBaseUrl: client.baseUrl,
+        jellyfinToken: token,
+      ),
+    );
+    if (approve) {
+      await seerr.approveRequest(parsedId);
+    } else {
+      await seerr.declineRequest(parsedId);
     }
 
     if (notificationId != null) {
@@ -125,30 +142,96 @@ Future<void> _runRequestAction({
     }
   } catch (e) {
     debugPrint('Seerr notification action failed: $e');
-    // Surface the failure so the tap isn't silently lost.
-    try {
-      await LocalNotificationBootstrap.instance.initialize();
-      await LocalNotificationBootstrap.instance.plugin.show(
-        id: requestId.hashCode ^ 0x5eec,
-        title: 'Request',
-        body: approve ? "Couldn't approve" : "Couldn't deny",
-        notificationDetails: const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'seerr_notifications',
-            'Requests',
-            importance: Importance.defaultImportance,
-            priority: Priority.defaultPriority,
-            autoCancel: true,
-          ),
-          iOS: DarwinNotificationDetails(),
-          macOS: DarwinNotificationDetails(),
-          linux: LinuxNotificationDetails(),
-        ),
-      );
-    } catch (_) {}
+    await showSeerrActionFailure(
+      approve: approve,
+      requestId: requestId,
+      reason: e,
+    );
   } finally {
     seerr?.close();
   }
+}
+
+/// Runs an approve/deny through the live authenticated repository and clears
+/// the notification. Used whenever the app is alive, in this isolate or handed
+/// off to the main one.
+Future<void> _submitViaLiveRepo({
+  required bool approve,
+  required int requestId,
+  required int? notificationId,
+}) async {
+  final repo = await getIt.getAsync<SeerrRepository>();
+  if (approve) {
+    await repo.approveRequest(requestId);
+  } else {
+    await repo.declineRequest(requestId);
+  }
+  if (notificationId != null) {
+    await LocalNotificationBootstrap.instance.plugin.cancel(id: notificationId);
+  }
+}
+
+/// Background isolate: try to hand the action to the running app's main
+/// isolate, which has the live session. Returns true once the main isolate
+/// acks that it claimed the action; a short timeout covers a stale port
+/// mapping or a wedged main isolate, falling back to the headless path.
+Future<bool> _forwardToMainIsolate({
+  required bool approve,
+  required int requestId,
+  required int? notificationId,
+}) async {
+  final mainPort = IsolateNameServer.lookupPortByName(seerrActionPortName);
+  if (mainPort == null) return false;
+  final ack = ReceivePort();
+  try {
+    mainPort.send({
+      'approve': approve,
+      'requestId': requestId,
+      'notificationId': notificationId,
+      'ack': ack.sendPort,
+    });
+    final claimed = await ack.first
+        .timeout(const Duration(seconds: 3), onTimeout: () => false);
+    return claimed == true;
+  } catch (_) {
+    return false;
+  } finally {
+    ack.close();
+  }
+}
+
+Future<void> showSeerrActionFailure({
+  required bool approve,
+  required String requestId,
+  required Object reason,
+}) async {
+  final detail = reason
+      .toString()
+      .replaceFirst(RegExp(r'^(Bad state|Exception|Error):\s*'), '')
+      .trim();
+  final body = detail.isEmpty
+      ? 'Unknown error'
+      : (detail.length > 140 ? '${detail.substring(0, 140)}...' : detail);
+  try {
+    await LocalNotificationBootstrap.instance.initialize();
+    await LocalNotificationBootstrap.instance.plugin.show(
+      id: requestId.hashCode ^ 0x5eec,
+      title: approve ? "Couldn't approve" : "Couldn't deny",
+      body: body,
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'seerr_notifications',
+          'Requests',
+          importance: Importance.defaultImportance,
+          priority: Priority.defaultPriority,
+          autoCancel: true,
+        ),
+        iOS: DarwinNotificationDetails(),
+        macOS: DarwinNotificationDetails(),
+        linux: LinuxNotificationDetails(),
+      ),
+    );
+  } catch (_) {}
 }
 
 class LocalNotificationBootstrap {
@@ -162,6 +245,53 @@ class LocalNotificationBootstrap {
 
   bool _initialized = false;
   bool get isInitialized => _initialized;
+
+  ReceivePort? _actionPort;
+
+  /// Main isolate only. Registers the port that lets the Android
+  /// notification-action background isolate hand approve/deny off to the
+  /// live session. Safe to call repeatedly (hot restart re-registers).
+  ///
+  /// Deliberately not part of [initialize]: that also runs in the background
+  /// isolate, which must never claim this mapping.
+  void attachMainIsolateActionHandler() {
+    _actionPort?.close();
+    IsolateNameServer.removePortNameMapping(seerrActionPortName);
+    final port = ReceivePort();
+    _actionPort = port;
+    IsolateNameServer.registerPortWithName(port.sendPort, seerrActionPortName);
+    port.listen(_onForwardedRequestAction);
+  }
+
+  Future<void> _onForwardedRequestAction(dynamic message) async {
+    if (message is! Map) return;
+    final ack = message['ack'];
+    final reply = ack is SendPort ? ack : null;
+    final requestId = message['requestId'];
+    final approve = message['approve'] == true;
+    final notificationId = message['notificationId'];
+    if (requestId is! int || !getIt.isRegistered<SeerrRepository>()) {
+      reply?.send(false);
+      return;
+    }
+    // Claim before executing so the background isolate never double-runs the
+    // action while a slow network call is in flight.
+    reply?.send(true);
+    try {
+      await _submitViaLiveRepo(
+        approve: approve,
+        requestId: requestId,
+        notificationId: notificationId is int ? notificationId : null,
+      );
+    } catch (e) {
+      debugPrint('Seerr forwarded action failed: $e');
+      await showSeerrActionFailure(
+        approve: approve,
+        requestId: '$requestId',
+        reason: e,
+      );
+    }
+  }
 
   Future<void> initialize() async {
     if (_initialized) return;

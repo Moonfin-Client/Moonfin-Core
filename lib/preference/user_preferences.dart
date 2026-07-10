@@ -1,8 +1,11 @@
 import 'dart:ui' as ui;
+import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
 
+import '../data/models/aggregated_item.dart';
 import '../playback/audio_capability_profile.dart';
 import '../util/idiom/app_ui_idiom.dart';
 import '../util/insecure_certificates.dart';
@@ -2153,4 +2156,157 @@ class UserPreferences extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  static final hiddenContinueWatchingItems = Preference<String>(
+    key: 'hidden_continue_watching_items',
+    defaultValue: '{}',
+  );
+
+  static final hiddenNextUpSeries = Preference<String>(
+    key: 'hidden_next_up_series',
+    defaultValue: '{}',
+  );
+
+  Map<String, String> getHiddenContinueWatchingItems() {
+    try {
+      final jsonStr = get(hiddenContinueWatchingItems);
+      final map = jsonDecode(jsonStr) as Map;
+      return map.cast<String, String>();
+    } catch (_) {
+      return {};
+    }
+  }
+
+  Future<void> hideFromContinueWatching(String id) async {
+    final items = getHiddenContinueWatchingItems();
+    items[id] = DateTime.now().toUtc().toIso8601String();
+    await set(hiddenContinueWatchingItems, jsonEncode(items));
+  }
+
+  Future<void> unhideFromContinueWatching(String id) async {
+    final items = getHiddenContinueWatchingItems();
+    if (items.remove(id) != null) {
+      await set(hiddenContinueWatchingItems, jsonEncode(items));
+    }
+  }
+
+  Map<String, String> getHiddenNextUpSeries() {
+    try {
+      final jsonStr = get(hiddenNextUpSeries);
+      final map = jsonDecode(jsonStr) as Map;
+      return map.cast<String, String>();
+    } catch (_) {
+      return {};
+    }
+  }
+
+  Future<void> hideFromNextUp(String seriesId) async {
+    final series = getHiddenNextUpSeries();
+    series[seriesId] = DateTime.now().toUtc().toIso8601String();
+    await set(hiddenNextUpSeries, jsonEncode(series));
+  }
+
+  Future<void> unhideFromNextUp(String seriesId) async {
+    final series = getHiddenNextUpSeries();
+    if (series.remove(seriesId) != null) {
+      await set(hiddenNextUpSeries, jsonEncode(series));
+    }
+  }
+
+  List<AggregatedItem> filterContinueWatching(List<AggregatedItem> items) {
+    final hidden = getHiddenContinueWatchingItems();
+    if (hidden.isEmpty) return items;
+
+    final toRemove = <String>{};
+    final result = <AggregatedItem>[];
+
+    for (final item in items) {
+      final id = item.id;
+      final seriesId = item.seriesId;
+
+      String? matchedKey;
+      if (hidden.containsKey(id)) {
+        matchedKey = id;
+      } else if (seriesId != null && hidden.containsKey(seriesId)) {
+        matchedKey = seriesId;
+      }
+
+      if (matchedKey != null) {
+        final lastPlayedStr = item.rawData['UserData']?['LastPlayedDate'] as String?;
+        if (lastPlayedStr != null && lastPlayedStr.isNotEmpty) {
+          final lastPlayed = DateTime.tryParse(lastPlayedStr);
+          final hiddenAt = DateTime.tryParse(hidden[matchedKey]!);
+          if (lastPlayed != null && hiddenAt != null && lastPlayed.isAfter(hiddenAt)) {
+            toRemove.add(matchedKey);
+            result.add(item);
+            continue;
+          }
+        }
+        continue;
+      }
+      result.add(item);
+    }
+
+    if (toRemove.isNotEmpty) {
+      unawaited(() async {
+        final current = getHiddenContinueWatchingItems();
+        var changed = false;
+        for (final k in toRemove) {
+          if (current.remove(k) != null) {
+            changed = true;
+          }
+        }
+        if (changed) {
+          await set(hiddenContinueWatchingItems, jsonEncode(current));
+        }
+      }());
+    }
+
+    return result;
+  }
+
+  List<AggregatedItem> filterNextUp(List<AggregatedItem> items) {
+    final hidden = getHiddenNextUpSeries();
+    if (hidden.isEmpty) return items;
+
+    final toRemove = <String>{};
+    final result = <AggregatedItem>[];
+
+    for (final item in items) {
+      final seriesId = item.seriesId;
+
+      if (seriesId != null && hidden.containsKey(seriesId)) {
+        final lastPlayedStr = item.rawData['UserData']?['LastPlayedDate'] as String?;
+        if (lastPlayedStr != null && lastPlayedStr.isNotEmpty) {
+          final lastPlayed = DateTime.tryParse(lastPlayedStr);
+          final hiddenAt = DateTime.tryParse(hidden[seriesId]!);
+          if (lastPlayed != null && hiddenAt != null && lastPlayed.isAfter(hiddenAt)) {
+            toRemove.add(seriesId);
+            result.add(item);
+            continue;
+          }
+        }
+        continue;
+      }
+      result.add(item);
+    }
+
+    if (toRemove.isNotEmpty) {
+      unawaited(() async {
+        final current = getHiddenNextUpSeries();
+        var changed = false;
+        for (final k in toRemove) {
+          if (current.remove(k) != null) {
+            changed = true;
+          }
+        }
+        if (changed) {
+          await set(hiddenNextUpSeries, jsonEncode(current));
+        }
+      }());
+    }
+
+    return result;
+  }
 }
+

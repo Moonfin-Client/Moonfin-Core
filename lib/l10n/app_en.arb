@@ -3369,6 +3369,22 @@
   "@transcodingAudio": {
     "description": "Label for audio-only transcode playback method"
   },
+  "directStreamRemux": "Direct Stream (Remux)",
+  "@directStreamRemux": {
+    "description": "Play method label for direct stream with remuxing"
+  },
+  "transcodingBitrateOrResolution": "Transcoding (Bitrate or Resolution)",
+  "@transcodingBitrateOrResolution": {
+    "description": "Play method label for transcoding due to bitrate or resolution"
+  },
+  "transcodingVideoAndAudio": "Transcoding (Video & Audio)",
+  "@transcodingVideoAndAudio": {
+    "description": "Play method label for transcoding both video and audio"
+  },
+  "transcodingVideo": "Transcoding (Video)",
+  "@transcodingVideo": {
+    "description": "Play method label for transcoding video"
+  },
   "autoServerDefault": "Auto (Server Default)",
   "@autoServerDefault": {
     "description": "Option: auto server default"
@@ -7490,6 +7506,18 @@
   "contextMenuGoToSeries": "Go to Series",
   "@contextMenuGoToSeries": {
     "description": "Context menu action to navigate to the parent series of an episode"
+  },
+  "contextMenuHideFromContinueWatching": "Hide from Continue Watching",
+  "@contextMenuHideFromContinueWatching": {
+    "description": "Context menu action to hide an item from the Continue Watching section"
+  },
+  "contextMenuHideFromNextUp": "Hide from Next Up",
+  "@contextMenuHideFromNextUp": {
+    "description": "Context menu action to hide a show from the Next Up section"
+  },
+  "contextMenuAddToCollection": "Add to Collection",
+  "@contextMenuAddToCollection": {
+    "description": "Context menu action to add an item to a collection"
   },
   "settingsAdministrationSubtitle": "Access the server administration panel",
   "settingsAccountSecurity": "Account & Security",

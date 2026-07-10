@@ -69,8 +69,12 @@ def patch_media_kit_video_ios_pip_bridge
     next if content.include?(patch[:marker])
 
     unless content.include?(patch[:needle])
-      Pod::UI.warn("moonfin: PiP patch skipped; marker not found in #{patch[:path]}")
-      next
+      # Fail the build loudly. A silent skip here ships a black iOS PiP window because
+      # nothing else feeds frames to the AVSampleBufferDisplayLayer. If media_kit_video
+      # was upgraded and the anchor moved, update :needle rather than removing this.
+      raise "moonfin: iOS PiP bridge patch failed, anchor not found in #{patch[:path]}. " \
+            "media_kit_video source changed; update the needle in " \
+            "patch_media_kit_video_ios_pip_bridge or PiP will ship black."
     end
 
     File.write(patch[:path], content.sub(patch[:needle], patch[:needle] + patch[:insert]))

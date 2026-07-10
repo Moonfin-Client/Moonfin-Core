@@ -2,12 +2,20 @@ import 'package:playback_core/playback_core.dart';
 
 import '../l10n/app_localizations.dart';
 
-const Set<String> _videoReEncodeReasons = <String>{
+const Set<String> _bitrateOrResolutionReasons = <String>{
+  'videobitratenotsupported',
+  'containerbitrateexceedslimit',
+  'videobitrateexceedslimit',
+  'bitratelimitexceeded',
+  'containerbitratenotsupported',
+  'videoresolutionnotsupported',
+  'audiobitratenotsupported',
+};
+
+const Set<String> _videoCodecReasons = <String>{
   'videocodecnotsupported',
   'videoprofilenotsupported',
   'videolevelnotsupported',
-  'videoresolutionnotsupported',
-  'videobitratenotsupported',
   'videoframeratenotsupported',
   'videorangenotsupported',
   'videorangetypenotsupported',
@@ -15,6 +23,14 @@ const Set<String> _videoReEncodeReasons = <String>{
   'anamorphicvideonotsupported',
   'interlacedvideonotsupported',
   'refframesnotsupported',
+};
+
+const Set<String> _audioCodecReasons = <String>{
+  'audiocodecnotsupported',
+  'audiochannelsnotsupported',
+  'audioprofilenotsupported',
+  'audiosampleratenotsupported',
+  'audiobitdepthnotsupported',
 };
 
 String playbackMethodLabel({
@@ -26,17 +42,31 @@ String playbackMethodLabel({
   final lowerReasons = transcodingReasons
       .map((e) => e.toLowerCase())
       .toList(growable: false);
-  final isRemux =
-      playMethod == StreamPlayMethod.transcode &&
-      !lowerReasons.any(_videoReEncodeReasons.contains);
 
   if (playMethod != null) {
-    return switch (playMethod) {
-      StreamPlayMethod.directPlay => l10n.directPlay,
-      StreamPlayMethod.directStream => l10n.directStream,
-      StreamPlayMethod.transcode when isRemux => l10n.transcodingAudio,
-      StreamPlayMethod.transcode => l10n.transcoding,
-    };
+    if (playMethod == StreamPlayMethod.directPlay) {
+      return l10n.directPlay;
+    }
+    if (playMethod == StreamPlayMethod.directStream) {
+      return l10n.directStreamRemux;
+    }
+    if (playMethod == StreamPlayMethod.transcode) {
+      final isBitrateOrRes = lowerReasons.any(_bitrateOrResolutionReasons.contains);
+      final hasVideoCodec = lowerReasons.any(_videoCodecReasons.contains);
+      final hasAudioCodec = lowerReasons.any(_audioCodecReasons.contains);
+
+      if (isBitrateOrRes) {
+        return l10n.transcodingBitrateOrResolution;
+      } else if (hasVideoCodec && hasAudioCodec) {
+        return l10n.transcodingVideoAndAudio;
+      } else if (hasVideoCodec) {
+        return l10n.transcodingVideo;
+      } else if (hasAudioCodec) {
+        return l10n.transcodingAudio;
+      } else {
+        return l10n.transcoding;
+      }
+    }
   }
 
   return switch (fallbackPlayMethod) {

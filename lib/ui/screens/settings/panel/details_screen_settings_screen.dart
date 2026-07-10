@@ -25,12 +25,13 @@ class _DetailsScreenSettingsScreenState
   Widget build(BuildContext context) {
     final bottomPad = PlatformDetection.isTV ? 96.0 : 24.0;
     final l10n = AppLocalizations.of(context);
+    final _prefs = GetIt.instance<UserPreferences>();
     return Scaffold(
       appBar: buildSettingsAppBar(context, Text(l10n.settingsDetailsScreen)),
       body: FocusScope(
         node: _detailsScreenScope,
         child: ListenableBuilder(
-          listenable: GetIt.instance<UserPreferences>(),
+          listenable: _prefs,
           builder: (context, _) => ListView(
             padding: EdgeInsets.only(bottom: bottomPad),
             children: [
@@ -43,28 +44,30 @@ class _DetailsScreenSettingsScreenState
                     description: l10n.detailScreenStyleSubtitle,
                     icon: Icons.movie_outlined,
                     labelOf: (v) => switch (v) {
-                      DetailScreenStyle.moonfin =>
+                      DetailScreenStyle.classic =>
                         l10n.detailScreenStyleMoonfin,
                       DetailScreenStyle.modern => l10n.detailScreenStyleModern,
                     },
                   ),
-                  SliderPreferenceTile(
-                    preference: UserPreferences.detailsBackgroundBlurAmount,
-                    title: l10n.detailsBackgroundBlur,
-                    icon: Icons.blur_on,
-                    min: 0,
-                    max: 25,
-                    divisions: 25,
-                    labelOf: (v) => '$v',
-                    onChangeEnd: _pushPersonalizationSync,
-                  ),
-                  SwitchPreferenceTile(
-                    preference: UserPreferences.detailExpandedTabs,
-                    title: l10n.expandedTabs,
-                    subtitle: l10n.expandedTabsSubtitle,
-                    icon: Icons.tab,
-                    onChanged: _pushPersonalizationSync,
-                  ),
+                  if (_prefs.get(UserPreferences.detailScreenStyle) != DetailScreenStyle.modern)
+                    SliderPreferenceTile(
+                      preference: UserPreferences.detailsBackgroundBlurAmount,
+                      title: l10n.detailsBackgroundBlur,
+                      icon: Icons.blur_on,
+                      min: 0,
+                      max: 25,
+                      divisions: 25,
+                      labelOf: (v) => '$v',
+                      onChangeEnd: _pushPersonalizationSync,
+                    ),
+                  if (_prefs.get(UserPreferences.detailScreenStyle) == DetailScreenStyle.modern)
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.detailExpandedTabs,
+                      title: l10n.expandedTabs,
+                      subtitle: l10n.expandedTabsSubtitle,
+                      icon: Icons.tab,
+                      onChanged: _pushPersonalizationSync,
+                    ),
                 ],
               ),
             ],

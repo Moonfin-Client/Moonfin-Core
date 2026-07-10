@@ -9,6 +9,7 @@ import '../data/services/watch_next_service.dart';
 import '../di/injection.dart';
 import '../playback/car_artwork.dart';
 import '../playback/headless_session_bootstrap.dart';
+import '../preference/user_preferences.dart';
 
 Future<void> watchNextBackgroundMain() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,11 +32,14 @@ Future<void> watchNextBackgroundMain() async {
 
       final dataSource = RowDataSource(client);
       final rows = <HomeRow>[];
+      final prefs = GetIt.instance<UserPreferences>();
       try {
-        rows.add(await dataSource.loadResume(serverId));
+        final r = await dataSource.loadResume(serverId);
+        rows.add(r.copyWith(items: prefs.filterContinueWatching(r.items)));
       } catch (_) {}
       try {
-        rows.add(await dataSource.loadNextUp(serverId));
+        final r = await dataSource.loadNextUp(serverId);
+        rows.add(r.copyWith(items: prefs.filterNextUp(r.items)));
       } catch (_) {}
 
       await CarArtwork.instance.ensureReady();

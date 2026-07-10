@@ -49,51 +49,70 @@ class HeadlessSessionBootstrap {
 
   Future<MediaServerClient?> restoreClient() async {
     try {
-      final factory = GetIt.instance<MediaServerClientFactory>();
-      if (factory.clients.isNotEmpty) {
-        return factory.getActiveClient();
-      }
-
-      final authPrefs = GetIt.instance<AuthenticationPreferences>();
-      final String serverId;
-      final String userId;
-      switch (authPrefs.loginBehavior) {
-        case UserSelectBehavior.disabled:
-          return null;
-        case UserSelectBehavior.lastUser:
-          serverId = authPrefs.savedLastServerId;
-          userId = authPrefs.savedLastUserId;
-        case UserSelectBehavior.currentUser:
-          serverId = authPrefs.savedAutoLoginServerId;
-          userId = authPrefs.savedAutoLoginUserId;
-      }
-      if (serverId.isEmpty || userId.isEmpty) return null;
-
-      final server =
-          GetIt.instance<ServerRepository>().getServer(serverId);
-      if (server == null) return null;
-
-      final users = GetIt.instance<AuthenticationStore>().getUsers(serverId);
-      final userIndex = users.indexWhere((u) => u.id == userId);
-      if (userIndex < 0) return null;
-      final user = users[userIndex];
-
-      final storedToken =
-          await GetIt.instance<CredentialStore>().getToken(serverId);
-      final accessToken =
-          user.accessToken.isNotEmpty ? user.accessToken : storedToken;
-      if (accessToken == null || accessToken.isEmpty) return null;
-
-      final client = factory.getClient(
-        serverId: serverId,
-        serverType: server.serverType,
-        baseUrl: server.address,
-      );
-      client.accessToken = accessToken;
-      client.userId = userId;
-      return client;
+      return await restoreClientOrThrow();
     } catch (_) {
       return null;
     }
+  }
+
+  /// Restore that reports why it failed, for user-initiated flows (like a
+  /// notification approve/deny) that need a diagnosable error.
+  ///
+  /// [ignoreDisabledLoginBehavior] treats an explicit user action as consent
+  /// to use the last-signed-in account even when auto sign-in is off.
+  Future<MediaServerClient> restoreClientOrThrow({
+    bool ignoreDisabledLoginBehavior = false,
+  }) async {
+    final factory = GetIt.instance<MediaServerClientFactory>();
+    if (factory.clients.isNotEmpty) {
+      return factory.getActiveClient();
+    }
+
+    final authPrefs = GetIt.instance<AuthenticationPreferences>();
+    final String serverId;
+    final String userId;
+    switch (authPrefs.loginBehavior) {
+      case UserSelectBehavior.disabled:
+        if (!ignoreDisabledLoginBehavior) {
+          throw StateError('auto sign-in is disabled');
+        }
+        serverId = authPrefs.savedLastServerId;
+        userId = authPrefs.savedLastUserId;
+      case UserSelectBehavior.lastUser:
+        serverId = authPrefs.savedLastServerId;
+        userId = authPrefs.savedLastUserId;
+      case UserSelectBehavior.currentUser:
+        serverId = authPrefs.savedAutoLoginServerId;
+        userId = authPrefs.savedAutoLoginUserId;
+    }
+    if (serverId.isEmpty || userId.isEmpty) {
+      throw StateError('no saved sign-in');
+    }
+
+    final server =
+        GetIt.instance<ServerRepository>().getServer(serverId);
+    if (server == null) throw StateError('saved server not found');
+
+    final users = GetIt.instance<AuthenticationStore>().getUsers(serverId);
+    final userIndex = users.indexWhere((u) => u.id == userId);
+    if (userIndex < 0) throw StateError('saved user not found');
+    final user = users[userIndex];
+
+    final storedToken =
+        await GetIt.instance<CredentialStore>().getToken(serverId);
+    final accessToken =
+        user.accessToken.isNotEmpty ? user.accessToken : storedToken;
+    if (accessToken == null || accessToken.isEmpty) {
+      throw StateError('no stored access token');
+    }
+
+    final client = factory.getClient(
+      serverId: serverId,
+      serverType: server.serverType,
+      baseUrl: server.address,
+    );
+    client.accessToken = accessToken;
+    client.userId = userId;
+    return client;
   }
 }
