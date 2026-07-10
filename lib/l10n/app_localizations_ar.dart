@@ -2278,6 +2278,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => 'العب عند تصفح الشاشة الرئيسية';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'تفاصيل طمس الخلفية';
 
   @override

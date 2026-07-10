@@ -2303,6 +2303,13 @@ class AppLocalizationsTa extends AppLocalizations {
       'முகப்புத் திரையில் உலாவும்போது விளையாடு';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'விவரங்கள் பின்னணி தெளிவின்மை';
 
   @override

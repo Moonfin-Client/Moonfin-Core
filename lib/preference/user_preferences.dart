@@ -247,6 +247,7 @@ class UserPreferences extends ChangeNotifier {
     'themeMusicEnabled',
     'themeMusicVolume',
     'themeMusicOnHomeRows',
+    'themeMusicLoop',
     'homeRowsUniversalOverride',
     'homeRowsUniversalImageType',
     'pref_enable_series_thumbnails',
@@ -1816,6 +1817,10 @@ class UserPreferences extends ChangeNotifier {
   static final themeMusicOnHomeRows = Preference(
     key: 'themeMusicOnHomeRows',
     defaultValue: false,
+  );
+  static final themeMusicLoop = Preference(
+    key: 'themeMusicLoop',
+    defaultValue: true,
   );
   static final liveTvDirectPlayEnabled = Preference(
     key: 'pref_live_direct',

@@ -143,10 +143,12 @@ class ThemeMusicService {
         return;
       }
 
-      await localPlayer.setLoop();
-      if (generation != _playGeneration) {
-        await _safeDispose(localPlayer);
-        return;
+      if (_prefs.get(UserPreferences.themeMusicLoop)) {
+        await localPlayer.setLoop();
+        if (generation != _playGeneration) {
+          await _safeDispose(localPlayer);
+          return;
+        }
       }
 
       _fadeIn(generation);

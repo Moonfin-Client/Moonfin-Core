@@ -2286,6 +2286,13 @@ class AppLocalizationsNb extends AppLocalizations {
       'Spill når du surfer på startskjermen';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Detaljer Bakgrunnsuskarphet';
 
   @override

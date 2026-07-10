@@ -2298,6 +2298,13 @@ class AppLocalizationsLv extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => 'Atskaņot, pārlūkojot sākuma ekrānu';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Sīkāka informācija Fona aizmiglojums';
 
   @override

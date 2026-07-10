@@ -2248,6 +2248,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => 'ホーム画面閲覧時に再生';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => '詳細背景ぼかし';
 
   @override

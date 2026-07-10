@@ -2299,6 +2299,13 @@ class AppLocalizationsSl extends AppLocalizations {
       'Igrajte med brskanjem po začetnem zaslonu';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Zameglitev ozadja podrobnosti';
 
   @override

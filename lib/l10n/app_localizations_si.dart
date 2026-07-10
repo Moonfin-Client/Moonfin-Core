@@ -2285,6 +2285,13 @@ class AppLocalizationsSi extends AppLocalizations {
       'මුල් තිරය බ්‍රවුස් කරන විට සෙල්ලම් කරන්න';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'විස්තර පසුබිම බොඳ කිරීම';
 
   @override

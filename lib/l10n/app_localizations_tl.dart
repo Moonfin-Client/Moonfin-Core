@@ -2307,6 +2307,13 @@ class AppLocalizationsTl extends AppLocalizations {
       'I-play kapag nagba-browse sa home screen';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Mga Detalye ng Background Blur';
 
   @override

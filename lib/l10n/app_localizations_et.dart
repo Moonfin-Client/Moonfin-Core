@@ -2294,6 +2294,13 @@ class AppLocalizationsEt extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => 'Esita avakuva sirvimisel';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Üksikasjad Tausta hägu';
 
   @override

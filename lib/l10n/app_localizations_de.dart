@@ -2305,6 +2305,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Beim Durchstöbern der Startseite abspielen';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Detail-Hintergrundunschärfe';
 
   @override

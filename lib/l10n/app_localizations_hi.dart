@@ -2280,6 +2280,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => 'होम स्क्रीन ब्राउज़ करते समय चलाएं';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'विवरण पृष्ठभूमि धुंधला';
 
   @override

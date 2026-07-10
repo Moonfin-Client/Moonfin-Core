@@ -2299,6 +2299,13 @@ class AppLocalizationsRo extends AppLocalizations {
       'Joacă atunci când navighezi pe ecranul de pornire';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Detalii Blur de fundal';
 
   @override

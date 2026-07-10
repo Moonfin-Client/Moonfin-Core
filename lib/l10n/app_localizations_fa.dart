@@ -2277,6 +2277,13 @@ class AppLocalizationsFa extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => 'هنگام مرور صفحه اصلی بازی کنید';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'جزئیات تاری پس زمینه';
 
   @override

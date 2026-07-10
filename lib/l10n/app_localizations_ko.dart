@@ -2244,6 +2244,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => '홈 화면 탐색 시 재생';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => '세부 배경 흐림';
 
   @override

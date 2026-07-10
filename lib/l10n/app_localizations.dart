@@ -4132,6 +4132,18 @@ abstract class AppLocalizations {
   /// **'Play when browsing home screen'**
   String get playWhenBrowsingHomeScreen;
 
+  /// Setting to loop the theme music
+  ///
+  /// In en, this message translates to:
+  /// **'Loop Theme Music'**
+  String get loopThemeMusic;
+
+  /// Description for the loop theme music setting
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat the track instead of playing it once'**
+  String get loopThemeMusicSubtitle;
+
   /// Setting for details background blur
   ///
   /// In en, this message translates to:

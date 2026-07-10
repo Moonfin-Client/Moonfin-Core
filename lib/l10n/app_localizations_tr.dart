@@ -2286,6 +2286,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => 'Ana ekrana göz atarken oynat';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Detay Arka Plan Bulanıklığı';
 
   @override

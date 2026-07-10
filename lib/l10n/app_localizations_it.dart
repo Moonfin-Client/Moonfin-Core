@@ -2298,6 +2298,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Riproduci durante la navigazione della schermata home';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Sfocatura Sfondo Dettagli';
 
   @override

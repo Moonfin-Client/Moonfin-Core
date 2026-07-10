@@ -2315,6 +2315,13 @@ class AppLocalizationsEl extends AppLocalizations {
       'Παίξτε κατά την περιήγηση στην αρχική οθόνη';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Λεπτομέρειες Θάμπωμα φόντου';
 
   @override

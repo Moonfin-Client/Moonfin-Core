@@ -2316,6 +2316,13 @@ class AppLocalizationsCa extends AppLocalizations {
       'Reprodueix quan navegues per la pantalla d\'inici';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Detalls Desenfocament de fons';
 
   @override

@@ -2299,6 +2299,13 @@ class AppLocalizationsKn extends AppLocalizations {
       'ಹೋಮ್ ಸ್ಕ್ರೀನ್ ಬ್ರೌಸ್ ಮಾಡುವಾಗ ಪ್ಲೇ ಮಾಡಿ';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'ವಿವರಗಳ ಹಿನ್ನೆಲೆ ಮಸುಕು';
 
   @override

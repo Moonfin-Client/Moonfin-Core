@@ -1262,6 +1262,7 @@ class PluginSyncService extends ChangeNotifier {
         'themeMusicOnHomeRows',
         UserPreferences.themeMusicOnHomeRows,
       );
+      _applyBool(resolved, 'themeMusicLoop', UserPreferences.themeMusicLoop);
 
       _applyBool(
         resolved,
@@ -1776,6 +1777,7 @@ class PluginSyncService extends ChangeNotifier {
       'themeMusicEnabled': _prefs.get(UserPreferences.themeMusicEnabled),
       'themeMusicVolume': _prefs.get(UserPreferences.themeMusicVolume),
       'themeMusicOnHomeRows': _prefs.get(UserPreferences.themeMusicOnHomeRows),
+      'themeMusicLoop': _prefs.get(UserPreferences.themeMusicLoop),
       'homeRowsImageTypeOverride': _prefs.get(
         UserPreferences.homeRowsUniversalOverride,
       ),

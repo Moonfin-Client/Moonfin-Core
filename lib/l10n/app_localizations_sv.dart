@@ -2294,6 +2294,13 @@ class AppLocalizationsSv extends AppLocalizations {
       'Spela när du surfar på startskärmen';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Detaljer Bakgrundsskärpa';
 
   @override

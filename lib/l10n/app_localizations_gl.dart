@@ -2317,6 +2317,13 @@ class AppLocalizationsGl extends AppLocalizations {
       'Xoga ao navegar pola pantalla de inicio';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Detalles desenfoque de fondo';
 
   @override

@@ -2290,6 +2290,13 @@ class AppLocalizationsBe extends AppLocalizations {
       'Прайграванне падчас прагляду галоўнага экрана';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Размыццё фону дэталяў';
 
   @override

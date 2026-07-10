@@ -2296,6 +2296,13 @@ class AppLocalizationsUk extends AppLocalizations {
       'Грайте під час перегляду головного екрана';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Розмиття фону деталей';
 
   @override

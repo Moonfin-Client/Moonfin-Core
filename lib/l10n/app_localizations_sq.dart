@@ -2305,6 +2305,13 @@ class AppLocalizationsSq extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => 'Luaj kur shfleton ekranin bazë';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Detajet turbullimi i sfondit';
 
   @override

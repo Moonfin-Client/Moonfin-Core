@@ -2304,6 +2304,13 @@ class AppLocalizationsSw extends AppLocalizations {
       'Cheza unapovinjari skrini ya nyumbani';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Ukungu wa Mandharinyuma ya Maelezo';
 
   @override

@@ -2305,6 +2305,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'Reproducir al navegar por la pantalla de inicio';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Desenfoque de fondo en detalles';
 
   @override

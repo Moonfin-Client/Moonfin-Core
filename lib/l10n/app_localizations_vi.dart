@@ -2292,6 +2292,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => 'Chơi khi duyệt màn hình chính';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Chi tiết Làm mờ nền';
 
   @override

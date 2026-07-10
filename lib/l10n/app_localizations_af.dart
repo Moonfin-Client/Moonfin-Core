@@ -2291,6 +2291,13 @@ class AppLocalizationsAf extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => 'Speel wanneer u tuisskerm blaai';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Besonderhede Agtergrond vervaag';
 
   @override

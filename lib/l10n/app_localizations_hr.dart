@@ -2292,6 +2292,13 @@ class AppLocalizationsHr extends AppLocalizations {
       'Igrajte dok pregledavate početni zaslon';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Zamućenje pozadine detalja';
 
   @override

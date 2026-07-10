@@ -2300,6 +2300,13 @@ class AppLocalizationsMl extends AppLocalizations {
       'ഹോം സ്‌ക്രീൻ ബ്രൗസ് ചെയ്യുമ്പോൾ പ്ലേ ചെയ്യുക';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'വിശദാംശങ്ങളുടെ പശ്ചാത്തല മങ്ങൽ';
 
   @override

@@ -39,6 +39,13 @@ class _ThemeMusicScreen extends StatelessWidget {
                   icon: Icons.queue_music,
                   onChanged: _pushPersonalizationSync,
                 ),
+                SwitchPreferenceTile(
+                  preference: UserPreferences.themeMusicLoop,
+                  title: l10n.loopThemeMusic,
+                  subtitle: l10n.loopThemeMusicSubtitle,
+                  icon: Icons.repeat,
+                  onChanged: _pushPersonalizationSync,
+                ),
               ],
             ),
           ],

@@ -2320,6 +2320,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Lire lors de la navigation sur l’écran d’accueil';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Flou d’arrière-plan des détails';
 
   @override

@@ -3224,6 +3224,14 @@
   "@playWhenBrowsingHomeScreen": {
     "description": "Description for theme music on home rows"
   },
+  "loopThemeMusic": "Loop Theme Music",
+  "@loopThemeMusic": {
+    "description": "Setting to loop the theme music"
+  },
+  "loopThemeMusicSubtitle": "Repeat the track instead of playing it once",
+  "@loopThemeMusicSubtitle": {
+    "description": "Description for the loop theme music setting"
+  },
   "detailsBackgroundBlur": "Details Background Blur",
   "@detailsBackgroundBlur": {
     "description": "Setting for details background blur"

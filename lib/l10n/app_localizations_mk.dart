@@ -2302,6 +2302,13 @@ class AppLocalizationsMk extends AppLocalizations {
       'Репродуцирајте при прелистување на почетниот екран';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Детали Заматување на позадината';
 
   @override

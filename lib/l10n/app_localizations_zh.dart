@@ -2237,6 +2237,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => '浏览主屏幕时播放';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => '详情页背景模糊';
 
   @override

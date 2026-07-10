@@ -2291,6 +2291,13 @@ class AppLocalizationsUg extends AppLocalizations {
   String get playWhenBrowsingHomeScreen => 'ئائىلە ئېكرانىنى كۆرگەندە ئويناڭ';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'تەپسىلاتى ئارقا كۆرۈنۈش';
 
   @override

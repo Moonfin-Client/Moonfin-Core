@@ -2291,6 +2291,13 @@ class AppLocalizationsId extends AppLocalizations {
       'Putar saat menelusuri layar beranda';
 
   @override
+  String get loopThemeMusic => 'Loop Theme Music';
+
+  @override
+  String get loopThemeMusicSubtitle =>
+      'Repeat the track instead of playing it once';
+
+  @override
   String get detailsBackgroundBlur => 'Blur Latar Belakang Detail';
 
   @override
