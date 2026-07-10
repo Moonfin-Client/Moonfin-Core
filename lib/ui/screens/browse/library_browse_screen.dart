@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -488,6 +490,9 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
   Widget _buildContent(BuildContext context) {
     final isMobile = _isCompact(context);
     final hasBackdrop = !isMobile && _backdropUrl != null;
+    final blurAmount = _prefs
+      .get(UserPreferences.browsingBackgroundBlurAmount)
+      .toDouble();
     return Scaffold(
       backgroundColor: _navyBackground,
       body: Stack(
@@ -497,6 +502,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
               child: FullscreenBackdropSwitcher(
                 imageUrl: _backdropUrl!,
                 duration: BackgroundService.transitionDuration,
+                imageBuilder: (imageUrl) => _blurredImage(imageUrl, blurAmount),
               ),
             ),
           Positioned.fill(
@@ -554,6 +560,29 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _blurredImage(String imageUrl, double blur) {
+    final blurred = blur > 0;
+    final image = CachedNetworkImage(
+      imageUrl: imageUrl,
+      fit: BoxFit.cover,
+      fadeInDuration: Duration.zero,
+      memCacheWidth: blurred ? 640 : null,
+      errorWidget: (_, _, _) => const SizedBox.shrink(),
+    );
+    if (!blurred) return image;
+    final sigma = GlassSettings.decorativeSigma(blur);
+    return RepaintBoundary(
+      child: ImageFiltered(
+        imageFilter: ImageFilter.blur(
+          sigmaX: sigma,
+          sigmaY: sigma,
+          tileMode: TileMode.decal,
+        ),
+        child: image,
       ),
     );
   }
