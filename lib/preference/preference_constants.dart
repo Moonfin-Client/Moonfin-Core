@@ -463,6 +463,39 @@ enum SeerrRowType {
       );
 }
 
+extension SeerrRowTypeHomeSection on SeerrRowType {
+  HomeSectionType get homeSectionType => switch (this) {
+        SeerrRowType.recentRequests => HomeSectionType.seerrRecentRequests,
+        SeerrRowType.recentlyAdded => HomeSectionType.seerrRecentlyAdded,
+        SeerrRowType.trending => HomeSectionType.seerrTrending,
+        SeerrRowType.popularMovies => HomeSectionType.seerrPopularMovies,
+        SeerrRowType.movieGenres => HomeSectionType.seerrMovieGenres,
+        SeerrRowType.upcomingMovies => HomeSectionType.seerrUpcomingMovies,
+        SeerrRowType.studios => HomeSectionType.seerrStudios,
+        SeerrRowType.popularSeries => HomeSectionType.seerrPopularSeries,
+        SeerrRowType.seriesGenres => HomeSectionType.seerrSeriesGenres,
+        SeerrRowType.upcomingSeries => HomeSectionType.seerrUpcomingSeries,
+        SeerrRowType.networks => HomeSectionType.seerrNetworks,
+      };
+}
+
+extension HomeSectionTypeSeerrRow on HomeSectionType {
+  SeerrRowType? get seerrRowType => switch (this) {
+        HomeSectionType.seerrRecentRequests => SeerrRowType.recentRequests,
+        HomeSectionType.seerrRecentlyAdded => SeerrRowType.recentlyAdded,
+        HomeSectionType.seerrTrending => SeerrRowType.trending,
+        HomeSectionType.seerrPopularMovies => SeerrRowType.popularMovies,
+        HomeSectionType.seerrMovieGenres => SeerrRowType.movieGenres,
+        HomeSectionType.seerrUpcomingMovies => SeerrRowType.upcomingMovies,
+        HomeSectionType.seerrStudios => SeerrRowType.studios,
+        HomeSectionType.seerrPopularSeries => SeerrRowType.popularSeries,
+        HomeSectionType.seerrSeriesGenres => SeerrRowType.seriesGenres,
+        HomeSectionType.seerrUpcomingSeries => SeerrRowType.upcomingSeries,
+        HomeSectionType.seerrNetworks => SeerrRowType.networks,
+        _ => null,
+      };
+}
+
 enum ScreensaverMode { library, logo }
 
 enum ScreensaverClockMode { off, staticCorner, bouncing }

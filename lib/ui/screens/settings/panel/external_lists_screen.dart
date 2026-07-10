@@ -856,22 +856,6 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
     }
   }
 
-  HomeSectionType? _mapSeerrRowTypeToHomeSection(SeerrRowType type) {
-    return switch (type) {
-      SeerrRowType.recentRequests => HomeSectionType.seerrRecentRequests,
-      SeerrRowType.recentlyAdded => HomeSectionType.seerrRecentlyAdded,
-      SeerrRowType.trending => HomeSectionType.seerrTrending,
-      SeerrRowType.popularMovies => HomeSectionType.seerrPopularMovies,
-      SeerrRowType.movieGenres => HomeSectionType.seerrMovieGenres,
-      SeerrRowType.upcomingMovies => HomeSectionType.seerrUpcomingMovies,
-      SeerrRowType.studios => HomeSectionType.seerrStudios,
-      SeerrRowType.popularSeries => HomeSectionType.seerrPopularSeries,
-      SeerrRowType.seriesGenres => HomeSectionType.seerrSeriesGenres,
-      SeerrRowType.upcomingSeries => HomeSectionType.seerrUpcomingSeries,
-      SeerrRowType.networks => HomeSectionType.seerrNetworks,
-    };
-  }
-
   void _saveRows() {
     _seerrPrefs.setHomeRowsConfig(_rows);
 
@@ -879,22 +863,20 @@ class _SeerrListsScreenState extends State<_SeerrListsScreen> {
     final configs = List<HomeSectionConfig>.from(prefs.homeSectionsConfig);
     var changed = false;
     for (final row in _rows) {
-      final type = _mapSeerrRowTypeToHomeSection(row.type);
-      if (type != null) {
-        final idx = configs.indexWhere((c) => c.type == type);
-        if (idx >= 0) {
-          if (configs[idx].enabled != row.enabled) {
-            configs[idx] = configs[idx].copyWith(enabled: row.enabled);
-            changed = true;
-          }
-        } else {
-          configs.add(HomeSectionConfig(
-            type: type,
-            enabled: row.enabled,
-            order: configs.length,
-          ));
+      final type = row.type.homeSectionType;
+      final idx = configs.indexWhere((c) => c.type == type);
+      if (idx >= 0) {
+        if (configs[idx].enabled != row.enabled) {
+          configs[idx] = configs[idx].copyWith(enabled: row.enabled);
           changed = true;
         }
+      } else {
+        configs.add(HomeSectionConfig(
+          type: type,
+          enabled: row.enabled,
+          order: configs.length,
+        ));
+        changed = true;
       }
     }
     if (changed) {

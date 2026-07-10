@@ -525,38 +525,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     return _prefs.get(prefKey);
   }
 
-  SeerrRowType? _mapHomeSectionToSeerrRowType(HomeSectionType type) {
-    return switch (type) {
-      HomeSectionType.seerrRecentRequests => SeerrRowType.recentRequests,
-      HomeSectionType.seerrRecentlyAdded => SeerrRowType.recentlyAdded,
-      HomeSectionType.seerrTrending => SeerrRowType.trending,
-      HomeSectionType.seerrPopularMovies => SeerrRowType.popularMovies,
-      HomeSectionType.seerrMovieGenres => SeerrRowType.movieGenres,
-      HomeSectionType.seerrUpcomingMovies => SeerrRowType.upcomingMovies,
-      HomeSectionType.seerrStudios => SeerrRowType.studios,
-      HomeSectionType.seerrPopularSeries => SeerrRowType.popularSeries,
-      HomeSectionType.seerrSeriesGenres => SeerrRowType.seriesGenres,
-      HomeSectionType.seerrUpcomingSeries => SeerrRowType.upcomingSeries,
-      HomeSectionType.seerrNetworks => SeerrRowType.networks,
-      _ => null,
-    };
-  }
-
-  bool _isSeerrRowEnabled(HomeSectionType type) {
-    final seerrType = _mapHomeSectionToSeerrRowType(type);
-    if (seerrType == null) return false;
-    final seerrPrefs = GetIt.instance<SeerrPreferences>();
-    if (!seerrPrefs.enabled) return false;
-    final configs = seerrPrefs.homeRowsConfig;
-    final config = configs.firstWhere(
-      (c) => c.type == seerrType,
-      orElse: () => SeerrRowConfig(type: seerrType, enabled: true, order: 0),
-    );
-    return config.enabled;
-  }
-
   void _disableSeerrHomeRow(HomeSectionType type) {
-    final seerrType = _mapHomeSectionToSeerrRowType(type);
+    final seerrType = type.seerrRowType;
     if (seerrType == null) return;
     final seerrPrefs = GetIt.instance<SeerrPreferences>();
     final configs = List<SeerrRowConfig>.from(seerrPrefs.homeRowsConfig);
@@ -614,7 +584,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
             (section.isPluginDynamic &&
                 section.pluginSource == HomeSectionPluginSource.playlists));
     final hiddenBySeerr = _isSeerrSectionType(section.type) &&
-        (!showSeerrRows || !_isSeerrRowEnabled(section.type));
+        (!showSeerrRows ||
+            !GetIt.instance<SeerrPreferences>().isSeerrHomeRowEnabled(section.type));
     final hiddenByTmdb = _isTmdbSectionType(section.type) &&
         (!showTmdbRows || !_isTmdbRowEnabled(section.type));
 
