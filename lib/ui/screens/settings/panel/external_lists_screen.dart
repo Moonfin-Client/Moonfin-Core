@@ -202,6 +202,12 @@ class _ExternalListsScreenState extends State<_ExternalListsScreen> {
                     adaptiveListSection(
                       children: [
                         _TvSettingsListTile(
+                          leading: const Icon(Icons.movie_outlined),
+                          title: const Text('IMDb Lists'),
+                          subtitle: const Text('Configure IMDb Top 250, Popular, and other charts.'),
+                          onTap: () => context.pushSettingsScreen(const _ImdbListsScreen()),
+                        ),
+                        _TvSettingsListTile(
                           leading: const Icon(Icons.trending_up),
                           title: const Text('TMDB Lists'),
                           subtitle: Text(
@@ -248,6 +254,316 @@ class _ExternalListsScreenState extends State<_ExternalListsScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _ImdbListsScreen extends StatefulWidget {
+  const _ImdbListsScreen();
+
+  @override
+  State<_ImdbListsScreen> createState() => _ImdbListsScreenState();
+}
+
+class _ImdbListsScreenState extends State<_ImdbListsScreen> {
+  bool _isFetching = false;
+  final _scope = FocusScopeNode(debugLabel: 'ImdbListsScope');
+  final _firstFocusNode = FocusNode(debugLabel: 'imdb_top_250_movies');
+
+  @override
+  void dispose() {
+    _scope.dispose();
+    _firstFocusNode.dispose();
+    super.dispose();
+  }
+
+  Future<bool> _fetchAndCacheList(HomeSectionType type, String title) async {
+    if (_isFetching) return false;
+    _isFetching = true;
+
+    var dialogDismissed = false;
+
+    unawaited(
+      showFocusRestoringDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) {
+          return withCleanSettingsTypography(
+            ctx,
+            PopScope(
+              canPop: false,
+              child: AlertDialog(
+                title: Text('Fetching $title'),
+                content: const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 8),
+                    SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: CircularProgressIndicator(),
+                    ),
+                    SizedBox(height: 24),
+                    Text(
+                      'Downloading list from Moonbase and saving locally...',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ).then((_) {
+        dialogDismissed = true;
+      }),
+    );
+
+    try {
+      final customService = GetIt.instance<CustomExternalListsService>();
+      final config = HomeSectionConfig.pluginDynamic(
+        serverId: 'seerr', // placeholder
+        pluginSection: type.serializedName,
+        pluginDisplayText: title,
+        pluginSource: HomeSectionPluginSource.custom,
+        pluginAdditionalData: jsonEncode({
+          'source': 'imdb',
+          'type': type.serializedName,
+        }),
+      );
+
+      final items = await customService
+          .fetchCustomRow(config, forceRefresh: true)
+          .timeout(const Duration(seconds: 15));
+      if (items.isEmpty) {
+        throw Exception('Server returned no items.');
+      }
+      return true;
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to fetch $title from Moonbase: $e')),
+        );
+      }
+      return false;
+    } finally {
+      _isFetching = false;
+      if (mounted && !dialogDismissed) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+    }
+  }
+
+  void _syncSingleImdbSectionState(HomeSectionType type, bool enabled) {
+    final prefs = GetIt.instance<UserPreferences>();
+    final configs = List<HomeSectionConfig>.from(prefs.homeSectionsConfig);
+
+    final idx = configs.indexWhere((c) => c.type == type);
+    var changed = false;
+    if (idx >= 0) {
+      if (configs[idx].enabled != enabled) {
+        configs[idx] = configs[idx].copyWith(enabled: enabled);
+        changed = true;
+      }
+    } else {
+      configs.add(HomeSectionConfig(
+        type: type,
+        enabled: enabled,
+        order: configs.length,
+      ));
+      changed = true;
+    }
+
+    if (changed) {
+      prefs.setHomeSectionsConfig(configs);
+    }
+    _pushPersonalizationSync();
+  }
+
+  void _pushPersonalizationSync() {
+    final syncService = GetIt.instance<PluginSyncService>();
+    final client = GetIt.instance.isRegistered<MediaServerClient>()
+        ? GetIt.instance<MediaServerClient>()
+        : null;
+    if (client != null) {
+      syncService.pushSettings(client);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final prefs = GetIt.instance<UserPreferences>();
+
+    return withCleanSettingsTypography(
+      context,
+      RequestInitialFocus(
+        targetNode: PlatformDetection.isTV ? _firstFocusNode : null,
+        child: Scaffold(
+          appBar: buildSettingsAppBar(
+            context,
+            const Text('IMDb Lists'),
+          ),
+          body: FocusScope(
+            node: _scope,
+            autofocus: true,
+            child: ListView(
+              children: [
+                adaptiveListSection(
+                  children: [
+                    SwitchPreferenceTile(
+                      focusNode: _firstFocusNode,
+                      preference: UserPreferences.imdbTop250MoviesEnabled,
+                      title: l10n.imdbTop250Movies,
+                      icon: Icons.movie_outlined,
+                      enabled: !_isFetching,
+                      onChangedValue: (isEnabled) async {
+                        if (_isFetching) return;
+                        if (isEnabled) {
+                          final success = await _fetchAndCacheList(
+                            HomeSectionType.imdbTop250Movies,
+                            l10n.imdbTop250Movies,
+                          );
+                          if (!success) {
+                            await prefs.set(UserPreferences.imdbTop250MoviesEnabled, false);
+                            setState(() {});
+                            return;
+                          }
+                        }
+                        _syncSingleImdbSectionState(
+                          HomeSectionType.imdbTop250Movies,
+                          isEnabled,
+                        );
+                      },
+                    ),
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.imdbTop250TvShowsEnabled,
+                      title: l10n.imdbTop250TvShows,
+                      icon: Icons.live_tv,
+                      enabled: !_isFetching,
+                      onChangedValue: (isEnabled) async {
+                        if (_isFetching) return;
+                        if (isEnabled) {
+                          final success = await _fetchAndCacheList(
+                            HomeSectionType.imdbTop250TvShows,
+                            l10n.imdbTop250TvShows,
+                          );
+                          if (!success) {
+                            await prefs.set(UserPreferences.imdbTop250TvShowsEnabled, false);
+                            setState(() {});
+                            return;
+                          }
+                        }
+                        _syncSingleImdbSectionState(
+                          HomeSectionType.imdbTop250TvShows,
+                          isEnabled,
+                        );
+                      },
+                    ),
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.imdbMostPopularMoviesEnabled,
+                      title: l10n.imdbMostPopularMovies,
+                      icon: Icons.trending_up,
+                      enabled: !_isFetching,
+                      onChangedValue: (isEnabled) async {
+                        if (_isFetching) return;
+                        if (isEnabled) {
+                          final success = await _fetchAndCacheList(
+                            HomeSectionType.imdbMostPopularMovies,
+                            l10n.imdbMostPopularMovies,
+                          );
+                          if (!success) {
+                            await prefs.set(UserPreferences.imdbMostPopularMoviesEnabled, false);
+                            setState(() {});
+                            return;
+                          }
+                        }
+                        _syncSingleImdbSectionState(
+                          HomeSectionType.imdbMostPopularMovies,
+                          isEnabled,
+                        );
+                      },
+                    ),
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.imdbMostPopularTvShowsEnabled,
+                      title: l10n.imdbMostPopularTvShows,
+                      icon: Icons.live_tv,
+                      enabled: !_isFetching,
+                      onChangedValue: (isEnabled) async {
+                        if (_isFetching) return;
+                        if (isEnabled) {
+                          final success = await _fetchAndCacheList(
+                            HomeSectionType.imdbMostPopularTvShows,
+                            l10n.imdbMostPopularTvShows,
+                          );
+                          if (!success) {
+                            await prefs.set(UserPreferences.imdbMostPopularTvShowsEnabled, false);
+                            setState(() {});
+                            return;
+                          }
+                        }
+                        _syncSingleImdbSectionState(
+                          HomeSectionType.imdbMostPopularTvShows,
+                          isEnabled,
+                        );
+                      },
+                    ),
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.imdbLowestRatedMoviesEnabled,
+                      title: l10n.imdbLowestRatedMovies,
+                      icon: Icons.trending_down,
+                      enabled: !_isFetching,
+                      onChangedValue: (isEnabled) async {
+                        if (_isFetching) return;
+                        if (isEnabled) {
+                          final success = await _fetchAndCacheList(
+                            HomeSectionType.imdbLowestRatedMovies,
+                            l10n.imdbLowestRatedMovies,
+                          );
+                          if (!success) {
+                            await prefs.set(UserPreferences.imdbLowestRatedMoviesEnabled, false);
+                            setState(() {});
+                            return;
+                          }
+                        }
+                        _syncSingleImdbSectionState(
+                          HomeSectionType.imdbLowestRatedMovies,
+                          isEnabled,
+                        );
+                      },
+                    ),
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.imdbTopEnglishMoviesEnabled,
+                      title: l10n.imdbTopEnglishMovies,
+                      icon: Icons.language,
+                      enabled: !_isFetching,
+                      onChangedValue: (isEnabled) async {
+                        if (_isFetching) return;
+                        if (isEnabled) {
+                          final success = await _fetchAndCacheList(
+                            HomeSectionType.imdbTopEnglishMovies,
+                            l10n.imdbTopEnglishMovies,
+                          );
+                          if (!success) {
+                            await prefs.set(UserPreferences.imdbTopEnglishMoviesEnabled, false);
+                            setState(() {});
+                            return;
+                          }
+                        }
+                        _syncSingleImdbSectionState(
+                          HomeSectionType.imdbTopEnglishMovies,
+                          isEnabled,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

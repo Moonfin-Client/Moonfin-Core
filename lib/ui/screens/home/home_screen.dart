@@ -3275,6 +3275,7 @@ class _ContentRowsState extends State<_ContentRows>
     }
     if (row.id.startsWith('seerr_')) return l10n.seerrDiscoveryRows;
     if (row.id.startsWith('tmdb_')) return 'TMDB Lists';
+    if (row.id.startsWith('imdb_')) return 'IMDb List';
 
     final config = widget.prefs.homeSectionsConfig.firstWhereOrNull((c) => c.stableId == row.id);
     if (config != null && config.pluginSource == HomeSectionPluginSource.custom) {
