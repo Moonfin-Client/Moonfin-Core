@@ -29,7 +29,7 @@ bool isSpecialSubtitleStream(Map<String, dynamic> stream) {
     stream['Name'] as String?,
   ].whereType<String>().map((s) => s.toLowerCase()).join(' ');
   return RegExp(
-    r'\b(commentary|director\s*commentary|commentaries|directors\s*commentary|jump\s*scare)\b',
+    r'\b(commentary|commentaries|jump\s*scare)\b',
   ).hasMatch(titleParts);
 }
 
@@ -187,37 +187,35 @@ int? computeEffectiveSubtitleIndex({
       return aEngMatch ? -1 : 1;
     }
 
-    // 1.6. Special/Commentary/Warnings check (prefer non-special over special)
+    // 1.6. Push commentary and warning tracks below normal dialogue
     final aSpecial = isSpecialSubtitleStream(streamA);
     final bSpecial = isSpecialSubtitleStream(streamB);
     if (aSpecial != bSpecial) {
       return aSpecial ? 1 : -1;
     }
 
-    // 2. SDH Match vs 3. Internal vs External depending on preferSdh
+    // 2 and 3. SDH match and internal vs external, ordered by preferSdh. With SDH
+    // on we match SDH first, with it off we keep internal tracks first so a bad
+    // external download cannot beat an internal SDH track.
     if (preferSdh) {
-      // SDH Match first
       final aSdhMatch = isSdhSubtitleStream(streamA) == preferSdh;
       final bSdhMatch = isSdhSubtitleStream(streamB) == preferSdh;
       if (aSdhMatch != bSdhMatch) {
         return aSdhMatch ? -1 : 1;
       }
 
-      // Internal vs External second
       final aInternal = !isExternalSubtitleStream(streamA);
       final bInternal = !isExternalSubtitleStream(streamB);
       if (aInternal != bInternal) {
         return aInternal ? -1 : 1;
       }
     } else {
-      // Internal vs External first
       final aInternal = !isExternalSubtitleStream(streamA);
       final bInternal = !isExternalSubtitleStream(streamB);
       if (aInternal != bInternal) {
         return aInternal ? -1 : 1;
       }
 
-      // SDH Match second
       final aSdhMatch = isSdhSubtitleStream(streamA) == preferSdh;
       final bSdhMatch = isSdhSubtitleStream(streamB) == preferSdh;
       if (aSdhMatch != bSdhMatch) {

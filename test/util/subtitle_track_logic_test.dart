@@ -296,6 +296,46 @@ void main() {
         2,
       );
     });
+    test('deprioritizes an English commentary track over normal English dialogue when preferSdh is true', () {
+      final customStreams = [
+        {
+          "Codec": "subrip",
+          "Language": "eng",
+          "DisplayTitle": "English Commentary",
+          "IsDefault": false,
+          "IsForced": false,
+          "IsHearingImpaired": false,
+          "IsExternal": false,
+          "Index": 1
+        },
+        {
+          "Codec": "subrip",
+          "Language": "eng",
+          "DisplayTitle": "English",
+          "IsDefault": false,
+          "IsForced": false,
+          "IsHearingImpaired": false,
+          "IsExternal": false,
+          "Index": 2
+        },
+      ];
+      expect(
+        computeEffectiveSubtitleIndex(
+          subtitleStreams: customStreams,
+          selectedSubtitleIndex: null,
+          activePlaybackSubtitleIndex: null,
+          subtitleMode: SubtitleMode.always,
+          preferredLanguage: 'eng',
+          fallbackLanguage: '',
+          preferSdh: true,
+          pgsDirectPlay: true,
+          assDirectPlay: true,
+          preferredAudioLanguage: '',
+          activeAudioLanguage: null,
+        ),
+        2,
+      );
+    });
     test('falls back to English when both preferred and fallback languages are not found', () {
       final customStreams = [
         {
