@@ -201,14 +201,20 @@ class MdbListItem {
   });
 
   factory MdbListItem.fromJson(Map<String, dynamic> json) {
+    final rawId = json['id'] ?? json['Id'];
+    final parsedId = rawId is int 
+        ? rawId 
+        : int.tryParse(rawId?.toString() ?? '');
+    final providerIdsMap = (json['providerIds'] ?? json['ProviderIds']) as Map<String, dynamic>? ?? {};
+    final pIds = MdbListItemProviderIds.fromJson(providerIdsMap);
     return MdbListItem(
-      id: json['id'] as int?,
-      name: json['name'] as String? ?? '',
-      type: json['type'] as String? ?? '',
-      productionYear: json['productionYear'] as int?,
-      rank: json['rank'] as int?,
-      poster: json['poster'] as String?,
-      providerIds: MdbListItemProviderIds.fromJson(json['providerIds'] as Map<String, dynamic>? ?? {}),
+      id: parsedId,
+      name: (json['name'] ?? json['Name']) as String? ?? '',
+      type: (json['type'] ?? json['Type']) as String? ?? '',
+      productionYear: (json['productionYear'] ?? json['ProductionYear']) as int?,
+      rank: (json['rank'] ?? json['Rank']) as int?,
+      poster: (json['poster'] ?? json['Poster'] ?? json['posterUrl'] ?? json['poster_path']) as String?,
+      providerIds: pIds,
     );
   }
 }
@@ -226,9 +232,9 @@ class MdbListItemProviderIds {
 
   factory MdbListItemProviderIds.fromJson(Map<String, dynamic> json) {
     return MdbListItemProviderIds(
-      imdb: json['Imdb'] as String?,
-      tmdb: json['Tmdb'] as String?,
-      tvdb: json['Tvdb'] as String?,
+      imdb: (json['Imdb'] ?? json['imdb'] ?? json['IMDB'])?.toString(),
+      tmdb: (json['Tmdb'] ?? json['tmdb'] ?? json['TMDB'])?.toString(),
+      tvdb: (json['Tvdb'] ?? json['tvdb'] ?? json['TVDB'])?.toString(),
     );
   }
 }

@@ -152,6 +152,9 @@ class PlaybackMediaSource {
                 ?.cast<Map<String, dynamic>>() ??
             const [],
         defaultAudioStreamIndex: json['DefaultAudioStreamIndex'] as int?,
+        defaultPlayMethod: json['PlayMethod'] != null
+            ? PlayMethod.fromServerString(json['PlayMethod'] as String?)
+            : null,
         transcodingReasons: _parseTranscodingReasons(json),
       );
 

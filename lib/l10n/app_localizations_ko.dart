@@ -2348,6 +2348,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get transcodingAudio => '';
 
   @override
+  String get directStreamRemux => 'Direct Stream (Remux)';
+
+  @override
+  String get transcodingBitrateOrResolution =>
+      'Transcoding (Bitrate or Resolution)';
+
+  @override
+  String get transcodingVideoAndAudio => 'Transcoding (Video & Audio)';
+
+  @override
+  String get transcodingVideo => 'Transcoding (Video)';
+
+  @override
   String get autoServerDefault => '자동(서버 기본값)';
 
   @override
@@ -7622,6 +7635,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get contextMenuGoToSeries => '시리즈로 이동';
+
+  @override
+  String get contextMenuHideFromContinueWatching =>
+      'Hide from Continue Watching';
+
+  @override
+  String get contextMenuHideFromNextUp => 'Hide from Next Up';
+
+  @override
+  String get contextMenuAddToCollection => 'Add to Collection';
 
   @override
   String get settingsAdministrationSubtitle => '서버 관리 패널에 액세스';

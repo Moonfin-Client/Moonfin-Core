@@ -129,6 +129,21 @@ class PipService {
     }
   }
 
+  Future<void> updateIosTimeline({
+    required int positionMs,
+    required int durationMs,
+    required bool isPlaying,
+  }) async {
+    if (!PlatformDetection.isIOS || !_isIosPiPInitialized) return;
+    try {
+      await _iosChannel.invokeMethod('updateTimeline', {
+        'positionMs': positionMs,
+        'durationMs': durationMs,
+        'isPlaying': isPlaying,
+      });
+    } catch (_) {}
+  }
+
   Future<void> updatePiPActions({required bool isPlaying}) async {
     if (PlatformDetection.isAndroid && !_isInPiP) return;
     try {

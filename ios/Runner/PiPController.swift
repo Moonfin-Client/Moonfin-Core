@@ -58,6 +58,16 @@ final class PiPController: NSObject {
   private var isInPiP = false
   private var isPlaybackPaused = false
   private var isWarmedUp = false
+  // Last frame from the bridge, kept even before the display layer exists so we can
+  // prime PiP with a real frame instead of opening on a black layer.
+  private var latestSampleBuffer: CMSampleBuffer?
+
+  // Drives the PiP scrubber from the real media position so the window shows a
+  // timeline instead of the LIVE badge. Fed by updateTimeline from Dart.
+  private var controlTimebase: CMTimebase?
+  private var currentTimeSeconds: Double = 0
+  private var durationSeconds: Double = 0
+
   private(set) var lastErrorMessage: String?
 
   private var pendingPiPStart = false
@@ -91,6 +101,11 @@ final class PiPController: NSObject {
       return false
     }
     lastErrorMessage = nil
+    // Arm capture now even without a view controller. Under the scene lifecycle the
+    // FlutterViewController can be nil when the mpv handle arrives, and without this
+    // we would drop every frame for the session and PiP would open black.
+    installSharedContextObservers()
+    isActive = true
     if let vc = viewController {
       warmUpPiPPipeline(on: vc)
     }
@@ -116,27 +131,38 @@ final class PiPController: NSObject {
     }
 
     installSharedContextObservers()
+    isActive = true
     guard setupPiPLayer(on: viewController) else {
       return false
     }
 
-    if isWarmedUp && sharedFrameCount > 0 {
-      isActive = true
+    // Prime the layer with the last frame so PiP never opens on an empty black layer.
+    // This covers warm-up having run before a view controller was available.
+    if let latest = latestSampleBuffer {
+      displayLayer?.enqueue(latest)
+      if sharedFrameCount == 0 { sharedFrameCount = 1 }
+    }
+
+    if sharedFrameCount > 0 {
       pipController?.startPictureInPicture()
       lastErrorMessage = nil
       return true
     }
 
-    displayLayer?.flush()
-    sharedFrameCount = 0
-    isActive = true
+    // No frame yet. Don't force-start on an empty layer, that is what shows black.
+    // Wait briefly for the first frame, and give up if none arrives.
     pendingPiPStart = true
-
     pipStartTimeoutItem?.cancel()
     let timeoutItem = DispatchWorkItem { [weak self] in
       guard let self, self.pendingPiPStart else { return }
       self.pendingPiPStart = false
-      self.pipController?.startPictureInPicture()
+      if let latest = self.latestSampleBuffer {
+        self.displayLayer?.enqueue(latest)
+        self.pipController?.startPictureInPicture()
+      } else {
+        self.setError("PiP aborted: no video frame available")
+        self.handlePiPTermination(notifyStopWhenNotWarmedUp: true)
+      }
     }
     pipStartTimeoutItem = timeoutItem
     DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: timeoutItem)
@@ -173,6 +199,22 @@ final class PiPController: NSObject {
     let layer = AVSampleBufferDisplayLayer()
     layer.videoGravity = .resizeAspect
     displayLayer = layer
+
+    // Give the layer a control timebase set to the current media position so the PiP
+    // scrubber tracks real playback instead of showing LIVE. Frames still display
+    // immediately (DisplayImmediately attachment), so this never gates the video.
+    var timebase: CMTimebase?
+    CMTimebaseCreateWithSourceClock(
+      allocator: kCFAllocatorDefault,
+      sourceClock: CMClockGetHostTimeClock(),
+      timebaseOut: &timebase
+    )
+    if let timebase {
+      CMTimebaseSetTime(timebase, time: CMTime(seconds: currentTimeSeconds, preferredTimescale: 600))
+      CMTimebaseSetRate(timebase, rate: isPlaybackPaused ? 0 : 1)
+      layer.controlTimebase = timebase
+      controlTimebase = timebase
+    }
 
     // AVSampleBufferDisplayLayer must live in a view hierarchy for PiP.
     let hostView = UIView(frame: CGRect(x: 0, y: 0, width: 2, height: 2))
@@ -249,6 +291,7 @@ final class PiPController: NSObject {
     }
 
     guard let sampleBuffer = buffer else { return }
+    latestSampleBuffer = sampleBuffer
     displayLayer?.enqueue(sampleBuffer)
 
     sharedFrameCount += 1
@@ -291,7 +334,24 @@ final class PiPController: NSObject {
 
   func updatePlaybackState(isPlaying: Bool) {
     isPlaybackPaused = !isPlaying
+    if let timebase = controlTimebase {
+      CMTimebaseSetRate(timebase, rate: isPlaying ? 1 : 0)
+    }
     pipController?.invalidatePlaybackState()
+  }
+
+  func updateTimeline(positionSeconds: Double, durationSeconds: Double, isPlaying: Bool) {
+    currentTimeSeconds = max(0, positionSeconds)
+    self.durationSeconds = max(0, durationSeconds)
+    if let timebase = controlTimebase {
+      // The timebase advances on its own, so only resync it when it has drifted
+      // (after a seek or a stall) to keep the scrubber from stuttering.
+      let drift = abs(CMTimebaseGetTime(timebase).seconds - currentTimeSeconds)
+      if drift > 0.75 {
+        CMTimebaseSetTime(timebase, time: CMTime(seconds: currentTimeSeconds, preferredTimescale: 600))
+      }
+    }
+    updatePlaybackState(isPlaying: isPlaying)
   }
 
   private func teardown() {
@@ -299,6 +359,10 @@ final class PiPController: NSObject {
     pipStartTimeoutItem?.cancel()
     pipStartTimeoutItem = nil
     sharedFrameCount = 0
+    latestSampleBuffer = nil
+    controlTimebase = nil
+    currentTimeSeconds = 0
+    durationSeconds = 0
     removeSharedContextObservers()
     layerHostView?.removeFromSuperview()
     layerHostView = nil
@@ -428,7 +492,15 @@ extension PiPController: AVPictureInPictureSampleBufferPlaybackDelegate {
   func pictureInPictureControllerTimeRangeForPlayback(
     _ pictureInPictureController: AVPictureInPictureController
   ) -> CMTimeRange {
-    CMTimeRange(start: .negativeInfinity, duration: .positiveInfinity)
+    // Once Dart has reported a duration, hand back a real timeline so PiP drops the
+    // LIVE badge and shows a scrubber. Until then, fall back to the live range.
+    guard durationSeconds > 0 else {
+      return CMTimeRange(start: .negativeInfinity, duration: .positiveInfinity)
+    }
+    return CMTimeRange(
+      start: .zero,
+      duration: CMTime(seconds: durationSeconds, preferredTimescale: 600)
+    )
   }
 
   func pictureInPictureControllerIsPlaybackPaused(
@@ -447,6 +519,9 @@ extension PiPController: AVPictureInPictureSampleBufferPlaybackDelegate {
     skipByInterval skipInterval: CMTime,
     completion completionHandler: @escaping () -> Void
   ) {
+    // The system tells us the direction; Dart does the actual seek using the app's
+    // configured skip length, so PiP matches the on-screen skip buttons.
+    onPiPAction?(skipInterval.seconds < 0 ? "skipBackward" : "skipForward")
     completionHandler()
   }
 }

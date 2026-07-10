@@ -46,7 +46,10 @@ dependencies:
 
   # Media Playback
   media_kit: 1.2.6
-  media_kit_video: ^2.0.1
+  # Pinned exactly: the iOS PiP frame bridge is monkey-patched into this package's
+  # TextureHW.swift / TextureSW.swift at pod-install (ios/Podfile). A minor bump can
+  # move the patch anchor and silently disable PiP, so upgrades must be deliberate.
+  media_kit_video: 2.0.1
   media_kit_libs_video: 1.0.7
   # Tizen playback backend (TizenPlayerBackend) — media_kit/libmpv and Media3
   # are unavailable on Tizen, so video plays through video_player, whose Tizen

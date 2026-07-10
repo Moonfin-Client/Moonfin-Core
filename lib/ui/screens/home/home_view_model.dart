@@ -27,7 +27,6 @@ import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/utils/bounded_concurrency.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../data/viewmodels/seerr_discover_view_model.dart';
-import '../../../data/repositories/mdblist_repository.dart';
 import 'package:dio/dio.dart';
 import '../../../data/services/custom_external_lists_service.dart';
 
@@ -864,23 +863,20 @@ class HomeViewModel extends ChangeNotifier {
     const sortOrder = 'Ascending';
     switch (section) {
       case HomeSectionType.resume:
-        return [
-          _multiServerEnabled
-              ? await _multiServerRepo.getAggregatedResume()
-              : await _dataSource.loadResume(_serverId),
-        ];
+        final row = _multiServerEnabled
+            ? await _multiServerRepo.getAggregatedResume()
+            : await _dataSource.loadResume(_serverId);
+        return [row.copyWith(items: _prefs.filterContinueWatching(row.items))];
       case HomeSectionType.resumeAudio:
-        return [
-          _multiServerEnabled
-              ? await _multiServerRepo.getAggregatedResumeAudio()
-              : await _dataSource.loadResumeAudio(_serverId),
-        ];
+        final row = _multiServerEnabled
+            ? await _multiServerRepo.getAggregatedResumeAudio()
+            : await _dataSource.loadResumeAudio(_serverId);
+        return [row.copyWith(items: _prefs.filterContinueWatching(row.items))];
       case HomeSectionType.nextUp:
-        return [
-          _multiServerEnabled
-              ? await _multiServerRepo.getAggregatedNextUp()
-              : await _dataSource.loadNextUp(_serverId),
-        ];
+        final row = _multiServerEnabled
+            ? await _multiServerRepo.getAggregatedNextUp()
+            : await _dataSource.loadNextUp(_serverId);
+        return [row.copyWith(items: _prefs.filterNextUp(row.items))];
       case HomeSectionType.latestMedia:
         return _multiServerEnabled
             ? await _multiServerRepo.getAggregatedLatestMediaRows()
@@ -1634,11 +1630,13 @@ class HomeViewModel extends ChangeNotifier {
           }();
           final resumeRow = await resumeFuture;
           final nextUpRow = await nextUpFuture;
+          final filteredResume = _prefs.filterContinueWatching(resumeRow.items);
+          final filteredNextUp = _prefs.filterNextUp(nextUpRow?.items ?? []);
           final mergedItemsMap = <String, AggregatedItem>{};
-          for (final item in resumeRow.items) {
+          for (final item in filteredResume) {
             mergedItemsMap[item.id] = item;
           }
-          for (final item in nextUpRow?.items ?? []) {
+          for (final item in filteredNextUp) {
             mergedItemsMap.putIfAbsent(item.id, () => item);
           }
           int byLastPlayedDate(AggregatedItem a, AggregatedItem b) {
@@ -1656,11 +1654,13 @@ class HomeViewModel extends ChangeNotifier {
             _dataSource.loadResume(_serverId),
             _dataSource.loadNextUp(_serverId),
           ]);
+          final filteredResume = _prefs.filterContinueWatching(results[0].items);
+          final filteredNextUp = _prefs.filterNextUp(results[1].items);
           final mergedItemsMap = <String, AggregatedItem>{};
-          for (final item in results[0].items) {
+          for (final item in filteredResume) {
             mergedItemsMap[item.id] = item;
           }
-          for (final item in results[1].items) {
+          for (final item in filteredNextUp) {
             mergedItemsMap.putIfAbsent(item.id, () => item);
           }
           int byLastPlayedDate(AggregatedItem a, AggregatedItem b) {
@@ -2003,59 +2003,6 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<List<HomeRow>> _loadMdbListRow(
-    HomeSectionType type,
-    String title,
-    String rowId,
-    String slug,
-    String mediatype,
-  ) async {
-    try {
-      final mdbListRepo = GetIt.instance<MdbListRepository>();
-      final items = await mdbListRepo.getListItems(slug, mediaType: mediatype);
-      if (items == null || items.isEmpty) {
-        return const [];
-      }
-
-      final aggregatedItems = items.map((item) {
-        final imdbId = item.providerIds.imdb ?? '';
-        final tmdbId = item.providerIds.tmdb ?? item.id?.toString() ?? '';
-        final type = item.type; // 'movie' or 'show'
-        final displayType = type == 'show' ? 'Series' : 'Movie';
-        final seerrMediaType = type == 'show' ? 'tv' : 'movie';
-
-        return AggregatedItem(
-          id: imdbId.isNotEmpty ? imdbId : tmdbId,
-          serverId: 'seerr',
-          rawData: {
-            'Name': item.name,
-            'Type': displayType,
-            'Overview': '',
-            'PosterPath': item.poster ?? '',
-            'BackdropPath': '',
-            'ProductionYear': item.productionYear,
-            'SeerrMediaType': seerrMediaType,
-            'ProviderIds': {
-              if (imdbId.isNotEmpty) 'Imdb': imdbId,
-              if (tmdbId.isNotEmpty) 'Tmdb': tmdbId,
-            },
-          },
-        );
-      }).toList();
-
-      return [
-        HomeRow(
-          id: rowId,
-          title: title,
-          rowType: HomeRowType.pluginDynamic,
-          items: aggregatedItems,
-        )
-      ];
-    } catch (e) {
-      debugPrint('[MdbListHomeRow] Failed to load MdbList row $type ($slug): $e');
-      return const [];
-    }
-  }
 
   Future<List<HomeRow>> _loadTmdbChartRow(
     HomeSectionType sectionType,
@@ -2085,8 +2032,9 @@ class HomeViewModel extends ChangeNotifier {
       }
 
       final aggregatedItems = items.map((item) {
+        final itemId = item.imdbId.isNotEmpty ? item.imdbId : item.tmdbId;
         return AggregatedItem(
-          id: item.imdbId,
+          id: itemId,
           serverId: 'seerr',
           rawData: {
             'Name': item.title,
@@ -2096,6 +2044,10 @@ class HomeViewModel extends ChangeNotifier {
             'BackdropPath': item.backdropUrl ?? item.posterUrl ?? '',
             'ProductionYear': item.year,
             'SeerrMediaType': item.type == 'Series' ? 'tv' : 'movie',
+            'ProviderIds': {
+              if (item.imdbId.isNotEmpty) 'Imdb': item.imdbId,
+              if (item.tmdbId.isNotEmpty) 'Tmdb': item.tmdbId,
+            },
           },
         );
       }).toList();

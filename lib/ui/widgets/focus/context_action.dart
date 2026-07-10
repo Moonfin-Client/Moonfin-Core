@@ -8,6 +8,7 @@ import '../../../auth/repositories/user_repository.dart';
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/repositories/item_mutation_repository.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../preference/user_preferences.dart';
 import '../../navigation/destinations.dart';
 import '../add_to_collection_dialog.dart';
 import '../add_to_playlist_dialog.dart';
@@ -69,6 +70,47 @@ List<ItemContextAction> contextActionsFor(
         onChanged?.call();
       },
     ));
+
+    final hasProgress = item.playbackPositionTicks != null &&
+        item.playbackPositionTicks! > 0 &&
+        !item.isPlayed;
+    if (hasProgress) {
+      actions.add(ItemContextAction(
+        icon: Icons.visibility_off_outlined,
+        label: l10n.contextMenuHideFromContinueWatching,
+        onSelect: () async {
+          final prefs = GetIt.instance<UserPreferences>();
+          if (item.seriesId != null && item.seriesId!.isNotEmpty) {
+            await prefs.hideFromContinueWatching(item.seriesId!);
+          } else {
+            await prefs.hideFromContinueWatching(item.id);
+          }
+          try {
+            await client.userLibraryApi.unmarkPlayed(item.id);
+          } catch (_) {}
+          onChanged?.call();
+        },
+      ));
+    }
+
+    final isEpisode = type == 'Episode';
+    final hasSeries = item.seriesId != null && item.seriesId!.isNotEmpty;
+    if (isEpisode && hasSeries) {
+      actions.add(ItemContextAction(
+        icon: Icons.visibility_off_outlined,
+        label: l10n.contextMenuHideFromNextUp,
+        onSelect: () async {
+          final prefs = GetIt.instance<UserPreferences>();
+          await prefs.hideFromNextUp(item.seriesId!);
+          await prefs.hideFromContinueWatching(item.seriesId!);
+          try {
+            await client.userLibraryApi.unmarkPlayed(item.id);
+          } catch (_) {}
+          onChanged?.call();
+        },
+      ));
+    }
+
     actions.add(ItemContextAction(
       icon: item.isFavorite ? Icons.favorite : Icons.favorite_border,
       label: item.isFavorite
@@ -83,7 +125,7 @@ List<ItemContextAction> contextActionsFor(
     if (canManageCollections) {
       actions.add(ItemContextAction(
         icon: Icons.collections_bookmark,
-        label: '${l10n.add} ${l10n.collections}',
+        label: l10n.contextMenuAddToCollection,
         onSelect: () async {
           if (!context.mounted) return;
           final added = await AddToCollectionDialog.show(

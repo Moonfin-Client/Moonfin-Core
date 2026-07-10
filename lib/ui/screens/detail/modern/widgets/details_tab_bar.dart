@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
+import 'package:moonfin/preference/user_preferences.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../../../util/platform_detection.dart';
@@ -107,15 +109,20 @@ class DetailsTabBar extends StatelessWidget {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var i = 0; i < labels.length; i++)
-            Padding(
-              padding: const EdgeInsets.only(right: 20),
-              child: item(i),
-            ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var i = 0; i < labels.length; i++)
+              Padding(
+                padding: EdgeInsets.only(
+                  right: i < labels.length - 1 ? 20 : 0,
+                ),
+                child: item(i),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -154,6 +161,21 @@ class _DetailsTabItem extends StatefulWidget {
 
 class _DetailsTabItemState extends State<_DetailsTabItem> {
   bool _isFocused = false;
+
+  Color get _focusColor {
+    final activeTheme = ThemeRegistry.active;
+    if (activeTheme.id == ThemeRegistry.neonPulseId) {
+      return AppColorScheme.onButtonFocused;
+    }
+    if (activeTheme.id == ThemeRegistry.moonfinId) {
+      return Colors.white;
+    }
+    return Color(
+      GetIt.instance<UserPreferences>()
+          .get(UserPreferences.focusColor)
+          .colorValue,
+    );
+  }
 
   @override
   void initState() {
@@ -236,10 +258,12 @@ class _DetailsTabItemState extends State<_DetailsTabItem> {
         behavior: HitTestBehavior.opaque,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: AppRadius.circular(8),
+            borderRadius: AppColorScheme.isPixel
+                ? BorderRadius.zero
+                : AppRadius.circular(8),
             // Border is ALWAYS present with a fixed width to eliminate visual judder!
             border: Border.all(
-              color: _isFocused ? accent : Colors.transparent,
+              color: _isFocused ? _focusColor : Colors.transparent,
               width: 1.5,
             ),
           ),
@@ -252,11 +276,12 @@ class _DetailsTabItemState extends State<_DetailsTabItem> {
                 Text(
                   widget.label,
                   textAlign: TextAlign.center,
-                  style: textTheme.titleSmall?.copyWith(
+                  style: textTheme.bodyMedium?.copyWith(
                     color: (widget.isSelected || _isFocused)
                         ? AppColorScheme.onSurface
                         : muted,
                     fontWeight: FontWeight.w600,
+                    height: 1.4,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -296,21 +321,32 @@ class _DetailsTabItemState extends State<_DetailsTabItem> {
         child: GlassFocusHalo(
           focused: _isFocused,
           scale: 1.0,
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: AppColorScheme.isPixel
+              ? BorderRadius.zero
+              : BorderRadius.circular(999),
           backgroundColor: Colors.transparent,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 7),
-            child: Text(
-              widget.label,
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                color: selected
-                    ? selectedTextColor
-                    : onSurface.withValues(alpha: 0.75),
+          ringColor: _focusColor,
+          child: SizedBox(
+            height: 38,
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppColorScheme.isPixel ? 12 : 15,
+                ),
+                child: Text(
+                  widget.label,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontSize: AppColorScheme.isPixel ? 11 : 13,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                    color: selected
+                        ? selectedTextColor
+                        : onSurface.withValues(alpha: 0.75),
+                    height: 1.4,
+                  ),
+                ),
               ),
             ),
           ),
@@ -339,7 +375,7 @@ class _DetailsTabItemState extends State<_DetailsTabItem> {
       fg = AppColorScheme.onSurface.withValues(alpha: 0.6);
     }
 
-    final radius = AppRadius.circular(9);
+    final radius = AppColorScheme.isPixel ? BorderRadius.zero : AppRadius.circular(9);
 
     return Focus(
       focusNode: widget.focusNode,
@@ -365,9 +401,10 @@ class _DetailsTabItemState extends State<_DetailsTabItem> {
               child: Text(
                 widget.label,
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: fg,
                       fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                      height: 1.4,
                     ),
               ),
             ),
@@ -418,6 +455,7 @@ class _PillTabBarState extends State<_PillTabBar> {
     }
     if (oldWidget.config.selectedIndex != _config.selectedIndex) {
       _scheduleEnsureVisible();
+      _scheduleMeasure();
     }
   }
 
@@ -488,7 +526,9 @@ class _PillTabBarState extends State<_PillTabBar> {
             child: Container(
               decoration: BoxDecoration(
                 color: thumbColor,
-                borderRadius: AppRadius.circular(999),
+                borderRadius: AppColorScheme.isPixel
+                    ? BorderRadius.zero
+                    : AppRadius.circular(999),
                 border: glass
                     ? Border.all(
                         color: onSurface.withValues(alpha: 0.25),
@@ -511,12 +551,12 @@ class _PillTabBarState extends State<_PillTabBar> {
     final pane = glassPane(
       tier: glass ? GlassSettings.tier : GlassTier.solid,
       fallbackColor: onSurface.withValues(alpha: 0.08),
-      cornerRadius: 999,
+      cornerRadius: AppColorScheme.isPixel ? 0 : 999,
       sigma: 12,
       context: context,
       padding: const EdgeInsets.all(3),
       child: SizedBox(
-        height: 34,
+        height: 38,
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: stack,
@@ -527,11 +567,11 @@ class _PillTabBarState extends State<_PillTabBar> {
     return LayoutBuilder(
       builder: (context, constraints) {
         // Hug the content when it fits, cap at the available width and let the
-        // segments scroll inside when they overflow. The 6px accounts for the
-        // pane's all(3) padding.
+        // segments scroll inside when they overflow. The 16px covers the pane's
+        // all(3) padding plus a small buffer so the last segment is not clipped.
         final available = constraints.maxWidth;
         if (_widths.isEmpty || !available.isFinite) return pane;
-        final content = _widths.fold<double>(0, (sum, w) => sum + w) + 6;
+        final content = _widths.fold<double>(0, (sum, w) => sum + w) + 16.0;
         final pillWidth = content < available ? content : available;
         return Align(
           alignment: Alignment.centerLeft,

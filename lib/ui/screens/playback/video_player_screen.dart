@@ -1420,6 +1420,18 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
       case 'pause':
         _manager.pause();
         return;
+      case 'skipForward':
+        _seekRelative(
+          _prefs.get(UserPreferences.skipForwardLength),
+          showControls: false,
+        );
+        return;
+      case 'skipBackward':
+        _seekRelative(
+          -_prefs.get(UserPreferences.skipForwardLength),
+          showControls: false,
+        );
+        return;
       case 'dismissed':
         final lifecycle = WidgetsBinding.instance.lifecycleState;
         final isForeground =
@@ -2070,6 +2082,13 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     }
     _refreshTrickplayIfNeeded();
     _syncAirPlayPlaybackState(position: position);
+    if (PlatformDetection.isIOS) {
+      _pipService.updateIosTimeline(
+        positionMs: position.inMilliseconds,
+        durationMs: _state.duration.inMilliseconds,
+        isPlaying: _state.isPlaying,
+      );
+    }
     _checkSegments(position);
     _checkNextUp(position);
   }

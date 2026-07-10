@@ -94,8 +94,14 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
   /// controller is no longer reachable via `self.window` at launch time and
   /// must be looked up from the connected scenes when a channel call needs it.
   private var flutterViewController: FlutterViewController? {
-    for scene in UIApplication.shared.connectedScenes {
-      guard let windowScene = scene as? UIWindowScene else { continue }
+    // Prefer the foreground-active scene so a background or placeholder scene can't
+    // shadow the live Flutter window and leave PiP without a host view.
+    let scenes = UIApplication.shared.connectedScenes
+      .compactMap { $0 as? UIWindowScene }
+      .sorted {
+        Self.sceneActivationRank($0.activationState) < Self.sceneActivationRank($1.activationState)
+      }
+    for windowScene in scenes {
       let windows = windowScene.windows
       let keyed = windows.first(where: { $0.isKeyWindow }) ?? windows.first
       if let controller = keyed?.rootViewController as? FlutterViewController {
@@ -104,6 +110,16 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
     }
     // Fallback for the legacy (non-scene) path.
     return window?.rootViewController as? FlutterViewController
+  }
+
+  private static func sceneActivationRank(_ state: UIScene.ActivationState) -> Int {
+    switch state {
+    case .foregroundActive: return 0
+    case .foregroundInactive: return 1
+    case .background: return 2
+    case .unattached: return 3
+    @unknown default: return 4
+    }
   }
 
   private func topViewController(from root: UIViewController?) -> UIViewController? {
@@ -283,6 +299,17 @@ private final class NativeAirPlayEventStreamHandler: NSObject, FlutterStreamHand
           case "updatePlaybackState":
             let isPlaying = (call.arguments as? [String: Any])?["isPlaying"] as? Bool ?? true
             pip.updatePlaybackState(isPlaying: isPlaying)
+            result(nil)
+          case "updateTimeline":
+            let args = call.arguments as? [String: Any]
+            let positionMs = (args?["positionMs"] as? NSNumber)?.doubleValue ?? 0
+            let durationMs = (args?["durationMs"] as? NSNumber)?.doubleValue ?? 0
+            let isPlaying = args?["isPlaying"] as? Bool ?? true
+            pip.updateTimeline(
+              positionSeconds: positionMs / 1000.0,
+              durationSeconds: durationMs / 1000.0,
+              isPlaying: isPlaying
+            )
             result(nil)
           default:
             result(FlutterMethodNotImplemented)

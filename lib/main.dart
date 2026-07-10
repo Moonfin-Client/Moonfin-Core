@@ -11,6 +11,7 @@ import 'package:playback_core/playback_core.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'app.dart';
+import 'data/models/aggregated_item.dart';
 import 'background/watch_next_background.dart' as watch_next_bg;
 import 'data/services/carplay_service.dart';
 import 'data/services/cast/airplay_command_bridge.dart';
@@ -414,6 +415,17 @@ void main() async {
 
   final prefs = GetIt.instance<UserPreferences>();
   WidgetsBinding.instance.addObserver(_PreferenceWriteFlushObserver(prefs));
+
+  GetIt.instance<PlaybackManager>().queueService.queueChangedStream.listen((_) {
+    final activeItem = GetIt.instance<PlaybackManager>().queueService.currentItem;
+    if (activeItem is AggregatedItem) {
+      prefs.unhideFromContinueWatching(activeItem.id);
+      if (activeItem.seriesId != null && activeItem.seriesId!.isNotEmpty) {
+        prefs.unhideFromContinueWatching(activeItem.seriesId!);
+        prefs.unhideFromNextUp(activeItem.seriesId!);
+      }
+    }
+  });
 
   // Register Theme Store themes before the active theme is resolved so a
   // store-saved theme applies on launch.

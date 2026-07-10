@@ -2404,6 +2404,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get transcodingAudio => '';
 
   @override
+  String get directStreamRemux => 'Direct Stream (Remux)';
+
+  @override
+  String get transcodingBitrateOrResolution =>
+      'Transcoding (Bitrate or Resolution)';
+
+  @override
+  String get transcodingVideoAndAudio => 'Transcoding (Video & Audio)';
+
+  @override
+  String get transcodingVideo => 'Transcoding (Video)';
+
+  @override
   String get autoServerDefault => 'Automático (Padrão do Servidor)';
 
   @override
@@ -7834,6 +7847,16 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get contextMenuGoToSeries => 'Ir para a série';
+
+  @override
+  String get contextMenuHideFromContinueWatching =>
+      'Hide from Continue Watching';
+
+  @override
+  String get contextMenuHideFromNextUp => 'Hide from Next Up';
+
+  @override
+  String get contextMenuAddToCollection => 'Add to Collection';
 
   @override
   String get settingsAdministrationSubtitle =>

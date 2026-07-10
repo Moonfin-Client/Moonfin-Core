@@ -4336,6 +4336,30 @@ abstract class AppLocalizations {
   /// **'Transcoding (Audio)'**
   String get transcodingAudio;
 
+  /// Play method label for direct stream with remuxing
+  ///
+  /// In en, this message translates to:
+  /// **'Direct Stream (Remux)'**
+  String get directStreamRemux;
+
+  /// Play method label for transcoding due to bitrate or resolution
+  ///
+  /// In en, this message translates to:
+  /// **'Transcoding (Bitrate or Resolution)'**
+  String get transcodingBitrateOrResolution;
+
+  /// Play method label for transcoding both video and audio
+  ///
+  /// In en, this message translates to:
+  /// **'Transcoding (Video & Audio)'**
+  String get transcodingVideoAndAudio;
+
+  /// Play method label for transcoding video
+  ///
+  /// In en, this message translates to:
+  /// **'Transcoding (Video)'**
+  String get transcodingVideo;
+
   /// Option: auto server default
   ///
   /// In en, this message translates to:
@@ -13977,6 +14001,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Go to Series'**
   String get contextMenuGoToSeries;
+
+  /// Context menu action to hide an item from the Continue Watching section
+  ///
+  /// In en, this message translates to:
+  /// **'Hide from Continue Watching'**
+  String get contextMenuHideFromContinueWatching;
+
+  /// Context menu action to hide a show from the Next Up section
+  ///
+  /// In en, this message translates to:
+  /// **'Hide from Next Up'**
+  String get contextMenuHideFromNextUp;
+
+  /// Context menu action to add an item to a collection
+  ///
+  /// In en, this message translates to:
+  /// **'Add to Collection'**
+  String get contextMenuAddToCollection;
 
   /// No description provided for @settingsAdministrationSubtitle.
   ///

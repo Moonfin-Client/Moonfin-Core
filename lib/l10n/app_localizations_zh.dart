@@ -2341,6 +2341,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get transcodingAudio => '';
 
   @override
+  String get directStreamRemux => 'Direct Stream (Remux)';
+
+  @override
+  String get transcodingBitrateOrResolution =>
+      'Transcoding (Bitrate or Resolution)';
+
+  @override
+  String get transcodingVideoAndAudio => 'Transcoding (Video & Audio)';
+
+  @override
+  String get transcodingVideo => 'Transcoding (Video)';
+
+  @override
   String get autoServerDefault => '自动（服务器默认）';
 
   @override
@@ -7587,6 +7600,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get contextMenuGoToSeries => '前往剧集';
+
+  @override
+  String get contextMenuHideFromContinueWatching =>
+      'Hide from Continue Watching';
+
+  @override
+  String get contextMenuHideFromNextUp => 'Hide from Next Up';
+
+  @override
+  String get contextMenuAddToCollection => 'Add to Collection';
 
   @override
   String get settingsAdministrationSubtitle => '访问服务器管理面板';

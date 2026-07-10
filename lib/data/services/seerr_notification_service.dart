@@ -14,6 +14,7 @@ class SeerrNotificationService {
 
   Future<void> initialize() async {
     await LocalNotificationBootstrap.instance.initialize();
+    LocalNotificationBootstrap.instance.attachMainIsolateActionHandler();
   }
 
   void show(
