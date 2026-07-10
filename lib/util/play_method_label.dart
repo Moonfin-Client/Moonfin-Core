@@ -8,7 +8,7 @@ const Set<String> _bitrateOrResolutionReasons = <String>{
   'videobitrateexceedslimit',
   'bitratelimitexceeded',
   'containerbitratenotsupported',
-  'resolutionnotsupported',
+  'videoresolutionnotsupported',
   'audiobitratenotsupported',
 };
 
