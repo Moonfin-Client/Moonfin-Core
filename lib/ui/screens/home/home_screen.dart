@@ -4848,12 +4848,11 @@ class _ContentRowsState extends State<_ContentRows>
       final parentBackdropTags = item.parentBackdropImageTags;
       final maxW = (height * 16 / 9 * requestScale).toInt();
       if (parentBackdropItemId != null && parentBackdropTags.isNotEmpty) {
-        final backdropUrl = imageApi.getBackdropImageUrl(
+        return imageApi.getBackdropImageUrl(
           parentBackdropItemId,
           maxWidth: maxW,
           tag: parentBackdropTags.first,
         );
-        if (backdropUrl != null) return backdropUrl;
       }
     }
 

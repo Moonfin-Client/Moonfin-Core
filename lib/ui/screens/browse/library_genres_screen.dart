@@ -152,7 +152,7 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
         return GenreCardData(
           id: data['Id']?.toString() ?? '',
           name: data['Name'] as String? ?? '',
-          itemCount: 0,
+          itemCount: x.itemCount,
           imageUrl: imageUrl,
           backdropUrl: backdropUrl,
           isGenreFallback: !hasCustomArtwork,
@@ -273,15 +273,6 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
       if (!_disposed && mounted) setState(() {});
     } catch (_) {}
   }
-
-  String? _tagForType(Map<String, dynamic> item, String imageType) {
-    final tags = item['ImageTags'];
-    if (tags is! Map) return null;
-    return tags[imageType] as String?;
-  }
-
-
-
 
   int _genreCardRequestMaxWidth() {
     final requestScale = MediaQuery.devicePixelRatioOf(context).clamp(1.0, 2.0);
