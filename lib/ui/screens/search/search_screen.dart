@@ -788,7 +788,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
           child: Column(
             children: [
               const SizedBox(height: 30),
-              if (topbar | PlatformDetection.isMobile)
+              if (topbar || PlatformDetection.isMobile)
                 const SizedBox(height: 50),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 48),
@@ -1126,10 +1126,10 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     // scale as the season/similar tabs on TV and desktop.
     final cardWidth = isMobile ? 108.0 : 150.0;
 
-    final topbar = _userPreferences.get(UserPreferences.navbarPosition) == 'top';
-
+    final cardWidth = isMobile ? 108.0 : 150.0;
 
     final groups = _vm.results;
+
     final hasSeerr = _vm.seerrResults.isNotEmpty;
     final rowLens = <int>[
       for (final g in groups) g.items.length,
