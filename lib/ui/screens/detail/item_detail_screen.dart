@@ -11371,7 +11371,7 @@ class _OverviewText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
-    final prunedText = text.replaceAll(RegExp(r'<\/?([a-z][a-z0-9]*)\b[^>]*>'), '');
+    final prunedText = text.replaceAll(RegExp(r'<\/?([a-z0-9]*)\b[^>]*>|(&|#)([a-z0-9&#]*);'), '');
     return ExpandableBiography(
       text: prunedText,
       toggleFocusNode: focusNode,
