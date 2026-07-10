@@ -48,26 +48,23 @@ String playbackMethodLabel({
       return l10n.directPlay;
     }
     if (playMethod == StreamPlayMethod.directStream) {
-      return '${l10n.directStream} (Remux)';
+      return l10n.directStreamRemux;
     }
     if (playMethod == StreamPlayMethod.transcode) {
       final isBitrateOrRes = lowerReasons.any(_bitrateOrResolutionReasons.contains);
       final hasVideoCodec = lowerReasons.any(_videoCodecReasons.contains);
       final hasAudioCodec = lowerReasons.any(_audioCodecReasons.contains);
 
-      final base = l10n.transcoding;
       if (isBitrateOrRes) {
-        return '$base (Bitrate or Resolution)';
+        return l10n.transcodingBitrateOrResolution;
       } else if (hasVideoCodec && hasAudioCodec) {
-        return '$base (Video & Audio)';
+        return l10n.transcodingVideoAndAudio;
       } else if (hasVideoCodec) {
-        return '$base (Video)';
+        return l10n.transcodingVideo;
       } else if (hasAudioCodec) {
-        return l10n.transcodingAudio.isNotEmpty
-            ? l10n.transcodingAudio
-            : '$base (Audio)';
+        return l10n.transcodingAudio;
       } else {
-        return base;
+        return l10n.transcoding;
       }
     }
   }

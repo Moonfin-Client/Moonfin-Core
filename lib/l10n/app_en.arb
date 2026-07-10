@@ -3369,6 +3369,22 @@
   "@transcodingAudio": {
     "description": "Label for audio-only transcode playback method"
   },
+  "directStreamRemux": "Direct Stream (Remux)",
+  "@directStreamRemux": {
+    "description": "Play method label for direct stream with remuxing"
+  },
+  "transcodingBitrateOrResolution": "Transcoding (Bitrate or Resolution)",
+  "@transcodingBitrateOrResolution": {
+    "description": "Play method label for transcoding due to bitrate or resolution"
+  },
+  "transcodingVideoAndAudio": "Transcoding (Video & Audio)",
+  "@transcodingVideoAndAudio": {
+    "description": "Play method label for transcoding both video and audio"
+  },
+  "transcodingVideo": "Transcoding (Video)",
+  "@transcodingVideo": {
+    "description": "Play method label for transcoding video"
+  },
   "autoServerDefault": "Auto (Server Default)",
   "@autoServerDefault": {
     "description": "Option: auto server default"
