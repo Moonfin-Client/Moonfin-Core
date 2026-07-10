@@ -767,6 +767,7 @@ class _ContentRowsState extends State<_ContentRows>
   List<double> _cachedRowTargetOffsets = [];
   double _cachedRowTargetMaxScrollExtent = -1.0;
   bool _cachedRowTargetFullScreenRows = false;
+  double _cachedRowTargetFocusTop = -1.0;
   double _overlayBottom = 0;
   static const _previewScrollThreshold = 150.0;
   static const _previewOpenTimeout = Duration(seconds: 10);
@@ -802,15 +803,34 @@ class _ContentRowsState extends State<_ContentRows>
     _cachedRowTargetOffsets = [];
     _cachedRowTargetMaxScrollExtent = -1.0;
     _cachedRowTargetFullScreenRows = false;
+    _cachedRowTargetFocusTop = -1.0;
+  }
+
+  double _desktopRowFocusTargetTop() {
+    if (!_scrollController.hasClients) return 0.0;
+    final viewportHeight = _scrollController.position.viewportDimension;
+    if (viewportHeight <= 0.0) return 0.0;
+    if (_showHomeRowInfoOverlay()) {
+      return _overlayBottom.clamp(0.0, viewportHeight * 0.85);
+    }
+    final safeTop = MediaQuery.of(context).padding.top;
+    final navbarIsTop =
+        widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
+    final navbarHeight = navbarIsTop
+        ? (PlatformDetection.useMobileUi ? 60.0 : 80.0)
+        : 0.0;
+    return (safeTop + navbarHeight + 8.0).clamp(0.0, viewportHeight * 0.85);
   }
 
   List<double> _rowTargetOffsetsForScroll({required bool fullScreenRows}) {
     final maxScrollExtent = _scrollController.hasClients
         ? _scrollController.position.maxScrollExtent
         : double.infinity;
+    final focusTargetTop = fullScreenRows ? 0.0 : _desktopRowFocusTargetTop();
     if (_cachedRowTargetOffsets.length == _rowTopOffsets.length &&
         _cachedRowTargetFullScreenRows == fullScreenRows &&
-        _cachedRowTargetMaxScrollExtent == maxScrollExtent) {
+        _cachedRowTargetMaxScrollExtent == maxScrollExtent &&
+        _cachedRowTargetFocusTop == focusTargetTop) {
       return _cachedRowTargetOffsets;
     }
 
@@ -822,13 +842,14 @@ class _ContentRowsState extends State<_ContentRows>
                 0.0,
                 maxScrollExtent,
               )
-            : _rowTopOffsets[i].clamp(0.0, maxScrollExtent),
+            : (_rowTopOffsets[i] - focusTargetTop).clamp(0.0, maxScrollExtent),
       );
     }
 
     _cachedRowTargetOffsets = targets;
     _cachedRowTargetMaxScrollExtent = maxScrollExtent;
     _cachedRowTargetFullScreenRows = fullScreenRows;
+    _cachedRowTargetFocusTop = focusTargetTop;
     return targets;
   }
 
@@ -2556,11 +2577,6 @@ class _ContentRowsState extends State<_ContentRows>
               return;
             }
 
-            final viewportHeight = _scrollController.hasClients
-                ? _scrollController.position.viewportDimension
-                : 768.0;
-            final overlayEnabled = _showHomeRowInfoOverlay();
-
             final fullScreenRows =
                 !PlatformDetection.useMobileUi &&
                 widget.prefs.get(UserPreferences.fullScreenRows);
@@ -2588,13 +2604,64 @@ class _ContentRowsState extends State<_ContentRows>
               return;
             }
 
-            final alignment = overlayEnabled
-                ? ((_overlayBottom + 120) / viewportHeight).clamp(0.05, 0.85)
-                : 0.12;
+            if (_showHomeRowInfoOverlay() &&
+                _scrollController.hasClients &&
+                target < _rowTopOffsets.length) {
+              final targetOffset =
+                  (_rowTopOffsets[target] - _desktopRowFocusTargetTop()).clamp(
+                    0.0,
+                    _scrollController.position.maxScrollExtent,
+                  );
+              _scrollController
+                  .animateTo(
+                    targetOffset,
+                    duration: _focusHandoffDuration,
+                    curve: _focusHandoffCurve,
+                  )
+                  .whenComplete(() {
+                    if (!navComplete.isCompleted) navComplete.complete();
+                  });
+              return;
+            }
+
+            // Other desktop rows (classic without overlay, modern) aren't
+            // height-locked, so the estimate can drift and mis-scroll a row off
+            // screen or under the navbar. Measure the row's ACTUAL top relative
+            // to the viewport and scroll it to the target (just below the
+            // navbar) — drift-free.
+            if (_scrollController.hasClients) {
+              final rowObj = _rowContainerKey(
+                target,
+              ).currentContext?.findRenderObject();
+              final viewportObj = context.findRenderObject();
+              if (rowObj is RenderBox &&
+                  rowObj.attached &&
+                  viewportObj is RenderBox &&
+                  viewportObj.attached) {
+                final rowTopInViewport = rowObj
+                    .localToGlobal(Offset.zero, ancestor: viewportObj)
+                    .dy;
+                final targetOffset =
+                    (_scrollController.offset +
+                            rowTopInViewport -
+                            _desktopRowFocusTargetTop())
+                        .clamp(0.0, _scrollController.position.maxScrollExtent);
+                _scrollController
+                    .animateTo(
+                      targetOffset,
+                      duration: _focusHandoffDuration,
+                      curve: _focusHandoffCurve,
+                    )
+                    .whenComplete(() {
+                      if (!navComplete.isCompleted) navComplete.complete();
+                    });
+                return;
+              }
+            }
 
             Scrollable.ensureVisible(
               rowCtx,
-              alignment: alignment,
+              alignment: 0.12,
               duration: _focusHandoffDuration,
               curve: _focusHandoffCurve,
             ).whenComplete(() {
@@ -3202,6 +3269,18 @@ class _ContentRowsState extends State<_ContentRows>
     // Get viewport height from scroll controller
     final viewportHeight = _scrollController.position.viewportDimension;
 
+    if (!fullScreenRows && !isRowsV2) {
+      final clipTop =
+          (overlayBottom - rowViewportTop).clamp(0.0, rowExtents[rowIndex]);
+      if (clipTop <= 0.0) {
+        return child;
+      }
+      return ClipRect(
+        clipper: _OverlayTopClipper(clipTop),
+        child: child,
+      );
+    }
+
     // Classifier inputs
     final isVisibleOnScreen = rowViewportBottom > 0 && rowViewportTop < viewportHeight;
     final isUnderOverlay = rowViewportBottom <= overlayBottom + 8;
@@ -3605,6 +3684,11 @@ class _ContentRowsState extends State<_ContentRows>
                           )
                         : rowChild;
 
+                    final bool lockRowHeight = fullScreenRows ||
+                        (!PlatformDetection.isTV &&
+                            !PlatformDetection.useMobileUi &&
+                            showInfoOverlay);
+
                     if (row.isLoading) {
                       final itemWidget = Padding(
                         padding: EdgeInsets.only(left: rowLeftInset),
@@ -3622,7 +3706,7 @@ class _ContentRowsState extends State<_ContentRows>
                           },
                         ),
                       );
-                      if (fullScreenRows) {
+                      if (lockRowHeight) {
                         return SizedBox(
                           height: rowExtents[rowIndex],
                           child: itemWidget,
@@ -3663,7 +3747,7 @@ class _ContentRowsState extends State<_ContentRows>
                         },
                       ),
                     );
-                    if (fullScreenRows) {
+                    if (lockRowHeight) {
                       return SizedBox(
                         height: rowExtents[rowIndex],
                         child: itemWidget,
@@ -5297,6 +5381,19 @@ class _LiveTvAction {
   final String destination;
 
   const _LiveTvAction(this.icon, this.label, this.destination);
+}
+
+class _OverlayTopClipper extends CustomClipper<Rect> {
+  const _OverlayTopClipper(this.top);
+
+  final double top;
+
+  @override
+  Rect getClip(Size size) =>
+      Rect.fromLTRB(0, top.clamp(0.0, size.height), size.width, size.height);
+
+  @override
+  bool shouldReclip(_OverlayTopClipper oldClipper) => oldClipper.top != top;
 }
 
 class _PreviewCardShell extends StatelessWidget {
