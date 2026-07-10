@@ -139,4 +139,50 @@ void main() {
       expect(requests, 1);
     });
   });
+
+  group('stopActiveEncodings', () {
+    test('issues DELETE /Videos/ActiveEncodings with both params', () async {
+      RequestOptions? captured;
+      final dio = Dio()
+        ..interceptors.add(
+          _FakeServer((options, h) {
+            captured = options;
+            h.resolve(Response(requestOptions: options, statusCode: 204));
+          }),
+        );
+
+      final api = EmbyPlaybackApi(dio, () => 'http://emby.local');
+      await api.stopActiveEncodings(
+        deviceId: 'device-1',
+        playSessionId: 'session-1',
+      );
+
+      expect(captured!.method, 'DELETE');
+      expect(captured!.path, '/Videos/ActiveEncodings');
+      expect(captured!.queryParameters, {
+        'deviceId': 'device-1',
+        'playSessionId': 'session-1',
+      });
+    });
+
+    test('omits playSessionId when null or empty', () async {
+      final queries = <Map<String, dynamic>>[];
+      final dio = Dio()
+        ..interceptors.add(
+          _FakeServer((options, h) {
+            queries.add(options.queryParameters);
+            h.resolve(Response(requestOptions: options, statusCode: 204));
+          }),
+        );
+
+      final api = EmbyPlaybackApi(dio, () => 'http://emby.local');
+      await api.stopActiveEncodings(deviceId: 'device-1');
+      await api.stopActiveEncodings(deviceId: 'device-1', playSessionId: '');
+
+      expect(queries, [
+        {'deviceId': 'device-1'},
+        {'deviceId': 'device-1'},
+      ]);
+    });
+  });
 }

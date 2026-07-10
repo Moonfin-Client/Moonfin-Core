@@ -413,6 +413,7 @@ class Media3VideoView(
     private data class TrackEntry(
         val group: TrackGroup,
         val trackIndex: Int,
+        val supported: Boolean,
     )
 
     private enum class ZoomMode(
@@ -707,7 +708,7 @@ class Media3VideoView(
 
         override fun onTracksChanged(tracks: androidx.media3.common.Tracks) {
             pendingSubtitleIndex?.let { index ->
-                if (selectTrack(C.TRACK_TYPE_TEXT, index)) {
+                if (selectTextTrack(index, pendingExternalSubtitleUrl)) {
                     selectedSubtitleCodec = pendingSubtitleCodec?.trim()?.lowercase()
                     selectedSubtitleIsExternal = pendingSubtitleIsExternal ?: false
                     selectedSubtitleIsBitmap = pendingSubtitleIsBitmap ?: false
@@ -721,10 +722,21 @@ class Media3VideoView(
                     pendingSubtitleIsExternal = null
                     pendingSubtitleIsBitmap = null
                     pendingExternalSubtitleUrl = null
+                } else if (index in 1..trackCount(C.TRACK_TYPE_TEXT)) {
+                    // The target track exists but can't be selected (for
+                    // example an unsupported codec), so retrying on the next
+                    // tracks change won't help.
+                    pendingSubtitleIndex = null
+                    pendingSubtitleCodec = null
+                    pendingSubtitleIsExternal = null
+                    pendingSubtitleIsBitmap = null
+                    pendingExternalSubtitleUrl = null
                 }
             }
             pendingAudioIndex?.let { index ->
-                if (selectTrack(C.TRACK_TYPE_AUDIO, index)) {
+                if (selectTrack(C.TRACK_TYPE_AUDIO, index) ||
+                    index in 1..trackCount(C.TRACK_TYPE_AUDIO)
+                ) {
                     pendingAudioIndex = null
                 }
             }
@@ -1256,7 +1268,7 @@ class Media3VideoView(
                     pendingSubtitleIsBitmap = isBitmap
                     pendingExternalSubtitleUrl = externalUrl
 
-                    val selected = selectTrack(C.TRACK_TYPE_TEXT, index)
+                    val selected = selectTextTrack(index, externalUrl)
                     if (selected) {
                         selectedSubtitleCodec = codec?.trim()?.lowercase()
                         selectedSubtitleIsExternal = isExternal
@@ -2830,7 +2842,14 @@ class Media3VideoView(
             return false
         }
         val entry = entries[oneBasedIndex - 1]
+        if (!entry.supported) {
+            return false
+        }
 
+        return applyTrackOverride(trackType, entry)
+    }
+
+    private fun applyTrackOverride(trackType: Int, entry: TrackEntry): Boolean {
         return try {
             val override = TrackSelectionOverride(entry.group, listOf(entry.trackIndex))
 
@@ -2851,6 +2870,41 @@ class Media3VideoView(
         }
     }
 
+    // Include unsupported tracks so 1-based positions stay aligned with the
+    // server's stream list (a track the decoder rejects must not shift every
+    // later position); selection of an unsupported entry is vetoed instead.
+    // Resolves an external file by the URL it was added from (through the
+    // deterministic SubtitleConfiguration id), which is immune to ExoPlayer
+    // group-ordering surprises, and falls back to positional selection.
+    private fun selectTextTrack(oneBasedIndex: Int, externalUrl: String?): Boolean {
+        if (!externalUrl.isNullOrBlank() && selectExternalSubtitleByUrl(externalUrl)) {
+            return true
+        }
+        return selectTrack(C.TRACK_TYPE_TEXT, oneBasedIndex)
+    }
+
+    private fun selectExternalSubtitleByUrl(url: String): Boolean {
+        val configIndex = externalSubtitleConfigurations.indexOfFirst {
+            it.uri.toString() == url
+        }
+        if (configIndex < 0) return false
+        val targetId = (EXTERNAL_SUBTITLE_ID_BASE + configIndex).toString()
+
+        for (group in player.currentTracks.groups) {
+            if (group.type != C.TRACK_TYPE_TEXT) continue
+            val mediaTrackGroup = group.mediaTrackGroup
+            for (index in 0 until group.length) {
+                if (group.getTrackFormat(index).id != targetId) continue
+                if (!group.isTrackSupported(index)) return false
+                return applyTrackOverride(
+                    C.TRACK_TYPE_TEXT,
+                    TrackEntry(mediaTrackGroup, index, supported = true),
+                )
+            }
+        }
+        return false
+    }
+
     private fun collectTracks(trackType: Int): List<TrackEntry> {
         val entries = mutableListOf<TrackEntry>()
 
@@ -2858,9 +2912,9 @@ class Media3VideoView(
             if (group.type != trackType) continue
             val mediaTrackGroup = group.mediaTrackGroup
             for (index in 0 until group.length) {
-                if (group.isTrackSupported(index)) {
-                    entries.add(TrackEntry(mediaTrackGroup, index))
-                }
+                entries.add(
+                    TrackEntry(mediaTrackGroup, index, group.isTrackSupported(index)),
+                )
             }
         }
 
@@ -2880,12 +2934,12 @@ class Media3VideoView(
         val options = mutableListOf<Map<String, Any?>>()
         var oneBasedIndex = 1
 
+        // Numbering must mirror collectTracks (all tracks, including
+        // unsupported ones) so a menu selection resolves to the same track.
         for (group in player.currentTracks.groups) {
             if (group.type != trackType) continue
 
             for (trackIndex in 0 until group.length) {
-                if (!group.isTrackSupported(trackIndex)) continue
-
                 val format = group.getTrackFormat(trackIndex)
                 options.add(
                     mapOf(
@@ -2894,6 +2948,7 @@ class Media3VideoView(
                         "selected" to group.isTrackSelected(trackIndex),
                         "language" to (format.language ?: ""),
                         "codec" to (format.codecs ?: format.sampleMimeType ?: ""),
+                        "supported" to group.isTrackSupported(trackIndex),
                     ),
                 )
                 oneBasedIndex += 1

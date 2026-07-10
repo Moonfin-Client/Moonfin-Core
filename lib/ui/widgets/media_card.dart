@@ -46,6 +46,7 @@ class MediaCard extends StatefulWidget {
   final bool suppressFocusGlow;
   final Color? titleColor;
   final Color? subtitleColor;
+  final bool isGenreFallback;
 
   /// Extra widgets layered over the poster image (inside its clip), e.g.
   /// format badges. Position each with [Positioned].
@@ -91,6 +92,7 @@ class MediaCard extends StatefulWidget {
     this.subtitleColor,
     this.imageOverlays = const [],
     this.overlayOccupiesTopLeft = false,
+    this.isGenreFallback = false,
   });
 
   static IconData iconForType(String? type) {
@@ -256,6 +258,7 @@ class _MediaCardState extends State<MediaCard> with FocusStateMixin {
                   seerrStatus: widget.seerrStatus,
                   imageOverlays: widget.imageOverlays,
                   overlayOccupiesTopLeft: widget.overlayOccupiesTopLeft,
+                  isGenreFallback: widget.isGenreFallback,
                 ),
                 if (widget.title != null) ...[
                   const SizedBox(height: 6),
@@ -482,6 +485,7 @@ class _CardImage extends StatelessWidget {
   final int? seerrStatus;
   final List<Widget> imageOverlays;
   final bool overlayOccupiesTopLeft;
+  final bool isGenreFallback;
 
   const _CardImage({
     this.imageUrl,
@@ -503,6 +507,7 @@ class _CardImage extends StatelessWidget {
     this.seerrStatus,
     this.imageOverlays = const [],
     this.overlayOccupiesTopLeft = false,
+    this.isGenreFallback = false,
   });
 
   @override
@@ -560,18 +565,50 @@ class _CardImage extends StatelessWidget {
                       ? const EdgeInsets.all(8.0)
                       : EdgeInsets.zero,
                   child: imageUrl != null
-                      ? BoundedNetworkImage(
-                          imageUrl: imageUrl!,
-                          fit: (itemType == 'Network' || itemType == 'Studio')
-                              ? BoxFit.contain
-                              : BoxFit.cover,
-                          fadeInDuration: Duration.zero,
-                          scale: isCircular ? 0.8 : 0.9,
-                          maxWidth: aspectRatio > 1.2 ? 960 : 640,
-                          errorBuilder: (_, _, _) => _PlaceholderIcon(
-                            itemType: itemType,
-                            title: title,
-                          ),
+                      ? Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            BoundedNetworkImage(
+                              imageUrl: imageUrl!,
+                              fit: (itemType == 'Network' || itemType == 'Studio')
+                                  ? BoxFit.contain
+                                  : BoxFit.cover,
+                              fadeInDuration: Duration.zero,
+                              scale: isCircular ? 0.8 : 0.9,
+                              maxWidth: aspectRatio > 1.2 ? 960 : 640,
+                              errorBuilder: (_, _, _) => _PlaceholderIcon(
+                                itemType: itemType,
+                                title: title,
+                              ),
+                            ),
+                            if (isGenreFallback) ...[
+                              Container(
+                                color: Colors.black.withValues(alpha: 0.45),
+                              ),
+                              if (title != null && title!.isNotEmpty)
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: Text(
+                                        title!.toUpperCase(),
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 2.5,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface
+                                              .withValues(alpha: 0.9),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ],
                         )
                       : _PlaceholderIcon(itemType: itemType, title: title),
                 ),
@@ -830,18 +867,19 @@ class _PlaceholderIcon extends StatelessWidget {
             ? Center(
                 child: Padding(
                   padding: const EdgeInsets.all(12.0),
-                  child: Text(
-                    title!.toUpperCase(),
-                    textAlign: TextAlign.center,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2.5,
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withValues(alpha: 0.5),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      title!.toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2.5,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
                     ),
                   ),
                 ),

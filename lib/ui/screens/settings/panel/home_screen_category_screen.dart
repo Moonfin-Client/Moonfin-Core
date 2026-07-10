@@ -109,6 +109,15 @@ class _HomeScreenCategoryScreenState extends State<_HomeScreenCategoryScreen> {
                 onTap: () =>
                     context.pushSettingsScreen(const HomeRowTogglesScreen()),
               ),
+              if (rowsStyle == HomeRowsStyle.v1)
+                _TvSettingsListTile(
+                  leading: const Icon(Icons.image_outlined),
+                  title: Text(l10n.perRowImageTypeSelection),
+                  subtitle: Text(l10n.configureImageTypeForEachRow),
+                  onTap: () => context.pushSettingsScreen(
+                    const HomeRowsImageTypeScreen(),
+                  ),
+                ),
               if (GetIt.instance<PluginSyncService>().seerrAvailable)
                 _TvSettingsListTile(
                   leading: const Icon(Icons.link),

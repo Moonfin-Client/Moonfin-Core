@@ -90,6 +90,18 @@ class EmbyPlaySessionService implements PlayerService {
     } catch (_) {}
   }
 
+  @override
+  Future<void> stopTranscoding(StreamResolutionResult resolution) async {
+    final playSessionId = resolution.playSessionId;
+    if (playSessionId == null || playSessionId.isEmpty) return;
+    try {
+      await _client.playbackApi.stopActiveEncodings(
+        deviceId: _client.deviceInfo.id,
+        playSessionId: playSessionId,
+      );
+    } catch (_) {}
+  }
+
   static PlayMethod _toPlayMethod(StreamPlayMethod method) => switch (method) {
     StreamPlayMethod.directPlay => PlayMethod.directPlay,
     StreamPlayMethod.directStream => PlayMethod.directStream,

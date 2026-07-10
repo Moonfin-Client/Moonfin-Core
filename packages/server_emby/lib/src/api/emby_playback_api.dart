@@ -31,6 +31,21 @@ class EmbyPlaybackApi implements PlaybackApi {
   }
 
   @override
+  Future<void> stopActiveEncodings({
+    required String deviceId,
+    String? playSessionId,
+  }) async {
+    await _dio.delete(
+      '/Videos/ActiveEncodings',
+      queryParameters: {
+        'deviceId': deviceId,
+        if (playSessionId != null && playSessionId.isNotEmpty)
+          'playSessionId': playSessionId,
+      },
+    );
+  }
+
+  @override
   Future<Map<String, dynamic>> getPlaybackInfo(
     String itemId, {
     Map<String, dynamic>? requestBody,

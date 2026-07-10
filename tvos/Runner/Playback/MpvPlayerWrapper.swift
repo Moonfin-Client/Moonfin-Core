@@ -58,6 +58,8 @@ struct PlayerTrack: Identifiable, Equatable {
     let isDefault: Bool
     let isForced: Bool
     let codec: String?
+    let isExternal: Bool
+    let externalFilename: String?
 
     init(
         id: Int32,
@@ -66,7 +68,9 @@ struct PlayerTrack: Identifiable, Equatable {
         title: String? = nil,
         isDefault: Bool = false,
         isForced: Bool = false,
-        codec: String? = nil
+        codec: String? = nil,
+        isExternal: Bool = false,
+        externalFilename: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -75,6 +79,8 @@ struct PlayerTrack: Identifiable, Equatable {
         self.isDefault = isDefault
         self.isForced = isForced
         self.codec = codec
+        self.isExternal = isExternal
+        self.externalFilename = externalFilename
     }
 }
 
@@ -598,9 +604,30 @@ class MpvPlayerWrapper: NSObject, ObservableObject {
         _ = engine?.command(["set", "audio-spdif", "ac3,eac3"])
     }
 
+    /// The Dart side sends 1-based positions into the stream's track list of
+    /// a type, not mpv track ids. Resolve the position against the live list,
+    /// since mpv ids can have gaps or a shifted origin. An empty list means
+    /// the refresh hasn't landed yet, where id == position has held.
+    private func trackId(atPosition trackIndex: Int32, in tracks: [PlayerTrack]) -> Int32? {
+        guard !tracks.isEmpty else { return trackIndex }
+        let position = Int(trackIndex) - 1
+        guard tracks.indices.contains(position) else { return nil }
+        return tracks[position].id
+    }
+
     func setAudioTrack(_ trackIndex: Int32) {
         if hybridAudioActive { return }
-        _ = engine?.setAudioTrack(trackIndex)
+        if trackIndex < 1 {
+            _ = engine?.setAudioTrack(trackIndex)
+            currentAudioTrackIndex = trackIndex
+            return
+        }
+        guard let aid = trackId(atPosition: trackIndex, in: audioTracks) else {
+            // The position doesn't exist in this stream, and selecting a
+            // nonexistent aid would mute playback.
+            return
+        }
+        _ = engine?.setAudioTrack(aid)
         currentAudioTrackIndex = trackIndex
     }
 
@@ -612,23 +639,53 @@ class MpvPlayerWrapper: NSObject, ObservableObject {
         subtitleDebug(
             "subtitle_mpv_set track_id=\(trackIndex) current_track_before=\(self.currentSubtitleTrackIndex) tracks=\(self.subtitleTrackDebugSummary(self.subtitleTracks))"
         )
-        _ = engine?.setSubtitleTrack(trackIndex)
-        _ = engine?.command(["set", "sub-visibility", "yes"])
-        currentSubtitleTrackIndex = trackIndex
-        subtitleDebug("subtitle_mpv_set_done track_id=\(trackIndex) current_track_after=\(self.currentSubtitleTrackIndex)")
+        guard let sid = trackId(atPosition: trackIndex, in: subtitleTracks) else {
+            subtitleDebug("subtitle_mpv_set track_id=\(trackIndex) skipped: only \(self.subtitleTracks.count) sub tracks")
+            return
+        }
+        applySubtitleSid(sid, requestedIndex: trackIndex)
+        subtitleDebug("subtitle_mpv_set_done track_id=\(trackIndex) sid=\(sid) current_track_after=\(self.currentSubtitleTrackIndex)")
     }
 
-    /// Selects a subtitle track by mpv sid. External tracks are already
-    /// sub-added unselected at playback start, so selecting one is just a sid
-    /// change. If the track is missing from mpv's list, fall back to adding
-    /// it with the select flag.
+    private func applySubtitleSid(_ sid: Int32, requestedIndex: Int32) {
+        _ = engine?.setSubtitleTrack(sid)
+        _ = engine?.command(["set", "sub-visibility", "yes"])
+        currentSubtitleTrackIndex = requestedIndex
+    }
+
+    /// Selects a subtitle track by its 1-based position. External tracks are
+    /// already sub-added unselected at playback start and are matched by the
+    /// URL they were loaded from, so a scrambled add order can't select the
+    /// wrong track. If the external file is missing from mpv's list entirely,
+    /// fall back to adding it with the select flag.
     func selectSubtitleTrack(_ trackIndex: Int32, externalUrl: String?) {
         if trackIndex < 0 {
             disableSubtitles()
             return
         }
-        guard let externalUrl,
-              !subtitleTracks.contains(where: { $0.id == trackIndex }),
+        guard let externalUrl else {
+            // Embedded selection: count only demuxed tracks so early-added
+            // externals can't shift the position.
+            let embedded = subtitleTracks.filter { !$0.isExternal }
+            if !embedded.isEmpty, embedded.indices.contains(Int(trackIndex) - 1) {
+                applySubtitleSid(embedded[Int(trackIndex) - 1].id, requestedIndex: trackIndex)
+                return
+            }
+            setSubtitleTrack(trackIndex)
+            return
+        }
+        if let match = subtitleTracks.first(where: { $0.isExternal && $0.externalFilename == externalUrl }) {
+            subtitleDebug(
+                "subtitle_mpv_select_external_by_url track_id=\(trackIndex) sid=\(match.id) tracks=\(self.subtitleTrackDebugSummary(self.subtitleTracks))"
+            )
+            applySubtitleSid(match.id, requestedIndex: trackIndex)
+            return
+        }
+        // No URL match. If some external is already loaded this is likely a
+        // filename normalization mismatch, so select positionally to avoid a
+        // duplicate add. Otherwise the intended file was never loaded.
+        let hasExternalTrack = subtitleTracks.contains { $0.isExternal }
+        guard Int(trackIndex) > subtitleTracks.count || !hasExternalTrack,
               let url = URL(string: externalUrl) else {
             setSubtitleTrack(trackIndex)
             return
@@ -1578,7 +1635,9 @@ class MpvPlayerWrapper: NSObject, ObservableObject {
             title: normalizedTrackText(track.title),
             isDefault: track.isDefault,
             isForced: track.isForced,
-            codec: normalizedTrackText(track.codec)
+            codec: normalizedTrackText(track.codec),
+            isExternal: track.isExternal,
+            externalFilename: normalizedTrackText(track.externalFilename)
         )
     }
 
@@ -2019,6 +2078,8 @@ private final class MPVEngine {
         var isDefault: Bool
         var isForced: Bool
         var codec: String?
+        var isExternal: Bool
+        var externalFilename: String?
     }
 
     enum EventID: Int32 {
@@ -2343,6 +2404,8 @@ private final class MPVEngine {
             let isDefault = getFlagProperty("\(prefix)/default") ?? false
             let isForced = getFlagProperty("\(prefix)/forced") ?? false
             let codec = getStringProperty("\(prefix)/codec")
+            let isExternal = getFlagProperty("\(prefix)/external") ?? false
+            let externalFilename = getStringProperty("\(prefix)/external-filename")
 
             tracks.append(
                 TrackInfo(
@@ -2352,7 +2415,9 @@ private final class MPVEngine {
                     language: language,
                     isDefault: isDefault,
                     isForced: isForced,
-                    codec: codec
+                    codec: codec,
+                    isExternal: isExternal,
+                    externalFilename: externalFilename
                 )
             )
         }

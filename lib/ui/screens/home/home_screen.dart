@@ -4282,6 +4282,11 @@ class _ContentRowsState extends State<_ContentRows>
                     itemType: item.type,
                     seerrMediaType: item.seerrMediaType,
                     seerrStatus: item.seerrStatus,
+                    isGenreFallback: (row.rowType == HomeRowType.genres && row.id == 'genres') &&
+                        (() {
+                          final primaryAr = item.rawData['PrimaryImageAspectRatio'] as num?;
+                          return primaryAr == null || primaryAr >= 1.0;
+                        })(),
                     focusColor: (row.rowType == HomeRowType.genres && row.id == 'genres')
                         ? ThemeRegistry.active.borders.focusBorder.color
                         : focusColor,
@@ -4746,6 +4751,14 @@ class _ContentRowsState extends State<_ContentRows>
       );
     }
 
+    if (item.type == 'Genre' || item.type == 'MusicGenre') {
+      final primaryAr = item.rawData['PrimaryImageAspectRatio'] as num?;
+      if (primaryAr == null || primaryAr >= 1.0) {
+        final repUrl = primary(item.primaryImageItemId, item.primaryImageTagField);
+        if (repUrl != null) return repUrl;
+      }
+    }
+
     return primary(item.id, item.primaryImageTag) ??
         primary(item.primaryImageItemId, item.primaryImageTagField) ??
         primary(item.parentPrimaryImageItemId, item.parentPrimaryImageTag);
@@ -4830,6 +4843,19 @@ class _ContentRowsState extends State<_ContentRows>
     double requestScale, {
     bool isPrefetch = false,
   }) {
+    if (item.type == 'Genre' || item.type == 'MusicGenre') {
+      final parentBackdropItemId = item.parentBackdropItemId;
+      final parentBackdropTags = item.parentBackdropImageTags;
+      final maxW = (height * 16 / 9 * requestScale).toInt();
+      if (parentBackdropItemId != null && parentBackdropTags.isNotEmpty) {
+        return imageApi.getBackdropImageUrl(
+          parentBackdropItemId,
+          maxWidth: maxW,
+          tag: parentBackdropTags.first,
+        );
+      }
+    }
+
     if (item.serverId == 'seerr') {
       if (!isPrefetch) {
         _fetchBackdropIfNeeded(item);

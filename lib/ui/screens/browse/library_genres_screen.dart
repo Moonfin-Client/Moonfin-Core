@@ -6,7 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:server_core/server_core.dart' hide ImageType;
 
+import '../../../data/models/aggregated_item.dart';
+import '../../../auth/repositories/user_repository.dart';
 import '../../../data/services/background_service.dart';
+import '../../../data/utils/genre_browse_utils.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../util/platform_detection.dart';
@@ -14,6 +17,7 @@ import '../../navigation/destinations.dart';
 import '../../widgets/focus/request_initial_focus.dart';
 import '../../widgets/fullscreen_backdrop_switcher.dart';
 import '../../widgets/genre_grid_card.dart';
+import '../../widgets/focus/context_menu_sheet.dart';
 import '../../../l10n/app_localizations.dart';
 
 Color get _navyBackground => AppColorScheme.background;
@@ -21,7 +25,7 @@ const _horizontalPadding = 60.0;
 const _mobileHorizontalPadding = 16.0;
 const _kCompactBreakpoint = 600.0;
 const _initialArtworkBatch = 12;
-const _backgroundArtworkConcurrency = 6;
+const _backgroundArtworkConcurrency = 4;
 
 bool _isCompact(BuildContext context) =>
     PlatformDetection.useMobileUi ||
@@ -85,27 +89,74 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
         sortBy: 'SortName',
         sortOrder: 'Ascending',
         recursive: true,
-        fields: 'ItemCounts',
+        fields: 'ItemCounts,PrimaryImageTag,ImageTags,BackdropImageTags,PrimaryImageAspectRatio',
       );
 
       final items = (response['Items'] as List?) ?? [];
-      _genres = items.map((g) {
+      final temp = items.map((g) {
         final data = g as Map<String, dynamic>;
-        return GenreCardData(
-          id: data['Id']?.toString() ?? '',
-          name: data['Name'] as String? ?? '',
-          itemCount:
-              data['ChildCount'] as int? ??
-              (data['MovieCount'] as int? ?? 0) +
-                  (data['SeriesCount'] as int? ?? 0) +
-                  (data['AlbumCount'] as int? ?? 0) +
-                  (data['SongCount'] as int? ?? 0) +
-                  (data['ArtistCount'] as int? ?? 0) +
-                  (data['MusicVideoCount'] as int? ?? 0),
+        final count = data['ChildCount'] as int? ??
+            (data['MovieCount'] as int? ?? 0) +
+                (data['SeriesCount'] as int? ?? 0) +
+                (data['AlbumCount'] as int? ?? 0) +
+                (data['SongCount'] as int? ?? 0) +
+                (data['ArtistCount'] as int? ?? 0) +
+                (data['MusicVideoCount'] as int? ?? 0);
+        return (
+          data: data,
+          itemCount: count,
         );
       }).where((genre) {
         if (_collectionType == 'music') return true;
         return genre.itemCount > 0;
+      }).toList();
+
+      _genres = temp.map((x) {
+        final data = x.data;
+        final primaryTag = data['PrimaryImageTag'] as String?;
+        final imageTags = data['ImageTags'] as Map?;
+        final primaryAr = data['PrimaryImageAspectRatio'] as num?;
+        final backdropTags = data['BackdropImageTags'] as List?;
+
+        final customThumb = imageTags?['Thumb'] as String?;
+        final hasCustomArtwork = (primaryTag != null && primaryAr != null && primaryAr < 1.0) ||
+            (customThumb != null && customThumb.isNotEmpty);
+
+        String? imageUrl;
+        String? backdropUrl;
+
+        if (hasCustomArtwork) {
+          if (customThumb != null && customThumb.isNotEmpty) {
+            imageUrl = _client.imageApi.getThumbImageUrl(
+              data['Id']?.toString() ?? '',
+              tag: customThumb,
+              maxWidth: _genreCardRequestMaxWidth(),
+            );
+          } else if (primaryTag != null) {
+            imageUrl = _client.imageApi.getPrimaryImageUrl(
+              data['Id']?.toString() ?? '',
+              tag: primaryTag,
+              maxWidth: _genreCardRequestMaxWidth(),
+            );
+          }
+
+          if (backdropTags != null && backdropTags.isNotEmpty) {
+            backdropUrl = _client.imageApi.getBackdropImageUrl(
+              data['Id']?.toString() ?? '',
+              tag: backdropTags.first.toString(),
+              maxWidth: 960,
+            );
+          }
+        }
+
+        return GenreCardData(
+          id: data['Id']?.toString() ?? '',
+          name: data['Name'] as String? ?? '',
+          itemCount: x.itemCount,
+          imageUrl: imageUrl,
+          backdropUrl: backdropUrl,
+          isGenreFallback: !hasCustomArtwork,
+        );
       }).toList();
     } catch (_) {}
 
@@ -153,9 +204,9 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
         sortBy: 'Random',
         sortOrder: 'Ascending',
         recursive: true,
-        limit: 6,
-        fields: 'PrimaryImageTag,ImageTags,BackdropImageTags',
-        enableImageTypes: 'Primary,Backdrop',
+        limit: 4,
+        fields: 'PrimaryImageTag,ImageTags,BackdropImageTags,PrimaryImageAspectRatio',
+        enableImageTypes: 'Primary,Backdrop,Thumb',
         imageTypeLimit: 1,
       );
       final items = (response['Items'] as List?) ?? [];
@@ -169,6 +220,8 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
         }
         return;
       }
+
+      genre.itemCount = totalCount;
 
       if (_collectionType == 'music') {
         for (final raw in items) {
@@ -200,99 +253,25 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
           if (!_disposed && mounted) setState(() {});
           return;
         }
-      }
+      } else {
+        if (genre.isGenreFallback) {
+          final maps = List<Map<String, dynamic>>.from(
+            items.whereType<Map>().map((item) => item.cast<String, dynamic>()),
+          );
+          maps.shuffle();
 
-      String? imageUrl;
-      for (final raw in items) {
-        final item = raw as Map<String, dynamic>;
-        final backdropUrl = _backdropUrlFor(item);
-        genre.backdropUrl ??= backdropUrl;
-        imageUrl ??= _imageUrlFor(item, _imageType, backdropUrl: backdropUrl);
-        if (imageUrl != null && genre.backdropUrl != null) {
-          break;
+          final (imageUrl, backdropUrl) = resolveGenreFallbackArtwork(
+            items: maps,
+            imageApi: _client.imageApi,
+            maxWidth: _genreCardRequestMaxWidth(),
+          );
+
+          genre.imageUrl = imageUrl;
+          genre.backdropUrl = backdropUrl;
         }
       }
-      genre.imageUrl = imageUrl ?? genre.backdropUrl;
       if (!_disposed && mounted) setState(() {});
     } catch (_) {}
-  }
-
-  String? _tagForType(Map<String, dynamic> item, String imageType) {
-    final tags = item['ImageTags'];
-    if (tags is! Map) return null;
-    return tags[imageType] as String?;
-  }
-
-  String? _backdropUrlFor(Map<String, dynamic> item) {
-    final tags = (item['BackdropImageTags'] as List?) ?? const [];
-    if (tags.isEmpty) {
-      return null;
-    }
-    return _client.imageApi.getBackdropImageUrl(
-      item['Id']?.toString() ?? '',
-      maxWidth: BackgroundService.backdropMaxWidth,
-      tag: tags.first as String,
-    );
-  }
-
-  String? _imageUrlFor(
-    Map<String, dynamic> item,
-    ImageType imageType, {
-    String? backdropUrl,
-  }) {
-    final itemId = item['Id']?.toString() ?? '';
-    final primaryTag = item['PrimaryImageTag'] as String?;
-    final thumbTag = _tagForType(item, 'Thumb');
-    final bannerTag = _tagForType(item, 'Banner');
-    final maxWidth = _genreCardRequestMaxWidth();
-    final resolvedBackdropUrl = backdropUrl ?? _backdropUrlFor(item);
-
-    return switch (imageType) {
-      ImageType.poster =>
-        primaryTag != null
-            ? _client.imageApi.getPrimaryImageUrl(
-                itemId,
-                tag: primaryTag,
-                maxWidth: maxWidth,
-              )
-            : thumbTag != null
-            ? _client.imageApi.getThumbImageUrl(
-                itemId,
-                tag: thumbTag,
-                maxWidth: maxWidth,
-              )
-            : resolvedBackdropUrl,
-      ImageType.thumb =>
-        thumbTag != null
-            ? _client.imageApi.getThumbImageUrl(
-                itemId,
-                tag: thumbTag,
-                maxWidth: maxWidth,
-              )
-            : resolvedBackdropUrl ??
-                  (primaryTag != null
-                      ? _client.imageApi.getPrimaryImageUrl(
-                          itemId,
-                          tag: primaryTag,
-                          maxWidth: maxWidth,
-                        )
-                      : null),
-      ImageType.banner =>
-        bannerTag != null
-            ? _client.imageApi.getBannerImageUrl(
-                itemId,
-                tag: bannerTag,
-                maxWidth: maxWidth,
-              )
-            : resolvedBackdropUrl ??
-                  (primaryTag != null
-                      ? _client.imageApi.getPrimaryImageUrl(
-                          itemId,
-                          tag: primaryTag,
-                          maxWidth: maxWidth,
-                        )
-                      : null),
-    };
   }
 
   int _genreCardRequestMaxWidth() {
@@ -453,6 +432,19 @@ class _LibraryGenresScreenState extends State<LibraryGenresScreen> {
                     includeType: _includeType,
                   ),
                 );
+              },
+              onLongPress: () {
+                final serverId = GetIt.instance<UserRepository>().currentUser?.serverId ?? '';
+                final aggregatedItem = AggregatedItem(
+                  id: genre.id,
+                  serverId: serverId,
+                  rawData: {
+                    'Type': 'Genre',
+                    'Name': genre.name,
+                    'Id': genre.id,
+                  },
+                );
+                showContextMenu(context, aggregatedItem, onChanged: () => setState(() {}));
               },
               onHover: isMobile
                   ? null

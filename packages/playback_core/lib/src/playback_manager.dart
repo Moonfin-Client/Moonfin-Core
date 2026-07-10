@@ -7,6 +7,7 @@ import 'player_service.dart';
 import 'player_state.dart';
 import 'queue_service.dart';
 import 'stream_resolution_result.dart';
+import 'track_ordinal_mapper.dart';
 
 class PlaybackManager implements AudioOwnable {
   static const _mediaReadyPollInterval = Duration(milliseconds: 100);
@@ -90,6 +91,10 @@ class PlaybackManager implements AudioOwnable {
   bool _forceExternalChooserOnce = false;
   bool _unsupportedAudioRecoveryInFlight = false;
   bool _suppressNextGenericBackendError = false;
+  bool _teardownForReResolve = false;
+  DateTime? _lastTrackSwitchReResolveAt;
+  bool _transcodeSwitchRecoveryConsumed = false;
+  Future<void>? _reResolveQueue;
   final _backendChangedController = StreamController<PlayerBackend>.broadcast();
   final _bringupStateController =
       StreamController<PlaybackBringupState>.broadcast();
@@ -660,6 +665,12 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
 
+    // The old player is being stopped for a track-switch restart; its dying
+    // error events are noise (the new stream's own failures still surface).
+    if (_teardownForReResolve) {
+      return;
+    }
+
     final eventType = event['event']?.toString();
     final kind = event['kind']?.toString();
     final recoverable = event['recoverable'] == true;
@@ -681,9 +692,37 @@ class PlaybackManager implements AudioOwnable {
       );
     }
 
+    // A transcoded stream that errors right after a user track switch gets
+    // one silent re-resolve: the old encoder teardown can transiently break
+    // the fresh manifest (shared hw-encoder slots, temp segment reaping).
+    // The consumed flag is reset only by the next user-initiated re-resolve,
+    // so this can never loop.
+    bool canRetryTranscodeSwitch() =>
+        resolution != null &&
+        resolution.playMethod == StreamPlayMethod.transcode &&
+        !_isOfflinePlayback &&
+        !_waitingForMedia &&
+        !_transcodeSwitchRecoveryConsumed &&
+        _lastTrackSwitchReResolveAt != null &&
+        DateTime.now().difference(_lastTrackSwitchReResolveAt!) <
+            const Duration(seconds: 20);
+
+    Future<void> retryTranscodeSwitch() async {
+      _transcodeSwitchRecoveryConsumed = true;
+      _suppressNextGenericBackendError = true;
+      try {
+        await _reResolveAtCurrentPosition(isErrorRecovery: true);
+      } catch (_) {}
+    }
+
     if (eventType == 'error') {
       if (_suppressNextGenericBackendError) {
         _suppressNextGenericBackendError = false;
+        return;
+      }
+
+      if (canRetryTranscodeSwitch()) {
+        await retryTranscodeSwitch();
         return;
       }
 
@@ -696,6 +735,10 @@ class PlaybackManager implements AudioOwnable {
     }
 
     if (!recoverable) {
+      if (canRetryTranscodeSwitch()) {
+        await retryTranscodeSwitch();
+        return;
+      }
       _suppressNextGenericBackendError = true;
       emitFailedBringupState('Playback failed.');
       return;
@@ -1629,7 +1672,20 @@ class PlaybackManager implements AudioOwnable {
     state.setShuffled(queueService.isShuffled);
   }
 
-  Future<void> changeAudioTrack(int streamIndex) async {
+  /// Runs a track change with progress reporting paused, so a progress tick
+  /// can't report the new selection against the old play session.
+  Future<void> _withProgressPaused(Future<void> Function() action) async {
+    _stopProgressTimer();
+    try {
+      await action();
+    } finally {
+      if (_progressTimer == null && _currentResolution != null) {
+        _startProgressTimer();
+      }
+    }
+  }
+
+  Future<void> changeAudioTrack(int streamIndex) => _withProgressPaused(() async {
     _audioStreamIndex = streamIndex;
     _audioSelectionExplicit = true;
 
@@ -1660,7 +1716,7 @@ class PlaybackManager implements AudioOwnable {
     } else {
       await _reResolveAtCurrentPosition();
     }
-  }
+  });
 
   static const _bitmapSubCodecs = {
     'pgs',
@@ -1810,7 +1866,10 @@ class PlaybackManager implements AudioOwnable {
     _subtitleRendererMode = SubtitleRendererMode.native;
   }
 
-  Future<void> changeSubtitleTrack(int streamIndex) async {
+  Future<void> changeSubtitleTrack(int streamIndex) =>
+      _withProgressPaused(() => _changeSubtitleTrackInner(streamIndex));
+
+  Future<void> _changeSubtitleTrackInner(int streamIndex) async {
     final previousSubtitleStreamIndex = _subtitleStreamIndex;
     final isBitmap = _isSubtitleBitmap(streamIndex);
     _subtitleStreamIndex = streamIndex;
@@ -1851,7 +1910,7 @@ class PlaybackManager implements AudioOwnable {
 
     if (_currentResolution?.playMethod == StreamPlayMethod.directPlay ||
         _isOfflinePlayback) {
-      final isExternal = _isSubtitleExternal(streamIndex);
+      final isExternal = _isSubtitleDeliveredExternally(streamIndex);
       if (isBitmap && !(_backend?.canRenderBitmapSubtitles ?? false)) {
         await _backend?.disableSubtitleTrack();
         if (!_isOfflinePlayback) {
@@ -1902,32 +1961,22 @@ class PlaybackManager implements AudioOwnable {
             mpvId,
             isBitmapSubtitle: isBitmap,
             subtitleCodec: _subtitleCodecForStream(streamIndex),
-            isExternalSubtitle: _isSubtitleExternal(streamIndex),
+            isExternalSubtitle: _isSubtitleDeliveredExternally(streamIndex),
             externalSubtitleUrl: _externalSubtitleUrlForStream(streamIndex),
           );
           return;
         }
       }
 
-      final externalSubs = _currentResolution!.externalSubtitles;
-      final idx = externalSubs.indexWhere((s) => s.streamIndex == streamIndex);
-      if (idx >= 0) {
-        final selectedExternal = externalSubs[idx];
-        await _backend?.setSubtitleTrack(
-          idx + 1,
-          subtitleCodec: selectedExternal.codec,
-          isExternalSubtitle: true,
-          externalSubtitleUrl: _ensureSubtitleApiKey(selectedExternal.deliveryUrl),
-        );
-      } else {
-        await _reResolveAtCurrentPosition(forceTranscode: true);
-      }
+      // Not selectable in the current stream (e.g. embedded sub the server
+      // didn't re-deliver externally): restart with the sub burned in.
+      await _reResolveAtCurrentPosition(forceTranscode: true);
     } else {
       await _reResolveAtCurrentPosition();
     }
   }
 
-  Future<void> disableSubtitles() async {
+  Future<void> disableSubtitles() => _withProgressPaused(() async {
     final previousWasBurned =
         _currentResolution?.streamUrl.toLowerCase().contains('subtitlemethod=encode') ?? false;
     _subtitleStreamIndex = -1;
@@ -1940,15 +1989,38 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
     await _backend?.disableSubtitleTrack();
-  }
+  });
 
   Future<void> changeBitrate(int? mbps) async {
     _maxBitrateOverrideMbps = mbps;
     await _reResolveAtCurrentPosition(forceTranscode: mbps != null);
   }
 
+  /// Serializes re-resolves so rapid track switches can't tear down the same
+  /// session twice or race two restarts.
   Future<void> _reResolveAtCurrentPosition({
     bool forceTranscode = false,
+    bool isErrorRecovery = false,
+  }) {
+    final previous = _reResolveQueue;
+    final run = () async {
+      if (previous != null) {
+        try {
+          await previous;
+        } catch (_) {}
+      }
+      await _reResolveNow(
+        forceTranscode: forceTranscode,
+        isErrorRecovery: isErrorRecovery,
+      );
+    }();
+    _reResolveQueue = run;
+    return run;
+  }
+
+  Future<void> _reResolveNow({
+    required bool forceTranscode,
+    required bool isErrorRecovery,
   }) async {
     final backendPos = _backend?.position ?? Duration.zero;
     final currentPos = Duration(
@@ -1961,11 +2033,43 @@ class PlaybackManager implements AudioOwnable {
     _stopProgressTimer();
     final item = queueService.currentItem ?? _lastPlaybackItem;
     final resolution = _currentResolution ?? _lastPlaybackResolution;
-    if (item != null && resolution != null) {
-      _service?.onPlaybackStop(item, resolution, currentPos);
-    }
     _currentResolution = null;
-    await _backend?.stop();
+
+    // Stop the backend before tearing down the server session so the old
+    // player can't fetch segments of a killed transcode and surface a
+    // spurious source error. The flag stays set through the whole teardown
+    // because the dying player's error events arrive asynchronously.
+    _teardownForReResolve = true;
+    try {
+      await _backend?.stop();
+    } catch (_) {}
+
+    if (item != null && resolution != null) {
+      final stopReport = _service?.onPlaybackStop(item, resolution, currentPos);
+      if (resolution.playMethod == StreamPlayMethod.directPlay) {
+        // No server-side job to tear down, so don't delay the restart.
+        if (stopReport != null) {
+          unawaited(stopReport.catchError((_) {}));
+        }
+      } else {
+        // The server kills the old encoder job on the stop report. The
+        // ActiveEncodings delete is the deterministic backstop, since the
+        // stop report is skipped for audiobooks and can fail transiently.
+        try {
+          await Future.wait([
+            if (stopReport != null) stopReport,
+            if (_service != null) _service!.stopTranscoding(resolution),
+          ]).timeout(const Duration(seconds: 3));
+        } catch (_) {}
+      }
+    }
+
+    if (!isErrorRecovery) {
+      _lastTrackSwitchReResolveAt = DateTime.now();
+      _transcodeSwitchRecoveryConsumed = false;
+    }
+
+    _teardownForReResolve = false;
     await _playCurrentItem(
       startPosition: currentPos,
       enableDirectPlay: !forceTranscode,
@@ -1981,7 +2085,10 @@ class PlaybackManager implements AudioOwnable {
     final shouldRestore =
         restorePosition != null && restorePosition > Duration.zero;
 
-    if (_audioStreamIndex != null) {
+    // Transcoded/remuxed streams carry only the server-selected audio track
+    // (AudioStreamIndex is baked into the stream URL), so applying the
+    // Jellyfin ordinal as a player track id would select a nonexistent track.
+    if (_audioStreamIndex != null && !_embeddedTracksStripped) {
       final mpvId = _mpvTrackIdForStream(_audioStreamIndex!, 'Audio');
       if (mpvId != null && mpvId > 0) {
         await _backend?.setAudioTrack(mpvId);
@@ -2013,7 +2120,9 @@ class PlaybackManager implements AudioOwnable {
             mpvId,
             isBitmapSubtitle: isBitmap,
             subtitleCodec: _subtitleCodecForStream(_subtitleStreamIndex!),
-            isExternalSubtitle: _isSubtitleExternal(_subtitleStreamIndex!),
+            isExternalSubtitle: _isSubtitleDeliveredExternally(
+              _subtitleStreamIndex!,
+            ),
             externalSubtitleUrl: _externalSubtitleUrlForStream(
               _subtitleStreamIndex!,
             ),
@@ -2075,22 +2184,20 @@ class PlaybackManager implements AudioOwnable {
   ) {
     _waitForTracksAndExternals().then((_) async {
       if (sessionToken != _playbackSessionToken) return;
-      if (_subtitleStreamIndex == null || _subtitleStreamIndex! < 0) return;
-      final externalSubs = resolution.externalSubtitles;
-      final idx = externalSubs.indexWhere(
-        (s) => s.streamIndex == _subtitleStreamIndex,
+      final streamIndex = _subtitleStreamIndex;
+      if (streamIndex == null || streamIndex < 0) return;
+      if (!_isSubtitleDeliveredExternally(streamIndex)) return;
+      final mpvId = _mpvTrackIdForStream(streamIndex, 'Subtitle');
+      if (mpvId == null) return;
+      await _applySubtitleRendererModeForStream(streamIndex);
+      if (sessionToken != _playbackSessionToken) return;
+      await _backend?.setSubtitleTrack(
+        mpvId,
+        isBitmapSubtitle: _isSubtitleBitmap(streamIndex),
+        subtitleCodec: _subtitleCodecForStream(streamIndex),
+        isExternalSubtitle: true,
+        externalSubtitleUrl: _externalSubtitleUrlForStream(streamIndex),
       );
-      if (idx >= 0) {
-        await _applySubtitleRendererModeForStream(_subtitleStreamIndex!);
-        if (sessionToken != _playbackSessionToken) return;
-        final selectedExternal = externalSubs[idx];
-        await _backend?.setSubtitleTrack(
-          idx + 1,
-          subtitleCodec: selectedExternal.codec,
-          isExternalSubtitle: true,
-          externalSubtitleUrl: _ensureSubtitleApiKey(selectedExternal.deliveryUrl),
-        );
-      }
     });
   }
 
@@ -2106,13 +2213,19 @@ class PlaybackManager implements AudioOwnable {
       return;
     }
 
-    final embeddedSubCount = _currentMediaStreams
-        .where((s) => s['Type'] == 'Subtitle' && s['IsExternal'] != true)
-        .length;
+    final embeddedSubCount = TrackOrdinalMapper.embeddedSubtitleCount(
+      mediaStreams: _currentMediaStreams,
+      embeddedStripped: _embeddedTracksStripped,
+    );
+    final subsToAdd = TrackOrdinalMapper.effectiveExternalSubtitles(
+      mediaStreams: _currentMediaStreams,
+      externalSubtitles: resolution.externalSubtitles,
+      embeddedStripped: _embeddedTracksStripped,
+    );
 
     backend.waitForEmbeddedSubtitleCount(embeddedSubCount).then((_) async {
       if (sessionToken == _playbackSessionToken) {
-        for (final sub in resolution.externalSubtitles) {
+        for (final sub in subsToAdd) {
           try {
             await backend.addExternalSubtitle(
               _ensureSubtitleApiKey(sub.deliveryUrl),
@@ -2133,98 +2246,50 @@ class PlaybackManager implements AudioOwnable {
     await _externalSubsLoaded;
   }
 
-  int? _mpvTrackIdForStream(int streamIndex, String type) {
-    final streams = _currentMediaStreams;
-    if (streams.isEmpty) return null;
-    final typeStreams = streams.where((s) => s['Type'] == type).toList();
-    if (typeStreams.isEmpty) return null;
+  /// Transcoded/remuxed streams don't carry the source's embedded subtitle
+  /// tracks (and carry only the server-selected audio track).
+  bool get _embeddedTracksStripped =>
+      _currentResolution?.playMethod == StreamPlayMethod.transcode ||
+      _currentResolution?.playMethod == StreamPlayMethod.directStream;
 
-    if (type == 'Subtitle') {
-      final targetIdx = typeStreams.indexWhere(
-        (s) => s['Index'] == streamIndex,
+  /// The external subtitles that actually get sub-added, in add order.
+  List<ExternalSubtitle> get _effectiveExternalSubtitles {
+    final resolution = _currentResolution;
+    if (resolution == null) return const [];
+    return TrackOrdinalMapper.effectiveExternalSubtitles(
+      mediaStreams: _currentMediaStreams,
+      externalSubtitles: resolution.externalSubtitles,
+      embeddedStripped: _embeddedTracksStripped,
+    );
+  }
+
+  /// Whether the player sees this subtitle stream as a sub-added external
+  /// file (includes embedded streams re-delivered externally under
+  /// transcode/directStream), as opposed to a demuxed embedded track.
+  bool _isSubtitleDeliveredExternally(int streamIndex) {
+    if (_currentResolution == null) return _isSubtitleExternal(streamIndex);
+    return _effectiveExternalSubtitles.any(
+      (s) => s.streamIndex == streamIndex,
+    );
+  }
+
+  int? _mpvTrackIdForStream(int streamIndex, String type) =>
+      TrackOrdinalMapper.mpvTrackIdForStream(
+        streamIndex: streamIndex,
+        type: type,
+        mediaStreams: _currentMediaStreams,
+        externalSubtitles: _currentResolution?.externalSubtitles,
+        embeddedStripped: _embeddedTracksStripped,
       );
-      if (targetIdx < 0) return null;
-      final target = typeStreams[targetIdx];
-      final isExternal = target['IsExternal'] == true;
 
-      // Transcoded/remuxed streams don't carry the source's embedded
-      // subtitle tracks, so the player only sees the sub-added externals.
-      final embeddedStripped =
-          _currentResolution?.playMethod == StreamPlayMethod.transcode ||
-          _currentResolution?.playMethod == StreamPlayMethod.directStream;
-
-      if (isExternal) {
-        final embeddedCount = embeddedStripped
-            ? 0
-            : typeStreams.where((s) => s['IsExternal'] != true).length;
-        final externalStreams = typeStreams
-            .where((s) => s['IsExternal'] == true)
-            .toList();
-        final externalPos = externalStreams.indexWhere(
-          (s) => s['Index'] == streamIndex,
-        );
-        if (externalPos < 0) return null;
-        return embeddedCount + externalPos + 1;
-      } else {
-        if (embeddedStripped) return null;
-        final embeddedStreams = typeStreams
-            .where((s) => s['IsExternal'] != true)
-            .toList();
-        final embeddedPos = embeddedStreams.indexWhere(
-          (s) => s['Index'] == streamIndex,
-        );
-        if (embeddedPos < 0) return null;
-        return embeddedPos + 1;
-      }
-    }
-
-    final positional = typeStreams.indexWhere((s) => s['Index'] == streamIndex);
-    if (positional < 0) return null;
-    return positional + 1;
-  }
-
-  int? _streamIndexForMpvTrackId(int mpvTrackId, String type) {
-    final streams = _currentMediaStreams;
-    if (streams.isEmpty) return null;
-    final typeStreams = streams.where((s) => s['Type'] == type).toList();
-    if (typeStreams.isEmpty) return null;
-
-    if (type == 'Subtitle') {
-      // Mirror _mpvTrackIdForStream: transcoded/remuxed streams don't carry
-      // the source's embedded subtitle tracks.
-      final embeddedStripped =
-          _currentResolution?.playMethod == StreamPlayMethod.transcode ||
-          _currentResolution?.playMethod == StreamPlayMethod.directStream;
-      final embeddedCount = embeddedStripped
-          ? 0
-          : typeStreams.where((s) => s['IsExternal'] != true).length;
-
-      if (mpvTrackId > embeddedCount) {
-        final externalPos = mpvTrackId - embeddedCount - 1;
-        final externalStreams = typeStreams
-            .where((s) => s['IsExternal'] == true)
-            .toList();
-        if (externalPos >= 0 && externalPos < externalStreams.length) {
-          return externalStreams[externalPos]['Index'] as int?;
-        }
-      } else {
-        final embeddedStreams = typeStreams
-            .where((s) => s['IsExternal'] != true)
-            .toList();
-        final embeddedPos = mpvTrackId - 1;
-        if (embeddedPos >= 0 && embeddedPos < embeddedStreams.length) {
-          return embeddedStreams[embeddedPos]['Index'] as int?;
-        }
-      }
-      return null;
-    }
-
-    final positional = mpvTrackId - 1;
-    if (positional >= 0 && positional < typeStreams.length) {
-      return typeStreams[positional]['Index'] as int?;
-    }
-    return null;
-  }
+  int? _streamIndexForMpvTrackId(int mpvTrackId, String type) =>
+      TrackOrdinalMapper.streamIndexForMpvTrackId(
+        mpvTrackId: mpvTrackId,
+        type: type,
+        mediaStreams: _currentMediaStreams,
+        externalSubtitles: _currentResolution?.externalSubtitles,
+        embeddedStripped: _embeddedTracksStripped,
+      );
 
   Future<void> playOffline(
     String url, {

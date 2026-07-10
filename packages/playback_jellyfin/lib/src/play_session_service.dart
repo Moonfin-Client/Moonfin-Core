@@ -96,6 +96,18 @@ class PlaySessionService implements PlayerService {
     } catch (_) {}
   }
 
+  @override
+  Future<void> stopTranscoding(StreamResolutionResult resolution) async {
+    final playSessionId = resolution.playSessionId;
+    if (playSessionId == null || playSessionId.isEmpty) return;
+    try {
+      await _client.playbackApi.stopActiveEncodings(
+        deviceId: _client.deviceInfo.id,
+        playSessionId: playSessionId,
+      );
+    } catch (_) {}
+  }
+
   void _armExitBeacon(
     dynamic mediaItem,
     StreamResolutionResult resolution,

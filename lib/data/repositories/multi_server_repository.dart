@@ -49,7 +49,7 @@ class MultiServerRepository {
       'ParentIndexNumber,IndexNumber,Status,ImageTags,BackdropImageTags,'
       'ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,'
       'ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,'
-      'ParentLogoItemId,ParentLogoImageTag';
+      'ParentLogoItemId,ParentLogoImageTag,PrimaryImageTag,PrimaryImageAspectRatio';
   // Cap image tags to one per type (server returns all by default)
   static const _imageTypes = 'Primary,Backdrop,Thumb';
   static const _imageTypeLimit = 1;
@@ -448,7 +448,7 @@ class MultiServerRepository {
             sortOrder: sortOrder,
             recursive: true,
             limit: perServer,
-            fields: 'ItemCounts',
+            fields: 'ItemCounts,PrimaryImageAspectRatio',
             includeItemTypes: browseItemTypes,
           );
           final items = await _buildBrowsableGenresForSession(
@@ -1050,24 +1050,26 @@ class MultiServerRepository {
         genreIds: [genreId],
         includeItemTypes: includeItemTypes,
         excludeItemTypes: const ['Episode'],
-        sortBy: _defaultSortBy,
-        sortOrder: _defaultSortOrder,
+        sortBy: 'Random',
+        sortOrder: 'Ascending',
         recursive: true,
-        limit: 1,
+        limit: 10,
         fields: _fields,
         enableImageTypes: _imageTypes,
         imageTypeLimit: _imageTypeLimit,
       );
 
       final items = (response['Items'] as List?) ?? const [];
-      if (items.isEmpty) {
+      final maps = List<Map<String, dynamic>>.from(
+        items.whereType<Map>().map((item) => item.cast<String, dynamic>()),
+      );
+      if (maps.isEmpty) {
         return null;
       }
 
-      final representative = items.first;
-      if (representative is! Map) {
-        return null;
-      }
+      maps.shuffle();
+      final representative = maps[0];
+      final backdropRepresentative = maps.length > 1 ? maps[1] : null;
 
       final rawTotalCount = response['TotalRecordCount'];
       final totalCount = rawTotalCount is num
@@ -1082,8 +1084,9 @@ class MultiServerRepository {
 
       final merged = mergeGenreWithRepresentativeItem(
         genreData: genreData,
-        representativeItem: representative.cast<String, dynamic>(),
+        representativeItem: representative,
         itemCount: totalCount,
+        backdropRepresentativeItem: backdropRepresentative,
       );
       return AggregatedItem(
         id: merged['Id']?.toString() ?? '',

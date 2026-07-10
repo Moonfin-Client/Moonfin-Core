@@ -6,6 +6,7 @@ import '../../preference/user_preferences.dart';
 import 'bounded_network_image.dart';
 import 'marquee_text.dart';
 import '../../util/focus/dpad_keys.dart';
+import '../../util/focus/key_event_utils.dart';
 import '../mixins/focus_state_mixin.dart';
 
 class GenreCardData {
@@ -14,6 +15,7 @@ class GenreCardData {
   int itemCount;
   String? imageUrl;
   String? backdropUrl;
+  bool isGenreFallback;
 
   GenreCardData({
     required this.id,
@@ -21,12 +23,14 @@ class GenreCardData {
     required this.itemCount,
     this.imageUrl,
     this.backdropUrl,
+    this.isGenreFallback = false,
   });
 }
 
 class GenreGridCard extends StatefulWidget {
   final GenreCardData genre;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
   final ValueChanged<bool>? onHover;
   final bool centerTitle;
   final Color? focusColor;
@@ -36,6 +40,7 @@ class GenreGridCard extends StatefulWidget {
     super.key,
     required this.genre,
     required this.onTap,
+    this.onLongPress,
     this.onHover,
     this.centerTitle = false,
     this.focusColor,
@@ -47,6 +52,14 @@ class GenreGridCard extends StatefulWidget {
 }
 
 class _GenreGridCardState extends State<GenreGridCard> with FocusStateMixin {
+  final _selectKeyHandler = LongPressSelectKeyHandler();
+
+  @override
+  void dispose() {
+    _selectKeyHandler.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final borders = ThemeRegistry.active.borders;
@@ -82,14 +95,28 @@ class _GenreGridCardState extends State<GenreGridCard> with FocusStateMixin {
       child: Focus(
         onFocusChange: (focused) => setFocused(focused),
         onKeyEvent: (_, event) {
-          if (isActivateKey(event)) {
+          if (widget.onLongPress != null) {
+            final handlerResult = _selectKeyHandler.handleKeyEvent(
+              event,
+              onTap: widget.onTap,
+              onLongPress: () => widget.onLongPress?.call(),
+            );
+            if (handlerResult != KeyEventResult.ignored) {
+              return handlerResult;
+            }
+          } else if (isActivateKey(event)) {
             widget.onTap();
             return KeyEventResult.handled;
           }
           return KeyEventResult.ignored;
         },
         child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: widget.onTap,
+          onLongPressStart: widget.onLongPress != null
+              ? (_) => widget.onLongPress?.call()
+              : null,
+          onSecondaryTap: widget.onLongPress,
           child: AnimatedScale(
             scale: widget.cardFocusExpansion && showFocusBorder ? 1.05 : 1.0,
             duration: const Duration(milliseconds: 150),

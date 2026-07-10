@@ -29,5 +29,9 @@ abstract class PlayerService {
   /// directly (so only one upstream connection remains). Default: no-op.
   Future<void> closeLiveStream(String liveStreamId) async {}
 
+  /// Kills the server-side transcode job for [resolution]'s play session so a
+  /// track-switch restart never races the old encoder. Default: no-op.
+  Future<void> stopTranscoding(StreamResolutionResult resolution) async {}
+
   void dispose();
 }

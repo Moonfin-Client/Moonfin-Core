@@ -253,27 +253,33 @@ class MediaKitPlayerBackend extends PlayerBackend {
     }
   }
 
-  List<int> _extractSubtitleTrackIds(String? trackListRaw) {
-    if (trackListRaw == null || trackListRaw.isEmpty) return const <int>[];
+  /// A track entry from mpv's `track-list` property, in list order.
+  /// [externalFilename] is the URL/path a sub-added external track was
+  /// loaded from (null for demuxed embedded tracks).
+  static List<({int id, bool external, String? externalFilename})>
+      _extractTrackEntries(String? trackListRaw, {required String type}) {
+    if (trackListRaw == null || trackListRaw.isEmpty) return const [];
     try {
       final decoded = jsonDecode(trackListRaw);
-      if (decoded is! List) return const <int>[];
-      final ids = <int>[];
+      if (decoded is! List) return const [];
+      final entries = <({int id, bool external, String? externalFilename})>[];
       for (final item in decoded) {
         if (item is! Map) continue;
-        final type = item['type']?.toString();
-        if (type != 'sub') continue;
+        if (item['type']?.toString() != type) continue;
         final idValue = item['id'];
         final parsed = idValue is int
             ? idValue
             : int.tryParse(idValue?.toString() ?? '');
-        if (parsed != null && parsed > 0) {
-          ids.add(parsed);
-        }
+        if (parsed == null || parsed <= 0) continue;
+        entries.add((
+          id: parsed,
+          external: item['external'] == true,
+          externalFilename: item['external-filename']?.toString(),
+        ));
       }
-      return ids;
+      return entries;
     } catch (_) {
-      return const <int>[];
+      return const [];
     }
   }
 
@@ -1218,12 +1224,26 @@ class MediaKitPlayerBackend extends PlayerBackend {
   @override
   Future<void> setAudioTrack(int mpvTrackId) async {
     if (mpvTrackId < 1) return;
-    final id = mpvTrackId.toString();
     try {
-      final tracks = _player.state.tracks.audio;
+      final native = _player.platform as NativePlayer;
+      // The incoming value is a 1-based position among the stream's audio
+      // tracks, not an mpv aid, so resolve it against the live track list
+      // like the subtitle path does (aids can have gaps or a shifted origin).
+      final trackList = await _tryNativeGetProperty(native, 'track-list');
+      final audioEntries = _extractTrackEntries(trackList, type: 'audio');
+      if (audioEntries.isNotEmpty && mpvTrackId > audioEntries.length) {
+        // The position doesn't exist in this stream (e.g. a stale Jellyfin
+        // ordinal against a single-track transcode); selecting a nonexistent
+        // aid would mute playback.
+        return;
+      }
+      final aidToApply = audioEntries.isNotEmpty
+          ? audioEntries[mpvTrackId - 1].id.toString()
+          : mpvTrackId.toString();
+
       AudioTrack? match;
-      for (final t in tracks) {
-        if (t.id == id) {
+      for (final t in _player.state.tracks.audio) {
+        if (t.id == aidToApply) {
           match = t;
           break;
         }
@@ -1231,14 +1251,13 @@ class MediaKitPlayerBackend extends PlayerBackend {
       if (match != null) {
         await _player.setAudioTrack(match);
       } else {
-        await _player.setAudioTrack(AudioTrack(id, null, null));
+        await _player.setAudioTrack(AudioTrack(aidToApply, null, null));
       }
-    } catch (e) {
-      try {
-        final native = _player.platform as NativePlayer;
-        await _nativeSetProperty(native, 'aid', id);
-      } catch (_) {}
-    }
+      final aidAfter = await _tryNativeGetProperty(native, 'aid');
+      if (aidAfter != aidToApply) {
+        await _nativeSetProperty(native, 'aid', aidToApply);
+      }
+    } catch (_) {}
   }
 
   @override
@@ -1288,10 +1307,32 @@ class MediaKitPlayerBackend extends PlayerBackend {
     try {
       final native = _player.platform as NativePlayer;
       final trackListBefore = await _tryNativeGetProperty(native, 'track-list');
-      final subtitleIds = _extractSubtitleTrackIds(trackListBefore);
-      final sidToApply = (mpvTrackId <= subtitleIds.length)
-          ? subtitleIds[mpvTrackId - 1].toString()
-          : mpvTrackId.toString();
+      final subEntries = _extractTrackEntries(trackListBefore, type: 'sub');
+      final subtitleIds = subEntries.map((e) => e.id).toList();
+
+      // Resolve the 1-based position to a real mpv sid. External tracks are
+      // matched by the URL they were sub-added from, so a scrambled add order
+      // (external added before a slow embedded demux finished) can't select
+      // the wrong track. Embedded positions count only demuxed tracks for the
+      // same reason.
+      String? resolvedSid;
+      if (isExternalSubtitle && externalSubtitleUrl != null) {
+        for (final entry in subEntries) {
+          if (entry.external && entry.externalFilename == externalSubtitleUrl) {
+            resolvedSid = entry.id.toString();
+            break;
+          }
+        }
+      } else if (!isExternalSubtitle) {
+        final embedded = subEntries.where((e) => !e.external).toList();
+        if (mpvTrackId <= embedded.length) {
+          resolvedSid = embedded[mpvTrackId - 1].id.toString();
+        }
+      }
+      final sidToApply = resolvedSid ??
+          ((mpvTrackId <= subtitleIds.length)
+              ? subtitleIds[mpvTrackId - 1].toString()
+              : mpvTrackId.toString());
       final subtitleTracks = _player.state.tracks.subtitle;
       final playableSubtitleTracks = subtitleTracks
           .where((t) => t.id != 'auto' && t.id != 'no')

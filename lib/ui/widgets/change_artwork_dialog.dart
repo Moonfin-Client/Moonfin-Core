@@ -72,7 +72,9 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   bool get _isLibraryFolder =>
       _item.type?.toLowerCase() == 'collectionfolder' ||
       _item.type?.toLowerCase() == 'userview' ||
-      _item.type?.toLowerCase() == 'folder';
+      _item.type?.toLowerCase() == 'folder' ||
+      _item.type?.toLowerCase() == 'genre' ||
+      _item.type?.toLowerCase() == 'musicgenre';
 
   final Map<String, ScrollController> _scrollControllers = {};
   final Map<String, FocusNode> _headerFocusNodes = {};
@@ -348,6 +350,8 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
       case 'folder':
       case 'collectionfolder':
       case 'userview':
+      case 'genre':
+      case 'musicgenre':
         return const ['Primary', 'Backdrop', 'Thumb'];
       default:
         return const ['Primary', 'Backdrop'];
@@ -618,6 +622,15 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
 
   Future<void> _fetchRemoteImages(String category) async {
     if (!mounted) return;
+    final isGenre = _item.type?.toLowerCase() == 'genre' ||
+        _item.type?.toLowerCase() == 'musicgenre';
+    if (isGenre) {
+      setState(() {
+        _remoteImages[category] = const [];
+        _loadingCategories[category] = false;
+      });
+      return;
+    }
     setState(() {
       _loadingCategories[category] = true;
       _categoryErrors[category] = null;
