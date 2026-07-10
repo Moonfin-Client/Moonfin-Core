@@ -168,7 +168,7 @@
     "@settingsAppearanceTheme": {
         "description": "Title for the theme selection screen and theme settings entry"
     },
-    "settingsAppearanceThemeSubtitle": "Uygulamayı yeniden başlatmadan Moonfin ve Neon Pulse arasında geçiş yapın",
+    "settingsAppearanceThemeSubtitle": "Tamamen özel bir tema uygulayın ve Apple veya Material esintili kullanıcı arayüzleri arasında geçiş yapın.",
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
@@ -176,7 +176,7 @@
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
-    "themeMoonfinSubtitle": "Hepinizin çok sevdiği mevcut Moonfin görünümü",
+    "themeMoonfinSubtitle": "Orijinal, sade Moonfin varsayılanı.",
     "@themeMoonfinSubtitle": {
         "description": "Preview description for the Moonfin theme"
     },
@@ -3466,7 +3466,7 @@
     "@showInNavigation": {
         "description": "Toggle for showing library in navigation"
     },
-    "showInLatestMedia": "Son Eklenenlerde Göster",
+    "showInLatestMedia": "Son eklenen/yayınlanan medyalarda göster",
     "@showInLatestMedia": {
         "description": "Toggle for showing library in latest media"
     },
@@ -3591,7 +3591,7 @@
     "@enablePreviewAudio": {
         "description": "Description for preview audio"
     },
-    "latestMedia": "En Son Medya",
+    "latestMedia": "En Son Eklenen Medya",
     "@latestMedia": {
         "description": "Home section: latest media"
     },
@@ -4030,15 +4030,15 @@
             }
         }
     },
-    "discoverRows": "Keşfet Satırları",
+    "discoverRows": "Seerr Keşfet Sayfaları",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Yeniden sıralamak için sürükleyin. Satırları etkinleştirin veya devre dışı bırakın. Etkinleştirilen satır sırası, Moonfin eklentisiyle senkronize edilir.",
+    "discoverRowsDescriptionPlugin": "Seerr ana sayfasında görmek istediğiniz satırları etkinleştirin. Yeniden sıralamak için sürükleyin. Özel sıralama Moonbase ile senkronize edilir.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Yeniden sıralamak için sürükleyin. Satırları etkinleştirin veya devre dışı bırakın.",
+    "discoverRowsDescription": "Seerr ana sayfasında görmek istediğiniz satırları etkinleştirin. Yeniden sıralamak için sürükleyin. Özel sıralama Moonbase ile senkronize edilir.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4144,7 +4144,7 @@
     "@navbarStyleToolbarAppearance": {
         "description": "Navigation settings subtitle"
     },
-    "reorderToggleHomeRows": "Ana satırları yeniden sıralayın ve değiştirin",
+    "reorderToggleHomeRows": "Hem kütüphane hem de harici kaynaklı ana sayfa satırlarını yeniden sıralayın ve açıp kapatın",
     "@reorderToggleHomeRows": {
         "description": "Home sections settings subtitle"
     },
@@ -6558,7 +6558,7 @@
     "settingsPrivacyAndSafetySection": "GİZLİLİK & GÜVENLİK",
     "settingsBlockedRatings": "Engellenen Derecelendirmeler",
     "settingsGeneralStyle": "Genel Stil",
-    "settingsGeneralStyleSubtitle": "Tema vurguları, arka planlar, izlenen göstergeler ve tema müziği",
+    "settingsGeneralStyleSubtitle": "Tema vurguları, arka planlar ve izlendi göstergeleri",
     "settingsHomePage": "Ana Sayfa",
     "settingsHomePageSubtitle": "Bölümler, görüntü türleri, kaplamalar ve medya önizlemeleri",
     "settingsLibrariesSubtitle": "Kütüphane görünürlüğü, klasör görünümü ve çoklu sunucu davranışı",
@@ -6698,7 +6698,7 @@
             }
         }
     },
-    "latestLibraryName": "Son Eklenen {libraryName}",
+    "latestLibraryName": "En Son Eklenen {libraryName}",
     "@latestLibraryName": {
         "description": "Row title for latest media in a specific library",
         "placeholders": {
@@ -7551,7 +7551,7 @@
     "homeRowDisplay": "Ana Sayfa Satır Gösterimi",
     "homeRowSections": "Ana Sayfa Satır Bölümleri",
     "homeRowToggles": "Ana Sayfa Satır Ayarları",
-    "homeRowTogglesSubtitle": "Farklı ana sayfa satır kategorilerini etkinleştirin veya devre dışı bırakın",
+    "homeRowTogglesSubtitle": "Kütüphane kaynaklı ana sayfa satır kategorilerini etkinleştirin veya devre dışı bırakın",
     "homeRowTogglesDescription": "Satırları Ana Sayfa Bölümleri'nde göstermek için aşağıdaki anahtarları etkinleştirin.",
     "displayPlaylistsRows": "Oynatma Listesi Satırlarını Göster",
     "displayPlaylistsRowsSubtitle": "Oynatma listesi satırlarını Ana Sayfa Bölümleri'nde göster.",
@@ -7663,71 +7663,71 @@
     "audioRowsSorting": "Ses Satırları Sıralaması",
     "audioRowsSortingDescription": "Ses satırlarını eklenme tarihine, çıkış tarihine, alfabetik sıraya ve daha fazlasına göre sıralayın.",
     "audioPlaylists": "Ses Oynatma Listeleri",
-    "interfaceStyle": "",
+    "interfaceStyle": "Arayüz Tarzı",
     "@interfaceStyle": {
         "description": "Label for the Automatic/Apple/Material interface style setting"
     },
-    "fallbackAudioLanguage": "",
+    "fallbackAudioLanguage": "Yedek Ses Dili",
     "@fallbackAudioLanguage": {
         "description": "Setting for fallback audio language"
     },
-    "preferDefaultAudioTrack": "",
+    "preferDefaultAudioTrack": "Varsayılan Ses Parçasına Öncelik Ver",
     "@preferDefaultAudioTrack": {
         "description": "Setting for preferring default audio track"
     },
-    "preferDefaultAudioTrackDescription": "",
+    "preferDefaultAudioTrackDescription": "Yerel dublaj yerine orijinal ses parçasına öncelik ver.",
     "@preferDefaultAudioTrackDescription": {
         "description": "Description for preferring default audio track setting"
     },
-    "preferAudioDescription": "",
+    "preferAudioDescription": "Sesli Betimlemeli Parçalara Öncelik Ver",
     "@preferAudioDescription": {
         "description": "Setting for preferring audio description tracks"
     },
-    "preferAudioDescriptionDescription": "",
+    "preferAudioDescriptionDescription": "Normal ses yerine sesli betimlemeli parçalara öncelik ver.",
     "@preferAudioDescriptionDescription": {
         "description": "Description for preferring audio description tracks setting"
     },
-    "transcodingAudio": "",
+    "transcodingAudio": "Anlık Dönüştürme (Ses)",
     "@transcodingAudio": {
         "description": "Label for audio-only transcode playback method"
     },
-    "subtitleModeAlwaysDescription": "",
+    "subtitleModeAlwaysDescription": "Her video başladığında altyazıları otomatik olarak yükler ve görüntüler.",
     "@subtitleModeAlwaysDescription": {
         "description": "Description for always subtitle mode"
     },
-    "subtitleModeForeignDescription": "",
+    "subtitleModeForeignDescription": "Varsayılan ses parçası yabancı bir dildeyse altyazıları otomatik olarak açar.",
     "@subtitleModeForeignDescription": {
         "description": "Description for foreign subtitle mode"
     },
-    "subtitleModeForcedDescription": "",
+    "subtitleModeForcedDescription": "Yalnızca meta verilerinde açıkça zorunlu olarak işaretlenmiş altyazıları yükler.",
     "@subtitleModeForcedDescription": {
         "description": "Description for forced subtitle mode"
     },
-    "subtitleModeNoneDescription": "",
+    "subtitleModeNoneDescription": "Otomatik altyazı yüklemeyi tamamen devre dışı bırakır.",
     "@subtitleModeNoneDescription": {
         "description": "Description for none subtitle mode"
     },
-    "fallbackSubtitleLanguage": "",
+    "fallbackSubtitleLanguage": "Yedek Altyazı Dili",
     "@fallbackSubtitleLanguage": {
         "description": "Setting for fallback subtitle language"
     },
-    "subtitleStream": "",
+    "subtitleStream": "Altyazı Parçası",
     "@subtitleStream": {
         "description": "Header for subtitle stream settings"
     },
-    "hideCollectionAssociatedItems": "",
+    "hideCollectionAssociatedItems": "Kitaplıklarda gezinirken koleksiyona dahil olan ögeleri gizle",
     "@hideCollectionAssociatedItems": {
         "description": "Description for grouping items into collections"
     },
-    "groupItemsIntoCollectionsDialogTitle": "",
+    "groupItemsIntoCollectionsDialogTitle": "Kitaplık Gruplandırma Bildirimi",
     "@groupItemsIntoCollectionsDialogTitle": {
         "description": "Title of the alert dialog explaining server settings requirement"
     },
-    "groupItemsIntoCollectionsDialogMessage": "",
+    "groupItemsIntoCollectionsDialogMessage": "Bu özellikten yararlanabilmek için Jellyfin veya Emby sunucunuzun Kitaplık > Görüntüleme ayarları altındaki 'Filmleri koleksiyonlar halinde grupla' ve/veya 'Dizileri koleksiyonlar halinde grupla' seçeneklerinin açık olduğundan emin olun.",
     "@groupItemsIntoCollectionsDialogMessage": {
         "description": "Message of the alert dialog explaining server settings requirement"
     },
-    "recentlyReleasedLibraryName": "",
+    "recentlyReleasedLibraryName": "Yeni Çıkan {libraryName}",
     "@recentlyReleasedLibraryName": {
         "description": "Row title for recently released media in a specific library",
         "placeholders": {
@@ -7736,100 +7736,100 @@
             }
         }
     },
-    "crewContributionsSeerr": "",
-    "subtitlePreferences": "",
+    "crewContributionsSeerr": "Ekip Katkıları (Seerr)",
+    "subtitlePreferences": "Altyazı Ayarları",
     "@subtitlePreferences": {
         "description": "Title for the subtitle preferences settings section"
     },
-    "subtitlePreferencesDescription": "",
+    "subtitlePreferencesDescription": "Altyazı modlarını, varsayılan dilleri, görünümü ve oluşturma seçeneklerini değiştirin.",
     "@subtitlePreferencesDescription": {
         "description": "Description for the subtitle preferences settings section"
     },
-    "subtitleRendering": "",
+    "subtitleRendering": "Altyazı Oluşturma",
     "@subtitleRendering": {
         "description": "Header for subtitle rendering settings"
     },
-    "displayOptions": "",
+    "displayOptions": "Görüntüleme Seçenekleri",
     "@displayOptions": {
         "description": "Title for details display options dialog"
     },
-    "releaseDateAscending": "",
+    "releaseDateAscending": "Çıkış Tarihi (Eskiden Yeniye)",
     "@releaseDateAscending": {
         "description": "Sort option for crew/cast contributions in ascending release date order"
     },
-    "releaseDateDescending": "",
+    "releaseDateDescending": "Çıkış Tarihi (Yeniden Eskiye)",
     "@releaseDateDescending": {
         "description": "Sort option for crew/cast contributions in descending release date order"
     },
-    "groupContributions": "",
+    "groupContributions": "Grup Katkıları",
     "@groupContributions": {
         "description": "Section header for grouping person contributions"
     },
-    "groupMultipleRoles": "",
+    "groupMultipleRoles": "Birden Fazla Rolü Grupla",
     "@groupMultipleRoles": {
         "description": "Option to group multiple roles for a person"
     },
-    "interfaceStyleSubtitle": "",
+    "interfaceStyleSubtitle": "Cihazınızla otomatik olarak eşleşir. Belirli bir görünümü zorlamak için Apple veya Material seçeneğini belirleyin.",
     "@interfaceStyleSubtitle": {
         "description": "Explanation under the interface style setting"
     },
-    "interfaceStyleAutomatic": "",
+    "interfaceStyleAutomatic": "Otomatik",
     "@interfaceStyleAutomatic": {
         "description": "Interface style option: follow the platform"
     },
-    "interfaceStyleApple": "",
+    "interfaceStyleApple": "Apple",
     "@interfaceStyleApple": {
         "description": "Interface style option: Apple native look"
     },
-    "subtitleMode": "",
+    "subtitleMode": "Altyazı Modu",
     "@subtitleMode": {
         "description": "Setting for subtitle mode"
     },
-    "subtitleModeFlagged": "",
+    "subtitleModeFlagged": "İşaretli",
     "@subtitleModeFlagged": {
         "description": "Subtitle mode: default/flagged"
     },
-    "subtitleModeAlways": "",
+    "subtitleModeAlways": "Her zaman",
     "@subtitleModeAlways": {
         "description": "Subtitle mode: always play"
     },
-    "interfaceStyleMaterial": "",
+    "interfaceStyleMaterial": "Material",
     "@interfaceStyleMaterial": {
         "description": "Interface style option: Material look"
     },
-    "subtitleModeForeign": "",
+    "subtitleModeForeign": "Yabancı Diller",
     "@subtitleModeForeign": {
         "description": "Subtitle mode: foreign/smart"
     },
-    "subtitleModeForced": "",
+    "subtitleModeForced": "Zorunlu",
     "@subtitleModeForced": {
         "description": "Subtitle mode: only forced"
     },
-    "subtitleModeFlaggedDescription": "",
+    "subtitleModeFlaggedDescription": "Medya dosyasının meta verilerinde 'varsayılan' veya 'zorunlu' olarak işaretlenmiş parçaları oynatır.",
     "@subtitleModeFlaggedDescription": {
         "description": "Description for flagged subtitle mode"
     },
-    "groupItemsIntoCollections": "",
+    "groupItemsIntoCollections": "Ögeleri Koleksiyonlar Halinde Grupla",
     "@groupItemsIntoCollections": {
         "description": "Setting for grouping items into collections"
     },
-    "libraryWriteAccessWarningTitle": "",
+    "libraryWriteAccessWarningTitle": "Kitaplık Yazma İzni Uyarısı",
     "@libraryWriteAccessWarningTitle": {
         "description": "Title for library write access warning dialog"
     },
-    "libraryWriteAccessHowToFix": "",
+    "libraryWriteAccessHowToFix": "Bu sorun nasıl çözülür:",
     "@libraryWriteAccessHowToFix": {
         "description": "Section header for write access troubleshooting"
     },
-    "libraryWriteAccessFixSteps": "",
+    "libraryWriteAccessFixSteps": "1. Sunucudaki medya kitaplığı klasörleriniz için Jellyfin hizmet kullanıcısına (örn. jellyfin veya Docker PUID/PGID) yazma izinleri tanımlayın.\n\n2. Veya Jellyfin Kontrol Paneli -> Kitaplıklar bölümüne gidin, bu kitaplığı düzenleyin ve görselleri Jellyfin'in dahili veritabanında saklamak için 'Görselleri medya klasörlerine kaydet' seçeneğini devre dışı bırakın.",
     "@libraryWriteAccessFixSteps": {
         "description": "Troubleshooting steps for write access issues"
     },
-    "dismiss": "",
+    "dismiss": "Yoksay",
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "",
+    "libraryWriteAccessProactiveBody": "'{libraryName}' kütüphaneniz, görselleri doğrudan medya klasörlerine kaydedecek şekilde yapılandırılmış ('Görselleri medya klasörlerine kaydet' seçeneği etkin). Ancak Jellyfin yazma erişimini test etti ve bu dizine dosya yazma izni olmadığını belirledi:\n\n{failedPath}",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -7841,8 +7841,849 @@
             }
         }
     },
-    "libraryWriteAccessReactiveBody": "",
+    "libraryWriteAccessReactiveBody": "Jellyfin görselleri güncelleyemedi. Kütüphaneniz, görselleri doğrudan medya klasörlerine kaydedecek şekilde yapılandırılmış ('Görselleri medya klasörlerine kaydet' seçeneği etkin). Bu hata genellikle Jellyfin sunucu işleminin, medya dizinlerinize dosya yazma izni olmadığında meydana gelir.",
     "@libraryWriteAccessReactiveBody": {
         "description": "Reactive error warning message when artwork update fails"
-    }
+    },
+    "impellerRestartTitle": "Yeniden Başlatma Gerekiyor",
+    "@impellerRestartTitle": {
+        "description": "Title of the dialog shown after changing the rendering engine."
+    },
+    "impellerOff": "Kapalı",
+    "theme": "Tema",
+    "glassQuality": "Cam Efekti Kalitesi",
+    "@glassQuality": {
+        "description": "Label for the glass rendering quality setting"
+    },
+    "latestAudiobooks": "Son Eklenen Sesli Kitaplar",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "adminControls": "Yönetici Kontrolleri",
+    "featurettes": "Özel Özellikler",
+    "@featurettes": {
+        "description": "Tab label for featurettes special features"
+    },
+    "scenes": "Sahneler",
+    "@scenes": {
+        "description": "Tab label for scenes special features"
+    },
+    "shorts": "Kısa Videolar",
+    "@shorts": {
+        "description": "Tab label for shorts special features"
+    },
+    "adminActivityDateRange": "Zaman Aralığı",
+    "adminLibLyricDownloaders": "Şarkı sözü indiriciler",
+    "adminLibrarySectionEmbedded": "Gömülü bilgi",
+    "adminLibrarySectionImages": "Görseller",
+    "adminLibDateAddedSection": "Eklenme Tarihi Davranışı",
+    "adminLibMetadataTitle": "Meta Veri ve Görseller",
+    "adminLibNfoTitle": "NFO Ayarları",
+    "adminLibNone": "Hiçbiri",
+    "adminLibRefreshDays": "{days} gün",
+    "@adminLibRefreshDays": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibEmbeddedEpisodeInfos": "Gömülü bölüm bilgilerini kullan",
+    "adminLibEmbeddedAllowAll": "Tümüne izin ver",
+    "adminParentalControl": "Ebeveyn Kontrolü",
+    "adminAddSchedule": "Program Ekle",
+    "adminDayEveryday": "Her Gün",
+    "adminDayWeekend": "Hafta Sonu",
+    "adminAuthProvider": "Kimlik doğrulama sağlayıcısı",
+    "adminLiveTvSectionPaths": "Kayıt yolları",
+    "adminRefreshGuideData": "Rehber Verisini Yenile",
+    "adminPlaybackTonemappingAlgorithm": "Ton Eşleme Algoritması",
+    "adminNetworkingEnableIpv6": "IPv6 Etkinleştir",
+    "adminLibraryTabPaths": "Yollar",
+    "adminLibrarySectionMovies": "Filmler",
+    "adminLibGroupShows": "Dizileri koleksiyonlar halinde grupla",
+    "adminLibEmbeddedExtrasTitles": "Ekstralar için gömülü başlıkları kullan",
+    "contextMenuAddToCollection": "Koleksiyona ekle",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 kitap} other{{count} kitap}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "shuffleAllMusic": "Tüm müzikleri karıştır",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "adminPlaybackPresetsQuality": "Ön Ayar & Kalite",
+    "adminPlaybackDeinterlaceMethod": "Tarama giderme yöntemi",
+    "adminBlockedTags": "Engellenen Etiketler",
+    "adminBlockedTagsHint": "Bu etiketlere sahip içerikler bu kullanıcıdan gizlenir.",
+    "adminLibRealtimeMonitor": "Gerçek zamanlı izlemeyi etkinleştir",
+    "adminLibRealtimeMonitorHint": "Dosya değişikliklerini algıla ve otomatik olarak işle.",
+    "adminLibArchiveMediaFiles": "Arşivleri medya dosyası olarak işle",
+    "adminLibRefreshInterval": "Otomatik Meta Veri Yenileme",
+    "adminLibDisplaySection": "Kütüphane görünümü",
+    "adminLibKodiUser": "İzlenme verileri NFO dosyalarına kaydedilecek kullanıcı",
+    "adminLibEmbeddedAllowText": "Sadece yazı",
+    "adminLibEmbeddedAllowImage": "Sadece görsel",
+    "adminLibEmbeddedAllowNone": "Hiçbiri",
+    "adminLibSkipIfAudioMatches": "Ses izi indirme diliyle eşleşiyorsa indirmeyi atla",
+    "adminLibRequirePerfectMatch": "Birebir altyazı eşleşmesi zorunlu olsun",
+    "adminLibSaveSubtitlesWithMedia": "Altyazıları medya klasörlerine kaydet",
+    "adminDayFriday": "Cuma",
+    "adminGuideDaysDisplay": "Rehber verisi: {value}",
+    "@adminGuideDaysDisplay": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "adminBrandingSplashUpload": "Görsel Yükle",
+    "adminPlaybackColorDepth": "Donanım kod çözme renk derinliği",
+    "behindTheScenes": "Kamera Arkası",
+    "@behindTheScenes": {
+        "description": "Tab label for behind the scenes special features"
+    },
+    "adminDaySunday": "Pazar",
+    "settingsAllowSelfSignedCertsSubtitle": "Kendinden imzalı veya özel CA (Sertifika Yetkilisi) TLS sertifikaları kullanan sunuculara güvenin. Bunu yalnızca kontrolünüz altındaki sunucular için etkinleştirin. Bu işlem, tüm bağlantılar için sertifika doğrulamasını devre dışı bırakır.",
+    "@settingsAllowSelfSignedCertsSubtitle": {
+        "description": "Description for the allow self-signed certificates setting"
+    },
+    "theme8BitHeroSubtitle": "Bloklu renk paleti, kalın kenarlıkları, sert düşen gölgeleri ve piksel yazı tipiyle retro piksel sanatı stili",
+    "@theme8BitHeroSubtitle": {
+        "description": "Preview description for the 8-bit Hero theme"
+    },
+    "gameSaveState": "Durumu Kaydet",
+    "@gameSaveState": {
+        "description": "In-game menu action to save the game state"
+    },
+    "gameLoadState": "Durumu Yükle",
+    "@gameLoadState": {
+        "description": "In-game menu action to load the saved game state"
+    },
+    "bookFormatAudiobook": "Sesli Kitap",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "%{percent} okundu",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "extras": "Özel Özellikler",
+    "@extras": {
+        "description": "Tab label for special features / extras"
+    },
+    "timeRemaining": "{time} kaldı",
+    "@timeRemaining": {
+        "description": "Label showing remaining playback time, e.g. '42m remaining'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "seerrNotifyNewRequestsSubtitle": "Birisi talep gönderdiğinde bana bildirim gönder",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "İstek güncellemeleri",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "Onaylandı, reddedildi ve kütüphanenize eklendi",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "adminLibrarySectionMetadata": "Meta Veri",
+    "adminLibDummyChapterDurationHint": "Bölüm bilgisi olmayan medyalar için oluşturulacak bölümlerin süresi. Devre dışı bırakmak için 0 olarak ayarlayın.",
+    "adminLibChapterImageResolution": "Bölüm görsel çözünürlüğü",
+    "adminLibSaveTrickplayWithMedia": "Trickplay görsellerini medya klasörlerine kaydet",
+    "adminLibAutoAddToCollection": "Filmleri koleksiyonlara otomatik olarak ekle",
+    "adminUnratedMovie": "Filmler",
+    "adminUnratedMusic": "Müzik",
+    "adminPasswordResetProvider": "Parola sıfırlama sağlayıcısı",
+    "adminLoginAttemptsBeforeLockout": "Kilitlenme öncesi maksimum hatalı giriş denemesi",
+    "adminBackupMetadata": "Meta Veri",
+    "adminBackupSubtitles": "Altyazılar",
+    "adminBackupTrickplay": "Trickplay görselleri",
+    "adminGuideDaysAuto": "Otomatik",
+    "adminGuideDaysValue": "{days} gün",
+    "@adminGuideDaysValue": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLiveTvSectionPostProcessing": "Son işleme",
+    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12-bit kod çözme",
+    "adminPlaybackEnableTonemapping": "Ton eşlemeyi aktif et",
+    "adminPlaybackEnableVtTonemapping": "VideoToolbox ton eşlemeyi aktif et",
+    "adminPlaybackTonemappingMode": "Ton eşleme modu",
+    "adminPlaybackTonemappingRange": "Ton eşleme aralığı",
+    "adminPlaybackTonemappingDesat": "Ton eşleme doygunluk azaltma",
+    "adminGeneralQuickConnect": "Hızlı Bağlantıyı Etkinleştir",
+    "adminGeneralSectionServer": "Sunucu",
+    "adminGeneralSectionMetadata": "Meta Veri",
+    "adminGeneralSectionPaths": "Yollar",
+    "adminGeneralSectionPerformance": "Performans",
+    "audiobookBookmarks": "Yer İmleri",
+    "audiobookTimelineEmpty": "Zaman Çizelgesi boş",
+    "audiobookExportFailed": "Dışarı aktarma başarısız: {error}",
+    "@audiobookExportFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookAddBookmark": "Yer İmi Ekle",
+    "audiobookNoteHint": "Bu ana not ekle",
+    "audiobookSleepOff": "Kapalı",
+    "audiobookRemainingTime": "Kalan Süre",
+    "audiobookElapsedTime": "Geçen Süre",
+    "audiobookSkipForwardSeconds": "{seconds} sn ileri",
+    "@audiobookSkipForwardSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNextChapter": "Bir Sonraki Bölüm",
+    "audiobookBookmarkAdded": "Yer işareti {position} konumuna eklendi",
+    "@audiobookBookmarkAdded": {
+        "placeholders": {
+            "position": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSpeedCustomLabel": "{value}x",
+    "@audiobookSpeedCustomLabel": {
+        "placeholders": {
+            "value": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookSave": "Kaydet",
+    "audiobookCancel": "İptal Et",
+    "showAllAudioTracks": "Tüm Ses Parçalarını Göster ({count})",
+    "@showAllAudioTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "checkingDirectPlay": "Doğrudan Oynatma uyumluluğu kontrol ediliyor...",
+    "directPlayCapabilityLabel": "Doğrudan Oynatma Uyumluluğu: ",
+    "seerrNotifyNewRequestsTitle": "Yeni keşfet bildirimleri",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "adminDevicesDeletedAll": "Cihazlar silindi",
+    "adminLibraryTabOptions": "Seçenekler",
+    "adminScheduleDay": "Gün",
+    "adminRecordingPostProcessor": "Son işleme uygulaması yolu",
+    "adminBrandingSplashUploaded": "Açılış ekranı güncellendi",
+    "adminBrandingSplashDeleted": "Açılış ekranı silindi",
+    "adminBrandingNoSplash": "Özel açılış ekranı yok",
+    "adminPlaybackQsvDevice": "QSV cihazı",
+    "adminPlaybackHwEncodingSection": "Donanım kodlama",
+    "adminNetworkingRequireHttps": "HTTPS Gerekli",
+    "adminNetworkingEnableIpv4": "IPv4 Etkinleştir",
+    "expandedTabs": "Genişletilmiş Sekmeler",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "Sekmeler arasında gezinirken sekme içeriğini otomatik olarak göster. Her sekmeyi manuel olarak açıp kapatmak için bu seçeneği kapatın.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "themeMusicSettingsSubtitle": "Detay sayfaları, ana sayfa satırları ve ses seviyesi",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "settingsDetailsScreen": "Detay Ekranı",
+    "layout": "Düzen",
+    "adminActivitySeverityAll": "Tüm Dereceler",
+    "adminPlaybackH264Crf": "H.264 kodlama CRF",
+    "adminSyncPlayAccess": "SyncPlay erişimi",
+    "adminDevicesDeletedPartial": "Bazı cihazlar kaldırıldı; {count} cihaz kaldırılamadı.",
+    "@adminDevicesDeletedPartial": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibImageFetchersFor": "Görsel İndiriciler: {type}",
+    "@adminLibImageFetchersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibrarySectionSubtitles": "Altyazılar",
+    "adminLibEnablePhotos": "Görselleri görüntüle",
+    "adminLibSaveLocalMetadata": "Görselleri medya klasörlerine kaydet",
+    "adminLibRefreshNever": "Asla",
+    "adminLibDefault": "Varsayılan",
+    "adminLibDisplayTitle": "Görünüm",
+    "adminLibDummyChapterDuration": "Yapay bölüm süresi (saniye)",
+    "adminLibAllowEmbeddedSubtitles": "Gömülü altyazılara izin ver",
+    "adminDrawerNfo": "NFO Ayarları",
+    "mpvConfiguration": "MPV ayarı",
+    "settingsDetailsScreenSubtitle": "Stil, arka plan bulanıklığı ve sekme davranışı",
+    "navButtons": "Butonlar",
+    "keyboard": "Klavye",
+    "rendering": "Render Etme",
+    "directStreamRemux": "Direct Stream (Remux)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "Dönüştürme (Bit hızı veya Çözünürlük)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "Dönüştürme (Video ve Ses)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "Dönüştürme (Video)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "contextMenuHideFromContinueWatching": "İzlemeye Devam Et'ten Gizle",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Sıradaki Bölümlerden Gizle",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "carSignInPrompt": "Moonfin'e telefon üzerinden giriş yap",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "latestBooks": "Son Eklenen Kitaplar",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "adminBackupDatabase": "Veri tabanı",
+    "adminRecordingPostProcessorArgs": "Son işleme argümanları",
+    "adminNetworkingAutoDiscovery": "Otomatik port eşlemeyi etkinleştir",
+    "adminNetworkingLocalSubnets": "Yerel Ağlar",
+    "recommendationsApplyParentalRatingCap": "Ebeveyn Reyting Sınırı Uygulansın mı?",
+    "@recommendationsApplyParentalRatingCap": {
+        "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
+    },
+    "recommendationsApplyParentalRatingCapSubtitle": "Moonfin Önerileri'ni hedef medyanın ebeveyn yaş sınırına göre kısıtla",
+    "@recommendationsApplyParentalRatingCapSubtitle": {
+        "description": "Explanation under the parental rating cap setting toggle"
+    },
+    "deletedScenes": "Silinmiş Sahneler",
+    "@deletedScenes": {
+        "description": "Tab label for deleted scenes special features"
+    },
+    "interviews": "Röportaj",
+    "@interviews": {
+        "description": "Tab label for interviews special features"
+    },
+    "adminLibraryTabDownloaders": "İndiriciler",
+    "adminLibrarySectionSeries": "Diziler",
+    "adminLibrarySectionMusic": "Müzik",
+    "adminLibFolderView": "Medya klasörlerini olduğu gibi görmek için bir klasör görünümü görüntüle",
+    "adminLibMetadataLangSection": "Tercih edilen meta veri dili",
+    "adminLibMetadataSavers": "Meta Veri Kaydediciler",
+    "adminLibNoDownloaders": "Bu sunucu, bu kütüphane türü için hiçbir indirici sunmuyor.",
+    "adminLibTrickplayDuringScan": "Kütüphane taraması sırasında trickplay görsellerini ayıkla",
+    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10-bit kod çözme",
+    "adminPlaybackToneMapping": "Ton Eşleme",
+    "audiobookExportNotes": "Notları Dışarı Aktar",
+    "impellerOn": "Açık",
+    "adminRefreshLibrary": "Kütüphaneyi Yenile",
+    "@adminRefreshLibrary": {
+        "description": "Dropdown option to refresh/rescan a single library"
+    },
+    "adminRemoveDeviceConfirm": "'{name}' cihazı kaldırılsın mı? Kullanıcının bu cihazda tekrar oturum açması gerekecektir.",
+    "@adminRemoveDeviceConfirm": {
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibSpecialsInSeasons": "Özel bölümleri yayınlandıkları sezonların içinde göster",
+    "adminLibGroupMovies": "Filmleri koleksiyonlar halinde grupla",
+    "adminLibExternalSuggestions": "Önerilerde harici içerikleri göster",
+    "adminLibDateAddedLabel": "Eklenme tarihini şuradan al",
+    "adminLibDateAddedImport": "Kütüphaneye taranma tarihi",
+    "adminUnratedTrailer": "Fragmanlar",
+    "adminUnratedSeries": "Diziler",
+    "adminAccessSchedules": "Erişim Programları",
+    "adminDayMonday": "Pazartesi",
+    "adminDayTuesday": "Salı",
+    "adminDayWednesday": "Çarşamba",
+    "adminDaySaturday": "Cumartesi",
+    "adminAllowedTags": "Etiketlere izin ver",
+    "adminAllowedTagsHint": "Yalnızca bu etiketlere sahip içerikler gösterilir. Tümüne izin vermek için boş bırakın.",
+    "adminAddTag": "Etiket ekle",
+    "adminEnabledDevices": "Aktif edilen cihazlar",
+    "adminEnabledChannels": "Aktif edilen kanallar",
+    "adminSyncPlayCreateAndJoin": "Grup oluşturulmasına ve katılımına izin ver",
+    "adminBackupInclude": "Yedeğe nelerin dahil edileceğini seçin.",
+    "adminBackupDatabaseAlways": "Her zaman dahil edilenler",
+    "adminGuideDays": "Rehber verisi gün sayısı",
+    "adminPlaybackTonemappingPeak": "Ton eşleme tepe değeri",
+    "adminPlaybackTonemappingParam": "Ton eşleme parametresi",
+    "adminPlaybackEncoderPreset": "Kodlama ön ayarı",
+    "adminPlaybackH265Crf": "H.265 (HEVC) kodlama CRF",
+    "adminPlaybackEnableAudioVbr": "Ses VBR kodlamasını etkinleştir",
+    "adminPlaybackDownmixBoost": "Ses downmix artışı",
+    "adminNetworkingRequireHttpsHint": "Tüm uzak istekleri HTTPS'e yönlendir. Sunucunun geçerli bir sertifikası yoksa hiçbir etkisi olmaz.",
+    "adminNetworkingIpSettings": "IP Ayarları",
+    "adminGeneralEnableSlowResponse": "Yavaş yanıt uyarılarını etkinleştir",
+    "audiobookChapterIndicator": "Bölüm: {current} / {total}",
+    "@audiobookChapterIndicator": {
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNoChapters": "Bölüm bulunamadı",
+    "audiobookNoNotes": "Henüz not yok",
+    "transcodeContainerNotSupported": "Kapsayıcı biçimi oynatıcı tarafından desteklenmiyor.",
+    "transcodeSubtitleCodecNotSupported": "Altyazı biçimi desteklenmiyor (videoya gömülmesi gerekiyor).",
+    "transcodeAudioProfileNotSupported": "Ses profili desteklenmiyor.",
+    "transcodeVideoResolutionNotSupported": "Video çözünürlüğü bu cihaz tarafından desteklenmiyor.",
+    "transcodeVideoFramerateNotSupported": "Video kare hızı desteklenmiyor.",
+    "transcodeContainerBitrateExceedsLimit": "Dosya bit hızı, oynatıcının akış sınırını aşıyor.",
+    "transcodeAudioChannelsNotSupported": "Ses kanalı sayısı desteklenmiyor.",
+    "adminRepoSortNameDesc": "Alfabetik (Z'den A'ya)",
+    "@adminRepoSortNameDesc": {
+        "description": "Repository sort option, alphabetical descending"
+    },
+    "adminAnalyticsLoadingProgress": "Sunucu Analizleri Yükleniyor... %{percentage}",
+    "@adminAnalyticsLoadingProgress": {
+        "description": "Progress label shown while server analytics load",
+        "placeholders": {
+            "percentage": {
+                "type": "int"
+            }
+        }
+    },
+    "glassQualityAuto": "Otomatik",
+    "@glassQualityAuto": {
+        "description": "Glass quality option: per-device default"
+    },
+    "glassQualityFull": "Tam",
+    "@glassQualityFull": {
+        "description": "Glass quality option: force real blur"
+    },
+    "glassQualityReduced": "Azaltılmış",
+    "@glassQualityReduced": {
+        "description": "Glass quality option: lightweight zero-blur glass"
+    },
+    "customThemeSubtitle": "Özel temalar, Moonfin genelindeki görsel ögeleri değiştirir. Tarzınıza uygun seçeneklerden birini belirleyin.",
+    "@customThemeSubtitle": {
+        "description": "Description under custom themes section"
+    },
+    "impellerRendering": "İşleme motoru (Impeller)",
+    "@impellerRendering": {
+        "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
+    },
+    "impellerAuto": "Otomatik",
+    "adminRefreshAllLibraries": "Bütün Kütüphaneleri Yenile",
+    "@adminRefreshAllLibraries": {
+        "description": "Floating action button text to refresh all libraries"
+    },
+    "adminRepoSortDateOldest": "Ekleme Tarihi (Önce En Eski)",
+    "@adminRepoSortDateOldest": {
+        "description": "Repository sort option, oldest added first"
+    },
+    "adminDrawerMetadata": "Meta Veri",
+    "adminDrawerDisplay": "Görünüm",
+    "bookTimeLeft": "{time} kaldı",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "Oku",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "Dinle",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "guideNextProgram": "Sıradaki: {time}  {title}",
+    "@guideNextProgram": {
+        "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookDelete": "Sil",
+    "adminDeleteAllDevicesConfirm": "{count} cihaz kaldırılsın mı? Etkilenen kullanıcıların tekrar oturum açması gerekecektir. Mevcut cihazınız bu durumdan etkilenmez.",
+    "@adminDeleteAllDevicesConfirm": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "adminLibSubtitleDownloaders": "Altyazı indiriciler",
+    "adminLibMetadataDownloadersFor": "Meta Veri İndiriciler: {type}",
+    "@adminLibMetadataDownloadersFor": {
+        "placeholders": {
+            "type": {
+                "type": "String"
+            }
+        }
+    },
+    "adminLibrarySectionGeneral": "Genel",
+    "adminLibDateAddedFile": "Dosyanın oluşturulma tarihi",
+    "adminLibChaptersSection": "Bölümler",
+    "adminLibNfoHelp": "NFO meta verileri Kodi ve benzeri istemcilerle uyumludur. Ayarlar, NFO meta verilerini kaydeden tüm kütüphaneler için geçerlidir.",
+    "adminLibSaveImagePaths": "Görsel yollarını NFO dosyalarının içine kaydet",
+    "adminLibPathSubstitution": "NFO görsel yolları için yol değiştirmeyi etkinleştir",
+    "adminLibExtraThumbs": "Extrafanart görsellerini bir extrathumbs klasörüne kopyala",
+    "adminLibEmbeddedTitles": "Gömülü başlıkları kullan",
+    "adminLibSkipIfEmbeddedSubs": "Gömülü altyazı varsa indirmeyi atla",
+    "adminLibChapterImageExtraction": "Bölüm görsellerini ayıkla",
+    "adminLibChapterImagesDuringScan": "Kütüphane taraması sırasında bölüm görsellerini ayıkla",
+    "adminLibTrickplayExtraction": "Trickplay görsel ayıklamayı etkinleştir",
+    "adminLibAutomaticSeriesGrouping": "Birden fazla klasöre dağılmış dizileri otomatik olarak birleştir",
+    "adminLibSeasonZeroName": "0. Sezon görünen adı",
+    "adminLibLufsScan": "Ses normalleştirme için LUFS taramasını etkinleştir",
+    "adminLibPreferNonstandardArtist": "Standart dışı sanatçı etiketlerini tercih et",
+    "adminMaxParentalRating": "İzin verilen en yüksek ebeveyn derecelendirmesi",
+    "adminMaxParentalRatingHint": "Bu derecelendirmenin üzerindeki içerikler bu kullanıcıdan gizlenecektir.",
+    "adminParentalRatingNone": "Hiçbiri",
+    "adminBlockUnratedItems": "Derecelendirme bilgisi olmayan veya tanınmayan içerikleri engelle",
+    "adminUnratedChannelContent": "Kanallar",
+    "adminUnratedLiveTvChannel": "Canlı TV",
+    "adminAccessSchedulesHint": "Erişime yalnızca aşağıdaki programlanan saatlerde izin verilir. Herhangi bir program ayarlanmadığında erişim tüm gün serbesttir.",
+    "adminScheduleStart": "Başlangıç",
+    "adminScheduleEnd": "Bitiş",
+    "adminDayWeekday": "Hafta içi",
+    "adminDayThursday": "Perşembe",
+    "adminLoginAttemptsHint": "Varsayılan değer için 0, kilitlenmeyi devre dışı bırakmak için -1 yazın.",
+    "adminSyncPlayJoin": "Gruplara katılmaya izin ver",
+    "adminSyncPlayNone": "İzin yok",
+    "adminContentDeletionFolders": "İçerik silme izni verilecek kaynaklar",
+    "adminTunerResetNotSupported": "Bu alıcı türü sıfırlamayı desteklemiyor.",
+    "adminSaveRecordingNfo": "Kayıt NFO meta verilerini kaydet",
+    "adminSaveRecordingImages": "Kayıt görsellerini kaydet",
+    "adminGuideRefreshStarted": "Rehber verisi yenileme işlemi başladı",
+    "adminGuideRefreshUnavailable": "Rehber yenileme görevi bu sunucuda mevcut değil.",
+    "adminMetadataIdentify": "Tanımla",
+    "adminPlaybackEnhancedNvdec": "Gelişmiş NVDEC kod çözücüyü etkinleştir",
+    "adminPlaybackPreferNativeDecoder": "Sistemin yerel donanım kod çözücüsünü tercih et",
+    "adminPlaybackColorDepth10Hevc": "10-bit HEVC kod çözme",
+    "adminPlaybackColorDepth10Vp9": "10-bit VP9 kod çözme",
+    "adminPlaybackAllowHevcEncoding": "HEVC kodlamaya izin ver",
+    "adminPlaybackAllowAv1Encoding": "AV1 kodlamaya izin ver",
+    "adminPlaybackIntelLowPowerH264": "Intel düşük güç tüketimli H.264 kodlayıcıyı etkinleştir",
+    "adminPlaybackIntelLowPowerHevc": "Intel düşük güç tüketimli HEVC kodlayıcıyı etkinleştir",
+    "adminPlaybackEnableVppTonemapping": "VPP ton eşlemeyi aktif et",
+    "adminPlaybackAudioSection": "Ses",
+    "adminPlaybackDownmixAlgorithm": "Stereo downmix algoritması",
+    "adminPlaybackMaxMuxingQueue": "Maksimum muxing kuyruk boyutu",
+    "adminPlaybackAutoOption": "Otomatik",
+    "adminRunningTasks": "Çalışan Görevler",
+    "adminNetworkingPublicHttpPort": "Genel HTTP bağlantı noktası",
+    "adminNetworkingCertPassword": "Sertifika şifresi",
+    "adminNetworkingLocalSubnetsHint": "Yerel ağda kabul edilecek IP adreslerinin veya CIDR alt ağlarının virgül veya yeni satırla ayrılmış listesi.",
+    "adminNetworkingPublishedUris": "Yayınlanan Sunucu URI'leri",
+    "adminNetworkingPublishedUriHint": "Bir alt ağı veya adresi yayınlanan bir URL ile eşleyin, örn. all=https://example.com",
+    "settingsConnectionSection": "BAĞLANTI",
+    "@settingsConnectionSection": {
+        "description": "Section header for server connection settings"
+    },
+    "settingsAllowSelfSignedCerts": "Kendinden imzalı sertifikalara izin ver",
+    "@settingsAllowSelfSignedCerts": {
+        "description": "Setting to trust self-signed TLS certificates"
+    },
+    "settingsAlwaysExpandNavbarLabels": "Üst gezinti çubuğundaki metin etiketlerini her zaman göster",
+    "audiobookWholeBook": "Tüm Kitap",
+    "adminRepoSortDateNewest": "Ekleme Tarihi (Önce En Yeni)",
+    "@adminRepoSortDateNewest": {
+        "description": "Repository sort option, newest added first"
+    },
+    "adminRepoSortNameAsc": "Alfabetik (A'dan Z'ye)",
+    "@adminRepoSortNameAsc": {
+        "description": "Repository sort option, alphabetical ascending"
+    },
+    "adminLibChapterImageResolutionMatchSource": "Kaynağa göre eşle",
+    "@adminLibChapterImageResolutionMatchSource": {
+        "description": "Chapter image resolution option that matches the source resolution"
+    },
+    "fileSizeFormat": "Boyut: {size}  •  Format: {format}",
+    "@fileSizeFormat": {
+        "placeholders": {
+            "size": {},
+            "format": {}
+        }
+    },
+    "guideHoursMinutesLeft": "{hours} sa {minutes} dk kaldı",
+    "@guideHoursMinutesLeft": {
+        "description": "Remaining time of the current program, hours and minutes",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "customThemeTitle": "Özel Tema",
+    "@customThemeTitle": {
+        "description": "Title for the custom theme settings section"
+    },
+    "gamePaused": "Duraklatıldı",
+    "@gamePaused": {
+        "description": "Status shown in the in-game menu while the game is paused"
+    },
+    "audiobookSkipBackSeconds": "{seconds} sn geri",
+    "@audiobookSkipBackSeconds": {
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "recommendationSystemTmdb": "TMDb Benzerliği",
+    "@recommendationSystemTmdb": {
+        "description": "Recommendation system option: TMDb Similarity"
+    },
+    "glassQualitySubtitle": "Bu cihaz için en iyi cam efektini otomatik seçer. Tam, gerçek bulanıklaştırma efektini zorlar; Azaltılmış ise GPU (grafik işlemci) gücünden tasarruf sağlayan hafif bir cam efekti kullanır.",
+    "@glassQualitySubtitle": {
+        "description": "Explanation under the glass quality setting"
+    },
+    "bookFormatBook": "Kitap",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "carServerUnreachable": "Sunucuya erişilemiyor",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "guideHoursLeft": "{hours} sa kaldı",
+    "@guideHoursLeft": {
+        "description": "Remaining time of the current program, whole hours",
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrNotificationsSection": "Bildirimler",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "adminDeleteAllDevices": "Tüm cihazları sil",
+    "adminBackupOptionsTitle": "Yedek Oluştur",
+    "adminMovieRecordingPath": "Film kayıt yolu",
+    "adminBrandingSplashUploadFailed": "Açılış ekranı yüklenemedi",
+    "audiobookChapters": "Bölümler",
+    "sortReleaseDescending": "Yayın Tarihine Göre (Yeniden Eskiye)",
+    "sortCustomDragDrop": "Özel (Sürükle-Bırak)",
+    "playlistSortOptions": "Oynatma Listesi Sıralama Seçenekleri",
+    "resetSort": "Sıralamayı Sıfırla",
+    "rewatchSeasonEpisode": "S{season}:E{episode} Bölümünü Yeniden İzle",
+    "@rewatchSeasonEpisode": {
+        "placeholders": {
+            "season": {
+                "type": "int"
+            },
+            "episode": {
+                "type": "int"
+            }
+        }
+    },
+    "rewatchPlaylist": "Oynatma Listesini Yeniden İzle",
+    "noSubtitlesFound": "Altyazı bulunamadı.",
+    "impellerRenderingSubtitle": "Impeller, daha akıcı animasyonlar ve daha az takılma sağlayan Flutter'ın modern GPU işleme motorudur. Bazı TV kutularında (TV Box) ve eski grafik işlemcilerde (GPU) ekran bozulmalarına veya siyah ekrana neden olabilir; bu gibi durumlarla karşılaşırsanız özelliği Kapatın. Otomatik seçeneği, cihazınız için en iyi varsayılanı belirler. Değişiklikleri uygulamak için Moonfin'i yeniden başlatın.",
+    "@impellerRenderingSubtitle": {
+        "description": "Explanatory description under the rendering engine setting."
+    },
+    "replay": "Tekrar",
+    "audiobookAddNote": "Not Ekle",
+    "audiobookEditNote": "Notu Düzenle",
+    "audiobookSpeedReset": "1.0x hızına sıfırla",
+    "audiobookExportAll": "Hepsini Dışarı Aktar",
+    "audiobookExportSuccess": "{path} konumuna aktarıldı",
+    "@audiobookExportSuccess": {
+        "placeholders": {
+            "path": {
+                "type": "String"
+            }
+        }
+    },
+    "theme8BitHero": "8-bit Hero",
+    "@theme8BitHero": {
+        "description": "Display name for the 8-bit Hero theme"
+    },
+    "gameMenu": "Menü",
+    "@gameMenu": {
+        "description": "Tooltip for the in-game menu button"
+    },
+    "navbarAlwaysExpanded": "Gezinti Çubuğu Etiketlerini Her Zaman Göster",
+    "@navbarAlwaysExpanded": {
+        "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
+    },
+    "audiobookSleepTimer": "Uyku Zamanlayıcısı",
+    "audiobookSleepMinutes": "{count, plural, =1{1 dk} other{{count} dk}}",
+    "@audiobookSleepMinutes": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookPreviousChapter": "Bir Önceki Bölüm",
+    "transcodeVideoProfileNotSupported": "Video profili desteklenmiyor.",
+    "transcodeVideoLevelNotSupported": "Video seviyesi desteklenmiyor.",
+    "recommendationSystem": "Öneri Sistemi",
+    "@recommendationSystem": {
+        "description": "Label for the Recommendation System setting"
+    },
+    "recommendationSystemMoonfin": "Moonfin Önerileri",
+    "@recommendationSystemMoonfin": {
+        "description": "Recommendation system option: Moonfin Recommends"
+    },
+    "recommendationSystemSubtitle": "Moonfin Önerileri yerel kütüphane algoritmasını veya çevrimiçi TMDb Benzerlik Metriklerini kullanın. Not: Çevrimiçi öneriler Seerr entegrasyonu gerektirir.",
+    "@recommendationSystemSubtitle": {
+        "description": "Explanation under the recommendation system setting"
+    },
+    "gameNoCoreOptions": "Bu çekirdeğin ayarlanabilir bir seçeneği yok.",
+    "@gameNoCoreOptions": {
+        "description": "Shown when a game core exposes no settings"
+    },
+    "gameHoldToOpenMenu": "Menüyü açmak için basılı tutun",
+    "@gameHoldToOpenMenu": {
+        "description": "Hint shown while holding the gamepad combo to open the in-game menu"
+    },
+    "gamePlaybackUnsupported": "Bu cihazda henüz oyun oynatma desteklenmiyor.",
+    "@gamePlaybackUnsupported": {
+        "description": "Shown when the device cannot run the retro-game emulator"
+    },
+    "audiobookExportBookmarks": "Yer İmlerini Dışarı Aktar",
+    "detailScreenStyleModern": "Modern",
+    "@detailScreenStyleModern": {
+        "description": "Detail screen style option: the responsive cinematic layout"
+    },
+    "detailScreenStyleSubtitle": "Klasik, orijinal ortalanmış Moonfin düzenidir. Modern ise duyarlı sinematik bir düzendir.",
+    "@detailScreenStyleSubtitle": {
+        "description": "Explanation under the detail screen style setting"
+    },
+    "gameFastForward": "İleri Sar",
+    "@gameFastForward": {
+        "description": "In-game menu action to toggle fast-forward"
+    },
+    "gameEmulatorSettings": "Emülatör ayarları",
+    "@gameEmulatorSettings": {
+        "description": "In-game menu action opening the emulator settings"
+    },
+    "audiobookQueue": "Sıra",
+    "audiobookTimeline": "Zaman Çizelgesi",
+    "settingsAudioRouteHeadphones": "Kulaklık",
+    "@settingsAudioRouteHeadphones": {
+        "description": "Audio route type wired or USB headphones"
+    },
+    "transcodeVideoBitDepthNotSupported": "Video bit derinliği desteklenmiyor.",
+    "transcodeVideoBitrateExceedsLimit": "Video bit hızı, akış sınırını aşıyor.",
+    "transcodeAudioBitrateExceedsLimit": "Ses bit hızı, akış sınırını aşıyor.",
+    "items": "Ögeler",
+    "@items": {
+        "description": "Tab label for the items in a collection/box set"
+    },
+    "detailScreenStyle": "Detay Görüntüleme Stili",
+    "@detailScreenStyle": {
+        "description": "Label for the media detail screen layout style setting"
+    },
+    "detailScreenStyleMoonfin": "Klasik",
+    "@detailScreenStyleMoonfin": {
+        "description": "Detail screen style option: the classic centered layout"
+    },
+    "guideMinutesLeft": "{minutes} dk kaldı",
+    "@guideMinutesLeft": {
+        "description": "Remaining time of the current program, under an hour",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "audiobookNotes": "Notlar",
+    "audiobookFocusedTimeline": "Odaklanmış Zaman Çizelgesi",
+    "audiobookLyrics": "Şarkı Sözleri",
+    "audiobookSleepEndOfChapter": "Bölüm sonunda",
+    "audiobookSleepCustom": "Özel",
+    "audiobookSleepRemaining": "{remaining} kaldı",
+    "@audiobookSleepRemaining": {
+        "placeholders": {
+            "remaining": {
+                "type": "String"
+            }
+        }
+    },
+    "audiobookPlaybackSpeed": "Oynatma Hızı",
+    "audiobookNoBookmarks": "Henüz yer işareti yok",
+    "externalLists": "Harici Ana Sayfa Satır Listeleri",
+    "fileInformation": "Dosya Bilgisi",
+    "showAllSubtitleTracks": "Tüm Altyazıları Göster ({count})",
+    "@showAllSubtitleTracks": {
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "forced": "Zorunlu",
+    "transcodeAudioCodecNotSupported": "Ses kodeki desteklenmiyor.",
+    "impellerRestartMessage": "İşleme motorunu değiştirmek için Moonfin'in yeniden başlatılması gerekiyor. Değişiklikleri uygulamak için uygulamayı şimdi kapatın ve ardından tekrar açın.",
+    "@impellerRestartMessage": {
+        "description": "Body of the dialog shown after changing the rendering engine."
+    },
+    "sortAlphabetical": "Alfabetik",
+    "impellerCloseNow": "Uygulamayı Şimdi Kapat",
+    "@impellerCloseNow": {
+        "description": "Button that closes the app so the new rendering engine takes effect on next launch."
+    },
+    "transcodeVideoCodecNotSupported": "Video kodeki desteklenmiyor.",
+    "adminUnratedBook": "Kitaplar",
+    "adminLiveTvSectionTiming": "Zamanlama",
+    "sortReleaseAscending": "Yayın Tarihine Göre (Eskiden Yeniye)"
 }
