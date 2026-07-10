@@ -557,6 +557,8 @@ class _InfoAreaContentState extends State<_InfoAreaContent> {
     }
     final hasLogo = logoItemId != null && logoTag != null;
 
+    final overview = item.overview ?? '';
+
     return SizedBox(
       width: double.infinity,
       child: Column(
@@ -623,7 +625,7 @@ class _InfoAreaContentState extends State<_InfoAreaContent> {
             child: Align(
               alignment: Alignment.topLeft,
               child: Text(
-                item.overview ?? '',
+                overview.replaceAll(RegExp(r'<\/?([a-z][a-z0-9]*)\b[^>]*>'), ''),
                 style: overviewStyle,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
