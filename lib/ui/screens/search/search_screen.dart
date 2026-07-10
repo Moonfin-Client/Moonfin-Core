@@ -777,7 +777,9 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
       if (_tabCount > 0) RowFocusEntry.node(_tabsFocusNode),
     ];
 
-    final topbar = _userPreferences.get(UserPreferences.navbarPosition) == 'top';
+    final topbar =
+        _userPreferences.get(UserPreferences.navbarPosition) ==
+        NavbarPosition.top;
 
     final scaffold = Scaffold(
       backgroundColor: AppColorScheme.background,
@@ -1124,8 +1126,6 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     final isMobile = PlatformDetection.useMobileUi;
     // Match the modern detail Similar grid (150) so posters read at the same
     // scale as the season/similar tabs on TV and desktop.
-    final cardWidth = isMobile ? 108.0 : 150.0;
-
     final cardWidth = isMobile ? 108.0 : 150.0;
 
     final groups = _vm.results;
