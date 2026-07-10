@@ -1091,9 +1091,9 @@ class PluginSyncService extends ChangeNotifier {
         UserPreferences.displaySinceYouWatchedRows,
       );
       _applyBool(
-        resoved,
-        'displayPlaylistRows',
-        UserPreferences.displayPlaylistRows,
+        resolved,
+        'displayPlaylistsRows',
+        UserPreferences.displayPlaylistsRows,
       );
       _applyBool(
         resolved,
@@ -1716,7 +1716,7 @@ class PluginSyncService extends ChangeNotifier {
       'displayGenresRows': _prefs.get(UserPreferences.displayGenresRows),
       'displayAudioRows': _prefs.get(UserPreferences.displayAudioRows),
       'displaySinceYouWatchedRows': _prefs.get(UserPreferences.displaySinceYouWatchedRows),
-      'displayPlaylistRows': _prefs.get(UserPreferences.displayPlaylistRows),
+      'displayPlaylistsRows': _prefs.get(UserPreferences.displayPlaylistsRows),
       'displayRewatchRow': _prefs.get(UserPreferences.displayRewatchRow),
       'fullScreenRows': _prefs.get(UserPreferences.fullScreenRows),
       'useDetailedSubHeadings': _prefs.get(
