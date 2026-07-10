@@ -4478,7 +4478,7 @@ class _ContentRowsState extends State<_ContentRows>
                       Padding(
                         padding: const EdgeInsets.only(top: 4),
                         child: Text(
-                          overview.replaceAll(RegExp(r'<\/?([a-z][a-z0-9]*)\b[^>]*>'), ''),
+                          overview.replaceAll(RegExp(r'<\/?([a-z0-9]*)\b[^>]*>|(&|#)([a-z0-9&#]*);'), ''),
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: overviewStyle,
