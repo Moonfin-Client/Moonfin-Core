@@ -44,7 +44,7 @@ class _DetailsScreenSettingsScreenState
                     description: l10n.detailScreenStyleSubtitle,
                     icon: Icons.movie_outlined,
                     labelOf: (v) => switch (v) {
-                      DetailScreenStyle.moonfin =>
+                      DetailScreenStyle.classic =>
                         l10n.detailScreenStyleMoonfin,
                       DetailScreenStyle.modern => l10n.detailScreenStyleModern,
                     },

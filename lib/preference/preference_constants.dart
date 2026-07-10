@@ -206,7 +206,7 @@ enum VisualThemeId {
 /// responsive cinematic layout (landscape two-pane / portrait stack). Resolved
 /// globally (not scoped per server/user).
 enum DetailScreenStyle {
-  moonfin,
+  classic,
   modern;
 }
 
