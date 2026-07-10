@@ -206,7 +206,12 @@ List<ItemContextAction> contextActionsFor(
 
   }
 
-  final canChangeArtwork = (isMediaType || type == 'Folder' || type == 'CollectionFolder' || type == 'UserView') &&
+  final canChangeArtwork = (isMediaType ||
+          type == 'Folder' ||
+          type == 'CollectionFolder' ||
+          type == 'UserView' ||
+          type == 'Genre' ||
+          type == 'MusicGenre') &&
       client.serverType == ServerType.jellyfin &&
       isAdminUser;
 

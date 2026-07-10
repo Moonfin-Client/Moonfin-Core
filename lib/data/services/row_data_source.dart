@@ -38,7 +38,7 @@ class RowDataSource {
       'ParentIndexNumber,IndexNumber,Status,ImageTags,BackdropImageTags,'
       'ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,'
       'ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag,'
-      'ParentLogoItemId,ParentLogoImageTag';
+      'ParentLogoItemId,ParentLogoImageTag,PrimaryImageTag,PrimaryImageAspectRatio';
   static const _fallbackFields =
       'DateCreated,Type,UserData,OfficialRating,RunTimeTicks,ProductionYear,SeriesName,'
       'ParentIndexNumber,IndexNumber,ImageTags,BackdropImageTags,'
@@ -396,7 +396,7 @@ class RowDataSource {
         sortOrder: sortOrder,
         recursive: true,
         limit: _defaultLimit,
-        fields: 'ItemCounts',
+        fields: 'ItemCounts,PrimaryImageAspectRatio',
         includeItemTypes: browseItemTypes,
       );
     } on DioException catch (e) {
@@ -488,21 +488,23 @@ class RowDataSource {
         genreIds: [genreId],
         includeItemTypes: includeItemTypes,
         excludeItemTypes: const ['Episode'],
-        sortBy: _defaultSortBy,
-        sortOrder: _defaultSortOrder,
+        sortBy: 'Random',
+        sortOrder: 'Ascending',
         recursive: true,
-        limit: 1,
+        limit: 10,
       );
 
       final items = (response['Items'] as List?) ?? const [];
-      if (items.isEmpty) {
+      final maps = List<Map<String, dynamic>>.from(
+        items.whereType<Map>().map((item) => item.cast<String, dynamic>()),
+      );
+      if (maps.isEmpty) {
         return null;
       }
 
-      final representative = items.first;
-      if (representative is! Map) {
-        return null;
-      }
+      maps.shuffle();
+      final representative = maps[0];
+      final backdropRepresentative = maps.length > 1 ? maps[1] : null;
 
       final rawTotalCount = response['TotalRecordCount'];
       final totalCount = rawTotalCount is num
@@ -517,8 +519,9 @@ class RowDataSource {
 
       return mergeGenreWithRepresentativeItem(
         genreData: genreData,
-        representativeItem: representative.cast<String, dynamic>(),
+        representativeItem: representative,
         itemCount: totalCount,
+        backdropRepresentativeItem: backdropRepresentative,
       );
     } catch (_) {
       return null;
