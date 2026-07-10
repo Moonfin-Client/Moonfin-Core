@@ -127,10 +127,7 @@ class CustomExternalListsService {
 
     if (source == null || type == null) return [];
 
-    if (source == 'imdb') {
-      debugPrint('[CustomService] IMDb custom row source is deprecated and unsupported.');
-      return [];
-    }
+
 
     final client = GetIt.instance.isRegistered<MediaServerClient>()
         ? GetIt.instance<MediaServerClient>()
