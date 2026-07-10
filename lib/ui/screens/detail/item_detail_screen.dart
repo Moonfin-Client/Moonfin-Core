@@ -6656,50 +6656,51 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
                     },
                   ),
                 ),
-              Focus(
-                onKeyEvent: (_, event) {
-                  if (isActivateKey(event)) {
-                    Navigator.of(context).pop();
-                    _confirmDeleteItem(context, item);
-                    return KeyEventResult.handled;
-                  }
-                  return KeyEventResult.ignored;
-                },
-                child: Builder(
-                  builder: (context) {
-                    final hasFocus = Focus.of(context).hasFocus;
-                    return InkWell(
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        _confirmDeleteItem(context, item);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 12,
-                          horizontal: 16,
-                        ),
-                        decoration: BoxDecoration(
-                          color: hasFocus ? Colors.white12 : Colors.transparent,
-                          borderRadius: AppRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.delete_forever,
-                              color: Colors.redAccent,
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              l10n.delete,
-                              style: const TextStyle(color: Colors.redAccent),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+              if (item.canDelete)
+                Focus(
+                  onKeyEvent: (_, event) {
+                    if (isActivateKey(event)) {
+                      Navigator.of(context).pop();
+                      _confirmDeleteItem(context, item);
+                      return KeyEventResult.handled;
+                    }
+                    return KeyEventResult.ignored;
                   },
+                  child: Builder(
+                    builder: (context) {
+                      final hasFocus = Focus.of(context).hasFocus;
+                      return InkWell(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          _confirmDeleteItem(context, item);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            color: hasFocus ? Colors.white12 : Colors.transparent,
+                            borderRadius: AppRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.delete_forever,
+                                color: Colors.redAccent,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                l10n.delete,
+                                style: const TextStyle(color: Colors.redAccent),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
             ],
           ),
         );
