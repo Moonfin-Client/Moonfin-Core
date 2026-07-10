@@ -3099,7 +3099,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final isSeason = item.type == 'Season';
     final logoTag = item.logoImageTag ?? (isEpisode ? item.seriesLogoImageTag : null);
     final logoId = logoTag != null ? (item.logoImageTag != null ? item.id : item.seriesId) : null;
-    final overview = item.overview?.trim().replaceAll(RegExp(r'<\/?([a-z][a-z0-9]*)\b[^>]*>'), '');
+    final overview = item.overview?.trim().replaceAll(RegExp(r'<\/?([a-z0-9]*)\b[^>]*>|(&|#)([a-z0-9&#]*);'), '');
     final hideTitleAndLogo = _landscape && _buildUpNext(context, item) != null;
     final hasUpNext = _landscape && _buildUpNext(context, item) != null;
     final showRatings = isEpisode
