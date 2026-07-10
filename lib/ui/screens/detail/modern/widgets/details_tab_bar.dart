@@ -165,7 +165,7 @@ class _DetailsTabItemState extends State<_DetailsTabItem> {
   Color get _focusColor {
     final activeTheme = ThemeRegistry.active;
     if (activeTheme.id == ThemeRegistry.neonPulseId) {
-      return const Color(0xFF00E5FF);
+      return AppColorScheme.onButtonFocused;
     }
     if (activeTheme.id == ThemeRegistry.moonfinId) {
       return Colors.white;
@@ -338,14 +338,13 @@ class _DetailsTabItemState extends State<_DetailsTabItem> {
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontSize: AppColorScheme.isPixel ? 11 : 13,
                     fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                     color: selected
                         ? selectedTextColor
                         : onSurface.withValues(alpha: 0.75),
                     height: 1.4,
-                    fontFamily: Theme.of(context).textTheme.bodyMedium?.fontFamily,
                   ),
                 ),
               ),
@@ -568,8 +567,8 @@ class _PillTabBarState extends State<_PillTabBar> {
     return LayoutBuilder(
       builder: (context, constraints) {
         // Hug the content when it fits, cap at the available width and let the
-        // segments scroll inside when they overflow. The 6px accounts for the
-        // pane's all(3) padding.
+        // segments scroll inside when they overflow. The 16px covers the pane's
+        // all(3) padding plus a small buffer so the last segment is not clipped.
         final available = constraints.maxWidth;
         if (_widths.isEmpty || !available.isFinite) return pane;
         final content = _widths.fold<double>(0, (sum, w) => sum + w) + 16.0;
