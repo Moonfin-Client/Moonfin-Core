@@ -1126,7 +1126,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     final isMobile = PlatformDetection.useMobileUi;
     // Match the modern detail Similar grid (150) so posters read at the same
     // scale as the season/similar tabs on TV and desktop.
-    final cardWidth = isMobile ? 108.0 : 150.0;
+    final cardWidth = 108.0;
 
     final groups = _vm.results;
 
