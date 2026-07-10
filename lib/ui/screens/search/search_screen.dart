@@ -1123,10 +1123,6 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
     final cardFocusExpansion = prefs.get(UserPreferences.cardFocusExpansion);
     final l10n = AppLocalizations.of(context);
-    final isMobile = PlatformDetection.useMobileUi;
-    // Match the modern detail Similar grid (150) so posters read at the same
-    // scale as the season/similar tabs on TV and desktop.
-    final cardWidth = 108.0;
 
     final groups = _vm.results;
 
@@ -1140,6 +1136,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     for (var r = 0; r < groups.length; r++) {
       final group = groups[r];
       final ar = MediaCard.aspectRatioForType(group.items.first.type);
+      final cardWidth = (ar == 2/3) ? 108.0 : 150.0;
       rows.add(
         LibraryRow(
           key: _allRowKey(r),
@@ -1333,7 +1330,6 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     final prefs = _userPreferences;
     final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
     final cardFocusExpansion = prefs.get(UserPreferences.cardFocusExpansion);
-    final isMobile = PlatformDetection.useMobileUi;
     final isSeerr = _tabIsSeerr(_selectedTab);
     final count = _currentTabItemCount();
     if (count == 0) return const SizedBox.shrink();
@@ -1346,10 +1342,8 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Match the modern detail Similar grid geometry (target 150, spacing 12,
-        // 3-8 columns) so search posters scale identically on TV/desktop.
         const spacing = 12.0;
-        final targetWidth = isMobile ? 108.0 : 150.0;
+        final targetWidth = (imageAspect == 2/3) ? 108.0 : 150.0;
         final available = constraints.maxWidth - horizontalPadding * 2;
         final columns = ((available + spacing) / (targetWidth + spacing))
             .floor()
