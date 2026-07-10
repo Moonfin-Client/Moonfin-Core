@@ -625,7 +625,7 @@ class _InfoAreaContentState extends State<_InfoAreaContent> {
             child: Align(
               alignment: Alignment.topLeft,
               child: Text(
-                overview.replaceAll(RegExp(r'<\/?([a-z][a-z0-9]*)\b[^>]*>'), ''),
+                overview.replaceAll(RegExp(r'<\/?([a-z0-9]*)\b[^>]*>|(&|#)([a-z0-9&#]*);'), ''),
                 style: overviewStyle,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
