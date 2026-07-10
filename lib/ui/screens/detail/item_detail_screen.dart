@@ -6092,6 +6092,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         return _DetailActionButton(
           label: widget.label,
           icon: widget.icon,
+          isPrimary: widget.isPrimary,
           onPressed: widget.onPressed,
           onLongPress: widget.onLongPress,
           onFocused: widget.onFocused,
@@ -9669,7 +9670,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                       children: [
                         Text(
                           widget.label.split('\n')[0],
-                          style: Theme.of(context).textTheme.titleSmall
+                          style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
                                 color: fg,
                                 fontWeight: FontWeight.bold,
@@ -9679,7 +9680,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                         ),
                         Text(
                           widget.label.split('\n')[1],
-                          style: Theme.of(context).textTheme.titleSmall
+                          style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
                                 color: fg.withValues(alpha: 0.8),
                                 fontWeight: FontWeight.bold,
@@ -9693,7 +9694,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                       widget.label,
                       maxLines: 1,
                       softWrap: false,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: fg,
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
@@ -9852,10 +9853,10 @@ class _DetailActionButtonState extends State<_DetailActionButton>
               const SizedBox(width: 6),
               Text(
                 widget.label,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: labelColor,
                   fontWeight: FontWeight.bold,
-                  fontSize: 14,
+                  fontSize: 13,
                   height: 1.1,
                 ),
                 textAlign: TextAlign.center,
@@ -9949,12 +9950,12 @@ class _DetailActionButtonState extends State<_DetailActionButton>
     final activeColor = widget.isActive ? widget.activeColor : null;
     final neonAccent = widget.neonAccentColor ?? AppColorScheme.onSurface;
     final iconColor = showHighlight
-        ? (isNeon ? AppColorScheme.accent : AppColorScheme.onButtonFocused)
+        ? AppColorScheme.onButtonFocused
         : (widget.isActive
               ? (widget.activeColor ?? (isNeon ? neonAccent : Colors.white))
               : (isNeon ? neonAccent : Colors.white));
     final labelColor = showHighlight
-        ? (isNeon ? AppColorScheme.accent : AppColorScheme.onButtonFocused)
+        ? AppColorScheme.onButtonFocused
         : (isNeon ? neonAccent : Colors.white);
 
     return MouseRegion(
