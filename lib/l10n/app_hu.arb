@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Gyors csatlakozás",
+    "quickConnect": "Quick Connect",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -45,11 +45,11 @@
     "@serverUnavailable": {
         "description": "Error message when server cannot be reached"
     },
-    "loginFailed": "Sikertelen bejelentkezés",
+    "loginFailed": "Nem sikerült bejelentkezni",
     "@loginFailed": {
         "description": "Generic login failure message"
     },
-    "quickConnectUnavailable": "Gyorscsatlakozás nem elérhető: {detail}",
+    "quickConnectUnavailable": "QuickConnect nem érhető el: {detail}",
     "@quickConnectUnavailable": {
         "description": "Quick Connect generic error message",
         "placeholders": {
@@ -58,7 +58,7 @@
             }
         }
     },
-    "quickConnectUnavailableWithStatus": "Gyorscsatlakozás nem érhető el ({status}): {detail}",
+    "quickConnectUnavailableWithStatus": "QuickConnect nem érhető el ({status}): {detail}",
     "@quickConnectUnavailableWithStatus": {
         "description": "Quick Connect error message with HTTP status info",
         "placeholders": {
@@ -70,7 +70,7 @@
             }
         }
     },
-    "whosWatching": "Ki néz?",
+    "whosWatching": "Ki nézi?",
     "@whosWatching": {
         "description": "Server user selection heading"
     },
@@ -128,7 +128,7 @@
             }
         }
     },
-    "cancel": "Mégsem",
+    "cancel": "Mégse",
     "@cancel": {
         "description": "Generic cancel button label"
     },
@@ -273,7 +273,7 @@
     "@retryHomeRows": {
         "description": "Button to retry loading home rows after failure"
     },
-    "guide": "Útmutató",
+    "guide": "Műsorújság",
     "@guide": {
         "description": "Live TV guide button label"
     },
@@ -281,11 +281,11 @@
     "@recordings": {
         "description": "Live TV recordings button label"
     },
-    "schedule": "Menetrend",
+    "schedule": "Ütemezés",
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "Sorozat",
+    "series": "Sorozatok",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -293,11 +293,11 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "Otthon",
+    "home": "Kezdőképernyő",
     "@home": {
         "description": "Home navigation tooltip"
     },
-    "browseAll": "Tallózás az összesben",
+    "browseAll": "Összes böngészése",
     "@browseAll": {
         "description": "Button to browse all items in a library"
     },
@@ -396,7 +396,7 @@
             }
         }
     },
-    "continuing": "Folytatás",
+    "continuing": "Folyamatban",
     "@continuing": {
         "description": "Series status badge for ongoing series"
     },
@@ -485,7 +485,7 @@
     "@chapter": {
         "description": "Bookmark mode label for epub format"
     },
-    "page": "oldal",
+    "page": "Oldal",
     "@page": {
         "description": "Bookmark mode label for pdf/comic format"
     },
@@ -524,19 +524,19 @@
             }
         }
     },
-    "discoverySubjects": "Felfedezési alanyok",
+    "discoverySubjects": "Felfedezési témakörök",
     "@discoverySubjects": {
         "description": "Title for the book discovery subject picker panel"
     },
-    "pickDiscoverySubjects": "Válaszd ki, mely témacsatornák jelenjenek meg a Discoverben.",
+    "pickDiscoverySubjects": "Válaszd ki, mely témacsatornák jelenjenek meg a Felfedezésben.",
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "Alkalmazni",
+    "apply": "Alkalmaz",
     "@apply": {
         "description": "Button label to apply selected options"
     },
-    "openLink": "Link megnyitása",
+    "openLink": "Hivatkozás megnyitása",
     "@openLink": {
         "description": "Action label to open a URL externally"
     },
@@ -548,7 +548,7 @@
     "@audiobookGenres": {
         "description": "Title for audiobook genre picker panel"
     },
-    "pickAudiobookGenres": "Válaszd ki, mely műfajokat szeretnéd megjeleníteni a Hangoskönyv Discoverben.",
+    "pickAudiobookGenres": "Válaszd ki, mely műfajokat szeretnéd megjeleníteni a Hangoskönyv-felfedezésben.",
     "@pickAudiobookGenres": {
         "description": "Instruction text in audiobook genre picker"
     },
@@ -733,11 +733,11 @@
     "@authors": {
         "description": "Stat card label for author count"
     },
-    "browseByAuthor": "Tallózás szerző szerint",
+    "browseByAuthor": "Böngészés szerző szerint",
     "@browseByAuthor": {
         "description": "Collection picker dialog title for author browse"
     },
-    "browseByGenre": "Tallózás műfaj szerint",
+    "browseByGenre": "Böngészés műfaj szerint",
     "@browseByGenre": {
         "description": "Collection picker dialog title for genre browse"
     },
@@ -745,7 +745,7 @@
     "@discover": {
         "description": "Section title for book discovery"
     },
-    "trendingTitlesOpenLibrary": "Felkapott címek téma szerint Open Library.",
+    "trendingTitlesOpenLibrary": "Felkapott címek témakör szerint az Open Libraryből.",
     "@trendingTitlesOpenLibrary": {
         "description": "Subtitle for book discovery section"
     },
@@ -794,7 +794,7 @@
     "@watched": {
         "description": "Filter label for watched items"
     },
-    "unread": "Nem olvasott",
+    "unread": "Olvasatlan",
     "@unread": {
         "description": "Status label for an unread book"
     },
@@ -854,7 +854,7 @@
     "@rssFeed": {
         "description": "Button label for RSS feed external link"
     },
-    "downloadZip": "Letöltés Zip",
+    "downloadZip": "ZIP letöltése",
     "@downloadZip": {
         "description": "Button label for zip download external link"
     },
@@ -876,7 +876,7 @@
             }
         }
     },
-    "noOpenLibraryOverview": "Ehhez a címhez még nem áll rendelkezésre áttekintés a Open Library-tól.",
+    "noOpenLibraryOverview": "Ehhez a címhez még nem áll rendelkezésre áttekintés az Open Library-től.",
     "@noOpenLibraryOverview": {
         "description": "Fallback when Open Library has no description"
     },
@@ -901,7 +901,7 @@
     "@couldNotLoadSubject": {
         "description": "Error when a discover subject row fails to load"
     },
-    "audiobookDetails": "Hangoskönyv Részletek",
+    "audiobookDetails": "Hangoskönyv részletei",
     "@audiobookDetails": {
         "description": "AppBar title for LibriVox audiobook detail screen"
     },
@@ -923,7 +923,7 @@
             }
         }
     },
-    "trackList": "Számlista",
+    "trackList": "Dallista",
     "@trackList": {
         "description": "AppBar title for the item list screen"
     },
@@ -939,7 +939,7 @@
     "@failedToLoad": {
         "description": "Error message when item detail fails to load"
     },
-    "delete": "Töröl",
+    "delete": "Törlés",
     "@delete": {
         "description": "Delete action button label"
     },
@@ -999,7 +999,7 @@
     "@tableOfContents": {
         "description": "Section header for audiobook chapters"
     },
-    "tracklist": "Számlista",
+    "tracklist": "Dallista",
     "@tracklist": {
         "description": "Section header for album track listing"
     },
@@ -1007,7 +1007,7 @@
     "@biography": {
         "description": "Section header for person biography"
     },
-    "authorDetails": "A szerző adatai",
+    "authorDetails": "Szerző adatai",
     "@authorDetails": {
         "description": "AppBar title for author detail screen"
     },
@@ -1111,7 +1111,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Szereplők",
+    "cast": "Átküldés",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1131,7 +1131,7 @@
     "@favorite": {
         "description": "Action button label to favorite an item"
     },
-    "playlist": "Hozzáadás lejátszási listához",
+    "playlist": "Lejátszási listához adás",
     "@playlist": {
         "description": "Action button label for adding to a playlist"
     },
@@ -1203,7 +1203,7 @@
     "@deleteDownloadedAlbum": {
         "description": "Dialog title for deleting downloaded album tracks"
     },
-    "deleteDownloadedTracksMessage": "Törlöd a(z) \"{title}\" letöltött számait?",
+    "deleteDownloadedTracksMessage": "Törlöd a(z) „{title}” letöltött számait?",
     "@deleteDownloadedTracksMessage": {
         "description": "Confirmation message for deleting downloaded album tracks",
         "placeholders": {
@@ -1245,7 +1245,7 @@
             }
         }
     },
-    "deleteConfirmMessage": "Biztosan törlöd a(z) \"{name}\" elemet a szerverről? Ez a művelet nem vonható vissza.",
+    "deleteConfirmMessage": "Biztosan törlöd a(z) „{name}” elemet a szerverről? Ez a művelet nem vonható vissza.",
     "@deleteConfirmMessage": {
         "description": "Confirmation message for permanently deleting an item",
         "placeholders": {
@@ -1287,7 +1287,7 @@
     "@downloadSubtitlesLabel": {
         "description": "Label for the download subtitles option"
     },
-    "searchOpenSubtitlesPlugin": "Keresés a OpenSubtitles beépülő modul használatával",
+    "searchOpenSubtitlesPlugin": "Keresés az OpenSubtitles beépülő modul használatával",
     "@searchOpenSubtitlesPlugin": {
         "description": "Subtitle for the download subtitles option"
     },
@@ -1370,7 +1370,7 @@
     "@deleteDownloadedFiles": {
         "description": "Dialog title for deleting downloaded files"
     },
-    "deleteLocalFilesMessage": "Törlöd a(z) {typeLabel} helyi fájljait?\n\nEzzel tárhelyet szabadítasz fel. Később újra letöltheted.",
+    "deleteLocalFilesMessage": "Törlöd a(z) {typeLabel} helyben tárolt fájljait?\n\nEzzel tárhelyet szabadítasz fel. Később újra letöltheted.",
     "@deleteLocalFilesMessage": {
         "description": "Confirmation message for deleting local downloaded files",
         "placeholders": {
@@ -1556,7 +1556,7 @@
             }
         }
     },
-    "remoteSubtitleDetailError": "A távoli felirat {action} művelete sikertelen: {detail}",
+    "remoteSubtitleDetailError": "Nem sikerült a távoli felirat {action} művelete: {detail}",
     "@remoteSubtitleDetailError": {
         "description": "Error message with detail for subtitle operation",
         "placeholders": {
@@ -1568,7 +1568,7 @@
             }
         }
     },
-    "remoteSubtitleHttpError": "A távoli felirat {action} művelete sikertelen (HTTP {status}).",
+    "remoteSubtitleHttpError": "Nem sikerült a távoli felirat {action} művelete (HTTP {status}).",
     "@remoteSubtitleHttpError": {
         "description": "Error message with HTTP status for subtitle operation",
         "placeholders": {
@@ -1589,7 +1589,7 @@
             }
         }
     },
-    "deleteSeriesFiles": "a(z) \"{name}\" összes letöltött epizódja",
+    "deleteSeriesFiles": "a(z) „{name}” összes letöltött epizódja",
     "@deleteSeriesFiles": {
         "description": "Type label for series file deletion",
         "placeholders": {
@@ -1634,7 +1634,7 @@
     "@castingUnavailableOffline": {
         "description": "Snackbar message when casting is unavailable offline"
     },
-    "castActionFailed": "A(z) {label} művelet sikertelen: {error}",
+    "castActionFailed": "Nem sikerült a(z) {label} művelet: {error}",
     "@castActionFailed": {
         "description": "Error when a cast action fails",
         "placeholders": {
@@ -1764,7 +1764,7 @@
     "@bitrateOverride": {
         "description": "Label shown in stream info when a manual bitrate override is active"
     },
-    "audioDelay": "Hang késleltetés",
+    "audioDelay": "Hangkésleltetés",
     "@audioDelay": {
         "description": "Title for audio delay adjuster"
     },
@@ -1786,7 +1786,7 @@
             }
         }
     },
-    "subtitleDelay": "Felirat késleltetése",
+    "subtitleDelay": "Feliratkésleltetés",
     "@subtitleDelay": {
         "description": "Title for subtitle delay adjuster"
     },
@@ -1814,7 +1814,7 @@
     "@directPlay": {
         "description": "Play method label"
     },
-    "directStream": "Közvetlen közvetítés",
+    "directStream": "Közvetlen adatfolyam",
     "@directStream": {
         "description": "Audio option: direct stream"
     },
@@ -1866,7 +1866,7 @@
     "@channels": {
         "description": "Stream info label for audio channels"
     },
-    "audioBitrate": "Audio bitráta",
+    "audioBitrate": "Audió bitráta",
     "@audioBitrate": {
         "description": "Stream info label for audio bitrate"
     },
@@ -2089,7 +2089,7 @@
     "@preparingInAppReader": {
         "description": "Loading text while reader is being prepared"
     },
-    "pdfDataNotAvailable": "PDF adatok nem állnak rendelkezésre.",
+    "pdfDataNotAvailable": "PDF-adatok nem állnak rendelkezésre.",
     "@pdfDataNotAvailable": {
         "description": "Error when PDF data cannot be loaded"
     },
@@ -2114,7 +2114,7 @@
     "@openExternally": {
         "description": "Button to open document in external viewer"
     },
-    "noEpubChaptersFound": "Nem található EPUB fejezet.",
+    "noEpubChaptersFound": "Nem található EPUB-fejezet.",
     "@noEpubChaptersFound": {
         "description": "Error when no EPUB chapters are found"
     },
@@ -2126,7 +2126,7 @@
     "@seriesRecordings": {
         "description": "Live TV series recordings label"
     },
-    "now": "Jelenleg",
+    "now": "Most",
     "@now": {
         "description": "Button label to jump to current time in guide"
     },
@@ -2134,7 +2134,7 @@
     "@sports": {
         "description": "Sports category filter label"
     },
-    "news": "Hír",
+    "news": "Hírek",
     "@news": {
         "description": "News category filter label"
     },
@@ -2220,7 +2220,7 @@
     "@recentRecordings": {
         "description": "Section title for recently completed recordings"
     },
-    "tvSeries": "TV sorozat",
+    "tvSeries": "TV-sorozat",
     "@tvSeries": {
         "description": "Section title for TV series recordings"
     },
@@ -2236,7 +2236,7 @@
     "@cancelRecording": {
         "description": "Dialog title for cancelling a recording"
     },
-    "cancelScheduledRecordingOf": "Megszakítod a(z) \"{name}\" ütemezett felvételét?",
+    "cancelScheduledRecordingOf": "Megszakítod a(z) „{name}” ütemezett felvételét?",
     "@cancelScheduledRecordingOf": {
         "description": "Confirmation message for cancelling a scheduled recording",
         "placeholders": {
@@ -2273,7 +2273,7 @@
     "@cancelSeriesRecordingQuestion": {
         "description": "Dialog title for cancelling a series recording"
     },
-    "stopRecordingName": "Leállítod a(z) \"{name}\" felvételét?",
+    "stopRecordingName": "Leállítod a(z) „{name}” felvételét?",
     "@stopRecordingName": {
         "description": "Confirmation message for stopping a series recording",
         "placeholders": {
@@ -2294,7 +2294,7 @@
     "@searchEllipsis": {
         "description": "Search hint placeholder"
     },
-    "noResultsForQuery": "Nincs találat a következőre: \"{query}\"",
+    "noResultsForQuery": "Nincs találat a következőre: „{query}”",
     "@noResultsForQuery": {
         "description": "Shown when search returns no results",
         "placeholders": {
@@ -2340,7 +2340,7 @@
     "@noDownloadedMediaYet": {
         "description": "Shown when no media has been downloaded"
     },
-    "browseLibrary": "Tallózás a könyvtárban",
+    "browseLibrary": "Böngészés a könyvtárban",
     "@browseLibrary": {
         "description": "Button to navigate to the library"
     },
@@ -2348,7 +2348,7 @@
     "@deleteDownload": {
         "description": "Dialog title for deleting a download"
     },
-    "removeItemAndFiles": "Eltávolítod a(z) \"{name}\" elemet és a fájljait?",
+    "removeItemAndFiles": "Eltávolítod a(z) „{name}” elemet és a fájljait?",
     "@removeItemAndFiles": {
         "description": "Confirmation to delete a downloaded item and its files",
         "placeholders": {
@@ -2408,7 +2408,7 @@
     "@deleteEpisode": {
         "description": "Dialog title for deleting an episode"
     },
-    "removeName": "Eltávolítod a(z) \"{name}\" elemet?",
+    "removeName": "Eltávolítod a(z) „{name}” elemet?",
     "@removeName": {
         "description": "Confirmation to remove an item by name",
         "placeholders": {
@@ -2581,7 +2581,7 @@
     "@autoLoginServerManagement": {
         "description": "Auth settings description"
     },
-    "pinCode": "PIN kód",
+    "pinCode": "PIN-kód",
     "@pinCode": {
         "description": "PIN code settings title"
     },
@@ -2613,7 +2613,7 @@
     "@serverSyncAndPluginStatus": {
         "description": "Plugin settings description"
     },
-    "mediaRequestIntegration": "Médiakérelem integráció",
+    "mediaRequestIntegration": "Médiakérelem-integráció",
     "@mediaRequestIntegration": {
         "description": "Seerr settings description"
     },
@@ -2722,7 +2722,7 @@
     "@showBackdropImages": {
         "description": "Description for background backdrops"
     },
-    "seriesThumbnails": "Sorozat miniatűrök",
+    "seriesThumbnails": "Sorozatminiatűrök",
     "@seriesThumbnails": {
         "description": "Setting for series thumbnails"
     },
@@ -2730,7 +2730,7 @@
     "@seriesThumbnailsDescription": {
         "description": "Description for series thumbnails setting"
     },
-    "homeRowInfoOverlay": "Kezdőlap sor információs fedvény",
+    "homeRowInfoOverlay": "Kezdősori információs fedvény",
     "@homeRowInfoOverlay": {
         "description": "Setting for home row info overlay"
     },
@@ -2738,7 +2738,7 @@
     "@showTitleMetadataOnHomeRows": {
         "description": "Description for home row info overlay"
     },
-    "clockDisplay": "Óra kijelző",
+    "clockDisplay": "Órakijelzés",
     "@clockDisplay": {
         "description": "Setting for clock display"
     },
@@ -2812,15 +2812,15 @@
             }
         }
     },
-    "browsingBackgroundBlur": "Böngészés hátterének elmosása",
+    "browsingBackgroundBlur": "Böngészőnézet háttérelmosása",
     "@browsingBackgroundBlur": {
         "description": "Setting for browsing background blur"
     },
-    "maxStreamingBitrate": "Max streamelési bitráta",
+    "maxStreamingBitrate": "Maximális streamelési bitráta",
     "@maxStreamingBitrate": {
         "description": "Setting for max streaming bitrate"
     },
-    "maxResolution": "Max felbontás",
+    "maxResolution": "Maximális felbontás",
     "@maxResolution": {
         "description": "Setting for max resolution"
     },
@@ -2840,7 +2840,7 @@
     "@stretch": {
         "description": "Zoom mode: stretch"
     },
-    "refreshRateSwitching": "Frissítési gyakoriság váltás",
+    "refreshRateSwitching": "Frissítési gyakoriság váltása",
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
@@ -2872,7 +2872,7 @@
     "@dimVideoShowOverview": {
         "description": "Description for show description on pause"
     },
-    "osdLockButton": "OSD zár gomb",
+    "osdLockButton": "OSD-zárgomb",
     "@osdLockButton": {
         "description": "Setting for OSD lock button"
     },
@@ -2968,11 +2968,11 @@
     "@polish": {
         "description": "Language: Polish"
     },
-    "ac3Passthrough": "AC3 Passthrough",
+    "ac3Passthrough": "AC3-átengedés",
     "@ac3Passthrough": {
         "description": "Setting for AC3 passthrough"
     },
-    "dtsPassthrough": "DTS Passthrough",
+    "dtsPassthrough": "DTS-átengedés",
     "@dtsPassthrough": {
         "description": "Setting for DTS passthrough"
     },
@@ -2980,7 +2980,7 @@
     "@trueHdSupport": {
         "description": "Setting for TrueHD support"
     },
-    "enableDtsPassthrough": "DTS hang közvetlen átvitele az erősítőnek (bitstream); erősítő-támogatást és DTS hangsávot igényel.",
+    "enableDtsPassthrough": "DTS hang közvetlen átvitele az erősítőnek (bitstream); erősítő-támogatást és DTS hangsávot igényel",
     "@enableDtsPassthrough": {
         "description": "Description for DTS passthrough"
     },
@@ -3004,7 +3004,7 @@
     "@enableCustomMpvConf": {
         "description": "Setting for custom mpv.conf"
     },
-    "applyMpvConfBeforePlayback": "A felhasználó által megadott mpv.conf fájl alkalmazása a lejátszás megkezdése előtt.",
+    "applyMpvConfBeforePlayback": "A felhasználó által megadott mpv.conf fájl alkalmazása a lejátszás megkezdése előtt",
     "@applyMpvConfBeforePlayback": {
         "description": "Description for custom mpv.conf"
     },
@@ -3077,7 +3077,7 @@
     "@resumeAndSkip": {
         "description": "Section title for resume and skip settings"
     },
-    "resumeRewind": "Visszatekerés folytatása",
+    "resumeRewind": "Visszatekerés folytatáskor",
     "@resumeRewind": {
         "description": "Setting for resume rewind"
     },
@@ -3101,11 +3101,11 @@
     "@thirtySeconds": {
         "description": "Duration: 30 seconds"
     },
-    "skipBackLength": "Ugrás vissza hossza",
+    "skipBackLength": "Visszaugrás hossza",
     "@skipBackLength": {
         "description": "Setting for skip back length"
     },
-    "skipForwardLength": "Ugrás előre hossza",
+    "skipForwardLength": "Előreugrás hossza",
     "@skipForwardLength": {
         "description": "Setting for skip forward length"
     },
@@ -3125,7 +3125,7 @@
     "@pathToMpvConf": {
         "description": "Hint text for mpv.conf path input"
     },
-    "subtitleStyleDescription": "A stílusbeállítások (méret, szín, eltolás) a szöveges feliratokra vonatkoznak (SRT, VTT, TTML). Az ASS/SSA feliratok saját beágyazott stílusukat használják, kivéve, ha az „ASS/SSA Direct Play” ki van kapcsolva. A bittérképes feliratok (PGS, DVB, VobSub) nem alakíthatók át.",
+    "subtitleStyleDescription": "A stílusbeállítások (méret, szín, eltolás) a szöveges feliratokra vonatkoznak (SRT, VTT, TTML). Az ASS/SSA feliratok saját beágyazott stílusukat használják, kivéve, ha az „ASS/SSA Direct Play” ki van kapcsolva. A bittérképes feliratok (PGS, DVB, VobSub) stílusa nem módosítható.",
     "@subtitleStyleDescription": {
         "description": "Info text about subtitle styling"
     },
@@ -3153,7 +3153,7 @@
     "@backgroundColor": {
         "description": "Setting for background color"
     },
-    "textStrokeColor": "Szöveg körvonal színe",
+    "textStrokeColor": "Szöveg körvonalszíne",
     "@textStrokeColor": {
         "description": "Setting for subtitle text stroke color"
     },
@@ -3177,7 +3177,7 @@
     "@pgsDirectPlay": {
         "description": "Setting for PGS direct play"
     },
-    "directPlayPgsSubtitles": "Közvetlen lejátszású PGS-felirat",
+    "directPlayPgsSubtitles": "PGS-feliratok közvetlen lejátszása",
     "@directPlayPgsSubtitles": {
         "description": "Description for PGS direct play"
     },
@@ -3185,7 +3185,7 @@
     "@assSsaDirectPlay": {
         "description": "Setting for ASS/SSA direct play"
     },
-    "directPlayAssSsaSubtitles": "Közvetlen lejátszás ASS/SSA felirattal",
+    "directPlayAssSsaSubtitles": "ASS/SSA-feliratok közvetlen lejátszása",
     "@directPlayAssSsaSubtitles": {
         "description": "Description for ASS/SSA direct play"
     },
@@ -3288,7 +3288,7 @@
     "@profileSyncHidden": {
         "description": "Title when profile sync is hidden"
     },
-    "enablePluginSyncDescription": "A profilvezérlők megjelenítéséhez engedélyezd a szerverbővítmény szinkronizálását a bővítmény beállításaiban.",
+    "enablePluginSyncDescription": "A profilvezérlők megjelenítéséhez engedélyezd a szerver beépülőmodul-szinkronizálását a beépülő modulok beállításaiban.",
     "@enablePluginSyncDescription": {
         "description": "Description when plugin sync is disabled"
     },
@@ -3312,11 +3312,11 @@
     "@onlyDownloadOnWifi": {
         "description": "Description for wifi-only downloads"
     },
-    "storage": "Tárolás",
+    "storage": "Tárhely",
     "@storage": {
         "description": "Section title for storage settings"
     },
-    "storageUsed": "Tárolás használt",
+    "storageUsed": "Használt tárhely",
     "@storageUsed": {
         "description": "Label for storage used"
     },
@@ -3408,7 +3408,7 @@
     "@showShuffleButton": {
         "description": "Setting for showing shuffle button"
     },
-    "showGenresButton": "Műfajok megjelenítése gomb",
+    "showGenresButton": "Műfajok gomb megjelenítése",
     "@showGenresButton": {
         "description": "Setting for showing genres button"
     },
@@ -3484,7 +3484,7 @@
     "@thumbnailLabel": {
         "description": "Image type: thumbnail"
     },
-    "bannerLabel": "Banner",
+    "bannerLabel": "Bannerkép",
     "@bannerLabel": {
         "description": "Image type: banner"
     },
@@ -3573,7 +3573,7 @@
     "@mediaBarModeMakd": {
         "description": "Media bar style option: MakD"
     },
-    "mediaBarModeOff": "Le",
+    "mediaBarModeOff": "Kikapcsolva",
     "@mediaBarModeOff": {
         "description": "Media bar style option: Off"
     },
@@ -3633,11 +3633,11 @@
     "@autoPlayTrailers": {
         "description": "Description for trailer preview"
     },
-    "episodePreview": "Epizód előnézete",
+    "episodePreview": "Epizód-előnézet",
     "@episodePreview": {
         "description": "Setting for episode preview"
     },
-    "episodePreviewDescription": "Játssz le egy 30 másodperces soros előnézetet fókuszált, lebegtetett vagy hosszan lenyomott kártyákon",
+    "episodePreviewDescription": "Játssz le egy 30 másodperces beágyazott előnézetet fókuszált, lebegtetett vagy hosszan lenyomott kártyákon",
     "@episodePreviewDescription": {
         "description": "Description for episode preview"
     },
@@ -3661,7 +3661,7 @@
     "@myMedia": {
         "description": "Home section: my media"
     },
-    "myMediaSmall": "Saját média (kicsi)",
+    "myMediaSmall": "Saját médiám (kicsi)",
     "@myMediaSmall": {
         "description": "Home section: my media small"
     },
@@ -3689,7 +3689,7 @@
     "@liveTV": {
         "description": "Home section: live TV"
     },
-    "homeSections": "Kezdőlap szakaszok",
+    "homeSections": "Kezdőlapszakaszok",
     "@homeSections": {
         "description": "Settings title for home sections"
     },
@@ -3697,7 +3697,7 @@
     "@resetToDefaults": {
         "description": "Tooltip for reset to defaults button"
     },
-    "homeRowPosterSize": "Főoldali sor poszter mérete",
+    "homeRowPosterSize": "Kezdősor posztermérete",
     "@homeRowPosterSize": {
         "description": "Setting for home row poster size"
     },
@@ -3761,7 +3761,7 @@
     "@noContentRatingsFound": {
         "description": "Shown when no ratings exist on server"
     },
-    "couldNotLoadServerRatings": "Nem sikerült betölteni a szerver értékelését. Csak a mentett értékelések megjelenítése.",
+    "couldNotLoadServerRatings": "Nem sikerült betölteni a szerver értékeléseit. Csak a mentett értékelések megjelenítése.",
     "@couldNotLoadServerRatings": {
         "description": "Shown when ratings fail to load"
     },
@@ -3769,7 +3769,7 @@
     "@couldNotRefreshRatings": {
         "description": "Shown when ratings fail to refresh"
     },
-    "enablePinCode": "PIN kód engedélyezése",
+    "enablePinCode": "PIN-kód engedélyezése",
     "@enablePinCode": {
         "description": "Setting for enabling PIN code"
     },
@@ -3825,7 +3825,7 @@
     "@timeout": {
         "description": "Setting for timeout"
     },
-    "minutesShort": "{minutes} min",
+    "minutesShort": "{minutes} perc",
     "@minutesShort": {
         "description": "Minutes duration short format",
         "placeholders": {
@@ -3887,7 +3887,7 @@
     "@tmdb": {
         "description": "Rating source: TMDB"
     },
-    "metacritic": "Metakritikus",
+    "metacritic": "Metacritic",
     "@metacritic": {
         "description": "Rating source: Metacritic"
     },
@@ -3967,7 +3967,7 @@
     "@pluginDetected": {
         "description": "Status when plugin is detected"
     },
-    "pluginNotDetected": "A beépülő modul nem észlelhető",
+    "pluginNotDetected": "Beépülő modul nem észlelhető",
     "@pluginNotDetected": {
         "description": "Status when plugin is not detected"
     },
@@ -4003,7 +4003,7 @@
     "@syncSettingsWithPlugin": {
         "description": "Description for server plugin sync"
     },
-    "whatSyncControls": "Milyen szinkronizálást vezérel",
+    "whatSyncControls": "Mit szabályoz a szinkronizálás?",
     "@whatSyncControls": {
         "description": "Info title for sync explanation"
     },
@@ -4027,7 +4027,7 @@
     "@popularMovies": {
         "description": "Seerr row: popular movies"
     },
-    "movieGenres": "Film műfajok",
+    "movieGenres": "Filmműfajok",
     "@movieGenres": {
         "description": "Seerr row: movie genres"
     },
@@ -4039,19 +4039,19 @@
     "@studios": {
         "description": "Seerr row: studios"
     },
-    "popularSeries": "Népszerű sorozat",
+    "popularSeries": "Népszerű sorozatok",
     "@popularSeries": {
         "description": "Seerr row: popular series"
     },
-    "seriesGenres": "Sorozat műfajai",
+    "seriesGenres": "Sorozatműfajok",
     "@seriesGenres": {
         "description": "Seerr row: series genres"
     },
-    "upcomingSeries": "Közelgő sorozat",
+    "upcomingSeries": "Közelgő sorozatok",
     "@upcomingSeries": {
         "description": "Seerr row: upcoming series"
     },
-    "networks": "Hálózatok",
+    "networks": "Tévéadók",
     "@networks": {
         "description": "Seerr row: networks"
     },
@@ -4067,11 +4067,11 @@
     "@showSeerrInNavigation": {
         "description": "Description for enable Seerr"
     },
-    "seerrUnavailable": "Nem érhető el, mert a Seerr szerverbővítmény támogatása le van tiltva.",
+    "seerrUnavailable": "Nem érhető el, mert a szerver beépülő modul Seerr-támogatása le van tiltva.",
     "@seerrUnavailable": {
         "description": "Description when Seerr is unavailable"
     },
-    "nsfwFilter": "NSFW szűrő",
+    "nsfwFilter": "NSFW-szűrő",
     "@nsfwFilter": {
         "description": "Setting for NSFW filter"
     },
@@ -4207,7 +4207,7 @@
     "@downloadingUpdate": {
         "description": "Label shown while an update is being downloaded"
     },
-    "updateDownloadFailed": "A frissítés letöltése sikertelen. Kérlek, próbáld újra.",
+    "updateDownloadFailed": "Nem sikerült letölteni a frissítést. Kérlek, próbáld újra.",
     "@updateDownloadFailed": {
         "description": "Error shown when the update download fails"
     },
@@ -4301,7 +4301,7 @@
     "@cancelRequest": {
         "description": "Button/dialog title to cancel a media request"
     },
-    "playInMoonfin": "Lejátszás a Moonfinban",
+    "playInMoonfin": "Lejátszás a Moonfinben",
     "@playInMoonfin": {
         "description": "Button to play available media in Moonfin"
     },
@@ -4330,7 +4330,7 @@
     "@recommendations": {
         "description": "Section title for recommended media"
     },
-    "cancelRequestForTitle": "Visszavonod a(z) \"{title}\" igénylését?",
+    "cancelRequestForTitle": "Visszavonod a(z) „{title}” igénylését?",
     "@cancelRequestForTitle": {
         "description": "Confirmation message for single request cancellation",
         "placeholders": {
@@ -4339,7 +4339,7 @@
             }
         }
     },
-    "cancelCountRequestsForTitle": "Visszavonod a(z) \"{title}\" {count} igénylését?",
+    "cancelCountRequestsForTitle": "Visszavonod a(z) „{title}” {count} igénylését?",
     "@cancelCountRequestsForTitle": {
         "description": "Confirmation message for multiple request cancellation",
         "placeholders": {
@@ -4355,7 +4355,7 @@
     "@keep": {
         "description": "Button to keep/dismiss a cancel dialog"
     },
-    "itemNotFoundInLibrary": "Az elem nem található a Moonfin könyvtárában",
+    "itemNotFoundInLibrary": "Az elem nem található a Moonfin-könyvtáradban",
     "@itemNotFoundInLibrary": {
         "description": "Snackbar when Seerr item cannot be found in Jellyfin"
     },
@@ -4455,7 +4455,7 @@
     "@noRequests": {
         "description": "Shown when request list is empty"
     },
-    "pendingStatus": "Függőben levő",
+    "pendingStatus": "Függőben lévő",
     "@pendingStatus": {
         "description": "Request status label"
     },
@@ -4565,7 +4565,7 @@
     "set": "Készlet",
     "status": "Állapot",
     "stop": "Leállítás",
-    "streaming": "Streaming",
+    "streaming": "Streamelés",
     "time": "Idő",
     "trickplay": "Trickplay",
     "uninstall": "Eltávolítás",
@@ -4575,7 +4575,7 @@
     "unmute": "Némítás feloldása",
     "mute": "Némítás",
     "branding": "Arculat",
-    "adminDrawerDashboard": "Műszerfal",
+    "adminDrawerDashboard": "Irányítópult",
     "adminDrawerAnalytics": "Analitika",
     "adminDrawerSettings": "Beállítások",
     "adminDrawerBranding": "Arculat",
@@ -4600,7 +4600,7 @@
     "adminMediaOverview": "Média áttekintése",
     "adminMediaTotalsError": "Nem sikerült betölteni a szerver média-összesítéseit.",
     "adminMediaOverviewSubtitle": "Gyors áttekintés arról, hogy mennyi tartalom van ezen a szerveren.",
-    "adminPluginUpdatesAvailable": "Elérhető bővítményfrissítések: {count}",
+    "adminPluginUpdatesAvailable": "Elérhető beépülőmodul-frissítések: {count}",
     "@adminPluginUpdatesAvailable": {
         "placeholders": {
             "count": {
@@ -4608,7 +4608,7 @@
             }
         }
     },
-    "adminPluginsRequiringRestart": "Újraindítást igénylő bővítmények: {count}",
+    "adminPluginsRequiringRestart": "Újraindítást igénylő beépülő modulok: {count}",
     "@adminPluginsRequiringRestart": {
         "placeholders": {
             "count": {
@@ -4685,7 +4685,7 @@
     "uhd4k": "4K",
     "nowPlaying": "Most játszott",
     "volume": "Hangerő",
-    "actions": "Akciók",
+    "actions": "Műveletek",
     "videoCodec": "Videókodek",
     "audioCodec": "Audiokodek",
     "hwAccel": "Hardveres gyorsítás",
@@ -4741,7 +4741,7 @@
     },
     "adminRenameLibrary": "Könyvtár átnevezése",
     "adminNewName": "Új név",
-    "adminLibraryRenamed": "A könyvtár átnevezve erre: \"{name}\"",
+    "adminLibraryRenamed": "A könyvtár átnevezve erre: „{name}”",
     "@adminLibraryRenamed": {
         "placeholders": {
             "name": {
@@ -4758,7 +4758,7 @@
         }
     },
     "adminDeleteLibrary": "Könyvtár törlése",
-    "adminLibraryDeleted": "A(z) \"{name}\" könyvtár törölve",
+    "adminLibraryDeleted": "A(z) „{name}” könyvtár törölve",
     "@adminLibraryDeleted": {
         "placeholders": {
             "name": {
@@ -4783,7 +4783,7 @@
         }
     },
     "adminRemovePath": "Elérési út eltávolítása",
-    "adminRemovePathConfirm": "Eltávolítod a(z) \"{path}\" elérési utat ebből a könyvtárból?",
+    "adminRemovePathConfirm": "Eltávolítod a(z) „{path}” elérési utat ebből a könyvtárból?",
     "@adminRemovePathConfirm": {
         "placeholders": {
             "path": {
@@ -4849,7 +4849,7 @@
             }
         }
     },
-    "adminUserDisabled": "A(z) \"{name}\" felhasználó letiltva",
+    "adminUserDisabled": "A(z) „{name}” felhasználó letiltva",
     "@adminUserDisabled": {
         "placeholders": {
             "name": {
@@ -4857,7 +4857,7 @@
             }
         }
     },
-    "adminUserEnabled": "A(z) \"{name}\" felhasználó engedélyezve",
+    "adminUserEnabled": "A(z) „{name}” felhasználó engedélyezve",
     "@adminUserEnabled": {
         "placeholders": {
             "name": {
@@ -4927,7 +4927,7 @@
     "adminAllowRemoteControl": "Más felhasználók távvezérlésének engedélyezése",
     "adminAllowSharedDeviceControl": "Megosztott eszközvezérlés engedélyezése",
     "adminAllowRemoteAccess": "Távoli hozzáférés engedélyezése",
-    "adminRemoteBitrateLimit": "Távoli kliens bitsebesség-korlátja (bps)",
+    "adminRemoteBitrateLimit": "Távoli kliens bitráta-korlátja (bps)",
     "adminLeaveEmptyNoLimit": "Hagyd üresen, ha nem szeretnél korlátozást",
     "adminMaxActiveSessions": "Maximális aktív munkamenet",
     "adminAllowLiveTvAccess": "Élő TV-hozzáférés engedélyezése",
@@ -4948,7 +4948,7 @@
     "adminUserSettings": "Felhasználói beállítások",
     "adminLibraryAccess": "Könyvtár-hozzáférés",
     "adminDeviceAndChannelAccess": "Eszköz- és csatornahozzáférés",
-    "adminEnableAllDevices": "Engedélyezd a hozzáférést az összes eszközhöz",
+    "adminEnableAllDevices": "Hozzáférés engedélyezése az összes eszközhöz",
     "adminEnableAllChannels": "Hozzáférés engedélyezése az összes csatornához",
     "adminResetPasswordWarning": "Ez eltávolítja a jelszót. A felhasználó jelszó nélkül is be tud majd jelentkezni.",
     "adminServerReturnedHttp": "A szerver HTTP {status} kódot adott vissza",
@@ -4967,7 +4967,7 @@
             }
         }
     },
-    "adminUserDeleted": "A(z) \"{name}\" felhasználó törölve",
+    "adminUserDeleted": "A(z) „{name}” felhasználó törölve",
     "@adminUserDeleted": {
         "placeholders": {
             "name": {
@@ -5171,7 +5171,7 @@
     },
     "adminDayOfWeek": "A hét napja",
     "adminSearchPlugins": "Beépülő modulok keresése...",
-    "adminPluginToggleFailed": "Nem sikerült átváltani a bővítményt: {error}",
+    "adminPluginToggleFailed": "Nem sikerült átváltani a beépülő modult: {error}",
     "@adminPluginToggleFailed": {
         "placeholders": {
             "error": {
@@ -5179,8 +5179,8 @@
             }
         }
     },
-    "adminUninstallPlugin": "Bővítmény eltávolítása",
-    "adminUninstallPluginConfirm": "Biztosan el szeretnéd távolítani a(z) \"{name}\" bővítményt?",
+    "adminUninstallPlugin": "Beépülő modul eltávolítása",
+    "adminUninstallPluginConfirm": "Biztosan el szeretnéd távolítani a(z) „{name}” beépülő modult?",
     "@adminUninstallPluginConfirm": {
         "placeholders": {
             "name": {
@@ -5188,7 +5188,7 @@
             }
         }
     },
-    "adminPluginUninstallFailed": "Nem sikerült eltávolítani a bővítményt: {error}",
+    "adminPluginUninstallFailed": "Nem sikerült eltávolítani a beépülő modult: {error}",
     "@adminPluginUninstallFailed": {
         "placeholders": {
             "error": {
@@ -5212,7 +5212,7 @@
             }
         }
     },
-    "adminPluginsLoadFailed": "Nem sikerült betölteni a bővítményeket: {error}",
+    "adminPluginsLoadFailed": "Nem sikerült betölteni a beépülő modulokat: {error}",
     "@adminPluginsLoadFailed": {
         "placeholders": {
             "error": {
@@ -5220,8 +5220,8 @@
             }
         }
     },
-    "adminNoPluginsMatchSearch": "Egyetlen bővítmény sem felel meg a keresésnek",
-    "adminNoPluginsInstalled": "Nincsenek telepítve bővítmények",
+    "adminNoPluginsMatchSearch": "Egyetlen beépülő modul sem felel meg a keresésnek",
+    "adminNoPluginsInstalled": "Nincsenek telepítve beépülő modulok",
     "adminInstallUpdate": "Frissítés telepítése (v{version})",
     "@adminInstallUpdate": {
         "placeholders": {
@@ -5243,7 +5243,7 @@
     "adminExperimentalIntegration": "Kísérleti integráció",
     "adminExperimentalWarning": "A beépülő modulok beállításainak integrációja még kísérleti fázisban van. Előfordulhat, hogy egyes beállítási oldalak nem jelennek meg megfelelően.",
     "continueAction": "Folytatás",
-    "adminPluginRemoveAfterRestart": "A(z) \"{name}\" a szerver újraindítása után lesz eltávolítva",
+    "adminPluginRemoveAfterRestart": "A(z) „{name}” a szerver újraindítása után lesz eltávolítva",
     "@adminPluginRemoveAfterRestart": {
         "placeholders": {
             "name": {
@@ -5259,7 +5259,7 @@
             }
         }
     },
-    "adminPluginUpdating": "A(z) \"{name}\" frissítése a(z) v{version} verzióra...",
+    "adminPluginUpdating": "A(z) „{name}” frissítése a(z) v{version} verzióra...",
     "@adminPluginUpdating": {
         "placeholders": {
             "name": {
@@ -5271,7 +5271,7 @@
         }
     },
     "adminMissingAuthToken": "Nem lehet megnyitni a beállításokat: hiányzik a hitelesítési token.",
-    "adminPluginLoadFailed": "Nem sikerült betölteni a bővítményt: {error}",
+    "adminPluginLoadFailed": "Nem sikerült betölteni a beépülő modult: {error}",
     "@adminPluginLoadFailed": {
         "placeholders": {
             "error": {
@@ -5293,7 +5293,7 @@
     "adminRevisionHistory": "Revíziótörténet",
     "adminNoChangelog": "Nem érhető el változásnapló.",
     "adminRemoveRepository": "Adattár eltávolítása",
-    "adminRemoveRepositoryConfirm": "Biztosan el szeretnéd távolítani a(z) \"{name}\" adattárat?",
+    "adminRemoveRepositoryConfirm": "Biztosan el szeretnéd távolítani a(z) „{name}” adattárat?",
     "@adminRemoveRepositoryConfirm": {
         "placeholders": {
             "name": {
@@ -5321,7 +5321,7 @@
     "adminRepositoryUrl": "Adattár URL-je",
     "adminAddEntry": "Bejegyzés hozzáadása",
     "adminInvalidUrl": "Érvénytelen URL",
-    "adminPluginSettingsLoadFailed": "Nem sikerült betölteni a bővítmény beállításait: {error}",
+    "adminPluginSettingsLoadFailed": "Nem sikerült betölteni a beépülő modul beállításait: {error}",
     "@adminPluginSettingsLoadFailed": {
         "placeholders": {
             "error": {
@@ -5343,7 +5343,7 @@
     "adminServerName": "Szerver neve",
     "adminPreferredMetadataCountry": "Előnyben részesített metaadatok országa",
     "adminCachePath": "Gyorsítótár elérési útja",
-    "adminMetadataPath": "Metaadat elérési út",
+    "adminMetadataPath": "Metaadatok elérési útja",
     "adminLibraryScanConcurrency": "A könyvtári szkennelés párhuzamossága",
     "adminParallelImageEncodingLimit": "Párhuzamos képkódolási korlát",
     "adminSlowResponseThreshold": "Lassú válaszküszöb (ms)",
@@ -5352,12 +5352,12 @@
     "adminLoginDisclaimer": "Bejelentkezési felelősség kizárása",
     "adminLoginDisclaimerHint": "HTML a bejelentkezési űrlap alatt",
     "adminCustomCss": "Egyedi CSS",
-    "adminCustomCssHint": "Egyéni CSS alkalmazva a webes felületen",
+    "adminCustomCssHint": "A webes felületre alkalmazott egyedi CSS",
     "adminEnableSplashScreen": "Indítóképernyő engedélyezése",
     "adminStreamingSaved": "A streamelési beállítások elmentve",
     "adminStreamingLoadFailed": "Nem sikerült betölteni a streamelési beállításokat",
     "adminStreamingDescription": "Globális adatfolyam-bitráta-korlátok beállítása a távoli kapcsolatokhoz.",
-    "adminRemoteBitrateLimitMbps": "Távoli kliens bitsebesség-korlátja (Mbps)",
+    "adminRemoteBitrateLimitMbps": "Távoli kliens bitráta-korlátja (Mbps)",
     "adminLeaveEmptyForUnlimited": "Hagyd üresen, vagy adj meg 0-t a korlátlanhoz",
     "adminPlaybackSaved": "A lejátszási beállítások elmentve",
     "adminPlaybackLoadFailed": "Nem sikerült betölteni a lejátszási beállításokat",
@@ -5368,27 +5368,27 @@
     "adminEnableHardwareDecoding": "Hardveres dekódolás engedélyezése:",
     "adminEncodingThreads": "Kódolási szálak",
     "adminAutomatic": "0 = automatikus",
-    "adminTranscodingTempPath": "Átkódolási hőmérsékleti útvonal",
+    "adminTranscodingTempPath": "Ideiglenes átkódolási útvonal",
     "adminEnableFallbackFont": "Tartalék betűtípus engedélyezése",
     "adminFallbackFontPath": "Tartalék betűtípus elérési útja",
     "adminAllowSegmentDeletion": "Szegmens törlésének engedélyezése",
     "adminSegmentKeepSeconds": "Szegmens megtartása (másodperc)",
-    "adminThrottleBuffering": "Fojtószelep pufferelés",
-    "adminTrickplaySaved": "A trükkjáték beállításai mentve",
-    "adminTrickplayLoadFailed": "Nem sikerült betölteni a trükkös lejátszási beállításokat",
+    "adminThrottleBuffering": "Pufferelés korlátozása",
+    "adminTrickplaySaved": "A Trickplay-beállítások elmentve",
+    "adminTrickplayLoadFailed": "Nem sikerült betölteni a Trickplay-beállításokat",
     "adminEnableHardwareAcceleration": "Hardveres gyorsítás engedélyezése",
-    "adminEnableKeyFrameExtraction": "Csak kulcskeret kivonat engedélyezése",
+    "adminEnableKeyFrameExtraction": "Csak a kulcskockák kinyerésének engedélyezése",
     "adminKeyFrameSubtitle": "Gyorsabb, de kisebb pontosság",
     "adminScanBehavior": "Szkennelési viselkedés",
     "adminProcessPriority": "A folyamat prioritása",
     "adminImageSettings": "Képbeállítások",
     "adminIntervalMs": "Időköz (ms)",
     "adminCaptureFrameSubtitle": "Képkockák rögzítésének gyakorisága",
-    "adminWidthResolutions": "Szélesség felbontások",
+    "adminWidthResolutions": "Szélességi felbontások",
     "adminTileWidth": "Csempe szélessége",
     "adminTileHeight": "Csempe magassága",
     "adminQualitySubtitle": "Alacsonyabb érték = jobb minőség, nagyobb fájlok",
-    "adminProcessThreads": "Folyamat szálak",
+    "adminProcessThreads": "Folyamatszálak",
     "adminResumeSaved": "Folytatási beállítások mentve",
     "adminResumeLoadFailed": "Nem sikerült betölteni a folytatási beállításokat",
     "adminResumeDescription": "Konfiguráld, hogy a tartalom mikor legyen részben vagy teljesen lejátszottként megjelölve.",
@@ -5397,7 +5397,7 @@
     "adminMaxResumePercentage": "Maximális folytatási százalék",
     "adminMaxResumeSubtitle": "A tartalom e százalék után teljesen lejátszottnak minősül",
     "adminMinResumeDuration": "Minimális folytatási időtartam (másodperc)",
-    "adminMinResumeDurationSubtitle": "Az ennél rövidebb tételek nem cserélhetők újra",
+    "adminMinResumeDurationSubtitle": "Az ennél rövidebb elemek lejátszása nem folytatható",
     "adminMinAudiobookResume": "A hangoskönyv-folytatás minimális százaléka",
     "adminMaxAudiobookResume": "A hangoskönyv-folytatás maximális százaléka",
     "adminNetworkingSaved": "A hálózati beállítások elmentve. A szerver újraindítására lehet szükség.",
@@ -5407,7 +5407,7 @@
     "ports": "Portok",
     "adminHttpPort": "HTTP-port",
     "adminHttpsPort": "HTTPS-port",
-    "adminPublicHttpsPort": "Nyilvános HTTPS port",
+    "adminPublicHttpsPort": "Nyilvános HTTPS-port",
     "adminBaseUrl": "Alap URL",
     "adminBaseUrlHint": "például /jellyfin",
     "https": "HTTPS",
@@ -5416,7 +5416,7 @@
     "adminLocalNetworkAddresses": "Helyi hálózati címek",
     "adminKnownProxies": "Ismert proxyk",
     "adminRemoteIpFilter": "Távoli IP-szűrő",
-    "adminRemoteIpFilterEntries": "Távoli IP szűrő",
+    "adminRemoteIpFilterEntries": "Távoli IP-szűrő",
     "adminCertificatePath": "Tanúsítvány elérési útja",
     "whitelist": "Fehérlista",
     "blacklist": "Feketelista",
@@ -5464,7 +5464,7 @@
         }
     },
     "adminUpdateContentType": "Tartalomtípus frissítése",
-    "adminContentType": "Tartalom típusa",
+    "adminContentType": "Tartalomtípus",
     "adminContentTypeUpdated": "Tartalomtípus frissítve",
     "adminContentTypeUpdateFailed": "Nem sikerült frissíteni a tartalomtípust: {error}",
     "@adminContentTypeUpdateFailed": {
@@ -5475,7 +5475,7 @@
         }
     },
     "adminMetadataEditorLoadFailed": "Nem sikerült betölteni a metaadatszerkesztőt",
-    "adminNoPeopleEntries": "Nincsenek személyek bejegyzései",
+    "adminNoPeopleEntries": "Nincsenek személybejegyzések",
     "adminNoExternalIds": "Nem állnak rendelkezésre külső azonosítók",
     "adminImageUpdated": "{imageType} kép frissítve",
     "@adminImageUpdated": {
@@ -5550,7 +5550,7 @@
     "adminTunerTypeHint": "HDHomeRun, M3U, egyéb",
     "adminUrlPath": "URL / elérési út",
     "adminNameOptional": "Név (nem kötelező)",
-    "adminTunerAdded": "Tuner hozzá",
+    "adminTunerAdded": "Tuner hozzáadva",
     "adminTunerAddFailed": "Nem sikerült hozzáadni a tunert: {error}",
     "@adminTunerAddFailed": {
         "placeholders": {
@@ -5559,12 +5559,12 @@
             }
         }
     },
-    "adminAddGuideProvider": "Útmutató-szolgáltató hozzáadása",
+    "adminAddGuideProvider": "Műsorújság-szolgáltató hozzáadása",
     "adminProviderType": "Szolgáltató típusa",
     "adminProviderTypeHint": "SchedulesDirect vagy XMLTV",
     "adminUsernameOptional": "Felhasználónév (nem kötelező)",
     "adminRefreshInterval": "Frissítési időköz (óra)",
-    "adminProviderAdded": "A szolgáltató hozzáadva",
+    "adminProviderAdded": "Szolgáltató hozzáadva",
     "adminProviderAddFailed": "Nem sikerült hozzáadni a szolgáltatót: {error}",
     "@adminProviderAddFailed": {
         "placeholders": {
@@ -5581,8 +5581,8 @@
             }
         }
     },
-    "adminTunerResetRequested": "Tuner reset kérve",
-    "adminTunerResetFailed": "Nem sikerült visszaállítani a tunert: {error}",
+    "adminTunerResetRequested": "Tuner alaphelyzetbe állítása kérve",
+    "adminTunerResetFailed": "Nem sikerült alaphelyzetbe állítani a tunert: {error}",
     "@adminTunerResetFailed": {
         "placeholders": {
             "error": {
@@ -5599,11 +5599,11 @@
         }
     },
     "adminRecordingSettings": "Felvételi beállítások",
-    "adminPrePadding": "Előtöltés (perc)",
-    "adminPostPadding": "Utólagos kitöltés (perc)",
+    "adminPrePadding": "Felvétel előtti ráhagyás (perc)",
+    "adminPostPadding": "Felvétel utáni ráhagyás (perc)",
     "adminRecordingPath": "Felvételi útvonal",
-    "adminSeriesRecordingPath": "Sorozat rögzítési útvonala",
-    "adminRecordingSettingsSaved": "A rögzítési beállítások elmentve",
+    "adminSeriesRecordingPath": "Sorozatok felvételi útvonala",
+    "adminRecordingSettingsSaved": "A felvételi beállítások elmentve",
     "adminSettingsSaveFailed": "Nem sikerült menteni a beállításokat: {error}",
     "@adminSettingsSaveFailed": {
         "placeholders": {
@@ -5613,8 +5613,8 @@
         }
     },
     "adminSetChannelMappings": "Csatornaleképezések beállítása",
-    "adminMappingJson": "JSON leképezése",
-    "adminMappingJsonHint": "Példa: JSON hasznos terhelés leképezése",
+    "adminMappingJson": "Leképezési JSON",
+    "adminMappingJsonHint": "Példa: leképezési JSON-adatok",
     "adminChannelMappingsUpdated": "A csatornaleképezések frissítve",
     "adminMappingsUpdateFailed": "Nem sikerült frissíteni a leképezéseket: {error}",
     "@adminMappingsUpdateFailed": {
@@ -5627,9 +5627,9 @@
     "adminLiveTvLoadFailed": "Nem sikerült betölteni az élő tévéadás adminisztrációját",
     "adminTunerDevices": "Tuner eszközök",
     "adminNoTunerHosts": "Nincs beállítva tunergazda",
-    "adminGuideProviders": "Útmutató-szolgáltatók",
+    "adminGuideProviders": "Műsorújság-szolgáltatók",
     "adminAddProvider": "Szolgáltató hozzáadása",
-    "adminNoListingProviders": "Nincsenek konfigurálva listaszolgáltatók",
+    "adminNoListingProviders": "Nincsenek beállítva műsorújság-szolgáltatók",
     "adminRecordingPathDisplay": "Felvételi útvonal: {path}",
     "@adminRecordingPathDisplay": {
         "placeholders": {
@@ -5684,12 +5684,12 @@
     "adminUnnamedBackup": "Névtelen biztonsági mentés",
     "adminLiveTvNotAvailable": "Élő TV adminisztráció nem érhető el ezen a szerver builden.",
     "adminLiveTvTitle": "Élő TV adminisztráció",
-    "adminApply": "Alkalmazni",
+    "adminApply": "Alkalmaz",
     "adminNotSet": "Nincs beállítva",
     "adminReset": "Visszaállítás",
     "adminLogsTitle": "Szervernaplók",
     "adminLogsNewestFirst": "Legújabb első",
-    "adminLogsOldestFirst": "A legrégebbi első",
+    "adminLogsOldestFirst": "Legrégebbi első",
     "adminLogsJustNow": "Éppen most",
     "adminLogsMinutesAgo": "{minutes} perce",
     "@adminLogsMinutesAgo": {
@@ -5762,8 +5762,8 @@
     "adminMetadataImagePrimary": "Elsődleges",
     "adminMetadataImageBackdrop": "Háttér",
     "adminMetadataImageLogo": "Logó",
-    "adminMetadataImageBanner": "Transzparens",
-    "adminMetadataImageThumb": "Hüvelykujj",
+    "adminMetadataImageBanner": "Bannerkép",
+    "adminMetadataImageThumb": "Bélyegkép",
     "adminMetadataRecursive": "Rekurzív",
     "adminMetadataProvider": "Szolgáltató",
     "adminMetadataImageUpdated": "{imageType} kép frissítve",
@@ -5815,7 +5815,7 @@
             }
         }
     },
-    "adminMetadataDeleteImageContent": "Ezzel eltávolítja az aktuális képet az elemből.",
+    "adminMetadataDeleteImageContent": "Ezzel eltávolítod az aktuális képet az elemből.",
     "adminMetadataImageDeleteFailed": "Nem sikerült törölni a képet: {error}",
     "@adminMetadataImageDeleteFailed": {
         "placeholders": {
@@ -5839,8 +5839,8 @@
     "adminPluginsCatalog": "Katalógus",
     "adminPluginsActive": "Aktív",
     "adminPluginsRestart": "Újraindítás",
-    "adminPluginsNoSearchResults": "Egyetlen bővítmény sem felel meg a keresésnek",
-    "adminPluginsNoneInstalled": "Nincs telepítve plugin",
+    "adminPluginsNoSearchResults": "Egyetlen beépülő modul sem felel meg a keresésnek",
+    "adminPluginsNoneInstalled": "Nincs telepítve beépülő modul",
     "adminPluginsUpdateAvailable": "Frissítés érhető el: v{version}",
     "@adminPluginsUpdateAvailable": {
         "placeholders": {
@@ -5865,7 +5865,7 @@
     },
     "adminPluginsCatalogNoSearchResults": "Nincs a keresésnek megfelelő csomag",
     "adminPluginsCatalogEmpty": "Nincsenek elérhető csomagok",
-    "adminPluginsInstalling": "A(z) \"{name}\" telepítése folyamatban van...",
+    "adminPluginsInstalling": "A(z) „{name}” telepítése folyamatban van...",
     "@adminPluginsInstalling": {
         "placeholders": {
             "name": {
@@ -5874,9 +5874,9 @@
         }
     },
     "adminPluginDetailExperimental": "Kísérleti integráció",
-    "adminPluginDetailExperimentalContent": "A beépülő modul-beállítások integrációja még csak kísérleti jellegű. Előfordulhat, hogy egyes mezők vagy elrendezések még nem jelennek meg megfelelően.",
-    "adminPluginDetailToggle404": "Nem sikerült átkapcsolni a bővítményt. A szerver nem találta ezt a bővítményverziót. Próbáld meg frissíteni a beépülő modulokat, majd próbáld újra.",
-    "adminPluginDetailToggleDioError": "Nem sikerült átkapcsolni a bővítményt. Kérlek, ellenőrizd a szervernaplókat a részletekért.",
+    "adminPluginDetailExperimentalContent": "A beépülő modulok beállításainak integrációja még csak kísérleti jellegű. Előfordulhat, hogy egyes mezők vagy elrendezések még nem jelennek meg megfelelően.",
+    "adminPluginDetailToggle404": "Nem sikerült átkapcsolni a beépülő modult. A szerver nem találta a beépülő modul ezen verzióját. Próbáld meg frissíteni a beépülő modulokat, majd próbáld újra.",
+    "adminPluginDetailToggleDioError": "Nem sikerült átkapcsolni a beépülő modult. Kérlek, ellenőrizd a szervernaplókat a részletekért.",
     "adminPluginDetailSettingsTitle": "{name} beállítások",
     "@adminPluginDetailSettingsTitle": {
         "placeholders": {
@@ -5892,9 +5892,9 @@
     "adminPluginDetailEnablePlugin": "Beépülő modul engedélyezése",
     "adminPluginDetailRestartRequired": "A változtatások életbe léptetéséhez a szerver újraindítása szükséges.",
     "adminPluginDetailRemovalPending": "Ez a beépülő modul eltávolításra kerül a szerver újraindítása után.",
-    "adminPluginDetailMalfunctioned": "Ez a bővítmény meghibásodott, és előfordulhat, hogy nem működik megfelelően.",
+    "adminPluginDetailMalfunctioned": "Ez a beépülő modul meghibásodott, és előfordulhat, hogy nem működik megfelelően.",
     "adminPluginDetailNotSupported": "Ezt a beépülő modult a jelenlegi szerververzió nem támogatja.",
-    "adminPluginDetailSuperseded": "Ezt a bővítményt egy újabb verzió váltotta fel.",
+    "adminPluginDetailSuperseded": "Ezt a beépülő modult egy újabb verzió váltotta fel.",
     "adminReposLoadFailed": "Nem sikerült betölteni a tárolókat: {error}",
     "@adminReposLoadFailed": {
         "placeholders": {
@@ -5904,7 +5904,7 @@
         }
     },
     "adminReposRemoveTitle": "Adattár eltávolítása",
-    "adminReposRemoveConfirm": "Biztosan el akarod távolítani a(z) \"{name}\" elemet?",
+    "adminReposRemoveConfirm": "Biztosan el akarod távolítani a(z) „{name}” elemet?",
     "@adminReposRemoveConfirm": {
         "placeholders": {
             "name": {
@@ -5922,7 +5922,7 @@
         }
     },
     "adminReposEmpty": "Nincsenek beállítva tárolók",
-    "adminReposEmptySubtitle": "Adj hozzá egy adattárat az elérhető bővítmények böngészéséhez",
+    "adminReposEmptySubtitle": "Adj hozzá egy adattárat az elérhető beépülő modulok böngészéséhez",
     "adminReposUnnamed": "(névtelen)",
     "adminReposEditTitle": "Adattár szerkesztése",
     "adminReposAddTitle": "Adattár hozzáadása",
@@ -5956,9 +5956,9 @@
     "adminNetworkingAddEntry": "Bejegyzés hozzáadása",
     "adminBrandingTitle": "Márkaépítés",
     "adminBrandingLoginDisclaimer": "Bejelentkezési felelősség kizárása",
-    "adminBrandingLoginDisclaimerHint": "HTML a bejelentkezési űrlap alatt",
+    "adminBrandingLoginDisclaimerHint": "A bejelentkezési űrlap alatt megjelenő HTML",
     "adminBrandingCustomCss": "Egyedi CSS",
-    "adminBrandingCustomCssHint": "Egyéni CSS alkalmazva a webes felületen",
+    "adminBrandingCustomCssHint": "A webes felületre alkalmazott egyedi CSS",
     "adminBrandingEnableSplash": "Indítóképernyő engedélyezése",
     "adminPlaybackHwAccel": "Hardveres gyorsítás",
     "adminPlaybackHwAccelLabel": "Hardveres gyorsítás",
@@ -5968,7 +5968,7 @@
     "adminPlaybackEncodingThreads": "Kódolási szálak",
     "adminPlaybackFallbackFont": "Tartalék betűtípus engedélyezése",
     "adminPlaybackFallbackFontPath": "Tartalék betűtípus elérési útja",
-    "adminPlaybackStreaming": "Folyó",
+    "adminPlaybackStreaming": "Streamelés",
     "adminResumeVideo": "Videó",
     "adminResumeAudiobooks": "Hangoskönyvek",
     "adminResumeMinAudiobookPct": "A hangoskönyv-folytatás minimális százaléka",
@@ -5977,10 +5977,10 @@
     "adminStreamingBitrateLimitHint": "Hagyd üresen, vagy adj meg 0-t a korlátlanhoz",
     "adminTrickplayHwAccel": "Hardveres gyorsítás engedélyezése",
     "adminTrickplayHwEncoding": "Hardveres kódolás engedélyezése",
-    "adminTrickplayKeyFrameOnly": "Csak kulcskeret kivonat engedélyezése",
+    "adminTrickplayKeyFrameOnly": "Csak kulcskockák kinyerésének engedélyezése",
     "adminTrickplayKeyFrameOnlySubtitle": "Gyorsabb, de kisebb pontosság",
     "adminTrickplayNonBlocking": "Nem blokkoló",
-    "adminTrickplayBlocking": "Blokkolás",
+    "adminTrickplayBlocking": "Blokkoló",
     "adminTrickplayPriorityHigh": "Magas",
     "adminTrickplayPriorityAboveNormal": "Normál felett",
     "adminTrickplayPriorityNormal": "Normál",
@@ -5992,12 +5992,12 @@
     "adminTrickplayWidthResolutionsHint": "Vesszővel elválasztott képpontszélességek (pl. 320)",
     "adminTrickplayQuality": "Minőség",
     "adminTrickplayQScale": "Minőségi skála",
-    "adminTrickplayQScaleSubtitle": "Alacsonyabb érték = jobb minőség, nagyobb fájlok",
-    "adminTrickplayJpegQuality": "JPEG minőség",
+    "adminTrickplayQScaleSubtitle": "Alacsonyabb értékek = jobb minőség, nagyobb fájlok",
+    "adminTrickplayJpegQuality": "JPEG-minőség",
     "adminTrickplayProcessing": "Feldolgozás",
     "adminTasksEmpty": "Nem található ütemezett feladat",
     "adminTasksNoFilterMatch": "Egyetlen feladat sem felel meg az aktuális szűrőnek",
-    "adminTaskCancelling": "Lemondás...",
+    "adminTaskCancelling": "Megszakítás...",
     "adminTaskRunning": "Fut...",
     "adminTaskNeverRun": "Soha nem futott",
     "adminTaskStop": "Leállítás",
@@ -6044,7 +6044,7 @@
     "adminTaskTriggerEvery12Hours": "12 óránként",
     "adminTaskTriggerEvery24Hours": "24 óránként",
     "adminTaskTriggerEvery2Days": "2 naponta",
-    "adminTaskTriggerHours": "{count, plural, one {1 óra} other {{count} óra}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 óra} other{{count} óra}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6055,7 +6055,7 @@
     "adminTaskTriggerTime": "Idő",
     "adminTaskTriggerNoLimit": "Nincs korlátozás",
     "adminActivityJustNow": "Éppen most",
-    "adminActivityLastHour": "Utolsó óra",
+    "adminActivityLastHour": "Elmúlt óra",
     "adminActivityToday": "Ma",
     "adminActivityYesterday": "Tegnap",
     "adminActivityOlder": "Régebbi",
@@ -6083,7 +6083,7 @@
             }
         }
     },
-    "adminActivityNow": "jelenleg",
+    "adminActivityNow": "most",
     "adminActivityMinutesShort": "{minutes} p",
     "@adminActivityMinutesShort": {
         "placeholders": {
@@ -6120,19 +6120,19 @@
         }
     },
     "adminTrickplayDescription": "Állítsd be a gyorstekerési (trickplay) képek generálását az előnézeti képekhez.",
-    "adminNetworkingPublicHttpsPort": "Nyilvános HTTPS port",
+    "adminNetworkingPublicHttpsPort": "Nyilvános HTTPS-port",
     "adminNetworkingBaseUrl": "Alap URL",
     "adminNetworkingBaseUrlHint": "például /jellyfin",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Tanúsítvány elérési útja",
     "adminNetworkingRemoteIpFilter": "Távoli IP-szűrő",
-    "adminNetworkingRemoteIpFilterLabel": "Távoli IP szűrő",
+    "adminNetworkingRemoteIpFilterLabel": "Távoli IP-szűrő",
     "adminPlaybackVaapiDevice": "VA-API eszköz",
     "adminPlaybackAutomatic": "0 = automatikus",
-    "adminPlaybackTranscodeTempPath": "Átkódolási hőmérsékleti útvonal",
-    "adminPlaybackSegmentDeletion": "Szegmens törlésének engedélyezése",
-    "adminPlaybackSegmentKeep": "Szegmens megtartása (másodperc)",
-    "adminPlaybackThrottleBuffering": "Fojtószelep pufferelés",
+    "adminPlaybackTranscodeTempPath": "Átkódolás ideiglenes elérési útja",
+    "adminPlaybackSegmentDeletion": "Szegmensek törlésének engedélyezése",
+    "adminPlaybackSegmentKeep": "Szegmensek megőrzése (másodperc)",
+    "adminPlaybackThrottleBuffering": "Pufferelés korlátozása",
     "adminResumeMinPct": "Minimális folytatási százalék",
     "adminResumeMinPctSubtitle": "A haladás mentéséhez a tartalmat ezen a százalékon túl kell lejátszani",
     "adminResumeMaxPct": "Maximális folytatási százalék",
@@ -6140,11 +6140,11 @@
     "adminResumeMinDuration": "Folytatás minimális időtartama (másodperc)",
     "adminResumeMinDurationSubtitle": "Az ennél rövidebb elemek lejátszása nem folytatható",
     "adminTrickplayScanBehavior": "Szkennelési viselkedés",
-    "adminTrickplayProcessPriority": "A folyamat prioritása",
+    "adminTrickplayProcessPriority": "Folyamat prioritása",
     "adminTrickplayTileWidth": "Csempe szélessége",
     "adminTrickplayTileHeight": "Csempe magassága",
-    "adminTrickplayProcessThreads": "Folyamat szálak",
-    "adminTrickplayWidthResolutions": "Szélesség felbontások",
+    "adminTrickplayProcessThreads": "Feldolgozási szálak",
+    "adminTrickplayWidthResolutions": "Szélességi felbontások",
     "adminMetadataDefault": "Alapértelmezett",
     "adminMetadataContentTypeUpdated": "Tartalomtípus frissítve",
     "adminMetadataContentTypeFailed": "Nem sikerült frissíteni a tartalomtípust: {error}",
@@ -6157,7 +6157,7 @@
     },
     "adminGeneralSlowResponseThreshold": "Lassú válaszküszöb (ms)",
     "adminGeneralCachePath": "Gyorsítótár elérési útja",
-    "adminGeneralMetadataPath": "Metaadat elérési út",
+    "adminGeneralMetadataPath": "Metaadatok elérési útja",
     "adminGeneralServerName": "Szerver neve",
     "adminSettingsLoadFailed": "Nem sikerült betölteni a beállításokat",
     "adminDiscover": "Felfedezés",
@@ -6181,11 +6181,11 @@
     "libraries": "Könyvtárak",
     "syncPlay": "SyncPlay",
     "syncPlayDisabledTitle": "SyncPlay letiltva",
-    "syncPlayDisabledMessage": "A szinkronizált lejátszás használatához engedélyezd a SyncPlay beállítást a beállításokban.",
+    "syncPlayDisabledMessage": "A szinkronizált lejátszás használatához engedélyezd a SyncPlay-t a Beállításokban.",
     "syncPlayServerUnsupportedTitle": "A szerver nem támogatott",
-    "syncPlayServerUnsupportedMessage": "A SyncPlay Jellyfin szervert igényel. A jelenlegi szerver nem támogatja.",
-    "syncPlayGroupFallbackName": "SyncPlay csoport",
-    "syncPlayGroupTooltip": "SyncPlay csoport",
+    "syncPlayServerUnsupportedMessage": "A SyncPlay Jellyfin-szervert igényel. A jelenlegi szerver nem támogatja.",
+    "syncPlayGroupFallbackName": "SyncPlay-csoport",
+    "syncPlayGroupTooltip": "SyncPlay-csoport",
     "syncPlayParticipantCount": "{count, plural, one {# résztvevő} other {# résztvevő}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
@@ -6203,9 +6203,9 @@
     "syncPlayShuffleModeShuffled": "Megkeverve",
     "syncPlayShuffleModeSorted": "Rendezett",
     "syncPlaySyncCurrentQueue": "Az aktuális lejátszási sor szinkronizálása",
-    "syncPlaySyncCurrentQueueSubtitle": "Cseréld le a csoport várólistáját a helyileg lejátszottra",
-    "syncPlayLeaveGroup": "Kilépés a csoportból",
-    "syncPlayGroupQueue": "Csoportos várólista",
+    "syncPlaySyncCurrentQueueSubtitle": "Cseréld le a csoport lejátszási sorát a helyben lejátszottra",
+    "syncPlayLeaveGroup": "Csoport elhagyása",
+    "syncPlayGroupQueue": "Csoportos lejátszási sor",
     "syncPlayQueueItemFallback": "{index}. elem",
     "@syncPlayQueueItemFallback": {
         "description": "Fallback title for SyncPlay queue item when media title is unavailable",
@@ -6215,15 +6215,15 @@
             }
         }
     },
-    "syncPlayPlayNow": "Játssz most",
-    "syncPlayCreateNewGroup": "Hozz létre egy új csoportot",
+    "syncPlayPlayNow": "Lejátszás most",
+    "syncPlayCreateNewGroup": "Új csoport létrehozása",
     "syncPlayGroupName": "Csoport neve",
-    "syncPlayDefaultGroupName": "Saját SyncPlay csoportom",
+    "syncPlayDefaultGroupName": "Saját SyncPlay-csoportom",
     "syncPlayCreateGroup": "Csoport létrehozása",
     "syncPlayAvailableGroups": "Elérhető csoportok",
     "syncPlayNoGroupsAvailable": "Nincsenek elérhető csoportok",
-    "syncPlayJoinGroupQuestion": "Csatlakozol a SyncPlay csoporthoz?",
-    "syncPlayJoinGroupWarning": "A SyncPlay csoporthoz való csatlakozás lecserélheti a jelenlegi lejátszási sorodat. Folytatod?",
+    "syncPlayJoinGroupQuestion": "Csatlakozol a SyncPlay-csoporthoz?",
+    "syncPlayJoinGroupWarning": "A SyncPlay-csoporthoz való csatlakozás lecserélheti a jelenlegi lejátszási sorodat. Folytatod?",
     "syncPlayJoin": "Csatlakozás",
     "syncPlayStateIdle": "Tétlen",
     "syncPlayStateWaiting": "Várakozás",
@@ -6247,9 +6247,9 @@
             }
         }
     },
-    "syncPlayAccessDeniedTitle": "SyncPlay hozzáférés megtagadva",
-    "syncPlayAccessDeniedMessage": "Nincs hozzáférésed egy vagy több elemhez ebben a SyncPlay csoportban. Kérd meg a csoport tulajdonosát, hogy ellenőrizze a könyvtári engedélyeket, vagy válassz másik sort.",
-    "syncPlaySyncingPlaybackToGroup": "Lejátszás szinkronizálása a(z) {groupName} csoporthoz",
+    "syncPlayAccessDeniedTitle": "SyncPlay-hozzáférés megtagadva",
+    "syncPlayAccessDeniedMessage": "Nincs hozzáférésed egy vagy több elemhez ebben a SyncPlay-csoportban. Kérd meg a csoport tulajdonosát, hogy ellenőrizze a könyvtárengedélyeket, vagy válassz másik lejátszási sort.",
+    "syncPlaySyncingPlaybackToGroup": "Lejátszás szinkronizálása a(z) {groupName} csoporttal",
     "@syncPlaySyncingPlaybackToGroup": {
         "description": "Snackbar message shown when starting playback in a SyncPlay group",
         "placeholders": {
@@ -6259,13 +6259,13 @@
         }
     },
     "voiceSearchUnavailable": "A hangalapú keresés nem érhető el.",
-    "dolbyVisionDirectPlayFailedTitle": "Dolby Vision közvetlen lejátszás sikertelen",
-    "dolbyVisionDirectPlayFailedMessage": "Nem sikerült elindítani a közvetlen lejátszást ehhez a Dolby Vision adatfolyamhoz. Megpróbálod újra a szerver átkódolásával?",
-    "retryWithTranscode": "Próbáld újra átkódolással",
-    "dolbyVisionNotSupportedTitle": "Dolby Vision nem támogatott",
-    "dolbyVisionNotSupportedMessage": "Ez az eszköz nem tudja közvetlenül dekódolni a Dolby Vision tartalmat. Használd a HDR10 tartalékot, vagy kérj szerveroldali átkódolást.",
-    "rememberMyChoice": "Emlékezz a választásomra",
-    "playHdr10Fallback": "HDR10 tartalék lejátszása",
+    "dolbyVisionDirectPlayFailedTitle": "A Dolby Vision közvetlen lejátszása nem sikerült",
+    "dolbyVisionDirectPlayFailedMessage": "Nem sikerült elindítani a közvetlen lejátszást ehhez a Dolby Vision-streamhez. Újrapróbálod szerveroldali átkódolással?",
+    "retryWithTranscode": "Újrapróbálás átkódolással",
+    "dolbyVisionNotSupportedTitle": "A Dolby Vision nem támogatott",
+    "dolbyVisionNotSupportedMessage": "Ez az eszköz nem képes közvetlenül dekódolni a Dolby Vision tartalmakat. Használd a HDR10-tartalékot, vagy kérj szerveroldali átkódolást.",
+    "rememberMyChoice": "Választás megjegyzése",
+    "playHdr10Fallback": "HDR10-tartalék lejátszása",
     "requestTranscode": "Átkódolás kérése",
     "integrationRowsDiscoveredCount": "{count, plural, one {# felfedezett sor} other {# felfedezett sor}}",
     "@integrationRowsDiscoveredCount": {
@@ -6285,7 +6285,7 @@
     "offlineServerUnavailable": "Csatlakozva az internethez, de a jelenlegi szerver nem elérhető.",
     "offlineNoInternet": "Offline vagy. Csak a letöltött tartalom érhető el.",
     "offlineFileNotAvailable": "A fájl nem érhető el",
-    "offlineSwitchServer": "Szerver váltása",
+    "offlineSwitchServer": "Szerverváltás",
     "offlineSavedMedia": "Mentett média",
     "castGoogleCast": "Google Cast",
     "castAirPlay": "AirPlay",
@@ -6322,7 +6322,7 @@
     "pinConfirmTitle": "Erősítsd meg a PIN-kódot",
     "pinSetTitle": "PIN-kód beállítása",
     "pinEnterTitle": "Írd be a PIN-kódot",
-    "pinReenterToConfirm": "A megerősítéshez írd be újra a PIN-kódot",
+    "pinReenterToConfirm": "A megerősítéshez add meg újra a PIN-kódot",
     "pinEnterNDigit": "Adj meg egy {length} jegyű PIN-kódot",
     "@pinEnterNDigit": {
         "placeholders": {
@@ -6331,7 +6331,7 @@
             }
         }
     },
-    "pinEnterYourNDigit": "Add meg a {length} jegyű PIN-kódodat",
+    "pinEnterYourNDigit": "Add meg a(z) {length} jegyű PIN-kódodat",
     "@pinEnterYourNDigit": {
         "placeholders": {
             "length": {
@@ -6344,14 +6344,14 @@
     "pinForgot": "Elfelejtetted a PIN-kódot?",
     "pinClear": "Törlés",
     "pinBackspace": "Visszatörlés",
-    "quickConnectAuthorized": "A gyorscsatlakozási kérés engedélyezve.",
-    "quickConnectInvalidOrExpired": "A gyorscsatlakozási kód érvénytelen vagy lejárt.",
-    "quickConnectNotSupported": "A gyorscsatlakozás nem támogatott ezen a szerveren.",
-    "quickConnectAuthorizeFailed": "Nem sikerült engedélyezni a Quick Connect kódot.",
-    "quickConnectDisabled": "A gyors csatlakozás le van tiltva ezen a szerveren.",
-    "quickConnectForbidden": "A fiókod nem tudja engedélyezni ezt a gyorscsatlakozási kérést.",
-    "quickConnectNotFound": "A gyorscsatlakozási kód nem található. Próbálj ki egy új kódot.",
-    "quickConnectFailedWithMessage": "Nem sikerült a gyorscsatlakozás: {message}",
+    "quickConnectAuthorized": "A Quick Connect-kérés jóváhagyva.",
+    "quickConnectInvalidOrExpired": "A Quick Connect-kód érvénytelen vagy lejárt.",
+    "quickConnectNotSupported": "A Quick Connect nem támogatott ezen a szerveren.",
+    "quickConnectAuthorizeFailed": "Nem sikerült jóváhagyni a Quick Connect-kódot.",
+    "quickConnectDisabled": "A Quick Connect le van tiltva ezen a szerveren.",
+    "quickConnectForbidden": "A fiókod nem tudja jóváhagyni ezt a Quick Connect-kérést.",
+    "quickConnectNotFound": "A Quick Connect-kód nem található. Próbálj ki egy új kódot.",
+    "quickConnectFailedWithMessage": "A Quick Connect sikertelen: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6360,7 +6360,7 @@
         }
     },
     "quickConnectEnterCode": "Írd be a kódot",
-    "quickConnectAuthorize": "Engedélyezd",
+    "quickConnectAuthorize": "Jóváhagyás",
     "remoteCommandFailed": "Nem sikerült a parancs: {error}",
     "@remoteCommandFailed": {
         "placeholders": {
@@ -6375,7 +6375,7 @@
     "remoteStartPlayback": "Lejátszás indítása egy másik eszközön",
     "unknownUser": "Ismeretlen",
     "unknownItem": "Ismeretlen",
-    "remoteNothingPlaying": "Semmi sem játszik le ezen a munkameneten",
+    "remoteNothingPlaying": "Nincs lejátszás ezen a munkameneten",
     "castingStarted": "Az átküldés megkezdődött a kiválasztott eszközön",
     "castingFailed": "Nem sikerült elindítani az átküldést: {error}",
     "@castingFailed": {
@@ -6385,16 +6385,16 @@
             }
         }
     },
-    "noRemoteDevices": "Nem állnak rendelkezésre távoli lejátszó eszközök.",
-    "noRemoteDevicesIos": "Nem állnak rendelkezésre távoli lejátszó eszközök.\n\niOS rendszeren előfordulhat, hogy az AirPlay-célpontok nem érhetők el a szimulátorban.",
+    "noRemoteDevices": "Nem állnak rendelkezésre távoli lejátszóeszközök.",
+    "noRemoteDevicesIos": "Nem állnak rendelkezésre távoli lejátszóeszközök.\n\niOS rendszeren előfordulhat, hogy az AirPlay-célpontok nem érhetők el a szimulátorban.",
     "trackActionPlayNext": "Lejátszás következőként",
-    "trackActionAddToQueue": "Hozzáadás a sorhoz",
-    "trackActionAddToPlaylist": "Hozzáadás a lejátszási listához",
+    "trackActionAddToQueue": "Hozzáadás a lejátszási sorhoz",
+    "trackActionAddToPlaylist": "Lejátszási listához adás",
     "trackActionCancelDownload": "Letöltés megszakítása",
-    "trackActionDeleteFromPlaylist": "Törlés a lejátszási listáról",
+    "trackActionDeleteFromPlaylist": "Eltávolítás a lejátszási listáról",
     "trackActionMoveUp": "Mozgatás fel",
     "trackActionMoveDown": "Mozgatás le",
-    "trackActionRemoveFromFavorites": "Eltávolítás a kedvencek közül",
+    "trackActionRemoveFromFavorites": "Eltávolítás a kedvencekből",
     "trackActionAddToFavorites": "Hozzáadás a kedvencekhez",
     "trackActionGoToAlbum": "Ugrás az albumhoz",
     "trackActionGoToArtist": "Ugrás az előadóhoz",
@@ -6414,19 +6414,19 @@
     "shuffleLibrary": "Könyvtár",
     "shuffleGenre": "Műfaj",
     "shuffleNoLibraries": "Nem állnak rendelkezésre kompatibilis könyvtárak.",
-    "shuffleNoGenres": "Nem található műfaj ehhez a véletlenszerű lejátszási módhoz.",
-    "posterDisplayTitle": "Kijelző",
-    "posterImageType": "Kép típusa",
+    "shuffleNoGenres": "Nem találhatók műfajok ehhez a keverési módhoz.",
+    "posterDisplayTitle": "Megjelenítés",
+    "posterImageType": "Képtípus",
     "imageTypePoster": "Poszter",
     "imageTypeThumbnail": "Miniatűr",
-    "imageTypeBanner": "Banner",
+    "imageTypeBanner": "Bannerkép",
     "playlistAddFailed": "Nem sikerült hozzáadni a lejátszási listához",
     "playlistCreateFailed": "Nem sikerült létrehozni a lejátszási listát",
     "playlistNew": "Új lejátszási lista",
     "playlistCreate": "Létrehozás",
     "playlistCreateNew": "Új lejátszási lista létrehozása",
     "playlistNoneFound": "Nem található lejátszási lista",
-    "addToPlaylist": "Hozzáadás a lejátszási listához",
+    "addToPlaylist": "Lejátszási listához adás",
     "lyricsNotAvailable": "Nincs elérhető dalszöveg",
     "upNext": "Következő",
     "playNext": "Lejátszás következőként",
@@ -6537,7 +6537,7 @@
     "settingsPlaybackSyncplay": "Lejátszás és SyncPlay",
     "settingsPlaybackSyncplaySubtitle": "Audio/video beállítások, feliratok, letöltések és SyncPlay vezérlők",
     "settingsIntegrationsSubtitle": "Beépülő modulok szinkronizálása, Seerr, értékelések és egyebek",
-    "settingsAboutSubtitle": "Az alkalmazás verziója, jogi információk és kreditek",
+    "settingsAboutSubtitle": "Az alkalmazás verziója, jogi információk és közreműködők",
     "settingsAuthenticationSection": "HITELESÍTÉS",
     "settingsSortServersBy": "Szerverek rendezése szerint",
     "settingsLastUsed": "Utoljára használt",
@@ -6545,11 +6545,11 @@
     "settingsPrivacyAndSafetySection": "ADATVÉDELEM ÉS BIZTONSÁG",
     "settingsBlockedRatings": "Blokkolt értékelések",
     "settingsGeneralStyle": "Általános stílus",
-    "settingsGeneralStyleSubtitle": "Téma hangsúlyok, hátterek, figyelt indikátorok és témazene",
-    "settingsHomePage": "Kezdőlap",
-    "settingsHomePageSubtitle": "Szakaszok, képtípusok, lefedések és média előnézetek",
+    "settingsGeneralStyleSubtitle": "Témaszínek, hátterek, megtekintettség-jelzők és témazene",
+    "settingsHomePage": "Kezdőképernyő",
+    "settingsHomePageSubtitle": "Szakaszok, képtípusok, fedvények és média-előnézetek",
     "settingsLibrariesSubtitle": "Könyvtár láthatósága, mappanézet és többszerveres viselkedés",
-    "settingsTwentyFourHourClock": "24 órás óra",
+    "settingsTwentyFourHourClock": "24 órás formátum",
     "settingsTwentyFourHourClockSubtitle": "24 órás időformátum használata, ahol az óra látható",
     "settingsShowShuffleButtonInNavigation": "Keverés gomb megjelenítése a navigációs sávban",
     "settingsShowGenresButtonInNavigation": "Műfajok gomb megjelenítése a navigációs sávban",
@@ -6557,7 +6557,7 @@
     "settingsShowLibrariesButtonInNavigation": "Könyvtárak gomb megjelenítése a navigációs sávban",
     "settingsLibraryVisibilitySubtitle": "A kezdőlap láthatóságának váltása könyvtáronként. Indítsd újra a Moonfin alkalmazást, hogy a változtatások életbe lépjenek.",
     "settingsMediaBarAndLocalPreviews": "Médiasáv és helyi előnézetek",
-    "settingsVisualOverlays": "Vizuális lefedések",
+    "settingsVisualOverlays": "Vizuális fedvények",
     "settingsSeasonalSurprise": "Szezonális meglepetés",
     "settingsMetadataAndRatings": "Metaadatok és értékelések",
     "settingsPluginScreenDescription": "A Moonbase a szerveroldali integrációkat segíti elő, beleértve a további értékelési forrásokat, a Seerr-kéréseket és a szinkronizált beállításokat.",
@@ -6568,7 +6568,7 @@
     "settingsEnterDownloadFolderPath": "Add meg a letöltési mappa elérési útját",
     "settingsConcurrentDownloads": "Egyidejű letöltések",
     "settingsConcurrentDownloadsDescription": "Az egyszerre letölthető elemek maximális száma.",
-    "settingsAppInfo": "APP INFORMÁCIÓ",
+    "settingsAppInfo": "ALKALMAZÁS-INFORMÁCIÓ",
     "settingsReportAnIssue": "Probléma bejelentése",
     "settingsReportAnIssueSubtitle": "A GitHub problémakövető megnyitása",
     "settingsJoinDiscord": "Csatlakozz a Discordhoz",
@@ -6577,12 +6577,12 @@
     "settingsSupportMoonfin": "Moonfin támogatása",
     "settingsLegal": "JOGI",
     "settingsLicenses": "Licencek",
-    "settingsOpenSourceLicenseNotices": "Nyílt forráskódú licenc megjegyzések",
+    "settingsOpenSourceLicenseNotices": "Nyílt forráskódú licencnyilatkozatok",
     "settingsPrivacyPolicy": "Adatvédelmi szabályzat",
     "settingsPrivacyPolicySubtitle": "Hogyan kezeli a Moonfin az adataidat",
     "settingsCheckForUpdates": "Frissítések ellenőrzése",
     "settingsCheckForUpdatesSubtitle": "A legújabb Moonfin kiadás ellenőrzése",
-    "settingsPoweredByFlutter": "Powered by Flutter",
+    "settingsPoweredByFlutter": "Flutterrel készült",
     "settingsLicenseNoticesCount": "{count, plural, one {# licencnyilatkozat} other {# licencnyilatkozat}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
@@ -6593,22 +6593,22 @@
         }
     },
     "settingsBoth": "Mindkettő",
-    "settingsShuffleContentTypeFilter": "Véletlenszerű tartalomtípus szűrő",
-    "settingsVideoPlaybackPreferences": "Videó lejátszási beállítások",
-    "settingsVideoPlaybackPreferencesSubtitle": "Alapvető videómotor és streaming minőségi beállítások",
+    "settingsShuffleContentTypeFilter": "Véletlenszerű tartalomtípus-szűrő",
+    "settingsVideoPlaybackPreferences": "Videólejátszási beállítások",
+    "settingsVideoPlaybackPreferencesSubtitle": "Alapvető videómotor és streamelési minőségbeállítások",
     "settingsAudioPreferences": "Hangbeállítások",
-    "settingsAudioPreferencesSubtitle": "Hangsávok, feldolgozás és áthárítási lehetőségek",
+    "settingsAudioPreferencesSubtitle": "Hangsávok, feldolgozás és átengedési lehetőségek",
     "settingsAutomationAndQueue": "Automatizálás és sor",
     "settingsAutomationAndQueueSubtitle": "Automatikus lejátszás és szekvenálás",
     "settingsOfflineDownloadsSubtitle": "Letöltési minőség, tárhelykorlátok és a letöltési sor mérete",
     "settingsSyncplaySubtitle": "Szinkronizálási logika a csoportos munkamenetekhez",
     "settingsAdvancedOptionsSubtitle": "Speciális lejátszófunkciók. Óvatosan használd, mivel egyes beállítások lejátszási problémákat okozhatnak",
     "settingsSkipIntrosAndOutros": "Kihagyod a bevezetőket és a stáblistákat?",
-    "settingsPromptUser": "Felhasználó kérése",
+    "settingsPromptUser": "Felhasználó megkérdezése",
     "settingsSkip": "Kihagyás",
     "settingsDoNothing": "Nincs művelet",
-    "settingsMaxBitrateDescription": "Közvetítési bitráta korlátja. A küszöbérték feletti tartalmat a szerver átkódolja, hogy beférjen.",
-    "settingsMaxResolutionDescription": "A lejátszó által kért maximális felbontás korlátja. A nagyobb felbontású tartalom átkódolásra kerül.",
+    "settingsMaxBitrateDescription": "A streamelési bitráta korlátozása. A küszöbérték feletti tartalmat a szerver átkódolja, hogy lejátszható legyen.",
+    "settingsMaxResolutionDescription": "A lejátszó által kért maximális felbontás korlátozása. A nagyobb felbontású tartalom átkódolásra kerül.",
     "settingsPlayerZoomDescription": "Hogyan kell a videót a képernyőhöz igazítani.",
     "settingsPlaybackEngineAndroidTv": "Lejátszómotor (Android TV)",
     "settingsPlaybackEngineAndroidTvDescription": "Válaszd ki az alapértelmezett lejátszási motort Android TV-eszközökön. A változtatások a következő lejátszási munkamenetre vonatkoznak.",
@@ -6617,8 +6617,8 @@
     "settingsDolbyVisionFallback": "Dolby Vision-tartalék",
     "settingsDolbyVisionFallbackDescription": "A Dolby Vision-tartalmak lejátszási viselkedése olyan eszközökön, amelyek nem támogatják a Dolby Vision dekódolást.",
     "settingsAskEachTime": "Kérdezd meg minden alkalommal",
-    "settingsPreferHdr10Fallback": "Inkább HDR10 tartalék",
-    "settingsPreferServerTranscode": "Szerver átkódolás előnyben részesítése",
+    "settingsPreferHdr10Fallback": "HDR10-tartalék előnyben részesítése",
+    "settingsPreferServerTranscode": "Szerveroldali átkódolás előnyben részesítése",
     "settingsDolbyVisionProfile7DirectPlay": "Dolby Vision 7. profil közvetlen lejátszás",
     "settingsDolbyVisionProfile7DirectPlayDescription": "Azt szabályozza, hogy a Dolby Vision 7. profil bővítőrétegű adatfolyamai közvetlenül lejátszhatók-e.",
     "settingsAutoAftkrtEnabled": "Automatikus (AFTKRT engedélyezve)",
@@ -6632,7 +6632,7 @@
     "settingsFortyFiveSeconds": "45 másodperc",
     "settingsSixtySeconds": "60 másodperc",
     "settingsSkipForwardLengthDescription": "Hány másodpercet ugorjon előre a lejátszó a gyors előretekerés gomb megnyomása után.",
-    "settingsBitstreamAc3ToExternalDecoder": "Bitfolyam AC3 külső dekóderhez",
+    "settingsBitstreamAc3ToExternalDecoder": "AC3-bitfolyam külső dekóderre",
     "settingsCinemaMode": "Mozi mód",
     "settingsCinemaModeSubtitle": "Előzetesek és bevezetők lejátszása a főfilm előtt",
     "settingsShort": "Rövid",
@@ -6651,9 +6651,9 @@
     "settingsLiveTvDirect": "Élő TV közvetlen",
     "settingsLiveTvDirectSubtitle": "Közvetlen lejátszás engedélyezése az élő tévéadáshoz",
     "settingsOpenGroups": "Csoportok megnyitása",
-    "settingsOpenGroupsSubtitle": "SyncPlay csoport létrehozása, csatlakozása vagy kezelése",
+    "settingsOpenGroupsSubtitle": "SyncPlay csoport létrehozása, csatlakozás vagy kezelés",
     "settingsSyncplayEnabled": "SyncPlay engedélyezve",
-    "settingsSyncplayEnabledSubtitle": "Csoportfigyelő funkciók engedélyezése",
+    "settingsSyncplayEnabledSubtitle": "Csoportos megtekintési funkciók engedélyezése",
     "settingsSyncplayButton": "SyncPlay gomb",
     "settingsSyncplayButtonSubtitle": "SyncPlay gomb megjelenítése a navigációs sávban",
     "settingsSyncplayAdvancedCorrection": "Speciális javítás",
@@ -6663,9 +6663,9 @@
     "settingsSyncplaySpeedToSync": "Szinkronizálási sebesség",
     "settingsSyncplaySpeedToSyncSubtitle": "A szinkronizáláshoz használd a lejátszási sebesség beállítását",
     "settingsSyncplaySkipToSync": "Ugrás a szinkronizáláshoz",
-    "settingsSyncplaySkipToSyncSubtitle": "Használd a keresést a szinkronizáláshoz",
-    "settingsSyncplayMinimumSpeedDelay": "Minimális sebesség késleltetés",
-    "settingsSyncplayMaximumSpeedDelay": "Maximális sebesség késleltetés",
+    "settingsSyncplaySkipToSyncSubtitle": "Használd a tekerést a szinkronizáláshoz",
+    "settingsSyncplayMinimumSpeedDelay": "Minimális sebességkésleltetés",
+    "settingsSyncplayMaximumSpeedDelay": "Maximális sebességkésleltetés",
     "settingsSyncplaySpeedDuration": "Sebesség időtartama",
     "settingsSyncplayMinimumSkipDelay": "Minimális kihagyási késleltetés",
     "settingsSyncplayExtraOffset": "SyncPlay extra eltolás",
@@ -6702,7 +6702,7 @@
             }
         }
     },
-    "desktopUiScale": "Asztali felhasználói felület skála",
+    "desktopUiScale": "Felület méretezése",
     "@desktopUiScale": {
         "description": "Setting for desktop UI scale"
     },
@@ -6723,7 +6723,7 @@
     "@email": {
         "description": "Email field label"
     },
-    "seerrAccountType": "Seerr fiók típusa",
+    "seerrAccountType": "Seerr-fiók típusa",
     "@seerrAccountType": {
         "description": "Header for selecting Seerr authentication account type"
     },
@@ -6747,7 +6747,7 @@
     "@behavior": {
         "description": "Section heading for behavior options"
     },
-    "seconds": "másodpercig",
+    "seconds": "másodperc",
     "@seconds": {
         "description": "Time unit label in seconds"
     },
@@ -6755,7 +6755,7 @@
     "@localPreviews": {
         "description": "Local previews settings screen title"
     },
-    "localPreviewsDescription": "Előzetes, média és audio előnézetek konfigurálása.",
+    "localPreviewsDescription": "Előzetes-, média- és hangelőnézetek konfigurálása.",
     "@localPreviewsDescription": {
         "description": "Description for local previews settings"
     },
@@ -6763,7 +6763,7 @@
     "@mediaPreview": {
         "description": "Setting for media preview"
     },
-    "mediaPreviewDescription": "Játssz le egy 30 másodperces soros előnézetet fókuszált, lebegtetett vagy hosszan lenyomott kártyákon",
+    "mediaPreviewDescription": "Játssz le egy 30 másodperces beágyazott előnézetet fókuszált, lebegtetett vagy hosszan lenyomott kártyákon",
     "@mediaPreviewDescription": {
         "description": "Description for media preview"
     },
@@ -6835,27 +6835,27 @@
     "@settingsAudioCodecPassthroughDescription": {
         "description": "Description for codec passthrough settings group"
     },
-    "settingsAudioEac3Passthrough": "EAC3 Passthrough",
+    "settingsAudioEac3Passthrough": "EAC3-átengedés",
     "@settingsAudioEac3Passthrough": {
         "description": "Setting for EAC3 passthrough"
     },
-    "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) Passthrough",
+    "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos)-átengedés",
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
+    "settingsAudioDtsCorePassthrough": "DTS Core-átengedés",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
-    "settingsAudioDtsHdPassthrough": "DTS-HD MA átengedés",
+    "settingsAudioDtsHdPassthrough": "DTS-HD MA-átengedés",
     "@settingsAudioDtsHdPassthrough": {
         "description": "Setting for DTS-HD MA passthrough"
     },
-    "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
+    "settingsAudioTrueHdPassthrough": "TrueHD-átengedés",
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
+    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos-átengedés",
     "@settingsAudioTrueHdAtmosPassthrough": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
@@ -7030,12 +7030,12 @@
     "@useDetailedSubHeadings": {
         "description": "Label for setting to toggle detailed or minimal subrow on library pages"
     },
-    "useDetailedSubHeadingsDescription": "Részletes vagy minimális alsó sor megjelenítése a könyvtár oldalakon.",
+    "useDetailedSubHeadingsDescription": "Részletes vagy minimális alsó sor megjelenítése a könyvtároldalakon.",
     "@useDetailedSubHeadingsDescription": {
         "description": "Subtitle for the use detailed sub headings setting"
     },
     "savedThemesDeleteDialogTitle": "Mentett téma törlése?",
-    "savedThemesDeleteDialogMessage": "Eltávolítod a(z) \"{themeName}\" témát az eszköz gyorsítótárából?",
+    "savedThemesDeleteDialogMessage": "Eltávolítod a(z) „{themeName}” témát az eszköz gyorsítótárából?",
     "@savedThemesDeleteDialogMessage": {
         "description": "Confirmation message for deleting a saved custom theme",
         "placeholders": {
@@ -7044,7 +7044,7 @@
             }
         }
     },
-    "savedThemesDeletedMessage": "A(z) \"{themeName}\" törölve erről az eszközről.",
+    "savedThemesDeletedMessage": "A(z) „{themeName}” törölve erről az eszközről.",
     "@savedThemesDeletedMessage": {
         "description": "Status message shown after deleting a saved custom theme",
         "placeholders": {
@@ -7053,7 +7053,7 @@
             }
         }
     },
-    "savedThemesDeleteFailedMessage": "Nem sikerült törölni a(z) \"{themeName}\" témát.",
+    "savedThemesDeleteFailedMessage": "Nem sikerült törölni a(z) „{themeName}” témát.",
     "@savedThemesDeleteFailedMessage": {
         "description": "Status message shown when deleting a saved custom theme fails",
         "placeholders": {
@@ -7063,7 +7063,7 @@
         }
     },
     "savedThemesTitle": "Mentett témák",
-    "savedThemesDescription": "Ezek a jelenlegi szerverhez a Moonfin bővítményből letöltött témák. A törlés csak ezt a helyi másolatot távolítja el.",
+    "savedThemesDescription": "Ezek a jelenlegi szerverhez a Moonfin beépülő modulból letöltött témák. A törlés csak ezt a helyi másolatot távolítja el.",
     "savedThemesEmpty": "Nem találhatók mentett témák ehhez a szerverhez.",
     "savedThemesCurrentThemeId": "{themeId} • Jelenleg aktív",
     "@savedThemesCurrentThemeId": {
@@ -7075,7 +7075,7 @@
         }
     },
     "savedThemesDeleteTooltip": "Mentett téma törlése",
-    "savedThemesManageSubtitle": "A letöltött bővítménytémák kezelése ezen az eszközön",
+    "savedThemesManageSubtitle": "A letöltött beépülőmodul-témák kezelése ezen az eszközön",
     "themeEditor": "Témaszerkesztő",
     "themeEditorSubtitle": "Nyisd meg a Moonfin témaszerkesztőt a böngésződben",
     "homeScreen": "Kezdőképernyő",
@@ -7084,7 +7084,7 @@
     "homeRowsStyleModern": "Modern",
     "homeRowsSection": "Kezdőképernyő sorai",
     "rowsType": "Sor típusa",
-    "rowsTypeDescription": "A klasszikus megtartja a soronkénti képtípust és az információs réteget. A modern állóképről háttérképre váltó sorokat használ.",
+    "rowsTypeDescription": "A klasszikus megtartja a soronkénti képtípust és az információs fedvényt. A modern állóképről háttérképre váltó sorokat használ.",
     "displayFavoritesRows": "Kedvencek sorainak megjelenítése",
     "displayFavoritesRowsSubtitle": "A kedvenc filmek, sorozatok és más kedvenc sorok megjelenítése a kezdőképernyő szakaszaiban.",
     "favoritesRowSorting": "Kedvencek sorainak rendezése",
@@ -7110,13 +7110,13 @@
     "supportedOnThisDevice": "Támogatott ezen az eszközön",
     "notSupportedOnThisDevice": "Nem támogatott ezen az eszközön",
     "settingsAudioDtsXPassthrough": "DTS:X (DTS UHD) átengedés",
-    "settingsAudioBitstreamDtsXToExternalDecoder": "DTS:X (DTS UHD) bitstream külső dekóderre.",
+    "settingsAudioBitstreamDtsXToExternalDecoder": "DTS:X (DTS UHD) bitfolyam külső dekóderre.",
     "settingsAudioTrueHdJocPassthrough": "TrueHD Atmos (JOC) átengedés",
     "mediaPlayerBehavior": "Médialejátszó viselkedése",
     "playbackEnhancements": "Lejátszási fejlesztések",
     "alwaysOn": "Mindig bekapcsolva.",
     "replaceSkipOutroWithNextUpDisplay": "Stáblista kihagyása gomb lecserélése a Következő elem megjelenítésére",
-    "replaceSkipOutroWithNextUpDisplaySubtitle": "A Következő elem panel megjelenítése a Stáblista kihagyása gomb helyett.",
+    "replaceSkipOutroWithNextUpDisplaySubtitle": "A Következő elem fedvény megjelenítése a Stáblista kihagyása gomb helyett.",
     "playerRouting": "Lejátszó-útvonalválasztás",
     "preferSoftwareDecoders": "Szoftveres dekódolók előnyben részesítése",
     "preferSoftwareDecodersSubtitle": "Használd az FFmpeg-et (audió) és a libgav1-et (AV1) a hardveres dekódolók előtt. Tiltsd le, ha a HDMI-hangátengedés elromlik.",
@@ -7132,7 +7132,7 @@
     "webDiagnosticsDetectedCorsPreflightFailure": "CORS/Preflight hiba észlelve",
     "webDiagnosticsMixedContentFailureBody": "A Moonfin észlelte, hogy egy HTTPS-oldal próbál hívni egy HTTP-szerver URL-t. A böngészők blokkolják ezt a kérést, mielőtt az elérné a szerveredet.",
     "webDiagnosticsCorsFailureBody": "A Moonfin böngészőszintű kéréshibát észlelt, amelyet általában a CORS- vagy preflight-fejlécek hiánya okoz a médiaszerveren.",
-    "webDiagnosticsTargetUrl": "Cél URL: {url}",
+    "webDiagnosticsTargetUrl": "Cél-URL: {url}",
     "@webDiagnosticsTargetUrl": {
         "description": "Target URL shown in diagnostics summary",
         "placeholders": {
@@ -7151,9 +7151,9 @@
         }
     },
     "webDiagnosticsCurrentRuntimeContext": "Jelenlegi futtatókörnyezet",
-    "webDiagnosticsOrigin": "Origin",
+    "webDiagnosticsOrigin": "Eredet",
     "webDiagnosticsScheme": "Séma",
-    "webDiagnosticsPluginMode": "Bővítmény mód",
+    "webDiagnosticsPluginMode": "Beépülő modul mód",
     "webDiagnosticsWebRtcScan": "WebRTC-vizsgálat",
     "webDiagnosticsForcedServerUrl": "Kényszerített szerver-URL",
     "webDiagnosticsDefaultServerUrl": "Alapértelmezett szerver-URL",
@@ -7173,15 +7173,15 @@
     "webDiagnosticsNonWebNote": "Ez a diagnosztikai útvonal webes buildekhez készült. Ha ezt egy másik platformon látod, előfordulhat, hogy ezek az ellenőrzések nem érvényesek.",
     "backToServerSelect": "Vissza a szerverválasztáshoz",
     "signOutAllUsers": "Minden felhasználó kijelentkeztetése",
-    "voiceSearchPermissionPermanentlyDenied": "A mikrofon hozzáférés véglegesen meg van tagadva. Engedélyezd a rendszerbeállításokban.",
+    "voiceSearchPermissionPermanentlyDenied": "A mikrofon-hozzáférés véglegesen meg van tagadva. Engedélyezd a rendszerbeállításokban.",
     "voiceSearchPermissionRequired": "A hangalapú kereséshez mikrofon-hozzáférés szükséges.",
     "voiceSearchNoMatch": "Nem értettem. Próbáld újra.",
     "voiceSearchNoSpeechDetected": "Nem észlelhető beszéd.",
     "voiceSearchMicrophoneError": "Mikrofonhiba.",
     "voiceSearchNeedsInternet": "A hangalapú kereséshez internetkapcsolat szükséges.",
     "voiceSearchServiceBusy": "A hangalapú szolgáltatás elfoglalt. Próbáld újra.",
-    "microphonePermissionPermanentlyDenied": "A mikrofon hozzáférés véglegesen meg van tagadva.",
-    "microphonePermissionDenied": "A mikrofon hozzáférés meg van tagadva.",
+    "microphonePermissionPermanentlyDenied": "A mikrofon-hozzáférés véglegesen meg van tagadva.",
+    "microphonePermissionDenied": "A mikrofon-hozzáférés meg van tagadva.",
     "speechRecognitionUnavailable": "A beszédfelismerés nem érhető el ezen az eszközön.",
     "openIosRoutePicker": "iOS útvonalválasztó megnyitása",
     "airPlayRoutePickerUnavailable": "Az AirPlay útvonalválasztó nem érhető el ezen az eszközön.",
@@ -7256,7 +7256,7 @@
     "adminDrawerSectionPlayback": "Lejátszás",
     "adminDrawerSectionDevices": "Eszközök",
     "adminDrawerSectionAdvanced": "Speciális",
-    "adminDrawerSectionPlugins": "Bővítmények",
+    "adminDrawerSectionPlugins": "Beépülő modulok",
     "adminDrawerSectionLiveTv": "Élő TV",
     "homeVideos": "Saját videók",
     "mixedContent": "Vegyes tartalom",
@@ -7324,10 +7324,10 @@
             }
         }
     },
-    "cbrExtractionPluginUnavailable": "A CBR-kicsomagoló bővítmény nem érhető el ezen a platformon.",
+    "cbrExtractionPluginUnavailable": "A CBR-kicsomagoló beépülő modul nem érhető el ezen a platformon.",
     "failedToExtractCbrArchive": "Nem sikerült kicsomagolni a .cbr archívumot.",
     "cb7ExtractionUnavailable": "A CB7-kicsomagolás nem érhető el ezen a platformon.",
-    "cb7ExtractionPluginUnavailable": "A CB7-kicsomagoló bővítmény nem érhető el ezen a platformon.",
+    "cb7ExtractionPluginUnavailable": "A CB7-kicsomagoló beépülő modul nem érhető el ezen a platformon.",
     "closeGenrePanel": "Műfajpanel bezárása",
     "loadingShuffle": "Keverés betöltése...",
     "libraryShuffleLabel": "Könyvtár keverése",
@@ -7365,11 +7365,11 @@
     "@settingsAudioFallbackCodecMp3": {
         "description": "Fallback codec option: MP3"
     },
-    "themeGlass": "Áttetsző",
+    "themeGlass": "Üveg",
     "@themeGlass": {
         "description": "Display name for the Glass theme"
     },
-    "themeGlassSubtitle": "Liquid-glass stílus színátmenetes háttérrel, jeges felülettel, és Apple-kék kiemelő színnel",
+    "themeGlassSubtitle": "Folyékony üveg stílus színátmenetes háttérrel, jeges felülettel és Apple-kék kiemelő színnel",
     "@themeGlassSubtitle": {
         "description": "Preview description for the Glass theme"
     },
@@ -7446,7 +7446,7 @@
     "@settingsAudioOutputModeDescription": {
         "description": "Description for audio output mode setting"
     },
-    "settingsAudioFallbackCodecDescription": "Válaszd ki a célformátumot a többcsatornás hang átkódolásához, ha a forrás-adatfolyam nem játszható le közvetlen lejátszással, vagy nem továbbítható.",
+    "settingsAudioFallbackCodecDescription": "Válaszd ki a célformátumot a többcsatornás hang átkódolásához, ha a forrás-adatfolyam nem játszható le közvetlen lejátszással, vagy nem engedhető át.",
     "@settingsAudioFallbackCodecDescription": {
         "description": "Description for audio fallback codec setting"
     },
@@ -7538,7 +7538,7 @@
     "@groupItemsIntoCollectionsDialogTitle": {
         "description": "Title of the alert dialog explaining server settings requirement"
     },
-    "groupItemsIntoCollectionsDialogMessage": "A beállítás használatához győződj meg róla, hogy a \"Filmek csoportosítása gyűjteményekbe\" és/vagy \"Sorozatok csoportosítása gyűjteményekbe\" könyvtári beállítások engedélyezve vannak a könyvtárad megjelenítési beállításai között a Jellyfin vagy Emby szervereden.",
+    "groupItemsIntoCollectionsDialogMessage": "A beállítás használatához győződj meg róla, hogy a „Filmek csoportosítása gyűjteményekbe” és/vagy „Sorozatok csoportosítása gyűjteményekbe” könyvtári beállítások engedélyezve vannak a könyvtárad megjelenítési beállításai között a Jellyfin vagy Emby szervereden.",
     "@groupItemsIntoCollectionsDialogMessage": {
         "description": "Message of the alert dialog explaining server settings requirement"
     },
@@ -7609,7 +7609,7 @@
     "themeStoreSaveAndApply": "Mentés és alkalmazás",
     "themeStoreSaved": "Mentve",
     "themeStoreInvalidMessage": "Nem sikerült betölteni ezt a témát.",
-    "themeStoreSavedMessage": "\"{themeName}\" mentve.",
+    "themeStoreSavedMessage": "„{themeName}” mentve.",
     "@themeStoreSavedMessage": {
         "description": "Status message shown after saving a Theme Store theme",
         "placeholders": {
@@ -7685,7 +7685,7 @@
     },
     "posterCategory": "Plakát",
     "backdropsCategory": "Háttérképek",
-    "bannerCategory": "Banner",
+    "bannerCategory": "Bannerkép",
     "logoCategory": "Logó",
     "thumbnailCategory": "Bélyegkép",
     "artCategory": "Illusztráció",
@@ -7696,7 +7696,7 @@
     "menuArtCategory": "Menüháttér",
     "confirmItemPoster": "plakát",
     "confirmItemBackdrop": "háttérkép",
-    "confirmItemBanner": "banner",
+    "confirmItemBanner": "bannerkép",
     "confirmItemLogo": "logó",
     "confirmItemThumbnail": "bélyegkép",
     "confirmItemArt": "illusztráció",
@@ -7760,7 +7760,7 @@
     "@interfaceStyleMaterial": {
         "description": "Interface style option: Material look"
     },
-    "subtitleMode": "Felirat mód",
+    "subtitleMode": "Feliratmód",
     "@subtitleMode": {
         "description": "Setting for subtitle mode"
     },
@@ -7800,7 +7800,7 @@
     "@subtitleModeNoneDescription": {
         "description": "Description for none subtitle mode"
     },
-    "fallbackSubtitleLanguage": "Tartalék felirat nyelve",
+    "fallbackSubtitleLanguage": "Tartalék feliratnyelv",
     "@fallbackSubtitleLanguage": {
         "description": "Setting for fallback subtitle language"
     },
@@ -7813,7 +7813,7 @@
         "description": "Setting title to show/hide focused media details at the top of the library page"
     },
     "yes": "Igen",
-    "libraryWriteAccessWarningTitle": "Könyvtár írási jogosultság figyelmeztetés",
+    "libraryWriteAccessWarningTitle": "Figyelmeztetés a könyvtár írási jogosultságára",
     "@libraryWriteAccessWarningTitle": {
         "description": "Title for library write access warning dialog"
     },
@@ -7882,7 +7882,7 @@
     "adminDayWednesday": "Szerda",
     "adminPlaybackTonemappingRange": "Tónusleképezési tartomány",
     "adminNetworkingIpSettings": "IP-beállítások",
-    "adminNetworkingAutoDiscovery": "Automatikus porttérképezés engedélyezése",
+    "adminNetworkingAutoDiscovery": "Automatikus portleképzés engedélyezése",
     "adminNetworkingLocalSubnets": "Helyi hálózatok (LAN)",
     "adminNetworkingPublishedUris": "Közzétett szerver-URI-k",
     "adminGeneralSectionPerformance": "Teljesítmény",
@@ -7952,7 +7952,7 @@
     "adminBlockedTagsHint": "Az ilyen címkékkel rendelkező tartalmak el lesznek rejtve a felhasználó elől.",
     "adminLoginAttemptsHint": "Állítsd 0-ra az alapértelmezetthez, vagy -1-re a kizárás letiltásához.",
     "adminSyncPlayAccess": "SyncPlay-hozzáférés",
-    "recommendationsApplyParentalRatingCapSubtitle": "Korlátozd a Moonfin ajánlásai javaslatokat a célmédia szülői értékelése alapján",
+    "recommendationsApplyParentalRatingCapSubtitle": "Korlátozd a „Moonfin ajánlásai” javaslatait a célmédia szülői korhatár-besorolása alapján",
     "@recommendationsApplyParentalRatingCapSubtitle": {
         "description": "Explanation under the parental rating cap setting toggle"
     },
@@ -8022,7 +8022,7 @@
     "adminDrawerNfo": "NFO-beállítások",
     "adminActivitySeverityAll": "Minden súlyosság",
     "adminActivityDateRange": "Dátumtartomány",
-    "adminRemoveDeviceConfirm": "Eltávolítod a(z) '{name}' eszközt? A felhasználónak újra be kell majd jelentkeznie ezen az eszközön.",
+    "adminRemoveDeviceConfirm": "Eltávolítod a(z) „{name}” eszközt? A felhasználónak újra be kell majd jelentkeznie ezen az eszközön.",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8085,7 +8085,7 @@
     "adminLibNfoHelp": "Az NFO-metaadatok kompatibilisek a Kodi és hasonló kliensekkel. A beállítások minden olyan könyvtárra érvényesek, amely NFO-metaadatokat ment.",
     "adminLibKodiUser": "Felhasználó, akinek a megtekintési adatait az NFO-fájlokba menti",
     "adminLibSaveImagePaths": "Képútvonalak mentése az NFO-fájlokba",
-    "adminLibPathSubstitution": "Útvonal-helyettesítés engedélyezése az NFO képútvonalakhoz",
+    "adminLibPathSubstitution": "Útvonal-helyettesítés engedélyezése az NFO-képútvonalakhoz",
     "adminLibExtraThumbs": "Extrafanart képek másolása egy extrathumbs mappába",
     "adminLibEmbeddedExtrasTitles": "Beágyazott címek használata az extrákhoz",
     "adminLibAllowEmbeddedSubtitles": "Beágyazott feliratok engedélyezése",
@@ -8120,7 +8120,7 @@
     "adminPasswordResetProvider": "Jelszó-visszaállítási szolgáltató",
     "adminSyncPlayJoin": "Csoportokhoz való csatlakozás engedélyezése",
     "adminSyncPlayNone": "Nincs hozzáférés",
-    "adminContentDeletionFolders": "Tartalom törlésének engedélyezése innen",
+    "adminContentDeletionFolders": "Tartalomtörlés engedélyezése innen",
     "adminBackupMetadata": "Metaadatok",
     "adminBackupTrickplay": "Trickplay-képek",
     "adminGuideDays": "Műsorújság-adatok napjai",
@@ -8143,7 +8143,7 @@
     "adminBrandingSplashDeleted": "Indítóképernyő eltávolítva",
     "adminBrandingNoSplash": "Nincs egyéni indítóképernyő",
     "adminPlaybackEnhancedNvdec": "Speciális NVDEC dekóder engedélyezése",
-    "adminPlaybackPreferNativeDecoder": "Rendszer saját hardveres dekóderének előnyben részesítése",
+    "adminPlaybackPreferNativeDecoder": "A rendszer saját hardveres dekóderének előnyben részesítése",
     "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10 bites dekódolás",
     "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12 bites dekódolás",
     "adminPlaybackHwEncodingSection": "Hardveres kódolás",
@@ -8161,7 +8161,7 @@
     "adminPlaybackH265Crf": "H.265 (HEVC) kódolás CRF értéke",
     "adminPlaybackAudioSection": "Hang",
     "adminPlaybackEnableAudioVbr": "Változó bitsebességű (VBR) hangkódolás engedélyezése",
-    "adminPlaybackDownmixBoost": "Hang lekeverésének erősítése",
+    "adminPlaybackDownmixBoost": "Hanglekeverés erősítése",
     "adminPlaybackDownmixAlgorithm": "Sztereó lekeverési algoritmus",
     "adminPlaybackMaxMuxingQueue": "Maximális muxolási sor mérete",
     "adminPlaybackAutoOption": "Automatikus",
@@ -8169,7 +8169,7 @@
     "adminNetworkingEnableIpv6": "IPv6 engedélyezése",
     "adminNetworkingPublishedUriHint": "Alhálózat vagy cím hozzárendelése egy közzétett URL-hez, pl. all=https://example.com",
     "adminGeneralEnableSlowResponse": "Lassú válaszokra vonatkozó figyelmeztetések engedélyezése",
-    "adminGeneralQuickConnect": "Gyorscsatlakozás engedélyezése",
+    "adminGeneralQuickConnect": "Quick Connect engedélyezése",
     "adminGeneralSectionServer": "Szerver",
     "adminGeneralSectionMetadata": "Metaadatok",
     "adminGeneralSectionPaths": "Útvonalak",
@@ -8361,7 +8361,7 @@
     "@detailScreenStyleModern": {
         "description": "Detail screen style option: the responsive cinematic layout"
     },
-    "recommendationsApplyParentalRatingCap": "Alkalmazod a szülői értékelési korlátot?",
+    "recommendationsApplyParentalRatingCap": "Alkalmazod a szülői korhatár-korlátot?",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
@@ -8493,7 +8493,7 @@
     },
     "audiobookSave": "Mentés",
     "replay": "Újrajátszás",
-    "glassQualitySubtitle": "Az Automatikus opció kiválasztja a legjobb üveghatást ehhez az eszközhöz. A teljes valódi elmosódást kényszerít ki; a csökkentett pedig egy könnyű üveget használ, amivel GPU-teljesítményt takaríthatsz meg.",
+    "glassQualitySubtitle": "Az Automatikus opció kiválasztja a legjobb üveghatást ehhez az eszközhöz. A Teljes opció valódi elmosódást kényszerít ki, a Csökkentett pedig egy könnyű üveget használ, amivel GPU-teljesítményt takaríthatsz meg.",
     "@glassQualitySubtitle": {
         "description": "Explanation under the glass quality setting"
     },
@@ -8554,5 +8554,136 @@
     "audiobookExportBookmarks": "Könyvjelzők exportálása",
     "externalLists": "Külső kezdőképernyő-sorok",
     "fileInformation": "Fájlinformációk",
-    "rewatchPlaylist": "Lejátszási lista újranézése"
+    "rewatchPlaylist": "Lejátszási lista újranézése",
+    "expandedTabs": "Kibontott lapok",
+    "@expandedTabs": {
+        "description": "Label for the detail screen expanded tabs setting"
+    },
+    "expandedTabsSubtitle": "Lapok tartalmának automatikus megjelenítése a lapok böngészése közben. Kapcsold ki az egyes lapok kézi megnyitásához és bezárásához.",
+    "@expandedTabsSubtitle": {
+        "description": "Explanation under the expanded tabs setting"
+    },
+    "latestBooks": "Legújabb könyvek",
+    "@latestBooks": {
+        "description": "Row title for recently added books in the book library"
+    },
+    "latestAudiobooks": "Legújabb hangoskönyvek",
+    "@latestAudiobooks": {
+        "description": "Row title for recently added audiobooks in the book library"
+    },
+    "bookSeriesItemCount": "{count, plural, =1{1 könyv} other{{count} könyv}}",
+    "@bookSeriesItemCount": {
+        "description": "Subtitle for a book series shelf entry showing how many books it contains",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "bookFormatBook": "Könyv",
+    "@bookFormatBook": {
+        "description": "Semantic label for the book format badge on library cards"
+    },
+    "bookFormatAudiobook": "Hangoskönyv",
+    "@bookFormatAudiobook": {
+        "description": "Semantic label for the audiobook format badge on library cards"
+    },
+    "bookPercentRead": "{percent}% elolvasva",
+    "@bookPercentRead": {
+        "description": "Reading progress label on book cards",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "bookTimeLeft": "{time} van hátra",
+    "@bookTimeLeft": {
+        "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "bookHeroRead": "Olvasás",
+    "@bookHeroRead": {
+        "description": "Hero CTA label to start reading a book"
+    },
+    "bookHeroListen": "Hallgatás",
+    "@bookHeroListen": {
+        "description": "Hero CTA label to start listening to an audiobook"
+    },
+    "shuffleAllMusic": "Összes zene keverése",
+    "@shuffleAllMusic": {
+        "description": "Car browse action that shuffles the whole music library"
+    },
+    "carSignInPrompt": "Jelentkezz be a Moonfinbe a telefonodon",
+    "@carSignInPrompt": {
+        "description": "Shown in the car when no account is signed in"
+    },
+    "carServerUnreachable": "A szervered nem érhető el",
+    "@carServerUnreachable": {
+        "description": "Shown in the car when the media server can't be reached"
+    },
+    "themeMusicSettingsSubtitle": "Részletező oldalak, kezdőképernyő-sorok és hangerő",
+    "@themeMusicSettingsSubtitle": {
+        "description": "Subtitle for the Theme Music settings sub-category tile"
+    },
+    "directStreamRemux": "Közvetlen adatfolyam (Remux)",
+    "@directStreamRemux": {
+        "description": "Play method label for direct stream with remuxing"
+    },
+    "transcodingBitrateOrResolution": "Átkódolás (bitráta vagy felbontás)",
+    "@transcodingBitrateOrResolution": {
+        "description": "Play method label for transcoding due to bitrate or resolution"
+    },
+    "transcodingVideoAndAudio": "Átkódolás (videó és hang)",
+    "@transcodingVideoAndAudio": {
+        "description": "Play method label for transcoding both video and audio"
+    },
+    "transcodingVideo": "Átkódolás (videó)",
+    "@transcodingVideo": {
+        "description": "Play method label for transcoding video"
+    },
+    "seerrNotificationsSection": "Értesítések",
+    "@seerrNotificationsSection": {
+        "description": "Header for the Seerr notifications settings section"
+    },
+    "seerrNotifyNewRequestsTitle": "Értesítések új kérésekről",
+    "@seerrNotifyNewRequestsTitle": {
+        "description": "Title for the toggle that notifies approvers of new Seerr requests"
+    },
+    "seerrNotifyNewRequestsSubtitle": "Értesíts, ha valaki kérést küld be",
+    "@seerrNotifyNewRequestsSubtitle": {
+        "description": "Subtitle for the new request notifications toggle"
+    },
+    "seerrNotifyLibraryAddedTitle": "Kérések frissítései",
+    "@seerrNotifyLibraryAddedTitle": {
+        "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
+    },
+    "seerrNotifyLibraryAddedSubtitle": "Jóváhagyva, elutasítva és hozzáadva a könyvtáradhoz",
+    "@seerrNotifyLibraryAddedSubtitle": {
+        "description": "Subtitle for the library-added notifications toggle"
+    },
+    "contextMenuHideFromContinueWatching": "Elrejtés a Folytatásból",
+    "@contextMenuHideFromContinueWatching": {
+        "description": "Context menu action to hide an item from the Continue Watching section"
+    },
+    "contextMenuHideFromNextUp": "Elrejtés a Következőből",
+    "@contextMenuHideFromNextUp": {
+        "description": "Context menu action to hide a show from the Next Up section"
+    },
+    "contextMenuAddToCollection": "Hozzáadás gyűjteményhez",
+    "@contextMenuAddToCollection": {
+        "description": "Context menu action to add an item to a collection"
+    },
+    "settingsDetailsScreen": "Részletképernyő",
+    "settingsDetailsScreenSubtitle": "Stílus, háttérelmosás és lapok viselkedése",
+    "layout": "Elrendezés",
+    "theme": "Téma",
+    "keyboard": "Billentyűzet",
+    "navButtons": "Gombok",
+    "rendering": "Renderelés",
+    "mpvConfiguration": "MPV-konfiguráció"
 }
