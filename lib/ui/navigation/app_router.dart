@@ -43,6 +43,7 @@ import '../screens/seerr/seerr_discover_screen.dart';
 import '../screens/seerr/seerr_media_detail_screen.dart';
 import '../screens/seerr/seerr_person_screen.dart';
 import '../screens/seerr/seerr_requests_screen.dart';
+import '../screens/livetv/live_tv_channel_player_loader.dart';
 import '../screens/livetv/live_tv_guide_screen.dart';
 import '../screens/livetv/live_tv_player_screen.dart';
 import '../../data/viewmodels/live_tv_guide_view_model.dart';
@@ -482,12 +483,14 @@ final appRouter = GoRouter(
         GoRoute(
           path: 'player',
           pageBuilder: (context, state) {
-            final extra = state.extra as Map<String, dynamic>;
-            final channels = extra['channels'] as List<GuideChannel>;
-            final startIndex = extra['startIndex'] as int;
-            return _opaqueFullScreenPage<void>(
-              state: state,
-              child: PlatformDetection.isAppleTV
+            final extra = state.extra is Map<String, dynamic>
+                ? state.extra as Map<String, dynamic>
+                : const <String, dynamic>{};
+            final channels = extra['channels'] as List<GuideChannel>?;
+            final startIndex = extra['startIndex'] as int? ?? 0;
+            final Widget child;
+            if (channels != null) {
+              child = PlatformDetection.isAppleTV
                   ? AppleTvLiveTvPlayerHostScreen(
                       channels: channels,
                       startIndex: startIndex,
@@ -495,7 +498,17 @@ final appRouter = GoRouter(
                   : LiveTvPlayerScreen(
                       channels: channels,
                       startIndex: startIndex,
-                    ),
+                    );
+            } else {
+              // Entered by channel id (favorites, search, deep links). The
+              // loader resolves the lineup before showing the player.
+              child = LiveTvChannelPlayerLoader(
+                channelId: state.uri.queryParameters['channelId'] ?? '',
+              );
+            }
+            return _opaqueFullScreenPage<void>(
+              state: state,
+              child: child,
             );
           },
         ),

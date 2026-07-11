@@ -113,10 +113,14 @@ WebPlaybackCapabilities detectWebPlaybackCapabilities() {
       'video/x-ms-wmv; codecs="vc1"',
     ]);
 
-    final canPlayNativeHls = _supportsAnyTypeDirect(video, const <String>[
-      'application/x-mpegURL',
-      'application/vnd.apple.mpegURL',
-    ]);
+    // Only Safari and iOS WebKit deliver working native HLS. Chromium 142+
+    // answers canPlayType affirmatively but black-screens on MPEG-TS
+    // segments, and playback goes through hls.js there anyway.
+    final canPlayNativeHls = (browser.isSafari || browser.isIOS) &&
+        _supportsAnyTypeDirect(video, const <String>[
+          'application/x-mpegURL',
+          'application/vnd.apple.mpegURL',
+        ]);
     final canPlayHls = canPlayNativeHls || _hasMediaSourceSupport();
     final canPlayNativeHlsInFmp4 =
         (browser.isIOS && browser.iOSMajorVersion >= 11) || browser.isMacOS;

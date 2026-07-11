@@ -7311,6 +7311,11 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       return;
     }
 
+    if (Destinations.isLiveTvChannelType(item.type)) {
+      await context.push(Destinations.liveTvChannel(item.id));
+      return;
+    }
+
     if (_isReadableBookItem(item)) {
       final extension = BookReaderService.detectExtension(item);
       if (extension != null &&

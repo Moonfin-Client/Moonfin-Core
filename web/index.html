@@ -121,26 +121,18 @@
         return normalized.indexOf('format=hls') !== -1;
       }
 
-      function canNativePlayHls(video) {
-        if (!video || typeof video.canPlayType !== 'function') {
-          return false;
-        }
-        return !!(
-          video.canPlayType('application/vnd.apple.mpegurl') ||
-          video.canPlayType('application/x-mpegurl')
-        );
-      }
-
       function shouldTreatAsHls(url, forceHls) {
         return !!forceHls || isHlsPlaylistUrl(url);
       }
 
       window.MoonfinHlsBridge = {
+        // hls.js is preferred whenever MediaSource is available. canPlayType
+        // isn't consulted because Chromium reports native HLS support it
+        // can't actually deliver (black screen on MPEG-TS segments). Browsers
+        // without MSE, like iPhone Safari, fall through to the native
+        // video element, which plays HLS natively there.
         canUseHlsJs: function (video, url, forceHls) {
           if (!shouldTreatAsHls(url, forceHls)) {
-            return false;
-          }
-          if (canNativePlayHls(video)) {
             return false;
           }
           if (typeof window.Hls === 'undefined') {

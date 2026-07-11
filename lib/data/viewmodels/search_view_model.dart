@@ -90,7 +90,10 @@ class SearchViewModel extends ChangeNotifier {
       SearchResultGroup(title: l10n.musicVideos, itemTypes: const ['MusicVideo']),
       SearchResultGroup(title: l10n.trailers, itemTypes: const ['Trailer']),
       SearchResultGroup(title: l10n.programs, itemTypes: const ['Program']),
-      SearchResultGroup(title: l10n.channels, itemTypes: const ['LiveTvChannel']),
+      SearchResultGroup(
+        title: l10n.channels,
+        itemTypes: const ['LiveTvChannel', 'TvChannel'],
+      ),
       SearchResultGroup(title: l10n.playlists, itemTypes: const ['Playlist']),
       SearchResultGroup(
         title: l10n.artists,
@@ -185,17 +188,23 @@ class SearchViewModel extends ChangeNotifier {
     final peopleFuture = _searchRepository
         .searchPeople(query, limit: _resultLimit)
         .catchError((_) => <AggregatedItem>[]);
+    final channelsFuture = _channelMatches(query);
     final allItems = await _searchRepository.search(
       query,
       parentId: _scopedParentId,
       limit: _globalFetchLimit,
     );
     final people = await peopleFuture;
+    final channels = await channelsFuture;
 
     final grouped = <SearchResultGroup>[];
     for (final group in activeGroups) {
       if (group.itemTypes.contains('Person')) {
         grouped.add(group.copyWith(items: people.take(_resultLimit).toList()));
+        continue;
+      }
+      if (group.itemTypes.contains('LiveTvChannel')) {
+        grouped.add(group.copyWith(items: channels));
         continue;
       }
       final matched = allItems
@@ -206,6 +215,28 @@ class SearchViewModel extends ChangeNotifier {
     }
 
     return grouped;
+  }
+
+  // The lineup is fetched once per search session and reused across queries,
+  // since /LiveTv/Channels has no search parameter of its own.
+  Future<List<AggregatedItem>>? _channelsFuture;
+
+  Future<List<AggregatedItem>> _channelMatches(String query) async {
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty || q.startsWith('studio:')) return const [];
+    _channelsFuture ??= _searchRepository.fetchLiveTvChannels();
+    try {
+      final all = await _channelsFuture!;
+      return all
+          .where((c) => c.name.toLowerCase().contains(q))
+          .take(_resultLimit)
+          .toList();
+    } catch (_) {
+      // A server without Live TV shouldn't break search. Retry next query in
+      // case the failure was transient.
+      _channelsFuture = null;
+      return const [];
+    }
   }
 
   Future<List<SeerrDiscoverItem>> _fetchSeerrResults(String query) async {

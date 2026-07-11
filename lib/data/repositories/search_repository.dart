@@ -80,6 +80,26 @@ class SearchRepository {
     }).toList();
   }
 
+  /// Live TV channels never come back from the recursive items search, so
+  /// channel search fetches the lineup and filters by name client-side.
+  Future<List<AggregatedItem>> fetchLiveTvChannels() async {
+    final response = await _client.liveTvApi.getChannels(
+      fields: 'ImageTags',
+      enableTotalRecordCount: false,
+      userId: _client.userId,
+    );
+    final items = response['Items'] as List? ?? const [];
+    return items.map((item) {
+      final data = Map<String, dynamic>.from(item as Map);
+      data['Type'] ??= 'TvChannel';
+      return AggregatedItem(
+        id: data['Id']?.toString() ?? '',
+        serverId: data['ServerId']?.toString() ?? '',
+        rawData: data,
+      );
+    }).toList();
+  }
+
   Future<List<AggregatedItem>> search(
     String query, {
     List<String>? includeItemTypes,

@@ -123,7 +123,10 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
   @override
   void initState() {
     super.initState();
-    _vm = LiveTvGuideViewModel(GetIt.instance<MediaServerClient>());
+    _vm = LiveTvGuideViewModel(
+      GetIt.instance<MediaServerClient>(),
+      initialSortBy: _prefs.get(UserPreferences.liveTvChannelSortBy),
+    );
     _vm.addListener(_onChanged);
     _mobileView = _prefs.get(UserPreferences.epgMobileView);
 
@@ -312,6 +315,42 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
     } finally {
       _isShowingDatePicker = false;
     }
+  }
+
+  void _openSortDialog() {
+    final l10n = AppLocalizations.of(context);
+    showFocusRestoringDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog.adaptive(
+        backgroundColor: AppColorScheme.surface,
+        title: Text(
+          l10n.sortBy,
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: RadioGroup<ChannelSortBy>(
+          groupValue: _vm.sortBy,
+          onChanged: (value) {
+            if (value == null) return;
+            _prefs.set(UserPreferences.liveTvChannelSortBy, value);
+            _vm.setSortBy(value);
+            Navigator.of(dialogContext).pop();
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final option in ChannelSortBy.values)
+                RadioListTile<ChannelSortBy>(
+                  value: option,
+                  title: Text(
+                    option.displayName,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _openRecordings() async {
@@ -596,6 +635,11 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
             ),
           ),
           _GuidePillButton(
+            icon: Icons.sort,
+            onPressed: _openSortDialog,
+          ),
+          const SizedBox(width: 6),
+          _GuidePillButton(
             icon: Icons.calendar_today,
             onPressed: _openDatePicker,
           ),
@@ -870,6 +914,11 @@ class _LiveTvGuideScreenState extends State<LiveTvGuideScreen> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
+          _GuidePillButton(
+            icon: Icons.sort,
+            onPressed: _openSortDialog,
+          ),
+          const SizedBox(width: 8),
           _GuidePillButton(
             icon: Icons.calendar_today,
             onPressed: _openDatePicker,

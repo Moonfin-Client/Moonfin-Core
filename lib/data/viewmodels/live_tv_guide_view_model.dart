@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:server_core/server_core.dart';
 
+import '../../preference/preference_constants.dart';
+
 class GuideChannel {
   final String id;
   final String name;
@@ -20,6 +22,15 @@ class GuideChannel {
     this.isFavorite = false,
     required this.rawData,
   });
+
+  factory GuideChannel.fromRawItem(Map<String, dynamic> raw) => GuideChannel(
+        id: raw['Id']?.toString() ?? '',
+        name: raw['Name'] as String? ?? '',
+        number: raw['ChannelNumber'] as String?,
+        imageTag: (raw['ImageTags'] as Map?)?['Primary'] as String?,
+        isFavorite: ((raw['UserData'] as Map?)?['IsFavorite'] == true),
+        rawData: raw,
+      );
 }
 
 class GuideProgram {
@@ -119,7 +130,73 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   bool hasProgramsFor(String channelId) =>
       _programsLoadedIds.contains(channelId);
 
-  LiveTvGuideViewModel(this._client);
+  LiveTvGuideViewModel(this._client, {ChannelSortBy? initialSortBy})
+      : _sortBy = initialSortBy ?? ChannelSortBy.number;
+
+  ChannelSortBy _sortBy;
+  ChannelSortBy get sortBy => _sortBy;
+
+  void setSortBy(ChannelSortBy value) {
+    if (_sortBy == value) return;
+    _sortBy = value;
+    _channels = List<GuideChannel>.from(_channels)
+      ..sort(comparatorFor(value));
+    // The lazy-load prefix follows list order, so walk it again from the top.
+    // Already-fetched channels are skipped in _loadNextBatch.
+    _programsHighWater = 0;
+    notifyListeners();
+    unawaited(loadMorePrograms());
+  }
+
+  /// Shared with the single-channel player loader so zapping order always
+  /// matches the guide.
+  static Comparator<GuideChannel> comparatorFor(ChannelSortBy sortBy) {
+    switch (sortBy) {
+      case ChannelSortBy.number:
+        return _compareByNumber;
+      case ChannelSortBy.name:
+        return _compareByName;
+      case ChannelSortBy.favoritesFirst:
+        return (a, b) {
+          if (a.isFavorite != b.isFavorite) return a.isFavorite ? -1 : 1;
+          return _compareByNumber(a, b);
+        };
+    }
+  }
+
+  static int _compareByName(GuideChannel a, GuideChannel b) =>
+      a.name.toLowerCase().compareTo(b.name.toLowerCase());
+
+  // Channel numbers are dot-separated segments ('10.10' airs after '10.2'),
+  // so compare segment-wise as ints, not as a double.
+  static int _compareByNumber(GuideChannel a, GuideChannel b) {
+    final segsA = _numberSegments(a.number);
+    final segsB = _numberSegments(b.number);
+    if (segsA == null || segsB == null) {
+      if (segsA != null) return -1;
+      if (segsB != null) return 1;
+      return _compareByName(a, b);
+    }
+    final len = max(segsA.length, segsB.length);
+    for (var i = 0; i < len; i++) {
+      final va = i < segsA.length ? segsA[i] : 0;
+      final vb = i < segsB.length ? segsB[i] : 0;
+      if (va != vb) return va.compareTo(vb);
+    }
+    return _compareByName(a, b);
+  }
+
+  static List<int>? _numberSegments(String? number) {
+    if (number == null || number.trim().isEmpty) return null;
+    final parts = number.trim().split('.');
+    final segments = <int>[];
+    for (final part in parts) {
+      final value = int.tryParse(part);
+      if (value == null) return null;
+      segments.add(value);
+    }
+    return segments;
+  }
 
   ImageApi get imageApi => _client.imageApi;
 
@@ -348,16 +425,11 @@ class LiveTvGuideViewModel extends ChangeNotifier {
       userId: _client.userId,
     );
     final items = (response['Items'] as List?) ?? [];
-    _channels = items.cast<Map<String, dynamic>>().map((raw) {
-      return GuideChannel(
-        id: raw['Id']?.toString() ?? '',
-        name: raw['Name'] as String? ?? '',
-        number: raw['ChannelNumber'] as String?,
-        imageTag: (raw['ImageTags'] as Map?)?['Primary'] as String?,
-        isFavorite: ((raw['UserData'] as Map?)?['IsFavorite'] == true),
-        rawData: raw,
-      );
-    }).toList();
+    _channels = items
+        .cast<Map<String, dynamic>>()
+        .map(GuideChannel.fromRawItem)
+        .toList()
+      ..sort(comparatorFor(_sortBy));
   }
 
   void _resetPrograms() {
@@ -389,7 +461,12 @@ class LiveTvGuideViewModel extends ChangeNotifier {
   Future<void> _loadNextBatch() async {
     if (!hasMorePrograms) return;
     final end = min(_programsHighWater + _programBatchSize, _channels.length);
-    final batch = _channels.sublist(_programsHighWater, end);
+    // A re-sort can move already-fetched channels back into the unwalked
+    // suffix. Fetching them again would append duplicate programs.
+    final batch = _channels
+        .sublist(_programsHighWater, end)
+        .where((c) => !_programsLoadedIds.contains(c.id))
+        .toList();
     await _loadProgramsBatch(batch);
     _programsHighWater = end;
   }

@@ -351,6 +351,15 @@ enum LibrarySortBy {
   final String displayName;
 }
 
+enum ChannelSortBy {
+  number('Channel Number'),
+  name('Name'),
+  favoritesFirst('Favorites First');
+
+  const ChannelSortBy(this.displayName);
+  final String displayName;
+}
+
 enum GenresRowItemFilter {
   movies(['Movie'], 'Movies'),
   series(['Series'], 'Series'),

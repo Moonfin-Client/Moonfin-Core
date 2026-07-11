@@ -251,8 +251,19 @@ class Destinations {
         : base;
   }
 
-  static String itemOrPhoto(String itemId, {String? serverId, String? type}) =>
-      type == 'Photo' ? photo(itemId) : item(itemId, serverId: serverId);
+  static bool isLiveTvChannelType(String? type) =>
+      type == 'TvChannel' || type == 'LiveTvChannel';
+
+  static String liveTvChannel(String channelId) =>
+      '$liveTvPlayer?channelId=${Uri.encodeQueryComponent(channelId)}';
+
+  static String itemOrPhoto(String itemId, {String? serverId, String? type}) {
+    if (type == 'Photo') return photo(itemId);
+    // Channels have no detail screen worth landing on, so go straight to
+    // the live player, which resolves the lineup from the id.
+    if (isLiveTvChannelType(type)) return liveTvChannel(itemId);
+    return item(itemId, serverId: serverId);
+  }
   static String nextUpFor(String itemId) => '/player/next-up/$itemId';
   static String stillWatchingFor(String itemId) =>
       '/player/still-watching/$itemId';

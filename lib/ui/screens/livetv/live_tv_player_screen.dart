@@ -25,6 +25,7 @@ import '../../../util/play_method_label.dart';
 import '../../../util/platform_detection.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
 import '../../widgets/subtitle_preview.dart';
+import '../../widgets/track_selector_dialog.dart';
 import 'live_tv_guide_screen.dart';
 import '../../screensaver/screensaver_controller.dart';
 
@@ -87,10 +88,13 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
   final _overlayFocus = FocusNode();
   final _tvPlayPauseFocus = FocusNode(debugLabel: 'LiveTvPlayPause');
   final _tvChannelsFocus = FocusNode(debugLabel: 'LiveTvChannels');
+  final _tvAudioFocus = FocusNode(debugLabel: 'LiveTvAudio');
+  final _tvSubtitleFocus = FocusNode(debugLabel: 'LiveTvSubtitle');
+  final _tvBitrateFocus = FocusNode(debugLabel: 'LiveTvBitrate');
   final _tvPlaybackInfoFocus = FocusNode(debugLabel: 'LiveTvPlaybackInfo');
-  // Index of the currently focused OSD control (0=PlayPause, 1=Channels,
-  // 2=PlaybackInfo). Tracked explicitly so arrow navigation never depends on
-  // FocusManager.primaryFocus matching one of these exact nodes.
+  // Index of the currently focused OSD control within _osdFocusOrder. Tracked
+  // explicitly so arrow navigation never depends on FocusManager.primaryFocus
+  // matching one of these exact nodes.
   int _focusedControlIndex = 0;
   PlayerState get _state => _manager.state;
 
@@ -110,6 +114,9 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
     });
     _tvPlayPauseFocus.addListener(_onControlFocusChanged);
     _tvChannelsFocus.addListener(_onControlFocusChanged);
+    _tvAudioFocus.addListener(_onControlFocusChanged);
+    _tvSubtitleFocus.addListener(_onControlFocusChanged);
+    _tvBitrateFocus.addListener(_onControlFocusChanged);
     _tvPlaybackInfoFocus.addListener(_onControlFocusChanged);
     _playCurrentChannel();
     _scheduleHide();
@@ -125,10 +132,16 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
     _backendSub?.cancel();
     _tvPlayPauseFocus.removeListener(_onControlFocusChanged);
     _tvChannelsFocus.removeListener(_onControlFocusChanged);
+    _tvAudioFocus.removeListener(_onControlFocusChanged);
+    _tvSubtitleFocus.removeListener(_onControlFocusChanged);
+    _tvBitrateFocus.removeListener(_onControlFocusChanged);
     _tvPlaybackInfoFocus.removeListener(_onControlFocusChanged);
     _overlayFocus.dispose();
     _tvPlayPauseFocus.dispose();
     _tvChannelsFocus.dispose();
+    _tvAudioFocus.dispose();
+    _tvSubtitleFocus.dispose();
+    _tvBitrateFocus.dispose();
     _tvPlaybackInfoFocus.dispose();
     if (!_isStopping) {
       _manager.stop(userInitiated: false);
@@ -277,24 +290,31 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
     });
   }
 
+  /// OSD controls in visual order. Audio/subtitle only participate when their
+  /// buttons are shown, so arrow navigation never lands on a hidden control.
+  List<FocusNode> get _osdFocusOrder => [
+        _tvPlayPauseFocus,
+        _tvChannelsFocus,
+        if (_streamsOfType('Audio').length > 1) _tvAudioFocus,
+        if (_streamsOfType('Subtitle').isNotEmpty) _tvSubtitleFocus,
+        _tvBitrateFocus,
+        _tvPlaybackInfoFocus,
+      ];
+
   bool get _isOverlayInteractionActive {
     if (_isGuidePickerOpen) return true;
     if (!PlatformDetection.isTV) return false;
-    return _tvPlayPauseFocus.hasFocus ||
-        _tvChannelsFocus.hasFocus ||
-        _tvPlaybackInfoFocus.hasFocus;
+    return _osdFocusOrder.any((node) => node.hasFocus);
   }
 
   void _onControlFocusChanged() {
     if (!mounted || !PlatformDetection.isTV) return;
-    if (_tvPlayPauseFocus.hasFocus) {
-      _focusedControlIndex = 0;
-    } else if (_tvChannelsFocus.hasFocus) {
-      _focusedControlIndex = 1;
-    } else if (_tvPlaybackInfoFocus.hasFocus) {
-      _focusedControlIndex = 2;
+    final order = _osdFocusOrder;
+    final focused = order.indexWhere((node) => node.hasFocus);
+    if (focused >= 0) {
+      _focusedControlIndex = focused;
     }
-    if (_tvPlayPauseFocus.hasFocus || _tvChannelsFocus.hasFocus) {
+    if (focused >= 0 && order[focused] != _tvPlaybackInfoFocus) {
       _hideTimer?.cancel();
       if (!_infoVisible) {
         setState(() => _infoVisible = true);
@@ -388,6 +408,127 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
         streamInfoSections: streamInfoSections,
       ),
     );
+    _showInfo();
+  }
+
+  List<Map<String, dynamic>> _streamsOfType(String type) =>
+      (_manager.currentResolution?.mediaStreams ??
+              const <Map<String, dynamic>>[])
+          .where((s) => s['Type'] == type)
+          .toList();
+
+  String _streamLabel(Map<String, dynamic> stream, String fallback) {
+    final display = stream['DisplayTitle'] as String? ?? '';
+    if (display.isNotEmpty) return display;
+    final title = stream['Title'] as String? ?? '';
+    if (title.isNotEmpty) return title;
+    final language = stream['Language'] as String? ?? '';
+    if (language.isNotEmpty) return language;
+    return fallback;
+  }
+
+  void _showAudioSelector() {
+    final l10n = AppLocalizations.of(context);
+    final streams = _streamsOfType('Audio');
+    if (streams.isEmpty) return;
+
+    final currentIndex = _manager.audioStreamIndex ??
+        (streams.firstWhere(
+          (s) => s['IsDefault'] == true,
+          orElse: () => streams.first,
+        )['Index'] as int?);
+    final selected =
+        streams.indexWhere((s) => s['Index'] == currentIndex);
+
+    final options = <TrackOption>[];
+    for (var i = 0; i < streams.length; i++) {
+      final details = [
+        (streams[i]['Codec'] as String? ?? '').toUpperCase(),
+        streams[i]['ChannelLayout'] as String? ?? '',
+      ].where((s) => s.isNotEmpty).join(' • ');
+      options.add(TrackOption(
+        label: _streamLabel(streams[i], '${l10n.audioTrack} ${i + 1}'),
+        subtitle: details.isEmpty ? null : details,
+      ));
+    }
+
+    unawaited(() async {
+      final result = await TrackSelectorDialog.show(
+        context,
+        title: l10n.audioTrack,
+        options: options,
+        selectedIndex: selected >= 0 ? selected : null,
+      );
+      _suppressBackNavigation();
+      if (result == null || !mounted) return;
+      final index = streams[result]['Index'] as int?;
+      if (index != null) unawaited(_manager.changeAudioTrack(index));
+    }());
+    _showInfo();
+  }
+
+  void _showSubtitleSelector() {
+    final l10n = AppLocalizations.of(context);
+    final streams = _streamsOfType('Subtitle');
+
+    final current = _manager.subtitleStreamIndex;
+    final selectedStream = current == null || current < 0
+        ? -1
+        : streams.indexWhere((s) => s['Index'] == current);
+
+    final options = <TrackOption>[TrackOption(label: l10n.off)];
+    for (var i = 0; i < streams.length; i++) {
+      final codec = (streams[i]['Codec'] as String? ?? '').toUpperCase();
+      options.add(TrackOption(
+        label: _streamLabel(streams[i], '${l10n.subtitleTrack} ${i + 1}'),
+        subtitle: codec.isEmpty ? null : codec,
+      ));
+    }
+
+    unawaited(() async {
+      final result = await TrackSelectorDialog.show(
+        context,
+        title: l10n.subtitleTrack,
+        options: options,
+        selectedIndex: selectedStream >= 0 ? selectedStream + 1 : 0,
+      );
+      _suppressBackNavigation();
+      if (result == null || !mounted) return;
+      if (result == 0) {
+        unawaited(_manager.disableSubtitles());
+        return;
+      }
+      final index = streams[result - 1]['Index'] as int?;
+      if (index != null) unawaited(_manager.changeSubtitleTrack(index));
+    }());
+    _showInfo();
+  }
+
+  void _showBitrateSelector() {
+    final l10n = AppLocalizations.of(context);
+    final options = <int?>[null, 40, 20, 12, 8, 4, 2];
+    final current = _manager.maxBitrateOverrideMbps;
+
+    final trackOptions = options
+        .map(
+          (mbps) => TrackOption(
+            label: mbps == null ? l10n.auto : l10n.bitrateValueMbps(mbps),
+          ),
+        )
+        .toList();
+    final currentIdx = options.indexWhere((mbps) => mbps == current);
+
+    unawaited(() async {
+      final result = await TrackSelectorDialog.show(
+        context,
+        title: l10n.bitrate,
+        options: trackOptions,
+        selectedIndex: currentIdx >= 0 ? currentIdx : null,
+      );
+      _suppressBackNavigation();
+      if (result == null || !mounted) return;
+      unawaited(_manager.changeBitrate(options[result]));
+    }());
     _showInfo();
   }
 
@@ -780,7 +921,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
   }
 
   void _moveControlFocus(int delta) {
-    final order = [_tvPlayPauseFocus, _tvChannelsFocus, _tvPlaybackInfoFocus];
+    final order = _osdFocusOrder;
     _focusedControlIndex =
         (_focusedControlIndex + delta).clamp(0, order.length - 1);
     order[_focusedControlIndex].requestFocus();
@@ -1117,6 +1258,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
 
   Widget _buildPlaybackControlsRow() {
     final l10n = AppLocalizations.of(context);
+    final hasAudioChoices = _streamsOfType('Audio').length > 1;
+    final hasSubtitles = _streamsOfType('Subtitle').isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.spaceSm),
@@ -1154,6 +1297,31 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
               onPressed: _toggleOrientationLock,
             ),
           ],
+          if (hasAudioChoices) ...[
+            const SizedBox(width: AppSpacing.spaceSm),
+            _buildOverlayControlButton(
+              focusNode: PlatformDetection.isTV ? _tvAudioFocus : null,
+              icon: Icons.audiotrack_rounded,
+              tooltip: l10n.audioTrack,
+              onPressed: _showAudioSelector,
+            ),
+          ],
+          if (hasSubtitles) ...[
+            const SizedBox(width: AppSpacing.spaceSm),
+            _buildOverlayControlButton(
+              focusNode: PlatformDetection.isTV ? _tvSubtitleFocus : null,
+              icon: Icons.subtitles_rounded,
+              tooltip: l10n.subtitleTrack,
+              onPressed: _showSubtitleSelector,
+            ),
+          ],
+          const SizedBox(width: AppSpacing.spaceSm),
+          _buildOverlayControlButton(
+            focusNode: PlatformDetection.isTV ? _tvBitrateFocus : null,
+            icon: Icons.video_settings_outlined,
+            tooltip: l10n.bitrate,
+            onPressed: _showBitrateSelector,
+          ),
           const SizedBox(width: AppSpacing.spaceSm),
           _buildOverlayControlButton(
             focusNode: PlatformDetection.isTV ? _tvPlaybackInfoFocus : null,

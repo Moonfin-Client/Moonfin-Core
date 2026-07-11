@@ -1959,6 +1959,12 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: false,
   );
 
+  static final liveTvChannelSortBy = EnumPreference(
+    key: 'live_tv_channel_sort_by',
+    defaultValue: ChannelSortBy.number,
+    values: ChannelSortBy.values,
+  );
+
   static EnumPreference<LibrarySortBy> librarySortBy(String libraryId) =>
       EnumPreference(
         key: 'library_sort_by_$libraryId',
