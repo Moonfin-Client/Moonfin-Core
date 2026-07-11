@@ -958,7 +958,14 @@ class Media3VideoView(
         audioPipeline.release()
         player.clearVideoSurface()
         Media3SessionController.releaseForPlayer(player)
+        player.stop()
+        player.clearMediaItems()
         player.release()
+
+        videoView.visibility = View.GONE
+        if (videoView is SurfaceView) {
+            (videoView as SurfaceView).holder.setFormat(android.graphics.PixelFormat.TRANSPARENT)
+        }
     }
 
     override fun dispose() {
@@ -971,6 +978,7 @@ class Media3VideoView(
             return
         }
         forceReleasePlayer()
+        containerView.removeAllViews()
         Media3Bridge.detachView(this)
     }
 
@@ -1015,7 +1023,7 @@ class Media3VideoView(
             .setMediaSourceFactory(bootMediaSourceFactory)
             .setHandleAudioBecomingNoisy(true)
             .setWakeMode(C.WAKE_MODE_NETWORK)
-            .setPauseAtEndOfMediaItems(true)
+            .setPauseAtEndOfMediaItems(false)
             .build()
             .also {
                 attachAssOverlay(assHandler)
@@ -1115,6 +1123,10 @@ class Media3VideoView(
             FrameLayout.LayoutParams.MATCH_PARENT,
             Gravity.CENTER,
         )
+        videoView.visibility = View.GONE
+        if (videoView is SurfaceView) {
+            (videoView as SurfaceView).holder.setFormat(android.graphics.PixelFormat.TRANSPARENT)
+        }
         containerView.removeView(videoView)
         videoView = newVideoView()
         containerView.addView(videoView, 0, params)
@@ -1530,7 +1542,7 @@ class Media3VideoView(
             ?.trim()
             ?.lowercase()
             ?.takeIf { it.isNotEmpty() }
-        player.setPauseAtEndOfMediaItems(currentMediaType != "audio")
+        player.setPauseAtEndOfMediaItems(false)
         audioOffloadRetryAttemptedForCurrentSource = false
         stereoDownmixRetryAttemptedForCurrentSource = false
         containerFallbackAttempted = false
