@@ -641,7 +641,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
 
   Widget _buildTvLayout() {
     final overlayColor = _overlayColor();
-    final opacity = _overlayOpacity();
+    final opacity = _overlayOpacity() ?? 0.0;
     final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
     final desktopHoverRail =
         (PlatformDetection.isDesktop || (PlatformDetection.isWeb && !PlatformDetection.useMobileUi)) && !PlatformDetection.isTV;
@@ -682,11 +682,19 @@ class _LeftSidebarState extends State<LeftSidebar> {
                                 end: Alignment.centerRight,
                                 colors: [
                                   overlayColor.withValues(
-                                    alpha: math.max(opacity, 0.7),
+                                    alpha: math.pow(opacity, 0.25) as double,
                                   ),
                                   overlayColor.withValues(
-                                    alpha: math.max(opacity, 0.5),
+                                    alpha: opacity,
                                   ),
+                                  overlayColor.withValues(
+                                    alpha: math.pow(opacity, 2.0) as double,
+                                  ),
+                                  overlayColor.withValues(
+                                    alpha: math.pow(opacity, 4.0) as double,
+                                  ),
+                                  if (opacity < 1)
+                                    Colors.transparent,
                                 ],
                               ),
                               border: isNeon
@@ -701,27 +709,6 @@ class _LeftSidebarState extends State<LeftSidebar> {
                                           ),
                                     )
                                   : null,
-                            ),
-                          ),
-                        if (!AppColorScheme.isGlass)
-                          Positioned(
-                            left: _kExpandedBackdropWidthTV,
-                            top: 0,
-                            bottom: 0,
-                            child: Container(
-                              width: _kBackdropEdgeBlendWidthTV,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [
-                                    overlayColor.withValues(
-                                      alpha: math.max(opacity, 0.5),
-                                    ),
-                                    Colors.transparent,
-                                  ],
-                                ),
-                              ),
                             ),
                           ),
                       ],
