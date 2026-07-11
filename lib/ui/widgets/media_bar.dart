@@ -583,17 +583,17 @@ class _MediaBarState extends State<MediaBar>
       }
     } else if (_trailerUsingMedia3) {
       final audioEnabled = widget.prefs.get(
-        UserPreferences.previewAudioEnabled,
+        UserPreferences.mediaBarTrailerAudio,
       );
       _media3TrailerBackend!.setVolume(audioEnabled ? 100 : 0);
     } else if (_trailerUsingAppleTv) {
       final audioEnabled = widget.prefs.get(
-        UserPreferences.previewAudioEnabled,
+        UserPreferences.mediaBarTrailerAudio,
       );
       unawaited(_appleTvTrailerPlayer?.setVolume(audioEnabled ? 100 : 0));
     } else if (_trailerPlayer != null) {
       final audioEnabled = widget.prefs.get(
-        UserPreferences.previewAudioEnabled,
+        UserPreferences.mediaBarTrailerAudio,
       );
       _trailerPlayer?.setVolume(audioEnabled ? 100 : 0);
     }
@@ -1123,7 +1123,7 @@ class _MediaBarState extends State<MediaBar>
 
     if (_trailerUsingMedia3) {
       final audioEnabled = widget.prefs.get(
-        UserPreferences.previewAudioEnabled,
+        UserPreferences.mediaBarTrailerAudio,
       );
       try {
         await _media3TrailerBackend!.setVolume(audioEnabled ? 100 : 0);
@@ -1158,7 +1158,7 @@ class _MediaBarState extends State<MediaBar>
       final player = _appleTvTrailerPlayer;
       if (player == null) return;
       final audioEnabled = widget.prefs.get(
-        UserPreferences.previewAudioEnabled,
+        UserPreferences.mediaBarTrailerAudio,
       );
       try {
         await player.setVolume(audioEnabled ? 100 : 0);
@@ -1184,7 +1184,7 @@ class _MediaBarState extends State<MediaBar>
     final player = _trailerPlayer;
     if (player == null) return;
 
-    final audioEnabled = widget.prefs.get(UserPreferences.previewAudioEnabled);
+    final audioEnabled = widget.prefs.get(UserPreferences.mediaBarTrailerAudio);
     try {
       await player.setVolume(audioEnabled ? 100 : 0);
       if (!mounted || resolveId != _trailerResolveId) return;
@@ -2636,7 +2636,7 @@ class _MediaBarState extends State<MediaBar>
                             (_activeYouTubeVideoId ?? _retainedYouTubeVideoId)!,
                         suspended: _activeYouTubeVideoId == null,
                         muted: !widget.prefs.get(
-                          UserPreferences.previewAudioEnabled,
+                          UserPreferences.mediaBarTrailerAudio,
                         ),
                         showControls: false,
                         ignorePointer: true,
@@ -2666,7 +2666,7 @@ class _MediaBarState extends State<MediaBar>
                   key: ValueKey(_activeWebTrailerUrl),
                   url: _activeWebTrailerUrl!,
                   muted: !widget.prefs.get(
-                    UserPreferences.previewAudioEnabled,
+                    UserPreferences.mediaBarTrailerAudio,
                   ),
                   ignorePointer: true,
                   onCompleted: () => _onTrailerCompleted(true),
