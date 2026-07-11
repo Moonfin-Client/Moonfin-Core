@@ -197,10 +197,17 @@ class _MoonfinAppState extends State<MoonfinApp> {
                       builder: (context) {
                         final Widget shell = Column(
                           children: [
-                            const OfflineBanner(),
                             Expanded(
-                              child: _ConnectivityListener(
-                                child: child ?? const SizedBox.shrink(),
+                              child: Stack(
+                                children: [
+                                  _ConnectivityListener(
+                                    child: child ?? const SizedBox.shrink(),
+                                  ),
+                                  const Align(
+                                    alignment: Alignment.topCenter,
+                                    child: OfflineBanner(),
+                                  ),
+                                ],
                               ),
                             ),
                             if (!hidePlayer)

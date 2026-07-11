@@ -410,7 +410,7 @@ class _AccountDialogState extends State<_AccountDialog> {
                     ),
                   ),
                 ),
-                if (!PlatformDetection.isWeb) ...[
+                if (!PlatformDetection.isWeb && !PlatformDetection.isTV) ...[
                   const SizedBox(height: 8),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),

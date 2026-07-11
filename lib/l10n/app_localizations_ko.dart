@@ -7448,6 +7448,22 @@ class AppLocalizationsKo extends AppLocalizations {
   String get offlineSavedMedia => '저장된 미디어';
 
   @override
+  String get offlineBannerTitle => 'You\'re offline';
+
+  @override
+  String get offlineBannerSubtitle => 'Showing your downloads';
+
+  @override
+  String get offlineBannerAction => 'Downloads';
+
+  @override
+  String get serverUnreachableBannerTitle => 'Can\'t reach your server';
+
+  @override
+  String get serverUnreachableBannerSubtitle =>
+      'Playing from downloads until it\'s back';
+
+  @override
   String get castGoogleCast => 'Google Cast';
 
   @override

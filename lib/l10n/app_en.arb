@@ -7521,6 +7521,11 @@
   "offlineFileNotAvailable": "File not available",
   "offlineSwitchServer": "Switch Server",
   "offlineSavedMedia": "Saved Media",
+  "offlineBannerTitle": "You're offline",
+  "offlineBannerSubtitle": "Showing your downloads",
+  "offlineBannerAction": "Downloads",
+  "serverUnreachableBannerTitle": "Can't reach your server",
+  "serverUnreachableBannerSubtitle": "Playing from downloads until it's back",
 
   "castGoogleCast": "Google Cast",
   "castAirPlay": "AirPlay",

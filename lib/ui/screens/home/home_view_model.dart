@@ -26,6 +26,7 @@ import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/plugin_sync_service.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/utils/bounded_concurrency.dart';
+import '../../../util/platform_detection.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../../data/viewmodels/seerr_discover_view_model.dart';
 import 'package:dio/dio.dart';
@@ -58,7 +59,10 @@ class HomeViewModel extends ChangeNotifier {
   String get _serverId => _client.baseUrl;
   MediaBarViewModel get mediaBarViewModel => _mediaBarViewModel;
 
+  // TV can't download, so it never enters offline browsing mode and keeps
+  // rendering its cached rows instead.
   bool get _isOffline =>
+      !PlatformDetection.isTV &&
       GetIt.instance.isRegistered<ConnectivityService>() &&
       !GetIt.instance<ConnectivityService>().canReachServer;
 

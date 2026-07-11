@@ -13624,6 +13624,36 @@ abstract class AppLocalizations {
   /// **'Saved Media'**
   String get offlineSavedMedia;
 
+  /// No description provided for @offlineBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline'**
+  String get offlineBannerTitle;
+
+  /// No description provided for @offlineBannerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing your downloads'**
+  String get offlineBannerSubtitle;
+
+  /// No description provided for @offlineBannerAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloads'**
+  String get offlineBannerAction;
+
+  /// No description provided for @serverUnreachableBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t reach your server'**
+  String get serverUnreachableBannerTitle;
+
+  /// No description provided for @serverUnreachableBannerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Playing from downloads until it\'s back'**
+  String get serverUnreachableBannerSubtitle;
+
   /// No description provided for @castGoogleCast.
   ///
   /// In en, this message translates to:
