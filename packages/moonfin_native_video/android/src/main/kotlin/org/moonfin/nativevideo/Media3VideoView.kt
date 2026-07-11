@@ -958,6 +958,8 @@ class Media3VideoView(
         audioPipeline.release()
         player.clearVideoSurface()
         Media3SessionController.releaseForPlayer(player)
+        // Stop and clear before releasing so the render threads unwind and the
+        // last decoded frame is dropped instead of lingering in the surface.
         player.stop()
         player.clearMediaItems()
         player.release()
@@ -1542,7 +1544,6 @@ class Media3VideoView(
             ?.trim()
             ?.lowercase()
             ?.takeIf { it.isNotEmpty() }
-        player.setPauseAtEndOfMediaItems(false)
         audioOffloadRetryAttemptedForCurrentSource = false
         stereoDownmixRetryAttemptedForCurrentSource = false
         containerFallbackAttempted = false
