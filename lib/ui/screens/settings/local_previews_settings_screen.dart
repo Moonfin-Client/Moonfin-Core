@@ -41,6 +41,13 @@ class LocalPreviewsSettingsScreen extends StatelessWidget {
                   onChanged: _pushSync,
                 ),
                 SwitchPreferenceTile(
+                  preference: UserPreferences.mediaBarTrailerAudio,
+                  title: l10n.trailerAudio,
+                  subtitle: l10n.enableTrailerAudio,
+                  icon: Icons.volume_up,
+                  onChanged: _pushSync,
+                ),
+                SwitchPreferenceTile(
                   preference: UserPreferences.episodePreviewEnabled,
                   title: l10n.mediaPreview,
                   subtitle: l10n.mediaPreviewDescription,
