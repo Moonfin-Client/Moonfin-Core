@@ -3272,8 +3272,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get previewAudio => 'Preview Audio';
 
   @override
-  String get enablePreviewAudio =>
-      'Enable audio for trailer and episode previews';
+  String get enablePreviewAudio => 'Enable audio for media previews';
 
   @override
   String get latestMedia => 'Recently Added Media';

@@ -5983,7 +5983,7 @@ abstract class AppLocalizations {
   /// Description for preview audio
   ///
   /// In en, this message translates to:
-  /// **'Enable audio for trailer and episode previews'**
+  /// **'Enable audio for media previews'**
   String get enablePreviewAudio;
 
   /// Home section: recently added media

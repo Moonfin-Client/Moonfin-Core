@@ -4523,7 +4523,7 @@
   "@previewAudio": {
     "description": "Setting for preview audio"
   },
-  "enablePreviewAudio": "Enable audio for trailer and episode previews",
+  "enablePreviewAudio": "Enable audio for media previews",
   "@enablePreviewAudio": {
     "description": "Description for preview audio"
   },
