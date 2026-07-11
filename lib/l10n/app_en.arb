@@ -8487,8 +8487,6 @@
     "description": "Chapter image resolution option that matches the source resolution"
   },
   "externalLists": "External Lists",
-  "enableImdb": "IMDb External Lists",
-  "enableImdbDescription": "Fetch IMDb lists for display on the Home Screen.",
   "imdbTop250Movies": "IMDb Top 250 Movies",
   "imdbTop250TvShows": "IMDb Top 250 TV Shows",
   "imdbMostPopularMovies": "IMDb Most Popular Movies",

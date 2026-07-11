@@ -127,8 +127,6 @@ class CustomExternalListsService {
 
     if (source == null || type == null) return [];
 
-
-
     final client = GetIt.instance.isRegistered<MediaServerClient>()
         ? GetIt.instance<MediaServerClient>()
         : null;

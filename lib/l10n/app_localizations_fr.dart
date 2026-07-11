@@ -9618,7 +9618,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Il semble que Jellyfin n\'ait pas réussi à mettre à jour le visuel. Votre bibliothèque est configurée pour enregistrer les visuels directement dans les dossiers multimédias (l\'option « Enregistrer les illustrations dans les dossiers multimédias » est activée). Cette erreur survient généralement lorsque le serveur Jellyfin n\'a pas la permission d\'écrire dans vos répertoires multimédias.';
 
   @override
-  String get externalLists => 'External Home Row Lists';
+  String get externalLists => 'External Lists';
 
   @override
   String get replay => 'Replay';
@@ -9786,4 +9786,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get adminLibChapterImageResolutionMatchSource => 'Match source';
+
+  @override
+  String get imdbTop250Movies => 'IMDb Top 250 Movies';
+
+  @override
+  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
+
+  @override
+  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
+
+  @override
+  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
+
+  @override
+  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
+
+  @override
+  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
 }

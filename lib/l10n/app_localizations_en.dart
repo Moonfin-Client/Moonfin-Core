@@ -9450,7 +9450,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'It looks like Jellyfin failed to update the artwork. Your library is configured to save artwork directly into the media folders (\'Save artwork into media folders\' is enabled). This error typically occurs when the Jellyfin server process does not have permission to write files into your media directories.';
 
   @override
-  String get externalLists => 'External Home Row Lists';
+  String get externalLists => 'External Lists';
 
   @override
   String get replay => 'Replay';
@@ -9618,6 +9618,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminLibChapterImageResolutionMatchSource => 'Match source';
+
+  @override
+  String get imdbTop250Movies => 'IMDb Top 250 Movies';
+
+  @override
+  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
+
+  @override
+  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
+
+  @override
+  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
+
+  @override
+  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
+
+  @override
+  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
 }
 
 /// The translations for English, as used in the United Kingdom (`en_GB`).

@@ -16939,7 +16939,7 @@ abstract class AppLocalizations {
   /// No description provided for @externalLists.
   ///
   /// In en, this message translates to:
-  /// **'External Home Row Lists'**
+  /// **'External Lists'**
   String get externalLists;
 
   /// No description provided for @replay.
@@ -17229,6 +17229,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Match source'**
   String get adminLibChapterImageResolutionMatchSource;
+
+  /// No description provided for @imdbTop250Movies.
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb Top 250 Movies'**
+  String get imdbTop250Movies;
+
+  /// No description provided for @imdbTop250TvShows.
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb Top 250 TV Shows'**
+  String get imdbTop250TvShows;
+
+  /// No description provided for @imdbMostPopularMovies.
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb Most Popular Movies'**
+  String get imdbMostPopularMovies;
+
+  /// No description provided for @imdbMostPopularTvShows.
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb Most Popular TV Shows'**
+  String get imdbMostPopularTvShows;
+
+  /// No description provided for @imdbLowestRatedMovies.
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb Lowest Rated Movies'**
+  String get imdbLowestRatedMovies;
+
+  /// No description provided for @imdbTopEnglishMovies.
+  ///
+  /// In en, this message translates to:
+  /// **'IMDb Top Rated English Movies'**
+  String get imdbTopEnglishMovies;
 }
 
 class _AppLocalizationsDelegate

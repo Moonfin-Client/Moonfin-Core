@@ -428,7 +428,7 @@ class _ImdbListsScreenState extends State<_ImdbListsScreen> {
                           );
                           if (!success) {
                             await prefs.set(UserPreferences.imdbTop250MoviesEnabled, false);
-                            setState(() {});
+                            if (mounted) setState(() {});
                             return;
                           }
                         }
@@ -452,7 +452,7 @@ class _ImdbListsScreenState extends State<_ImdbListsScreen> {
                           );
                           if (!success) {
                             await prefs.set(UserPreferences.imdbTop250TvShowsEnabled, false);
-                            setState(() {});
+                            if (mounted) setState(() {});
                             return;
                           }
                         }
@@ -476,7 +476,7 @@ class _ImdbListsScreenState extends State<_ImdbListsScreen> {
                           );
                           if (!success) {
                             await prefs.set(UserPreferences.imdbMostPopularMoviesEnabled, false);
-                            setState(() {});
+                            if (mounted) setState(() {});
                             return;
                           }
                         }
@@ -500,7 +500,7 @@ class _ImdbListsScreenState extends State<_ImdbListsScreen> {
                           );
                           if (!success) {
                             await prefs.set(UserPreferences.imdbMostPopularTvShowsEnabled, false);
-                            setState(() {});
+                            if (mounted) setState(() {});
                             return;
                           }
                         }
@@ -524,7 +524,7 @@ class _ImdbListsScreenState extends State<_ImdbListsScreen> {
                           );
                           if (!success) {
                             await prefs.set(UserPreferences.imdbLowestRatedMoviesEnabled, false);
-                            setState(() {});
+                            if (mounted) setState(() {});
                             return;
                           }
                         }
@@ -548,7 +548,7 @@ class _ImdbListsScreenState extends State<_ImdbListsScreen> {
                           );
                           if (!success) {
                             await prefs.set(UserPreferences.imdbTopEnglishMoviesEnabled, false);
-                            setState(() {});
+                            if (mounted) setState(() {});
                             return;
                           }
                         }

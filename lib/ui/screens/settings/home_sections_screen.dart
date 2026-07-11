@@ -18,6 +18,7 @@ import '../../../preference/seerr_preferences.dart';
 import '../../../preference/seerr_row_config.dart';
 import '../../../util/extensions.dart';
 import '../../../util/platform_detection.dart';
+import '../../navigation/route_lifecycle_observer.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/poster_size_settings_dialog.dart';
 import '../../widgets/playback/player_loading_overlay.dart';
@@ -87,8 +88,9 @@ class HomeSectionsScreen extends StatefulWidget {
   State<HomeSectionsScreen> createState() => _HomeSectionsScreenState();
 }
 
-class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
+class _HomeSectionsScreenState extends State<HomeSectionsScreen> with RouteAware {
   final _prefs = GetIt.instance<UserPreferences>();
+  ModalRoute<dynamic>? _observedRoute;
   static const _rowsTypeDescription =
       'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
   late List<HomeSectionConfig> _sections;
@@ -703,6 +705,38 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     // no separate call here avoids a double-spinner flash on open.
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route == null || route == _observedRoute) return;
+    if (_observedRoute != null) {
+      routeLifecycleObserver.unsubscribe(this);
+    }
+    _observedRoute = route;
+    routeLifecycleObserver.subscribe(this, route);
+  }
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    // The External Lists sub-screen can toggle IMDb rows while this screen is
+    // still on the stack. Those toggles are authoritative in the preference, so
+    // pull them back into our snapshot before the user can save a stale value
+    // over them.
+    if (!mounted) return;
+    var changed = false;
+    for (var i = 0; i < _sections.length; i++) {
+      if (!_isImdbSectionType(_sections[i].type)) continue;
+      final enabled = _isImdbRowEnabled(_sections[i].type);
+      if (_sections[i].enabled != enabled) {
+        _sections[i] = _sections[i].copyWith(enabled: enabled);
+        changed = true;
+      }
+    }
+    if (changed) setState(() {});
+  }
+
   bool _ensureBuiltinSectionsPresent() {
     final existingTypes = _sections
         .where((s) => s.isBuiltin)
@@ -1169,6 +1203,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
 
   @override
   void dispose() {
+    routeLifecycleObserver.unsubscribe(this);
     for (final n in _focusNodesByStableId.values) {
       n.dispose();
     }

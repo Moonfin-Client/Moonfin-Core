@@ -9511,7 +9511,7 @@ class AppLocalizationsLt extends AppLocalizations {
   String get libraryWriteAccessReactiveBody => '';
 
   @override
-  String get externalLists => 'External Home Row Lists';
+  String get externalLists => 'External Lists';
 
   @override
   String get replay => 'Replay';
@@ -9679,4 +9679,22 @@ class AppLocalizationsLt extends AppLocalizations {
 
   @override
   String get adminLibChapterImageResolutionMatchSource => 'Match source';
+
+  @override
+  String get imdbTop250Movies => 'IMDb Top 250 Movies';
+
+  @override
+  String get imdbTop250TvShows => 'IMDb Top 250 TV Shows';
+
+  @override
+  String get imdbMostPopularMovies => 'IMDb Most Popular Movies';
+
+  @override
+  String get imdbMostPopularTvShows => 'IMDb Most Popular TV Shows';
+
+  @override
+  String get imdbLowestRatedMovies => 'IMDb Lowest Rated Movies';
+
+  @override
+  String get imdbTopEnglishMovies => 'IMDb Top Rated English Movies';
 }
