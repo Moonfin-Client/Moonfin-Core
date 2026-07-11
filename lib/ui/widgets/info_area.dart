@@ -9,6 +9,7 @@ import '../../data/services/media_server_client_factory.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/current_app_localizations.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/overview_text.dart';
 import '../../util/platform_detection.dart';
 import 'rating_display.dart';
 import 'simple_info_row.dart';
@@ -557,8 +558,6 @@ class _InfoAreaContentState extends State<_InfoAreaContent> {
     }
     final hasLogo = logoItemId != null && logoTag != null;
 
-    final overview = item.overview ?? '';
-
     return SizedBox(
       width: double.infinity,
       child: Column(
@@ -625,7 +624,7 @@ class _InfoAreaContentState extends State<_InfoAreaContent> {
             child: Align(
               alignment: Alignment.topLeft,
               child: Text(
-                overview.replaceAll(RegExp(r'<\/?([a-z0-9]*)\b[^>]*>|(&|#)([a-z0-9&#]*);'), ''),
+                cleanOverview(item.overview),
                 style: overviewStyle,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,

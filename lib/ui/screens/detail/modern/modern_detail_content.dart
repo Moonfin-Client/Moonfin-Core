@@ -18,6 +18,7 @@ import '../../../../data/viewmodels/item_detail_view_model.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../preference/user_preferences.dart';
 import '../../../../preference/preference_constants.dart';
+import '../../../../util/overview_text.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../../util/focus/dpad_keys.dart';
 import '../../../navigation/destinations.dart';
@@ -3099,7 +3100,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final isSeason = item.type == 'Season';
     final logoTag = item.logoImageTag ?? (isEpisode ? item.seriesLogoImageTag : null);
     final logoId = logoTag != null ? (item.logoImageTag != null ? item.id : item.seriesId) : null;
-    final overview = item.overview?.trim().replaceAll(RegExp(r'<\/?([a-z0-9]*)\b[^>]*>|(&|#)([a-z0-9&#]*);'), '');
+    final overview = cleanOverview(item.overview?.trim());
     final hideTitleAndLogo = _landscape && _buildUpNext(context, item) != null;
     final hasUpNext = _landscape && _buildUpNext(context, item) != null;
     final showRatings = isEpisode
@@ -3170,7 +3171,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               Expanded(child: personInfo),
             ],
           ),
-          if (overview != null && overview.isNotEmpty) ...[
+          if (overview.isNotEmpty) ...[
             const SizedBox(height: 24),
             ConstrainedBox(
               constraints: BoxConstraints(
@@ -3604,7 +3605,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             ),
           ),
         ],
-        if (overview != null && overview.isNotEmpty) ...[
+        if (overview.isNotEmpty) ...[
           if (!hideTitleAndLogo || (item.tagline != null && item.tagline!.trim().isNotEmpty))
             const SizedBox(height: 8),
           ConstrainedBox(

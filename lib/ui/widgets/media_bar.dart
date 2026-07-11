@@ -31,6 +31,7 @@ import '../navigation/app_router.dart';
 import '../navigation/destinations.dart';
 import '../../util/language_matching.dart';
 import '../../util/overlay_color_palette.dart';
+import '../../util/overview_text.dart';
 import '../../util/platform_detection.dart';
 import '../../l10n/app_localizations.dart';
 import '../../playback/appletv_preview_player.dart';
@@ -2951,7 +2952,7 @@ class _SlideInfo extends StatelessWidget {
                   1.4 *
                   (isMobile ? 2 : 3),
               child: Text(
-                item.overview ?? '',
+                cleanOverview(item.overview),
                 style:
                     (isMobile
                             ? theme.textTheme.bodySmall
@@ -3215,7 +3216,7 @@ class _MakdContent extends StatelessWidget {
         if (!isMobile && (item.overview?.isNotEmpty ?? false)) ...[
           const SizedBox(height: 10),
           Text(
-            item.overview!,
+            cleanOverview(item.overview),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodyMedium?.copyWith(
