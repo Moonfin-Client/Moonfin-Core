@@ -547,6 +547,14 @@ class Media3PlayerBackend extends PlayerBackend {
 
   Future<void> release() => _teardown('release');
 
+  Future<void> appPaused() async {
+    await _invoke<void>('appPaused');
+  }
+
+  Future<void> appResumed() async {
+    await _invoke<void>('appResumed');
+  }
+
   Future<void> _teardown(String command) async {
     await _invoke<void>(command);
     if (_isPlaying) {

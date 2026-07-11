@@ -438,6 +438,8 @@ class Media3VideoView(
     // composition path (see newVideoView). Previously gated to API 30+.
     private val useSurfaceView = true
     private var videoView: View = newVideoView()
+    private var lastSourceArguments: Map<*, *>? = null
+    private var lastPlaybackPositionMs: Long = 0L
 
     private fun newVideoView(): View =
         if (useSurfaceView) {
@@ -468,6 +470,20 @@ class Media3VideoView(
         container.addView(videoView, videoLayoutParams)
         container.addView(firstFrameCover, subtitleLayoutParams)
         container.addView(subtitleView, subtitleLayoutParams)
+
+        container.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(v: View) {
+                if (!isDisposedByFlutter && currentMediaType != "audio") {
+                    ensurePlayerAlive()
+                }
+            }
+
+            override fun onViewDetachedFromWindow(v: View) {
+                if (currentMediaType != "audio") {
+                    forceReleasePlayer()
+                }
+            }
+        })
     }
     private val isLowRamDevice = context.getSystemService<ActivityManager>()?.isLowRamDevice == true
     private val hasHardwareAv1Decoder by lazy { queryHardwareAv1DecoderAvailability() }
@@ -940,10 +956,20 @@ class Media3VideoView(
         applyTrackSelectorForCurrentSource()
         refreshSubtitleRendererMode()
         startTicker()
+
+        val args = lastSourceArguments
+        if (args != null) {
+            val updatedArgs = args.toMutableMap().apply {
+                this["startPositionMs"] = lastPlaybackPositionMs
+                this["autoPlay"] = false
+            }
+            setSource(updatedArgs)
+        }
     }
 
     fun forceReleasePlayer() {
         if (isPlayerReleased) return
+        lastPlaybackPositionMs = player.currentPosition
         isPlayerReleased = true
         isDisposed = true
         cancelPendingSubtitleCue(clearView = false)
@@ -1192,6 +1218,20 @@ class Media3VideoView(
                     if (isDisposedByFlutter && currentMediaType != "audio") {
                         forceReleasePlayer()
                         Media3Bridge.detachView(this)
+                    }
+                    result.success(null)
+                }
+
+                "appPaused" -> {
+                    if (currentMediaType != "audio") {
+                        forceReleasePlayer()
+                    }
+                    result.success(null)
+                }
+
+                "appResumed" -> {
+                    if (currentMediaType != "audio") {
+                        ensurePlayerAlive()
                     }
                     result.success(null)
                 }
@@ -1467,6 +1507,7 @@ class Media3VideoView(
 
     private fun setSource(arguments: Any?) {
         val args = arguments as? Map<*, *> ?: return
+        lastSourceArguments = args
         val url = args["url"]?.toString() ?: return
         val startPositionMs = (args["startPositionMs"] as? Number)?.toLong() ?: 0L
         val autoPlay = args["autoPlay"] as? Boolean ?: false

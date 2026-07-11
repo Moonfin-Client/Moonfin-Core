@@ -5,6 +5,7 @@ import 'package:playback_core/playback_core.dart';
 
 import '../data/models/aggregated_item.dart';
 import '../util/platform_detection.dart';
+import 'media3_player_backend.dart';
 
 class PlaybackLifecycleHandler with WidgetsBindingObserver {
   final PlaybackManager _manager;
@@ -46,8 +47,16 @@ class PlaybackLifecycleHandler with WidgetsBindingObserver {
       case AppLifecycleState.hidden:
       case AppLifecycleState.paused:
         _saveState();
+        final backend = _manager.backend;
+        if (backend is Media3PlayerBackend) {
+          unawaited(backend.appPaused());
+        }
         break;
       case AppLifecycleState.resumed:
+        final backend = _manager.backend;
+        if (backend is Media3PlayerBackend) {
+          unawaited(backend.appResumed());
+        }
         _restoreState();
         break;
       default:
