@@ -1201,19 +1201,34 @@ class MediaKitPlayerBackend extends PlayerBackend {
     return _isStale ? false : completed;
   });
 
+  // Some errors are just the socket dropping mid-stream, like a connection
+  // reset or a broken pipe. The reconnect options quietly re-open the stream
+  // and playback keeps going, so we don't want these popping up as a fatal
+  // "playback failed". Real trouble reaching the stream (connection refused,
+  // timed out, 403/404, a TLS error) reads differently and still gets through.
+  static bool _isTransientReconnectError(String message) {
+    final lower = message.toLowerCase();
+    // ffmpeg's socket read or write dropped mid-stream.
+    if (lower.contains('ffurl_read') || lower.contains('ffurl_write')) {
+      return true;
+    }
+    // How most platforms word a dropped connection.
+    if (lower.contains('connection reset') ||
+        lower.contains('connection abort') ||
+        lower.contains('broken pipe')) {
+      return true;
+    }
+    // Windows reports the same drops as hex codes. 0xffffd8ba is WSAECONNRESET
+    // (10054) and 0xffffd8bb is WSAECONNABORTED (10053).
+    if (lower.contains('0xffffd8ba') || lower.contains('0xffffd8bb')) {
+      return true;
+    }
+    return false;
+  }
+
   @override
   Stream<Map<String, dynamic>>? get errorStream => _player.stream.error
-      .where((err) {
-        final lower = err.toLowerCase();
-        if (lower.startsWith('tcp:') ||
-            lower.startsWith('http:') ||
-            lower.startsWith('https:') ||
-            lower.startsWith('tls:') ||
-            lower.startsWith('crypto:')) {
-          return false;
-        }
-        return true;
-      })
+      .where((err) => !_isTransientReconnectError(err))
       .map((err) => <String, dynamic>{'event': 'error', 'message': err});
 
   @override
