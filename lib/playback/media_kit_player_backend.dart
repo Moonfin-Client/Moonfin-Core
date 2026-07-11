@@ -378,6 +378,11 @@ class MediaKitPlayerBackend extends PlayerBackend {
     final platform = player.platform;
     if (platform is NativePlayer) {
       _nativeSetProperty(platform, 'network-timeout', '120');
+      _nativeSetProperty(
+        platform,
+        'stream-lavf-o',
+        'reconnect=1,reconnect_on_network_error=1,reconnect_on_http_error=4xx,5xx,reconnect_streamed=1,reconnect_at_eof=1,reconnect_delay_max=5',
+      );
 
       final maxChannels = prefs.get(UserPreferences.maxAudioChannels);
       final audioChannelsLayout = (maxChannels == 0 || _passthroughActive(prefs))
@@ -1197,9 +1202,19 @@ class MediaKitPlayerBackend extends PlayerBackend {
   });
 
   @override
-  Stream<Map<String, dynamic>>? get errorStream => _player.stream.error.map(
-    (err) => <String, dynamic>{'event': 'error', 'message': err},
-  );
+  Stream<Map<String, dynamic>>? get errorStream => _player.stream.error
+      .where((err) {
+        final lower = err.toLowerCase();
+        if (lower.startsWith('tcp:') ||
+            lower.startsWith('http:') ||
+            lower.startsWith('https:') ||
+            lower.startsWith('tls:') ||
+            lower.startsWith('crypto:')) {
+          return false;
+        }
+        return true;
+      })
+      .map((err) => <String, dynamic>{'event': 'error', 'message': err});
 
   @override
   Future<void> setPlaybackSpeed(double speed) async {
