@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import 'offline_aware_image.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -31,10 +31,10 @@ import '../navigation/app_router.dart';
 import '../navigation/destinations.dart';
 import '../../util/language_matching.dart';
 import '../../util/overlay_color_palette.dart';
+import '../../util/overview_text.dart';
 import '../../util/platform_detection.dart';
 import '../../l10n/app_localizations.dart';
 import '../../playback/appletv_preview_player.dart';
-import '../../playback/device_profile_builder.dart';
 import '../../playback/html_video_backend_profile.dart';
 import '../../playback/inline_preview_engine.dart';
 import '../../playback/media3_player_backend.dart';
@@ -292,7 +292,7 @@ class _MediaBarState extends State<MediaBar>
   }
 
   bool _useMedia3TrailerEngine() {
-    return usesMedia3ForInlinePreview(widget.prefs);
+    return usesMedia3ForInlinePreview();
   }
 
   /// Whether the Media3 platform view stays mounted between trailers so each
@@ -514,7 +514,7 @@ class _MediaBarState extends State<MediaBar>
             if (item.posterUrl != null) {
               await precacheImage(
                 ResizeImage(
-                  CachedNetworkImageProvider(item.posterUrl!),
+                  offlineAwareImageProvider(item.posterUrl!),
                   width: posterCacheW,
                 ),
                 context,
@@ -524,7 +524,7 @@ class _MediaBarState extends State<MediaBar>
             if (item.backdropUrl != null) {
               await precacheImage(
                 ResizeImage(
-                  CachedNetworkImageProvider(item.backdropUrl!),
+                  offlineAwareImageProvider(item.backdropUrl!),
                   width: backdropCacheW,
                 ),
                 context,
@@ -533,7 +533,7 @@ class _MediaBarState extends State<MediaBar>
             }
             if (item.logoUrl != null) {
               await precacheImage(
-                CachedNetworkImageProvider(item.logoUrl!),
+                offlineAwareImageProvider(item.logoUrl!),
                 context,
               );
             }
@@ -705,7 +705,7 @@ class _MediaBarState extends State<MediaBar>
           if (item.posterUrl != null) {
             precacheImage(
               ResizeImage(
-                CachedNetworkImageProvider(item.posterUrl!),
+                offlineAwareImageProvider(item.posterUrl!),
                 width: posterCacheW,
               ),
               context,
@@ -715,7 +715,7 @@ class _MediaBarState extends State<MediaBar>
           if (item.backdropUrl != null) {
             precacheImage(
               ResizeImage(
-                CachedNetworkImageProvider(item.backdropUrl!),
+                offlineAwareImageProvider(item.backdropUrl!),
                 width: backdropCacheW,
               ),
               context,
@@ -723,7 +723,7 @@ class _MediaBarState extends State<MediaBar>
           }
 
           if (item.logoUrl != null) {
-            precacheImage(CachedNetworkImageProvider(item.logoUrl!), context);
+            precacheImage(offlineAwareImageProvider(item.logoUrl!), context);
           }
         }
       }
@@ -1628,7 +1628,10 @@ class _MediaBarState extends State<MediaBar>
     if (PlatformDetection.isWeb) {
       return buildHtmlVideoBackendDeviceProfile(widget.prefs);
     }
-    return DeviceProfileBuilder.build();
+    // Reuse the real profile from the active backend so the preview advertises
+    // the codecs, resolution, and bitrate the device supports instead of a bare
+    // profile that makes the server fall back to a tiny transcode.
+    return GetIt.instance<PlayerBackend>().getDeviceProfile();
   }
 
   List<Map<String, dynamic>> _audioStreamsFromRawTrailer(
@@ -2465,7 +2468,7 @@ class _MediaBarState extends State<MediaBar>
       if (url == null) continue;
       precacheImage(
         ResizeImage(
-          CachedNetworkImageProvider(url),
+          offlineAwareImageProvider(url),
           width: GalleryLayout.kBackdropDecodeWidth,
         ),
         context,
@@ -2693,7 +2696,7 @@ class _MediaBarState extends State<MediaBar>
   }
 
   Widget _buildLogoWithShadow(String url) {
-    Widget image() => CachedNetworkImage(
+    Widget image() => OfflineAwareImage(
       imageUrl: url,
       fit: BoxFit.contain,
       alignment: Alignment.centerLeft,
@@ -2951,7 +2954,7 @@ class _SlideInfo extends StatelessWidget {
                   1.4 *
                   (isMobile ? 2 : 3),
               child: Text(
-                item.overview ?? '',
+                cleanOverview(item.overview),
                 style:
                     (isMobile
                             ? theme.textTheme.bodySmall
@@ -3215,7 +3218,7 @@ class _MakdContent extends StatelessWidget {
         if (!isMobile && (item.overview?.isNotEmpty ?? false)) ...[
           const SizedBox(height: 10),
           Text(
-            item.overview!,
+            cleanOverview(item.overview),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodyMedium?.copyWith(

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import '../../widgets/offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -1589,7 +1589,7 @@ class _BlurredBackdrop extends StatelessWidget {
         colorBlendMode: BlendMode.darken,
       );
     } else if (coverUrl != null) {
-      bg = CachedNetworkImage(
+      bg = OfflineAwareImage(
         imageUrl: coverUrl!,
         fit: BoxFit.cover,
         color: AppColorScheme.scrim.withValues(alpha: 0.6),
@@ -1638,7 +1638,7 @@ class _CoverArt extends StatelessWidget {
         fit: BoxFit.contain,
       );
     } else if (coverUrl != null) {
-      child = CachedNetworkImage(
+      child = OfflineAwareImage(
         imageUrl: coverUrl!,
         height: size,
         fit: BoxFit.contain,

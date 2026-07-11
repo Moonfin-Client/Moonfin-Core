@@ -7,18 +7,21 @@ import 'subtitle_formats.dart';
 class OfflineStreamResult {
   final String url;
   final List<Map<String, dynamic>> mediaStreams;
-  final String itemId;
-  final String serverId;
-  final Duration duration;
   final List<OfflineSubtitle> externalSubtitles;
+
+  /// The original server media source id, so play reports line up.
+  final String mediaSourceId;
+
+  /// True when the file was transcoded at download time, meaning the stored
+  /// [mediaStreams] describe the original server file, not this one.
+  final bool isTranscoded;
 
   const OfflineStreamResult({
     required this.url,
     required this.mediaStreams,
-    required this.itemId,
-    required this.serverId,
-    required this.duration,
     this.externalSubtitles = const [],
+    required this.mediaSourceId,
+    this.isTranscoded = false,
   });
 }
 
@@ -59,9 +62,6 @@ class OfflineStreamResolver {
     final rawStreams = (metadata['MediaStreams'] as List?) ?? [];
     final mediaStreams = rawStreams.cast<Map<String, dynamic>>();
 
-    final runTimeTicks = metadata['RunTimeTicks'] as int? ?? 0;
-    final duration = Duration(microseconds: runTimeTicks ~/ 10);
-
     final parentDir = file.parent;
     final fileNameBase = file.uri.pathSegments.last.replaceAll(RegExp(r'\.[^.]+$'), '');
 
@@ -98,13 +98,17 @@ class OfflineStreamResolver {
       ));
     }
 
+    final mediaSources = (metadata['MediaSources'] as List?) ?? const [];
+    final mediaSourceId = mediaSources.isNotEmpty && mediaSources.first is Map
+        ? ((mediaSources.first as Map)['Id']?.toString() ?? itemId)
+        : itemId;
+
     return OfflineStreamResult(
       url: file.path,
       mediaStreams: mediaStreams,
-      itemId: itemId,
-      serverId: item.serverId,
-      duration: duration,
       externalSubtitles: externalSubs,
+      mediaSourceId: mediaSourceId,
+      isTranscoded: item.qualityPreset != 'original',
     );
   }
 }

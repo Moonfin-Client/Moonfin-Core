@@ -399,58 +399,88 @@ class PluginSyncService extends ChangeNotifier {
       if (parsed is! Map<String, dynamic>) {
         return;
       }
-
-      if (parsed['type'] == 'adminMessage') {
-        final text = parsed['text'];
-        if (text is String) {
-          final trimmed = text.trim();
-          if (trimmed.isNotEmpty) {
-            onAdminMessage?.call(trimmed);
-          }
-        }
-        return;
-      }
-
-      if (parsed['type'] == 'seerrNotification') {
-        final title = parsed['title'];
-        final body = parsed['body'];
-        final route = parsed['route'];
-        final kind = parsed['kind'];
-        final requestIdRaw = parsed['requestId'];
-        final requestId = requestIdRaw is String ? requestIdRaw : null;
-        if (route is String && route.trim().isNotEmpty) {
-          onSeerrNotification?.call(
-            title is String ? title : '',
-            body is String ? body : '',
-            route.trim(),
-            requestId: requestId,
-            isRequest: kind == 'request',
-          );
-        }
-        return;
-      }
-
-      if (parsed['type'] == 'themesChanged') {
-        await _refreshCustomThemes(client);
-        notifyListeners();
-        return;
-      }
-
-      if (parsed['type'] != 'settingsUpdated') {
-        return;
-      }
-
-      final resolved = await _fetchResolvedProfile(client, _profileName);
-      if (resolved == null) {
-        return;
-      }
-
-      await _applyServerSettings(resolved);
-      notifyListeners();
+      await _dispatchServerEvent(client, parsed);
     } catch (_) {}
   }
 
+  // Entry point for plugin events delivered over the session websocket
+  // (Emby servers, where the SSE stream is unavailable).
+  Future<void> handleServerEvent(
+    MediaServerClient client,
+    Map<String, dynamic> payload,
+  ) async {
+    try {
+      await _dispatchServerEvent(client, payload);
+    } catch (_) {}
+  }
+
+  // Reads a key tolerating PascalCase, since the websocket path may
+  // re-serialize the payload with capitalized keys.
+  static dynamic _eventValue(Map<String, dynamic> map, String key) =>
+      map[key] ?? map[key[0].toUpperCase() + key.substring(1)];
+
+  Future<void> _dispatchServerEvent(
+    MediaServerClient client,
+    Map<String, dynamic> parsed,
+  ) async {
+    final type = _eventValue(parsed, 'type');
+
+    if (type == 'adminMessage') {
+      final text = _eventValue(parsed, 'text');
+      if (text is String) {
+        final trimmed = text.trim();
+        if (trimmed.isNotEmpty) {
+          onAdminMessage?.call(trimmed);
+        }
+      }
+      return;
+    }
+
+    if (type == 'seerrNotification') {
+      final title = _eventValue(parsed, 'title');
+      final body = _eventValue(parsed, 'body');
+      final route = _eventValue(parsed, 'route');
+      final kind = _eventValue(parsed, 'kind');
+      final requestIdRaw = _eventValue(parsed, 'requestId');
+      final requestId = requestIdRaw is String ? requestIdRaw : null;
+      if (route is String && route.trim().isNotEmpty) {
+        onSeerrNotification?.call(
+          title is String ? title : '',
+          body is String ? body : '',
+          route.trim(),
+          requestId: requestId,
+          isRequest: kind == 'request',
+        );
+      }
+      return;
+    }
+
+    if (type == 'themesChanged') {
+      await _refreshCustomThemes(client);
+      notifyListeners();
+      return;
+    }
+
+    if (type != 'settingsUpdated') {
+      return;
+    }
+
+    final resolved = await _fetchResolvedProfile(client, _profileName);
+    if (resolved == null) {
+      return;
+    }
+
+    await _applyServerSettings(resolved);
+    notifyListeners();
+  }
+
   Future<void> _startSettingsStream(MediaServerClient client) async {
+    // Emby servers have no SSE endpoint, so plugin events arrive over the
+    // session websocket instead. Don't loop on 501 reconnects here.
+    if (client.serverType == ServerType.emby) {
+      return;
+    }
+
     if (!_pluginAvailable || !_prefs.get(UserPreferences.pluginSyncEnabled)) {
       return;
     }
@@ -589,6 +619,7 @@ class PluginSyncService extends ChangeNotifier {
         data: {
           'notifyOnNewRequests': _seerrPrefs.notifyOnNewRequests,
           'notifyOnLibraryAdded': _seerrPrefs.notifyOnLibraryAdded,
+          'notifyOnIssues': _seerrPrefs.notifyOnIssues,
         },
         options: Options(
           headers: {...headers, 'Content-Type': 'application/json'},

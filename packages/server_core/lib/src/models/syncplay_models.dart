@@ -415,16 +415,20 @@ class SyncPlayUtils {
 
   static int msToTicks(int ms) => ms * ticksPerMs;
 
-  static int parseISOToMs(String? iso) {
-    if (iso == null || iso.isEmpty) {
-      return DateTime.now().toUtc().millisecondsSinceEpoch;
-    }
+  static int? tryParseISOToMs(String? iso) {
+    if (iso == null || iso.isEmpty) return null;
     try {
       return DateTime.parse(iso).toUtc().millisecondsSinceEpoch;
     } catch (_) {
-      return DateTime.now().toUtc().millisecondsSinceEpoch;
+      return null;
     }
   }
+
+  /// Falls back to local now, which makes a command with a garbage timestamp
+  /// execute immediately. Callers that must distinguish a bad timestamp from
+  /// "now" should use [tryParseISOToMs].
+  static int parseISOToMs(String? iso) =>
+      tryParseISOToMs(iso) ?? DateTime.now().toUtc().millisecondsSinceEpoch;
 
   static String nowIsoUtc() => DateTime.now().toUtc().toIso8601String();
 }

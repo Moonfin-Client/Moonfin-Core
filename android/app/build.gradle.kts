@@ -68,6 +68,9 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // Fallback so the main manifest's ${enableImpeller} always resolves;
+        // TV flavors override this to "false".
+        manifestPlaceholders["enableImpeller"] = "true"
     }
 
     flavorDimensions += "device"
@@ -99,6 +102,8 @@ android {
             versionName = androidTvVersionName
             ndk { abiFilters += tvAbis }
             manifestPlaceholders["appName"] = baseAppName
+            // Impeller off on TV: the GLES fallback stutters on TV-box GPUs.
+            manifestPlaceholders["enableImpeller"] = "false"
         }
         create("androidTv-beta") {
             dimension = "device"
@@ -107,6 +112,7 @@ android {
             versionName = androidTvVersionName
             ndk { abiFilters += tvAbis }
             manifestPlaceholders["appName"] = "$baseAppName Beta"
+            manifestPlaceholders["enableImpeller"] = "false"
         }
     }
 

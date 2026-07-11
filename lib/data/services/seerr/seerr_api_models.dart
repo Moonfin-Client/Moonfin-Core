@@ -7,7 +7,8 @@ class SeerrRequest {
   static const statusPending = 1;
   static const statusApproved = 2;
   static const statusDeclined = 3;
-  static const statusAvailable = 4;
+  static const statusFailed = 4;
+  static const statusCompleted = 5;
 
   final int id;
   final int status;
@@ -16,6 +17,7 @@ class SeerrRequest {
   final String type;
   final SeerrMedia? media;
   final SeerrUser? requestedBy;
+  final SeerrUser? modifiedBy;
   final int? seasonCount;
   final String? externalId;
   final bool is4k;
@@ -29,6 +31,7 @@ class SeerrRequest {
     required this.type,
     this.media,
     this.requestedBy,
+    this.modifiedBy,
     this.seasonCount,
     this.externalId,
     this.is4k = false,
@@ -72,6 +75,8 @@ class SeerrMedia {
   final String? imdbId;
   final int? status;
   final int? status4k;
+  final List<SeerrDownloadingItem>? downloadStatus;
+  final List<SeerrDownloadingItem>? downloadStatus4k;
   final String? mediaAddedAt;
   final int? serviceId;
   final int? serviceId4k;
@@ -103,6 +108,8 @@ class SeerrMedia {
     this.imdbId,
     this.status,
     this.status4k,
+    this.downloadStatus,
+    this.downloadStatus4k,
     this.mediaAddedAt,
     this.serviceId,
     this.serviceId4k,
@@ -130,6 +137,21 @@ class SeerrMedia {
       _$SeerrMediaFromJson(json);
 
   Map<String, dynamic> toJson() => _$SeerrMediaToJson(this);
+}
+
+/// One Radarr/Sonarr queue entry, reported by Seerr while a request downloads.
+/// Only the byte counts are kept since that is all the progress bars need.
+@JsonSerializable()
+class SeerrDownloadingItem {
+  final int? size;
+  final int? sizeLeft;
+
+  const SeerrDownloadingItem({this.size, this.sizeLeft});
+
+  factory SeerrDownloadingItem.fromJson(Map<String, dynamic> json) =>
+      _$SeerrDownloadingItemFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrDownloadingItemToJson(this);
 }
 
 @JsonSerializable()
@@ -200,6 +222,16 @@ class SeerrUser {
       hasPermission(SeerrPermission.manageRequests) ||
       hasPermission(SeerrPermission.requestView);
 
+  bool get canManageIssues => hasPermission(SeerrPermission.manageIssues);
+
+  bool get canCreateIssues =>
+      hasPermission(SeerrPermission.createIssues) ||
+      hasPermission(SeerrPermission.manageIssues);
+
+  bool get canViewAllIssues =>
+      hasPermission(SeerrPermission.manageIssues) ||
+      hasPermission(SeerrPermission.viewIssues);
+
   factory SeerrUser.fromJson(Map<String, dynamic> json) =>
       _$SeerrUserFromJson(json);
 
@@ -221,6 +253,9 @@ abstract final class SeerrPermission {
   static const requestView = 16384;
   static const requestMovie = 262144;
   static const requestTv = 524288;
+  static const manageIssues = 1048576;
+  static const viewIssues = 2097152;
+  static const createIssues = 4194304;
   static const recentView = 67108864;
 }
 
@@ -327,6 +362,7 @@ class SeerrMovieDetails {
   final SeerrMediaInfo? mediaInfo;
   final List<SeerrKeyword> keywords;
   final List<SeerrVideo> relatedVideos;
+  final SeerrCollectionRef? collection;
 
   const SeerrMovieDetails({
     required this.id,
@@ -349,6 +385,7 @@ class SeerrMovieDetails {
     this.mediaInfo,
     this.keywords = const [],
     this.relatedVideos = const [],
+    this.collection,
   });
 
   factory SeerrMovieDetails.fromJson(Map<String, dynamic> json) =>
@@ -381,6 +418,7 @@ class SeerrTvDetails {
   final SeerrMediaInfo? mediaInfo;
   final List<SeerrKeyword> keywords;
   final List<SeerrVideo> relatedVideos;
+  final List<SeerrSeason> seasons;
 
   const SeerrTvDetails({
     required this.id,
@@ -405,6 +443,7 @@ class SeerrTvDetails {
     this.mediaInfo,
     this.keywords = const [],
     this.relatedVideos = const [],
+    this.seasons = const [],
   });
 
   String get displayTitle => name ?? title ?? '';
@@ -568,6 +607,8 @@ class SeerrMediaInfo {
   final int? tvdbId;
   final int? status;
   final int? status4k;
+  final List<SeerrDownloadingItem>? downloadStatus;
+  final List<SeerrDownloadingItem>? downloadStatus4k;
   final List<SeerrRequest>? requests;
   final String? jellyfinMediaId;
   final String? jellyfinMediaId4k;
@@ -578,6 +619,8 @@ class SeerrMediaInfo {
     this.tvdbId,
     this.status,
     this.status4k,
+    this.downloadStatus,
+    this.downloadStatus4k,
     this.requests,
     this.jellyfinMediaId,
     this.jellyfinMediaId4k,
@@ -1032,4 +1075,242 @@ class SeerrLanguageProfile {
       _$SeerrLanguageProfileFromJson(json);
 
   Map<String, dynamic> toJson() => _$SeerrLanguageProfileToJson(this);
+}
+
+@JsonSerializable()
+class SeerrSeason {
+  final int? id;
+  final int seasonNumber;
+  final int? episodeCount;
+  final String? name;
+  final String? airDate;
+
+  const SeerrSeason({
+    this.id,
+    required this.seasonNumber,
+    this.episodeCount,
+    this.name,
+    this.airDate,
+  });
+
+  factory SeerrSeason.fromJson(Map<String, dynamic> json) =>
+      _$SeerrSeasonFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrSeasonToJson(this);
+}
+
+@JsonSerializable()
+class SeerrRequestCounts {
+  final int total;
+  final int movie;
+  final int tv;
+  final int pending;
+  final int approved;
+  final int declined;
+  final int processing;
+  final int available;
+  final int completed;
+
+  const SeerrRequestCounts({
+    this.total = 0,
+    this.movie = 0,
+    this.tv = 0,
+    this.pending = 0,
+    this.approved = 0,
+    this.declined = 0,
+    this.processing = 0,
+    this.available = 0,
+    this.completed = 0,
+  });
+
+  factory SeerrRequestCounts.fromJson(Map<String, dynamic> json) =>
+      _$SeerrRequestCountsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrRequestCountsToJson(this);
+}
+
+@JsonSerializable()
+class SeerrQuotaDetail {
+  final int? days;
+  final int? limit;
+  final int used;
+  final int? remaining;
+  final bool restricted;
+
+  const SeerrQuotaDetail({
+    this.days,
+    this.limit,
+    this.used = 0,
+    this.remaining,
+    this.restricted = false,
+  });
+
+  bool get isUnlimited => limit == null || limit == 0;
+
+  factory SeerrQuotaDetail.fromJson(Map<String, dynamic> json) =>
+      _$SeerrQuotaDetailFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrQuotaDetailToJson(this);
+}
+
+@JsonSerializable()
+class SeerrQuota {
+  final SeerrQuotaDetail? movie;
+  final SeerrQuotaDetail? tv;
+
+  const SeerrQuota({this.movie, this.tv});
+
+  factory SeerrQuota.fromJson(Map<String, dynamic> json) =>
+      _$SeerrQuotaFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrQuotaToJson(this);
+}
+
+@JsonSerializable()
+class SeerrCollectionRef {
+  final int id;
+  final String? name;
+  final String? posterPath;
+  final String? backdropPath;
+
+  const SeerrCollectionRef({
+    required this.id,
+    this.name,
+    this.posterPath,
+    this.backdropPath,
+  });
+
+  factory SeerrCollectionRef.fromJson(Map<String, dynamic> json) =>
+      _$SeerrCollectionRefFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrCollectionRefToJson(this);
+}
+
+@JsonSerializable()
+class SeerrCollection {
+  final int id;
+  final String? name;
+  final String? overview;
+  final String? posterPath;
+  final String? backdropPath;
+  final List<SeerrDiscoverItem> parts;
+
+  const SeerrCollection({
+    required this.id,
+    this.name,
+    this.overview,
+    this.posterPath,
+    this.backdropPath,
+    this.parts = const [],
+  });
+
+  factory SeerrCollection.fromJson(Map<String, dynamic> json) =>
+      _$SeerrCollectionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrCollectionToJson(this);
+}
+
+@JsonSerializable()
+class SeerrIssue {
+  static const typeVideo = 1;
+  static const typeAudio = 2;
+  static const typeSubtitles = 3;
+  static const typeOther = 4;
+
+  static const statusOpen = 1;
+  static const statusResolved = 2;
+
+  final int id;
+  final int issueType;
+  final int status;
+  final int problemSeason;
+  final int problemEpisode;
+  final SeerrMedia? media;
+  final SeerrUser? createdBy;
+  final SeerrUser? modifiedBy;
+  final List<SeerrIssueComment> comments;
+  final String? createdAt;
+  final String? updatedAt;
+
+  const SeerrIssue({
+    required this.id,
+    required this.issueType,
+    required this.status,
+    this.problemSeason = 0,
+    this.problemEpisode = 0,
+    this.media,
+    this.createdBy,
+    this.modifiedBy,
+    this.comments = const [],
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  bool get isOpen => status == statusOpen;
+
+  factory SeerrIssue.fromJson(Map<String, dynamic> json) =>
+      _$SeerrIssueFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrIssueToJson(this);
+}
+
+@JsonSerializable()
+class SeerrIssueComment {
+  final int id;
+  final SeerrUser? user;
+  final String? message;
+  final String? createdAt;
+  final String? updatedAt;
+
+  const SeerrIssueComment({
+    required this.id,
+    this.user,
+    this.message,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory SeerrIssueComment.fromJson(Map<String, dynamic> json) =>
+      _$SeerrIssueCommentFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrIssueCommentToJson(this);
+}
+
+@JsonSerializable()
+class SeerrIssueCounts {
+  final int total;
+  final int video;
+  final int audio;
+  final int subtitles;
+  final int others;
+  final int open;
+  final int closed;
+
+  const SeerrIssueCounts({
+    this.total = 0,
+    this.video = 0,
+    this.audio = 0,
+    this.subtitles = 0,
+    this.others = 0,
+    this.open = 0,
+    this.closed = 0,
+  });
+
+  factory SeerrIssueCounts.fromJson(Map<String, dynamic> json) =>
+      _$SeerrIssueCountsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrIssueCountsToJson(this);
+}
+
+@JsonSerializable()
+class SeerrIssueListResponse {
+  final SeerrPageInfo? pageInfo;
+  final List<SeerrIssue> results;
+
+  const SeerrIssueListResponse({this.pageInfo, this.results = const []});
+
+  factory SeerrIssueListResponse.fromJson(Map<String, dynamic> json) =>
+      _$SeerrIssueListResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SeerrIssueListResponseToJson(this);
 }

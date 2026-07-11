@@ -206,6 +206,7 @@ class CustomKeyboardState extends State<CustomKeyboard> {
           _KeyboardChip(label: 'https://', value: 'https://'),
           _KeyboardChip(label: 'http://', value: 'http://'),
           _KeyboardChip(label: 'www.', value: 'www.'),
+          _KeyboardChip(label: 'jellyfin', value: 'jellyfin'),
           _KeyboardChip(label: '.com', value: '.com'),
           _KeyboardChip(label: '.org', value: '.org'),
           _KeyboardChip(label: '.net', value: '.net'),

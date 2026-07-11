@@ -37,6 +37,10 @@ class StreamResolutionResult {
   final List<String> transcodingReasons;
   final String? hybridAudioUrl;
 
+  /// True when [streamUrl] is a local file path served from the downloads
+  /// store rather than a server stream URL.
+  final bool isLocalMedia;
+
   const StreamResolutionResult({
     required this.streamUrl,
     required this.mediaSourceId,
@@ -53,5 +57,6 @@ class StreamResolutionResult {
     this.selectedAudioStreamIndex,
     this.transcodingReasons = const [],
     this.hybridAudioUrl,
+    this.isLocalMedia = false,
   });
 }

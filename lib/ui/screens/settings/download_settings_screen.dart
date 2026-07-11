@@ -2,7 +2,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/models/download_quality.dart';
@@ -14,7 +13,7 @@ import '../../../preference/user_preferences.dart';
 import '../../../util/download_utils.dart';
 import '../../../util/platform_detection.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../navigation/destinations.dart';
+import '../downloads/downloads_panel.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/adaptive/adaptive_list_section.dart';
 import '../../widgets/overlay_sheet.dart';
@@ -79,8 +78,7 @@ class DownloadSettingsScreen extends ConsumerWidget {
                     subtitle: Text(formatBytes(bytes)),
                     trailing: TextButton(
                       child: Text(l10n.manage),
-                      onPressed: () =>
-                          context.push(Destinations.storageManagement),
+                      onPressed: () => showDownloadsDialog(context),
                     ),
                   ),
                   loading: () => ListTile(

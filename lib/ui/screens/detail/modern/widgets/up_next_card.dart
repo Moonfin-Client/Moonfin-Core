@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../widgets/offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
@@ -273,7 +273,7 @@ class _UpNextCardState extends State<UpNextCard> {
         fit: StackFit.expand,
         children: [
           if (widget.imageUrl != null && widget.imageUrl!.isNotEmpty)
-            CachedNetworkImage(
+            OfflineAwareImage(
               imageUrl: widget.imageUrl!,
               fit: BoxFit.cover,
               errorWidget: (context, url, error) => const SizedBox.shrink(),

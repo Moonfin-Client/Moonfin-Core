@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import '../../widgets/offline_aware_image.dart';
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -887,7 +887,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     final ImageProvider? ambientImage =
         (localPoster != null && File(localPoster).existsSync())
         ? FileImage(File(localPoster))
-        : (artUrl != null ? CachedNetworkImageProvider(artUrl) : null);
+        : (artUrl != null ? offlineAwareImageProvider(artUrl) : null);
 
     final content = Stack(
       fit: StackFit.expand,
@@ -1105,7 +1105,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
                             errorBuilder: (_, _, _) => _artPlaceholder(),
                           )
                         : artUrl != null
-                        ? CachedNetworkImage(
+                        ? OfflineAwareImage(
                             imageUrl: artUrl,
                             fit: BoxFit.cover,
                             placeholder: (_, _) => _artPlaceholder(),
@@ -1949,7 +1949,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
               child: ClipRRect(
                 borderRadius: AppRadius.circular(4),
                 child: artUrl != null
-                    ? CachedNetworkImage(
+                    ? OfflineAwareImage(
                         imageUrl: artUrl,
                         fit: BoxFit.cover,
                         placeholder: (_, _) => _queueArtPlaceholder(),

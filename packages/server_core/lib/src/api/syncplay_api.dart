@@ -9,12 +9,17 @@ class UtcTimeResponse {
     required this.responseTransmissionTimeMs,
   });
 
+  /// Timestamps are -1 when the server response was missing or unparseable,
+  /// so a bad sample can be discarded instead of polluting the clock offset
+  /// with local time.
   factory UtcTimeResponse.fromJson(Map<String, dynamic> json) =>
       UtcTimeResponse(
-        requestReceptionTimeMs:
-            SyncPlayUtils.parseISOToMs(json['RequestReceptionTime'] as String?),
-        responseTransmissionTimeMs: SyncPlayUtils.parseISOToMs(
-            json['ResponseTransmissionTime'] as String?),
+        requestReceptionTimeMs: SyncPlayUtils.tryParseISOToMs(
+                json['RequestReceptionTime'] as String?) ??
+            -1,
+        responseTransmissionTimeMs: SyncPlayUtils.tryParseISOToMs(
+                json['ResponseTransmissionTime'] as String?) ??
+            -1,
       );
 }
 
@@ -33,11 +38,13 @@ abstract class SyncPlayApi {
     required bool isPlaying,
     required String playlistItemId,
     required int positionTicks,
+    DateTime? when,
   });
   Future<void> sendReady({
     required bool isPlaying,
     required String playlistItemId,
     required int positionTicks,
+    DateTime? when,
   });
   Future<void> sendPing(int ping);
 

@@ -19,34 +19,6 @@ class _AdvancedOptionsScreenState extends State<_AdvancedOptionsScreen> {
     super.dispose();
   }
 
-  // Renderer changes only apply after a relaunch; offer to close the app.
-  Future<void> _promptRenderingRestart() async {
-    if (!mounted) return;
-    final l10n = AppLocalizations.of(context);
-    await showFocusRestoringDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog.adaptive(
-        title: Text(l10n.impellerRestartTitle),
-        content: Text(l10n.impellerRestartMessage),
-        actions: [
-          adaptiveDialogAction(
-            autofocus: true,
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(l10n.cancel),
-          ),
-          adaptiveDialogAction(
-            isDefault: true,
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              AppExit.closeApp();
-            },
-            child: Text(l10n.impellerCloseNow),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -71,25 +43,6 @@ class _AdvancedOptionsScreenState extends State<_AdvancedOptionsScreen> {
                 ),
               ],
             ),
-            if (PlatformDetection.isAndroid) ...[
-              _SectionHeader(l10n.rendering),
-              adaptiveListSection(
-                children: [
-                  EnumPreferenceTile<ImpellerMode>(
-                    preference: UserPreferences.impellerMode,
-                    title: l10n.impellerRendering,
-                    description: l10n.impellerRenderingSubtitle,
-                    icon: Icons.auto_awesome_mosaic,
-                    labelOf: (v) => switch (v) {
-                      ImpellerMode.auto => l10n.impellerAuto,
-                      ImpellerMode.on => l10n.impellerOn,
-                      ImpellerMode.off => l10n.impellerOff,
-                    },
-                    onChanged: _promptRenderingRestart,
-                  ),
-                ],
-              ),
-            ],
             if (PlatformDetection.isAndroid && PlatformDetection.isTV) ...[
               _SectionHeader(l10n.playerRouting),
               adaptiveListSection(

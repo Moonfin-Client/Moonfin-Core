@@ -32,6 +32,7 @@ class WebSocketMessageParser {
       'ServerShuttingDown' => const ServerShuttingDownMessage(),
       'SessionEnded' => _parseSessionEnded(data),
       'ScheduledTaskEnded' => _parseScheduledTaskEnded(data),
+      'MoonfinEvent' ||
       'SessionsStart' ||
       'SessionsStop' ||
       'ScheduledTasksInfoStart' ||

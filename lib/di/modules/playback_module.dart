@@ -9,8 +9,11 @@ import '../../data/repositories/offline_repository.dart';
 import '../../data/services/audiobook_bookmarks_service.dart';
 import '../../data/services/audiobook_notes_service.dart';
 import '../../data/services/audiobook_resume_service.dart';
+import '../../data/services/connectivity_service.dart';
 import '../../data/services/media_server_client_factory.dart';
 import '../../data/services/offline_playback_tracker.dart';
+import '../../playback/local_aware_player_service.dart';
+import '../../playback/local_first_media_stream_resolver.dart';
 
 import '../../playback/hdr_stream_capability.dart';
 import '../../playback/headless_session_bootstrap.dart';
@@ -632,8 +635,8 @@ void setActiveStreamResolver(MediaServerClient client) {
   }
 
   final (
-    MediaStreamResolver resolver,
-    PlayerService service,
+    MediaStreamResolver serverResolver,
+    PlayerService serverService,
   ) = switch (client.serverType) {
     ServerType.jellyfin => () {
       final p = JellyfinPlugin(client);
@@ -644,6 +647,21 @@ void setActiveStreamResolver(MediaServerClient client) {
       return (p.createStreamResolver(), p.createPlaySessionService());
     }(),
   };
+
+  // Local-first: completed downloads play from disk instead of streaming,
+  // with progress mirrored to the downloads DB (and to the server when
+  // reachable).
+  final resolver = LocalFirstMediaStreamResolver(
+    inner: serverResolver,
+    offline: _getIt<OfflineStreamResolver>(),
+  );
+  final service = LocalAwarePlayerService(
+    serverService,
+    _getIt<OfflineRepository>(),
+    canReachServer: () =>
+        !_getIt.isRegistered<ConnectivityService>() ||
+        _getIt<ConnectivityService>().canReachServer,
+  );
 
   _getIt.registerSingleton<MediaStreamResolver>(resolver);
   _getIt.registerSingleton<PlayerService>(service);

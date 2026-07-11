@@ -3,6 +3,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/models/gallery_detail.dart';
 import '../../../data/models/media_bar_slide_item.dart';
+import '../../../util/overview_text.dart';
 import '../../../util/platform_detection.dart';
 
 class GalleryActiveCard extends StatelessWidget {
@@ -125,7 +126,7 @@ class _LeftColumn extends StatelessWidget {
         if (item.overview?.isNotEmpty ?? false) ...[
           const SizedBox(height: 14),
           Text(
-            item.overview!,
+            cleanOverview(item.overview),
             maxLines: 4,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodyLarge?.copyWith(

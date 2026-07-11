@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../data/services/download_service.dart';
 import '../../l10n/app_localizations.dart';
-import '../navigation/destinations.dart';
+import '../screens/downloads/downloads_panel.dart';
 
 class DownloadProgressBar extends StatelessWidget {
   const DownloadProgressBar({super.key});
@@ -55,7 +54,7 @@ class DownloadProgressBar extends StatelessWidget {
         }
 
         return GestureDetector(
-          onTap: () => context.push(Destinations.downloads),
+          onTap: () => showDownloadsDialog(context),
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

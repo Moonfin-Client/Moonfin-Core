@@ -161,11 +161,6 @@ enum DesktopScrollWheelAction {
   volume,
 }
 
-/// Rendering engine selection. Read natively at Android engine startup
-/// (MainActivity.getFlutterShellArgs) via the key `flutter.pref_impeller_mode`,
-/// so these enum names must stay stable. `auto` keeps the per-device default.
-enum ImpellerMode { auto, on, off }
-
 /// Glass rendering budget. `auto` picks per-device (real blur on capable
 /// hardware, zero-blur sheen on TV boxes/web); `full` forces real blur;
 /// `reduced` forces the zero-blur sheen everywhere.
@@ -300,6 +295,12 @@ enum HomeSectionType {
   seerrStudios('seerr_studios'),
   seerrSeriesGenres('seerr_series_genres'),
   seerrNetworks('seerr_networks'),
+  imdbTop250Movies('imdb_top_250_movies'),
+  imdbTop250TvShows('imdb_top_250_tv_shows'),
+  imdbMostPopularMovies('imdb_most_popular_movies'),
+  imdbMostPopularTvShows('imdb_most_popular_tv_shows'),
+  imdbLowestRatedMovies('imdb_lowest_rated_movies'),
+  imdbTopEnglishMovies('imdb_top_english_movies'),
   tmdbPopularMovies('tmdb_popular_movies'),
   tmdbTopRatedMovies('tmdb_top_rated_movies'),
   tmdbNowPlayingMovies('tmdb_now_playing_movies'),

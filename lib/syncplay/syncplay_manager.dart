@@ -23,6 +23,13 @@ class SyncPlayManager extends ChangeNotifier {
   static const int _bufferingDebounceMs = 350;
   static const int _readyDebounceMs = 900;
   static const int _readyStabilityWindowMs = 400;
+  // Buffering emitted this soon after a programmatic seek/resume is the seek
+  // itself, not a stall. Reporting it would bounce the whole group into
+  // Waiting because the server has no rate limit on buffering reports.
+  static const int _bufferingSuppressionMs = 2500;
+  // Half the server's MaxPlaybackOffset: close enough that skipping the seek
+  // keeps us inside the server's tolerance.
+  static const int _seekToleranceMs = 250;
   static const int _handshakeRetryDelayMs = 1200;
   static const int _maxHandshakeRetries = 3;
   static const double _defaultSpeed = 1.0;
@@ -51,7 +58,6 @@ class SyncPlayManager extends ChangeNotifier {
   StreamSubscription<bool>? _bufferingSub;
   StreamSubscription<void>? _queueChangedSub;
   bool _applyingRemoteCommand = false;
-  bool _intendsToPlay = false;
   final Map<String, String> _itemTitleCache = {};
   final Set<String> _pendingTitleLookups = {};
 
@@ -68,6 +74,8 @@ class SyncPlayManager extends ChangeNotifier {
   int _lastSyncPositionMs = 0;
   int _lastSyncTimeMs = 0;
   bool _isBuffering = false;
+  int _suppressBufferingUntilMs = 0;
+  Timer? _suppressedBufferingRecheckTimer;
 
   SyncPlayManager(
     this._playbackManager,
@@ -269,7 +277,6 @@ class SyncPlayManager extends ChangeNotifier {
 
   void _resetState() {
     _state = SyncPlayState();
-    _intendsToPlay = false;
     _stopTimeSync();
     _stopPingLoop();
     _stopPlaybackObservers();
@@ -378,16 +385,25 @@ class SyncPlayManager extends ChangeNotifier {
 
   void _reconcileLocalPlayback() {
     final pm = _playbackManager;
-    switch (_state.groupState) {
-      case SyncPlayGroupState.paused:
-      case SyncPlayGroupState.waiting:
-        if (pm.state.isPlaying) pm.pause();
-        break;
-      case SyncPlayGroupState.playing:
-        if (!pm.state.isPlaying) pm.resume();
-        break;
-      case SyncPlayGroupState.idle:
-        break;
+    // Waiting is a transient handshake state: the server sends an explicit
+    // Pause when it wants clients paused, so pausing here would fight the
+    // in-flight Unpause. These calls also shouldn't bounce through the
+    // transport interceptor back into SyncPlay requests.
+    _applyingRemoteCommand = true;
+    try {
+      switch (_state.groupState) {
+        case SyncPlayGroupState.paused:
+          if (pm.state.isPlaying) pm.pause();
+          break;
+        case SyncPlayGroupState.playing:
+          if (!pm.state.isPlaying) pm.resume();
+          break;
+        case SyncPlayGroupState.waiting:
+        case SyncPlayGroupState.idle:
+          break;
+      }
+    } finally {
+      _applyingRemoteCommand = false;
     }
   }
 
@@ -520,7 +536,6 @@ class SyncPlayManager extends ChangeNotifier {
         : null;
     final startMs = SyncPlayUtils.ticksToMs(update.startPositionTicks);
     final shouldAutoPlay = update.isPlaying;
-    _intendsToPlay = shouldAutoPlay;
 
     final localCurrentItemId =
         _itemId(_playbackManager.queueService.currentItem);
@@ -543,6 +558,7 @@ class SyncPlayManager extends ChangeNotifier {
       _applyingRemoteCommand = true;
       try {
         if (startMs > 0) {
+          _armBufferingSuppression();
           _playbackManager.seekTo(Duration(milliseconds: startMs));
         }
         if (!shouldAutoPlay && _playbackManager.state.isPlaying) {
@@ -590,6 +606,7 @@ class SyncPlayManager extends ChangeNotifier {
 
     _applyingRemoteCommand = true;
     try {
+      _armBufferingSuppression();
       await _playbackManager.playItems(
         items,
         startIndex: startIndex,
@@ -692,7 +709,6 @@ class SyncPlayManager extends ChangeNotifier {
   }
 
   void _handleStop() {
-    _intendsToPlay = false;
     _applyingRemoteCommand = true;
     try {
       _playbackManager.stop(userInitiated: false);
@@ -711,11 +727,16 @@ class SyncPlayManager extends ChangeNotifier {
   }
 
   void _performResume(int positionMs) {
-    _intendsToPlay = true;
     _applyingRemoteCommand = true;
     try {
-      _playbackManager.seekTo(Duration(milliseconds: positionMs));
-      _playbackManager.resume();
+      if (_needsSeek(positionMs)) {
+        _armBufferingSuppression();
+        _playbackManager.seekTo(Duration(milliseconds: positionMs));
+      }
+      if (!_playbackManager.state.isPlaying) {
+        _armBufferingSuppression();
+        _playbackManager.resume();
+      }
     } finally {
       _applyingRemoteCommand = false;
     }
@@ -724,28 +745,43 @@ class SyncPlayManager extends ChangeNotifier {
   }
 
   void _performPause(int positionMs) {
-    _intendsToPlay = false;
     _restorePlaybackRate();
     _applyingRemoteCommand = true;
     try {
       _playbackManager.pause();
-      _playbackManager.seekTo(Duration(milliseconds: positionMs));
+      if (_needsSeek(positionMs)) {
+        _armBufferingSuppression();
+        _playbackManager.seekTo(Duration(milliseconds: positionMs));
+      }
     } finally {
       _applyingRemoteCommand = false;
     }
   }
 
   void _performSeek(int positionMs) {
-    _applyingRemoteCommand = true;
-    try {
-      _playbackManager.seekTo(Duration(milliseconds: positionMs));
-    } finally {
-      _applyingRemoteCommand = false;
+    if (_needsSeek(positionMs)) {
+      _applyingRemoteCommand = true;
+      try {
+        _armBufferingSuppression();
+        _playbackManager.seekTo(Duration(milliseconds: positionMs));
+      } finally {
+        _applyingRemoteCommand = false;
+      }
     }
     if (syncCorrectionEnabled &&
         _state.groupState == SyncPlayGroupState.playing) {
       _scheduleDriftCorrection();
     }
+  }
+
+  bool _needsSeek(int targetMs) {
+    final currentMs = _playbackManager.state.position.inMilliseconds;
+    return (currentMs - targetMs).abs() > _seekToleranceMs;
+  }
+
+  void _armBufferingSuppression() {
+    _suppressBufferingUntilMs =
+        DateTime.now().millisecondsSinceEpoch + _bufferingSuppressionMs;
   }
 
   int _clampedPositionMs(int value) {
@@ -837,6 +873,9 @@ class SyncPlayManager extends ChangeNotifier {
     _pendingSeekTarget = null;
     _queueSyncDebounceTimer?.cancel();
     _queueSyncDebounceTimer = null;
+    _suppressedBufferingRecheckTimer?.cancel();
+    _suppressedBufferingRecheckTimer = null;
+    _suppressBufferingUntilMs = 0;
     _isBuffering = false;
     _playbackManager.setTransportInterceptor(null);
   }
@@ -898,9 +937,27 @@ class SyncPlayManager extends ChangeNotifier {
     if (!_state.enabled) return;
     if (buffering && !_isBuffering) {
       _isBuffering = true;
+      final nowMs = DateTime.now().millisecondsSinceEpoch;
+      if (nowMs < _suppressBufferingUntilMs) {
+        // This buffering was caused by our own seek/resume. Re-check when the
+        // window expires and report only a genuine stall that outlasts it.
+        _suppressedBufferingRecheckTimer?.cancel();
+        _suppressedBufferingRecheckTimer = Timer(
+          Duration(milliseconds: _suppressBufferingUntilMs - nowMs),
+          () {
+            if (_state.enabled && _isBuffering) _queueBufferingReport();
+          },
+        );
+        return;
+      }
       _queueBufferingReport();
     } else if (!buffering && _isBuffering) {
       _isBuffering = false;
+      _suppressedBufferingRecheckTimer?.cancel();
+      _suppressedBufferingRecheckTimer = null;
+      // A pending report for a blip that already recovered shouldn't fire.
+      // The Ready report is never suppressed because the server waits on it.
+      _bufferingTimer?.cancel();
       _queueReadyReport();
     }
   }
@@ -940,6 +997,18 @@ class SyncPlayManager extends ChangeNotifier {
     return deltaMs.abs() <= 120;
   }
 
+  /// Current time on the server's clock, for stamping outgoing reports. The
+  /// server rejects Ready/Buffering elapsed math when When is more than 2s
+  /// off its own clock, so the local clock alone isn't good enough.
+  DateTime? _serverWhen() {
+    final tsm = _timeSync;
+    if (tsm == null) return null;
+    return DateTime.fromMillisecondsSinceEpoch(
+      tsm.getServerTimeNow(),
+      isUtc: true,
+    );
+  }
+
   String? _currentPlaylistItemId() {
     final id = _state.currentPlaylistItemId;
     if (id != null && id.isNotEmpty) return id;
@@ -972,9 +1041,10 @@ class SyncPlayManager extends ChangeNotifier {
           SyncPlayUtils.msToTicks(pm.state.position.inMilliseconds);
       try {
         await api.sendBuffering(
-          isPlaying: _intendsToPlay,
+          isPlaying: pm.state.isPlaying,
           playlistItemId: playlistItemId,
           positionTicks: positionTicks,
+          when: _serverWhen(),
         );
         return;
       } catch (_) {
@@ -997,9 +1067,10 @@ class SyncPlayManager extends ChangeNotifier {
           SyncPlayUtils.msToTicks(pm.state.position.inMilliseconds);
       try {
         await api.sendReady(
-          isPlaying: _intendsToPlay,
+          isPlaying: pm.state.isPlaying,
           playlistItemId: playlistItemId,
           positionTicks: positionTicks,
+          when: _serverWhen(),
         );
         return;
       } catch (_) {
@@ -1040,7 +1111,7 @@ class SyncPlayManager extends ChangeNotifier {
   }
 
   Future<void> requestNext() async {
-    final id = _state.currentPlaylistItemId;
+    final id = _currentPlaylistItemId();
     if (!_state.enabled || !syncPlayEnabled || id == null) return;
     try {
       await _api?.nextItem(id);
@@ -1048,7 +1119,7 @@ class SyncPlayManager extends ChangeNotifier {
   }
 
   Future<void> requestPrevious() async {
-    final id = _state.currentPlaylistItemId;
+    final id = _currentPlaylistItemId();
     if (!_state.enabled || !syncPlayEnabled || id == null) return;
     try {
       await _api?.previousItem(id);

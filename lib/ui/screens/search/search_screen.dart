@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:custom_tv_text_field/custom_tv_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -790,7 +791,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
           child: Column(
             children: [
               const SizedBox(height: 30),
-              if (topbar || PlatformDetection.isMobile)
+              if (topbar || !PlatformDetection.isTV)
                 const SizedBox(height: 50),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 48),
@@ -1032,11 +1033,11 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
   GlobalKey _allRowKey(int row) =>
       _allRowKeys.putIfAbsent(row, () => GlobalKey());
 
-  void _focusAllCard(int row, int col) {
+  void _focusAllCard(int row, int col, {bool changedRow = true}) {
     final node = _allCardNode(row, col);
     if (node.context != null) {
       node.requestFocus();
-      _ensureAllCardVisible(row, node);
+      _ensureAllCardVisible(row, node, changedRow: changedRow);
       return;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1044,26 +1045,24 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
       final target = _allCardNode(row, col);
       if (target.canRequestFocus) {
         target.requestFocus();
-        _ensureAllCardVisible(row, target);
+        _ensureAllCardVisible(row, target, changedRow: changedRow);
       }
     });
   }
 
-  // Scroll the focused card into view horizontally within its row, then scroll
-  // the whole row (title first) into view vertically. The vertical call is last
-  // so the row title stays visible instead of being pushed above the fold.
-  void _ensureAllCardVisible(int row, FocusNode node) {
+  // Bring the focused card into view horizontally within its row. Only nudge the
+  // outer list vertically when the row actually changed. Scrolling vertically on
+  // every left/right press is what makes the page bounce up and down.
+  void _ensureAllCardVisible(
+    int row,
+    FocusNode node, {
+    required bool changedRow,
+  }) {
     final cardContext = node.context;
     if (cardContext != null) {
-      unawaited(
-        Scrollable.ensureVisible(
-          cardContext,
-          alignment: 0.5,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-        ),
-      );
+      _revealInNearestScrollable(cardContext, alignment: 0.5);
     }
+    if (!changedRow) return;
     final rowContext = _allRowKey(row).currentContext;
     if (rowContext != null) {
       unawaited(
@@ -1075,6 +1074,31 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
         ),
       );
     }
+  }
+
+  // Reveal a widget inside its nearest scrollable only, leaving any enclosing
+  // scrollable on the other axis alone. Scrollable.ensureVisible walks up every
+  // ancestor viewport, so on the horizontal row it would also tug the vertical
+  // list.
+  void _revealInNearestScrollable(
+    BuildContext context, {
+    required double alignment,
+  }) {
+    final scrollable = Scrollable.maybeOf(context);
+    final renderObject = context.findRenderObject();
+    if (scrollable == null || renderObject == null) return;
+    final position = scrollable.position;
+    final target = RenderAbstractViewport.of(renderObject)
+        .getOffsetToReveal(renderObject, alignment)
+        .offset
+        .clamp(position.minScrollExtent, position.maxScrollExtent);
+    unawaited(
+      position.animateTo(
+        target,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+      ),
+    );
   }
 
   KeyEventResult _onAllCardKey(
@@ -1094,11 +1118,13 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
         }
         return KeyEventResult.ignored;
       }
-      _focusAllCard(row, col - 1);
+      _focusAllCard(row, col - 1, changedRow: false);
       return KeyEventResult.handled;
     }
     if (key.isRightKey) {
-      if (col < rowLens[row] - 1) _focusAllCard(row, col + 1);
+      if (col < rowLens[row] - 1) {
+        _focusAllCard(row, col + 1, changedRow: false);
+      }
       return KeyEventResult.handled;
     }
     if (key.isUpKey) {
@@ -1123,10 +1149,6 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
     final cardFocusExpansion = prefs.get(UserPreferences.cardFocusExpansion);
     final l10n = AppLocalizations.of(context);
-    final isMobile = PlatformDetection.useMobileUi;
-    // Match the modern detail Similar grid (150) so posters read at the same
-    // scale as the season/similar tabs on TV and desktop.
-    final cardWidth = isMobile ? 108.0 : 150.0;
 
     final groups = _vm.results;
 
@@ -1140,6 +1162,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     for (var r = 0; r < groups.length; r++) {
       final group = groups[r];
       final ar = MediaCard.aspectRatioForType(group.items.first.type);
+      final cardWidth = (ar == 2/3) ? 108.0 : 150.0;
       rows.add(
         LibraryRow(
           key: _allRowKey(r),
@@ -1161,6 +1184,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
       );
     }
     if (hasSeerr) {
+      final cardWidth = 108.0;
       rows.add(
         LibraryRow(
           key: _allRowKey(groups.length),
@@ -1320,12 +1344,15 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
       cardFocusExpansion: cardFocusExpansion,
       focusNode: focusNode,
       onKeyEvent: onNavKey,
-      onTap: () => item.mediaType == 'person'
-          ? context.push(Destinations.seerrPerson(item.id.toString()))
-          : context.push(
-              Destinations.seerrMedia(item.id.toString()),
-              extra: {'mediaType': item.mediaType ?? 'movie'},
-            ),
+      onTap: () => switch (item.mediaType) {
+        'person' => context.push(Destinations.seerrPerson(item.id.toString())),
+        'collection' =>
+          context.push(Destinations.seerrCollection(item.id.toString())),
+        _ => context.push(
+          Destinations.seerrMedia(item.id.toString()),
+          extra: {'mediaType': item.mediaType ?? 'movie'},
+        ),
+      },
     );
   }
 
@@ -1333,7 +1360,6 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     final prefs = _userPreferences;
     final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
     final cardFocusExpansion = prefs.get(UserPreferences.cardFocusExpansion);
-    final isMobile = PlatformDetection.useMobileUi;
     final isSeerr = _tabIsSeerr(_selectedTab);
     final count = _currentTabItemCount();
     if (count == 0) return const SizedBox.shrink();
@@ -1346,14 +1372,12 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Match the modern detail Similar grid geometry (target 150, spacing 12,
-        // 3-8 columns) so search posters scale identically on TV/desktop.
         const spacing = 12.0;
-        final targetWidth = isMobile ? 108.0 : 150.0;
+        final targetWidth = (imageAspect == 2/3) ? 108.0 : 150.0;
         final available = constraints.maxWidth - horizontalPadding * 2;
         final columns = ((available + spacing) / (targetWidth + spacing))
             .floor()
-            .clamp(3, 8);
+            .clamp(3, 20);
         final cellWidth = (available - (columns - 1) * spacing) / columns;
         final imageHeight = cellWidth / imageAspect;
         final childAspectRatio = cellWidth / (imageHeight + 48);

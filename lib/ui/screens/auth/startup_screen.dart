@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:jellyfin_preference/jellyfin_preference.dart';
+import 'package:server_core/server_core.dart';
 
 import '../../../auth/repositories/server_repository.dart';
 import '../../../auth/repositories/session_repository.dart';
@@ -60,10 +61,19 @@ class _StartupScreenState extends State<StartupScreen>
   /// On a cold boot the app can win the race against Wi-Fi association and
   /// see the device as offline for a few seconds. Waiting here keeps the
   /// splash up briefly instead of bouncing the user to the offline fallback.
+  /// Once online, also settle server reachability (the boot-time check runs
+  /// before a client exists) so home loads in the right online/offline mode.
   Future<void> _waitForNetworkSettle() async {
     final connectivity = GetIt.instance<ConnectivityService>();
-    if (connectivity.isOnline) return;
-    await connectivity.waitForOnline(const Duration(seconds: 5));
+    if (!connectivity.isOnline) {
+      await connectivity.waitForOnline(const Duration(seconds: 5));
+    }
+    if (connectivity.isOnline &&
+        GetIt.instance.isRegistered<MediaServerClient>()) {
+      try {
+        await connectivity.recheckNow();
+      } catch (_) {}
+    }
   }
 
   Future<void> _initialize() async {

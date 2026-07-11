@@ -55,6 +55,14 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!-- Impeller renderer, set per flavor in build.gradle.kts. Off on TV
+             boxes, whose GPUs (often PowerVR) stutter on the Impeller GLES
+             fallback. This manifest flag is the value the Android engine
+             actually reads. -->
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="${enableImpeller}" />
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="org.moonfin.androidtv.MoonfinCastOptionsProvider" />

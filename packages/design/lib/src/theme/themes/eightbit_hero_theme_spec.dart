@@ -23,6 +23,7 @@ const eightbitHeroThemeSpec = ThemeSpec(
     statusRequested: Color(0xFF5D275D),
     statusPending: Color(0xFFFFCD75),
     statusDownloading: Color(0xFF41A6F6),
+    statusError: Color(0xFFB13E53),
     mediaTypeBadgeMovie: Color(0xFF3B5DC9),
     mediaTypeBadgeShow: Color(0xFFB13E53),
   ),

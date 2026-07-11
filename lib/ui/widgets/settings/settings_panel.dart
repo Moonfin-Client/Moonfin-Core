@@ -104,7 +104,20 @@ class SettingsPanel extends StatelessWidget {
             )
           : panel;
     } else {
-      content = body;
+      final navBorder = ThemeRegistry.active.borders.navBorder;
+      if (navBorder != null) {
+        content = DecoratedBox(
+          position: DecorationPosition.foreground,
+          decoration: BoxDecoration(
+            border: Border(
+              left: navBorder,
+            ),
+          ),
+          child: body,
+        );
+      } else {
+        content = body;
+      }
     }
     return Align(
       alignment: Alignment.centerRight,

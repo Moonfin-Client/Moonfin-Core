@@ -81,6 +81,7 @@ class TimeSyncManager {
       final t3 = _nowMs();
       final t1 = response.requestReceptionTimeMs;
       final t2 = response.responseTransmissionTimeMs;
+      if (t1 <= 0 || t2 <= 0) return;
 
       final offset = ((t1 - t0) + (t2 - t3)) ~/ 2;
       final rtt = (t3 - t0) - (t2 - t1);

@@ -10,7 +10,7 @@ import 'local_notification_bootstrap.dart';
 class SeerrNotificationService {
   static const _channelId = 'seerr_notifications';
   static const _channelName = 'Requests';
-  static const _channelDesc = 'Seerr request and library notifications';
+  static const _channelDesc = 'Seerr request, library, and issue notifications';
 
   Future<void> initialize() async {
     await LocalNotificationBootstrap.instance.initialize();

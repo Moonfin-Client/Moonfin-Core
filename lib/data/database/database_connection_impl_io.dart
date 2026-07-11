@@ -21,16 +21,31 @@ QueryExecutor openConnection() {
 
     if (PlatformDetection.isTizen || PlatformDetection.isAppleTV) {
       open.overrideForAll(
-        PlatformDetection.isAppleTV ? _openAppleSqlite : _openTizenSqlite,
+        PlatformDetection.isAppleTV ? _openAppleSqlite : _openSystemSqlite,
       );
       return NativeDatabase(file);
+    }
+
+    if (PlatformDetection.isLinux) {
+      // Desktop libraries (KDE/GNOME) load the system libsqlite3 at startup,
+      // which collides with the bundled sqlite and crashes sqlite3_initialize.
+      // Point the database isolate at the system library so only one sqlite is
+      // active in the process.
+      return NativeDatabase.createInBackground(
+        file,
+        isolateSetup: _useSystemSqlite,
+      );
     }
 
     return NativeDatabase.createInBackground(file);
   });
 }
 
-DynamicLibrary _openTizenSqlite() {
+Future<void> _useSystemSqlite() async {
+  open.overrideForAll(_openSystemSqlite);
+}
+
+DynamicLibrary _openSystemSqlite() {
   for (final name in const ['libsqlite3.so.0', 'libsqlite3.so']) {
     try {
       return DynamicLibrary.open(name);

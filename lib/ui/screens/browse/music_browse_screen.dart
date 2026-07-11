@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import '../../widgets/offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -519,7 +519,7 @@ class _MusicHeroState extends State<_MusicHero> with FocusStateMixin {
                   AspectRatio(
                     aspectRatio: 1,
                     child: widget.imageUrl != null
-                        ? CachedNetworkImage(
+                        ? OfflineAwareImage(
                             imageUrl: widget.imageUrl!,
                             fit: BoxFit.cover,
                             errorWidget: (_, _, _) => _heroArtPlaceholder(),
@@ -1116,7 +1116,7 @@ class _MusicSquareCardState extends State<_MusicSquareCard>
                               focused ? 36 : 15,
                             ),
                             child: widget.imageUrl != null
-                                ? CachedNetworkImage(
+                                ? OfflineAwareImage(
                                     imageUrl: widget.imageUrl!,
                                     fit: BoxFit.cover,
                                     fadeInDuration: const Duration(

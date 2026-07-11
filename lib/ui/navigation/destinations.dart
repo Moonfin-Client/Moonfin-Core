@@ -147,13 +147,7 @@ class Destinations {
   static const seerrBrowse = '/seerr/browse';
   static const seerrMediaDetail = '/seerr/media/:itemId';
   static const seerrPersonDetail = '/seerr/person/:personId';
-
-  // Downloads / Saved Media
-  static const downloads = '/downloads';
-  static const storageManagement = '/downloads/storage';
-  static const downloadsSeries = '/downloads/series/:seriesId';
-  static const downloadsSeason = '/downloads/series/:seriesId/season/:seasonId';
-  static const downloadsAlbum = '/downloads/music/:albumId';
+  static const seerrCollectionDetail = '/seerr/collection/:collectionId';
 
   static String library(
     String libraryId, {
@@ -278,19 +272,8 @@ class Destinations {
     return Uri(path: base, queryParameters: {'mediaType': mediaType}).toString();
   }
   static String seerrPerson(String personId) => '/seerr/person/$personId';
-
-  static String downloadedSeries(String seriesId) =>
-      '/downloads/series/$seriesId';
-  static String downloadedSeason(String seriesId, String seasonId) =>
-      '/downloads/series/$seriesId/season/$seasonId';
-  static String downloadedAlbum(String albumId, {String? albumName}) {
-    final base = '/downloads/music/${Uri.encodeComponent(albumId)}';
-    if (albumName == null || albumName.isEmpty) {
-      return base;
-    }
-
-    return '$base?name=${Uri.encodeComponent(albumName)}';
-  }
+  static String seerrCollection(String collectionId) =>
+      '/seerr/collection/$collectionId';
 
   static String adminUser(String userId) => '/admin/users/$userId';
   static String adminLibrary(String libraryId) => '/admin/libraries/$libraryId';

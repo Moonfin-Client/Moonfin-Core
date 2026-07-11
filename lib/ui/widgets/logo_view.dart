@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 
-import 'package:cached_network_image/cached_network_image.dart';
+import 'offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
@@ -22,7 +22,7 @@ class LogoView extends StatelessWidget {
   ImageProvider? get _effectiveProvider {
     if (imageProvider != null) return imageProvider;
     if (imageUrl != null && imageUrl!.isNotEmpty) {
-      return CachedNetworkImageProvider(imageUrl!);
+      return offlineAwareImageProvider(imageUrl!);
     }
     return null;
   }

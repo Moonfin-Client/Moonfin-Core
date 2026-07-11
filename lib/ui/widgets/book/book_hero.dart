@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import '../offline_aware_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -81,7 +81,7 @@ class _BookHeroState extends State<BookHero> {
   Widget _backdrop() {
     final background = AppColorScheme.background;
     if (widget.imageUrl == null) return ColoredBox(color: background);
-    final image = CachedNetworkImage(
+    final image = OfflineAwareImage(
       imageUrl: widget.imageUrl!,
       fit: BoxFit.cover,
       errorWidget: (_, _, _) => ColoredBox(color: background),
@@ -251,7 +251,7 @@ class _BookHeroState extends State<BookHero> {
           width: width,
           height: height,
           child: widget.imageUrl != null
-              ? CachedNetworkImage(
+              ? OfflineAwareImage(
                   imageUrl: widget.imageUrl!,
                   fit: BoxFit.cover,
                   errorWidget: (_, _, _) => _coverPlaceholder(width),

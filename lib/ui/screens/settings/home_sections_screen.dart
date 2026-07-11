@@ -18,6 +18,7 @@ import '../../../preference/seerr_preferences.dart';
 import '../../../preference/seerr_row_config.dart';
 import '../../../util/extensions.dart';
 import '../../../util/platform_detection.dart';
+import '../../navigation/route_lifecycle_observer.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../widgets/poster_size_settings_dialog.dart';
 import '../../widgets/playback/player_loading_overlay.dart';
@@ -87,8 +88,9 @@ class HomeSectionsScreen extends StatefulWidget {
   State<HomeSectionsScreen> createState() => _HomeSectionsScreenState();
 }
 
-class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
+class _HomeSectionsScreenState extends State<HomeSectionsScreen> with RouteAware {
   final _prefs = GetIt.instance<UserPreferences>();
+  ModalRoute<dynamic>? _observedRoute;
   static const _rowsTypeDescription =
       'Classic keeps per-row image type and info overlay. Modern uses portrait-to-backdrop rows.';
   late List<HomeSectionConfig> _sections;
@@ -540,6 +542,37 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     }
   }
 
+  bool _isAnyImdbSectionEnabled() {
+    return _prefs.get(UserPreferences.imdbTop250MoviesEnabled) ||
+        _prefs.get(UserPreferences.imdbTop250TvShowsEnabled) ||
+        _prefs.get(UserPreferences.imdbMostPopularMoviesEnabled) ||
+        _prefs.get(UserPreferences.imdbMostPopularTvShowsEnabled) ||
+        _prefs.get(UserPreferences.imdbLowestRatedMoviesEnabled) ||
+        _prefs.get(UserPreferences.imdbTopEnglishMoviesEnabled);
+  }
+
+  bool _isImdbRowEnabled(HomeSectionType type) {
+    final prefKey = switch (type) {
+      HomeSectionType.imdbTop250Movies => UserPreferences.imdbTop250MoviesEnabled,
+      HomeSectionType.imdbTop250TvShows => UserPreferences.imdbTop250TvShowsEnabled,
+      HomeSectionType.imdbMostPopularMovies => UserPreferences.imdbMostPopularMoviesEnabled,
+      HomeSectionType.imdbMostPopularTvShows => UserPreferences.imdbMostPopularTvShowsEnabled,
+      HomeSectionType.imdbLowestRatedMovies => UserPreferences.imdbLowestRatedMoviesEnabled,
+      HomeSectionType.imdbTopEnglishMovies => UserPreferences.imdbTopEnglishMoviesEnabled,
+      _ => null,
+    };
+    return prefKey != null ? _prefs.get(prefKey) : false;
+  }
+
+  bool _isImdbSectionType(HomeSectionType type) {
+    return type == HomeSectionType.imdbTop250Movies ||
+        type == HomeSectionType.imdbTop250TvShows ||
+        type == HomeSectionType.imdbMostPopularMovies ||
+        type == HomeSectionType.imdbMostPopularTvShows ||
+        type == HomeSectionType.imdbLowestRatedMovies ||
+        type == HomeSectionType.imdbTopEnglishMovies;
+  }
+
   bool _isTmdbSectionType(HomeSectionType type) {
     return type == HomeSectionType.tmdbPopularMovies ||
         type == HomeSectionType.tmdbTopRatedMovies ||
@@ -564,6 +597,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     final showGenresRows = _prefs.get(UserPreferences.displayGenresRows);
     final showPlaylistsRows = _prefs.get(UserPreferences.displayPlaylistsRows);
     final showSeerrRows = GetIt.instance<PluginSyncService>().seerrAvailable;
+    final showImdbRows = _isAnyImdbSectionEnabled();
     final showTmdbRows = _isAnyTmdbSectionEnabled();
 
     final hiddenByFavorites =
@@ -586,6 +620,8 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     final hiddenBySeerr = _isSeerrSectionType(section.type) &&
         (!showSeerrRows ||
             !GetIt.instance<SeerrPreferences>().isSeerrHomeRowEnabled(section.type));
+    final hiddenByImdb = _isImdbSectionType(section.type) &&
+        (!showImdbRows || !_isImdbRowEnabled(section.type));
     final hiddenByTmdb = _isTmdbSectionType(section.type) &&
         (!showTmdbRows || !_isTmdbRowEnabled(section.type));
 
@@ -606,6 +642,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         hiddenByGenres ||
         hiddenByPlaylists ||
         hiddenBySeerr ||
+        hiddenByImdb ||
         hiddenByTmdb ||
         hiddenByAudio ||
         hiddenBySinceYouWatched ||
@@ -638,6 +675,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         .firstOrNull;
     _sections = all.where((s) => s.type != HomeSectionType.mediaBar).toList()
         ..sort((a, b) => a.order.compareTo(b.order));
+    for (var i = 0; i < _sections.length; i++) {
+      if (_isImdbSectionType(_sections[i].type)) {
+        _sections[i] = _sections[i].copyWith(enabled: _isImdbRowEnabled(_sections[i].type));
+      }
+    }
     final addedBuiltins = _ensureBuiltinSectionsPresent();
     _mergeDiscoveredPluginSections();
 
@@ -663,6 +705,38 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
     // no separate call here avoids a double-spinner flash on open.
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route == null || route == _observedRoute) return;
+    if (_observedRoute != null) {
+      routeLifecycleObserver.unsubscribe(this);
+    }
+    _observedRoute = route;
+    routeLifecycleObserver.subscribe(this, route);
+  }
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    // The External Lists sub-screen can toggle IMDb rows while this screen is
+    // still on the stack. Those toggles are authoritative in the preference, so
+    // pull them back into our snapshot before the user can save a stale value
+    // over them.
+    if (!mounted) return;
+    var changed = false;
+    for (var i = 0; i < _sections.length; i++) {
+      if (!_isImdbSectionType(_sections[i].type)) continue;
+      final enabled = _isImdbRowEnabled(_sections[i].type);
+      if (_sections[i].enabled != enabled) {
+        _sections[i] = _sections[i].copyWith(enabled: enabled);
+        changed = true;
+      }
+    }
+    if (changed) setState(() {});
+  }
+
   bool _ensureBuiltinSectionsPresent() {
     final existingTypes = _sections
         .where((s) => s.isBuiltin)
@@ -678,7 +752,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
       if (existingTypes.contains(type)) continue;
 
       _addSection(
-        HomeSectionConfig(type: type, enabled: false, order: nextOrder++),
+        HomeSectionConfig(
+          type: type,
+          enabled: _isImdbSectionType(type) ? _isImdbRowEnabled(type) : false,
+          order: nextOrder++,
+        ),
       );
       changed = true;
     }
@@ -1125,6 +1203,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
 
   @override
   void dispose() {
+    routeLifecycleObserver.unsubscribe(this);
     for (final n in _focusNodesByStableId.values) {
       n.dispose();
     }
@@ -1176,6 +1255,12 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         HomeSectionType.tmdbTrendingTvDaily => UserPreferences.tmdbTrendingTvDailyEnabled,
         HomeSectionType.tmdbTrendingTvWeekly => UserPreferences.tmdbTrendingTvWeeklyEnabled,
         HomeSectionType.tmdbTrendingAllWeekly => UserPreferences.tmdbTrendingAllWeeklyEnabled,
+        HomeSectionType.imdbTop250Movies => UserPreferences.imdbTop250MoviesEnabled,
+        HomeSectionType.imdbTop250TvShows => UserPreferences.imdbTop250TvShowsEnabled,
+        HomeSectionType.imdbMostPopularMovies => UserPreferences.imdbMostPopularMoviesEnabled,
+        HomeSectionType.imdbMostPopularTvShows => UserPreferences.imdbMostPopularTvShowsEnabled,
+        HomeSectionType.imdbLowestRatedMovies => UserPreferences.imdbLowestRatedMoviesEnabled,
+        HomeSectionType.imdbTopEnglishMovies => UserPreferences.imdbTopEnglishMoviesEnabled,
         HomeSectionType.rewatch => UserPreferences.displayRewatchRow,
         HomeSectionType.sinceYouWatched1 => UserPreferences.sinceYouWatched1Enabled,
         HomeSectionType.sinceYouWatched2 => UserPreferences.sinceYouWatched2Enabled,
@@ -1459,6 +1544,12 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
         HomeSectionType.seerrNetworks => l10n.networks,
         HomeSectionType.radarrCalendar => 'Upcoming Movies (Radarr)',
         HomeSectionType.sonarrCalendar => 'Upcoming TV Shows (Sonarr)',
+        HomeSectionType.imdbTop250Movies => l10n.imdbTop250Movies,
+        HomeSectionType.imdbTop250TvShows => l10n.imdbTop250TvShows,
+        HomeSectionType.imdbMostPopularMovies => l10n.imdbMostPopularMovies,
+        HomeSectionType.imdbMostPopularTvShows => l10n.imdbMostPopularTvShows,
+        HomeSectionType.imdbLowestRatedMovies => l10n.imdbLowestRatedMovies,
+        HomeSectionType.imdbTopEnglishMovies => l10n.imdbTopEnglishMovies,
         HomeSectionType.tmdbPopularMovies => 'Popular Movies',
         HomeSectionType.tmdbTopRatedMovies => 'Top Rated Movies',
         HomeSectionType.tmdbNowPlayingMovies => 'Now Playing Movies',
@@ -1969,9 +2060,9 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                                           .withValues(alpha: 0.7),
                                     ),
                                   )
-                                : (_isTmdbSectionType(section.type)
+                                : (_isImdbSectionType(section.type)
                                       ? Text(
-                                          'TMDB Lists',
+                                          'IMDb List',
                                           style: TextStyle(
                                             fontSize: 12,
                                             fontFamily: kCleanSettingsFontFamily,
@@ -1979,7 +2070,17 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                                                 .withValues(alpha: 0.7),
                                           ),
                                         )
-                                      : null))),
+                                      : (_isTmdbSectionType(section.type)
+                                            ? Text(
+                                                'TMDB Lists',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontFamily: kCleanSettingsFontFamily,
+                                                  color: AppColorScheme.onSurface
+                                                      .withValues(alpha: 0.7),
+                                                ),
+                                              )
+                                            : null)))),
                 onTap: isEmpty
                     ? null
                     : () => _toggleSection(sectionIndex, !section.enabled),
@@ -2059,9 +2160,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                     ? 'Audio row'
                     : (_isSeerrSectionType(section.type)
                           ? 'Seerr Discovery Rows'
-                          : (_isTmdbSectionType(section.type)
-                                ? 'TMDB Lists'
-                                : null))),
+                          : (_isImdbSectionType(section.type)
+                                ? 'IMDb List'
+                                : (_isTmdbSectionType(section.type)
+                                      ? 'TMDB Lists'
+                                      : null)))),
           enabled: section.enabled,
           isFirst: visibleIndex == 0,
           isLast: visibleIndex == visibleIndices.length - 1,
@@ -2335,9 +2438,11 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen> {
                       ? const Text('Audio row')
                       : (_isSeerrSectionType(section.type)
                             ? const Text('Seerr Discovery Rows')
-                            : (_isTmdbSectionType(section.type)
-                                  ? const Text('TMDB Lists')
-                                  : null))),
+                            : (_isImdbSectionType(section.type)
+                                  ? const Text('IMDb List')
+                                  : (_isTmdbSectionType(section.type)
+                                        ? const Text('TMDB Lists')
+                                        : null)))),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [

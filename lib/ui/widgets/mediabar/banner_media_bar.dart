@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import '../offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -289,7 +289,7 @@ class _BannerMediaBarState extends State<BannerMediaBar> {
             child: SizedBox(
               width: 240,
               height: 56,
-              child: CachedNetworkImage(
+              child: OfflineAwareImage(
                 imageUrl: item.logoUrl!,
                 fit: BoxFit.contain,
                 alignment: Alignment.centerLeft,

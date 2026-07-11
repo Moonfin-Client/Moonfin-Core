@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import '../offline_aware_image.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -298,7 +298,7 @@ class BookshelfLayout extends StatelessWidget {
     final dpr = MediaQuery.devicePixelRatioOf(context);
     final cacheW = (width * 0.88 * dpr).round().clamp(150, 400);
 
-    return CachedNetworkImage(
+    return OfflineAwareImage(
       imageUrl: posterUrl,
       memCacheWidth: cacheW,
       maxWidthDiskCache: cacheW,

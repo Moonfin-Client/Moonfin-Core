@@ -5001,6 +5001,14 @@
   "@seerrNotifyLibraryAddedSubtitle": {
     "description": "Subtitle for the library-added notifications toggle"
   },
+  "seerrNotifyIssuesTitle": "Issue updates",
+  "@seerrNotifyIssuesTitle": {
+    "description": "Title for the issue notifications toggle"
+  },
+  "seerrNotifyIssuesSubtitle": "New issues, replies, and resolutions",
+  "@seerrNotifyIssuesSubtitle": {
+    "description": "Subtitle for the issue notifications toggle"
+  },
   "loggedInAs": "Logged in as: {username}",
   "@loggedInAs": {
     "description": "Label showing logged in username",
@@ -5210,6 +5218,19 @@
   "seerrRequestedStatus": "Requested",
   "@seerrRequestedStatus": {
     "description": "Seerr media status when item has been requested"
+  },
+  "seerrDownloadingPercent": "Downloading · {percent}%",
+  "@seerrDownloadingPercent": {
+    "description": "Label above the Seerr download progress bar",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "seerrImportingStatus": "Importing",
+  "@seerrImportingStatus": {
+    "description": "Label when a Seerr download has finished and is importing"
   },
   "itemsCount": "{count} Items",
   "@itemsCount": {
@@ -5421,6 +5442,236 @@
   "deletedStatus": "Deleted",
   "@deletedStatus": {
     "description": "Request status label for deleted media"
+  },
+  "failedStatus": "Failed",
+  "@failedStatus": {
+    "description": "Request status label when the request failed to send to Radarr/Sonarr"
+  },
+  "processingStatus": "Processing",
+  "@processingStatus": {
+    "description": "Filter label for approved requests being processed"
+  },
+  "modifiedByName": "Modified by {name}",
+  "@modifiedByName": {
+    "description": "Label showing which manager acted on a request",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "completedStatus": "Completed",
+  "@completedStatus": {
+    "description": "Request status label when the request finished"
+  },
+  "requestErrorDuplicate": "This title was already requested",
+  "@requestErrorDuplicate": {
+    "description": "Error when creating a request that already exists"
+  },
+  "requestErrorQuota": "Request limit reached",
+  "@requestErrorQuota": {
+    "description": "Error when the user is out of request quota"
+  },
+  "requestErrorBlocklisted": "This title is blocklisted",
+  "@requestErrorBlocklisted": {
+    "description": "Error when requesting blocklisted media"
+  },
+  "requestErrorNoSeasons": "No seasons left to request",
+  "@requestErrorNoSeasons": {
+    "description": "Error when every season is already requested or available"
+  },
+  "requestErrorPermission": "You don't have permission to make this request",
+  "@requestErrorPermission": {
+    "description": "Error when the user lacks request permission"
+  },
+  "seerrRequestsTitle": "Requests",
+  "@seerrRequestsTitle": {
+    "description": "Requests tab and screen title"
+  },
+  "seerrIssuesTitle": "Issues",
+  "@seerrIssuesTitle": {
+    "description": "Issues tab title on the requests hub"
+  },
+  "sortNewest": "Newest",
+  "@sortNewest": {
+    "description": "Request sort option, most recently added first"
+  },
+  "sortLastModified": "Last Modified",
+  "@sortLastModified": {
+    "description": "Request sort option, most recently updated first"
+  },
+  "noIssues": "No issues",
+  "@noIssues": {
+    "description": "Shown when the issue list is empty"
+  },
+  "movieQuotaRemaining": "{remaining} of {limit} movie requests remaining",
+  "@movieQuotaRemaining": {
+    "description": "Quota line in the request dialog",
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "seasonQuotaRemaining": "{remaining} of {limit} season requests remaining",
+  "@seasonQuotaRemaining": {
+    "description": "Quota line in the request dialog for series",
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "partOfCollectionName": "Part of {name}",
+  "@partOfCollectionName": {
+    "description": "Banner on a movie that belongs to a collection",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "viewCollection": "View Collection",
+  "@viewCollection": {
+    "description": "Link to open the collection screen"
+  },
+  "requestCollection": "Request Collection",
+  "@requestCollection": {
+    "description": "Button to request movies from a collection"
+  },
+  "collectionMoviesSummary": "{total} movies · {available} available",
+  "@collectionMoviesSummary": {
+    "description": "Collection header summary line",
+    "placeholders": {
+      "total": {
+        "type": "int"
+      },
+      "available": {
+        "type": "int"
+      }
+    }
+  },
+  "requestMoviesCount": "Request {count} movies",
+  "@requestMoviesCount": {
+    "description": "Submit button on the collection request sheet",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "requestingProgress": "Requesting {current} of {total}...",
+  "@requestingProgress": {
+    "description": "Progress label while collection requests are submitted",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "requestedMoviesCount": "Requested {count} movies",
+  "@requestedMoviesCount": {
+    "description": "Snackbar after a collection request succeeds",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "requestedMoviesPartial": "Requested {ok} of {total} movies",
+  "@requestedMoviesPartial": {
+    "description": "Snackbar when some collection requests failed",
+    "placeholders": {
+      "ok": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "collectionAllRequested": "All movies are already available or requested",
+  "@collectionAllRequested": {
+    "description": "Shown instead of the request button when nothing is requestable"
+  },
+  "reportIssue": "Report Issue",
+  "@reportIssue": {
+    "description": "Button on the seerr detail screen to report a media issue"
+  },
+  "issueTypeVideo": "Video",
+  "@issueTypeVideo": {
+    "description": "Issue type option"
+  },
+  "issueTypeAudio": "Audio",
+  "@issueTypeAudio": {
+    "description": "Issue type option"
+  },
+  "whatsWrong": "What's wrong?",
+  "@whatsWrong": {
+    "description": "Label for the issue description field"
+  },
+  "allEpisodes": "All Episodes",
+  "@allEpisodes": {
+    "description": "Episode dropdown option covering the whole season"
+  },
+  "episode": "Episode",
+  "@episode": {
+    "description": "Episode dropdown label"
+  },
+  "openStatus": "Open",
+  "@openStatus": {
+    "description": "Issue status label"
+  },
+  "resolvedStatus": "Resolved",
+  "@resolvedStatus": {
+    "description": "Issue status label"
+  },
+  "resolveAction": "Resolve",
+  "@resolveAction": {
+    "description": "Button to resolve an issue"
+  },
+  "reopenAction": "Reopen",
+  "@reopenAction": {
+    "description": "Button to reopen a resolved issue"
+  },
+  "reportedByName": "Reported by {name}",
+  "@reportedByName": {
+    "description": "Label showing who reported an issue",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "commentsCount": "{count} comments",
+  "@commentsCount": {
+    "description": "Number of comments on an issue",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addComment": "Add a comment",
+  "@addComment": {
+    "description": "Hint for the issue comment field"
+  },
+  "deleteIssueConfirm": "Delete this issue?",
+  "@deleteIssueConfirm": {
+    "description": "Confirmation before deleting an issue"
+  },
+  "submitReport": "Submit Report",
+  "@submitReport": {
+    "description": "Button to submit an issue report"
   },
   "tmdbScore": "TMDB Score",
   "@tmdbScore": {
@@ -7291,6 +7542,11 @@
   "offlineFileNotAvailable": "File not available",
   "offlineSwitchServer": "Switch Server",
   "offlineSavedMedia": "Saved Media",
+  "offlineBannerTitle": "You're offline",
+  "offlineBannerSubtitle": "Showing your downloads",
+  "offlineBannerAction": "Downloads",
+  "serverUnreachableBannerTitle": "Can't reach your server",
+  "serverUnreachableBannerSubtitle": "Playing from downloads until it's back",
 
   "castGoogleCast": "Google Cast",
   "castAirPlay": "AirPlay",
@@ -8501,5 +8757,12 @@
   "adminLibChapterImageResolutionMatchSource": "Match source",
   "@adminLibChapterImageResolutionMatchSource": {
     "description": "Chapter image resolution option that matches the source resolution"
-  }
+  },
+  "externalLists": "External Lists",
+  "imdbTop250Movies": "IMDb Top 250 Movies",
+  "imdbTop250TvShows": "IMDb Top 250 TV Shows",
+  "imdbMostPopularMovies": "IMDb Most Popular Movies",
+  "imdbMostPopularTvShows": "IMDb Most Popular TV Shows",
+  "imdbLowestRatedMovies": "IMDb Lowest Rated Movies",
+  "imdbTopEnglishMovies": "IMDb Top Rated English Movies"
 }

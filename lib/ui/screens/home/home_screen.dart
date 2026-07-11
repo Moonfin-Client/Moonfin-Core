@@ -38,6 +38,7 @@ import '../../../preference/user_preferences.dart';
 import '../../widgets/exit_confirmation_dialog.dart';
 import '../../widgets/overlay_sheet.dart';
 import '../../../util/app_exit.dart';
+import '../../../util/overview_text.dart';
 import '../../../util/global_shortcut_focus.dart';
 import '../../widgets/focus/context_menu_sheet.dart';
 import '../../widgets/focus/locked_focus_row.dart';
@@ -940,7 +941,7 @@ class _ContentRowsState extends State<_ContentRows>
   }
 
   bool _useMedia3InlinePreview() {
-    return usesMedia3ForInlinePreview(widget.prefs);
+    return usesMedia3ForInlinePreview();
   }
 
   void _onPreviewPrefsChanged() {
@@ -3354,6 +3355,7 @@ class _ContentRowsState extends State<_ContentRows>
     }
     if (row.id.startsWith('seerr_')) return l10n.seerrDiscoveryRows;
     if (row.id.startsWith('tmdb_')) return 'TMDB Lists';
+    if (row.id.startsWith('imdb_')) return 'IMDb List';
 
     final config = widget.prefs.homeSectionsConfig.firstWhereOrNull((c) => c.stableId == row.id);
     if (config != null && config.pluginSource == HomeSectionPluginSource.custom) {
@@ -4562,7 +4564,7 @@ class _ContentRowsState extends State<_ContentRows>
                       Padding(
                         padding: const EdgeInsets.only(top: 4),
                         child: Text(
-                          overview,
+                          cleanOverview(overview),
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: overviewStyle,

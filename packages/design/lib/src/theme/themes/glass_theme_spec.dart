@@ -12,6 +12,7 @@ const glassThemeSpec = ThemeSpec(
     statusRequested: Color(0xFFBF5AF2),
     statusPending: Color(0xFFFFD60A),
     statusDownloading: Color(0xFF0A84FF),
+    statusError: Color(0xFFFF453A),
     mediaTypeBadgeMovie: Color(0xFF0A84FF),
     mediaTypeBadgeShow: Color(0xFFBF5AF2),
   ),

@@ -1,10 +1,4 @@
-import '../preference/preference_constants.dart';
-import '../preference/user_preferences.dart';
-import '../util/platform_detection.dart';
-
-bool usesMedia3ForInlinePreview(UserPreferences prefs) {
-  return PlatformDetection.isAndroid &&
-      PlatformDetection.isTV &&
-      prefs.get(UserPreferences.playbackEnginePreference) ==
-          PlaybackEnginePreference.media3;
-}
+// Inline previews (media bar trailers and home row previews) always use the
+// media_kit / mpv path. Media3 as an embedded preview surface has device
+// specific playback problems, and mpv plays the same trailers reliably.
+bool usesMedia3ForInlinePreview() => false;

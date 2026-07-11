@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:server_core/server_core.dart';
@@ -9,6 +9,7 @@ import '../../data/services/media_server_client_factory.dart';
 import '../../l10n/app_localizations.dart';
 import '../../l10n/current_app_localizations.dart';
 import '../../preference/user_preferences.dart';
+import '../../util/overview_text.dart';
 import '../../util/platform_detection.dart';
 import 'rating_display.dart';
 import 'simple_info_row.dart';
@@ -569,7 +570,7 @@ class _InfoAreaContentState extends State<_InfoAreaContent> {
               padding: EdgeInsets.only(left: widget.headerLeftInset),
               child: hasLogo
                   ? Image(
-                      image: CachedNetworkImageProvider(
+                      image: offlineAwareImageProvider(
                         imageApi.getLogoImageUrl(
                           logoItemId,
                           maxWidth: isMobile ? 300 : 400,
@@ -623,7 +624,7 @@ class _InfoAreaContentState extends State<_InfoAreaContent> {
             child: Align(
               alignment: Alignment.topLeft,
               child: Text(
-                item.overview ?? '',
+                cleanOverview(item.overview),
                 style: overviewStyle,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,

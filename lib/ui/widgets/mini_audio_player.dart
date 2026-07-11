@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import 'offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:moonfin_design/moonfin_design.dart';
@@ -237,7 +237,7 @@ class _ArtThumbnail extends StatelessWidget {
         width: 44,
         height: 44,
         child: artUrl != null
-            ? CachedNetworkImage(
+            ? OfflineAwareImage(
                 imageUrl: artUrl!,
                 fit: BoxFit.cover,
                 placeholder: (_, _) => _placeholder(),

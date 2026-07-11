@@ -464,6 +464,13 @@ class DownloadService extends ChangeNotifier {
             : 'Specials';
         return 'TV/$series/$seasonFolder';
 
+      case 'MusicVideo':
+        final artist = item.albumArtist ??
+            (item.artists.isNotEmpty ? item.artists.first : null);
+        return artist != null
+            ? 'Music Videos/${_sanitizePath(artist)}'
+            : 'Music Videos/${_sanitizePath(item.name)}';
+
       default:
         return 'Other/${_sanitizePath(item.name)}';
     }
@@ -825,7 +832,10 @@ class DownloadService extends ChangeNotifier {
   }
 
   bool _supportsTranscodedDownload(String? type) {
-    return type == 'Movie' || type == 'Episode';
+    return type == 'Movie' ||
+        type == 'Episode' ||
+        type == 'MusicVideo' ||
+        type == 'Video';
   }
 
   Map<String, String> _buildAuthHeaders() {
@@ -1192,9 +1202,19 @@ class DownloadService extends ChangeNotifier {
   }
 
   Future<AggregatedItem> _ensureFullItem(AggregatedItem item) async {
-    if (item.mediaSources.isNotEmpty) return item;
-    final data = await _client.itemsApi.getItem(item.id);
-    return AggregatedItem(id: item.id, serverId: item.serverId, rawData: data);
+    // Items from row queries are missing fields like Overview and Chapters,
+    // so always fetch the full item before persisting its metadata.
+    try {
+      final data = await _client.itemsApi.getItem(item.id);
+      return AggregatedItem(
+        id: item.id,
+        serverId: item.serverId,
+        rawData: data,
+      );
+    } catch (_) {
+      if (item.mediaSources.isNotEmpty) return item;
+      rethrow;
+    }
   }
 
   Future<void> downloadItem(
@@ -1621,6 +1641,32 @@ class DownloadService extends ChangeNotifier {
     await downloadItems(playableItems, quality: quality);
   }
 
+  Future<void> downloadAlbum(
+    String albumId, {
+    DownloadQuality quality = DownloadQuality.original,
+  }) async {
+    final data = await _client.itemsApi.getItems(
+      parentId: albumId,
+      includeItemTypes: const ['Audio'],
+      sortBy: 'ParentIndexNumber,IndexNumber,SortName',
+      fields: 'MediaStreams,MediaSources,RunTimeTicks',
+    );
+    final rawItems = (data['Items'] as List?) ?? const [];
+    final tracks = rawItems
+        .whereType<Map>()
+        .map((raw) => raw.cast<String, dynamic>())
+        .where((raw) => (raw['Id']?.toString() ?? '').isNotEmpty)
+        .map(
+          (raw) => AggregatedItem(
+            id: raw['Id']!.toString(),
+            serverId: _client.baseUrl,
+            rawData: raw,
+          ),
+        )
+        .toList();
+    await downloadItems(tracks, quality: quality);
+  }
+
   Future<List<AggregatedItem>> _getAllPlayableItemsForBoxSet(
     String boxSetId,
   ) async {
@@ -1767,13 +1813,30 @@ class DownloadService extends ChangeNotifier {
       if (!await itemDir.exists()) await itemDir.create(recursive: true);
 
       final authOptions = Options(headers: _buildAuthHeaders());
-      String? posterPath, backdropPath, logoPath;
+      String? posterPath, backdropPath, logoPath, thumbPath;
 
+      // Fall back to album, series, or parent art so tracks and episodes
+      // still get a poster offline.
+      String? posterItemId, posterTag;
       if (item.primaryImageTag != null) {
+        posterItemId = item.id;
+        posterTag = item.primaryImageTag;
+      } else if (item.albumId != null && item.albumPrimaryImageTag != null) {
+        posterItemId = item.albumId;
+        posterTag = item.albumPrimaryImageTag;
+      } else if (item.seriesId != null && item.seriesPrimaryImageTag != null) {
+        posterItemId = item.seriesId;
+        posterTag = item.seriesPrimaryImageTag;
+      } else if (item.parentPrimaryImageItemId != null &&
+          item.parentPrimaryImageTag != null) {
+        posterItemId = item.parentPrimaryImageItemId;
+        posterTag = item.parentPrimaryImageTag;
+      }
+      if (posterItemId != null) {
         final url = _client.imageApi.getPrimaryImageUrl(
-          item.id,
+          posterItemId,
           maxHeight: 500,
-          tag: item.primaryImageTag,
+          tag: posterTag,
         );
         posterPath = '${itemDir.path}/poster.jpg';
         try {
@@ -1810,11 +1873,22 @@ class DownloadService extends ChangeNotifier {
         }
       }
 
+      String? logoItemId, logoTag;
       if (item.logoImageTag != null) {
+        logoItemId = item.id;
+        logoTag = item.logoImageTag;
+      } else if (item.seriesLogoImageTag != null) {
+        final parentLogoItemId = item.rawData['ParentLogoItemId']?.toString();
+        if (parentLogoItemId != null) {
+          logoItemId = parentLogoItemId;
+          logoTag = item.seriesLogoImageTag;
+        }
+      }
+      if (logoItemId != null) {
         final url = _client.imageApi.getLogoImageUrl(
-          item.id,
+          logoItemId,
           maxWidth: 500,
-          tag: item.logoImageTag,
+          tag: logoTag,
         );
         logoPath = '${itemDir.path}/logo.png';
         try {
@@ -1824,16 +1898,44 @@ class DownloadService extends ChangeNotifier {
         }
       }
 
+      String? thumbItemId, thumbTag;
+      if (item.thumbImageTag != null) {
+        thumbItemId = item.id;
+        thumbTag = item.thumbImageTag;
+      } else if (item.parentThumbItemId != null &&
+          item.parentThumbImageTag != null) {
+        thumbItemId = item.parentThumbItemId;
+        thumbTag = item.parentThumbImageTag;
+      }
+      if (thumbItemId != null) {
+        final url = _client.imageApi.getThumbImageUrl(
+          thumbItemId,
+          maxWidth: 1280,
+          tag: thumbTag,
+        );
+        thumbPath = '${itemDir.path}/thumb.jpg';
+        try {
+          await _downloadDio.download(url, thumbPath, options: authOptions);
+        } catch (_) {
+          thumbPath = null;
+        }
+      }
+
       await _offlineRepo.setImagePaths(
         item.id,
         poster: posterPath,
         backdrop: backdropPath,
         logo: logoPath,
+        thumb: thumbPath,
       );
     } catch (_) {}
   }
 
   Future<void> _ensureParentContainers(AggregatedItem episode) async {
+    if (episode.type == 'Audio' || episode.type == 'AudioBook') {
+      await _ensureAlbumContainer(episode);
+      return;
+    }
     if (episode.type != 'Episode') return;
 
     if (episode.seriesId != null) {
@@ -1889,6 +1991,34 @@ class DownloadService extends ChangeNotifier {
         } catch (_) {}
       }
     }
+  }
+
+  /// Creates a lightweight MusicAlbum container row (with images) so album
+  /// groupings render offline, mirroring the Series/Season containers.
+  Future<void> _ensureAlbumContainer(AggregatedItem track) async {
+    final albumId = track.albumId;
+    if (albumId == null || albumId.isEmpty) return;
+    final existing = await _offlineRepo.getItem(albumId);
+    if (existing != null) return;
+    try {
+      final albumData = await _client.itemsApi.getItem(albumId);
+      final albumItem = AggregatedItem(
+        id: albumId,
+        serverId: track.serverId,
+        rawData: albumData,
+      );
+      await _offlineRepo.upsertItem(
+        DownloadedItemsCompanion(
+          itemId: Value(albumId),
+          serverId: Value(track.serverId),
+          type: Value(albumItem.type ?? 'MusicAlbum'),
+          name: Value(albumItem.name),
+          metadataJson: Value(jsonEncode(albumData)),
+          downloadStatus: const Value(2),
+        ),
+      );
+      _downloadImages(albumItem);
+    } catch (_) {}
   }
 
   Future<void> _downloadExternalSubtitles(
@@ -1967,6 +2097,7 @@ class DownloadService extends ChangeNotifier {
       'Movies',
       'TV',
       'Music',
+      'Music Videos',
       'Audiobooks',
       'Books',
       'Other',

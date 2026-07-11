@@ -131,3 +131,12 @@ class SeerrStatus {
 
   Map<String, dynamic> toJson() => _$SeerrStatusToJson(this);
 }
+
+/// Title and poster for a request or issue card. The request and issue list
+/// media objects only carry ids, so these come from the details endpoints.
+class SeerrMediaSummary {
+  final String? title;
+  final String? posterPath;
+
+  const SeerrMediaSummary({this.title, this.posterPath});
+}

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 
 import '../log_service.dart';
+import 'seerr_error.dart';
 import 'seerr_models.dart';
 
 class SeerrHttpClient {
@@ -99,6 +100,7 @@ class SeerrHttpClient {
 
   Future<Map<String, dynamic>> getRequests({
     String? filter,
+    String? sort,
     int? requestedBy,
     int limit = 50,
     int offset = 0,
@@ -109,12 +111,129 @@ class SeerrHttpClient {
         'skip': offset,
         'take': limit,
         'filter': ?filter,
+        'sort': ?sort,
         'requestedBy': ?requestedBy,
       },
       options: _authOptions(),
     );
     _requireSuccess(response, 'getRequests');
     return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getRequestCount() async {
+    final response = await _dio.get(
+      _apiUrl('request/count'),
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'getRequestCount');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getUserQuota(int userId) async {
+    final response = await _dio.get(
+      _apiUrl('user/$userId/quota'),
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'getUserQuota');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getCollectionDetails(int collectionId) async {
+    final response = await _dio.get(
+      _apiUrl('collection/$collectionId'),
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'getCollectionDetails');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> createIssue({
+    required int issueType,
+    required String message,
+    required int mediaId,
+    int problemSeason = 0,
+    int problemEpisode = 0,
+  }) async {
+    final response = await _dio.post(
+      _apiUrl('issue'),
+      data: {
+        'issueType': issueType,
+        'message': message,
+        'mediaId': mediaId,
+        'problemSeason': problemSeason,
+        'problemEpisode': problemEpisode,
+      },
+      options: _authJsonOptions(),
+    );
+    _requireSuccess(response, 'createIssue');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getIssues({
+    String? filter,
+    String? sort,
+    int? createdBy,
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    final response = await _dio.get(
+      _apiUrl('issue'),
+      queryParameters: {
+        'skip': offset,
+        'take': limit,
+        'filter': ?filter,
+        'sort': ?sort,
+        'createdBy': ?createdBy,
+      },
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'getIssues');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getIssueCount() async {
+    final response = await _dio.get(
+      _apiUrl('issue/count'),
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'getIssueCount');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> getIssue(int issueId) async {
+    final response = await _dio.get(
+      _apiUrl('issue/$issueId'),
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'getIssue');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> commentOnIssue(int issueId, String message) async {
+    final response = await _dio.post(
+      _apiUrl('issue/$issueId/comment'),
+      data: {'message': message},
+      options: _authJsonOptions(),
+    );
+    _requireSuccess(response, 'commentOnIssue');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> setIssueStatus(int issueId, String status) async {
+    final response = await _dio.post(
+      _apiUrl('issue/$issueId/$status'),
+      options: _authJsonOptions(),
+    );
+    _requireSuccess(response, 'setIssueStatus');
+    return response.data as Map<String, dynamic>;
+  }
+
+  Future<void> deleteIssue(int issueId) async {
+    final response = await _dio.delete(
+      _apiUrl('issue/$issueId'),
+      options: _authOptions(),
+    );
+    _requireSuccess(response, 'deleteIssue');
   }
 
   Future<Map<String, dynamic>> getRequest(int requestId) async {
@@ -158,6 +277,9 @@ class SeerrHttpClient {
       data: body,
       options: _authJsonOptions(),
     );
+    final requestError =
+        SeerrRequestException.fromResponse(response.statusCode, response.data);
+    if (requestError != null) throw requestError;
     _requireSuccess(response, 'createRequest');
     return response.data as Map<String, dynamic>;
   }
@@ -183,6 +305,14 @@ class SeerrHttpClient {
       requestId,
       action: 'decline',
       opName: 'declineRequest',
+    );
+  }
+
+  Future<void> retryRequest(int requestId) async {
+    await _postRequestAction(
+      requestId,
+      action: 'retry',
+      opName: 'retryRequest',
     );
   }
 

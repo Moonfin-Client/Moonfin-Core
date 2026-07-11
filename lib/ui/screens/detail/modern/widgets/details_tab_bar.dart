@@ -8,6 +8,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 import '../../../../../util/platform_detection.dart';
 import '../../../../../util/idiom/glass_capability.dart';
 import '../../../../widgets/focus/glass_focus_halo.dart';
+import '../../../../widgets/focus/step_scroll.dart';
 
 /// Focusable, d-pad friendly tab bar: tabs select on press, left/right move
 /// focus between tabs, and left from the first tab calls [onExitLeft].
@@ -490,12 +491,10 @@ class _PillTabBarState extends State<_PillTabBar> {
       if (i < 0 || i >= _segmentKeys.length) return;
       final ctx = _segmentKeys[i].currentContext;
       if (ctx == null) return;
-      Scrollable.ensureVisible(
-        ctx,
-        alignment: 0.5,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
+      // Only scroll the tab strip itself. Scrollable.ensureVisible would also
+      // climb to the vertical page and re-center it on every tab change, which
+      // is the up/down bounce.
+      revealInNearestScrollable(ctx, alignment: 0.5);
     });
   }
 

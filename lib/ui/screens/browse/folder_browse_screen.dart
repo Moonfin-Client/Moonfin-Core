@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import '../../widgets/offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -403,7 +403,7 @@ class _FolderGridCard extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     if (imageUrl != null)
-                      CachedNetworkImage(
+                      OfflineAwareImage(
                         imageUrl: imageUrl!,
                         fit: BoxFit.cover,
                         errorWidget: (_, _, _) => Center(

@@ -7,6 +7,7 @@ import 'package:moonfin_design/moonfin_design.dart';
 
 import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
+import '../../../data/services/seerr/seerr_error.dart';
 import '../../../data/viewmodels/seerr_media_detail_view_model.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/seerr_preferences.dart';
@@ -16,9 +17,15 @@ import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
 import '../../widgets/adaptive/adaptive_dialog.dart';
 import '../../widgets/library_row.dart';
+import '../../widgets/seerr/seerr_advanced_request_options.dart';
+import '../../widgets/seerr/seerr_quota_row.dart';
+import '../../widgets/seerr/seerr_text_field.dart';
+import '../../widgets/seerr/seerr_tv_controls.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/overlay_sheet.dart';
+import '../../widgets/seerr_download_progress_bar.dart';
+import '../../widgets/focus/focusable_wrapper.dart';
 import '../../widgets/track_selector_dialog.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/focus/request_initial_focus.dart';
@@ -88,9 +95,18 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
       );
       _vm?.clearFeedback();
     } else if (s.requestError != null) {
+      final l10n = AppLocalizations.of(context);
+      final message = switch (s.requestErrorKind) {
+        SeerrRequestErrorKind.duplicate => l10n.requestErrorDuplicate,
+        SeerrRequestErrorKind.quotaExceeded => l10n.requestErrorQuota,
+        SeerrRequestErrorKind.blocklisted => l10n.requestErrorBlocklisted,
+        SeerrRequestErrorKind.noSeasonsAvailable => l10n.requestErrorNoSeasons,
+        SeerrRequestErrorKind.permission => l10n.requestErrorPermission,
+        _ => s.requestError!,
+      };
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(s.requestError!),
+          content: Text(message),
           backgroundColor: Colors.red[700],
           behavior: SnackBarBehavior.floating,
         ),
@@ -708,6 +724,16 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
         ),
       );
     }
+    if (vm.canReportIssue) {
+      tiles.add(
+        _ActionTile(
+          icon: Icons.report_problem_outlined,
+          label: l10n.reportIssue,
+          onTap: s.isRequesting ? null : _showReportIssueDialog,
+          focusNode: takeFirst(),
+        ),
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -752,7 +778,40 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
         ],
         if (tiles.isNotEmpty)
           Wrap(spacing: 16, runSpacing: 16, children: tiles),
+        if (s.movie?.collection != null) ...[
+          const SizedBox(height: 20),
+          _buildCollectionBanner(s.movie!.collection!),
+        ],
       ],
+    );
+  }
+
+  Widget _buildCollectionBanner(SeerrCollectionRef collection) {
+    final l10n = AppLocalizations.of(context);
+    return _CollectionBanner(
+      collection: collection,
+      label: l10n.partOfCollectionName(collection.name ?? ''),
+      cta: l10n.viewCollection,
+      onTap: () => context.push(
+        Destinations.seerrCollection(collection.id.toString()),
+      ),
+    );
+  }
+
+  void _showReportIssueDialog() {
+    final vm = _vm;
+    if (vm == null) return;
+    final s = vm.state;
+    final l10n = AppLocalizations.of(context);
+    showStyledPlayerDialog<void>(
+      context,
+      title: l10n.reportIssue,
+      builder: (_) => _ReportIssueDialog(
+        vm: vm,
+        isTv: s.isTv,
+        seasons: s.tv?.seasons ?? const [],
+        numberOfSeasons: s.numberOfSeasons ?? 0,
+      ),
     );
   }
 
@@ -953,22 +1012,33 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
           ],
           const SizedBox(height: 12),
           _buildStatusBadge(s),
+          if (s.hdDownload != null) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              width: 280,
+              child: SeerrDownloadProgressBar(
+                summary: s.hdDownload!,
+                prefixLabel: s.download4k != null ? 'HD' : null,
+              ),
+            ),
+          ],
+          if (s.download4k != null) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              width: 280,
+              child: SeerrDownloadProgressBar(
+                summary: s.download4k!,
+                prefixLabel: '4K',
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
 
   Widget _buildStatusBadge(SeerrMediaDetailState s) {
-    final Color color;
-    if (s.isFullyAvailable) {
-      color = Colors.green;
-    } else if (s.isPartiallyAvailable || s.isProcessing) {
-      color = Colors.orange;
-    } else if (s.hasExistingRequest) {
-      color = Colors.blue;
-    } else {
-      color = Colors.grey;
-    }
+    final (label, color) = _mediaStatusInfo(s);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -980,7 +1050,7 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
         borderRadius: AppRadius.circular(6),
       ),
       child: Text(
-        s.requestStatusText,
+        label,
         style: TextStyle(
           color: color,
           fontWeight: FontWeight.w600,
@@ -988,6 +1058,29 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
         ),
       ),
     );
+  }
+
+  /// Media status colors matching the seerr web UI. Labels come from
+  /// [_localizedStatusText].
+  (String, Color) _mediaStatusInfo(SeerrMediaDetailState s) {
+    final l10n = AppLocalizations.of(context);
+    final label = _localizedStatusText(s, l10n);
+    // Same branch order as _localizedStatusText so label and color agree.
+    final Color color;
+    if (s.isFullyAvailable || s.isPartiallyAvailable) {
+      color = AppColorScheme.statusAvailable;
+    } else if (s.isProcessing) {
+      color = AppColorScheme.statusRequested;
+    } else if (s.isPending) {
+      color = AppColorScheme.statusPending;
+    } else if (s.isBlacklisted || s.isDeleted) {
+      color = AppColorScheme.statusError;
+    } else if (s.hasExistingRequest) {
+      color = AppColorScheme.statusRequested;
+    } else {
+      color = AppColorScheme.onSurface.withValues(alpha: 0.54);
+    }
+    return (label, color);
   }
 
   Widget _buildMetadata(SeerrMediaDetailState s) {
@@ -1237,8 +1330,26 @@ class _SeerrMediaDetailScreenState extends State<SeerrMediaDetailScreen> {
                     ),
                   ),
                 ),
+              if (vm.canReportIssue)
+                OutlinedButton.icon(
+                  onPressed: s.isRequesting
+                      ? null
+                      : _showReportIssueDialog,
+                  icon: const Icon(Icons.report_problem_outlined, size: 18),
+                  label: Text(l10n.reportIssue),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.amber[300],
+                    side: ThemeRegistry.active.borders.chipBorder.copyWith(
+                      color: Colors.amber[300]!,
+                    ),
+                  ),
+                ),
             ],
           ),
+          if (s.movie?.collection != null) ...[
+            const SizedBox(height: 16),
+            _buildCollectionBanner(s.movie!.collection!),
+          ],
         ],
       ),
     );
@@ -1843,146 +1954,72 @@ class _RequestDialogState extends State<_RequestDialog> {
   bool _allSeasons = true;
   bool _submitting = false;
   final Set<int> _selectedSeasons = {};
-  bool _showAdvanced = false;
-
-  List<SeerrServiceServerDetails>? _servers;
-  int? _selectedServerId;
-  int? _selectedProfileId;
-  int? _selectedRootFolderId;
-  bool _loadingServers = false;
+  late final SeerrAdvancedRequestController _advanced;
 
   @override
   void initState() {
     super.initState();
-    _applySavedPreferences();
+    _advanced = SeerrAdvancedRequestController(
+      isTv: widget.isTv,
+      isAnime: widget.vm.state.isAnime,
+    );
+    _applySavedPreferences(resetSelection: false);
     if (widget.vm.canRequestAdvanced) {
-      _loadServers();
+      _advanced.load();
     }
+    widget.vm.loadQuota();
+    widget.vm.addListener(_onVmChanged);
   }
 
-  Future<void> _loadServers() async {
-    setState(() => _loadingServers = true);
-    try {
-      final repo = GetIt.instance<SeerrRepository>();
-
-      if (widget.isTv) {
-        final sonarrServers = await repo.getSonarrServers();
-        final details = await Future.wait(
-          sonarrServers.map((s) => repo.getSonarrServerDetails(s.id)),
-        );
-        setState(() {
-          _servers = details;
-          _applySavedPreferences();
-        });
-      } else {
-        final radarrServers = await repo.getRadarrServers();
-        final details = await Future.wait(
-          radarrServers.map((s) => repo.getRadarrServerDetails(s.id)),
-        );
-        setState(() {
-          _servers = details;
-          _applySavedPreferences();
-        });
-      }
-    } catch (_) {
-    } finally {
-      if (mounted) setState(() => _loadingServers = false);
-    }
+  @override
+  void dispose() {
+    widget.vm.removeListener(_onVmChanged);
+    _advanced.dispose();
+    super.dispose();
   }
 
-  void _applySavedPreferences() {
+  void _onVmChanged() {
+    if (mounted) setState(() {});
+  }
+
+  void _applySavedPreferences({bool resetSelection = true}) {
     final vm = widget.vm;
-    final savedServer = _is4k ? vm.saved4kServerId : vm.savedServerId;
-    final savedProfile = _is4k ? vm.saved4kProfileId : vm.savedProfileId;
-    final savedFolder = _is4k ? vm.saved4kRootFolderId : vm.savedRootFolderId;
-
-    if (savedServer != null && savedServer.isNotEmpty) {
-      _selectedServerId = int.tryParse(savedServer);
-    }
-    if (savedProfile != null && savedProfile.isNotEmpty) {
-      _selectedProfileId = int.tryParse(savedProfile);
-    }
-    if (savedFolder != null && savedFolder.isNotEmpty) {
-      _selectedRootFolderId = int.tryParse(savedFolder);
-    }
-
-    _applyServerDefaults();
+    _advanced.applySavedPreferences(
+      serverId: _is4k ? vm.saved4kServerId : vm.savedServerId,
+      profileId: _is4k ? vm.saved4kProfileId : vm.savedProfileId,
+      rootFolderId: _is4k ? vm.saved4kRootFolderId : vm.savedRootFolderId,
+      resetSelection: resetSelection,
+    );
   }
 
-  void _applyServerDefaults() {
-    final server = _activeServer;
-    if (server == null) return;
-    _selectedServerId ??= server.server.id;
-
-    final isAnime = widget.vm.state.isAnime;
-    final int? animeProfileId = server.server.activeAnimeProfileId;
-    final String? animeDir = server.server.activeAnimeDirectory;
-
-    if (isAnime && animeProfileId != null) {
-      _selectedProfileId ??= animeProfileId;
-    } else {
-      _selectedProfileId ??= server.server.activeProfileId;
-    }
-
-    final String dir;
-    if (isAnime && animeDir != null && animeDir.isNotEmpty) {
-      dir = animeDir;
-    } else {
-      dir = server.server.activeDirectory;
-    }
-
-    if (_selectedRootFolderId == null && dir.isNotEmpty) {
-      final match = server.rootFolders.where((f) => f.path == dir).firstOrNull;
-      if (match != null) _selectedRootFolderId = match.id;
-    }
+  SeerrQuotaDetail? get _quotaDetail {
+    final quota = widget.vm.state.quota;
+    if (quota == null) return null;
+    return widget.isTv ? quota.tv : quota.movie;
   }
 
-  int? get _effectiveServerId {
-    return _selectedServerId ?? _servers?.firstOrNull?.server.id;
+  int get _seasonsNeeded {
+    if (!widget.isTv) return 0;
+    if (_allSeasons) {
+      final total = widget.numberOfSeasons;
+      return (total - widget.requestedSeasons.length).clamp(1, total);
+    }
+    return _selectedSeasons.length;
   }
 
-  int? get _effectiveProfileId {
-    if (_selectedProfileId != null) return _selectedProfileId;
-    final server = _activeServer;
-    if (server == null) return null;
-    final isAnime = widget.vm.state.isAnime;
-    final int? animeProfileId = server.server.activeAnimeProfileId;
-    if (isAnime && animeProfileId != null) {
-      return animeProfileId;
-    }
-    return server.server.activeProfileId;
-  }
-
-  String? get _effectiveRootFolderPath {
-    final server = _activeServer;
-    if (server == null) return null;
-
-    if (_selectedRootFolderId != null) {
-      return server.rootFolders
-          .where((f) => f.id == _selectedRootFolderId)
-          .firstOrNull
-          ?.path;
-    }
-
-    final isAnime = widget.vm.state.isAnime;
-    final String? animeDir = server.server.activeAnimeDirectory;
-    final String dir;
-    if (isAnime && animeDir != null && animeDir.isNotEmpty) {
-      dir = animeDir;
-    } else {
-      dir = server.server.activeDirectory;
-    }
-
-    if (dir.isNotEmpty) {
-      final match = server.rootFolders.where((f) => f.path == dir).firstOrNull;
-      if (match != null) return match.path;
-    }
-
-    return server.rootFolders.firstOrNull?.path;
+  bool get _quotaBlocked {
+    final detail = _quotaDetail;
+    if (detail == null || detail.isUnlimited) return false;
+    if (detail.restricted) return true;
+    final remaining = detail.remaining;
+    if (remaining == null) return false;
+    // TV quota counts seasons, movie quota counts one movie per request.
+    final needed = widget.isTv ? _seasonsNeeded : 1;
+    return needed > remaining;
   }
 
   void _submit() {
-    if (_submitting) {
+    if (_submitting || _quotaBlocked) {
       return;
     }
 
@@ -1998,9 +2035,9 @@ class _RequestDialogState extends State<_RequestDialog> {
       is4k: _is4k,
       seasons: seasons,
       allSeasons: widget.isTv && _allSeasons,
-      profileId: _effectiveProfileId,
-      rootFolder: _effectiveRootFolderPath,
-      serverId: _effectiveServerId,
+      profileId: _advanced.effectiveProfileId,
+      rootFolder: _advanced.effectiveRootFolderPath,
+      serverId: _advanced.effectiveServerId,
     );
 
     Navigator.of(context).pop();
@@ -2009,253 +2046,488 @@ class _RequestDialogState extends State<_RequestDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final theme = Theme.of(context);
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+    final quotaRow = _buildQuotaRow(l10n);
+
+    var autofocusPending = true;
+    bool takeAutofocus() {
+      if (!autofocusPending) return false;
+      autofocusPending = false;
+      return true;
+    }
+
+    final children = <Widget>[];
+    if (widget.vm.canRequest4k) {
+      children.add(
+        SeerrToggleRow(
+          title: l10n.uhd4k,
+          value: _is4k,
+          autofocus: takeAutofocus(),
+          onChanged: (v) => setState(() {
+            _is4k = v;
+            _applySavedPreferences();
+          }),
+        ),
+      );
+    }
+    if (widget.isTv) {
+      children.add(const Divider(color: Colors.white12));
+      children.add(_buildSeasonSelector(autofocusAll: takeAutofocus()));
+    }
+    if (widget.vm.canRequestAdvanced) {
+      children.add(const Divider(color: Colors.white12));
+      children.add(SeerrAdvancedRequestOptions(controller: _advanced));
+    }
+    if (quotaRow != null) {
+      children.add(const SizedBox(height: 12));
+      children.add(quotaRow);
+    }
+    children.add(const SizedBox(height: 20));
+    children.add(
+      Row(
         children: [
-          if (widget.vm.canRequest4k)
-            SwitchListTile.adaptive(
-              title: Text(
-                l10n.uhd4k,
-                style: const TextStyle(color: Colors.white),
-              ),
-              value: _is4k,
-              onChanged: (v) => setState(() {
-                _is4k = v;
-                _selectedProfileId = null;
-                _selectedRootFolderId = null;
-                _applySavedPreferences();
-              }),
-              contentPadding: EdgeInsets.zero,
+          Expanded(
+            child: SeerrDialogButton(
+              label: l10n.cancel,
+              onPressed: _submitting ? null : () => Navigator.of(context).pop(),
             ),
-          if (widget.isTv) ...[
-            const Divider(color: Colors.white12),
-            _buildSeasonSelector(),
-          ],
-          if (widget.vm.canRequestAdvanced) ...[
-            const Divider(color: Colors.white12),
-            _buildAdvancedOptions(theme),
-          ],
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: _submit,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF6366F1),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-            ),
-            child: Text(
-              l10n.submitRequest,
-              style: const TextStyle(fontSize: 15),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: SeerrDialogButton(
+              label: l10n.submitRequest,
+              primary: true,
+              primaryColor: const Color(0xFF6366F1),
+              busy: _submitting,
+              onPressed: _quotaBlocked || _submitting ? null : _submit,
             ),
           ),
         ],
       ),
     );
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: children,
+      ),
+    );
   }
 
-  Widget _buildSeasonSelector() {
+  Widget? _buildQuotaRow(AppLocalizations l10n) {
+    final detail = _quotaDetail;
+    if (detail == null || detail.isUnlimited) return null;
+    final limit = detail.limit ?? 0;
+    final remaining = detail.remaining ?? 0;
+    final blocked = _quotaBlocked;
+    final label = blocked
+        ? l10n.requestErrorQuota
+        : widget.isTv
+        ? l10n.seasonQuotaRemaining(remaining, limit)
+        : l10n.movieQuotaRemaining(remaining, limit);
+    return SeerrQuotaRow(label: label, blocked: blocked);
+  }
+
+  Widget _buildSeasonSelector({bool autofocusAll = false}) {
     final l10n = AppLocalizations.of(context);
     final seasonCount = widget.numberOfSeasons;
     final requested = widget.requestedSeasons;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CheckboxListTile(
-          title: Text(
-            l10n.allSeasons,
-            style: const TextStyle(color: Colors.white),
-          ),
+        SeerrToggleRow(
+          title: l10n.allSeasons,
           value: _allSeasons,
+          checkbox: true,
+          autofocus: autofocusAll,
           onChanged: (v) => setState(() {
-            _allSeasons = v ?? true;
+            _allSeasons = v;
             if (_allSeasons) _selectedSeasons.clear();
           }),
-          contentPadding: EdgeInsets.zero,
-          controlAffinity: ListTileControlAffinity.leading,
         ),
         if (!_allSeasons && seasonCount > 0)
-          Wrap(
-            spacing: 8,
-            runSpacing: 4,
-            children: List.generate(seasonCount, (i) {
-              final num = i + 1;
-              final alreadyRequested = requested.contains(num);
-              final selected = _selectedSeasons.contains(num);
-              return FilterChip(
-                label: Text(
-                  l10n.seasonChip(num),
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: alreadyRequested
-                        ? Colors.white38
-                        : selected
-                        ? Colors.white
-                        : Colors.white70,
+          Padding(
+            padding: const EdgeInsets.only(top: 8, left: 8),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: List.generate(seasonCount, (i) {
+                final num = i + 1;
+                final alreadyRequested = requested.contains(num);
+                final selected = _selectedSeasons.contains(num);
+                return SeerrChoiceChip(
+                  label: l10n.seasonChip(num),
+                  selected: selected,
+                  onSelected: alreadyRequested
+                      ? null
+                      : (v) => setState(() {
+                          if (v) {
+                            _selectedSeasons.add(num);
+                          } else {
+                            _selectedSeasons.remove(num);
+                          }
+                        }),
+                );
+              }),
+            ),
+          ),
+      ],
+    );
+  }
+
+}
+
+class _CollectionBanner extends StatefulWidget {
+  final SeerrCollectionRef collection;
+  final String label;
+  final String cta;
+  final VoidCallback onTap;
+
+  const _CollectionBanner({
+    required this.collection,
+    required this.label,
+    required this.cta,
+    required this.onTap,
+  });
+
+  @override
+  State<_CollectionBanner> createState() => _CollectionBannerState();
+}
+
+class _CollectionBannerState extends State<_CollectionBanner>
+    with FocusStateMixin {
+  @override
+  Widget build(BuildContext context) {
+    final backdrop = widget.collection.backdropPath;
+    return Focus(
+      onFocusChange: setFocused,
+      onKeyEvent: (node, event) {
+        if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+          return KeyEventResult.ignored;
+        }
+        if (event.logicalKey == LogicalKeyboardKey.select ||
+            event.logicalKey == LogicalKeyboardKey.enter ||
+            event.logicalKey == LogicalKeyboardKey.gameButtonA) {
+          widget.onTap();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setHovered(true),
+        onExit: (_) => setHovered(false),
+        child: GestureDetector(
+          onTap: widget.onTap,
+          child: AnimatedScale(
+            scale: showFocusBorder ? 1.02 : 1.0,
+            duration: const Duration(milliseconds: 120),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 560),
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                borderRadius: AppRadius.circular(10),
+                border: Border.fromBorderSide(
+                  ThemeRegistry.active.borders.chipBorder.copyWith(
+                    color: showFocusBorder ? focusColor : Colors.white12,
+                    width: showFocusBorder ? 2 : 1,
                   ),
                 ),
-                selected: selected,
-                onSelected: alreadyRequested
-                    ? null
-                    : (v) => setState(() {
-                        if (v) {
-                          _selectedSeasons.add(num);
-                        } else {
-                          _selectedSeasons.remove(num);
-                        }
-                      }),
-                selectedColor: const Color(0xFF6366F1),
-                checkmarkColor: Colors.white,
-                disabledColor: Colors.white.withValues(alpha: 0.05),
-                backgroundColor: Colors.white12,
-                side: BorderSide.none,
-              );
-            }),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildAdvancedOptions(ThemeData theme) {
-    final l10n = AppLocalizations.of(context);
-    return ExpansionTile(
-      title: Text(
-        l10n.advancedOptions,
-        style: const TextStyle(color: Colors.white70),
-      ),
-      tilePadding: EdgeInsets.zero,
-      initiallyExpanded: _showAdvanced,
-      onExpansionChanged: (v) => _showAdvanced = v,
-      children: [
-        if (_loadingServers)
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-          )
-        else if (_servers != null && _servers!.isNotEmpty) ...[
-          _buildServerDropdown(),
-          const SizedBox(height: 16),
-          _buildProfileDropdown(),
-          const SizedBox(height: 16),
-          _buildRootFolderDropdown(),
-        ] else
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Text(
-              l10n.noServiceServersConfigured,
-              style: const TextStyle(color: Colors.white54),
-            ),
-          ),
-      ],
-    );
-  }
-
-  SeerrServiceServerDetails? get _activeServer {
-    if (_servers == null || _servers!.isEmpty) return null;
-    if (_selectedServerId == null) return _servers!.first;
-    return _servers!
-            .where((s) => s.server.id == _selectedServerId)
-            .firstOrNull ??
-        _servers!.first;
-  }
-
-  Widget _buildServerDropdown() {
-    final l10n = AppLocalizations.of(context);
-    return DropdownButtonFormField<int>(
-      decoration: InputDecoration(
-        labelText: l10n.server,
-        labelStyle: const TextStyle(color: Colors.white54),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 16,
-        ),
-        border: const OutlineInputBorder(),
-        enabledBorder: OutlineInputBorder(
-          borderSide: ThemeRegistry.active.borders.chipBorder,
-        ),
-      ),
-      dropdownColor: const Color(0xFF1A1A2E),
-      initialValue: _selectedServerId ?? _servers?.firstOrNull?.server.id,
-      items: _servers
-          ?.map(
-            (s) => DropdownMenuItem(
-              value: s.server.id,
-              child: Text(
-                '${s.server.name}${s.server.is4k ? " (4K)" : ""}',
-                style: const TextStyle(color: Colors.white),
+              ),
+              child: Stack(
+                children: [
+                  if (backdrop != null)
+                    Positioned.fill(
+                      child: CachedNetworkImage(
+                        imageUrl: '$_tmdbBackdropBase$backdrop',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            Colors.black.withValues(alpha: 0.85),
+                            Colors.black.withValues(alpha: 0.55),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.collections_bookmark_outlined,
+                          color: Colors.white70,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            widget.label,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          widget.cta,
+                          style: TextStyle(
+                            color: AppColorScheme.accent,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const Icon(
+                          Icons.chevron_right,
+                          color: Colors.white54,
+                          size: 18,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-          )
-          .toList(),
-      onChanged: (v) => setState(() {
-        _selectedServerId = v;
-        _selectedProfileId = null;
-        _selectedRootFolderId = null;
-        _applyServerDefaults();
-      }),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ReportIssueDialog extends StatefulWidget {
+  final SeerrMediaDetailViewModel vm;
+  final bool isTv;
+  final List<SeerrSeason> seasons;
+  final int numberOfSeasons;
+
+  const _ReportIssueDialog({
+    required this.vm,
+    required this.isTv,
+    required this.seasons,
+    required this.numberOfSeasons,
+  });
+
+  @override
+  State<_ReportIssueDialog> createState() => _ReportIssueDialogState();
+}
+
+class _ReportIssueDialogState extends State<_ReportIssueDialog> {
+  int _issueType = SeerrIssue.typeVideo;
+  int _season = 0;
+  int _episode = 0;
+  bool _submitting = false;
+  final _messageController = TextEditingController();
+
+  List<int> get _seasonNumbers {
+    final fromList = widget.seasons
+        .where((s) => s.seasonNumber > 0)
+        .map((s) => s.seasonNumber)
+        .toList();
+    if (fromList.isNotEmpty) return fromList;
+    return List.generate(widget.numberOfSeasons, (i) => i + 1);
+  }
+
+  int? get _episodeCount {
+    if (_season <= 0) return null;
+    return widget.seasons
+        .where((s) => s.seasonNumber == _season)
+        .firstOrNull
+        ?.episodeCount;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isTv && _seasonNumbers.length == 1) {
+      _season = _seasonNumbers.first;
+    }
+  }
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final message = _messageController.text.trim();
+    if (message.isEmpty || _submitting) return;
+    setState(() => _submitting = true);
+
+    final ok = await widget.vm.submitIssue(
+      issueType: _issueType,
+      message: message,
+      problemSeason: widget.isTv ? _season : 0,
+      problemEpisode: widget.isTv && _season > 0 ? _episode : 0,
+    );
+
+    if (!mounted) return;
+    if (ok) {
+      Navigator.of(context).pop();
+    } else {
+      setState(() => _submitting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final types = [
+      (SeerrIssue.typeVideo, l10n.issueTypeVideo),
+      (SeerrIssue.typeAudio, l10n.issueTypeAudio),
+      (SeerrIssue.typeSubtitles, l10n.subtitles),
+      (SeerrIssue.typeOther, l10n.other),
+    ];
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (var i = 0; i < types.length; i++)
+            _buildTypeOption(types[i].$1, types[i].$2, autofocus: i == 0),
+          if (widget.isTv && _seasonNumbers.isNotEmpty) ...[
+            const Divider(color: Colors.white12),
+            const SizedBox(height: 4),
+            SeerrSelectorRow(
+              label: l10n.season,
+              value: _season <= 0
+                  ? l10n.allSeasons
+                  : l10n.seasonNumber(_season),
+              onTap: () => _pickSeason(l10n),
+            ),
+            if (_season > 0) ...[
+              const SizedBox(height: 12),
+              SeerrSelectorRow(
+                label: l10n.episode,
+                value: _episode <= 0
+                    ? l10n.allEpisodes
+                    : l10n.episodeNumber(_episode),
+                onTap: () => _pickEpisode(l10n),
+              ),
+            ],
+          ],
+          const SizedBox(height: 16),
+          Text(
+            l10n.whatsWrong,
+            style: const TextStyle(color: Colors.white70, fontSize: 13),
+          ),
+          const SizedBox(height: 8),
+          SeerrTextField(
+            controller: _messageController,
+            hint: l10n.whatsWrong,
+            maxLines: PlatformDetection.isTV ? 1 : 3,
+          ),
+          const SizedBox(height: 20),
+          ValueListenableBuilder(
+            valueListenable: _messageController,
+            builder: (context, value, _) {
+              final canSend = value.text.trim().isNotEmpty && !_submitting;
+              return Row(
+                children: [
+                  Expanded(
+                    child: SeerrDialogButton(
+                      label: l10n.cancel,
+                      onPressed: _submitting
+                          ? null
+                          : () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SeerrDialogButton(
+                      label: l10n.submitReport,
+                      primary: true,
+                      busy: _submitting,
+                      onPressed: canSend ? _submit : null,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildProfileDropdown() {
-    final l10n = AppLocalizations.of(context);
-    final profiles = _activeServer?.profiles ?? [];
-    return DropdownButtonFormField<int>(
-      decoration: InputDecoration(
-        labelText: l10n.qualityProfile,
-        labelStyle: const TextStyle(color: Colors.white54),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 16,
-        ),
-        border: const OutlineInputBorder(),
-        enabledBorder: OutlineInputBorder(
-          borderSide: ThemeRegistry.active.borders.chipBorder,
+  Widget _buildTypeOption(int value, String label, {bool autofocus = false}) {
+    final selected = _issueType == value;
+    return FocusableWrapper(
+      autofocus: autofocus,
+      onSelect: () => setState(() => _issueType = value),
+      borderRadius: 8,
+      useBackgroundFocus: true,
+      disableScale: true,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        child: Row(
+          children: [
+            Icon(
+              selected
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_unchecked,
+              color: selected ? AppColorScheme.accent : Colors.white38,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(label, style: const TextStyle(color: Colors.white)),
+            ),
+          ],
         ),
       ),
-      dropdownColor: const Color(0xFF1A1A2E),
-      initialValue: _selectedProfileId ?? profiles.firstOrNull?.id,
-      items: profiles
-          .map(
-            (p) => DropdownMenuItem(
-              value: p.id,
-              child: Text(p.name, style: const TextStyle(color: Colors.white)),
-            ),
-          )
-          .toList(),
-      onChanged: (v) => setState(() => _selectedProfileId = v),
     );
   }
 
-  Widget _buildRootFolderDropdown() {
-    final l10n = AppLocalizations.of(context);
-    final folders = _activeServer?.rootFolders ?? [];
-    return DropdownButtonFormField<int>(
-      decoration: InputDecoration(
-        labelText: l10n.rootFolder,
-        labelStyle: const TextStyle(color: Colors.white54),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 16,
-        ),
-        border: const OutlineInputBorder(),
-        enabledBorder: OutlineInputBorder(
-          borderSide: ThemeRegistry.active.borders.chipBorder,
-        ),
-      ),
-      dropdownColor: const Color(0xFF1A1A2E),
-      initialValue: _selectedRootFolderId ?? folders.firstOrNull?.id,
-      items: folders
-          .map(
-            (f) => DropdownMenuItem(
-              value: f.id,
-              child: Text(f.path, style: const TextStyle(color: Colors.white)),
-            ),
-          )
-          .toList(),
-      onChanged: (v) => setState(() => _selectedRootFolderId = v),
+  Future<void> _pickSeason(AppLocalizations l10n) async {
+    final values = <int>[0, ..._seasonNumbers];
+    final current = values.indexOf(_season);
+    final picked = await showSeerrOptionPicker(
+      context,
+      title: l10n.season,
+      labels: [
+        l10n.allSeasons,
+        for (final num in _seasonNumbers) l10n.seasonNumber(num),
+      ],
+      selectedIndex: current < 0 ? 0 : current,
     );
+    if (picked == null || !mounted) return;
+    setState(() {
+      _season = values[picked];
+      _episode = 0;
+    });
+  }
+
+  Future<void> _pickEpisode(AppLocalizations l10n) async {
+    final count = _episodeCount ?? 0;
+    final picked = await showSeerrOptionPicker(
+      context,
+      title: l10n.episode,
+      labels: [
+        l10n.allEpisodes,
+        for (var i = 1; i <= count; i++) l10n.episodeNumber(i),
+      ],
+      selectedIndex: _episode.clamp(0, count),
+    );
+    if (picked == null || !mounted) return;
+    setState(() => _episode = picked);
   }
 }

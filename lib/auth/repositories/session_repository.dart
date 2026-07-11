@@ -65,6 +65,7 @@ class SessionRepository {
   String? _activeUserId;
   SessionState _state = SessionState.ready;
   StreamSubscription<ServerWebSocketMessage>? _remoteCommandSubscription;
+  StreamSubscription<ServerWebSocketMessage>? _pluginEventSubscription;
   double _lastUnmutedVolume = 100;
   bool _remoteMuted = false;
   bool _hasCheckedWriteAccess = false;
@@ -196,6 +197,7 @@ class SessionRepository {
     setActiveStreamResolver(client);
     _socketHandler.connectTo(client);
     _bindRemoteCommandHandling();
+    _bindPluginEventHandling(client);
     _refreshCarBrowseTree(signedIn: true);
 
     _activeServerId = serverId;
@@ -330,6 +332,8 @@ class SessionRepository {
 
     _remoteCommandSubscription?.cancel();
     _remoteCommandSubscription = null;
+    _pluginEventSubscription?.cancel();
+    _pluginEventSubscription = null;
     _socketHandler.disconnect();
 
     if (serverId != null) {
@@ -388,6 +392,24 @@ class SessionRepository {
     _remoteCommandSubscription = _socketHandler.events.listen(
       (event) => unawaited(_handleRemoteCommand(event)),
     );
+  }
+
+  // Plugin events pushed over the session websocket (Emby transport) get
+  // forwarded to the same dispatch the SSE stream uses.
+  void _bindPluginEventHandling(MediaServerClient client) {
+    _pluginEventSubscription?.cancel();
+    _pluginEventSubscription = _socketHandler.events.listen((event) {
+      if (event is! ServerEventMessage || event.type != 'MoonfinEvent') {
+        return;
+      }
+      try {
+        unawaited(
+          _pluginSyncService
+              .handleServerEvent(client, event.data)
+              .catchError((_) {}),
+        );
+      } catch (_) {}
+    });
   }
 
   Future<void> _reportRemoteCapabilities(MediaServerClient client) async {
@@ -668,6 +690,7 @@ class SessionRepository {
 
   void dispose() {
     _remoteCommandSubscription?.cancel();
+    _pluginEventSubscription?.cancel();
     _stateController.close();
   }
 }

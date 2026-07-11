@@ -8,6 +8,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
+import '../../../data/repositories/seerr_repository.dart';
 import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../data/viewmodels/seerr_discover_view_model.dart';
 import '../../../preference/preference_constants.dart';
@@ -16,6 +17,7 @@ import '../../../ui/mixins/focus_state_mixin.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/platform_detection.dart';
 import '../../navigation/destinations.dart';
+import '../../widgets/adaptive/adaptive_glass.dart';
 import '../../widgets/media_card.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/fullscreen_backdrop_switcher.dart';
@@ -47,6 +49,8 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
   final _initialFocusNode = FocusNode(debugLabel: 'seerrDiscoverInitial');
   final _loadingHoldFocusNode =
       FocusNode(debugLabel: 'seerrDiscoverLoadingHold', skipTraversal: true);
+  final _requestsEntryFocusNode = FocusNode(debugLabel: 'seerrRequestsEntry');
+  int _badgeCount = 0;
   bool _initialFocusResolved = false;
   bool _isFirstRowFocused = false;
   final Map<int, GlobalKey<LockedFocusRowState>> _rowKeys = {};
@@ -80,10 +84,15 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         return true;
       }
     } else if (isUp && targetIndex == -1) {
+      _restoreNavbarToNormalPosition();
+      // The requests entry sits between the rows and the navbar.
+      if (_requestsEntryFocusNode.context != null) {
+        _requestsEntryFocusNode.requestFocus();
+        return true;
+      }
       final prefs = GetIt.instance<UserPreferences>();
       final navbarPosition = prefs.get(UserPreferences.navbarPosition);
       if (navbarPosition == NavbarPosition.top) {
-        _restoreNavbarToNormalPosition();
         NavigationLayout.focusNavbarNotifier.value?.call();
       }
       return true;
@@ -113,6 +122,37 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     vm.addListener(_onChanged);
     setState(() => _viewModel = vm);
     vm.load();
+    _loadBadgeCount();
+  }
+
+  Future<void> _loadBadgeCount({bool force = false}) async {
+    try {
+      final repo = await GetIt.instance.getAsync<SeerrRepository>();
+      final count = await repo.getActionableBadgeCount(force: force);
+      if (mounted && count != _badgeCount) {
+        setState(() => _badgeCount = count);
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _openRequests() async {
+    await context.push(Destinations.seerrRequests);
+    _loadBadgeCount(force: true);
+  }
+
+  // Focusing the navbar can miss on the first try, so retry a few times.
+  void _focusNavbarFromEntry({int attempt = 0}) {
+    if (!mounted) return;
+    final focusNavbar = NavigationLayout.focusNavbarNotifier.value;
+    focusNavbar?.call();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_requestsEntryFocusNode.hasFocus) return;
+      if (attempt < 3) {
+        _focusNavbarFromEntry(attempt: attempt + 1);
+      } else {
+        FocusScope.of(context).focusInDirection(TraversalDirection.up);
+      }
+    });
   }
 
   @override
@@ -128,6 +168,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     _initialFocusNode.removeListener(_onInitialFocusNodeChanged);
     _initialFocusNode.dispose();
     _loadingHoldFocusNode.dispose();
+    _requestsEntryFocusNode.dispose();
     super.dispose();
   }
 
@@ -171,6 +212,13 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     }
     if (!event.logicalKey.isUpKey) return KeyEventResult.ignored;
     if (!_isFirstRowFocused) return KeyEventResult.ignored;
+
+    // The requests entry sits between the rows and the navbar.
+    if (_requestsEntryFocusNode.context != null) {
+      _restoreNavbarToNormalPosition();
+      _requestsEntryFocusNode.requestFocus();
+      return KeyEventResult.handled;
+    }
 
     _restoreNavbarToNormalPosition();
     NavigationLayout.focusNavbarNotifier.value?.call();
@@ -279,6 +327,21 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
                   ),
                 ),
               ],
+            ),
+            Positioned(
+              // On phones the navbar pill and row titles crowd the top edge,
+              // so the entry drops below them.
+              top: PlatformDetection.useMobileUi
+                  ? infoTopInset + 40.0
+                  : infoTopInset,
+              right: 24,
+              child: _RequestsEntryButton(
+                focusNode: _requestsEntryFocusNode,
+                badgeCount: _badgeCount,
+                onTap: _openRequests,
+                onDown: () => _initialFocusNode.requestFocus(),
+                onUp: _focusNavbarFromEntry,
+              ),
             ),
           ],
         ),
@@ -1181,6 +1244,140 @@ class _LogoCardState extends State<_LogoCard> with FocusStateMixin {
       },
       onFocusChange: setFocused,
       child: inner,
+    );
+  }
+}
+
+class _RequestsEntryButton extends StatefulWidget {
+  final FocusNode focusNode;
+  final int badgeCount;
+  final VoidCallback onTap;
+  final VoidCallback onDown;
+  final VoidCallback onUp;
+
+  const _RequestsEntryButton({
+    required this.focusNode,
+    required this.badgeCount,
+    required this.onTap,
+    required this.onDown,
+    required this.onUp,
+  });
+
+  @override
+  State<_RequestsEntryButton> createState() => _RequestsEntryButtonState();
+}
+
+class _RequestsEntryButtonState extends State<_RequestsEntryButton>
+    with FocusStateMixin {
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Focus(
+      focusNode: widget.focusNode,
+      onFocusChange: setFocused,
+      onKeyEvent: (node, event) {
+        if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+          return KeyEventResult.ignored;
+        }
+        final key = event.logicalKey;
+        if (key.isSelectKey) {
+          widget.onTap();
+          return KeyEventResult.handled;
+        }
+        if (key.isDownKey) {
+          widget.onDown();
+          return KeyEventResult.handled;
+        }
+        if (key.isUpKey) {
+          widget.onUp();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setHovered(true),
+        onExit: (_) => setHovered(false),
+        child: GestureDetector(
+          onTap: widget.onTap,
+          child: AnimatedScale(
+            scale: showFocusBorder ? 1.05 : 1.0,
+            duration: const Duration(milliseconds: 120),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 120),
+              decoration: BoxDecoration(
+                borderRadius: AppRadius.circular(999),
+                border: Border.fromBorderSide(
+                  ThemeRegistry.active.borders.chipBorder.copyWith(
+                    color: showFocusBorder
+                        ? focusColor
+                        : AppColorScheme.onSurface.withValues(alpha: 0.24),
+                    width: showFocusBorder ? 2 : 1,
+                  ),
+                ),
+                boxShadow: showFocusBorder
+                    ? ThemeRegistry.active.borders.focusGlow
+                    : null,
+              ),
+              child: ClipRRect(
+                borderRadius: AppRadius.circular(999),
+                child: adaptiveGlass(
+                  context: context,
+                  fallbackColor: AppColorScheme.surface.withValues(alpha: 0.8),
+                  cornerRadius: 999,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.move_to_inbox_outlined,
+                          color: AppColorScheme.onSurface.withValues(
+                            alpha: 0.7,
+                          ),
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.seerrRequestsTitle,
+                          style: TextStyle(
+                            color: AppColorScheme.onSurface,
+                            fontSize: 13.5,
+                          ),
+                        ),
+                        if (widget.badgeCount > 0) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 1,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColorScheme.accent,
+                              borderRadius: AppRadius.circular(10),
+                            ),
+                            child: Text(
+                              '${widget.badgeCount}',
+                              style: TextStyle(
+                                color: AppColorScheme.onAccent,
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

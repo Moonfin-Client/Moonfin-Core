@@ -88,6 +88,7 @@ class AppColorScheme {
   static Color get statusPending => ThemeRegistry.active.semantic.statusPending;
   static Color get statusDownloading =>
       ThemeRegistry.active.semantic.statusDownloading;
+  static Color get statusError => ThemeRegistry.active.semantic.statusError;
   static Color get mediaTypeBadgeMovie =>
       ThemeRegistry.active.semantic.mediaTypeBadgeMovie;
   static Color get mediaTypeBadgeShow =>

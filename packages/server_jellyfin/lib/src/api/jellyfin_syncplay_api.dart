@@ -62,9 +62,10 @@ class JellyfinSyncPlayApi implements SyncPlayApi {
     required bool isPlaying,
     required String playlistItemId,
     required int positionTicks,
+    DateTime? when,
   }) async {
     await _dio.post('/SyncPlay/Buffering', data: {
-      'When': SyncPlayUtils.nowIsoUtc(),
+      'When': when?.toUtc().toIso8601String() ?? SyncPlayUtils.nowIsoUtc(),
       'PositionTicks': positionTicks,
       'IsPlaying': isPlaying,
       'PlaylistItemId': playlistItemId,
@@ -76,9 +77,10 @@ class JellyfinSyncPlayApi implements SyncPlayApi {
     required bool isPlaying,
     required String playlistItemId,
     required int positionTicks,
+    DateTime? when,
   }) async {
     await _dio.post('/SyncPlay/Ready', data: {
-      'When': SyncPlayUtils.nowIsoUtc(),
+      'When': when?.toUtc().toIso8601String() ?? SyncPlayUtils.nowIsoUtc(),
       'PositionTicks': positionTicks,
       'IsPlaying': isPlaying,
       'PlaylistItemId': playlistItemId,

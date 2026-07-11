@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import '../../../../widgets/offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
@@ -89,7 +89,7 @@ class SeasonCard extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 if (imageUrl != null && imageUrl!.isNotEmpty)
-                  CachedNetworkImage(
+                  OfflineAwareImage(
                     imageUrl: imageUrl!,
                     fit: BoxFit.cover,
                     errorWidget: (context, url, error) =>

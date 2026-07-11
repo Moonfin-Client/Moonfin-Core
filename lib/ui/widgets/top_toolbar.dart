@@ -32,7 +32,7 @@ import 'seerr_icons.dart';
 import 'shuffle_overlay.dart';
 import 'user_menu_dialog.dart';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import 'offline_aware_image.dart';
 import 'package:playback_core/playback_core.dart';
 import '../../data/models/aggregated_item.dart';
 import '../../data/services/media_server_client_factory.dart';
@@ -2212,7 +2212,7 @@ class _TopMusicBarState extends State<TopMusicBar> {
                     width: 32,
                     height: 32,
                     child: artUrl != null
-                        ? CachedNetworkImage(
+                        ? OfflineAwareImage(
                             imageUrl: artUrl,
                             fit: BoxFit.cover,
                           )

@@ -28,7 +28,6 @@ import 'l10n/app_localizations.dart';
 import 'preference/user_preferences.dart';
 import 'syncplay/syncplay_manager.dart';
 import 'ui/navigation/app_router.dart';
-import 'ui/navigation/destinations.dart';
 import 'ui/navigation/home_refresh_bus.dart';
 import 'ui/theme/app_theme.dart';
 import 'ui/theme/app_theme_controller.dart';
@@ -198,10 +197,17 @@ class _MoonfinAppState extends State<MoonfinApp> {
                       builder: (context) {
                         final Widget shell = Column(
                           children: [
-                            const OfflineBanner(),
                             Expanded(
-                              child: _ConnectivityListener(
-                                child: child ?? const SizedBox.shrink(),
+                              child: Stack(
+                                children: [
+                                  _ConnectivityListener(
+                                    child: child ?? const SizedBox.shrink(),
+                                  ),
+                                  const Align(
+                                    alignment: Alignment.topCenter,
+                                    child: OfflineBanner(),
+                                  ),
+                                ],
                               ),
                             ),
                             if (!hidePlayer)
@@ -959,19 +965,11 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     } catch (_) {}
   }
 
-  /// Fires once the server is actually reachable again to revalidate cached home rows
-  /// and if the router auto-redirected the user to Saved Media, return them to home.
-  /// Gated on server reachability so a refresh isn't wasted against a server that the
-  /// ping hasn't confirmed yet.
-  void _handleServerReachable() {
+  /// Fires whenever server reachability flips (either way) so home swaps
+  /// between live rows and offline downloaded-only rows automatically.
+  void _handleServerReachabilityChanged() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       homeRefreshBus.requestNowOrAfterNavigation();
-      if (!OfflineRedirect.wasAutomatic) return;
-      OfflineRedirect.wasAutomatic = false;
-      final location = appRouter.routerDelegate.currentConfiguration.uri.path;
-      if (location == Destinations.downloads) {
-        appRouter.go(Destinations.home);
-      }
     });
   }
 
@@ -980,10 +978,8 @@ class _ConnectivityListenerState extends ConsumerState<_ConnectivityListener>
     final isOnline = ref.watch(isOnlineProvider);
     final serverReachable = ref.watch(activeServerReachableProvider);
 
-    if (_wasServerReachable != null &&
-        _wasServerReachable != serverReachable &&
-        serverReachable) {
-      _handleServerReachable();
+    if (_wasServerReachable != null && _wasServerReachable != serverReachable) {
+      _handleServerReachabilityChanged();
     }
     _wasServerReachable = serverReachable;
 

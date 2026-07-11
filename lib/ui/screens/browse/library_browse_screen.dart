@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import '../../widgets/offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -566,7 +566,7 @@ class _LibraryBrowseScreenState extends State<LibraryBrowseScreen>
 
   Widget _blurredImage(String imageUrl, double blur) {
     final blurred = blur > 0;
-    final image = CachedNetworkImage(
+    final image = OfflineAwareImage(
       imageUrl: imageUrl,
       fit: BoxFit.cover,
       fadeInDuration: Duration.zero,

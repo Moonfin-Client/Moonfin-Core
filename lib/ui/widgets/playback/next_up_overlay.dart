@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
+import '../offline_aware_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -200,7 +200,7 @@ class _NextUpOverlayState extends State<NextUpOverlay>
               if (hasThumb)
                 Stack(
                   children: [
-                    CachedNetworkImage(
+                    OfflineAwareImage(
                       imageUrl: widget.imageUrl!,
                       fit: BoxFit.fitWidth,
                       width: double.infinity,

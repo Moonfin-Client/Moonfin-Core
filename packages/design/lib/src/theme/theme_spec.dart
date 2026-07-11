@@ -194,6 +194,7 @@ class ThemeSemanticTokens {
   final Color statusRequested;
   final Color statusPending;
   final Color statusDownloading;
+  final Color statusError;
   final Color mediaTypeBadgeMovie;
   final Color mediaTypeBadgeShow;
 
@@ -202,6 +203,7 @@ class ThemeSemanticTokens {
     required this.statusRequested,
     required this.statusPending,
     required this.statusDownloading,
+    this.statusError = const Color(0xFFEF4444),
     required this.mediaTypeBadgeMovie,
     required this.mediaTypeBadgeShow,
   });
@@ -211,6 +213,7 @@ class ThemeSemanticTokens {
     statusRequested: Color(0xFF9333EA),
     statusPending: Color(0xFFEAB308),
     statusDownloading: Color(0xFF6366F1),
+    statusError: Color(0xFFEF4444),
     mediaTypeBadgeMovie: Color(0xFF3B82F6),
     mediaTypeBadgeShow: Color(0xFF8B5CF6),
   );
@@ -230,6 +233,10 @@ class ThemeSemanticTokens {
         json['statusDownloading'],
         'semantic.statusDownloading',
       ),
+      // Older custom themes were saved without this field.
+      statusError: json.containsKey('statusError')
+          ? _parseColor(json['statusError'], 'semantic.statusError')
+          : defaults.statusError,
       mediaTypeBadgeMovie: _parseColor(
         json['mediaTypeBadgeMovie'],
         'semantic.mediaTypeBadgeMovie',
@@ -246,6 +253,7 @@ class ThemeSemanticTokens {
         'statusRequested': _encodeColor(statusRequested),
         'statusPending': _encodeColor(statusPending),
         'statusDownloading': _encodeColor(statusDownloading),
+        'statusError': _encodeColor(statusError),
         'mediaTypeBadgeMovie': _encodeColor(mediaTypeBadgeMovie),
         'mediaTypeBadgeShow': _encodeColor(mediaTypeBadgeShow),
       };

@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'offline_aware_image.dart';
 import 'package:flutter/widgets.dart';
 
 class FullscreenBackdropSwitcher extends StatefulWidget {
@@ -73,7 +73,7 @@ class _FullscreenBackdropSwitcherState extends State<FullscreenBackdropSwitcher>
 
   Widget _buildImage(String imageUrl) {
     return widget.imageBuilder?.call(imageUrl) ??
-        CachedNetworkImage(
+        OfflineAwareImage(
           imageUrl: imageUrl,
           fit: BoxFit.cover,
           alignment: widget.alignment,

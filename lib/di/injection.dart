@@ -9,6 +9,7 @@ import 'package:uuid/uuid.dart';
 import '../auth/store/authentication_store.dart';
 import '../data/database/database_connection.dart';
 import '../data/database/offline_database.dart';
+import '../data/offline/offline_catalog.dart';
 import '../data/repositories/offline_repository.dart';
 import '../data/services/connectivity_service.dart';
 import '../data/services/log_service.dart';
@@ -420,6 +421,10 @@ Future<void> configureDependencies() async {
   final offlineRepo = OfflineRepository(getIt<OfflineDatabase>());
   getIt.registerSingleton<OfflineRepository>(offlineRepo);
   await _migrateIosPaths(offlineRepo);
+
+  final offlineCatalog = OfflineCatalog(offlineRepo);
+  getIt.registerSingleton<OfflineCatalog>(offlineCatalog);
+  await offlineCatalog.warm();
 
   final connectivityService = ConnectivityService();
   connectivityService.initialize();

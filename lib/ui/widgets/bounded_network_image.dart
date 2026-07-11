@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
+import 'image_source.dart';
 
 /// A [CachedNetworkImage] whose decoded pixel width is bounded to the
 /// rendered widget width times the device pixel ratio, optionally clamped
@@ -64,6 +68,12 @@ class BoundedNetworkImage extends StatelessWidget {
       minWidth: minWidth,
       maxWidth: maxWidth,
     );
+    if (isLocalImagePath(imageUrl)) {
+      return precacheImage(
+        offlineAwareImageProvider(imageUrl, maxWidth: cacheW),
+        context,
+      );
+    }
     return precacheImage(
       ResizeImage.resizeIfNeeded(
         cacheW,
@@ -86,6 +96,18 @@ class BoundedNetworkImage extends StatelessWidget {
           minWidth: minWidth,
           maxWidth: maxWidth,
         );
+        if (isLocalImagePath(imageUrl)) {
+          return Image.file(
+            File(imageUrl),
+            fit: fit,
+            alignment: alignment,
+            cacheWidth: cacheW,
+            errorBuilder: errorBuilder == null
+                ? null
+                : (context, error, stackTrace) =>
+                    errorBuilder!(context, imageUrl, error),
+          );
+        }
         return CachedNetworkImage(
           imageUrl: imageUrl,
           fit: fit,
