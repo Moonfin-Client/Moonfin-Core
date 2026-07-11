@@ -3260,6 +3260,12 @@ class AppLocalizationsLv extends AppLocalizations {
       'Automātiski atskaņojiet reklāmkadrus multivides joslā pēc 3 sekundēm';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Sērijas priekšskatījums';
 
   @override

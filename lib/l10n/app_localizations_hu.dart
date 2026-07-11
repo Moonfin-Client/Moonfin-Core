@@ -3262,6 +3262,12 @@ class AppLocalizationsHu extends AppLocalizations {
       'Előzetesek automatikus lejátszása a médiasávon 3 másodperc után';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Epizód előnézete';
 
   @override

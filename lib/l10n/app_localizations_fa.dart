@@ -3231,6 +3231,12 @@ class AppLocalizationsFa extends AppLocalizations {
       'پخش خودکار تریلرها در نوار رسانه بعد از 3 ثانیه';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'پیش نمایش قسمت';
 
   @override

@@ -3229,6 +3229,12 @@ class AppLocalizationsTh extends AppLocalizations {
       'เล่นตัวอย่างอัตโนมัติในแถบสื่อหลังจากผ่านไป 3 วินาที';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'ดูตัวอย่างตอน';
 
   @override

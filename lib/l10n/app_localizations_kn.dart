@@ -3261,6 +3261,12 @@ class AppLocalizationsKn extends AppLocalizations {
       '3 ಸೆಕೆಂಡುಗಳ ನಂತರ ಮೀಡಿಯಾ ಬಾರ್‌ನಲ್ಲಿ ಸ್ವಯಂ-ಪ್ಲೇ ಟ್ರೇಲರ್‌ಗಳು';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'ಸಂಚಿಕೆ ಮುನ್ನೋಟ';
 
   @override

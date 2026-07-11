@@ -3259,6 +3259,12 @@ class AppLocalizationsSl extends AppLocalizations {
       'Samodejno predvajanje napovednikov v medijski vrstici po 3 sekundah';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Predogled epizode';
 
   @override

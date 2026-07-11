@@ -3174,6 +3174,12 @@ class AppLocalizationsYue extends AppLocalizations {
   String get autoPlayTrailers => '3 秒後在媒體列中自動播放預告片';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => '劇集預覽';
 
   @override

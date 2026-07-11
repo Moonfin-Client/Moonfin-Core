@@ -3255,6 +3255,12 @@ class AppLocalizationsEt extends AppLocalizations {
       'Esitage treilereid automaatselt meediaribal 3 sekundi pärast';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Episoodi eelvaade';
 
   @override

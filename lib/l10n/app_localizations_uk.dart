@@ -3257,6 +3257,12 @@ class AppLocalizationsUk extends AppLocalizations {
       'Автоматичне відтворення трейлерів на медіа-панелі через 3 секунди';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Попередній перегляд епізоду';
 
   @override

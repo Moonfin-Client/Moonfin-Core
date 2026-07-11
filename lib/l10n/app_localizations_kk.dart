@@ -3259,6 +3259,12 @@ class AppLocalizationsKk extends AppLocalizations {
       '3 секундтан кейін медиа жолағында трейлерлерді автоматты түрде ойнату';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Эпизодты алдын ала қарау';
 
   @override

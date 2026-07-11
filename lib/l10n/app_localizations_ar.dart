@@ -3237,6 +3237,12 @@ class AppLocalizationsAr extends AppLocalizations {
       'تشغيل المقطورات تلقائيًا في شريط الوسائط بعد 3 ثوانٍ';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'معاينة الحلقة';
 
   @override

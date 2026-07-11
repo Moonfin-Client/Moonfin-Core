@@ -3243,6 +3243,12 @@ class AppLocalizationsSi extends AppLocalizations {
       'තත්පර 3කට පසු මාධ්‍ය තීරුවේ ට්‍රේලර් ස්වයංක්‍රීයව ධාවනය කරන්න';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'කථාංග පෙරදසුන';
 
   @override

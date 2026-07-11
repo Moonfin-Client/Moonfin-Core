@@ -3187,6 +3187,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get autoPlayTrailers => '3초 후에 미디어 바에서 예고편 자동 재생';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => '에피소드 미리보기';
 
   @override

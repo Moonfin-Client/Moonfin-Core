@@ -3243,6 +3243,12 @@ class AppLocalizationsPa extends AppLocalizations {
   String get autoPlayTrailers => '3 ਸਕਿੰਟਾਂ ਬਾਅਦ ਮੀਡੀਆ ਬਾਰ ਵਿੱਚ ਆਟੋ-ਪਲੇ ਟ੍ਰੇਲਰ';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'ਐਪੀਸੋਡ ਪੂਰਵ-ਝਲਕ';
 
   @override

@@ -3265,6 +3265,12 @@ class AppLocalizationsMk extends AppLocalizations {
       'Автоматска репродукција на трејлери во лентата за медиуми по 3 секунди';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Преглед на епизода';
 
   @override

@@ -3308,6 +3308,12 @@ class AppLocalizationsFr extends AppLocalizations {
       'Lire automatiquement les bandes-annonces dans la barre média après 3 secondes';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Aperçu de l\'épisode';
 
   @override

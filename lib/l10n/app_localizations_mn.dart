@@ -3251,6 +3251,12 @@ class AppLocalizationsMn extends AppLocalizations {
       '3 секундын дараа медиа талбарт трейлерүүдийг автоматаар тоглуулах';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Ангийг урьдчилан үзэх';
 
   @override

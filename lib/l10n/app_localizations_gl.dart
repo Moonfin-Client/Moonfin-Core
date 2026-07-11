@@ -3283,6 +3283,12 @@ class AppLocalizationsGl extends AppLocalizations {
       'Reproduce automaticamente tráilers na barra multimedia despois de 3 segundos';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Vista previa do episodio';
 
   @override

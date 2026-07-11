@@ -3218,6 +3218,12 @@ class AppLocalizationsHe extends AppLocalizations {
       'הפעל אוטומטית טריילרים בסרגל המדיה לאחר 3 שניות';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'תצוגה מקדימה של פרק';
 
   @override

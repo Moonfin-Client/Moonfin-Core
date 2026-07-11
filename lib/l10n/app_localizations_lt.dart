@@ -3248,6 +3248,12 @@ class AppLocalizationsLt extends AppLocalizations {
       'Automatiškai paleiskite anonsus medijos juostoje po 3 sekundžių';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Epizodo peržiūra';
 
   @override

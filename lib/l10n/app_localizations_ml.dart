@@ -3266,6 +3266,12 @@ class AppLocalizationsMl extends AppLocalizations {
       '3 സെക്കൻഡിന് ശേഷം മീഡിയ ബാറിൽ ട്രെയിലറുകൾ സ്വയമേവ പ്ലേ ചെയ്യുക';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'എപ്പിസോഡ് പ്രിവ്യൂ';
 
   @override

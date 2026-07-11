@@ -3194,6 +3194,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get autoPlayTrailers => '3 秒後にメディア バーでトレーラーを自動再生します';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'エピソードのプレビュー';
 
   @override

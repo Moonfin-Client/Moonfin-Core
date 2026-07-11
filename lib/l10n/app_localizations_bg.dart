@@ -3265,6 +3265,12 @@ class AppLocalizationsBg extends AppLocalizations {
       'Автоматично пускане на трейлъри в медийната лента след 3 секунди';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Преглед на епизод';
 
   @override

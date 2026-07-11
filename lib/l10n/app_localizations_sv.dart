@@ -3254,6 +3254,12 @@ class AppLocalizationsSv extends AppLocalizations {
       'Spela upp trailers automatiskt i mediafältet efter 3 sekunder';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Förhandsvisning av avsnitt';
 
   @override

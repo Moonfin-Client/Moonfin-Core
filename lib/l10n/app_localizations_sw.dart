@@ -3267,6 +3267,12 @@ class AppLocalizationsSw extends AppLocalizations {
       'Cheza trela kiotomatiki kwenye upau wa midia baada ya sekunde 3';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Muhtasari wa Kipindi';
 
   @override

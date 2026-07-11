@@ -3251,6 +3251,12 @@ class AppLocalizationsBe extends AppLocalizations {
       'Аўтаматычнае прайграванне трэйлераў на панэлі мультымедыя праз 3 секунды';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Папярэдні прагляд эпізоду';
 
   @override

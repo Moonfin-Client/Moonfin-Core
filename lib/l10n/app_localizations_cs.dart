@@ -3248,6 +3248,12 @@ class AppLocalizationsCs extends AppLocalizations {
       'Automatické přehrávání upoutávek na liště médií po 3 sekundách';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Náhled epizody';
 
   @override

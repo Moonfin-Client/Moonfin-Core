@@ -4495,6 +4495,14 @@
   "@autoPlayTrailers": {
     "description": "Description for trailer preview"
   },
+  "trailerAudio": "Trailer Audio",
+  "@trailerAudio": {
+    "description": "Setting for trailer audio"
+  },
+  "enableTrailerAudio": "Enable audio for trailers in media bar",
+  "@enableTrailerAudio": {
+    "description": "Description for trailer audio"
+  },
   "episodePreview": "Episode Preview",
   "@episodePreview": {
     "description": "Setting for episode preview"

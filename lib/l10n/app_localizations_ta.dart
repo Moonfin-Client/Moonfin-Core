@@ -3266,6 +3266,12 @@ class AppLocalizationsTa extends AppLocalizations {
       '3 வினாடிகளுக்குப் பிறகு மீடியா பட்டியில் டிரெய்லர்களைத் தானாக இயக்கவும்';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'எபிசோட் முன்னோட்டம்';
 
   @override

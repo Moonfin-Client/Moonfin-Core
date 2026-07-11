@@ -3259,6 +3259,12 @@ class AppLocalizationsPl extends AppLocalizations {
       'Automatyczne odtwarzanie zwiastunów na pasku multimediów po 3 sekundach';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Podgląd odcinka';
 
   @override

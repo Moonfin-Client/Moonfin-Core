@@ -3171,6 +3171,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get autoPlayTrailers => '3 秒后在媒体栏中自动播放预告片';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => '剧集预览';
 
   @override

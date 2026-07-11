@@ -3241,6 +3241,12 @@ class AppLocalizationsBn extends AppLocalizations {
       '3 সেকেন্ড পরে মিডিয়া বারে অটো-প্লে ট্রেলারগুলি৷';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'পর্বের পূর্বরূপ';
 
   @override

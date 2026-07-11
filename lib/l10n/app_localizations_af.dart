@@ -3251,6 +3251,12 @@ class AppLocalizationsAf extends AppLocalizations {
       'Speel sleepwaens outomaties in die mediabalk na 3 sekondes';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Episode Voorskou';
 
   @override

@@ -3259,6 +3259,12 @@ class AppLocalizationsNl extends AppLocalizations {
       'Trailers worden na 3 seconden automatisch afgespeeld in de mediabalk';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Aflevering voorbeeld';
 
   @override

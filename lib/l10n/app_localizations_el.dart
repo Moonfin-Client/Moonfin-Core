@@ -3279,6 +3279,12 @@ class AppLocalizationsEl extends AppLocalizations {
       'Αυτόματη αναπαραγωγή τρέιλερ στη γραμμή πολυμέσων μετά από 3 δευτερόλεπτα';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Προεπισκόπηση επεισοδίου';
 
   @override

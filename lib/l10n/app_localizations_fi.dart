@@ -3259,6 +3259,12 @@ class AppLocalizationsFi extends AppLocalizations {
       'Toista trailerit automaattisesti mediapalkissa 3 sekunnin kuluttua';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Jakson esikatselu';
 
   @override

@@ -3266,6 +3266,12 @@ class AppLocalizationsSq extends AppLocalizations {
       'Luaj automatikisht rimorkio në shiritin e medias pas 3 sekondash';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Pamja paraprake e episodit';
 
   @override

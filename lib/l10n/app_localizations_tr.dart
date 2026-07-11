@@ -3263,6 +3263,12 @@ class AppLocalizationsTr extends AppLocalizations {
       'Fragmanları medya çubuğunda 3 saniye sonra otomatik oynat';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Bölüm Önizlemesi';
 
   @override

@@ -3252,6 +3252,12 @@ class AppLocalizationsUg extends AppLocalizations {
       'مېدىيا ستونىدا 3 سېكۇنتتىن كېيىن ئاپتوماتىك ئويناش';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Episode Preview';
 
   @override

@@ -3257,6 +3257,12 @@ class AppLocalizationsCy extends AppLocalizations {
       'Trelars chwarae\'n awtomatig yn y bar cyfryngau ar ôl 3 eiliad';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Rhagolwg o Bennod';
 
   @override

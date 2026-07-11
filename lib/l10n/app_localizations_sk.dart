@@ -3257,6 +3257,12 @@ class AppLocalizationsSk extends AppLocalizations {
       'Automatické prehrávanie upútavok na paneli médií po 3 sekundách';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Ukážka epizódy';
 
   @override

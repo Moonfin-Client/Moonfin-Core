@@ -3262,6 +3262,12 @@ class AppLocalizationsRo extends AppLocalizations {
       'Redați automat trailerele în bara media după 3 secunde';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'Previzualizarea episodului';
 
   @override

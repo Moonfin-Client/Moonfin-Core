@@ -3260,6 +3260,12 @@ class AppLocalizationsTe extends AppLocalizations {
       '3 సెకన్ల తర్వాత మీడియా బార్‌లో ట్రైలర్‌లను ఆటో-ప్లే చేయండి';
 
   @override
+  String get trailerAudio => 'Trailer Audio';
+
+  @override
+  String get enableTrailerAudio => 'Enable audio for trailers in media bar';
+
+  @override
   String get episodePreview => 'ఎపిసోడ్ ప్రివ్యూ';
 
   @override
