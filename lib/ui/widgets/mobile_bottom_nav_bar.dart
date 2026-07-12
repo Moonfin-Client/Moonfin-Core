@@ -241,10 +241,7 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
 
     if (_seerrEnabled()) {
       final seerrPrefs = GetIt.instance<SeerrPreferences>();
-      final displayName = seerrPrefs.moonfinDisplayName.trim();
-      final label = displayName.isNotEmpty
-          ? displayName
-          : (seerrPrefs.isSeerrVariant ? l10n.seerr : l10n.seerr);
+      final label = seerrPrefs.labelOrDefault(l10n.seerr);
       actions.add(
         _BottomNavAction(
           iconBuilder: (size, color) => seerrPrefs.isSeerrVariant

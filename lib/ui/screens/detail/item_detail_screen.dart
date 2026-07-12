@@ -2615,10 +2615,9 @@ class _DetailContentState extends State<_DetailContent> {
     final seerrAppearancesFocusNode = hasSeerrAppearances
         ? _sectionFocusNode('detailPersonSeerrAppearances')
         : null;
-    final seerrDisplayName = GetIt.instance<SeerrPreferences>().moonfinDisplayName.trim();
-    final seerrLabel = seerrDisplayName.isNotEmpty
-        ? seerrDisplayName
-        : l10n.seerr;
+    final seerrLabel = GetIt.instance<SeerrPreferences>().labelOrDefault(
+      l10n.seerr,
+    );
 
     return [
       if (!useSplit) ...[

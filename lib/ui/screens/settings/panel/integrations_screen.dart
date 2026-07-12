@@ -22,10 +22,9 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final seerrDisplayName = GetIt.instance<SeerrPreferences>().moonfinDisplayName.trim();
-    final seerrLabel = seerrDisplayName.isNotEmpty
-    ? seerrDisplayName
-    : l10n.seerr;
+    final seerrLabel = GetIt.instance<SeerrPreferences>().labelOrDefault(
+      l10n.seerr,
+    );
     return withCleanSettingsTypography(
       context,
       Scaffold(

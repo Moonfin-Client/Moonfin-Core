@@ -807,10 +807,7 @@ class _TopToolbarState extends State<TopToolbar> {
     final showSeerr = _prefs.get(UserPreferences.showSeerrButton) &&
         GetIt.instance<PluginSyncService>().seerrAvailable;
     final l10n = AppLocalizations.of(context);
-    final seerrDisplayName = seerrPrefs.moonfinDisplayName.trim();
-    final seerrNavLabel = seerrDisplayName.isNotEmpty
-      ? seerrDisplayName
-      : (seerrPrefs.isSeerrVariant ? l10n.seerr : l10n.seerr);
+    final seerrNavLabel = seerrPrefs.labelOrDefault(l10n.seerr);
     // Desktop/macOS keeps the dropdown; inline fan-out is only used where
     // horizontal scroll is natural (TV d-pad or touch).
     final useInlineLibraries =

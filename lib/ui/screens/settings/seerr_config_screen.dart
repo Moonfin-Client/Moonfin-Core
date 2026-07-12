@@ -426,10 +426,7 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
     final seerrAvailable =
         _syncService.pluginAvailable && _syncService.seerrEnabled;
     final showSeerrSettings = seerrAvailable && _seerrPrefs.enabled;
-    final seerrDisplayName = _seerrPrefs.moonfinDisplayName.trim();
-    final seerrLabel = seerrDisplayName.isNotEmpty
-    ? seerrDisplayName
-    : l10n.seerr;
+    final seerrLabel = _seerrPrefs.labelOrDefault(l10n.seerr);
 
     return RequestInitialFocus(
       targetNode: _enableSeerrFocusNode,

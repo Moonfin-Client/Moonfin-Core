@@ -975,10 +975,9 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     if (_selectedTab >= tabCount) _selectedTab = tabCount - 1;
 
     final l10n = AppLocalizations.of(context);
-    final seerrDisplayName = GetIt.instance<SeerrPreferences>().moonfinDisplayName.trim();
-    final seerrLabel = seerrDisplayName.isNotEmpty
-    ? seerrDisplayName
-    : l10n.seerr;
+    final seerrLabel = GetIt.instance<SeerrPreferences>().labelOrDefault(
+      l10n.seerr,
+    );
     final totalCount =
         _vm.results.fold<int>(0, (s, g) => s + g.items.length) +
         _vm.seerrResults.length;
@@ -987,7 +986,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
       for (final group in _vm.results)
         '${localizeSearchGroupTitle(group.title, l10n)}: ${group.items.length}',
       if (_vm.seerrResults.isNotEmpty)
-        '${seerrLabel}: ${_vm.seerrResults.length}',
+        '$seerrLabel: ${_vm.seerrResults.length}',
     ];
 
     final isMobile = PlatformDetection.useMobileUi;
@@ -1190,10 +1189,9 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     }
     if (hasSeerr) {
       final cardWidth = 108.0;
-      final seerrDisplayName = GetIt.instance<SeerrPreferences>().moonfinDisplayName.trim();
-      final seerrLabel = seerrDisplayName.isNotEmpty
-      ? seerrDisplayName
-      : l10n.seerr;
+      final seerrLabel = GetIt.instance<SeerrPreferences>().labelOrDefault(
+        l10n.seerr,
+      );
       rows.add(
         LibraryRow(
           key: _allRowKey(groups.length),

@@ -763,10 +763,7 @@ class _LeftSidebarState extends State<LeftSidebar> {
         _prefs.get(UserPreferences.syncPlayEnabled) &&
         _prefs.get(UserPreferences.showSyncPlayButton);
     final seerrPrefs = GetIt.instance<SeerrPreferences>();
-    final seerrDisplayName = seerrPrefs.moonfinDisplayName.trim();
-    final seerrNavLabel = seerrDisplayName.isNotEmpty
-      ? seerrDisplayName
-      : (seerrPrefs.isSeerrVariant ? l10n.seerr : l10n.seerr);
+    final seerrNavLabel = seerrPrefs.labelOrDefault(l10n.seerr);
     final clockBehavior = _prefs.get(UserPreferences.clockBehavior);
     final showClock =
         clockBehavior == ClockBehavior.always ||

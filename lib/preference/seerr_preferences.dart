@@ -43,6 +43,13 @@ class SeerrPreferences {
   Future<void> setMoonfinDisplayName(String value) =>
       _store.setString(_userKey('moonfin_display_name'), value);
 
+  /// Label for the Seerr integration: the moonbase display name when one is set,
+  /// otherwise [fallback] (typically l10n.seerr).
+  String labelOrDefault(String fallback) {
+    final name = moonfinDisplayName.trim();
+    return name.isNotEmpty ? name : fallback;
+  }
+
   String get moonfinVariant => normalizeVariant(_store.getString(_userKey('moonfin_variant')));
   bool get isSeerrVariant => moonfinVariant == 'seerr';
   Future<void> setMoonfinVariant(String value) =>
