@@ -3587,7 +3587,7 @@
     "@previewAudio": {
         "description": "Setting for preview audio"
     },
-    "enablePreviewAudio": "Fragman ve bölüm önizlemeleri için sesi etkinleştirin",
+    "enablePreviewAudio": "Medya önizlemeleri için sesi aç",
     "@enablePreviewAudio": {
         "description": "Description for preview audio"
     },
@@ -8661,7 +8661,7 @@
     },
     "audiobookPlaybackSpeed": "Oynatma Hızı",
     "audiobookNoBookmarks": "Henüz yer işareti yok",
-    "externalLists": "Harici Ana Sayfa Satır Listeleri",
+    "externalLists": "Harici Listeler",
     "fileInformation": "Dosya Bilgisi",
     "showAllSubtitleTracks": "Tüm Altyazıları Göster ({count})",
     "@showAllSubtitleTracks": {
@@ -8685,5 +8685,283 @@
     "transcodeVideoCodecNotSupported": "Video kodeki desteklenmiyor.",
     "adminUnratedBook": "Kitaplar",
     "adminLiveTvSectionTiming": "Zamanlama",
-    "sortReleaseAscending": "Yayın Tarihine Göre (Eskiden Yeniye)"
+    "sortReleaseAscending": "Yayın Tarihine Göre (Eskiden Yeniye)",
+    "loopThemeMusic": "Tema Müziğini Sürekli Çal",
+    "@loopThemeMusic": {
+        "description": "Setting to loop the theme music"
+    },
+    "loopThemeMusicSubtitle": "Parçayı bir kez oynatmak yerine döngüye al",
+    "@loopThemeMusicSubtitle": {
+        "description": "Description for the loop theme music setting"
+    },
+    "trailerAudio": "Fragman Sesi",
+    "@trailerAudio": {
+        "description": "Setting for trailer audio"
+    },
+    "enableTrailerAudio": "Medya çubuğundaki fragmanlar için sesi etkinleştir",
+    "@enableTrailerAudio": {
+        "description": "Description for trailer audio"
+    },
+    "seerrNotifyIssuesTitle": "Sorun Güncellemeleri",
+    "@seerrNotifyIssuesTitle": {
+        "description": "Title for the issue notifications toggle"
+    },
+    "seerrNotifyIssuesSubtitle": "Yeni sorunlar, yanıtlar ve çözümler",
+    "@seerrNotifyIssuesSubtitle": {
+        "description": "Subtitle for the issue notifications toggle"
+    },
+    "seerrDownloadingPercent": "İndiriliyor · %{percent}",
+    "@seerrDownloadingPercent": {
+        "description": "Label above the Seerr download progress bar",
+        "placeholders": {
+            "percent": {
+                "type": "int"
+            }
+        }
+    },
+    "seerrImportingStatus": "İçe Aktarılıyor",
+    "@seerrImportingStatus": {
+        "description": "Label when a Seerr download has finished and is importing"
+    },
+    "failedStatus": "Başarısız Oldu",
+    "@failedStatus": {
+        "description": "Request status label when the request failed to send to Radarr/Sonarr"
+    },
+    "processingStatus": "İşleniyor",
+    "@processingStatus": {
+        "description": "Filter label for approved requests being processed"
+    },
+    "modifiedByName": "{name} tarafından değiştirildi",
+    "@modifiedByName": {
+        "description": "Label showing which manager acted on a request",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "completedStatus": "Tamamlandı",
+    "@completedStatus": {
+        "description": "Request status label when the request finished"
+    },
+    "requestErrorDuplicate": "Bu içerik zaten talep edilmiş",
+    "@requestErrorDuplicate": {
+        "description": "Error when creating a request that already exists"
+    },
+    "requestErrorQuota": "İstek sınırına ulaşıldı",
+    "@requestErrorQuota": {
+        "description": "Error when the user is out of request quota"
+    },
+    "requestErrorBlocklisted": "Bu içerik kara listede",
+    "@requestErrorBlocklisted": {
+        "description": "Error when requesting blocklisted media"
+    },
+    "requestErrorNoSeasons": "Talep edilecek sezon kalmadı",
+    "@requestErrorNoSeasons": {
+        "description": "Error when every season is already requested or available"
+    },
+    "requestErrorPermission": "Bu talebi gerçekleştirmek için izniniz yok",
+    "@requestErrorPermission": {
+        "description": "Error when the user lacks request permission"
+    },
+    "seerrRequestsTitle": "İstekler",
+    "@seerrRequestsTitle": {
+        "description": "Requests tab and screen title"
+    },
+    "seerrIssuesTitle": "Sorunlar",
+    "@seerrIssuesTitle": {
+        "description": "Issues tab title on the requests hub"
+    },
+    "sortNewest": "En Yeni",
+    "@sortNewest": {
+        "description": "Request sort option, most recently added first"
+    },
+    "sortLastModified": "Son Düzenlenen",
+    "@sortLastModified": {
+        "description": "Request sort option, most recently updated first"
+    },
+    "noIssues": "Sorun Yok",
+    "@noIssues": {
+        "description": "Shown when the issue list is empty"
+    },
+    "movieQuotaRemaining": "Kalan film talebi: {remaining} / {limit}",
+    "@movieQuotaRemaining": {
+        "description": "Quota line in the request dialog",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "seasonQuotaRemaining": "Kalan sezon talebi: {remaining} / {limit}",
+    "@seasonQuotaRemaining": {
+        "description": "Quota line in the request dialog for series",
+        "placeholders": {
+            "remaining": {
+                "type": "int"
+            },
+            "limit": {
+                "type": "int"
+            }
+        }
+    },
+    "partOfCollectionName": "{name} koleksiyonunun parçası",
+    "@partOfCollectionName": {
+        "description": "Banner on a movie that belongs to a collection",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "viewCollection": "Koleksiyonu Görüntüle",
+    "@viewCollection": {
+        "description": "Link to open the collection screen"
+    },
+    "requestCollection": "Koleksiyonu İste",
+    "@requestCollection": {
+        "description": "Button to request movies from a collection"
+    },
+    "collectionMoviesSummary": "{total} film · {available} mevcut",
+    "@collectionMoviesSummary": {
+        "description": "Collection header summary line",
+        "placeholders": {
+            "total": {
+                "type": "int"
+            },
+            "available": {
+                "type": "int"
+            }
+        }
+    },
+    "requestMoviesCount": "{count} film iste",
+    "@requestMoviesCount": {
+        "description": "Submit button on the collection request sheet",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestingProgress": "İsteniyor: {current} / {total}...",
+    "@requestingProgress": {
+        "description": "Progress label while collection requests are submitted",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesCount": "{count} film istendi",
+    "@requestedMoviesCount": {
+        "description": "Snackbar after a collection request succeeds",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "requestedMoviesPartial": "İstenen film: {ok} / {total}",
+    "@requestedMoviesPartial": {
+        "description": "Snackbar when some collection requests failed",
+        "placeholders": {
+            "ok": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "collectionAllRequested": "Tüm filmler zaten mevcut veya istenmiş",
+    "@collectionAllRequested": {
+        "description": "Shown instead of the request button when nothing is requestable"
+    },
+    "reportIssue": "Sorun Bildir",
+    "@reportIssue": {
+        "description": "Button on the seerr detail screen to report a media issue"
+    },
+    "issueTypeVideo": "Video",
+    "@issueTypeVideo": {
+        "description": "Issue type option"
+    },
+    "issueTypeAudio": "Ses",
+    "@issueTypeAudio": {
+        "description": "Issue type option"
+    },
+    "whatsWrong": "Sorun ne?",
+    "@whatsWrong": {
+        "description": "Label for the issue description field"
+    },
+    "allEpisodes": "Tüm Bölümler",
+    "@allEpisodes": {
+        "description": "Episode dropdown option covering the whole season"
+    },
+    "episode": "Bölüm",
+    "@episode": {
+        "description": "Episode dropdown label"
+    },
+    "openStatus": "Açık",
+    "@openStatus": {
+        "description": "Issue status label"
+    },
+    "resolvedStatus": "Çözüldü",
+    "@resolvedStatus": {
+        "description": "Issue status label"
+    },
+    "resolveAction": "Çöz",
+    "@resolveAction": {
+        "description": "Button to resolve an issue"
+    },
+    "reopenAction": "Tekrar aç",
+    "@reopenAction": {
+        "description": "Button to reopen a resolved issue"
+    },
+    "reportedByName": "{name} tarafından bildirildi",
+    "@reportedByName": {
+        "description": "Label showing who reported an issue",
+        "placeholders": {
+            "name": {
+                "type": "String"
+            }
+        }
+    },
+    "commentsCount": "{count} yorum",
+    "@commentsCount": {
+        "description": "Number of comments on an issue",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "addComment": "Yorum ekle",
+    "@addComment": {
+        "description": "Hint for the issue comment field"
+    },
+    "deleteIssueConfirm": "Sorun silinsin mi?",
+    "@deleteIssueConfirm": {
+        "description": "Confirmation before deleting an issue"
+    },
+    "submitReport": "Raporu Gönder",
+    "@submitReport": {
+        "description": "Button to submit an issue report"
+    },
+    "offlineBannerTitle": "Çevrimdışısın",
+    "offlineBannerSubtitle": "İndirdikleriniz gösteriliyor",
+    "offlineBannerAction": "İndirilenler",
+    "serverUnreachableBannerTitle": "Sunucuya erişilemiyor",
+    "serverUnreachableBannerSubtitle": "Bağlantı geri gelene kadar indirilenlerden oynatılıyor",
+    "imdbTop250Movies": "IMDB En İyi 250 Film",
+    "imdbTop250TvShows": "IMDB En İyi 250 Dizi",
+    "imdbMostPopularMovies": "IMDB En Popüler Filmler",
+    "imdbMostPopularTvShows": "IMDB En Popüler Diziler",
+    "imdbLowestRatedMovies": "IMDB En Düşük Puanlı Filmler",
+    "imdbTopEnglishMovies": "IMDB En Yüksek Puanlı İngilizce Filmler"
 }
