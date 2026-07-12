@@ -162,6 +162,13 @@ class AppLocalizationsSk extends AppLocalizations {
       'Automatically show tab content while browsing tabs. Turn off to open and close each tab manually.';
 
   @override
+  String get showTechnicalDetails => 'Show Technical Details?';
+
+  @override
+  String get showTechnicalDetailsSubtitle =>
+      'Show codec, resolution, and stream information in banner summary';
+
+  @override
   String get recommendationSystem => 'Recommendation System';
 
   @override

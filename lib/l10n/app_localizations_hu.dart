@@ -161,6 +161,13 @@ class AppLocalizationsHu extends AppLocalizations {
       'Lapok tartalmának automatikus megjelenítése a lapok böngészése közben. Kapcsold ki az egyes lapok kézi megnyitásához és bezárásához.';
 
   @override
+  String get showTechnicalDetails => 'Show Technical Details?';
+
+  @override
+  String get showTechnicalDetailsSubtitle =>
+      'Show codec, resolution, and stream information in banner summary';
+
+  @override
   String get recommendationSystem => 'Ajánlórendszer';
 
   @override
