@@ -984,7 +984,7 @@ class _DetailContentState extends State<_DetailContent> {
           return;
         }
       }
-      if (attempt + 1 >= 8) return;
+      if (attempt + 1 >= 60) return;
       Future<void>.delayed(const Duration(milliseconds: 50), () {
         if (!mounted) return;
         _tryRequestTvAlbumPlayFocus(itemId, attempt + 1);
@@ -5473,7 +5473,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           return;
         }
       }
-      if (attempt + 1 >= 8) return;
+      if (attempt + 1 >= 60) return;
       Future<void>.delayed(const Duration(milliseconds: 50), () {
         if (!mounted) return;
         _tryRequestPlayFocus(itemId, attempt + 1);
