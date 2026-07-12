@@ -21,7 +21,6 @@ import '../../../../preference/preference_constants.dart';
 import '../../../../util/overview_text.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../../util/focus/dpad_keys.dart';
-import '../../../../util/audio_labels.dart';
 import '../../../navigation/destinations.dart';
 import '../../../widgets/logo_view.dart';
 import '../../../widgets/media_card.dart';
@@ -49,12 +48,7 @@ import '../item_detail_screen.dart'
         FilmographyRow,
         SeerrAppearancesRow,
         SeerrCrewCreditsRow,
-        mediaStreamsForItem,
-        resolutionFromStreams,
-        hdrFromStreams,
-        codecFromStreams,
-        audioLabelFromStreams,
-        channelLayoutFromStreams;
+        technicalDetailsFor;
 import 'modern_landscape_layout.dart';
 import 'modern_portrait_layout.dart';
 import 'widgets/details_tab_bar.dart';
@@ -3859,44 +3853,15 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final muted = AppColorScheme.onSurface.withValues(alpha: 0.75);
     final style = theme.textTheme.bodyMedium?.copyWith(color: muted);
 
-    final streams = mediaStreamsForItem(item, selectedMediaSource);
-    final badges = <String>[];
-    final res = resolutionFromStreams(streams) ?? item.videoResolution;
-    if (res != null) badges.add(res);
-    final hdr = hdrFromStreams(streams) ?? item.hdrType;
-    if (hdr != null) badges.add(hdr);
-    final vcodec =
-        codecFromStreams(streams, 'Video') ?? item.videoCodec?.toUpperCase();
-    if (vcodec != null) badges.add(vcodec);
-    final acodec =
-        audioLabelFromStreams(streams) ??
-        audioLabelFromProfileCodec(item.audioProfile, item.audioCodec);
-    if (acodec != null) badges.add(acodec);
-    final layout = channelLayoutFromStreams(streams) ?? item.channelLayout;
-    if (layout != null) badges.add(layout);
-
-    final sizeBytes =
-        selectedMediaSource?['Size'] as int? ??
-        (item.mediaSources.isNotEmpty
-            ? item.mediaSources.first['Size'] as int?
-            : null);
+    final tech = technicalDetailsFor(item, selectedMediaSource);
+    final badges = tech.badges;
 
     final pieces = <Widget>[];
 
-    if (sizeBytes != null &&
-        sizeBytes > 0 &&
-        item.type != 'Series' &&
-        item.type != 'Season') {
-      final double mb = sizeBytes / (1024 * 1024);
-      final String formattedSize;
-      if (mb > 999) {
-        formattedSize = '${(mb / 1024).toStringAsFixed(2)} GB';
-      } else {
-        formattedSize = '${mb.toStringAsFixed(0)} MB';
-      }
+    if (tech.formattedSize != null) {
       pieces.add(
         Text(
-          formattedSize,
+          tech.formattedSize!,
           style: style?.copyWith(
             fontWeight: FontWeight.w700,
             shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],

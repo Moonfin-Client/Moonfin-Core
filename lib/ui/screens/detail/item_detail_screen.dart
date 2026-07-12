@@ -4147,26 +4147,12 @@ class DetailMetadataRow extends StatelessWidget {
     final showTech = GetIt.instance<UserPreferences>().get(
       UserPreferences.detailShowTechnicalDetails,
     );
+    final tech = showTech
+        ? technicalDetailsFor(item, selectedMediaSource)
+        : null;
 
-    if (showTech) {
-      final sizeBytes =
-          selectedMediaSource?['Size'] as int? ??
-          (item.mediaSources.isNotEmpty
-              ? item.mediaSources.first['Size'] as int?
-              : null);
-      if (sizeBytes != null &&
-          sizeBytes > 0 &&
-          item.type != 'Series' &&
-          item.type != 'Season') {
-        final double mb = sizeBytes / (1024 * 1024);
-        final String formattedSize;
-        if (mb > 999) {
-          formattedSize = '${(mb / 1024).toStringAsFixed(2)} GB';
-        } else {
-          formattedSize = '${mb.toStringAsFixed(0)} MB';
-        }
-        parts.add(_text(theme, formattedSize));
-      }
+    if (tech?.formattedSize != null) {
+      parts.add(_text(theme, tech!.formattedSize!));
     }
 
     final runtime = _runtimeForItem(item, selectedMediaSource);
@@ -4221,23 +4207,7 @@ class DetailMetadataRow extends StatelessWidget {
       }
     }
 
-    final streams = mediaStreamsForItem(item, selectedMediaSource);
-    final badges = <String>[];
-    if (showTech) {
-      final res = resolutionFromStreams(streams) ?? item.videoResolution;
-      if (res != null) badges.add(res);
-      final hdr = hdrFromStreams(streams) ?? item.hdrType;
-      if (hdr != null) badges.add(hdr);
-      final vcodec =
-          codecFromStreams(streams, 'Video') ?? item.videoCodec?.toUpperCase();
-      if (vcodec != null) badges.add(vcodec);
-      final acodec =
-          audioLabelFromStreams(streams) ??
-          audioLabelFromProfileCodec(item.audioProfile, item.audioCodec);
-      if (acodec != null) badges.add(acodec);
-      final layout = channelLayoutFromStreams(streams) ?? item.channelLayout;
-      if (layout != null) badges.add(layout);
-    }
+    final badges = tech?.badges ?? const <String>[];
 
     final compact = !_useDesktopDetailLayout(context);
 
@@ -8922,6 +8892,48 @@ String? codecFromStreams(
     return null;
   }
   return codec.toUpperCase();
+}
+
+/// Formatted file size and technical stream badges (resolution, HDR, video and
+/// audio codec, channel layout) for an item, shared by the classic and modern
+/// detail layouts.
+({String? formattedSize, List<String> badges}) technicalDetailsFor(
+  AggregatedItem item,
+  Map<String, dynamic>? selectedMediaSource,
+) {
+  final streams = mediaStreamsForItem(item, selectedMediaSource);
+  final badges = <String>[];
+  final res = resolutionFromStreams(streams) ?? item.videoResolution;
+  if (res != null) badges.add(res);
+  final hdr = hdrFromStreams(streams) ?? item.hdrType;
+  if (hdr != null) badges.add(hdr);
+  final vcodec =
+      codecFromStreams(streams, 'Video') ?? item.videoCodec?.toUpperCase();
+  if (vcodec != null) badges.add(vcodec);
+  final acodec =
+      audioLabelFromStreams(streams) ??
+      audioLabelFromProfileCodec(item.audioProfile, item.audioCodec);
+  if (acodec != null) badges.add(acodec);
+  final layout = channelLayoutFromStreams(streams) ?? item.channelLayout;
+  if (layout != null) badges.add(layout);
+
+  final sizeBytes =
+      selectedMediaSource?['Size'] as int? ??
+      (item.mediaSources.isNotEmpty
+          ? item.mediaSources.first['Size'] as int?
+          : null);
+  String? formattedSize;
+  if (sizeBytes != null &&
+      sizeBytes > 0 &&
+      item.type != 'Series' &&
+      item.type != 'Season') {
+    final double mb = sizeBytes / (1024 * 1024);
+    formattedSize = mb > 999
+        ? '${(mb / 1024).toStringAsFixed(2)} GB'
+        : '${mb.toStringAsFixed(0)} MB';
+  }
+
+  return (formattedSize: formattedSize, badges: badges);
 }
 
 String? channelLayoutFromStreams(List<Map<String, dynamic>> streams) {

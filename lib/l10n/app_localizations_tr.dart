@@ -161,6 +161,13 @@ class AppLocalizationsTr extends AppLocalizations {
       'Sekmeler arasında gezinirken sekme içeriğini otomatik olarak göster. Her sekmeyi manuel olarak açıp kapatmak için bu seçeneği kapatın.';
 
   @override
+  String get showTechnicalDetails => 'Show Technical Details?';
+
+  @override
+  String get showTechnicalDetailsSubtitle =>
+      'Show codec, resolution, and stream information in banner summary';
+
+  @override
   String get recommendationSystem => 'Öneri Sistemi';
 
   @override

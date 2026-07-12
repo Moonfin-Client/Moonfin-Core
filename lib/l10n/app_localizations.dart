@@ -496,6 +496,18 @@ abstract class AppLocalizations {
   /// **'Automatically show tab content while browsing tabs. Turn off to open and close each tab manually.'**
   String get expandedTabsSubtitle;
 
+  /// Label for the detail screen setting to show stream/codec technical details
+  ///
+  /// In en, this message translates to:
+  /// **'Show Technical Details?'**
+  String get showTechnicalDetails;
+
+  /// Explanation under the show technical details setting
+  ///
+  /// In en, this message translates to:
+  /// **'Show codec, resolution, and stream information in banner summary'**
+  String get showTechnicalDetailsSubtitle;
+
   /// Label for the Recommendation System setting
   ///
   /// In en, this message translates to:
