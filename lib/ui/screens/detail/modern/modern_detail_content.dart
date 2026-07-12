@@ -53,6 +53,7 @@ import 'modern_portrait_layout.dart';
 import 'widgets/details_tab_bar.dart';
 import 'widgets/season_card.dart';
 import 'widgets/up_next_card.dart';
+import '../../../widgets/overlay_sheet.dart';
 
 double _desktopUiScale({UserPreferences? prefs}) {
   final effectivePrefs = prefs ?? GetIt.instance<UserPreferences>();
@@ -2330,6 +2331,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
         },
         child: _DetailsContainer(
           isScrollable: hasButtons,
+          hasAudioButton: audioStreams.length > 2,
+          hasSubtitleButton: subtitleStreams.length > 2,
+          audioButtonFocusNode: _audioShowAllFocusNode,
+          subtitleButtonFocusNode: _subtitleShowAllFocusNode,
           canRequestFocus: true,
           focusNode: _detailsTabFocusNode,
           onNavigateUp: _focusSelectedTab,
@@ -2537,7 +2542,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 const SizedBox(width: 90),
                 FocusableWrapper(
                   focusNode: _audioShowAllFocusNode,
-                  onNavigateUp: _focusSelectedTab,
                   onSelect: () => setState(() => _audioExpanded = !_audioExpanded),
                   borderRadius: 6,
                   suppressFocusGlow: true,
@@ -2609,7 +2613,6 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 const SizedBox(width: 90),
                 FocusableWrapper(
                   focusNode: _subtitleShowAllFocusNode,
-                  onNavigateUp: _focusSelectedTab,
                   onSelect: () => setState(() => _subtitlesExpanded = !_subtitlesExpanded),
                   borderRadius: 6,
                   suppressFocusGlow: true,
@@ -4315,6 +4318,10 @@ class _ModernTab {
 class _DetailsContainer extends StatefulWidget {
   final Widget child;
   final bool isScrollable;
+  final bool hasAudioButton;
+  final bool hasSubtitleButton;
+  final FocusNode audioButtonFocusNode;
+  final FocusNode subtitleButtonFocusNode;
   final bool canRequestFocus;
   final FocusNode? focusNode;
   final VoidCallback? onNavigateUp;
@@ -4323,6 +4330,10 @@ class _DetailsContainer extends StatefulWidget {
   const _DetailsContainer({
     required this.child,
     required this.isScrollable,
+    required this.hasAudioButton,
+    required this.hasSubtitleButton,
+    required this.audioButtonFocusNode,
+    required this.subtitleButtonFocusNode,
     required this.canRequestFocus,
     this.focusNode,
     this.onNavigateUp,
@@ -4335,9 +4346,27 @@ class _DetailsContainer extends StatefulWidget {
 
 class _DetailsContainerState extends State<_DetailsContainer> with FocusStateMixin {
   final ScrollController _scrollController = ScrollController();
+  bool _hasInterceptor = false;
+
+  void _registerBackInterceptor() {
+    if (_hasInterceptor) return;
+    _hasInterceptor = true;
+    InlineBackInterceptor.push(_handleBack);
+  }
+
+  void _unregisterBackInterceptor() {
+    if (!_hasInterceptor) return;
+    _hasInterceptor = false;
+    InlineBackInterceptor.remove(_handleBack);
+  }
+
+  void _handleBack() {
+    widget.onNavigateUp?.call();
+  }
 
   @override
   void dispose() {
+    _unregisterBackInterceptor();
     _scrollController.dispose();
     super.dispose();
   }
@@ -4357,6 +4386,7 @@ class _DetailsContainerState extends State<_DetailsContainer> with FocusStateMix
       onFocusChange: (focused) {
         setFocused(focused);
         if (focused) {
+          _registerBackInterceptor();
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               Scrollable.ensureVisible(
@@ -4367,50 +4397,92 @@ class _DetailsContainerState extends State<_DetailsContainer> with FocusStateMix
               );
             }
           });
+        } else {
+          _unregisterBackInterceptor();
         }
       },
       onKeyEvent: (node, event) {
+        final isBackKey =
+            event.logicalKey == LogicalKeyboardKey.escape ||
+            event.logicalKey == LogicalKeyboardKey.goBack ||
+            event.logicalKey == LogicalKeyboardKey.browserBack ||
+            event.logicalKey == LogicalKeyboardKey.gameButtonB ||
+            event.logicalKey == LogicalKeyboardKey.backspace;
+
+        if (isBackKey) {
+          if (event is KeyDownEvent) {
+            widget.onNavigateUp?.call();
+          }
+          return KeyEventResult.handled;
+        }
+
         if (event is KeyDownEvent) {
           if (event.logicalKey == LogicalKeyboardKey.enter ||
               event.logicalKey == LogicalKeyboardKey.select) {
+            if (node == widget.audioButtonFocusNode || node == widget.subtitleButtonFocusNode) {
+              return KeyEventResult.ignored;
+            }
             if (widget.onSelect != null) {
               widget.onSelect!();
               return KeyEventResult.handled;
             }
           }
         }
-        if (widget.isScrollable) {
-          if (event is KeyDownEvent || event is KeyRepeatEvent) {
-            if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-              final maxScroll = _scrollController.position.maxScrollExtent;
-              final currentScroll = _scrollController.offset;
-              if (currentScroll < maxScroll) {
-                _scrollController.animateTo(
-                  (currentScroll + 60.0).clamp(0.0, maxScroll),
-                  duration: const Duration(milliseconds: 100),
-                  curve: Curves.easeOut,
-                );
-                return KeyEventResult.handled;
+
+        if (event is KeyDownEvent || event is KeyRepeatEvent) {
+          if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+            if (node == widget.focusNode) {
+              if (widget.isScrollable) {
+                final maxScroll = _scrollController.position.maxScrollExtent;
+                final currentScroll = _scrollController.offset;
+                if (currentScroll < maxScroll) {
+                  _scrollController.animateTo(
+                    (currentScroll + 60.0).clamp(0.0, maxScroll),
+                    duration: const Duration(milliseconds: 100),
+                    curve: Curves.easeOut,
+                  );
+                  return KeyEventResult.handled;
+                }
               }
-            } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-              final currentScroll = _scrollController.offset;
-              if (currentScroll > 0.0) {
-                _scrollController.animateTo(
-                  (currentScroll - 60.0).clamp(0.0, double.infinity),
-                  duration: const Duration(milliseconds: 100),
-                  curve: Curves.easeOut,
-                );
-                return KeyEventResult.handled;
-              } else {
-                widget.onNavigateUp?.call();
-                return KeyEventResult.handled;
+              if (widget.hasAudioButton) {
+                widget.audioButtonFocusNode.requestFocus();
+              } else if (widget.hasSubtitleButton) {
+                widget.subtitleButtonFocusNode.requestFocus();
               }
+              return KeyEventResult.handled;
+            } else if (node == widget.audioButtonFocusNode) {
+              if (widget.hasSubtitleButton) {
+                widget.subtitleButtonFocusNode.requestFocus();
+              }
+              return KeyEventResult.handled;
+            } else if (node == widget.subtitleButtonFocusNode) {
+              return KeyEventResult.handled;
             }
-          }
-        } else {
-          if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            widget.onNavigateUp?.call();
-            return KeyEventResult.handled;
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            if (node == widget.focusNode) {
+              if (widget.isScrollable) {
+                final currentScroll = _scrollController.offset;
+                if (currentScroll > 0.0) {
+                  _scrollController.animateTo(
+                    (currentScroll - 60.0).clamp(0.0, double.infinity),
+                    duration: const Duration(milliseconds: 100),
+                    curve: Curves.easeOut,
+                  );
+                  return KeyEventResult.handled;
+                }
+              }
+              return KeyEventResult.handled;
+            } else if (node == widget.audioButtonFocusNode) {
+              widget.focusNode?.requestFocus();
+              return KeyEventResult.handled;
+            } else if (node == widget.subtitleButtonFocusNode) {
+              if (widget.hasAudioButton) {
+                widget.audioButtonFocusNode.requestFocus();
+              } else {
+                widget.focusNode?.requestFocus();
+              }
+              return KeyEventResult.handled;
+            }
           }
         }
         return KeyEventResult.ignored;
