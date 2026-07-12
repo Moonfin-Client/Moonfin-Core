@@ -1566,6 +1566,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
               focusNode: _gridBackFocusNode,
               borderRadius: 8,
               suppressFocusGlow: true,
+              semanticLabel: l10n.back,
               onSelect: () {
                 final categoryToFocus = _focusedCategory;
                 setState(() {
@@ -1651,11 +1652,10 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                 res,
               ) {
                 final selected = _selectedResolution == res;
-                final index = ['All', 'High (1080p+)', 'Medium (720p)', 'Low (<720p)'].indexOf(res);
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: FocusableWrapper(
-                    focusNode: index == 0 ? _firstResolutionFocusNode : null,
+                    focusNode: res == 'All' ? _firstResolutionFocusNode : null,
                     borderRadius: 16,
                     suppressFocusGlow: true,
                     onSelect: () {
@@ -1664,7 +1664,8 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                       });
                     },
                     onNavigateUp: () => _gridBackFocusNode.requestFocus(),
-                    onNavigateDown: () => _getFirstCardFocusNode(category).requestFocus(),
+                    onNavigateDown: () =>
+                        _getFirstCardFocusNode(category).requestFocus(),
                     child: ExcludeFocus(
                       child: ChoiceChip(
                         label: Text(_getResolutionDisplayName(res, l10n)),
