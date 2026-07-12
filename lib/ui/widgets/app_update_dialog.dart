@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/services/app_update_service.dart';
@@ -64,9 +66,126 @@ Future<void> showAppUpdateDialog(
 
   if (choice == null || !context.mounted) return;
 
+  if (choice == 'download' && Platform.isWindows) {
+    await _downloadAndInstallWindowsUpdate(context, update);
+    return;
+  }
+
   final uri =
       choice == 'notes' ? Uri.parse(update.releaseNotesUrl) : update.downloadUri;
   await launchUrl(uri, mode: LaunchMode.externalApplication);
+}
+
+Future<void> _downloadAndInstallWindowsUpdate(
+  BuildContext context,
+  DesktopUpdateInfo update,
+) async {
+  final l10n = AppLocalizations.of(context);
+  final valueNotifier = ValueNotifier<double>(0.0);
+  final errorNotifier = ValueNotifier<String?>(null);
+
+  showStyledPlayerDialog<void>(
+    context,
+    title: 'Updating Moonfin',
+    barrierDismissible: false,
+    builder: (dialogContext) => PopScope(
+      canPop: false,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: AnimatedBuilder(
+          animation: Listenable.merge([valueNotifier, errorNotifier]),
+          builder: (context, child) {
+            final error = errorNotifier.value;
+            if (error != null) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    error,
+                    style: const TextStyle(color: Colors.redAccent, fontSize: 14),
+                  ),
+                  const SizedBox(height: 16),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: TextButton(
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                      child: Text(
+                        l10n.close,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            final progress = valueNotifier.value;
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                LinearProgressIndicator(
+                  value: progress,
+                  backgroundColor: Colors.white24,
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.blueAccent),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  '${(progress * 100).toStringAsFixed(0)}%',
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    ),
+  );
+
+  try {
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}${Platform.pathSeparator}moonfin_updater.exe');
+    if (await file.exists()) {
+      await file.delete();
+    }
+
+    final client = HttpClient()
+      ..connectionTimeout = const Duration(seconds: 15);
+
+    try {
+      final request = await client.getUrl(update.downloadUri);
+      final response = await request.close();
+
+      if (response.statusCode != 200) {
+        throw Exception('Server returned status code ${response.statusCode}');
+      }
+
+      final contentLength = response.contentLength;
+      var downloaded = 0;
+      final sink = file.openWrite();
+
+      await for (final chunk in response) {
+        sink.add(chunk);
+        downloaded += chunk.length;
+        if (contentLength > 0) {
+          valueNotifier.value = downloaded / contentLength;
+        }
+      }
+      await sink.flush();
+      await sink.close();
+    } finally {
+      client.close();
+    }
+
+    await Process.start(
+      file.path,
+      [],
+      mode: ProcessStartMode.detached,
+    );
+    exit(0);
+  } catch (e) {
+    errorNotifier.value = 'Error downloading/launching update: $e';
+  }
 }
 
 class _UpdateOption extends StatelessWidget {
