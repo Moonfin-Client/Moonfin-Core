@@ -535,7 +535,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
 
     final messenger = ScaffoldMessenger.of(context);
     messenger.hideCurrentSnackBar();
-    messenger.showSnackBar(
+    final controller = messenger.showSnackBar(
       SnackBar(
         content: Text(message),
         action: showSettingsAction
@@ -549,8 +549,10 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
       ),
     );
 
+    // A screen reader can keep the snackbar from auto-dismissing, so close this
+    // specific snackbar after a delay rather than whatever is current then.
     await Future.delayed(const Duration(seconds: 5));
-    messenger.hideCurrentSnackBar();
+    controller.close();
   }
 
   KeyEventResult _onVoiceKey(FocusNode node, KeyEvent event) {
