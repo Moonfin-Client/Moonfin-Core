@@ -886,6 +886,13 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: true,
   );
 
+  /// When on, the modern detail screen shows codec and stream technical details.
+  /// Global like [detailScreenStyle], so it is deliberately omitted from [_scopedPreferenceKeys].
+  static final detailShowTechnicalDetails = Preference(
+    key: 'pref_detail_show_technical_details',
+    defaultValue: false,
+  );
+
   /// Algorithm source for the similar items recommendation system. Global
   /// (not scoped per server/user), so it is deliberately omitted from [_scopedPreferenceKeys].
   static final recommendationSystemSource = EnumPreference(

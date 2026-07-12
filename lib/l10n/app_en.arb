@@ -212,6 +212,14 @@
   "@expandedTabsSubtitle": {
     "description": "Explanation under the expanded tabs setting"
   },
+  "showTechnicalDetails": "Show Technical Details?",
+  "@showTechnicalDetails": {
+    "description": "Label for the detail screen setting to show stream/codec technical details"
+  },
+  "showTechnicalDetailsSubtitle": "Show codec, resolution, and stream information in banner summary",
+  "@showTechnicalDetailsSubtitle": {
+    "description": "Explanation under the show technical details setting"
+  },
   "recommendationSystem": "Recommendation System",
   "@recommendationSystem": {
     "description": "Label for the Recommendation System setting"

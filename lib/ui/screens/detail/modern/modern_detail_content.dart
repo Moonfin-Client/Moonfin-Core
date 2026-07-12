@@ -21,6 +21,7 @@ import '../../../../preference/preference_constants.dart';
 import '../../../../util/overview_text.dart';
 import '../../../../util/platform_detection.dart';
 import '../../../../util/focus/dpad_keys.dart';
+import '../../../../util/audio_labels.dart';
 import '../../../navigation/destinations.dart';
 import '../../../widgets/logo_view.dart';
 import '../../../widgets/media_card.dart';
@@ -47,7 +48,13 @@ import '../item_detail_screen.dart'
         PersonDates,
         FilmographyRow,
         SeerrAppearancesRow,
-        SeerrCrewCreditsRow;
+        SeerrCrewCreditsRow,
+        mediaStreamsForItem,
+        resolutionFromStreams,
+        hdrFromStreams,
+        codecFromStreams,
+        audioLabelFromStreams,
+        channelLayoutFromStreams;
 import 'modern_landscape_layout.dart';
 import 'modern_portrait_layout.dart';
 import 'widgets/details_tab_bar.dart';
@@ -3439,6 +3446,8 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     }
 
     final selectedSource = selectedMediaSourceForItem(item, widget.selectedMediaSourceId);
+    final showTech = widget.prefs.get(UserPreferences.detailShowTechnicalDetails);
+    final techRow = showTech ? _buildTechnicalDetailsRow(context, item, selectedSource) : null;
 
     final Column childrenCol = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3576,6 +3585,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
           ],
           const SizedBox(height: 6),
           _metadataRow(context, item, selectedSource),
+          if (techRow != null) ...[
+            const SizedBox(height: 6),
+            techRow,
+          ],
           if (showRatings) ...[
             const SizedBox(height: 6),
             RatingsRow(
@@ -3638,7 +3651,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             ),
           ),
         ],
-        const SizedBox(height: 24),
+        SizedBox(height: techRow != null ? 12 : 24),
         Focus(
           canRequestFocus: false,
           skipTraversal: true,
@@ -3807,6 +3820,117 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
               fontWeight: FontWeight.w600,
             ),
       ),
+    );
+  }
+
+  Widget _techChip(ThemeData theme, String label) {
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        border: Border.fromBorderSide(
+          ThemeRegistry.active.borders.chipBorder.copyWith(
+            color: isNeon
+                ? AppColorScheme.accent.withValues(alpha: 0.7)
+                : Colors.white.withValues(alpha: 0.3),
+          ),
+        ),
+        borderRadius: AppRadius.circular(4),
+      ),
+      child: Text(
+        label,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: isNeon
+              ? AppColorScheme.onSurface
+              : Colors.white.withValues(alpha: 0.8),
+          shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
+        ),
+      ),
+    );
+  }
+
+  Widget? _buildTechnicalDetailsRow(
+    BuildContext context,
+    AggregatedItem item,
+    Map<String, dynamic>? selectedMediaSource,
+  ) {
+    final theme = Theme.of(context);
+    final isNeon = ThemeRegistry.active.id == ThemeRegistry.neonPulseId;
+    final muted = AppColorScheme.onSurface.withValues(alpha: 0.75);
+    final style = theme.textTheme.bodyMedium?.copyWith(color: muted);
+
+    final streams = mediaStreamsForItem(item, selectedMediaSource);
+    final badges = <String>[];
+    final res = resolutionFromStreams(streams) ?? item.videoResolution;
+    if (res != null) badges.add(res);
+    final hdr = hdrFromStreams(streams) ?? item.hdrType;
+    if (hdr != null) badges.add(hdr);
+    final vcodec =
+        codecFromStreams(streams, 'Video') ?? item.videoCodec?.toUpperCase();
+    if (vcodec != null) badges.add(vcodec);
+    final acodec =
+        audioLabelFromStreams(streams) ??
+        audioLabelFromProfileCodec(item.audioProfile, item.audioCodec);
+    if (acodec != null) badges.add(acodec);
+    final layout = channelLayoutFromStreams(streams) ?? item.channelLayout;
+    if (layout != null) badges.add(layout);
+
+    final sizeBytes =
+        selectedMediaSource?['Size'] as int? ??
+        (item.mediaSources.isNotEmpty
+            ? item.mediaSources.first['Size'] as int?
+            : null);
+
+    final pieces = <Widget>[];
+
+    if (sizeBytes != null &&
+        sizeBytes > 0 &&
+        item.type != 'Series' &&
+        item.type != 'Season') {
+      final double mb = sizeBytes / (1024 * 1024);
+      final String formattedSize;
+      if (mb > 999) {
+        formattedSize = '${(mb / 1024).toStringAsFixed(2)} GB';
+      } else {
+        formattedSize = '${mb.toStringAsFixed(0)} MB';
+      }
+      pieces.add(
+        Text(
+          formattedSize,
+          style: style?.copyWith(
+            fontWeight: FontWeight.w700,
+            shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
+          ),
+        ),
+      );
+    }
+
+    if (badges.isNotEmpty) {
+      if (pieces.isNotEmpty) {
+        pieces.add(
+          Text(
+            ' · ',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: isNeon
+                  ? AppColorScheme.onSurface.withValues(alpha: 0.6)
+                  : Colors.white.withValues(alpha: 0.5),
+              shadows: const [Shadow(blurRadius: 4, color: Colors.black54)],
+            ),
+          ),
+        );
+      }
+      pieces.addAll(
+        badges.map((b) => _techChip(theme, b)),
+      );
+    }
+
+    if (pieces.isEmpty) return null;
+
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 8,
+      runSpacing: 6,
+      children: pieces,
     );
   }
 

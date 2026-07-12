@@ -68,6 +68,13 @@ class _DetailsScreenSettingsScreenState
                       icon: Icons.tab,
                       onChanged: _pushPersonalizationSync,
                     ),
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.detailShowTechnicalDetails,
+                      title: l10n.showTechnicalDetails,
+                      subtitle: l10n.showTechnicalDetailsSubtitle,
+                      icon: Icons.info_outline,
+                      onChanged: _pushPersonalizationSync,
+                    ),
                 ],
               ),
             ],

@@ -4140,23 +4140,29 @@ class DetailMetadataRow extends StatelessWidget {
       parts.add(_badge(theme, item.officialRating!));
     }
 
-    final sizeBytes =
-        selectedMediaSource?['Size'] as int? ??
-        (item.mediaSources.isNotEmpty
-            ? item.mediaSources.first['Size'] as int?
-            : null);
-    if (sizeBytes != null &&
-        sizeBytes > 0 &&
-        item.type != 'Series' &&
-        item.type != 'Season') {
-      final double mb = sizeBytes / (1024 * 1024);
-      final String formattedSize;
-      if (mb > 999) {
-        formattedSize = '${(mb / 1024).toStringAsFixed(2)} GB';
-      } else {
-        formattedSize = '${mb.toStringAsFixed(0)} MB';
+    final showTech = GetIt.instance<UserPreferences>().get(
+      UserPreferences.detailShowTechnicalDetails,
+    );
+
+    if (showTech) {
+      final sizeBytes =
+          selectedMediaSource?['Size'] as int? ??
+          (item.mediaSources.isNotEmpty
+              ? item.mediaSources.first['Size'] as int?
+              : null);
+      if (sizeBytes != null &&
+          sizeBytes > 0 &&
+          item.type != 'Series' &&
+          item.type != 'Season') {
+        final double mb = sizeBytes / (1024 * 1024);
+        final String formattedSize;
+        if (mb > 999) {
+          formattedSize = '${(mb / 1024).toStringAsFixed(2)} GB';
+        } else {
+          formattedSize = '${mb.toStringAsFixed(0)} MB';
+        }
+        parts.add(_text(theme, formattedSize));
       }
-      parts.add(_text(theme, formattedSize));
     }
 
     final runtime = _runtimeForItem(item, selectedMediaSource);
@@ -4211,21 +4217,23 @@ class DetailMetadataRow extends StatelessWidget {
       }
     }
 
-    final streams = _mediaStreamsForItem(item, selectedMediaSource);
+    final streams = mediaStreamsForItem(item, selectedMediaSource);
     final badges = <String>[];
-    final res = _resolutionFromStreams(streams) ?? item.videoResolution;
-    if (res != null) badges.add(res);
-    final hdr = _hdrFromStreams(streams) ?? item.hdrType;
-    if (hdr != null) badges.add(hdr);
-    final vcodec =
-        _codecFromStreams(streams, 'Video') ?? item.videoCodec?.toUpperCase();
-    if (vcodec != null) badges.add(vcodec);
-    final acodec =
-        _audioLabelFromStreams(streams) ??
-        audioLabelFromProfileCodec(item.audioProfile, item.audioCodec);
-    if (acodec != null) badges.add(acodec);
-    final layout = _channelLayoutFromStreams(streams) ?? item.channelLayout;
-    if (layout != null) badges.add(layout);
+    if (showTech) {
+      final res = resolutionFromStreams(streams) ?? item.videoResolution;
+      if (res != null) badges.add(res);
+      final hdr = hdrFromStreams(streams) ?? item.hdrType;
+      if (hdr != null) badges.add(hdr);
+      final vcodec =
+          codecFromStreams(streams, 'Video') ?? item.videoCodec?.toUpperCase();
+      if (vcodec != null) badges.add(vcodec);
+      final acodec =
+          audioLabelFromStreams(streams) ??
+          audioLabelFromProfileCodec(item.audioProfile, item.audioCodec);
+      if (acodec != null) badges.add(acodec);
+      final layout = channelLayoutFromStreams(streams) ?? item.channelLayout;
+      if (layout != null) badges.add(layout);
+    }
 
     final compact = !_useDesktopDetailLayout(context);
 
@@ -5662,7 +5670,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         resolution.mediaStreams.isNotEmpty) {
       return resolution.mediaStreams;
     }
-    return _mediaStreamsForItem(item, selectedSource);
+    return mediaStreamsForItem(item, selectedSource);
   }
 
   void _openSubtitleSelector(BuildContext context, AggregatedItem item) {
@@ -5837,7 +5845,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       item,
       widget.selectedMediaSourceId,
     );
-    final mediaStreams = _mediaStreamsForItem(item, selectedSource);
+    final mediaStreams = mediaStreamsForItem(item, selectedSource);
     final subtitleStreams = mediaStreams
         .where((s) => s['Type'] == 'Subtitle')
         .toList();
@@ -7916,7 +7924,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
       item,
       widget.selectedMediaSourceId,
     );
-    return _mediaStreamsForItem(item, selectedSource);
+    return mediaStreamsForItem(item, selectedSource);
   }
 
   bool _hasTrailer(AggregatedItem item) {
@@ -8244,7 +8252,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
           refreshedItem,
           widget.selectedMediaSourceId,
         );
-        latestStreams = _mediaStreamsForItem(refreshedItem, mediaSource)
+        latestStreams = mediaStreamsForItem(refreshedItem, mediaSource)
             .where((stream) => stream['Type'] == 'Subtitle')
             .toList(growable: false);
         final hasNewStream = latestStreams.any((stream) {
@@ -8559,7 +8567,7 @@ Map<String, dynamic>? selectedMediaSourceForItem(
   return item.mediaSources.first;
 }
 
-List<Map<String, dynamic>> _mediaStreamsForItem(
+List<Map<String, dynamic>> mediaStreamsForItem(
   AggregatedItem item,
   Map<String, dynamic>? mediaSource,
 ) {
@@ -8666,7 +8674,7 @@ Future<bool> _runWithDolbyVisionStartupFallbackPrompt(
 
   for (final item in queue) {
     final selectedSource = selectedMediaSourceForItem(item, mediaSourceId);
-    final streams = _mediaStreamsForItem(item, selectedSource);
+    final streams = mediaStreamsForItem(item, selectedSource);
     for (final stream in streams) {
       if (!hasDolbyVision &&
           HdrStreamCapability.isDolbyVisionVideoStream(stream)) {
@@ -8856,7 +8864,7 @@ String? _endsAt(
   return '$h12:$minute $amPm';
 }
 
-String? _resolutionFromStreams(List<Map<String, dynamic>> streams) {
+String? resolutionFromStreams(List<Map<String, dynamic>> streams) {
   final video = streams.where((s) => s['Type'] == 'Video').firstOrNull;
   if (video == null) {
     return null;
@@ -8879,7 +8887,7 @@ String? _resolutionFromStreams(List<Map<String, dynamic>> streams) {
   return 'SD';
 }
 
-String? _hdrFromStreams(List<Map<String, dynamic>> streams) {
+String? hdrFromStreams(List<Map<String, dynamic>> streams) {
   final video = streams.where((s) => s['Type'] == 'Video').firstOrNull;
   if (video == null) {
     return null;
@@ -8891,7 +8899,7 @@ String? _hdrFromStreams(List<Map<String, dynamic>> streams) {
   return hdr.toUpperCase();
 }
 
-String? _audioLabelFromStreams(List<Map<String, dynamic>> streams) {
+String? audioLabelFromStreams(List<Map<String, dynamic>> streams) {
   final audio = streams.where((s) => s['Type'] == 'Audio').firstOrNull;
   if (audio == null) return null;
   return audioLabelFromProfileCodec(
@@ -8900,7 +8908,7 @@ String? _audioLabelFromStreams(List<Map<String, dynamic>> streams) {
   );
 }
 
-String? _codecFromStreams(
+String? codecFromStreams(
   List<Map<String, dynamic>> streams,
   String streamType,
 ) {
@@ -8912,7 +8920,7 @@ String? _codecFromStreams(
   return codec.toUpperCase();
 }
 
-String? _channelLayoutFromStreams(List<Map<String, dynamic>> streams) {
+String? channelLayoutFromStreams(List<Map<String, dynamic>> streams) {
   final audio = streams.where((s) => s['Type'] == 'Audio').firstOrNull;
   if (audio == null) {
     return null;
