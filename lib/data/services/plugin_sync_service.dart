@@ -1359,6 +1359,12 @@ class PluginSyncService extends ChangeNotifier {
       if (resolved['mdblistRatingSources'] is List) {
         final sources = (resolved['mdblistRatingSources'] as List)
             .cast<String>()
+            .map((s) => switch (s) {
+                  'metacriticUser' => 'metacriticuser',
+                  'myAnimeList' => 'myanimelist',
+                  'aniList' => 'anilist',
+                  _ => s,
+                })
             .join(',');
         _store.set(
           _prefs.getEffectivePreference(UserPreferences.enabledRatings),
@@ -1833,7 +1839,14 @@ class PluginSyncService extends ChangeNotifier {
       ),
       'seerrEnabled': _prefs.get(UserPreferences.seerrEnabled),
       'seerrBlockNsfw': _prefs.get(UserPreferences.seerrBlockNsfw),
-      'mdblistRatingSources': _csvToList(UserPreferences.enabledRatings),
+      'mdblistRatingSources': _csvToList(UserPreferences.enabledRatings)
+          .map((s) => switch (s) {
+                'metacriticuser' => 'metacriticUser',
+                'myanimelist' => 'myAnimeList',
+                'anilist' => 'aniList',
+                _ => s,
+              })
+          .toList(),
       'homeRowOrder': _prefs.homeSectionsConfig
           .where((c) => c.enabled)
           .map((c) => c.type.serializedName)
