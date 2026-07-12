@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-import 'package:jellyfin_preference/jellyfin_preference.dart';
 import 'package:server_core/server_core.dart';
 import 'package:moonfin_design/moonfin_design.dart';
 
@@ -58,7 +57,6 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
     _ => key,
   };
 
-  final _store = GetIt.instance<PreferenceStore>();
   final _prefs = GetIt.instance<UserPreferences>();
   String _lastEnabledRatingsCsv = '';
   late List<_RatingItem> _items;
@@ -84,13 +82,13 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
 
   void _onPrefsChanged() {
     if (!mounted) return;
-    final currentCsv = _store.get(UserPreferences.enabledRatings);
+    final currentCsv = _prefs.get(UserPreferences.enabledRatings);
     if (currentCsv == _lastEnabledRatingsCsv) return;
     setState(_loadFromPrefs);
   }
 
   void _loadFromPrefs() {
-    final csv = _store.get(UserPreferences.enabledRatings);
+    final csv = _prefs.get(UserPreferences.enabledRatings);
     _lastEnabledRatingsCsv = csv;
     final enabled = csv.split(',').where((s) => s.isNotEmpty).toList();
 
@@ -127,7 +125,7 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
     // Keep local ordering/focus stable for in-screen edits; external updates
     // still refresh via _onPrefsChanged when the stored CSV differs.
     _lastEnabledRatingsCsv = csv;
-    _store.set(UserPreferences.enabledRatings, csv);
+    _prefs.set(UserPreferences.enabledRatings, csv);
 
     final syncService = GetIt.instance<PluginSyncService>();
     if (syncService.pluginAvailable) {
@@ -159,7 +157,7 @@ class _RatingsConfigScreenState extends State<RatingsConfigScreen> {
                 tooltip: l10n.resetToDefaults,
                 onPressed: () {
                   setState(() {
-                    _store.set(
+                    _prefs.set(
                       UserPreferences.enabledRatings,
                       UserPreferences.enabledRatings.defaultValue,
                     );
