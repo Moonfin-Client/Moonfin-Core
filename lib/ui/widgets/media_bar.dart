@@ -1011,6 +1011,7 @@ class _MediaBarState extends State<MediaBar>
           if (!mounted || resolveId != _trailerResolveId) return;
         }
         await _media3TrailerBackend!.setVolume(0);
+        await _media3TrailerBackend.configureSubtitleStyle(verticalOffset: 0.15);
         if (!mounted || resolveId != _trailerResolveId) return;
 
         final payload = <String, dynamic>{
@@ -1379,6 +1380,13 @@ class _MediaBarState extends State<MediaBar>
         hwdec: _trailerHwdecSetting(),
       ),
     );
+
+    try {
+      final native = player.platform;
+      final dynamic dyn = native;
+      dyn.setProperty('sub-margin-y', '108');
+    } catch (_) {}
+
     return player;
   }
 
