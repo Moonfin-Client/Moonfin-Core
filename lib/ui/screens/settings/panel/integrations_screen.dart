@@ -22,6 +22,10 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final seerrDisplayName = GetIt.instance<SeerrPreferences>().moonfinDisplayName.trim();
+    final seerrLabel = seerrDisplayName.isNotEmpty
+    ? seerrDisplayName
+    : l10n.seerr;
     return withCleanSettingsTypography(
       context,
       Scaffold(
@@ -60,7 +64,7 @@ class _IntegrationsScreenState extends State<_IntegrationsScreen> {
                       width: 24,
                       height: 24,
                     ),
-                    title: Text(l10n.seerr),
+                    title: Text(seerrLabel),
                     subtitle: Text(l10n.mediaRequestIntegration),
                     onTap: () =>
                         context.pushSettingsScreen(const SeerrConfigScreen()),

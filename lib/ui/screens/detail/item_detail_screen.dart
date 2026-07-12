@@ -34,6 +34,7 @@ import '../../../data/services/seerr/seerr_api_models.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
+import '../../../preference/seerr_preferences.dart';
 import '../../../ui/mixins/focus_state_mixin.dart';
 import '../../../auth/repositories/user_repository.dart';
 import '../../../util/focus/key_event_utils.dart';
@@ -2614,6 +2615,10 @@ class _DetailContentState extends State<_DetailContent> {
     final seerrAppearancesFocusNode = hasSeerrAppearances
         ? _sectionFocusNode('detailPersonSeerrAppearances')
         : null;
+    final seerrDisplayName = GetIt.instance<SeerrPreferences>().moonfinDisplayName.trim();
+    final seerrLabel = seerrDisplayName.isNotEmpty
+        ? seerrDisplayName
+        : l10n.seerr;
 
     return [
       if (!useSplit) ...[
@@ -2711,7 +2716,7 @@ class _DetailContentState extends State<_DetailContent> {
             if (hasSeerrButton) ...[
               const SizedBox(width: 16),
               _DetailActionButton(
-                label: l10n.seerr,
+                label: seerrLabel,
                 iconBuilder: (size, color) =>
                     SeerrIcon(size: size, color: color),
                 onPressed: () {
