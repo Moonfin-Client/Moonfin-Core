@@ -30,20 +30,67 @@ class ScreensaverContentService {
     final maxAge = _prefs.get(UserPreferences.screensaverMaxAgeRating);
     final requireRating = _prefs.get(UserPreferences.screensaverRequireRating);
     try {
-      final response = await client.itemsApi.getItems(
-        includeItemTypes: ['Movie', 'Series'],
-        sortBy: 'Random',
-        sortOrder: 'Descending',
-        recursive: true,
-        limit: _batchSize,
-        fields: 'ImageTags,BackdropImageTags,OfficialRating',
-        enableTotalRecordCount: false,
-        enableImageTypes: 'Backdrop,Logo',
-        maxOfficialRating: maxAge == 'any' ? null : maxAge,
-        hasParentalRating: requireRating ? true : null,
-      );
-      final rawItems = (response['Items'] as List? ?? [])
+      final viewsResponse = await client.userViewsApi.getUserViews();
+      final views = (viewsResponse['Items'] as List? ?? [])
           .cast<Map<String, dynamic>>();
+      final targetLibraries = views.where((view) {
+        final type = view['CollectionType'] as String? ?? '';
+        return type == 'movies' || type == 'tvshows';
+      }).toList();
+
+      final List<Map<String, dynamic>> rawItems = [];
+
+      final random = DateTime.now().millisecondsSinceEpoch;
+      final sortByOptions = ['DateCreated', 'CommunityRating'];
+      final sortOrderOptions = ['Descending', 'Ascending'];
+
+      final sortBy = sortByOptions[random % sortByOptions.length];
+      final sortOrder = sortOrderOptions[(random ~/ 2) % sortOrderOptions.length];
+      final startIndex = [0, 30, 60, 90][(random ~/ 4) % 4];
+
+      if (targetLibraries.isNotEmpty) {
+        for (final lib in targetLibraries) {
+          final libId = lib['Id'] as String;
+          try {
+            final response = await client.itemsApi.getItems(
+              parentId: libId,
+              includeItemTypes: ['Movie', 'Series'],
+              sortBy: sortBy,
+              sortOrder: sortOrder,
+              recursive: true,
+              startIndex: startIndex,
+              limit: _batchSize,
+              fields: 'ImageTags,BackdropImageTags,OfficialRating',
+              enableTotalRecordCount: false,
+              enableImageTypes: 'Backdrop,Logo',
+              maxOfficialRating: maxAge == 'any' ? null : maxAge,
+              hasParentalRating: requireRating ? true : null,
+            );
+            final items = (response['Items'] as List? ?? [])
+                .cast<Map<String, dynamic>>();
+            rawItems.addAll(items);
+          } catch (_) {}
+        }
+      } else {
+        final response = await client.itemsApi.getItems(
+          includeItemTypes: ['Movie', 'Series'],
+          sortBy: sortBy,
+          sortOrder: sortOrder,
+          recursive: true,
+          limit: _batchSize,
+          fields: 'ImageTags,BackdropImageTags,OfficialRating',
+          enableTotalRecordCount: false,
+          enableImageTypes: 'Backdrop,Logo',
+          maxOfficialRating: maxAge == 'any' ? null : maxAge,
+          hasParentalRating: requireRating ? true : null,
+        );
+        final items = (response['Items'] as List? ?? [])
+            .cast<Map<String, dynamic>>();
+        rawItems.addAll(items);
+      }
+
+      rawItems.shuffle();
+
       final items = <ScreensaverItem>[];
       for (final raw in rawItems) {
         final item = _toItem(client, raw, requireRating: requireRating);
@@ -51,13 +98,12 @@ class ScreensaverContentService {
           items.add(item);
         }
       }
-      return items;
+
+      return items.take(_batchSize).toList();
     } catch (_) {
       return const [];
     }
-  }
-
-  ScreensaverItem? _toItem(
+  }  ScreensaverItem? _toItem(
     MediaServerClient client,
     Map<String, dynamic> raw, {
     required bool requireRating,
