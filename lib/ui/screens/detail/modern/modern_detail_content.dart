@@ -2844,12 +2844,13 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final grid = LayoutBuilder(
       builder: (context, constraints) {
         const spacing = 12.0;
-        final columns = (constraints.maxWidth / (_landscape ? 150.0 : 130.0))
+        final columns = (constraints.maxWidth / (_landscape ? 160.0 : 130.0))
             .floor()
-            .clamp(3, _landscape ? 8 : 6);
+            .clamp(3, _landscape ? 10 : 6);
         final cardWidth =
-            ((constraints.maxWidth - spacing * (columns - 1)) / columns)
-                .floorToDouble();
+            (((constraints.maxWidth - spacing * (columns - 1)) / columns)
+                .floorToDouble())
+            .clamp(0.0, 260.0 * _desktopUiScale(prefs: widget.prefs));
         return Wrap(
           spacing: spacing,
           runSpacing: 16,
