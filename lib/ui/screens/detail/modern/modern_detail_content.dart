@@ -1991,6 +1991,19 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                         ? OfflineAwareImage(
                             imageUrl: imageUrl,
                             fit: BoxFit.contain,
+                            imageBuilder: (context, imageProvider) {
+                              return Container(
+                                color: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                child: Image(
+                                  image: imageProvider,
+                                  fit: BoxFit.contain,
+                                ),
+                              );
+                            },
                             placeholder: (context, url) => _buildStudioFallback(context, name),
                             errorWidget: (context, url, error) => _buildStudioFallback(context, name),
                           )
