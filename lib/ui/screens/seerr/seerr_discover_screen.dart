@@ -53,6 +53,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
   int _badgeCount = 0;
   bool _initialFocusResolved = false;
   bool _isFirstRowFocused = false;
+  int _firstFocusableVisibleIndex = -1;
   final Map<int, GlobalKey<LockedFocusRowState>> _rowKeys = {};
   final Map<int, ScrollController> _rowScrollControllers = {};
 
@@ -191,12 +192,22 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
     _initialFocusNode.removeListener(_onInitialFocusNodeChanged);
     final targetContext = _initialFocusNode.context;
     if (!mounted || targetContext == null) return;
-    Scrollable.ensureVisible(
-      targetContext,
-      alignment: 0.0,
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeOut,
-    );
+    if (_firstFocusableVisibleIndex == 0) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          0.0,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      }
+    } else {
+      Scrollable.ensureVisible(
+        targetContext,
+        alignment: 0.0,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   KeyEventResult _onContentKeyEvent(FocusNode node, KeyEvent event) {
@@ -382,11 +393,14 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    var firstFocusableVisibleIndex = -1;
+    _firstFocusableVisibleIndex = -1;
     for (var i = 0; i < rows.length; i++) {
       final row = rows[i];
+      if (row.isLoading) {
+        break;
+      }
       if (_rowHasFocusableContent(row)) {
-        firstFocusableVisibleIndex = i;
+        _firstFocusableVisibleIndex = i;
         break;
       }
     }
@@ -401,7 +415,7 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
         if (!row.isLoading && !_rowHasFocusableContent(row)) {
           return const SizedBox.shrink();
         }
-        final isFirstFocusableRow = index == firstFocusableVisibleIndex;
+        final isFirstFocusableRow = index == _firstFocusableVisibleIndex;
         final firstNode = isFirstFocusableRow ? _initialFocusNode : null;
         Widget rowWidget;
         if (row.isGenreRow) {
@@ -442,12 +456,22 @@ class _SeerrDiscoverScreenState extends State<SeerrDiscoverScreen> {
             skipTraversal: true,
             onFocusChange: (hasFocus) {
               if (hasFocus) {
-                Scrollable.ensureVisible(
-                  rowContext,
-                  alignment: 0.0,
-                  duration: const Duration(milliseconds: 240),
-                  curve: Curves.easeInOut,
-                );
+                if (index == 0) {
+                  if (_scrollController.hasClients) {
+                    _scrollController.animateTo(
+                      0.0,
+                      duration: const Duration(milliseconds: 240),
+                      curve: Curves.easeInOut,
+                    );
+                  }
+                } else {
+                  Scrollable.ensureVisible(
+                    rowContext,
+                    alignment: 0.0,
+                    duration: const Duration(milliseconds: 240),
+                    curve: Curves.easeInOut,
+                  );
+                }
               }
             },
             child: rowWidget,
