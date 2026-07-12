@@ -529,7 +529,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
   void _showVoiceSearchError(
     String message, {
     bool showSettingsAction = false,
-  }) {
+  }) async {
     if (!mounted) return;
 
     final messenger = ScaffoldMessenger.of(context);
@@ -547,6 +547,9 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
             : null,
       ),
     );
+
+    await Future.delayed(const Duration(seconds: 5));
+    messenger.hideCurrentSnackBar();
   }
 
   KeyEventResult _onVoiceKey(FocusNode node, KeyEvent event) {
