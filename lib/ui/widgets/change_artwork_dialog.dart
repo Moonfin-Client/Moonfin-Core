@@ -68,6 +68,8 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   final FocusNode _closeFocusNode = FocusNode();
   final FocusNode _seriesFocusNode = FocusNode();
   final FocusNode _seasonFocusNode = FocusNode();
+  final FocusNode _gridBackFocusNode = FocusNode();
+  final FocusNode _firstResolutionFocusNode = FocusNode();
 
   bool get _isLibraryFolder =>
       _item.type?.toLowerCase() == 'collectionfolder' ||
@@ -186,6 +188,8 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
     _closeFocusNode.dispose();
     _seriesFocusNode.dispose();
     _seasonFocusNode.dispose();
+    _gridBackFocusNode.dispose();
+    _firstResolutionFocusNode.dispose();
     for (final controller in _scrollControllers.values) {
       controller.dispose();
     }
@@ -1090,7 +1094,9 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
   }
 
   void _handleNavigateDownFromFilters() {
-    if (_supportedCategories.isNotEmpty) {
+    if (_focusedCategory != null) {
+      _gridBackFocusNode.requestFocus();
+    } else if (_supportedCategories.isNotEmpty) {
       _getHeaderFocusNode(_supportedCategories[0]).requestFocus();
     }
   }
@@ -1556,9 +1562,11 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
         Row(
           children: [
             const SizedBox(width: 8),
-            IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
+            FocusableWrapper(
+              focusNode: _gridBackFocusNode,
+              borderRadius: 8,
+              suppressFocusGlow: true,
+              onSelect: () {
                 final categoryToFocus = _focusedCategory;
                 setState(() {
                   _focusedCategory = null;
@@ -1569,6 +1577,13 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                   });
                 }
               },
+              onNavigateUp: () => _getFirstFilterFocusNode().requestFocus(),
+              onNavigateDown: () => _firstResolutionFocusNode.requestFocus(),
+              onNavigateRight: () => _closeFocusNode.requestFocus(),
+              child: const Padding(
+                padding: EdgeInsets.all(8),
+                child: Icon(Icons.arrow_back),
+              ),
             ),
             const SizedBox(width: 8),
             Text(
@@ -1636,33 +1651,48 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                 res,
               ) {
                 final selected = _selectedResolution == res;
+                final index = ['All', 'High (1080p+)', 'Medium (720p)', 'Low (<720p)'].indexOf(res);
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
-                  child: ChoiceChip(
-                    label: Text(_getResolutionDisplayName(res, l10n)),
-                    selected: selected,
-                    onSelected: (val) {
-                      if (val) {
-                        setState(() {
-                          _selectedResolution = res;
-                        });
-                      }
+                  child: FocusableWrapper(
+                    focusNode: index == 0 ? _firstResolutionFocusNode : null,
+                    borderRadius: 16,
+                    suppressFocusGlow: true,
+                    onSelect: () {
+                      setState(() {
+                        _selectedResolution = res;
+                      });
                     },
-                    selectedColor: AppColorScheme.onSurface.withValues(
-                      alpha: 0.2,
-                    ),
-                    backgroundColor: AppColorScheme.onSurface.withValues(
-                      alpha: 0.06,
-                    ),
-                    labelStyle: TextStyle(
-                      color: selected
-                          ? AppColorScheme.onSurface
-                          : AppColorScheme.onSurface.withValues(alpha: 0.5),
-                      fontSize: 12,
-                    ),
-                    side: BorderSide.none,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: AppRadius.circular(16),
+                    onNavigateUp: () => _gridBackFocusNode.requestFocus(),
+                    onNavigateDown: () => _getFirstCardFocusNode(category).requestFocus(),
+                    child: ExcludeFocus(
+                      child: ChoiceChip(
+                        label: Text(_getResolutionDisplayName(res, l10n)),
+                        selected: selected,
+                        onSelected: (val) {
+                          if (val) {
+                            setState(() {
+                              _selectedResolution = res;
+                            });
+                          }
+                        },
+                        selectedColor: AppColorScheme.onSurface.withValues(
+                          alpha: 0.2,
+                        ),
+                        backgroundColor: AppColorScheme.onSurface.withValues(
+                          alpha: 0.06,
+                        ),
+                        labelStyle: TextStyle(
+                          color: selected
+                              ? AppColorScheme.onSurface
+                              : AppColorScheme.onSurface.withValues(alpha: 0.5),
+                          fontSize: 12,
+                        ),
+                        side: BorderSide.none,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: AppRadius.circular(16),
+                        ),
+                      ),
                     ),
                   ),
                 );
@@ -1682,11 +1712,19 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
             ),
             itemCount: totalCount,
             itemBuilder: (context, i) {
+              final isFirst = (i == 0);
+              final cardNode = isFirst ? _getFirstCardFocusNode(category) : null;
+
               if (i < currentCount) {
                 if (currentTags.isEmpty) {
                   return Align(
                     alignment: Alignment.topCenter,
-                    child: _buildCurrentCard(category, null, dims),
+                    child: _buildCurrentCard(
+                      category,
+                      null,
+                      dims,
+                      focusNode: cardNode,
+                    ),
                   );
                 }
                 return Align(
@@ -1696,6 +1734,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                     currentTags[i],
                     dims,
                     imageIndex: category == 'Backdrop' ? i : null,
+                    focusNode: cardNode,
                   ),
                 );
               }
@@ -1715,6 +1754,7 @@ class _ChangeArtworkDialogState extends State<ChangeArtworkDialog> {
                   remoteImage,
                   dims,
                   isActionLoading,
+                  focusNode: cardNode,
                 ),
               );
             },
