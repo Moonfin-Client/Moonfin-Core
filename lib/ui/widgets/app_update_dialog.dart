@@ -66,7 +66,9 @@ Future<void> showAppUpdateDialog(
 
   if (choice == null || !context.mounted) return;
 
-  if (choice == 'download' && Platform.isWindows) {
+  if (choice == 'download' &&
+      Platform.isWindows &&
+      update.downloadUri.isScheme('https')) {
     await _downloadAndInstallWindowsUpdate(context, update);
     return;
   }
@@ -86,7 +88,7 @@ Future<void> _downloadAndInstallWindowsUpdate(
 
   showStyledPlayerDialog<void>(
     context,
-    title: 'Updating Moonfin',
+    title: l10n.updating,
     barrierDismissible: false,
     builder: (dialogContext) => PopScope(
       canPop: false,
@@ -184,7 +186,8 @@ Future<void> _downloadAndInstallWindowsUpdate(
     );
     exit(0);
   } catch (e) {
-    errorNotifier.value = 'Error downloading/launching update: $e';
+    debugPrint('Windows in-app update failed: $e');
+    errorNotifier.value = l10n.updateDownloadFailed;
   }
 }
 
