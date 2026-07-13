@@ -325,6 +325,9 @@ class _GlobalShortcutScopeState extends State<_GlobalShortcutScope>
     _hardwareKeyHandler = _onHardwareKeyEvent;
     HardwareKeyboard.instance.addHandler(_hardwareKeyHandler);
     _screensaverController.visible.addListener(_onScreensaverVisibleChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _screensaverController.refreshWakeLock();
+    });
     if (_trackMouseThumbHistory) {
       appRouter.routerDelegate.addListener(_onRouterStateChanged);
       _onRouterStateChanged();

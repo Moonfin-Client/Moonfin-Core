@@ -20,6 +20,7 @@ class ScreensaverController {
       _prefs.addListener(_onPrefsChanged);
       _restartIdleTimer();
     }
+    visible.addListener(refreshWakeLock);
     _refreshWakeLock();
   }
 
@@ -57,6 +58,7 @@ class ScreensaverController {
   void setMediaBarTrailerActive(bool value) {
     if (_trailerActive == value) return;
     _trailerActive = value;
+    _refreshWakeLock();
     _onStateChanged();
   }
 
@@ -108,6 +110,7 @@ class ScreensaverController {
   void _onPlayingChanged(bool playing) {
     if (_streamPlaying == playing) return;
     _streamPlaying = playing;
+    _refreshWakeLock();
     _onStateChanged();
   }
 
@@ -159,18 +162,27 @@ class ScreensaverController {
     } catch (_) {}
   }
 
-  void _refreshWakeLock() {
+  void _refreshWakeLock({bool force = false}) {
     final shouldEnable =
         !_activityPaused &&
-        (_playbackActive || (PlatformDetection.isTV && _enabledCache));
-    if (_wakeLockEnabled == shouldEnable) {
+            (_playbackActive ||
+                _streamPlaying ||
+                _trailerActive ||
+                visible.value ||
+                (PlatformDetection.isTV && _enabledCache));
+    if (_wakeLockEnabled == shouldEnable && !force) {
       return;
     }
     _wakeLockEnabled = shouldEnable;
     unawaited(_setWakeLockEnabled(shouldEnable));
   }
 
+  void refreshWakeLock() {
+    _refreshWakeLock(force: true);
+  }
+
   void dispose() {
+    visible.removeListener(refreshWakeLock);
     _playingSub?.cancel();
     _idleTimer?.cancel();
     _prefs.removeListener(_onPrefsChanged);
