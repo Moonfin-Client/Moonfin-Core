@@ -70,86 +70,93 @@ class SeasonCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: radius,
             color: AppColorScheme.surface.withValues(alpha: 0.35),
-            border: isNextUp
-                ? Border.fromBorderSide(
-                    ThemeRegistry.active.borders.focusBorder.copyWith(
-                      color: isNeon
-                          ? const Color(0xFF00FFFF)
-                          : Colors.cyan.withValues(alpha: 0.7),
-                      width: 1.5,
-                    ),
-                  )
-                : Border.all(
-                    color: AppColorScheme.onSurface.withValues(alpha: 0.12),
-                  ),
           ),
-          child: ClipRRect(
-            borderRadius: radius,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                if (imageUrl != null && imageUrl!.isNotEmpty)
-                  OfflineAwareImage(
-                    imageUrl: imageUrl!,
-                    fit: BoxFit.cover,
-                    errorWidget: (context, url, error) =>
-                        const SizedBox.shrink(),
-                  ),
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withValues(alpha: 0.2),
-                          Colors.black.withValues(alpha: 0.85),
-                        ],
-                        stops: const [0.0, 0.4, 1.0],
-                      ),
+          clipBehavior: Clip.antiAlias,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (imageUrl != null && imageUrl!.isNotEmpty)
+                OfflineAwareImage(
+                  imageUrl: imageUrl!,
+                  fit: BoxFit.cover,
+                  errorWidget: (context, url, error) =>
+                      const SizedBox.shrink(),
+                ),
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.2),
+                        Colors.black.withValues(alpha: 0.85),
+                      ],
+                      stops: const [0.0, 0.4, 1.0],
                     ),
                   ),
                 ),
-                Positioned(
-                  left: 8,
-                  right: 8,
-                  bottom: 8,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (isFallbackImage) ...[
-                        Text(
-                          title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: textTheme.labelLarge?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 11,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                      ],
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          subtitle,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: textTheme.bodySmall?.copyWith(
-                            color: Colors.white.withValues(alpha: 0.85),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 9,
-                          ),
+              ),
+              Positioned(
+                left: 8,
+                right: 8,
+                bottom: 8,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isFallbackImage) ...[
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.labelLarge?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
                         ),
                       ),
+                      const SizedBox(height: 2),
                     ],
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: Colors.white.withValues(alpha: 0.85),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 9,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: radius,
+                      border: isNextUp
+                          ? Border.fromBorderSide(
+                              ThemeRegistry.active.borders.focusBorder.copyWith(
+                                color: isNeon
+                                    ? const Color(0xFF00FFFF)
+                                    : Colors.cyan.withValues(alpha: 0.7),
+                                width: 1.5,
+                              ),
+                            )
+                          : Border.all(
+                              color: AppColorScheme.onSurface.withValues(alpha: 0.12),
+                            ),
+                    ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

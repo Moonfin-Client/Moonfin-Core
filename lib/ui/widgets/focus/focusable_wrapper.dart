@@ -232,15 +232,11 @@ class _FocusableWrapperState extends State<FocusableWrapper>
         fit: StackFit.passthrough,
         children: [
           widget.child,
-          Positioned(
-            left: -borderWidth,
-            top: -borderWidth,
-            right: -borderWidth,
-            bottom: -borderWidth,
+          Positioned.fill(
             child: IgnorePointer(
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: AppRadius.circular(effectiveRadius + borderWidth),
+                  borderRadius: AppRadius.circular(effectiveRadius),
                   border: Border.fromBorderSide(
                     borders.focusBorder.copyWith(
                       color: color,

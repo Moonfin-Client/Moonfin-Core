@@ -11580,7 +11580,7 @@ class _EpisodesRow extends StatelessWidget {
     final desktopScale = _desktopUiScale();
 
     return SizedBox(
-      height: isMobile ? 150 : 180 * desktopScale,
+      height: isMobile ? 132 : 156 * desktopScale,
       child: ListView.separated(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
