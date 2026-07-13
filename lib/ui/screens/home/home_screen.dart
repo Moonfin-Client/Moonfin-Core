@@ -818,7 +818,9 @@ class _ContentRowsState extends State<_ContentRows>
     final navbarIsTop =
         widget.prefs.get(UserPreferences.navbarPosition) == NavbarPosition.top;
     final navbarHeight = navbarIsTop
-        ? (PlatformDetection.useMobileUi ? 60.0 : 80.0)
+        ? (PlatformDetection.isTV
+            ? 45.0
+            : (PlatformDetection.useMobileUi ? 60.0 : 80.0))
         : 0.0;
     return (safeTop + navbarHeight + 8.0).clamp(0.0, viewportHeight * 0.85);
   }
@@ -1094,7 +1096,10 @@ class _ContentRowsState extends State<_ContentRows>
     if (includeMediaBar) {
       currentTop += _mediaBarHeight();
     }
-    final focusedRowSpacing = PlatformDetection.isTV && !fullScreenRows ? _focusedRowExtraSpacing * 2 : 0.0;
+    final focusedRowSpacing =
+        PlatformDetection.isTV && !fullScreenRows && !showInfoOverlay
+        ? _focusedRowExtraSpacing * 2
+        : 0.0;
 
     for (var i = 0; i < rowExtents.length; i++) {
       rowTopOffsets.add(currentTop);
@@ -1994,6 +1999,7 @@ class _ContentRowsState extends State<_ContentRows>
 
   Future<void> _revealAndScrollToPinnedInfo({
     bool ignoreScrollCooldown = false,
+    bool fromMouseHover = false,
   }) async {
     if (_infoRevealed) return;
     if (!_showHomeRowInfoOverlay()) return;
@@ -2002,6 +2008,13 @@ class _ContentRowsState extends State<_ContentRows>
     if (!ignoreScrollCooldown &&
         _lastScrollTime != null &&
         now.difference(_lastScrollTime!).inMilliseconds < 350) {
+      return;
+    }
+
+    if (fromMouseHover &&
+        _isMediaBarIncluded() &&
+        _scrollController.hasClients &&
+        _scrollController.offset < _pinnedInfoCollapseOffset()) {
       return;
     }
 
@@ -2581,7 +2594,8 @@ class _ContentRowsState extends State<_ContentRows>
             final fullScreenRows =
                 !PlatformDetection.useMobileUi &&
                 widget.prefs.get(UserPreferences.fullScreenRows);
-            if ((PlatformDetection.isTV || fullScreenRows) &&
+            final isRowsV2 = _isHomeRowsStyleV2();
+            if ((fullScreenRows || (PlatformDetection.isTV && isRowsV2)) &&
                 _scrollController.hasClients) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (!mounted || !_scrollController.hasClients) {
@@ -2605,7 +2619,8 @@ class _ContentRowsState extends State<_ContentRows>
               return;
             }
 
-            if (_showHomeRowInfoOverlay() &&
+            if (!PlatformDetection.isTV &&
+                _showHomeRowInfoOverlay() &&
                 _scrollController.hasClients &&
                 target < _rowTopOffsets.length) {
               final targetOffset =
@@ -2625,11 +2640,6 @@ class _ContentRowsState extends State<_ContentRows>
               return;
             }
 
-            // Other desktop rows (classic without overlay, modern) aren't
-            // height-locked, so the estimate can drift and mis-scroll a row off
-            // screen or under the navbar. Measure the row's ACTUAL top relative
-            // to the viewport and scroll it to the target (just below the
-            // navbar) — drift-free.
             if (_scrollController.hasClients) {
               final rowObj = _rowContainerKey(
                 target,
@@ -3256,10 +3266,6 @@ class _ContentRowsState extends State<_ContentRows>
       return child;
     }
 
-    // If media bar isn't included, no shifting
-    if (!PlatformDetection.isTV && !fullScreenRows && !_isMediaBarIncluded()) {
-      return child;
-    }
 
     final focusedRowIndex = _focusedRowIndex(FocusManager.instance.primaryFocus);
 
@@ -3687,9 +3693,7 @@ class _ContentRowsState extends State<_ContentRows>
                         : rowChild;
 
                     final bool lockRowHeight = fullScreenRows ||
-                        (!PlatformDetection.isTV &&
-                            !PlatformDetection.useMobileUi &&
-                            showInfoOverlay);
+                        (!PlatformDetection.useMobileUi && showInfoOverlay);
 
                     if (row.isLoading) {
                       final itemWidget = Padding(
@@ -3728,6 +3732,7 @@ class _ContentRowsState extends State<_ContentRows>
                             padding: EdgeInsets.symmetric(
                               vertical: (PlatformDetection.isTV &&
                                       !fullScreenRows &&
+                                      !showInfoOverlay &&
                                       rowIndex == activeRowIndex)
                                   ? _focusedRowExtraSpacing
                                   : 0,
@@ -4381,7 +4386,9 @@ class _ContentRowsState extends State<_ContentRows>
                     suppressImageFocusBorder: showPreviewVideo,
                     suppressFocusGlow: suppressFocusGlow,
                     onHoverStart: () {
-                      unawaited(_revealAndScrollToPinnedInfo());
+                      unawaited(
+                        _revealAndScrollToPinnedInfo(fromMouseHover: true),
+                      );
                       widget.onItemSelected(item);
                       if (isRowsV2) {
                         if (_mouseHoveredV2Key != previewKey) {
