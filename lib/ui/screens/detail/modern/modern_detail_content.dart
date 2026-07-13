@@ -4284,7 +4284,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
             _buildBackdrop(_landscape, backdropUrl),
       ),
     );
-    final topInset = TopToolbar.heightFor(context);
+    final topInset = TopToolbar.baseHeightFor(context);
 
     final isEpisode = item.type == 'Episode';
     final logoTag = item.logoImageTag ?? (isEpisode ? item.seriesLogoImageTag : null);

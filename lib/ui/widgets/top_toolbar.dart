@@ -80,15 +80,18 @@ class TopToolbar extends StatefulWidget {
     return PlatformDetection.useLeanbackUi ? 64.0 : 54.0;
   }
 
-  /// Total laid-out height of the toolbar for the current platform.
-  static double heightFor(BuildContext context) {
-    final baseHeight = PlatformDetection.useLeanbackUi
+  /// Base height of the toolbar for the current platform (excluding music bar).
+  static double baseHeightFor(BuildContext context) {
+    return PlatformDetection.useLeanbackUi
         ? _kToolbarHeightTV
         : PlatformDetection.useMobileUi
         ? _kToolbarHeightMobile
         : _kToolbarHeightDesktop;
+  }
 
-    return baseHeight + musicBarExtraHeight();
+  /// Total laid-out height of the toolbar for the current platform.
+  static double heightFor(BuildContext context) {
+    return baseHeightFor(context) + musicBarExtraHeight();
   }
 
   @override

@@ -236,14 +236,7 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
             child: content,
           )
         : content;
-    // The top toolbar is a fixed overlay off-TV, so content must reserve the
-    // embedded music bar's extra height or it gets occluded. On TV the toolbar
-    // translates with scroll, so its reserve belongs in the scrolling list
-    // inset instead and is handled there.
-    final musicExtra = TopToolbar.musicBarExtraHeight();
-    final insetBody = (!translateWithScroll && musicExtra > 0)
-        ? Padding(padding: EdgeInsets.only(top: musicExtra), child: body)
-        : body;
+    final insetBody = body;
     return Column(
       children: [
         Expanded(
