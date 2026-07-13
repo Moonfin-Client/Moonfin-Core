@@ -236,7 +236,10 @@ class _NavigationLayoutState extends State<NavigationLayout> with WidgetsBinding
             child: content,
           )
         : content;
-    final insetBody = body;
+    final musicExtra = TopToolbar.musicBarExtraHeight();
+    final insetBody = (widget.pinTopToolbar && musicExtra > 0)
+        ? Padding(padding: EdgeInsets.only(top: musicExtra), child: body)
+        : body;
     return Column(
       children: [
         Expanded(
