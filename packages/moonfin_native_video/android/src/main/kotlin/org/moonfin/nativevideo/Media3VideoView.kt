@@ -470,7 +470,15 @@ class Media3VideoView(
             FrameLayout.LayoutParams.MATCH_PARENT,
         )
         container.addView(videoView, videoLayoutParams)
-        container.addView(firstFrameCover, subtitleLayoutParams)
+        // The cover keeps its own params so resizing the subtitle canvas to the
+        // active video box never shrinks the full-frame cover.
+        container.addView(
+            firstFrameCover,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT,
+            ),
+        )
         container.addView(subtitleView, subtitleLayoutParams)
     }
     private val isLowRamDevice = context.getSystemService<ActivityManager>()?.isLowRamDevice == true
@@ -2208,32 +2216,30 @@ class Media3VideoView(
     }
 
     private fun applyVideoLayout() {
-        val videoParams = videoView.layoutParams as? FrameLayout.LayoutParams
-        val subtitleParams = subtitleView.layoutParams as? FrameLayout.LayoutParams
+        val videoLayoutParams = videoView.layoutParams as? FrameLayout.LayoutParams
+            ?: FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                Gravity.CENTER,
+            )
+        val subtitleLayoutParams = subtitleView.layoutParams as? FrameLayout.LayoutParams
+            ?: FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                Gravity.CENTER,
+            )
 
-        val videoLayoutParams = videoParams ?: FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            Gravity.CENTER,
-        )
-        val subtitleLayoutParams = subtitleParams ?: FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            Gravity.CENTER,
-        )
+        // Keep the subtitle canvas aligned to the active video box so PGS cues
+        // and the ASS overlay position against the video, not the full frame.
+        fun applyBounds(width: Int, height: Int) {
+            applyLayoutBounds(videoView, videoLayoutParams, width, height)
+            applyLayoutBounds(subtitleView, subtitleLayoutParams, width, height)
+        }
 
         if (zoomMode == ZoomMode.STRETCH) {
-            updateLayoutParams(
-                view = videoView,
-                layoutParams = videoLayoutParams,
-                width = FrameLayout.LayoutParams.MATCH_PARENT,
-                height = FrameLayout.LayoutParams.MATCH_PARENT,
-            )
-            updateLayoutParams(
-                view = subtitleView,
-                layoutParams = subtitleLayoutParams,
-                width = FrameLayout.LayoutParams.MATCH_PARENT,
-                height = FrameLayout.LayoutParams.MATCH_PARENT,
+            applyBounds(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT,
             )
             return
         }
@@ -2243,17 +2249,9 @@ class Media3VideoView(
         val sourceWidth = videoWidthPx.toFloat() * videoPixelRatio
         val sourceHeight = videoHeightPx.toFloat()
         if (containerWidth <= 0 || containerHeight <= 0 || sourceWidth <= 0f || sourceHeight <= 0f) {
-            updateLayoutParams(
-                view = videoView,
-                layoutParams = videoLayoutParams,
-                width = FrameLayout.LayoutParams.MATCH_PARENT,
-                height = FrameLayout.LayoutParams.MATCH_PARENT,
-            )
-            updateLayoutParams(
-                view = subtitleView,
-                layoutParams = subtitleLayoutParams,
-                width = FrameLayout.LayoutParams.MATCH_PARENT,
-                height = FrameLayout.LayoutParams.MATCH_PARENT,
+            applyBounds(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT,
             )
             return
         }
@@ -2288,24 +2286,13 @@ class Media3VideoView(
             ZoomMode.STRETCH -> FrameLayout.LayoutParams.MATCH_PARENT to FrameLayout.LayoutParams.MATCH_PARENT
         }
 
-        val targetWidth = targetSize.first.coerceAtLeast(1)
-        val targetHeight = targetSize.second.coerceAtLeast(1)
-
-        updateLayoutParams(
-            view = videoView,
-            layoutParams = videoLayoutParams,
-            width = targetWidth,
-            height = targetHeight,
-        )
-        updateLayoutParams(
-            view = subtitleView,
-            layoutParams = subtitleLayoutParams,
-            width = targetWidth,
-            height = targetHeight,
+        applyBounds(
+            targetSize.first.coerceAtLeast(1),
+            targetSize.second.coerceAtLeast(1),
         )
     }
 
-    private fun updateLayoutParams(
+    private fun applyLayoutBounds(
         view: View,
         layoutParams: FrameLayout.LayoutParams,
         width: Int,
