@@ -8963,5 +8963,13 @@
     "imdbMostPopularMovies": "IMDB En Popüler Filmler",
     "imdbMostPopularTvShows": "IMDB En Popüler Diziler",
     "imdbLowestRatedMovies": "IMDB En Düşük Puanlı Filmler",
-    "imdbTopEnglishMovies": "IMDB En Yüksek Puanlı İngilizce Filmler"
+    "imdbTopEnglishMovies": "IMDB En Yüksek Puanlı İngilizce Filmler",
+    "showTechnicalDetails": "Teknik Detaylar Gösterilsin Mi?",
+    "@showTechnicalDetails": {
+        "description": "Label for the detail screen setting to show stream/codec technical details"
+    },
+    "showTechnicalDetailsSubtitle": "Başlık özetinde kodek, çözünürlük ve akış bilgilerini göster",
+    "@showTechnicalDetailsSubtitle": {
+        "description": "Explanation under the show technical details setting"
+    }
 }
