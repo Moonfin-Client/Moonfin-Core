@@ -474,7 +474,7 @@ class Media3VideoView(
         container.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
             override fun onViewAttachedToWindow(v: View) {
                 if (!isDisposedByFlutter && currentMediaType != "audio") {
-                    ensurePlayerAlive()
+                    resumeFromBackground()
                 }
             }
 
@@ -943,7 +943,10 @@ class Media3VideoView(
     fun isPlayerLive(): Boolean = !isPlayerReleased && !isDisposedByFlutter
 
     // Rebuilds the player after another view's attachView() force-released it
-    // while this widget stayed mounted. This mirrors the init path.
+    // while this widget stayed mounted. This mirrors the init path and leaves
+    // the source alone, because the caller re-sends its own source right after
+    // (a view swap or trailer reactivation). Use resumeFromBackground when there
+    // is no incoming source to reload.
     fun ensurePlayerAlive() {
         if (!isPlayerReleased) return
         isPlayerReleased = false
@@ -956,16 +959,23 @@ class Media3VideoView(
         applyTrackSelectorForCurrentSource()
         refreshSubtitleRendererMode()
         startTicker()
-
-        val args = lastSourceArguments
-        if (args != null) {
-            val updatedArgs = args.toMutableMap().apply {
-                this["startPositionMs"] = lastPlaybackPositionMs
-                this["autoPlay"] = false
-            }
-            setSource(updatedArgs)
-        }
     }
+
+    // Rebuilds the player and reloads the last source at its paused position when
+    // the app returns from the background or the system screensaver. Only runs
+    // when the player was actually released, so a still-live view is untouched.
+    fun resumeFromBackground() {
+        if (!isPlayerReleased) return
+        ensurePlayerAlive()
+        val args = lastSourceArguments ?: return
+        val restored = args.toMutableMap().apply {
+            this["startPositionMs"] = lastPlaybackPositionMs
+            this["autoPlay"] = false
+        }
+        setSource(restored)
+    }
+
+    fun isAudioPlayback(): Boolean = currentMediaType == "audio"
 
     fun forceReleasePlayer() {
         if (isPlayerReleased) return
@@ -1231,7 +1241,7 @@ class Media3VideoView(
 
                 "appResumed" -> {
                     if (currentMediaType != "audio") {
-                        ensurePlayerAlive()
+                        resumeFromBackground()
                     }
                     result.success(null)
                 }
