@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'package:moonfin_design/moonfin_design.dart';
+
 import '../../../util/focus/dpad_keys.dart';
 import '../../../util/focus/key_event_utils.dart';
 import 'focus_theme.dart';
@@ -216,15 +218,48 @@ class _FocusableWrapperState extends State<FocusableWrapper>
         : FocusTheme.focusDecoration(
             isFocused: _focused,
             radius: widget.borderRadius,
-            color: color,
+            color: null,
             suppressFocusGlow: widget.suppressFocusGlow,
           );
+
+    Widget childWithOverlay = widget.child;
+    if (_focused && !widget.useBackgroundFocus) {
+      final borders = ThemeRegistry.active.borders;
+      final effectiveRadius = AppColorScheme.isPixel ? 0.0 : widget.borderRadius;
+      final borderWidth = FocusTheme.borderWidth;
+      childWithOverlay = Stack(
+        clipBehavior: Clip.none,
+        fit: StackFit.passthrough,
+        children: [
+          widget.child,
+          Positioned(
+            left: -borderWidth,
+            top: -borderWidth,
+            right: -borderWidth,
+            bottom: -borderWidth,
+            child: IgnorePointer(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: AppRadius.circular(effectiveRadius + borderWidth),
+                  border: Border.fromBorderSide(
+                    borders.focusBorder.copyWith(
+                      color: color,
+                      width: borderWidth,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
 
     Widget content = AnimatedContainer(
       duration: FocusTheme.animationDuration,
       curve: Curves.easeOut,
       decoration: decoration,
-      child: widget.child,
+      child: childWithOverlay,
     );
 
     if (!widget.disableScale) {

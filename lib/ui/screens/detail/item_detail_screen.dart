@@ -11695,123 +11695,136 @@ class _EpisodeListCardState extends State<_EpisodeListCard>
             width: widget.isMobile ? 180.0 : 220.0 * desktopScale,
             decoration: BoxDecoration(
               borderRadius: AppRadius.circular(8),
-              border: showFocusBorder
-                  ? Border.fromBorderSide(
-                      ThemeRegistry.active.borders.focusBorder.copyWith(
-                        color: isNeon ? AppColorScheme.accent : focusColor,
-                        width: 1.5,
-                      ),
-                    )
-                  : widget.isCurrent
-                  ? Border.fromBorderSide(
-                      ThemeRegistry.active.borders.focusBorder.copyWith(
-                        color: AppColorScheme.onSurface,
-                        width: 2.5,
-                      ),
-                    )
-                  : null,
             ),
             clipBehavior: Clip.antiAlias,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Stack(
+              fit: StackFit.passthrough,
               children: [
-                SizedBox(
-                  height: widget.isMobile ? 100 : 124 * desktopScale,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      if (ep.primaryImageTag != null)
-                        OfflineAwareImage(
-                          imageUrl: widget.imageApi.getPrimaryImageUrl(
-                            ep.id,
-                            maxHeight: widget.isMobile
-                                ? 250
-                                : (250 * desktopScale).round(),
-                            tag: ep.primaryImageTag,
-                          ),
-                          fit: BoxFit.cover,
-                          errorWidget: (_, _, _) => Container(
-                            color: Colors.white.withValues(alpha: 0.05),
-                            child: const AdaptiveIcon(
-                              Icons.movie,
-                              color: Colors.white24,
-                              size: 32,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: widget.isMobile ? 100 : 124 * desktopScale,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          if (ep.primaryImageTag != null)
+                            OfflineAwareImage(
+                              imageUrl: widget.imageApi.getPrimaryImageUrl(
+                                ep.id,
+                                maxHeight: widget.isMobile
+                                    ? 250
+                                    : (250 * desktopScale).round(),
+                                tag: ep.primaryImageTag,
+                              ),
+                              fit: BoxFit.cover,
+                              errorWidget: (_, _, _) => Container(
+                                color: Colors.white.withValues(alpha: 0.05),
+                                child: const AdaptiveIcon(
+                                  Icons.movie,
+                                  color: Colors.white24,
+                                  size: 32,
+                                ),
+                              ),
+                            )
+                          else
+                            Container(
+                              color: Colors.white.withValues(alpha: 0.05),
+                              child: const AdaptiveIcon(
+                                Icons.movie,
+                                color: Colors.white24,
+                                size: 32,
+                              ),
+                            ),
+                          if ((ep.playedPercentage ?? 0) > 0)
+                            _EpisodeProgressBar(percentage: ep.playedPercentage!),
+                          if (ep.isPlayed && (ep.playedPercentage ?? 0) == 0)
+                            const Positioned(
+                              top: 6,
+                              right: 6,
+                              child: AdaptiveIcon(
+                                Icons.check_circle,
+                                color: Colors.green,
+                                size: 18,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 6, 8, 4),
+                      child: Row(
+                        children: [
+                          if (epNum != null)
+                            Text(
+                              'E$epNum',
+                              style: Theme.of(context).textTheme.labelSmall
+                                  ?.copyWith(
+                                    color: isNeon
+                                        ? AppColorScheme.onSurface.withValues(
+                                            alpha: 0.85,
+                                          )
+                                        : Colors.white.withValues(alpha: 0.5),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                          if (epNum != null) const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              ep.name,
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: isNeon
+                                        ? AppColorScheme.accent
+                                        : Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                        )
-                      else
-                        Container(
-                          color: Colors.white.withValues(alpha: 0.05),
-                          child: const AdaptiveIcon(
-                            Icons.movie,
-                            color: Colors.white24,
-                            size: 32,
-                          ),
-                        ),
-                      if ((ep.playedPercentage ?? 0) > 0)
-                        _EpisodeProgressBar(percentage: ep.playedPercentage!),
-                      if (ep.isPlayed && (ep.playedPercentage ?? 0) == 0)
-                        const Positioned(
-                          top: 6,
-                          right: 6,
-                          child: AdaptiveIcon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                            size: 18,
-                          ),
-                        ),
-                    ],
-                  ),
+                          if (runtimeText != null) ...[
+                            const SizedBox(width: 4),
+                            Text(
+                              runtimeText,
+                              style: Theme.of(context).textTheme.labelSmall
+                                  ?.copyWith(
+                                    color: isNeon
+                                        ? AppColorScheme.onSurface.withValues(
+                                            alpha: 0.8,
+                                          )
+                                        : Colors.white.withValues(alpha: 0.5),
+                                  ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 6, 8, 4),
-                  child: Row(
-                    children: [
-                      if (epNum != null)
-                        Text(
-                          'E$epNum',
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
-                                color: isNeon
-                                    ? AppColorScheme.onSurface.withValues(
-                                        alpha: 0.85,
-                                      )
-                                    : Colors.white.withValues(alpha: 0.5),
-                                fontWeight: FontWeight.w600,
-                              ),
-                        ),
-                      if (epNum != null) const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          ep.name,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: isNeon
-                                    ? AppColorScheme.accent
-                                    : Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                if (showFocusBorder || widget.isCurrent)
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: AppRadius.circular(8),
+                          border: showFocusBorder
+                              ? Border.fromBorderSide(
+                                  ThemeRegistry.active.borders.focusBorder.copyWith(
+                                    color: isNeon ? AppColorScheme.accent : focusColor,
+                                    width: 1.5,
+                                  ),
+                                )
+                              : Border.fromBorderSide(
+                                  ThemeRegistry.active.borders.focusBorder.copyWith(
+                                    color: AppColorScheme.onSurface,
+                                    width: 2.5,
+                                  ),
+                                ),
                         ),
                       ),
-                      if (runtimeText != null) ...[
-                        const SizedBox(width: 4),
-                        Text(
-                          runtimeText,
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(
-                                color: isNeon
-                                    ? AppColorScheme.onSurface.withValues(
-                                        alpha: 0.8,
-                                      )
-                                    : Colors.white.withValues(alpha: 0.5),
-                              ),
-                        ),
-                      ],
-                    ],
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -11894,84 +11907,97 @@ class DetailNextUpCardState extends State<DetailNextUpCard>
                     ? Colors.transparent
                     : Colors.white.withValues(alpha: 0.08),
                 borderRadius: AppRadius.circular(8),
-                border: showFocusBorder
-                    ? Border.fromBorderSide(
-                        ThemeRegistry.active.borders.focusBorder.copyWith(
-                          color: isNeon ? AppColorScheme.accent : focusColor,
-                          width: 1.5,
-                        ),
-                      )
-                    : null,
               ),
               clipBehavior: Clip.antiAlias,
-              child: Row(
+              child: Stack(
+                fit: StackFit.passthrough,
                 children: [
-                  SizedBox(
-                    width: isMobile ? 178.0 : 213.0 * desktopScale,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        if (episode.primaryImageTag != null)
-                          OfflineAwareImage(
-                            imageUrl: widget.imageApi.getPrimaryImageUrl(
-                              episode.id,
-                              maxHeight: isMobile
-                                  ? 240
-                                  : (240 * desktopScale).round(),
-                              tag: episode.primaryImageTag,
-                            ),
-                            fit: BoxFit.cover,
-                            errorWidget: (_, _, _) => const SizedBox.shrink(),
-                          ),
-                        if ((episode.playedPercentage ?? 0) > 0)
-                          _EpisodeProgressBar(
-                            percentage: episode.playedPercentage!,
-                          ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: isMobile ? 16 : 16 * desktopScale),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          subtitle,
-                          style: Theme.of(context).textTheme.titleSmall
-                              ?.copyWith(
-                                color: isNeon
-                                    ? AppColorScheme.accent
-                                    : Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (episode.overview != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            episode.overview!,
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: isNeon
-                                      ? AppColorScheme.onSurface
-                                      : Colors.white.withValues(alpha: 0.7),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: isMobile ? 178.0 : 213.0 * desktopScale,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            if (episode.primaryImageTag != null)
+                              OfflineAwareImage(
+                                imageUrl: widget.imageApi.getPrimaryImageUrl(
+                                  episode.id,
+                                  maxHeight: isMobile
+                                      ? 240
+                                      : (240 * desktopScale).round(),
+                                  tag: episode.primaryImageTag,
                                 ),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
+                                fit: BoxFit.cover,
+                                errorWidget: (_, _, _) => const SizedBox.shrink(),
+                              ),
+                            if ((episode.playedPercentage ?? 0) > 0)
+                              _EpisodeProgressBar(
+                                percentage: episode.playedPercentage!,
+                              ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: isMobile ? 16 : 16 * desktopScale),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              subtitle,
+                              style: Theme.of(context).textTheme.titleSmall
+                                  ?.copyWith(
+                                    color: isNeon
+                                        ? AppColorScheme.accent
+                                        : Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            if (episode.overview != null) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                episode.overview!,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: isNeon
+                                          ? AppColorScheme.onSurface
+                                          : Colors.white.withValues(alpha: 0.7),
+                                    ),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: isMobile ? 16 : 16 * desktopScale),
+                      AdaptiveIcon(
+                        Icons.play_circle_outline,
+                        color: Colors.white54,
+                        size: isMobile ? 40 : 40 * desktopScale,
+                      ),
+                      SizedBox(width: isMobile ? 16 : 16 * desktopScale),
+                    ],
+                  ),
+                  if (showFocusBorder)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: AppRadius.circular(8),
+                            border: Border.fromBorderSide(
+                              ThemeRegistry.active.borders.focusBorder.copyWith(
+                                color: isNeon ? AppColorScheme.accent : focusColor,
+                                width: 1.5,
+                              ),
+                            ),
                           ),
-                        ],
-                      ],
+                        ),
+                      ),
                     ),
-                  ),
-                  SizedBox(width: isMobile ? 16 : 16 * desktopScale),
-                  AdaptiveIcon(
-                    Icons.play_circle_outline,
-                    color: Colors.white54,
-                    size: isMobile ? 40 : 40 * desktopScale,
-                  ),
-                  SizedBox(width: isMobile ? 16 : 16 * desktopScale),
                 ],
               ),
             ),
@@ -12081,146 +12107,151 @@ class DetailEpisodeCardState extends State<DetailEpisodeCard>
                     ? Colors.transparent
                     : Colors.white.withValues(alpha: 0.06),
                 borderRadius: AppRadius.circular(8),
-                border: showFocusBorder
-                    ? Border.fromBorderSide(
-                        ThemeRegistry.active.borders.focusBorder.copyWith(
-                          color: isNeon ? AppColorScheme.accent : focusColor,
-                          width: 1.5,
-                        ),
-                      )
-                    : (widget.isActive
-                          ? Border.fromBorderSide(
-                              ThemeRegistry.active.borders.focusBorder.copyWith(
-                                color: isNeon
-                                    ? const Color(0xFF00FFFF)
-                                    : Colors.cyan.withValues(alpha: 0.7),
-                                width: 1.5,
-                              ),
-                            )
-                          : null),
               ),
               clipBehavior: Clip.none,
-              child: ClipRRect(
-                borderRadius: AppRadius.circular(8),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: isMobile ? 160.0 : 196.0 * desktopScale,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          if (episode.primaryImageTag != null)
-                            OfflineAwareImage(
-                              imageUrl: widget.imageApi.getPrimaryImageUrl(
-                                episode.id,
-                                maxHeight: isMobile
-                                    ? 220
-                                    : (220 * desktopScale).round(),
-                                tag: episode.primaryImageTag,
-                              ),
-                              fit: BoxFit.cover,
-                              errorWidget: (_, _, _) => Container(
-                                color: Colors.white.withValues(alpha: 0.05),
-                                child: const AdaptiveIcon(
-                                  Icons.movie,
-                                  color: Colors.white24,
-                                  size: 32,
-                                ),
-                              ),
-                            )
-                          else
-                            Container(
-                              color: Colors.white.withValues(alpha: 0.05),
-                              child: const AdaptiveIcon(
-                                Icons.movie,
-                                color: Colors.white24,
-                                size: 32,
-                              ),
-                            ),
-                          if ((episode.playedPercentage ?? 0) > 0)
-                            _EpisodeProgressBar(
-                              percentage: episode.playedPercentage!,
-                            ),
-                          if (episode.isPlayed)
-                            Positioned(
-                              top: 6,
-                              right: 6,
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: AppColorScheme.accent,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(3),
-                                  child: AdaptiveIcon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                    size: 14,
+              child: Stack(
+                clipBehavior: Clip.none,
+                fit: StackFit.passthrough,
+                children: [
+                  ClipRRect(
+                    borderRadius: AppRadius.circular(8),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: isMobile ? 160.0 : 196.0 * desktopScale,
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              if (episode.primaryImageTag != null)
+                                OfflineAwareImage(
+                                  imageUrl: widget.imageApi.getPrimaryImageUrl(
+                                    episode.id,
+                                    maxHeight: isMobile
+                                        ? 220
+                                        : (220 * desktopScale).round(),
+                                    tag: episode.primaryImageTag,
+                                  ),
+                                  fit: BoxFit.cover,
+                                  errorWidget: (_, _, _) => Container(
+                                    color: Colors.white.withValues(alpha: 0.05),
+                                    child: const AdaptiveIcon(
+                                      Icons.movie,
+                                      color: Colors.white24,
+                                      size: 32,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: isMobile ? 16 : 16 * desktopScale),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            [
-                              if (epNum != null)
-                                AppLocalizations.of(
-                                  context,
-                                ).episodeLabel(epNum),
-                              episode.name,
-                            ].join(' - '),
-                            style: Theme.of(context).textTheme.titleSmall
-                                ?.copyWith(
-                                  color: isNeon
-                                      ? AppColorScheme.accent
-                                      : Colors.white,
-                                  fontWeight: FontWeight.w600,
+                              if ((episode.playedPercentage ?? 0) > 0)
+                                _EpisodeProgressBar(
+                                  percentage: episode.playedPercentage!,
                                 ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                              if (episode.isPlayed)
+                                Positioned(
+                                  top: 6,
+                                  right: 6,
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      color: AppColorScheme.accent,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Padding(
+                                      padding: EdgeInsets.all(3),
+                                      child: AdaptiveIcon(
+                                        Icons.check,
+                                        color: Colors.white,
+                                        size: 14,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
-                          if (runtimeText != null) ...[
-                            const SizedBox(height: 2),
-                            Text(
-                              runtimeText,
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    color: isNeon
-                                        ? AppColorScheme.onSurface.withValues(
-                                            alpha: 0.8,
-                                          )
-                                        : Colors.white.withValues(alpha: 0.5),
+                        ),
+                        SizedBox(width: isMobile ? 16 : 16 * desktopScale),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                [
+                                  if (epNum != null)
+                                    AppLocalizations.of(
+                                      context,
+                                    ).episodeLabel(epNum),
+                                  episode.name,
+                                ].join(' - '),
+                                style: Theme.of(context).textTheme.titleSmall
+                                    ?.copyWith(
+                                      color: isNeon
+                                          ? AppColorScheme.accent
+                                          : Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              if (runtimeText != null) ...[
+                                const SizedBox(height: 2),
+                                Text(
+                                  runtimeText,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: isNeon
+                                            ? AppColorScheme.onSurface.withValues(
+                                                alpha: 0.8,
+                                              )
+                                            : Colors.white.withValues(alpha: 0.5),
+                                      ),
+                                ),
+                              ],
+                              if (episode.overview != null) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  episode.overview!,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(
+                                        color: isNeon
+                                            ? AppColorScheme.onSurface
+                                            : Colors.white.withValues(alpha: 0.7),
+                                      ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: isMobile ? 12 : 12 * desktopScale),
+                      ],
+                    ),
+                  ),
+                  if (showFocusBorder || widget.isActive)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: AppRadius.circular(8),
+                            border: showFocusBorder
+                                ? Border.fromBorderSide(
+                                    ThemeRegistry.active.borders.focusBorder.copyWith(
+                                      color: isNeon ? AppColorScheme.accent : focusColor,
+                                      width: 1.5,
+                                    ),
+                                  )
+                                : Border.fromBorderSide(
+                                    ThemeRegistry.active.borders.focusBorder.copyWith(
+                                      color: isNeon
+                                          ? const Color(0xFF00FFFF)
+                                          : Colors.cyan.withValues(alpha: 0.7),
+                                      width: 1.5,
+                                    ),
                                   ),
-                            ),
-                          ],
-                          if (episode.overview != null) ...[
-                            const SizedBox(height: 4),
-                            Text(
-                              episode.overview!,
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    color: isNeon
-                                        ? AppColorScheme.onSurface
-                                        : Colors.white.withValues(alpha: 0.7),
-                                  ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ],
+                          ),
+                        ),
                       ),
                     ),
-                    SizedBox(width: isMobile ? 12 : 12 * desktopScale),
-                  ],
-                ),
+                ],
               ),
             ),
           ),
