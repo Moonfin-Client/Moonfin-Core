@@ -4401,25 +4401,23 @@ class _DetailsContainerState extends State<_DetailsContainer> with FocusStateMix
           _unregisterBackInterceptor();
         }
       },
-      onKeyEvent: (node, event) {
-        final isBackKey =
-            event.logicalKey == LogicalKeyboardKey.escape ||
-            event.logicalKey == LogicalKeyboardKey.goBack ||
-            event.logicalKey == LogicalKeyboardKey.browserBack ||
-            event.logicalKey == LogicalKeyboardKey.gameButtonB ||
-            event.logicalKey == LogicalKeyboardKey.backspace;
-
-        if (isBackKey) {
+      onKeyEvent: (_, event) {
+        if (event.logicalKey.isBackKey) {
           if (event is KeyDownEvent) {
             widget.onNavigateUp?.call();
           }
           return KeyEventResult.handled;
         }
 
+        // onKeyEvent always passes this handler its own node, so read the
+        // actually-focused descendant to know which child is active.
+        final focused = FocusManager.instance.primaryFocus;
+
         if (event is KeyDownEvent) {
           if (event.logicalKey == LogicalKeyboardKey.enter ||
               event.logicalKey == LogicalKeyboardKey.select) {
-            if (node == widget.audioButtonFocusNode || node == widget.subtitleButtonFocusNode) {
+            if (focused == widget.audioButtonFocusNode ||
+                focused == widget.subtitleButtonFocusNode) {
               return KeyEventResult.ignored;
             }
             if (widget.onSelect != null) {
@@ -4431,7 +4429,7 @@ class _DetailsContainerState extends State<_DetailsContainer> with FocusStateMix
 
         if (event is KeyDownEvent || event is KeyRepeatEvent) {
           if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-            if (node == widget.focusNode) {
+            if (focused == widget.focusNode) {
               if (widget.isScrollable) {
                 final maxScroll = _scrollController.position.maxScrollExtent;
                 final currentScroll = _scrollController.offset;
@@ -4450,16 +4448,16 @@ class _DetailsContainerState extends State<_DetailsContainer> with FocusStateMix
                 widget.subtitleButtonFocusNode.requestFocus();
               }
               return KeyEventResult.handled;
-            } else if (node == widget.audioButtonFocusNode) {
+            } else if (focused == widget.audioButtonFocusNode) {
               if (widget.hasSubtitleButton) {
                 widget.subtitleButtonFocusNode.requestFocus();
               }
               return KeyEventResult.handled;
-            } else if (node == widget.subtitleButtonFocusNode) {
+            } else if (focused == widget.subtitleButtonFocusNode) {
               return KeyEventResult.handled;
             }
           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-            if (node == widget.focusNode) {
+            if (focused == widget.focusNode) {
               if (widget.isScrollable) {
                 final currentScroll = _scrollController.offset;
                 if (currentScroll > 0.0) {
@@ -4472,10 +4470,10 @@ class _DetailsContainerState extends State<_DetailsContainer> with FocusStateMix
                 }
               }
               return KeyEventResult.handled;
-            } else if (node == widget.audioButtonFocusNode) {
+            } else if (focused == widget.audioButtonFocusNode) {
               widget.focusNode?.requestFocus();
               return KeyEventResult.handled;
-            } else if (node == widget.subtitleButtonFocusNode) {
+            } else if (focused == widget.subtitleButtonFocusNode) {
               if (widget.hasAudioButton) {
                 widget.audioButtonFocusNode.requestFocus();
               } else {
