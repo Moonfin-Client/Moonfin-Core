@@ -6266,6 +6266,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     final imageApi = _clientForItem(item).imageApi;
 
     void openPersonDetails(BuildContext routeContext, String personId) {
+      if (_state.isPlaying) {
+        _manager.pause();
+      }
       Navigator.of(routeContext).pop();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;

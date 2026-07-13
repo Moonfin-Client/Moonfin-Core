@@ -20,6 +20,7 @@ final class AppleTvPlayerViewController: UIViewController {
     var onDownloadSubtitle: ((String) -> Void)?
     var onSyncplayLeave: (() -> Void)?
     var onSyncplayIgnoreWait: ((Bool) -> Void)?
+    var onOpenCastPerson: ((String) -> Void)?
     var baseSubtitlePos = 92
     private var didAttachSurface = false
     private var updateTimer: Timer?
@@ -34,7 +35,8 @@ final class AppleTvPlayerViewController: UIViewController {
     private var subtitleTracks: [(index: Int, label: String, subtitle: String, selected: Bool)] = []
     private var streamInfoSections: [[String: Any]] = []
     private var hasCast = false
-    private var castPeople: [(name: String, subtitle: String, imageUrl: String)] = []
+    private var castPeople:
+        [(name: String, subtitle: String, imageUrl: String, personId: String)] = []
     private var canFavorite = false
     private var isFavorite = false
     private var canDownloadSubtitles = false
@@ -860,7 +862,8 @@ final class AppleTvPlayerViewController: UIViewController {
             return (
                 name: name,
                 subtitle: (e["subtitle"] as? String) ?? "",
-                imageUrl: (e["imageUrl"] as? String) ?? "")
+                imageUrl: (e["imageUrl"] as? String) ?? "",
+                personId: (e["personId"] as? String) ?? "")
         }
 
         chapters = ((args["chapters"] as? [[String: Any]]) ?? []).compactMap {
@@ -1931,7 +1934,12 @@ final class AppleTvPlayerViewController: UIViewController {
     }
 
     private func presentCastPanel() {
-        let panel = CastPanelViewController(people: castPeople)
+        let panel = CastPanelViewController(people: castPeople) { [weak self] personId in
+            guard let self else { return }
+            self.dismiss(animated: true) {
+                self.onOpenCastPerson?(personId)
+            }
+        }
         panel.modalPresentationStyle = .overFullScreen
         present(panel, animated: true)
     }
@@ -2318,11 +2326,16 @@ private final class InfoCell: UITableViewCell {
 private final class CastPanelViewController: UIViewController, UICollectionViewDataSource,
     UICollectionViewDelegate
 {
-    private let people: [(name: String, subtitle: String, imageUrl: String)]
+    private let people: [(name: String, subtitle: String, imageUrl: String, personId: String)]
+    private let onSelect: (String) -> Void
     private var collectionView: UICollectionView!
 
-    init(people: [(name: String, subtitle: String, imageUrl: String)]) {
+    init(
+        people: [(name: String, subtitle: String, imageUrl: String, personId: String)],
+        onSelect: @escaping (String) -> Void
+    ) {
         self.people = people
+        self.onSelect = onSelect
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -2380,6 +2393,14 @@ private final class CastPanelViewController: UIViewController, UICollectionViewD
         let person = people[indexPath.item]
         cell.configure(name: person.name, subtitle: person.subtitle, imageUrl: person.imageUrl)
         return cell
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath
+    ) {
+        let person = people[indexPath.item]
+        guard !person.personId.isEmpty else { return }
+        onSelect(person.personId)
     }
 
     override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {

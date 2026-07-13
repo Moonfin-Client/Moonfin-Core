@@ -20,6 +20,8 @@ import '../../../playback/playback_profile_diagnostics.dart';
 import '../../../syncplay/syncplay_manager.dart';
 import '../../theme/app_theme_controller.dart';
 import '../../screensaver/screensaver_controller.dart';
+import '../../navigation/app_router.dart';
+import '../../navigation/destinations.dart';
 import '../../../preference/preference_constants.dart';
 import '../../../preference/user_preferences.dart';
 import '../../../l10n/app_localizations.dart';
@@ -606,6 +608,7 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
             'name': name,
             'subtitle': subtitle,
             'imageUrl': imageUrl,
+            'personId': personId,
           };
         })
         .whereType<Map<String, dynamic>>()
@@ -1267,6 +1270,19 @@ class _AppleTvPlayerHostScreenState extends State<AppleTvPlayerHostScreen> {
         unawaited(
           manager.changeBitrate(mbps == null || mbps < 0 ? null : mbps),
         );
+      case 'openCastPerson':
+        final personId = action['personId']?.toString();
+        if (personId != null && personId.isNotEmpty) {
+          final current = manager.queueService.currentItem;
+          final serverId = current is AggregatedItem ? current.serverId : null;
+          // The native player is presented over Flutter, so exit it before
+          // pushing the person route or the detail would stay hidden behind it.
+          _handleExit();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            appRouter.push(Destinations.item(personId, serverId: serverId));
+          });
+        }
+        return;
       case 'toggleFavorite':
         _toggleFavorite(manager.queueService.currentItem);
       case 'stillWatchingContinue':

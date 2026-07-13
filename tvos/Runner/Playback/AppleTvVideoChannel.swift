@@ -223,6 +223,9 @@ final class AppleTvVideoChannel: NSObject, FlutterStreamHandler {
         vc.onSyncplayIgnoreWait = { [weak self] value in
             self?.send(["event": "syncplayIgnoreWait", "value": value])
         }
+        vc.onOpenCastPerson = { [weak self] personId in
+            self?.send(["event": "openCastPerson", "personId": personId])
+        }
         if let meta = lastMetadata {
             vc.applyUiMetadata(meta)
         }
