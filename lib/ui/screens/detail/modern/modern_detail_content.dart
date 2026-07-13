@@ -1984,6 +1984,13 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                       color: Colors.white.withValues(alpha: 0.15),
                       width: 1,
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: ClipRRect(
                     borderRadius: AppRadius.circular(12),
