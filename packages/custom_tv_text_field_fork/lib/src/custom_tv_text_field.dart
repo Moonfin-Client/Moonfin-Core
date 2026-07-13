@@ -360,7 +360,7 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
 
   void _requestSystemInputFocus() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
+      if (!mounted || !_useSystemImeSession) return;
       _systemInputFocusNode.requestFocus();
       SystemChannels.textInput.invokeMethod<void>('TextInput.show');
       Scrollable.ensureVisible(
@@ -369,6 +369,13 @@ class CustomTVTextFieldState extends State<CustomTVTextField>
         duration: const Duration(milliseconds: 160),
         curve: Curves.easeOut,
       );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_useSystemImeSession) return;
+        if (!_systemInputFocusNode.hasFocus) {
+          _systemInputFocusNode.requestFocus();
+        }
+        SystemChannels.textInput.invokeMethod<void>('TextInput.show');
+      });
     });
   }
 
