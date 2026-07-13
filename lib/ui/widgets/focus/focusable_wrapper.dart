@@ -222,16 +222,20 @@ class _FocusableWrapperState extends State<FocusableWrapper>
             suppressFocusGlow: widget.suppressFocusGlow,
           );
 
-    Widget childWithOverlay = widget.child;
-    if (_focused && !widget.useBackgroundFocus) {
-      final borders = ThemeRegistry.active.borders;
-      final effectiveRadius = AppColorScheme.isPixel ? 0.0 : widget.borderRadius;
-      final borderWidth = FocusTheme.borderWidth;
-      childWithOverlay = Stack(
-        clipBehavior: Clip.none,
-        fit: StackFit.passthrough,
-        children: [
-          widget.child,
+    // Keep the child inside a stable Stack whether or not it is focused, and
+    // only add or remove the border overlay. Rebuilding the Stack around the
+    // child on every focus change would give the child a fresh element and
+    // restart things like image fade-ins each time it gains or loses focus.
+    final borders = ThemeRegistry.active.borders;
+    final effectiveRadius = AppColorScheme.isPixel ? 0.0 : widget.borderRadius;
+    final borderWidth = FocusTheme.borderWidth;
+    final showOverlayBorder = _focused && !widget.useBackgroundFocus;
+    final childWithOverlay = Stack(
+      clipBehavior: Clip.none,
+      fit: StackFit.passthrough,
+      children: [
+        widget.child,
+        if (showOverlayBorder)
           Positioned.fill(
             child: IgnorePointer(
               child: Container(
@@ -247,9 +251,8 @@ class _FocusableWrapperState extends State<FocusableWrapper>
               ),
             ),
           ),
-        ],
-      );
-    }
+      ],
+    );
 
     Widget content = AnimatedContainer(
       duration: FocusTheme.animationDuration,

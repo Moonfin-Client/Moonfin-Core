@@ -11579,8 +11579,18 @@ class _EpisodesRow extends StatelessWidget {
     final isMobile = _isCompact(context);
     final desktopScale = _desktopUiScale();
 
+    // The card is a fixed-height poster plus a single label line. The poster
+    // tracks the desktop scale while the label tracks the text scaler, so size
+    // the row from both. Folding the text scaler in keeps a larger system font
+    // from overflowing the row and clipping the labels.
+    final imageHeight = isMobile ? 100.0 : 124 * desktopScale;
+    final labelStyle = Theme.of(context).textTheme.bodySmall;
+    final labelLine = MediaQuery.textScalerOf(
+      context,
+    ).scale((labelStyle?.fontSize ?? 12) * (labelStyle?.height ?? 1.4));
+
     return SizedBox(
-      height: isMobile ? 132 : 156 * desktopScale,
+      height: imageHeight + 10 + labelLine + 6,
       child: ListView.separated(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
