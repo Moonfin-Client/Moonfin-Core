@@ -249,6 +249,8 @@ class _LeftSidebarState extends State<LeftSidebar> {
                 .getAggregatedLibraries()
           : await _viewsRepo.getUserViews();
 
+      unawaited(GetIt.instance<GameLibraryRegistry>().refresh());
+
       List<AggregatedLibrary> filtered = libs;
       if (useMultiServer) {
         try {

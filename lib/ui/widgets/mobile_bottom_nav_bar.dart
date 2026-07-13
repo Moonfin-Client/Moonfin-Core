@@ -109,6 +109,8 @@ class _MobileBottomNavBarState extends State<MobileBottomNavBar> {
                 .getAggregatedLibraries()
           : await _viewsRepo.getUserViews();
 
+      unawaited(GetIt.instance<GameLibraryRegistry>().refresh());
+
       List<AggregatedLibrary> filtered = libs;
       if (useMultiServer) {
         try {

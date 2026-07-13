@@ -1,15 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:server_core/server_core.dart';
 
 import '../ui/navigation/destinations.dart';
 
 /// Shared helpers for recognizing and navigating to retro-game (ROM) libraries so every
-/// entry point (home tiles, sidebar, bottom nav) treats them consistently.
+/// entry point (home tiles, sidebar, top navbar, bottom nav) treats them consistently.
 ///
-/// Games live in a "Mixed Content" Jellyfin library; the client recognizes one by name
-/// (matching the Moonbase plugin's auto-detect) since ROMs are not a Jellyfin media type.
+/// The Moonbase plugin decides which libraries are game libraries: an admin can select any
+/// library, and the plugin exposes that list at /Moonfin/Games/Libraries. The client mirrors
+/// it through [GameLibraryRegistry]. Until that list has loaded (offline, or a server without
+/// the updated plugin) we fall back to the plugin's own auto-detect, which matches a Mixed
+/// Content library by name.
 final RegExp _gameLibraryName = RegExp('game|rom|emulat', caseSensitive: false);
 
-bool isGameLibrary(String? collectionType, String? name) {
+/// Caches the game-library ids the Moonbase plugin reports, so routing can tell a game
+/// library from a normal one synchronously. Refreshed when the library list loads.
+class GameLibraryRegistry {
+  final Set<String> _ids = <String>{};
+  bool _loaded = false;
+
+  bool get loaded => _loaded;
+  bool contains(String id) => _ids.contains(id);
+
+  Future<void> refresh() async {
+    if (!GetIt.instance.isRegistered<MediaServerClient>()) return;
+    final gamesApi = GetIt.instance<MediaServerClient>().gamesApi;
+    if (gamesApi == null) return;
+    try {
+      final libraries = await gamesApi.getLibraries();
+      _ids
+        ..clear()
+        ..addAll(libraries.map((l) => l.id));
+      _loaded = true;
+    } catch (_) {
+      // Keep the previous ids so routing stays stable. The name fallback covers
+      // the case where the list never loads.
+    }
+  }
+}
+
+bool isGameLibrary(String id, String? collectionType, String? name) {
+  if (GetIt.instance.isRegistered<GameLibraryRegistry>()) {
+    final registry = GetIt.instance<GameLibraryRegistry>();
+    if (registry.loaded) return registry.contains(id);
+  }
   if (name == null || name.isEmpty) return false;
   final ct = (collectionType ?? '').toLowerCase();
   // Mixed Content libraries report an empty/unknown/mixed collection type.
@@ -20,7 +55,7 @@ bool isGameLibrary(String? collectionType, String? name) {
 /// The route a library tile should open: the games browser for game libraries,
 /// otherwise the normal library view.
 String gameOrLibraryRoute(String id, String? collectionType, String name) {
-  if (isGameLibrary(collectionType, name)) {
+  if (isGameLibrary(id, collectionType, name)) {
     return '${Destinations.gamesLibrary(id)}?title=${Uri.encodeQueryComponent(name)}';
   }
   return Destinations.library(id);

@@ -3937,7 +3937,7 @@ class _ContentRowsState extends State<_ContentRows>
           itemBuilder: (ctx, item, idx, isFocused) {
             final collectionType =
                 (item.rawData['CollectionType'] as String? ?? '').toLowerCase();
-            final icon = isGameLibrary(collectionType, item.name)
+            final icon = isGameLibrary(item.id, collectionType, item.name)
                 ? gameLibraryIcon
                 : _iconForCollectionType(collectionType);
             return Align(

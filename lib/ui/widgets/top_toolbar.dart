@@ -19,6 +19,7 @@ import '../../preference/preference_constants.dart';
 import '../../preference/seerr_preferences.dart';
 import '../../preference/user_preferences.dart';
 import '../../util/clock_format.dart';
+import '../../util/game_library.dart';
 import '../../util/overlay_color_palette.dart';
 import '../../util/platform_detection.dart';
 import '../navigation/destinations.dart';
@@ -267,6 +268,8 @@ class _TopToolbarState extends State<TopToolbar> {
           ? await GetIt.instance<MultiServerRepository>()
                 .getAggregatedLibraries()
           : await _viewsRepo.getUserViews();
+
+      unawaited(GetIt.instance<GameLibraryRegistry>().refresh());
 
       List<AggregatedLibrary> filtered = libs;
       if (useMultiServer) {
@@ -1100,7 +1103,9 @@ class _TopToolbarState extends State<TopToolbar> {
         } else if (lib.collectionType == 'livetv') {
           context.navigateTopLevel(Destinations.liveTvGuide);
         } else {
-          context.navigateTopLevel('/library/${lib.id}');
+          context.navigateTopLevel(
+            gameOrLibraryRoute(lib.id, lib.collectionType, lib.name),
+          );
         }
       },
     );
@@ -1131,7 +1136,9 @@ class _TopToolbarState extends State<TopToolbar> {
         } else if (lib.collectionType == 'livetv') {
           context.navigateTopLevel(Destinations.liveTvGuide);
         } else {
-          context.navigateTopLevel('/library/${lib.id}');
+          context.navigateTopLevel(
+            gameOrLibraryRoute(lib.id, lib.collectionType, lib.name),
+          );
         }
       },
     );

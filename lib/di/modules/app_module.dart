@@ -16,6 +16,7 @@ import '../../data/repositories/tmdb_repository.dart';
 import '../../data/repositories/user_views_repository.dart';
 import '../../data/repositories/search_repository.dart';
 import '../../data/repositories/item_mutation_repository.dart';
+import '../../util/game_library.dart';
 import '../../data/services/background_service.dart';
 import '../../data/services/app_update_service.dart';
 import '../../data/services/cast/airplay_provider.dart';
@@ -147,6 +148,7 @@ void _registerUserScopedSingletons() {
     () => UserViewsRepository(_getIt()),
     dispose: (repository) => repository.dispose(),
   );
+  _getIt.registerLazySingleton(() => GameLibraryRegistry());
   _getIt.registerLazySingleton(() => SearchRepository(_getIt()));
   _getIt.registerLazySingleton(() => ItemMutationRepository(_getIt()));
   _getIt.registerLazySingleton(
