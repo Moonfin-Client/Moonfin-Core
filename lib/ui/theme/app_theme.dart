@@ -96,6 +96,11 @@ class AppTheme {
         scrim: c.scrim,
       ),
       scaffoldBackgroundColor: c.background,
+      textSelectionTheme: TextSelectionThemeData(
+        selectionColor: c.accent.withValues(alpha: 0.40),
+        selectionHandleColor: c.accent,
+        cursorColor: c.accent,
+      ),
       cardTheme: CardThemeData(
         color: JellyfinTokens.colors.card,
         shape: buttonShape,

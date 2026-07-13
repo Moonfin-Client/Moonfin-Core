@@ -9967,7 +9967,8 @@ class _DetailActionButtonState extends State<_DetailActionButton>
         : (widget.isActive
               ? (widget.activeColor ?? (isNeon ? neonAccent : Colors.white))
               : (isNeon ? neonAccent : Colors.white));
-    final labelColor = showHighlight
+    final showLabelInside = modern && (widget.isPrimary || !isMobile);
+    final labelColor = (showHighlight && showLabelInside)
         ? AppColorScheme.onButtonFocused
         : (isNeon ? neonAccent : Colors.white);
 
