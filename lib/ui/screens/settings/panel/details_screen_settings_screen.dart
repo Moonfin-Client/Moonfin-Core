@@ -75,6 +75,26 @@ class _DetailsScreenSettingsScreenState
                       icon: Icons.info_outline,
                       onChanged: _pushPersonalizationSync,
                     ),
+                    EnumPreferenceTile<RecommendationSystemSource>(
+                      preference: UserPreferences.recommendationSystemSource,
+                      title: l10n.recommendationSystem,
+                      description: l10n.recommendationSystemSubtitle,
+                      icon: Icons.auto_awesome,
+                      labelOf: (v) => switch (v) {
+                        RecommendationSystemSource.local =>
+                          l10n.recommendationSystemMoonfin,
+                        RecommendationSystemSource.online =>
+                          l10n.recommendationSystemTmdb,
+                      },
+                      onChanged: _pushPersonalizationSync,
+                    ),
+                    SwitchPreferenceTile(
+                      preference: UserPreferences.recommendationsApplyParentalRatingCap,
+                      title: l10n.recommendationsApplyParentalRatingCap,
+                      subtitle: l10n.recommendationsApplyParentalRatingCapSubtitle,
+                      icon: Icons.family_restroom,
+                      onChanged: _pushPersonalizationSync,
+                    ),
                 ],
               ),
             ],

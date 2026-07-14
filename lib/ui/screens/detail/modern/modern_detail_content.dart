@@ -2847,9 +2847,20 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                 itemType: entry.type,
                 watchedBehavior:
                     widget.prefs.get(UserPreferences.watchedIndicatorBehavior),
-                onTap: () => context.push(
-                  Destinations.item(entry.id, serverId: entry.serverId),
-                ),
+                onTap: () {
+                  if (entry.serverId == 'seerr') {
+                    final mediaType = entry.seerrMediaType ??
+                        (entry.type == 'Series' ? 'tv' : 'movie');
+                    context.push(
+                      Destinations.seerrMedia(entry.id),
+                      extra: {'mediaType': mediaType},
+                    );
+                  } else {
+                    context.push(
+                      Destinations.item(entry.id, serverId: entry.serverId),
+                    );
+                  }
+                },
               );
             },
           ),
@@ -2919,9 +2930,20 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                         : null,
                     watchedBehavior: widget.prefs
                         .get(UserPreferences.watchedIndicatorBehavior),
-                    onTap: () => context.push(
-                      Destinations.item(entry.id, serverId: entry.serverId),
-                    ),
+                    onTap: () {
+                      if (entry.serverId == 'seerr') {
+                        final mediaType = entry.seerrMediaType ??
+                            (entry.type == 'Series' ? 'tv' : 'movie');
+                        context.push(
+                          Destinations.seerrMedia(entry.id),
+                          extra: {'mediaType': mediaType},
+                        );
+                      } else {
+                        context.push(
+                          Destinations.item(entry.id, serverId: entry.serverId),
+                        );
+                      }
+                    },
                   );
                 },
               ),
@@ -4159,6 +4181,10 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
     final tag = item.primaryImageTag;
     if (tag != null && !item.id.startsWith('tmdb:')) {
       return _vm.imageApi.getPrimaryImageUrl(item.id, maxHeight: 360, tag: tag);
+    }
+    final posterPath = item.rawData['PosterPath'] as String?;
+    if (posterPath != null && posterPath.isNotEmpty) {
+      return 'https://image.tmdb.org/t/p/w342$posterPath';
     }
     final profilePath = item.rawData['ProfilePath'] as String?;
     if (profilePath != null && profilePath.isNotEmpty) {

@@ -1,29 +1,7 @@
 part of '../settings_side_panel.dart';
 
-class _LibrariesCategoryScreen extends StatefulWidget {
+class _LibrariesCategoryScreen extends StatelessWidget {
   const _LibrariesCategoryScreen();
-
-  @override
-  State<_LibrariesCategoryScreen> createState() => _LibrariesCategoryScreenState();
-}
-
-class _LibrariesCategoryScreenState extends State<_LibrariesCategoryScreen> {
-  late final PreferenceBinding<RecommendationSystemSource> _recSysBinding;
-
-  @override
-  void initState() {
-    super.initState();
-    _recSysBinding = PreferenceBinding(
-      GetIt.instance<PreferenceStore>(),
-      UserPreferences.recommendationSystemSource,
-    );
-  }
-
-  @override
-  void dispose() {
-    _recSysBinding.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,34 +19,6 @@ class _LibrariesCategoryScreenState extends State<_LibrariesCategoryScreen> {
                 subtitle: Text(l10n.settingsLibraryVisibilitySubtitle),
                 onTap: () =>
                     context.pushSettingsScreen(const LibraryVisibilityScreen()),
-              ),
-              EnumPreferenceTile<RecommendationSystemSource>(
-                preference: UserPreferences.recommendationSystemSource,
-                title: l10n.recommendationSystem,
-                description: l10n.recommendationSystemSubtitle,
-                icon: Icons.auto_awesome,
-                labelOf: (v) => switch (v) {
-                  RecommendationSystemSource.local =>
-                    l10n.recommendationSystemMoonfin,
-                  RecommendationSystemSource.online =>
-                    l10n.recommendationSystemTmdb,
-                },
-                onChanged: _pushPersonalizationSync,
-              ),
-              ValueListenableBuilder<RecommendationSystemSource>(
-                valueListenable: _recSysBinding,
-                builder: (context, source, _) {
-                  if (source != RecommendationSystemSource.local) {
-                    return const SizedBox.shrink();
-                  }
-                  return SwitchPreferenceTile(
-                    preference: UserPreferences.recommendationsApplyParentalRatingCap,
-                    title: l10n.recommendationsApplyParentalRatingCap,
-                    subtitle: l10n.recommendationsApplyParentalRatingCapSubtitle,
-                    icon: Icons.family_restroom,
-                    onChanged: _pushPersonalizationSync,
-                  );
-                },
               ),
               SwitchPreferenceTile(
                 preference: UserPreferences.enableFolderView,

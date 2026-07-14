@@ -10447,7 +10447,10 @@ class DetailSimilarRow extends StatelessWidget {
                     maxHeight: isMobile ? 300 : (400 * desktopScale).round(),
                     tag: item.primaryImageTag,
                   )
-                : null,
+                : (item.rawData['PosterPath'] != null &&
+                        (item.rawData['PosterPath'] as String).isNotEmpty
+                    ? 'https://image.tmdb.org/t/p/w342${item.rawData['PosterPath']}'
+                    : null),
             width: cardWidth,
             aspectRatio: ar,
             focusColor: isNeon
@@ -10467,9 +10470,20 @@ class DetailSimilarRow extends StatelessWidget {
             onLongPress: onItemLongPress == null
                 ? null
                 : () => onItemLongPress!(item),
-            onTap: () => context.push(
-              Destinations.item(item.id, serverId: item.serverId),
-            ),
+            onTap: () {
+              if (item.serverId == 'seerr') {
+                final mediaType = item.seerrMediaType ??
+                    (item.type == 'Series' ? 'tv' : 'movie');
+                context.push(
+                  Destinations.seerrMedia(item.id),
+                  extra: {'mediaType': mediaType},
+                );
+              } else {
+                context.push(
+                  Destinations.item(item.id, serverId: item.serverId),
+                );
+              }
+            },
           );
         },
       ),
