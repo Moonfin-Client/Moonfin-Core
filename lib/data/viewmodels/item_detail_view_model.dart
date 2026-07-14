@@ -186,6 +186,11 @@ class ItemDetailViewModel extends ChangeNotifier {
 
   ImageApi get imageApi => _client.imageApi;
   String get baseUrl => _client.baseUrl;
+  bool get supportsNumericUserRatings =>
+      _client.userLibraryApi.supportsNumericUserRatings;
+
+  bool _isRatingMutationInProgress = false;
+  bool get isRatingMutationInProgress => _isRatingMutationInProgress;
 
   bool get canManagePlaylistTracks =>
       _item?.type == 'Playlist' &&
@@ -1095,6 +1100,73 @@ class ItemDetailViewModel extends ChangeNotifier {
     } catch (_) {
       _applyOptimisticUpdate({'Played': !newState});
     }
+  }
+
+  Future<void> setThumbRating(bool likes) async {
+    return _mutateRating(
+      {'Rating': likes ? 10.0 : 1.0, 'Likes': likes},
+      () => _mutations.setRating(itemId, likes: likes),
+    );
+  }
+
+  Future<void> setNumericRating(double rating) async {
+    if (_isRatingMutationInProgress) return;
+    if (!rating.isFinite || rating < 0 || rating > 10) {
+      throw ArgumentError.value(rating, 'rating', 'must be between 0 and 10');
+    }
+    return _mutateRating(
+      {'Rating': rating, 'Likes': rating >= 6.5},
+      () => _mutations.setNumericRating(itemId, rating: rating),
+    );
+  }
+
+  Future<void> clearRating() async {
+    return _mutateRating(
+      {'Rating': null, 'Likes': null},
+      () => _mutations.clearRating(itemId),
+    );
+  }
+
+  Future<void> _mutateRating(
+    Map<String, dynamic> userDataPatch,
+    Future<void> Function() mutation,
+  ) async {
+    if (_isRatingMutationInProgress) return;
+    final previousUserData = _copyUserData();
+    _isRatingMutationInProgress = true;
+    try {
+      _applyOptimisticUpdate(userDataPatch);
+      await mutation();
+      await _reload();
+    } catch (_) {
+      _restoreUserData(previousUserData);
+      rethrow;
+    } finally {
+      _isRatingMutationInProgress = false;
+      notifyListeners();
+    }
+  }
+
+  Map<String, dynamic>? _copyUserData() {
+    final userData = _item?.rawData['UserData'];
+    return userData is Map ? Map<String, dynamic>.from(userData) : null;
+  }
+
+  void _restoreUserData(Map<String, dynamic>? userData) {
+    final item = _item;
+    if (item == null) return;
+    final updatedRaw = Map<String, dynamic>.from(item.rawData);
+    if (userData == null) {
+      updatedRaw.remove('UserData');
+    } else {
+      updatedRaw['UserData'] = userData;
+    }
+    _item = AggregatedItem(
+      id: item.id,
+      serverId: item.serverId,
+      rawData: updatedRaw,
+    );
+    notifyListeners();
   }
 
   void _applyOptimisticUpdate(Map<String, dynamic> userDataPatch) {

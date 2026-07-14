@@ -233,6 +233,12 @@ enum RatingType {
   hidden,
 }
 
+enum PersonalRatingStyle {
+  thumbs,
+  stars,
+  numeric,
+}
+
 enum MediaSegmentAction {
   nothing,
   skip,
@@ -577,4 +583,3 @@ enum RewatchSortBy {
 
   String get displayName => this == recentlyWatched ? 'Recently Watched' : 'Random';
 }
-

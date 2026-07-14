@@ -25,13 +25,13 @@ class _DetailsScreenSettingsScreenState
   Widget build(BuildContext context) {
     final bottomPad = PlatformDetection.isTV ? 96.0 : 24.0;
     final l10n = AppLocalizations.of(context);
-    final _prefs = GetIt.instance<UserPreferences>();
+    final prefs = GetIt.instance<UserPreferences>();
     return Scaffold(
       appBar: buildSettingsAppBar(context, Text(l10n.settingsDetailsScreen)),
       body: FocusScope(
         node: _detailsScreenScope,
         child: ListenableBuilder(
-          listenable: _prefs,
+          listenable: prefs,
           builder: (context, _) => ListView(
             padding: EdgeInsets.only(bottom: bottomPad),
             children: [
@@ -49,7 +49,22 @@ class _DetailsScreenSettingsScreenState
                       DetailScreenStyle.modern => l10n.detailScreenStyleModern,
                     },
                   ),
-                  if (_prefs.get(UserPreferences.detailScreenStyle) != DetailScreenStyle.modern)
+                  EnumPreferenceTile<PersonalRatingStyle>(
+                    preference: UserPreferences.personalRatingStyle,
+                    title: l10n.personalRatingStyle,
+                    icon: Icons.rate_review,
+                    values: GetIt.instance<MediaServerClient>()
+                            .userLibraryApi
+                            .supportsNumericUserRatings
+                        ? PersonalRatingStyle.values
+                        : const [PersonalRatingStyle.thumbs],
+                    labelOf: (style) => switch (style) {
+                      PersonalRatingStyle.thumbs => l10n.personalRatingThumbs,
+                      PersonalRatingStyle.stars => l10n.personalRatingStars,
+                      PersonalRatingStyle.numeric => l10n.personalRatingNumeric,
+                    },
+                  ),
+                  if (prefs.get(UserPreferences.detailScreenStyle) != DetailScreenStyle.modern)
                     SliderPreferenceTile(
                       preference: UserPreferences.detailsBackgroundBlurAmount,
                       title: l10n.detailsBackgroundBlur,
@@ -60,7 +75,7 @@ class _DetailsScreenSettingsScreenState
                       labelOf: (v) => '$v',
                       onChangeEnd: _pushPersonalizationSync,
                     ),
-                  if (_prefs.get(UserPreferences.detailScreenStyle) == DetailScreenStyle.modern)
+                  if (prefs.get(UserPreferences.detailScreenStyle) == DetailScreenStyle.modern)
                     SwitchPreferenceTile(
                       preference: UserPreferences.detailExpandedTabs,
                       title: l10n.expandedTabs,

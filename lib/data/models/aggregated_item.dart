@@ -88,6 +88,10 @@ class AggregatedItem {
 
   bool get isFavorite => _userData?['IsFavorite'] as bool? ?? false;
 
+  double? get personalRating => (_userData?['Rating'] as num?)?.toDouble();
+
+  bool? get personalRatingLikes => _userData?['Likes'] as bool?;
+
   int? get playbackPositionTicks => _toInt(_userData?['PlaybackPositionTicks']);
 
   Duration? get playbackPosition => playbackPositionTicks != null
