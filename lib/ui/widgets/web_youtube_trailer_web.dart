@@ -388,6 +388,11 @@ class _WebYouTubeTrailerState extends State<WebYouTubeTrailer> {
     if (_playbackStarted || _disposed) return;
     _playbackStarted = true;
     _autoplayTimer?.cancel();
+    if (!widget.muted) {
+      try {
+        _player?.unMute();
+      } catch (_) {}
+    }
     widget.onPlaybackStarted?.call();
   }
 
