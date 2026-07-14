@@ -8,12 +8,15 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'package:moonfin_native_video/moonfin_native_video.dart';
 import 'package:playback_core/playback_core.dart';
 import 'package:server_core/server_core.dart';
+import 'package:screen_brightness_platform_interface/screen_brightness_platform_interface.dart';
+import 'package:volume_controller/volume_controller.dart';
 
 import '../../../data/models/aggregated_item.dart';
 import '../../../data/viewmodels/live_tv_guide_view_model.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../playback/html_video_backend.dart';
 import '../../../playback/media_kit_player_backend.dart';
+import '../../../platform/pip_service.dart';
 import '../../../playback/tizen_player_backend.dart';
 import 'package:video_player/video_player.dart';
 import '../../../playback/media3_player_backend.dart';
@@ -23,6 +26,7 @@ import '../../../util/clock_format.dart';
 import '../../../util/subtitle_track_logic.dart';
 import '../../../util/play_method_label.dart';
 import '../../../util/platform_detection.dart';
+import '../../widgets/adaptive/sf_symbol.dart';
 import '../../widgets/playback/stream_info_dialog.dart';
 import '../../widgets/subtitle_preview.dart';
 import '../../widgets/track_selector_dialog.dart';
@@ -45,7 +49,8 @@ class LiveTvPlayerScreen extends StatefulWidget {
   State<LiveTvPlayerScreen> createState() => _LiveTvPlayerScreenState();
 }
 
-class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
+class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
+    with WidgetsBindingObserver {
   final _manager = GetIt.instance<PlaybackManager>();
   final MediaKitPlayerBackend? _backend =
       (PlatformDetection.isTizen || PlatformDetection.isAppleTV)
@@ -85,6 +90,33 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
   StreamSubscription<PlayerBackend>? _backendSub;
   StreamSubscription<bool>? _screensaverPlayingSub;
 
+  // Brightness and volume swipe gesture state (mobile/tablet). Left half of the
+  // screen controls brightness, right half controls volume.
+  double _brightnessValue = 0.5;
+  double _systemVolume = 1.0;
+  bool _showVolumeOverlay = false;
+  bool _showBrightnessOverlay = false;
+  Timer? _volumeOverlayTimer;
+  Timer? _brightnessOverlayTimer;
+  StreamSubscription<double>? _brightnessListenerSub;
+  StreamSubscription<double>? _volumeListenerSub;
+  double? _pendingMobileSystemVolume;
+  bool _isApplyingMobileSystemVolume = false;
+  double _verticalDragStartY = 0.0;
+  double _verticalDragStartValue = 0.0;
+  bool _verticalDragIsVolume = false;
+  bool _verticalDragIgnored = false;
+  int _media3VolumeBoostLevel = 0;
+
+  // Android Picture-in-Picture wiring. iOS Live TV PiP needs the separate
+  // sample-buffer bridge and is not wired here.
+  final _pipService = GetIt.instance<PipService>();
+  StreamSubscription<bool>? _pipChangedSub;
+  StreamSubscription<String>? _pipActionSub;
+  StreamSubscription<bool>? _pipScreenLockSub;
+  StreamSubscription<bool>? _pipPlayingSub;
+  bool _wasPlayingBeforeScreenLock = false;
+
   final _overlayFocus = FocusNode();
   final _tvPlayPauseFocus = FocusNode(debugLabel: 'LiveTvPlayPause');
   final _tvChannelsFocus = FocusNode(debugLabel: 'LiveTvChannels');
@@ -121,6 +153,21 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
     _playCurrentChannel();
     _scheduleHide();
     _startProgramRefresh();
+
+    WidgetsBinding.instance.addObserver(this);
+    if (PlatformDetection.isMobile) {
+      _initBrightness();
+      _initSystemVolume();
+    }
+    if (PlatformDetection.isAndroid && !PlatformDetection.isTV) {
+      _pipService.enableAutoPiP(true);
+      _pipChangedSub = _pipService.onPiPChanged.listen(_onPiPChanged);
+      _pipActionSub = _pipService.onPiPAction.listen(_onPiPAction);
+      _pipScreenLockSub = _pipService.onScreenLock.listen(_onScreenLock);
+      _pipPlayingSub = _state.playingStream.listen((playing) {
+        _pipService.updatePiPActions(isPlaying: playing);
+      });
+    }
   }
 
   @override
@@ -130,6 +177,31 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
     _hideTimer?.cancel();
     _programRefreshTimer?.cancel();
     _backendSub?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    _volumeOverlayTimer?.cancel();
+    _brightnessOverlayTimer?.cancel();
+    _pipChangedSub?.cancel();
+    _pipActionSub?.cancel();
+    _pipScreenLockSub?.cancel();
+    _pipPlayingSub?.cancel();
+    if (PlatformDetection.isAndroid && !PlatformDetection.isTV) {
+      _pipService.enableAutoPiP(false);
+    }
+    if (PlatformDetection.isMobile) {
+      _volumeListenerSub?.cancel();
+      VolumeController.instance.removeListener();
+      _brightnessListenerSub?.cancel();
+      Future.microtask(() async {
+        try {
+          if (PlatformDetection.isIOS) {
+            await ScreenBrightnessPlatform.instance.setAutoReset(true);
+          } else {
+            await ScreenBrightnessPlatform.instance
+                .resetApplicationScreenBrightness();
+          }
+        } catch (_) {}
+      });
+    }
     _tvPlayPauseFocus.removeListener(_onControlFocusChanged);
     _tvChannelsFocus.removeListener(_onControlFocusChanged);
     _tvAudioFocus.removeListener(_onControlFocusChanged);
@@ -148,6 +220,377 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
     }
     unawaited(_restoreSystemUiForExit());
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState lifecycleState) {
+    // Android keeps the video rendering when backgrounded so the OS can capture
+    // a live frame for auto-PiP. On resume, re-read the system brightness in
+    // case it changed while away.
+    if (lifecycleState == AppLifecycleState.resumed &&
+        PlatformDetection.isMobile) {
+      _syncBrightnessFromSystem();
+    }
+  }
+
+  void _onPiPChanged(bool isInPiP) {
+    if (!mounted) return;
+    if (!isInPiP) {
+      _applyPlayerDisplayMode();
+      _showInfo();
+    }
+  }
+
+  void _onPiPAction(String action) {
+    switch (action) {
+      case 'playPause':
+        if (_state.isPlaying) {
+          _manager.pause();
+        } else {
+          _manager.resume();
+        }
+      case 'play':
+        _manager.resume();
+      case 'pause':
+        _manager.pause();
+      case 'dismissed':
+        final lifecycle = WidgetsBinding.instance.lifecycleState;
+        final isForeground =
+            lifecycle == AppLifecycleState.resumed ||
+            lifecycle == AppLifecycleState.inactive;
+        if (isForeground) return;
+        _exitPlayback();
+    }
+  }
+
+  void _onScreenLock(bool locked) {
+    if (locked) {
+      _wasPlayingBeforeScreenLock = _state.isPlaying;
+      if (_wasPlayingBeforeScreenLock) {
+        _manager.pause();
+      }
+    } else if (_wasPlayingBeforeScreenLock) {
+      _wasPlayingBeforeScreenLock = false;
+      _manager.resume();
+    }
+  }
+
+  void _initBrightness() {
+    final brightness = ScreenBrightnessPlatform.instance;
+    Future.microtask(() async {
+      try {
+        if (PlatformDetection.isIOS) {
+          await brightness.setAutoReset(true);
+          final current = await brightness.system;
+          if (mounted) setState(() => _brightnessValue = current);
+          _brightnessListenerSub = brightness.onSystemScreenBrightnessChanged
+              .listen((value) {
+                if (mounted && (value - _brightnessValue).abs() > 0.01) {
+                  setState(() => _brightnessValue = value);
+                }
+              });
+        } else {
+          await brightness.setAutoReset(false);
+          final current = await brightness.application;
+          if (mounted) setState(() => _brightnessValue = current);
+          _brightnessListenerSub = brightness
+              .onApplicationScreenBrightnessChanged
+              .listen((value) {
+                if (mounted && (value - _brightnessValue).abs() > 0.01) {
+                  setState(() => _brightnessValue = value);
+                }
+              });
+        }
+      } catch (_) {}
+    });
+  }
+
+  void _syncBrightnessFromSystem() {
+    Future.microtask(() async {
+      try {
+        final current = PlatformDetection.isIOS
+            ? await ScreenBrightnessPlatform.instance.system
+            : await ScreenBrightnessPlatform.instance.application;
+        if (mounted && (current - _brightnessValue).abs() > 0.01) {
+          setState(() => _brightnessValue = current);
+        }
+      } catch (_) {}
+    });
+  }
+
+  Future<void> _setBrightness(double value) async {
+    try {
+      final clamped = value.clamp(0.0, 1.0);
+      if (PlatformDetection.isIOS) {
+        await ScreenBrightnessPlatform.instance.setSystemScreenBrightness(
+          clamped,
+        );
+      } else {
+        await ScreenBrightnessPlatform.instance.setApplicationScreenBrightness(
+          clamped,
+        );
+      }
+    } catch (_) {}
+  }
+
+  void _initSystemVolume() {
+    final vc = VolumeController.instance;
+    vc.showSystemUI = false;
+    unawaited(_manager.backend?.setVolume(100.0));
+    _volumeListenerSub = vc.addListener((value) {
+      if (mounted && (value - _systemVolume).abs() > 0.01) {
+        setState(() => _systemVolume = value);
+      }
+      if (value < 0.99 &&
+          _media3VolumeBoostLevel > 0 &&
+          _activeMedia3Backend != null) {
+        unawaited(_setMedia3VolumeBoostLevel(0));
+      }
+    }, fetchInitialVolume: true);
+  }
+
+  Future<void> _setMobileSystemVolume(
+    double value, {
+    bool syncFromSystem = false,
+  }) async {
+    final clamped = value.clamp(0.0, 1.0);
+    if (mounted && (clamped - _systemVolume).abs() > 0.01) {
+      setState(() => _systemVolume = clamped);
+    }
+    _pendingMobileSystemVolume = clamped;
+    if (_isApplyingMobileSystemVolume) return;
+    _isApplyingMobileSystemVolume = true;
+    try {
+      while (_pendingMobileSystemVolume != null) {
+        final next = _pendingMobileSystemVolume!;
+        _pendingMobileSystemVolume = null;
+        await VolumeController.instance.setVolume(next);
+      }
+      if (syncFromSystem) {
+        final actual = await VolumeController.instance.getVolume();
+        if (mounted && (actual - _systemVolume).abs() > 0.01) {
+          setState(() => _systemVolume = actual);
+        }
+      }
+    } catch (_) {
+    } finally {
+      _isApplyingMobileSystemVolume = false;
+    }
+  }
+
+  Future<void> _setMedia3VolumeBoostLevel(int level) async {
+    final backend = _activeMedia3Backend;
+    if (backend == null) return;
+    final clampedLevel = level.clamp(0, 10).toInt();
+    if (_media3VolumeBoostLevel != clampedLevel) {
+      if (mounted) {
+        setState(() => _media3VolumeBoostLevel = clampedLevel);
+      } else {
+        _media3VolumeBoostLevel = clampedLevel;
+      }
+    }
+    await backend.setVolumeBoostLevel(clampedLevel);
+  }
+
+  void _showVolumeIndicator() {
+    setState(() => _showVolumeOverlay = true);
+    _volumeOverlayTimer?.cancel();
+    _volumeOverlayTimer = Timer(const Duration(milliseconds: 800), () {
+      if (mounted) setState(() => _showVolumeOverlay = false);
+    });
+  }
+
+  void _showBrightnessIndicator() {
+    setState(() => _showBrightnessOverlay = true);
+    _brightnessOverlayTimer?.cancel();
+    _brightnessOverlayTimer = Timer(const Duration(milliseconds: 800), () {
+      if (mounted) setState(() => _showBrightnessOverlay = false);
+    });
+  }
+
+  void _onVerticalDragStart(DragStartDetails details) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    _verticalDragStartY = details.localPosition.dy;
+    // Ignore drags that begin in the top edge strip so a swipe there pulls down
+    // the system notification shade instead of changing brightness or volume.
+    final topInset = MediaQuery.paddingOf(context).top;
+    final topDeadZone = topInset > 48.0 ? topInset : 48.0;
+    _verticalDragIgnored = _verticalDragStartY < topDeadZone;
+    if (_verticalDragIgnored) return;
+    _verticalDragIsVolume = details.localPosition.dx > screenWidth / 2;
+    if (_verticalDragIsVolume) {
+      final includeBoost = _activeMedia3Backend != null;
+      _verticalDragStartValue = includeBoost
+          ? _systemVolume + (_media3VolumeBoostLevel / 10.0)
+          : _systemVolume;
+      return;
+    }
+    _verticalDragStartValue = _brightnessValue;
+  }
+
+  void _onVerticalDragUpdate(DragUpdateDetails details) {
+    if (_verticalDragIgnored) return;
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final deltaY = _verticalDragStartY - details.localPosition.dy;
+    final deltaValue = deltaY / (screenHeight * 0.7);
+
+    if (_verticalDragIsVolume) {
+      final media3Backend = _activeMedia3Backend;
+      if (media3Backend != null) {
+        final rawEffective = (_verticalDragStartValue + deltaValue)
+            .clamp(0.0, 2.0)
+            .toDouble();
+        final newSystemVolume = rawEffective.clamp(0.0, 1.0).toDouble();
+        final newBoostLevel = rawEffective <= 1.0
+            ? 0
+            : ((rawEffective - 1.0) * 10.0).round().clamp(0, 10).toInt();
+        unawaited(_setMedia3VolumeBoostLevel(newBoostLevel));
+        unawaited(_setMobileSystemVolume(newSystemVolume));
+      } else {
+        final newVolume = (_verticalDragStartValue + deltaValue)
+            .clamp(0.0, 1.0)
+            .toDouble();
+        unawaited(_setMobileSystemVolume(newVolume));
+      }
+      _showVolumeIndicator();
+    } else {
+      final newBrightness = (_verticalDragStartValue + deltaValue).clamp(
+        0.0,
+        1.0,
+      );
+      _brightnessValue = newBrightness;
+      _setBrightness(newBrightness);
+      _showBrightnessIndicator();
+    }
+  }
+
+  void _onVerticalDragEnd(DragEndDetails details) {
+    if (_verticalDragIgnored) return;
+    if (_verticalDragIsVolume) {
+      unawaited(_setMobileSystemVolume(_systemVolume, syncFromSystem: true));
+    }
+  }
+
+  void _onVerticalDragCancel() {
+    if (_verticalDragIgnored) return;
+    if (_verticalDragIsVolume) {
+      unawaited(_setMobileSystemVolume(_systemVolume, syncFromSystem: true));
+    }
+  }
+
+  Widget _buildVolumeOverlay() {
+    final displayVolume = _systemVolume;
+    final usingMedia3Boost = _activeMedia3Backend != null;
+    final overlayProgress = usingMedia3Boost
+        ? ((displayVolume * 100.0) + (_media3VolumeBoostLevel * 10.0)).clamp(
+                0.0,
+                200.0,
+              ) /
+              200.0
+        : displayVolume.clamp(0.0, 1.0);
+    final overlayLabel = usingMedia3Boost && _media3VolumeBoostLevel > 0
+        ? 'Volume +$_media3VolumeBoostLevel'
+        : '${(displayVolume * 100).round()}%';
+    return Positioned.fill(
+      child: AnimatedOpacity(
+        opacity: _showVolumeOverlay ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 200),
+        child: IgnorePointer(
+          child: Align(
+            alignment: const Alignment(0.85, 0.0),
+            child: _buildGestureIndicator(
+              icon: displayVolume <= 0
+                  ? Icons.volume_off_rounded
+                  : displayVolume < 0.5
+                  ? Icons.volume_down_rounded
+                  : Icons.volume_up_rounded,
+              value: overlayProgress,
+              label: overlayLabel,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBrightnessOverlay() {
+    return Positioned.fill(
+      child: AnimatedOpacity(
+        opacity: _showBrightnessOverlay ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 200),
+        child: IgnorePointer(
+          child: Align(
+            alignment: const Alignment(-0.85, 0.0),
+            child: _buildGestureIndicator(
+              icon: _brightnessValue <= 0.25
+                  ? Icons.brightness_low_rounded
+                  : _brightnessValue >= 0.75
+                  ? Icons.brightness_high_rounded
+                  : Icons.brightness_medium_rounded,
+              value: _brightnessValue,
+              label: '${(_brightnessValue * 100).round()}%',
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGestureIndicator({
+    required IconData icon,
+    required double value,
+    required String label,
+  }) {
+    const barHeight = 120.0;
+    final fillHeight = barHeight * value.clamp(0.0, 1.0);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.6),
+        borderRadius: AppRadius.circular(14),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AdaptiveIcon(icon, color: Colors.white, size: 24),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: barHeight,
+            width: 4,
+            child: ClipRRect(
+              borderRadius: AppRadius.circular(2),
+              child: Stack(
+                children: [
+                  const Positioned.fill(
+                    child: ColoredBox(color: Colors.white24),
+                  ),
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    height: fillHeight,
+                    child: const ColoredBox(color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: 88,
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   GuideChannel get _currentChannel => widget.channels[_currentIndex];
@@ -929,6 +1372,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final gesturesEnabled =
+        PlatformDetection.isMobile && !_isGuidePickerOpen;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
@@ -955,6 +1400,10 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
           onKeyEvent: _handleKeyEvent,
           child: GestureDetector(
             onTap: PlatformDetection.isTV ? null : _toggleInfo,
+            onVerticalDragStart: gesturesEnabled ? _onVerticalDragStart : null,
+            onVerticalDragUpdate: gesturesEnabled ? _onVerticalDragUpdate : null,
+            onVerticalDragEnd: gesturesEnabled ? _onVerticalDragEnd : null,
+            onVerticalDragCancel: gesturesEnabled ? _onVerticalDragCancel : null,
             behavior: HitTestBehavior.opaque,
             child: MouseRegion(
               cursor: PlatformDetection.useDesktopUi && !_infoVisible
@@ -974,6 +1423,8 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen> {
                 children: [
                   _buildVideoSurface(),
                   _buildBufferingIndicator(),
+                  if (PlatformDetection.isMobile) _buildBrightnessOverlay(),
+                  if (PlatformDetection.isMobile) _buildVolumeOverlay(),
                   if (_isGuidePickerOpen) _buildGuideOverlay(),
                   if (_infoVisible && !_isGuidePickerOpen) ...[
                     _buildTopOverlay(),
