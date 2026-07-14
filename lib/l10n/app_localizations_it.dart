@@ -336,6 +336,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get gameSaveState => 'Salva stato';
 
   @override
+  String get games => 'Games';
+
+  @override
   String get gameLoadState => 'Carica stato';
 
   @override

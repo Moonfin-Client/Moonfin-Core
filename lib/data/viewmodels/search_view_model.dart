@@ -24,6 +24,16 @@ class SearchResultGroup {
       SearchResultGroup(title: title, itemTypes: itemTypes, items: items ?? this.items);
 }
 
+/// A single retro game that matched the query. Games live behind the Moonbase
+/// plugin rather than the normal /Items search, so they carry their owning
+/// [libraryId] (which [GameSummary] itself does not expose) for navigation.
+class GameSearchResult {
+  final String libraryId;
+  final GameSummary game;
+
+  const GameSearchResult({required this.libraryId, required this.game});
+}
+
 enum SearchState { idle, loading, ready, error }
 
 class SearchViewModel extends ChangeNotifier {
@@ -60,6 +70,13 @@ class SearchViewModel extends ChangeNotifier {
 
   List<SeerrDiscoverItem> _seerrResults = const [];
   List<SeerrDiscoverItem> get seerrResults => _seerrResults;
+
+  List<GameSearchResult> _gameResults = const [];
+  List<GameSearchResult> get gameResults => _gameResults;
+
+  // All games across every game library, fetched once per session and filtered
+  // client-side since the plugin exposes no search endpoint.
+  Future<List<GameSearchResult>>? _allGamesFuture;
 
   String _errorMessage = '';
   String get errorMessage => _errorMessage;
@@ -122,6 +139,7 @@ class SearchViewModel extends ChangeNotifier {
     if (trimmed.isEmpty) {
       _results = const [];
       _seerrResults = const [];
+      _gameResults = const [];
       _state = SearchState.idle;
       notifyListeners();
       return;
@@ -154,6 +172,9 @@ class SearchViewModel extends ChangeNotifier {
           ? _bookSearchGroups()
           : _searchGroups();
       final seerrFuture = _fetchSeerrResults(query);
+      final gamesFuture = _scopedParentId != null
+          ? Future.value(const <GameSearchResult>[])
+          : _fetchGameResults(query);
 
       final groups = _scopedParentId != null
           ? await Future.wait(activeGroups.map((group) async {
@@ -167,11 +188,13 @@ class SearchViewModel extends ChangeNotifier {
             }))
           : await _buildGroupedGlobalResults(query, activeGroups);
       final seerr = await seerrFuture;
+      final games = await gamesFuture;
 
       if (query != _query) return;
 
       _results = groups.where((g) => g.items.isNotEmpty).toList();
       _seerrResults = seerr;
+      _gameResults = games;
       _state = SearchState.ready;
     } catch (e) {
       if (query != _query) return;
@@ -252,6 +275,41 @@ class SearchViewModel extends ChangeNotifier {
     } catch (_) {
       return const [];
     }
+  }
+
+  Future<List<GameSearchResult>> _fetchGameResults(String query) async {
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty || q.startsWith('studio:')) return const [];
+    final gamesApi = _client.gamesApi;
+    if (gamesApi == null) return const [];
+    try {
+      _allGamesFuture ??= _fetchAllGames(gamesApi);
+      final all = await _allGamesFuture!;
+      return all
+          .where(
+            (r) =>
+                r.game.title.toLowerCase().contains(q) ||
+                r.game.fileName.toLowerCase().contains(q),
+          )
+          .take(_resultLimit)
+          .toList();
+    } catch (_) {
+      _allGamesFuture = null;
+      return const [];
+    }
+  }
+
+  Future<List<GameSearchResult>> _fetchAllGames(GamesApi gamesApi) async {
+    final libraries = await gamesApi.getLibraries();
+    final perLibrary = await Future.wait(
+      libraries.map((library) async {
+        final games = await gamesApi.getGames(library.id);
+        return games.map(
+          (game) => GameSearchResult(libraryId: library.id, game: game),
+        );
+      }),
+    );
+    return perLibrary.expand((results) => results).toList();
   }
 
   @override

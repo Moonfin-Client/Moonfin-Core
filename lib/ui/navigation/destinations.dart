@@ -258,6 +258,9 @@ class Destinations {
   static bool isLiveTvChannelType(String? type) =>
       type == 'TvChannel' || type == 'LiveTvChannel';
 
+  static bool isFolderType(String? type) =>
+      type == 'Folder' || type == 'CollectionFolder' || type == 'UserView';
+
   static String liveTvChannel(String channelId) =>
       '$liveTvPlayer?channelId=${Uri.encodeQueryComponent(channelId)}';
 
@@ -266,6 +269,8 @@ class Destinations {
     // Channels have no detail screen worth landing on, so go straight to
     // the live player, which resolves the lineup from the id.
     if (isLiveTvChannelType(type)) return liveTvChannel(itemId);
+    // Folders open their contents rather than a detail screen.
+    if (isFolderType(type)) return folder(itemId, serverId: serverId);
     return item(itemId, serverId: serverId);
   }
   static String nextUpFor(String itemId) => '/player/next-up/$itemId';

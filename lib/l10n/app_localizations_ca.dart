@@ -337,6 +337,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get gameSaveState => 'Desa l’estat actual';
 
   @override
+  String get games => 'Games';
+
+  @override
   String get gameLoadState => 'Carregar estat';
 
   @override

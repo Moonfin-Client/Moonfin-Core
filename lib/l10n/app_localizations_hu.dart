@@ -337,6 +337,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get gameSaveState => 'Állás mentése';
 
   @override
+  String get games => 'Games';
+
+  @override
   String get gameLoadState => 'Állás betöltése';
 
   @override

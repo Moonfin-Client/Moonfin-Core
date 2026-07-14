@@ -421,6 +421,10 @@
   "@gameSaveState": {
     "description": "In-game menu action to save the game state"
   },
+  "games": "Games",
+  "@games": {
+    "description": "Label for the games category tab in search results"
+  },
   "gameLoadState": "Load state",
   "@gameLoadState": {
     "description": "In-game menu action to load the saved game state"

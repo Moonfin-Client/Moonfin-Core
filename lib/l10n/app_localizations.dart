@@ -802,6 +802,12 @@ abstract class AppLocalizations {
   /// **'Save state'**
   String get gameSaveState;
 
+  /// Label for the games category tab in search results
+  ///
+  /// In en, this message translates to:
+  /// **'Games'**
+  String get games;
+
   /// In-game menu action to load the saved game state
   ///
   /// In en, this message translates to:

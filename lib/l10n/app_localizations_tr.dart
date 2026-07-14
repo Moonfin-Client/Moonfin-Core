@@ -334,6 +334,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get gameSaveState => 'Durumu Kaydet';
 
   @override
+  String get games => 'Games';
+
+  @override
   String get gameLoadState => 'Durumu Yükle';
 
   @override

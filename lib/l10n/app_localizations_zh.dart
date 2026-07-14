@@ -320,6 +320,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get gameSaveState => '保存存档';
 
   @override
+  String get games => 'Games';
+
+  @override
   String get gameLoadState => '读取存档';
 
   @override

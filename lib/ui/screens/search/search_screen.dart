@@ -21,6 +21,7 @@ import '../../../preference/user_preferences.dart';
 import '../../../preference/seerr_preferences.dart';
 import '../../navigation/destinations.dart';
 import '../../../util/platform_detection.dart';
+import '../../../util/game_library.dart';
 import '../../../util/focus/dpad_keys.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../util/search_group_title_localizer.dart';
@@ -134,13 +135,13 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     final query = _searchController.text.trim();
     if (_tabCount > 0 && query != _tabSelectionQuery) {
       _tabSelectionQuery = query;
-      _selectedTab = _seerrTabOffset;
+      _selectedTab = _leadingTabCount;
     } else if (_selectedTab >= _tabCount) {
-      _selectedTab = _tabCount == 0 ? 0 : _seerrTabOffset;
+      _selectedTab = _tabCount == 0 ? 0 : _leadingTabCount;
     }
     if (_focusTabsAfterResults && _tabCount > 0) {
       _focusTabsAfterResults = false;
-      _selectedTab = _seerrTabOffset;
+      _selectedTab = _leadingTabCount;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _tabsFocusNode.canRequestFocus) {
           _tabsFocusNode.requestFocus();
@@ -179,6 +180,9 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     if (_tabIsAll(_selectedTab)) return null;
     if (_tabIsSeerr(_selectedTab)) {
       return _vm.seerrResults.isEmpty ? null : _vm.seerrResults.first.id;
+    }
+    if (_tabIsGames(_selectedTab)) {
+      return _vm.gameResults.isEmpty ? null : _vm.gameResults.first.game.id;
     }
     final gi = _groupIndex(_selectedTab);
     if (gi >= 0 && gi < _vm.results.length) {
@@ -248,23 +252,27 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     );
   }
 
-  // Seerr is the first tab when it has results, then the All tab, then the
-  // group tabs.
+  // Seerr and Games are leading special tabs (when they have results), then the
+  // All tab, then the group tabs.
+  bool get _hasSeerr => _vm.seerrResults.isNotEmpty;
+  bool get _hasGames => _vm.gameResults.isNotEmpty;
+
   int get _tabCount {
-    final content = _vm.results.length + (_vm.seerrResults.isNotEmpty ? 1 : 0);
-    return content == 0 ? 0 : content + 1;
+    final hasContent = _vm.results.isNotEmpty || _hasSeerr || _hasGames;
+    return hasContent ? _leadingTabCount + 1 + _vm.results.length : 0;
   }
 
-  // How many tabs sit before the All tab, which is just the Seerr tab when it
-  // is shown. This is also the index of the All tab.
-  int get _seerrTabOffset => _vm.seerrResults.isNotEmpty ? 1 : 0;
+  // How many special tabs sit before the All tab. This is also the All index.
+  int get _leadingTabCount => (_hasSeerr ? 1 : 0) + (_hasGames ? 1 : 0);
 
-  bool _tabIsSeerr(int index) => _vm.seerrResults.isNotEmpty && index == 0;
+  bool _tabIsSeerr(int index) => _hasSeerr && index == 0;
 
-  bool _tabIsAll(int index) => index == _seerrTabOffset;
+  bool _tabIsGames(int index) => _hasGames && index == (_hasSeerr ? 1 : 0);
+
+  bool _tabIsAll(int index) => index == _leadingTabCount;
 
   // The _vm.results index for a group tab, which follow the All tab.
-  int _groupIndex(int tab) => tab - _seerrTabOffset - 1;
+  int _groupIndex(int tab) => tab - _leadingTabCount - 1;
 
   void _selectTab(int index) {
     if (index == _selectedTab) return;
@@ -983,6 +991,7 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
   int _currentTabItemCount() {
     if (_tabIsAll(_selectedTab)) return 0;
     if (_tabIsSeerr(_selectedTab)) return _vm.seerrResults.length;
+    if (_tabIsGames(_selectedTab)) return _vm.gameResults.length;
     final gi = _groupIndex(_selectedTab);
     if (gi >= 0 && gi < _vm.results.length) {
       return _vm.results[gi].items.length;
@@ -1001,10 +1010,11 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     );
     final totalCount =
         _vm.results.fold<int>(0, (s, g) => s + g.items.length) +
-        _vm.seerrResults.length;
+        _vm.seerrResults.length +
+        _vm.gameResults.length;
     final labels = <String>[
-      if (_vm.seerrResults.isNotEmpty)
-        '$seerrLabel: ${_vm.seerrResults.length}',
+      if (_hasSeerr) '$seerrLabel: ${_vm.seerrResults.length}',
+      if (_hasGames) '${l10n.games}: ${_vm.gameResults.length}',
       '${l10n.all}: $totalCount',
       for (final group in _vm.results)
         '${localizeSearchGroupTitle(group.title, l10n)}: ${group.items.length}',
@@ -1178,10 +1188,12 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     final groups = _vm.results;
 
     final hasSeerr = _vm.seerrResults.isNotEmpty;
-    // Library groups come first, then the Seerr row last when it has results.
+    final hasGames = _vm.gameResults.isNotEmpty;
+    // Library groups come first, then the Seerr and Games rows when present.
     final rowLens = <int>[
       for (final g in groups) g.items.length,
       if (hasSeerr) _vm.seerrResults.length,
+      if (hasGames) _vm.gameResults.length,
     ];
 
     final rows = <Widget>[];
@@ -1235,6 +1247,28 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
         ),
       );
     }
+    if (hasGames) {
+      final gamesRow = groups.length + (hasSeerr ? 1 : 0);
+      final cardWidth = 108.0;
+      rows.add(
+        LibraryRow(
+          key: _allRowKey(gamesRow),
+          title: l10n.games,
+          rowHeight: cardWidth / (2 / 3) + 56,
+          children: [
+            for (var c = 0; c < _vm.gameResults.length; c++)
+              _buildAllGameCard(
+                gamesRow,
+                c,
+                cardWidth,
+                rowLens,
+                focusColor,
+                cardFocusExpansion,
+              ),
+          ],
+        ),
+      );
+    }
 
     return ListView(
       controller: _resultsScrollController,
@@ -1275,6 +1309,26 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     bool cardFocusExpansion,
   ) {
     return _seerrResultCard(
+      index: col,
+      width: cardWidth,
+      focusColor: focusColor,
+      cardFocusExpansion: cardFocusExpansion,
+      focusNode: _usesDpad ? _allCardNode(row, col) : null,
+      onNavKey: _usesDpad
+          ? (node, event) => _onAllCardKey(row, col, rowLens, event)
+          : null,
+    );
+  }
+
+  Widget _buildAllGameCard(
+    int row,
+    int col,
+    double cardWidth,
+    List<int> rowLens,
+    Color focusColor,
+    bool cardFocusExpansion,
+  ) {
+    return _gameResultCard(
       index: col,
       width: cardWidth,
       focusColor: focusColor,
@@ -1393,10 +1447,11 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     final focusColor = Color(prefs.get(UserPreferences.focusColor).colorValue);
     final cardFocusExpansion = prefs.get(UserPreferences.cardFocusExpansion);
     final isSeerr = _tabIsSeerr(_selectedTab);
+    final isGames = _tabIsGames(_selectedTab);
     final count = _currentTabItemCount();
     if (count == 0) return const SizedBox.shrink();
 
-    final imageAspect = isSeerr
+    final imageAspect = (isSeerr || isGames)
         ? 2 / 3
         : MediaCard.aspectRatioForType(
             _vm.results[_groupIndex(_selectedTab)].items.first.type,
@@ -1431,6 +1486,15 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
           itemCount: count,
           itemBuilder: (context, index) => isSeerr
               ? _buildSeerrCell(
+                  index,
+                  columns,
+                  count,
+                  cellWidth,
+                  focusColor,
+                  cardFocusExpansion,
+                )
+              : isGames
+              ? _buildGameCell(
                   index,
                   columns,
                   count,
@@ -1488,6 +1552,59 @@ class _SearchScreenState extends State<SearchScreen> with GridFocusNodeMixin {
     bool cardFocusExpansion,
   ) {
     return _seerrResultCard(
+      index: index,
+      width: cellWidth,
+      focusColor: focusColor,
+      cardFocusExpansion: cardFocusExpansion,
+      focusNode: _usesDpad ? getGridItemFocusNode(index) : null,
+      onNavKey: _usesDpad
+          ? (node, event) => _onGridKey(
+              index: index,
+              columns: columns,
+              count: count,
+              event: event,
+            )
+          : null,
+    );
+  }
+
+  // Shared game card body, used by both the grid and the All-tab rows.
+  Widget _gameResultCard({
+    required int index,
+    required double width,
+    required Color focusColor,
+    required bool cardFocusExpansion,
+    required FocusNode? focusNode,
+    required KeyEventResult Function(FocusNode, KeyEvent)? onNavKey,
+  }) {
+    final result = _vm.gameResults[index];
+    final game = result.game;
+    return MediaCard(
+      title: gameDisplayTitle(game.title, game.fileName),
+      subtitle: game.system,
+      imageUrl: libretroBoxartUrl(game.core, thumbName(game.fileName)),
+      width: width,
+      aspectRatio: 2 / 3,
+      itemType: 'Game',
+      focusColor: focusColor,
+      cardFocusExpansion: cardFocusExpansion,
+      focusNode: focusNode,
+      onKeyEvent: onNavKey,
+      onTap: () => context.push(
+        Destinations.gameDetailOf(result.libraryId, game.id),
+      ),
+    );
+  }
+
+  Widget _buildGameCell(
+    int index,
+    int columns,
+    int count,
+    double cellWidth,
+    Color focusColor,
+    bool cardFocusExpansion,
+  ) {
+    return _gameResultCard(
       index: index,
       width: cellWidth,
       focusColor: focusColor,
