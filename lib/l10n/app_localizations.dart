@@ -17595,6 +17595,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'IMDb Top Rated English Movies'**
   String get imdbTopEnglishMovies;
+
+  /// Selects how personal ratings are displayed and entered on media details.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal rating style'**
+  String get personalRatingStyle;
+
+  /// Personal rating style using like and dislike actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Like / dislike'**
+  String get personalRatingThumbs;
+
+  /// Personal rating style using a five-star scale.
+  ///
+  /// In en, this message translates to:
+  /// **'5 stars'**
+  String get personalRatingStars;
+
+  /// Personal rating style using a numeric score out of ten.
+  ///
+  /// In en, this message translates to:
+  /// **'Numeric score out of 10'**
+  String get personalRatingNumeric;
+
+  /// Action that opens the personal rating control.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate'**
+  String get rate;
+
+  /// Personal rating action for a positive rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Like'**
+  String get like;
+
+  /// Personal rating action for a negative rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Dislike'**
+  String get dislike;
+
+  /// Action that removes the personal rating from the media item.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear rating'**
+  String get personalRatingClear;
+
+  /// Tooltip for a media item that has a numeric personal rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Rated'**
+  String get personalRatingRated;
+
+  /// Error shown when saving a personal rating fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save rating'**
+  String get personalRatingSaveFailed;
+
+  /// Action that increases a numeric personal rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase'**
+  String get increase;
+
+  /// Action that decreases a numeric personal rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease'**
+  String get decrease;
+
+  /// Numeric personal rating displayed on a scale out of ten.
+  ///
+  /// In en, this message translates to:
+  /// **'{rating} / 10'**
+  String personalRatingOutOfTen(String rating);
+
+  /// Personal rating displayed on a five-star scale.
+  ///
+  /// In en, this message translates to:
+  /// **'{rating} / 5'**
+  String personalRatingOutOfFive(String rating);
 }
 
 class _AppLocalizationsDelegate
