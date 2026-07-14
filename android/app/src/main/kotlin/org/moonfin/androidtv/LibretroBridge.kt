@@ -6,6 +6,7 @@ import android.media.AudioTrack
 import android.os.Handler
 import android.os.Looper
 import android.view.Surface
+import androidx.annotation.Keep
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
@@ -14,6 +15,10 @@ import io.flutter.view.TextureRegistry
 // Native retro-game playback on Android. Drives the shared libretro host through
 // JNI, renders into a Flutter external texture, plays audio through an
 // AudioTrack, and takes RetroPad input from MainActivity's key dispatch.
+//
+// Kept whole so minification does not rename the JNI entry points or the
+// onGeometry callback the native side looks up by name.
+@Keep
 class LibretroBridge(flutterEngine: FlutterEngine) {
   private val control = MethodChannel(
     flutterEngine.dartExecutor.binaryMessenger, "moonfin/native_game_control")

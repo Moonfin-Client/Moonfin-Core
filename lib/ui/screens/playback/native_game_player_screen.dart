@@ -220,7 +220,7 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
       if (corePath == null) {
         if (mounted) {
           setState(() => _error =
-              'The $coreId core is not installed. Add it in Settings, under Emulator Cores.');
+              'The core for this system is not installed. Add it in Settings, under Emulator Cores.');
         }
         return;
       }
@@ -512,6 +512,13 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
     if (mounted) context.pop();
   }
 
+  // Leaves the loading or error screen without the save-on-exit that a running
+  // game does.
+  void _backOut() {
+    unawaited(_player.stop());
+    if (mounted) context.pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     final scaffold = _buildScaffold(context);
@@ -571,6 +578,17 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
               child: const Text(
                 'Connect a Bluetooth game controller to play.',
                 style: TextStyle(color: Colors.white, fontSize: 26),
+              ),
+            ),
+          if (_textureId == null || _error != null)
+            SafeArea(
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  iconSize: 32,
+                  onPressed: _backOut,
+                ),
               ),
             ),
           if (_overlayOpen) _buildOverlay(),

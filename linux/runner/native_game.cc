@@ -8,9 +8,6 @@
 #include "lh_audio.h"
 #include "libretro_host.h"
 
-// GL_RGBA, the format the host writes and the texture expects.
-#define GAME_GL_RGBA 0x1908
-
 namespace {
 
 // libretro allows one session per process, so the state is global.
@@ -52,15 +49,14 @@ G_DEFINE_TYPE(MoonfinGameTexture, moonfin_game_texture,
               fl_pixel_buffer_texture_get_type())
 
 static gboolean moonfin_game_texture_copy_pixels(
-    FlPixelBufferTexture* texture, const uint8_t** out_buffer, uint32_t* format,
-    uint32_t* width, uint32_t* height, GError** error) {
+    FlPixelBufferTexture* texture, const uint8_t** out_buffer, uint32_t* width,
+    uint32_t* height, GError** error) {
   (void)texture;
   (void)error;
   const void* data;
   int w, h, stride;
   if (!g_host || !lh_get_frame(g_host, &data, &w, &h, &stride)) return FALSE;
   *out_buffer = static_cast<const uint8_t*>(data);
-  *format = GAME_GL_RGBA;
   *width = static_cast<uint32_t>(w);
   *height = static_cast<uint32_t>(h);
   return TRUE;
@@ -184,7 +180,9 @@ FlValue* Options(bool current_only) {
   return result;
 }
 
-void HandleMethod(FlMethodCall* call, gpointer user_data) {
+void HandleMethod(FlMethodChannel* channel, FlMethodCall* call,
+                  gpointer user_data) {
+  (void)channel;
   (void)user_data;
   const gchar* method = fl_method_call_get_name(call);
   FlValue* args = fl_method_call_get_args(call);
