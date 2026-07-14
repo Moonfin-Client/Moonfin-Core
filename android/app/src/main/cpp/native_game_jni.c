@@ -20,6 +20,8 @@
 typedef struct {
   lh_host *host;
   ANativeWindow *window;
+  int window_width;
+  int window_height;
   atomic_uint mask[4];
   JavaVM *vm;
   jobject bridge;
@@ -39,7 +41,14 @@ static void frame_ready(void *user) {
   int width, height, stride;
   if (!lh_get_frame(c->host, &data, &width, &height, &stride)) return;
 
-  ANativeWindow_setBuffersGeometry(window, width, height, WINDOW_FORMAT_RGBA_8888);
+  // Renegotiating the buffer queue every frame stalls emulation, so only set
+  // the geometry when the frame size changes.
+  if (width != c->window_width || height != c->window_height) {
+    ANativeWindow_setBuffersGeometry(window, width, height,
+                                     WINDOW_FORMAT_RGBA_8888);
+    c->window_width = width;
+    c->window_height = height;
+  }
   ANativeWindow_Buffer buffer;
   if (ANativeWindow_lock(window, &buffer, NULL) != 0) return;
 
@@ -177,6 +186,8 @@ JNI(void, nativeSetSurface)(JNIEnv *env, jobject thiz, jobject surface) {
     ANativeWindow_release(g_ctx.window);
     g_ctx.window = NULL;
   }
+  g_ctx.window_width = 0;
+  g_ctx.window_height = 0;
   if (surface) {
     g_ctx.window = ANativeWindow_fromSurface(env, surface);
   }

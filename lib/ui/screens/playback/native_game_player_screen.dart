@@ -306,7 +306,10 @@ class _NativeGamePlayerScreenState extends State<NativeGamePlayerScreen> {
       if (mounted) setState(() => _textureId = info.textureId);
     } catch (e) {
       if (mounted) {
-        setState(() => _error = 'Could not start this game. ($e)');
+        final message = e is PlatformException && e.code == 'core_missing'
+            ? 'The core for this system is not included in this build.'
+            : 'Could not start this game. ($e)';
+        setState(() => _error = message);
       }
     }
   }
