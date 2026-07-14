@@ -1126,6 +1126,34 @@ class PluginSyncService extends ChangeNotifier {
         'displaySinceYouWatchedRows',
         UserPreferences.displaySinceYouWatchedRows,
       );
+      _applyString(
+        resolved,
+        'sinceYouWatchedSource',
+        UserPreferences.sinceYouWatchedSource,
+        enumValues: prefs.SinceYouWatchedSource.values,
+      );
+      _applyInt(
+        resolved,
+        'sinceYouWatchedNumRows',
+        UserPreferences.sinceYouWatchedNumRows,
+      );
+      _applyString(
+        resolved,
+        'sinceYouWatchedSourceType',
+        UserPreferences.sinceYouWatchedSourceType,
+        enumValues: prefs.SinceYouWatchedSourceType.values,
+      );
+      _applyString(
+        resolved,
+        'sinceYouWatchedSourceItem',
+        UserPreferences.sinceYouWatchedSourceItem,
+        enumValues: prefs.SinceYouWatchedSourceItem.values,
+      );
+      _applyBool(
+        resolved,
+        'sinceYouWatchedIncludeWatched',
+        UserPreferences.sinceYouWatchedIncludeWatched,
+      );
       _applyBool(
         resolved,
         'displayPlaylistsRows',
@@ -1135,6 +1163,27 @@ class PluginSyncService extends ChangeNotifier {
         resolved,
         'displayRewatchRow',
         UserPreferences.displayRewatchRow,
+      );
+      _applyString(
+        resolved,
+        'rewatchSortBy',
+        UserPreferences.rewatchSortBy,
+        enumValues: prefs.RewatchSortBy.values,
+      );
+      _applyBool(
+        resolved,
+        'rewatchIncludeMovies',
+        UserPreferences.rewatchIncludeMovies,
+      );
+      _applyBool(
+        resolved,
+        'rewatchIncludeShows',
+        UserPreferences.rewatchIncludeShows,
+      );
+      _applyBool(
+        resolved,
+        'rewatchIncludeCollections',
+        UserPreferences.rewatchIncludeCollections,
       );
       _applyBool(
         resolved,
