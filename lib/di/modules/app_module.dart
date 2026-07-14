@@ -65,6 +65,7 @@ void resetUserScopedSingletons() {
   unregister<ItemMutationRepository>();
   unregister<SearchRepository>();
   unregister<UserViewsRepository>();
+  unregister<GameLibraryRegistry>();
 
   _registerUserScopedSingletons();
 }
