@@ -8,6 +8,9 @@ class JellyfinUserLibraryApi implements UserLibraryApi {
   JellyfinUserLibraryApi(this._dio);
 
   @override
+  bool get supportsNumericUserRatings => true;
+
+  @override
   Future<void> markFavorite(String itemId) async {
     await _dio.post('/UserFavoriteItems/$itemId');
   }
@@ -32,6 +35,14 @@ class JellyfinUserLibraryApi implements UserLibraryApi {
     await _dio.post('/UserItems/$itemId/Rating', queryParameters: {
       'Likes': likes,
     });
+  }
+
+  @override
+  Future<void> updateNumericUserRating(
+    String itemId, {
+    required double rating,
+  }) async {
+    await _dio.post('/UserItems/$itemId/UserData', data: {'Rating': rating});
   }
 
   @override

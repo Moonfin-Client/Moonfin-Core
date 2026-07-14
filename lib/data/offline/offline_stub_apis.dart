@@ -54,6 +54,9 @@ class OfflineUserLibraryApi implements UserLibraryApi {
   OfflineUserLibraryApi(this._catalog);
 
   @override
+  bool get supportsNumericUserRatings => false;
+
+  @override
   Future<Map<String, dynamic>> getItem(String itemId) async {
     final entry = _catalog.byId(itemId);
     if (entry != null) return entry.metadata;
@@ -83,6 +86,14 @@ class OfflineUserLibraryApi implements UserLibraryApi {
   @override
   Future<void> updateUserRating(String itemId, {required bool likes}) async {
     throw offlineUnavailable('/UserItems/$itemId/Rating');
+  }
+
+  @override
+  Future<void> updateNumericUserRating(
+    String itemId, {
+    required double rating,
+  }) async {
+    throw offlineUnavailable('/UserItems/$itemId/UserData');
   }
 
   @override

@@ -50,6 +50,7 @@ import '../../widgets/change_artwork_dialog.dart';
 import '../../widgets/navigation_layout.dart';
 import '../../widgets/horizontal_scroll_section.dart';
 import '../../widgets/rating_display.dart';
+import '../../widgets/personal_rating_dialog.dart';
 import '../../widgets/track_action_dialog.dart';
 import '../../widgets/track_selector_dialog.dart';
 import '../../widgets/remote_play_to_session_dialog.dart';
@@ -192,7 +193,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen>
       itemId: widget.itemId,
       serverId: widget.serverId,
       client: client,
-      mutations: GetIt.instance<ItemMutationRepository>(),
+      mutations: ItemMutationRepository(client),
       mdbListRepository: GetIt.instance<MdbListRepository>(),
       tmdbRepository: GetIt.instance<TmdbRepository>(),
     );
@@ -5284,6 +5285,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
     return _DetailActionButton(
       label: button.label,
       icon: button.icon,
+      iconBuilder: button.iconBuilder,
       onPressed: button.onPressed,
       onLongPress: button.onLongPress,
       onFocused: onFocused ?? button.onFocused,
@@ -5538,6 +5540,54 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         .floor();
 
     return maxButtons > 2 ? maxButtons : 2;
+  }
+
+  PersonalRatingStyle _personalRatingStyle() {
+    final style = GetIt.instance<UserPreferences>().get(
+      UserPreferences.personalRatingStyle,
+    );
+    return viewModel.supportsNumericUserRatings
+        ? style
+        : PersonalRatingStyle.thumbs;
+  }
+
+  bool? _displayRatingLikes(AggregatedItem item) =>
+      item.personalRatingLikes ??
+      (item.personalRating == null ? null : item.personalRating! >= 6.5);
+
+  String _personalRatingActionLabel(
+    AppLocalizations l10n,
+    AggregatedItem item,
+  ) {
+    final rating = item.personalRating;
+    switch (_personalRatingStyle()) {
+      case PersonalRatingStyle.thumbs:
+        if (rating == null) return l10n.rate;
+        return _displayRatingLikes(item) == true ? l10n.like : l10n.dislike;
+      case PersonalRatingStyle.stars:
+        if (rating == null) return l10n.rate;
+        final stars = rating / 2;
+        if (stars == 0) return l10n.personalRatingOutOfFive('0');
+        final fullStars = stars.floor();
+        final hasHalfStar = stars - fullStars >= 0.25;
+        return '${'★' * fullStars}${hasHalfStar ? '½' : ''}';
+      case PersonalRatingStyle.numeric:
+        return rating == null ? l10n.rate : l10n.personalRatingRated;
+    }
+  }
+
+  Future<void> _showPersonalRatingDialog(BuildContext context) {
+    final item = viewModel.item;
+    if (item == null) return Future.value();
+    return PersonalRatingDialog.show(
+      context,
+      style: _personalRatingStyle(),
+      rating: item.personalRating,
+      likes: _displayRatingLikes(item),
+      onSetThumbRating: viewModel.setThumbRating,
+      onSetNumericRating: viewModel.setNumericRating,
+      onClearRating: viewModel.clearRating,
+    );
   }
 
   @override
@@ -6011,6 +6061,31 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         isActive: item.isFavorite,
         activeColor: const Color(0xFFFF4757),
       ),
+      if (item.type == 'Movie')
+        _DetailActionButton(
+          label: _personalRatingActionLabel(l10n, item),
+          icon: switch (_personalRatingStyle()) {
+            PersonalRatingStyle.thumbs => _displayRatingLikes(item) == true
+                ? Icons.thumb_up
+                : _displayRatingLikes(item) == false
+                ? Icons.thumb_down
+                : Icons.thumb_up_outlined,
+            PersonalRatingStyle.stars => Icons.star_outline,
+            PersonalRatingStyle.numeric => Icons.numbers,
+          },
+          iconBuilder: (size, color) => _PersonalRatingActionIcon(
+            style: _personalRatingStyle(),
+            rating: item.personalRating,
+            likes: _displayRatingLikes(item),
+            size: size,
+            color: color,
+          ),
+          onPressed: viewModel.isRatingMutationInProgress
+              ? () {}
+              : () => _showPersonalRatingDialog(context),
+          isActive: item.personalRating != null,
+          activeColor: Colors.amber,
+        ),
       if (!isBook)
         _DetailActionButton(
           label: l10n.playlist,
@@ -6057,6 +6132,7 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
         return _DetailActionButton(
           label: widget.label,
           icon: widget.icon,
+          iconBuilder: widget.iconBuilder,
           isPrimary: widget.isPrimary,
           onPressed: widget.onPressed,
           onLongPress: widget.onLongPress,
@@ -9565,6 +9641,133 @@ class _DeleteDownloadButtonState extends State<_DeleteDownloadButton> {
   }
 }
 
+class _PersonalRatingActionIcon extends StatelessWidget {
+  final PersonalRatingStyle style;
+  final double? rating;
+  final bool? likes;
+  final double size;
+  final Color color;
+
+  const _PersonalRatingActionIcon({
+    required this.style,
+    required this.rating,
+    required this.likes,
+    required this.size,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (style) {
+      PersonalRatingStyle.thumbs => likes == null
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.thumb_up_outlined, color: color, size: size * 0.5),
+                SizedBox(width: size * 0.08),
+                Icon(
+                  Icons.thumb_down_outlined,
+                  color: color,
+                  size: size * 0.5,
+                ),
+              ],
+            )
+          : Icon(
+              likes! ? Icons.thumb_up : Icons.thumb_down,
+              color: color,
+              size: size * 0.72,
+            ),
+      PersonalRatingStyle.stars => _StarFillIcon(
+        fill: ((rating ?? 0).clamp(0, 10) / 10).toDouble(),
+        size: size * 0.82,
+        color: color,
+      ),
+      PersonalRatingStyle.numeric => Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          Text(
+            rating == null
+                ? '–'
+                : rating == rating!.roundToDouble()
+                ? rating!.toInt().toString()
+                : rating!.toString(),
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w800,
+              fontSize: size * 0.58,
+              height: 1,
+            ),
+          ),
+          Text(
+            ' / 10',
+            style: TextStyle(
+              color: color.withValues(alpha: 0.82),
+              fontWeight: FontWeight.w700,
+              fontSize: size * 0.28,
+              height: 1,
+            ),
+          ),
+        ],
+      ),
+    };
+  }
+}
+
+class _StarFillIcon extends StatelessWidget {
+  final double fill;
+  final double size;
+  final Color color;
+
+  const _StarFillIcon({
+    required this.fill,
+    required this.size,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // A linear fill is imperceptible at this button size: 1/5 looks empty and
+    // 4/5 looks full because the missing portion falls into a star point.
+    // Keep exact empty/full endpoints, but pull intermediate values toward the
+    // middle so every saved rating remains visually distinguishable.
+    final visualFill = fill == 0
+        ? 0.0
+        : fill == 1
+        ? 1.0
+        : 0.5 + (fill - 0.5) * 0.3;
+    if (visualFill == 0) {
+      return Icon(Icons.star_border, color: color, size: size);
+    }
+    if (visualFill == 1) {
+      return Icon(Icons.star, color: color, size: size);
+    }
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        children: [
+          Icon(Icons.star_border, color: color, size: size),
+          ShaderMask(
+            blendMode: BlendMode.srcIn,
+            shaderCallback: (bounds) => LinearGradient(
+              colors: [
+                color,
+                color,
+                color.withValues(alpha: 0),
+                color.withValues(alpha: 0),
+              ],
+              stops: [0, visualFill, visualFill, 1],
+            ).createShader(bounds),
+            child: Icon(Icons.star, color: Colors.white, size: size),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _DetailActionButton extends StatefulWidget {
   final String label;
   final IconData? icon;
@@ -9872,7 +10075,7 @@ class _DetailActionButtonState extends State<_DetailActionButton>
                       ),
               ),
             ),
-            if (isExpanded) ...[
+            if (isExpanded && widget.label.isNotEmpty) ...[
               const SizedBox(width: 6),
               Text(
                 widget.label,

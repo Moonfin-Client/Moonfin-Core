@@ -169,6 +169,8 @@ class ServerMediaSource {
 }
 
 class UserItemData {
+  final double? rating;
+  final bool? likes;
   final double? playedPercentage;
   final int? playbackPositionTicks;
   final int playCount;
@@ -177,6 +179,8 @@ class UserItemData {
   final DateTime? lastPlayedDate;
 
   const UserItemData({
+    this.rating,
+    this.likes,
     this.playedPercentage,
     this.playbackPositionTicks,
     this.playCount = 0,
@@ -186,6 +190,8 @@ class UserItemData {
   });
 
   factory UserItemData.fromJson(Map<String, dynamic> json) => UserItemData(
+        rating: (json['Rating'] as num?)?.toDouble(),
+        likes: json['Likes'] as bool?,
         playedPercentage: (json['PlayedPercentage'] as num?)?.toDouble(),
         playbackPositionTicks: json['PlaybackPositionTicks'] as int?,
         playCount: json['PlayCount'] as int? ?? 0,
