@@ -9343,5 +9343,25 @@
   "showAlphabeticalFilters": "Show Alphabet",
   "@showAlphabeticalFilters": {
     "description": "Checkbox label for toggling alphabetical picker visibility in Sort and Filter options"
+  },
+  "personalRatingStyle": "Personal rating style",
+  "personalRatingThumbs": "Like / dislike",
+  "personalRatingStars": "5 stars",
+  "personalRatingNumeric": "Numeric score out of 10",
+  "rate": "Rate",
+  "like": "Like",
+  "dislike": "Dislike",
+  "personalRatingClear": "Clear rating",
+  "personalRatingRated": "Rated",
+  "personalRatingSaveFailed": "Could not save rating",
+  "increase": "Increase",
+  "decrease": "Decrease",
+  "personalRatingOutOfTen": "{rating} / 10",
+  "@personalRatingOutOfTen": {
+    "placeholders": { "rating": { "type": "String" } }
+  },
+  "personalRatingOutOfFive": "{rating} / 5",
+  "@personalRatingOutOfFive": {
+    "placeholders": { "rating": { "type": "String" } }
   }
 }

@@ -451,6 +451,7 @@ class UserPreferences extends ChangeNotifier {
     'showRatingLabels',
     'showRatingBadges',
     'enableEpisodeRatings',
+    'pref_personal_rating_style',
     'tmdbApiKey',
     'seerrBlockNsfw',
     'enabledRatings',
@@ -1966,6 +1967,12 @@ class UserPreferences extends ChangeNotifier {
   static final enableEpisodeRatings = Preference(
     key: 'enableEpisodeRatings',
     defaultValue: true,
+  );
+
+  static final personalRatingStyle = EnumPreference(
+    key: 'pref_personal_rating_style',
+    values: PersonalRatingStyle.values,
+    defaultValue: PersonalRatingStyle.thumbs,
   );
 
   static final tmdbApiKey = Preference(key: 'tmdbApiKey', defaultValue: '');

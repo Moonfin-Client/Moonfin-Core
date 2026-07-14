@@ -8,6 +8,9 @@ class EmbyUserLibraryApi implements UserLibraryApi {
   EmbyUserLibraryApi(this._dio, this._getUserId);
 
   @override
+  bool get supportsNumericUserRatings => true;
+
+  @override
   Future<void> markFavorite(String itemId) async {
     final userId = _getUserId();
     await _dio.post('/Users/$userId/FavoriteItems/$itemId');
@@ -37,6 +40,18 @@ class EmbyUserLibraryApi implements UserLibraryApi {
     await _dio.post(
       '/Users/$userId/Items/$itemId/Rating',
       queryParameters: {'Likes': likes},
+    );
+  }
+
+  @override
+  Future<void> updateNumericUserRating(
+    String itemId, {
+    required double rating,
+  }) async {
+    final userId = _getUserId();
+    await _dio.post(
+      '/Users/$userId/Items/$itemId/UserData',
+      data: {'Rating': rating},
     );
   }
 
