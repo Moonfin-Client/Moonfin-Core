@@ -2999,6 +2999,13 @@ class AppLocalizationsMl extends AppLocalizations {
   String get wifiOnlyDownloads => 'വൈഫൈ-മാത്രം ഡൗൺലോഡുകൾ';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi =>
       'വൈഫൈയിലേക്ക് കണക്റ്റ് ചെയ്യുമ്പോൾ മാത്രം ഡൗൺലോഡ് ചെയ്യുക';
 

@@ -3014,6 +3014,13 @@ class AppLocalizationsGl extends AppLocalizations {
   String get wifiOnlyDownloads => 'Descargas só para WiFi';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi => 'Descarga só cando está conectado a WiFi';
 
   @override

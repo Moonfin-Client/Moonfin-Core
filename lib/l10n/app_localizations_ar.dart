@@ -2972,6 +2972,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wifiOnlyDownloads => 'تنزيلات WiFi فقط';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi => 'قم بالتنزيل فقط عند الاتصال بشبكة WiFi';
 
   @override

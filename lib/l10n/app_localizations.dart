@@ -5410,6 +5410,18 @@ abstract class AppLocalizations {
   /// **'WiFi-Only Downloads'**
   String get wifiOnlyDownloads;
 
+  /// No description provided for @reportDownloadsActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Show downloads on the server'**
+  String get reportDownloadsActivity;
+
+  /// No description provided for @reportDownloadsActivitySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Let the server admin see your transcoded downloads in the dashboard'**
+  String get reportDownloadsActivitySubtitle;
+
   /// Description for wifi-only downloads
   ///
   /// In en, this message translates to:

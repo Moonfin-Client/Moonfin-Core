@@ -3013,6 +3013,13 @@ class AppLocalizationsEl extends AppLocalizations {
   String get wifiOnlyDownloads => 'Λήψεις μόνο με WiFi';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi => 'Λήψη μόνο όταν είναι συνδεδεμένο σε WiFi';
 
   @override

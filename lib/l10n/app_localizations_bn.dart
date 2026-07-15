@@ -2975,6 +2975,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String get wifiOnlyDownloads => 'শুধুমাত্র ওয়াইফাই ডাউনলোড';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi =>
       'শুধুমাত্র WiFi এর সাথে সংযুক্ত হলেই ডাউনলোড করুন';
 

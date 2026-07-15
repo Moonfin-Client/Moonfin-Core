@@ -2920,6 +2920,13 @@ class AppLocalizationsYue extends AppLocalizations {
   String get wifiOnlyDownloads => '僅 WiFi 下載';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi => '僅在連接 WiFi 時下載';
 
   @override

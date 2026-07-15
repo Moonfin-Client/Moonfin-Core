@@ -31,6 +31,7 @@ class DownloadSettingsScreen extends ConsumerWidget {
     final prefs = ref.watch(userPreferencesProvider);
     final qualityName = prefs.get(UserPreferences.defaultDownloadQuality);
     final wifiOnly = prefs.get(UserPreferences.downloadWifiOnly);
+    final reportActivity = prefs.get(UserPreferences.reportDownloadsAsActivity);
     final storageLimitMb = prefs.get(UserPreferences.downloadStorageLimitMb);
     final customPath = prefs.get(UserPreferences.customDownloadPath);
     final storage = ref.watch(storageUsedProvider);
@@ -65,6 +66,15 @@ class DownloadSettingsScreen extends ConsumerWidget {
                     value: wifiOnly,
                     onChanged: (v) =>
                         prefs.set(UserPreferences.downloadWifiOnly, v),
+                  ),
+                if (!PlatformDetection.isWeb)
+                  SwitchListTile.adaptive(
+                    secondary: const Icon(Icons.podcasts),
+                    title: Text(l10n.reportDownloadsActivity),
+                    subtitle: Text(l10n.reportDownloadsActivitySubtitle),
+                    value: reportActivity,
+                    onChanged: (v) => prefs.set(
+                        UserPreferences.reportDownloadsAsActivity, v),
                   ),
               ],
             ),

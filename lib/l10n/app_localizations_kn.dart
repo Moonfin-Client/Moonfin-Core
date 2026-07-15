@@ -2995,6 +2995,13 @@ class AppLocalizationsKn extends AppLocalizations {
   String get wifiOnlyDownloads => 'ವೈಫೈ-ಮಾತ್ರ ಡೌನ್‌ಲೋಡ್‌ಗಳು';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi => 'ವೈಫೈಗೆ ಸಂಪರ್ಕಗೊಂಡಾಗ ಮಾತ್ರ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ';
 
   @override

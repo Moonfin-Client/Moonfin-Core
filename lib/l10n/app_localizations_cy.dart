@@ -2991,6 +2991,13 @@ class AppLocalizationsCy extends AppLocalizations {
   String get wifiOnlyDownloads => 'Dadlwythiadau WiFi yn Unig';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi =>
       'Dim ond pan fyddwch wedi cysylltu â WiFi y gallwch chi lawrlwytho';
 

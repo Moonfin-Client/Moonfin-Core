@@ -2066,6 +2066,11 @@ class UserPreferences extends ChangeNotifier {
     defaultValue: 2,
   );
 
+  static final reportDownloadsAsActivity = Preference(
+    key: 'download_report_as_activity',
+    defaultValue: true,
+  );
+
   static final customDownloadPath = Preference(
     key: 'download_custom_path',
     defaultValue: '',

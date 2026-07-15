@@ -2999,6 +2999,13 @@ class AppLocalizationsSw extends AppLocalizations {
   String get wifiOnlyDownloads => 'Vipakuliwa vya WiFi Pekee';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi => 'Pakua tu wakati umeunganishwa kwenye WiFi';
 
   @override

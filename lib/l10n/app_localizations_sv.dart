@@ -2988,6 +2988,13 @@ class AppLocalizationsSv extends AppLocalizations {
   String get wifiOnlyDownloads => 'Endast WiFi-nedladdningar';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi =>
       'Ladda bara ned när du är ansluten till WiFi';
 

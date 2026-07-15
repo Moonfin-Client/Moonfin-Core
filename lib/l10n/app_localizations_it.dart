@@ -3000,6 +3000,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get wifiOnlyDownloads => 'Download Solo WiFi';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi => 'Scarica solo quando connesso al WiFi';
 
   @override

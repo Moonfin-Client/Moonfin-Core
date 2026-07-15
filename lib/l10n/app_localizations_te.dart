@@ -2993,6 +2993,13 @@ class AppLocalizationsTe extends AppLocalizations {
   String get wifiOnlyDownloads => 'WiFi-మాత్రమే డౌన్‌లోడ్‌లు';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi =>
       'వైఫైకి కనెక్ట్ చేసినప్పుడు మాత్రమే డౌన్‌లోడ్ చేయండి';
 

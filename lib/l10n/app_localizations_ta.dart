@@ -2999,6 +2999,13 @@ class AppLocalizationsTa extends AppLocalizations {
   String get wifiOnlyDownloads => 'WiFi-மட்டும் பதிவிறக்கங்கள்';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi =>
       'வைஃபையுடன் இணைக்கப்பட்டால் மட்டுமே பதிவிறக்கவும்';
 

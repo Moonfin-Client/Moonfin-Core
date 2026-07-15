@@ -2994,6 +2994,13 @@ class AppLocalizationsLv extends AppLocalizations {
   String get wifiOnlyDownloads => 'Tikai WiFi lejupielādes';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi =>
       'Lejupielādējiet tikai tad, kad ir izveidots savienojums ar WiFi';
 

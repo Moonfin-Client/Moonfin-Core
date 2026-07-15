@@ -2996,6 +2996,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get wifiOnlyDownloads => 'Загрузки только для Wi-Fi';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi => 'Загрузка только при подключении к Wi-Fi';
 
   @override

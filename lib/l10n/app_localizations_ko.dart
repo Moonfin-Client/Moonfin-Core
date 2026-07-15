@@ -2931,6 +2931,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get wifiOnlyDownloads => 'WiFi 전용 다운로드';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi => 'Wi-Fi에 연결된 경우에만 다운로드';
 
   @override

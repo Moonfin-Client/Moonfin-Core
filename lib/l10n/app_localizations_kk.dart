@@ -2991,6 +2991,13 @@ class AppLocalizationsKk extends AppLocalizations {
   String get wifiOnlyDownloads => 'Тек WiFi жүктеп алулар';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi =>
       'WiFi желісіне қосылған кезде ғана жүктеп алыңыз';
 

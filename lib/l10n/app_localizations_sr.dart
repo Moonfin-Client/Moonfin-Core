@@ -2990,6 +2990,13 @@ class AppLocalizationsSr extends AppLocalizations {
   String get wifiOnlyDownloads => 'Преузимања само за ВиФи';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi => 'Преузмите само када сте повезани на ВиФи';
 
   @override

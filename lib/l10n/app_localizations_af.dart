@@ -2985,6 +2985,13 @@ class AppLocalizationsAf extends AppLocalizations {
   String get wifiOnlyDownloads => 'Slegs WiFi-aflaaie';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi =>
       'Laai slegs af wanneer dit aan WiFi gekoppel is';
 

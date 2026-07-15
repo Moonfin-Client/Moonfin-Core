@@ -4118,6 +4118,8 @@
   "@wifiOnlyDownloads": {
     "description": "Setting for wifi-only downloads"
   },
+  "reportDownloadsActivity": "Show downloads on the server",
+  "reportDownloadsActivitySubtitle": "Let the server admin see your transcoded downloads in the dashboard",
   "onlyDownloadOnWifi": "Only download when connected to WiFi",
   "@onlyDownloadOnWifi": {
     "description": "Description for wifi-only downloads"

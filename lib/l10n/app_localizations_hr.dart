@@ -2988,6 +2988,13 @@ class AppLocalizationsHr extends AppLocalizations {
   String get wifiOnlyDownloads => 'Preuzimanja samo za WiFi';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi => 'Preuzimajte samo kada ste povezani na WiFi';
 
   @override

@@ -2990,6 +2990,13 @@ class AppLocalizationsUk extends AppLocalizations {
   String get wifiOnlyDownloads => 'Завантаження лише через Wi-Fi';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi =>
       'Завантажуйте лише під час підключення до Wi-Fi';
 

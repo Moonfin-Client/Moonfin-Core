@@ -2900,6 +2900,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get wifiOnlyDownloads => '仅 Wi-Fi 下载';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi => '仅在连接 Wi-Fi 时下载';
 
   @override

@@ -2999,6 +2999,13 @@ class AppLocalizationsSq extends AppLocalizations {
   String get wifiOnlyDownloads => 'Shkarkime vetëm me WiFi';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi => 'Shkarkoni vetëm kur lidheni me WiFi';
 
   @override

@@ -2989,6 +2989,13 @@ class AppLocalizationsEt extends AppLocalizations {
   String get wifiOnlyDownloads => 'Allalaadimised ainult WiFi kaudu';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi =>
       'Laadige alla ainult siis, kui see on ühendatud WiFi-ga';
 

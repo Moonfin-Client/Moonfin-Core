@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:path/path.dart' as p;
 import 'package:server_core/server_core.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../platform/ios_storage.dart';
 import '../../playback/subtitle_formats.dart';
@@ -138,6 +139,8 @@ Future<void> _downloadIsolateMain(Map<String, Object?> args) async {
     sendPort.send(<String, Object?>{'t': 'e', 'msg': e.toString()});
   }
 }
+
+enum _DownloadActivityPhase { start, progress, stop }
 
 class DownloadService extends ChangeNotifier {
   static const String _guardCancelReason = 'download_guard_timeout';
@@ -1171,8 +1174,9 @@ class DownloadService extends ChangeNotifier {
   String _buildDownloadUrl(
     String itemId,
     AggregatedItem item,
-    DownloadQuality quality,
-  ) {
+    DownloadQuality quality, {
+    String? playSessionId,
+  }) {
     if (!quality.isTranscoded || !_supportsTranscodedDownload(item.type)) {
       return _buildDirectItemDownloadUrl(itemId, item);
     }
@@ -1195,6 +1199,10 @@ class DownloadService extends ChangeNotifier {
     params['container'] = quality.container;
     if (quality.audioChannels != null) {
       params['audioChannels'] = quality.audioChannels.toString();
+    }
+    if (playSessionId != null) {
+      params['PlaySessionId'] = playSessionId;
+      params['DeviceId'] = _client.deviceInfo.id;
     }
 
     final query = _encodeQuery(params);
@@ -1249,6 +1257,10 @@ class DownloadService extends ChangeNotifier {
     }
 
     String? savePath;
+    Timer? activityHeartbeat;
+    String? activityPlaySessionId;
+    String? activityMediaSourceId;
+    var activityResumeTicks = 0;
 
     if (!await _checkWifiPolicy()) {
       _activeDownloads[item.id] = DownloadProgress(
@@ -1340,9 +1352,43 @@ class DownloadService extends ChangeNotifier {
       );
       notifyListeners();
 
-      final url = _buildDownloadUrl(item.id, fullItem, quality);
+      final reportActivity = quality.isTranscoded &&
+          _supportsTranscodedDownload(fullItem.type) &&
+          _prefs.get(UserPreferences.reportDownloadsAsActivity);
+      if (reportActivity) {
+        activityPlaySessionId = const Uuid().v4();
+        activityMediaSourceId = _primaryMediaSourceId(fullItem);
+        activityResumeTicks = fullItem.playbackPositionTicks ?? 0;
+      }
+
+      final url = _buildDownloadUrl(
+        item.id,
+        fullItem,
+        quality,
+        playSessionId: activityPlaySessionId,
+      );
       final headers = _buildDownloadRequestHeaders();
       final requestOptions = Options(headers: headers, method: 'GET');
+
+      if (activityPlaySessionId != null) {
+        _reportDownloadActivity(
+          phase: _DownloadActivityPhase.start,
+          itemId: item.id,
+          mediaSourceId: activityMediaSourceId,
+          playSessionId: activityPlaySessionId,
+          positionTicks: activityResumeTicks,
+        );
+        final heartbeatSessionId = activityPlaySessionId;
+        activityHeartbeat = Timer.periodic(const Duration(seconds: 10), (_) {
+          _reportDownloadActivity(
+            phase: _DownloadActivityPhase.progress,
+            itemId: item.id,
+            mediaSourceId: activityMediaSourceId,
+            playSessionId: heartbeatSessionId,
+            positionTicks: activityResumeTicks,
+          );
+        });
+      }
 
       void onReceiveProgress(int received, int total) {
         final rawProgress = _calculateProgress(
@@ -1569,6 +1615,16 @@ class DownloadService extends ChangeNotifier {
       );
       _emitError('${item.name}: $friendlyError');
     } finally {
+      activityHeartbeat?.cancel();
+      if (activityPlaySessionId != null) {
+        _reportDownloadActivity(
+          phase: _DownloadActivityPhase.stop,
+          itemId: item.id,
+          mediaSourceId: activityMediaSourceId,
+          playSessionId: activityPlaySessionId,
+          positionTicks: activityResumeTicks,
+        );
+      }
       _downloadStartTimes.remove(item.id);
       _cancelTokens.remove(item.id);
       _lastPersistedProgress.remove(item.id);
@@ -1576,6 +1632,55 @@ class DownloadService extends ChangeNotifier {
       _lastCallbackProgress.remove(item.id);
       notifyListeners();
     }
+  }
+
+  // Best effort reporting of a transcoded download as a server play session so
+  // it shows up in the Jellyfin dashboard. This must never affect the download,
+  // so every call is fire and forget and swallows its errors. The position is
+  // held at the item's existing resume point across start, progress, and stop
+  // so a download never moves the user's watch progress.
+  void _reportDownloadActivity({
+    required _DownloadActivityPhase phase,
+    required String itemId,
+    required String? mediaSourceId,
+    required String playSessionId,
+    required int positionTicks,
+  }) {
+    unawaited(() async {
+      try {
+        final api = _client.playbackApi;
+        switch (phase) {
+          case _DownloadActivityPhase.start:
+            await api.reportPlaybackStart(
+              PlaybackStartReport(
+                itemId: itemId,
+                mediaSourceId: mediaSourceId,
+                playSessionId: playSessionId,
+                playMethod: PlayMethod.transcode,
+                positionTicks: positionTicks,
+              ).toJson(),
+            );
+          case _DownloadActivityPhase.progress:
+            await api.reportPlaybackProgress(
+              PlaybackProgressReport(
+                itemId: itemId,
+                mediaSourceId: mediaSourceId,
+                playSessionId: playSessionId,
+                positionTicks: positionTicks,
+              ).toJson(),
+            );
+          case _DownloadActivityPhase.stop:
+            await api.reportPlaybackStopped(
+              PlaybackStopReport(
+                itemId: itemId,
+                mediaSourceId: mediaSourceId,
+                playSessionId: playSessionId,
+                positionTicks: positionTicks,
+              ).toJson(),
+            );
+        }
+      } catch (_) {}
+    }());
   }
 
   Future<void> downloadItems(

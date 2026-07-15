@@ -2987,6 +2987,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get wifiOnlyDownloads => 'Tải xuống chỉ qua Wi-Fi';
 
   @override
+  String get reportDownloadsActivity => 'Show downloads on the server';
+
+  @override
+  String get reportDownloadsActivitySubtitle =>
+      'Let the server admin see your transcoded downloads in the dashboard';
+
+  @override
   String get onlyDownloadOnWifi => 'Chỉ tải xuống khi kết nối với WiFi';
 
   @override
