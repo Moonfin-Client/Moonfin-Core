@@ -7434,15 +7434,24 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               [selectedEpisode],
             );
             final directAllowed = !dvForceTranscode && !forceTranscode;
+
+            final epMediaStreams = _mediaStreamsForCurrentSelection(selectedEpisode);
+            final epAudioStreams = epMediaStreams.where((s) => s['Type'] == 'Audio').toList();
+            final epSubtitleStreams = epMediaStreams.where((s) => s['Type'] == 'Subtitle').toList();
+            final epAudioStreamIndex = _effectiveAudioStreamIndex(epAudioStreams);
+            final epSubtitleStreamIndex = _effectiveSubtitleStreamIndex(
+              epSubtitleStreams,
+              epAudioStreams,
+            );
+
             await manager.playItems(
               seriesQueue,
               startIndex: idx,
               startPosition: startPosition,
-              audioStreamIndex: audioStreamIndex,
-              subtitleStreamIndex: subtitleStreamIndex,
-              audioSelectionExplicit: viewModel.selectedAudioIndex != null,
-              subtitleSelectionExplicit:
-                  viewModel.selectedSubtitleIndex != null,
+              audioStreamIndex: epAudioStreamIndex,
+              subtitleStreamIndex: epSubtitleStreamIndex,
+              audioSelectionExplicit: false,
+              subtitleSelectionExplicit: false,
               enableDirectPlay: directAllowed,
               enableDirectStream: directAllowed,
             );
@@ -7471,15 +7480,24 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               [selectedEpisode],
             );
             final directAllowed = !dvForceTranscode && !forceTranscode;
+
+            final epMediaStreams = _mediaStreamsForCurrentSelection(selectedEpisode);
+            final epAudioStreams = epMediaStreams.where((s) => s['Type'] == 'Audio').toList();
+            final epSubtitleStreams = epMediaStreams.where((s) => s['Type'] == 'Subtitle').toList();
+            final epAudioStreamIndex = _effectiveAudioStreamIndex(epAudioStreams);
+            final epSubtitleStreamIndex = _effectiveSubtitleStreamIndex(
+              epSubtitleStreams,
+              epAudioStreams,
+            );
+
             await manager.playItems(
               seasonQueue,
               startIndex: idx,
               startPosition: startPosition,
-              audioStreamIndex: audioStreamIndex,
-              subtitleStreamIndex: subtitleStreamIndex,
-              audioSelectionExplicit: viewModel.selectedAudioIndex != null,
-              subtitleSelectionExplicit:
-                  viewModel.selectedSubtitleIndex != null,
+              audioStreamIndex: epAudioStreamIndex,
+              subtitleStreamIndex: epSubtitleStreamIndex,
+              audioSelectionExplicit: false,
+              subtitleSelectionExplicit: false,
               enableDirectPlay: directAllowed,
               enableDirectStream: directAllowed,
             );
@@ -7615,15 +7633,24 @@ class DetailActionButtonsState extends State<DetailActionButtons> {
               [targetItem],
             );
             final directAllowed = !dvForceTranscode && !forceTranscode;
+
+            final epMediaStreams = _mediaStreamsForCurrentSelection(targetItem);
+            final epAudioStreams = epMediaStreams.where((s) => s['Type'] == 'Audio').toList();
+            final epSubtitleStreams = epMediaStreams.where((s) => s['Type'] == 'Subtitle').toList();
+            final epAudioStreamIndex = _effectiveAudioStreamIndex(epAudioStreams);
+            final epSubtitleStreamIndex = _effectiveSubtitleStreamIndex(
+              epSubtitleStreams,
+              epAudioStreams,
+            );
+
             await manager.playItems(
               playableQueue,
               startIndex: startIndex,
               startPosition: startPosition,
-              audioStreamIndex: audioStreamIndex,
-              subtitleStreamIndex: subtitleStreamIndex,
-              audioSelectionExplicit: viewModel.selectedAudioIndex != null,
-              subtitleSelectionExplicit:
-                  viewModel.selectedSubtitleIndex != null,
+              audioStreamIndex: epAudioStreamIndex,
+              subtitleStreamIndex: epSubtitleStreamIndex,
+              audioSelectionExplicit: false,
+              subtitleSelectionExplicit: false,
               enableDirectPlay: directAllowed,
               enableDirectStream: directAllowed,
             );

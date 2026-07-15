@@ -1250,6 +1250,23 @@ class PlaybackManager implements AudioOwnable {
       }
     }
 
+    if (_subtitleStreamIndex == null) {
+      // Keep the server-selected subtitle index for later re-resolves.
+      // If it is missing, fall back to the file's default subtitle track.
+      _subtitleStreamIndex = resolution.selectedSubtitleStreamIndex;
+      if (_subtitleStreamIndex == null) {
+        final subtitleStreams =
+            resolution.mediaStreams.where((s) => s['Type'] == 'Subtitle').toList();
+        if (subtitleStreams.isNotEmpty) {
+          final defaultSubtitle = subtitleStreams.firstWhere(
+            (s) => s['IsDefault'] == true,
+            orElse: () => subtitleStreams.first,
+          );
+          _subtitleStreamIndex = defaultSubtitle['Index'] as int?;
+        }
+      }
+    }
+
     final playbackDecisionLogger = _playbackDecisionLogger;
     if (playbackDecisionLogger != null && _backend != null) {
       try {

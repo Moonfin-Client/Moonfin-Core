@@ -108,6 +108,7 @@ class EmbyMediaStreamResolver implements MediaStreamResolver {
       externalSubtitles: authedSubs,
       mediaStreams: source.mediaStreams,
       selectedAudioStreamIndex: source.defaultAudioStreamIndex,
+      selectedSubtitleStreamIndex: source.defaultSubtitleStreamIndex,
       transcodingReasons: source.transcodingReasons,
     );
   }

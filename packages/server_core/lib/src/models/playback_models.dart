@@ -109,6 +109,7 @@ class PlaybackMediaSource {
   final PlayMethod? defaultPlayMethod;
   final List<Map<String, dynamic>> mediaStreams;
   final int? defaultAudioStreamIndex;
+  final int? defaultSubtitleStreamIndex;
   final List<String> transcodingReasons;
 
   const PlaybackMediaSource({
@@ -129,6 +130,7 @@ class PlaybackMediaSource {
     this.defaultPlayMethod,
     this.mediaStreams = const [],
     this.defaultAudioStreamIndex,
+    this.defaultSubtitleStreamIndex,
     this.transcodingReasons = const [],
   });
 
@@ -152,6 +154,7 @@ class PlaybackMediaSource {
                 ?.cast<Map<String, dynamic>>() ??
             const [],
         defaultAudioStreamIndex: json['DefaultAudioStreamIndex'] as int?,
+        defaultSubtitleStreamIndex: json['DefaultSubtitleStreamIndex'] as int?,
         defaultPlayMethod: json['PlayMethod'] != null
             ? PlayMethod.fromServerString(json['PlayMethod'] as String?)
             : null,

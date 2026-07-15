@@ -34,6 +34,7 @@ class StreamResolutionResult {
   final List<ExternalSubtitle> externalSubtitles;
   final List<Map<String, dynamic>> mediaStreams;
   final int? selectedAudioStreamIndex;
+  final int? selectedSubtitleStreamIndex;
   final List<String> transcodingReasons;
   final String? hybridAudioUrl;
 
@@ -55,6 +56,7 @@ class StreamResolutionResult {
     this.externalSubtitles = const [],
     this.mediaStreams = const [],
     this.selectedAudioStreamIndex,
+    this.selectedSubtitleStreamIndex,
     this.transcodingReasons = const [],
     this.hybridAudioUrl,
     this.isLocalMedia = false,
