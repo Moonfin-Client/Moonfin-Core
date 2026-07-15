@@ -1132,10 +1132,11 @@ class PluginSyncService extends ChangeNotifier {
         UserPreferences.sinceYouWatchedSource,
         enumValues: prefs.SinceYouWatchedSource.values,
       );
-      _applyInt(
+      _applyString(
         resolved,
         'sinceYouWatchedNumRows',
         UserPreferences.sinceYouWatchedNumRows,
+        enumValues: prefs.SinceYouWatchedNumRows.values,
       );
       _applyString(
         resolved,
@@ -1819,8 +1820,17 @@ class PluginSyncService extends ChangeNotifier {
       'displayGenresRows': _prefs.get(UserPreferences.displayGenresRows),
       'displayAudioRows': _prefs.get(UserPreferences.displayAudioRows),
       'displaySinceYouWatchedRows': _prefs.get(UserPreferences.displaySinceYouWatchedRows),
+      'sinceYouWatchedSource': _prefs.get(UserPreferences.sinceYouWatchedSource).name,
+      'sinceYouWatchedNumRows': _prefs.get(UserPreferences.sinceYouWatchedNumRows).name,
+      'sinceYouWatchedSourceType': _prefs.get(UserPreferences.sinceYouWatchedSourceType).name,
+      'sinceYouWatchedSourceItem': _prefs.get(UserPreferences.sinceYouWatchedSourceItem).name,
+      'sinceYouWatchedIncludeWatched': _prefs.get(UserPreferences.sinceYouWatchedIncludeWatched),
       'displayPlaylistsRows': _prefs.get(UserPreferences.displayPlaylistsRows),
       'displayRewatchRow': _prefs.get(UserPreferences.displayRewatchRow),
+      'rewatchSortBy': _prefs.get(UserPreferences.rewatchSortBy).name,
+      'rewatchIncludeMovies': _prefs.get(UserPreferences.rewatchIncludeMovies),
+      'rewatchIncludeShows': _prefs.get(UserPreferences.rewatchIncludeShows),
+      'rewatchIncludeCollections': _prefs.get(UserPreferences.rewatchIncludeCollections),
       'fullScreenRows': _prefs.get(UserPreferences.fullScreenRows),
       'useDetailedSubHeadings': _prefs.get(
         UserPreferences.useDetailedSubHeadings,
