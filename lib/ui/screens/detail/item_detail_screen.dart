@@ -10475,8 +10475,7 @@ class DetailSimilarRow extends StatelessWidget {
                 final mediaType = item.seerrMediaType ??
                     (item.type == 'Series' ? 'tv' : 'movie');
                 context.push(
-                  Destinations.seerrMedia(item.id),
-                  extra: {'mediaType': mediaType},
+                  Destinations.seerrMedia(item.id, mediaType: mediaType),
                 );
               } else {
                 context.push(

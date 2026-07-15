@@ -2852,8 +2852,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                     final mediaType = entry.seerrMediaType ??
                         (entry.type == 'Series' ? 'tv' : 'movie');
                     context.push(
-                      Destinations.seerrMedia(entry.id),
-                      extra: {'mediaType': mediaType},
+                      Destinations.seerrMedia(entry.id, mediaType: mediaType),
                     );
                   } else {
                     context.push(
@@ -2935,8 +2934,7 @@ class _ModernDetailContentState extends State<ModernDetailContent> {
                         final mediaType = entry.seerrMediaType ??
                             (entry.type == 'Series' ? 'tv' : 'movie');
                         context.push(
-                          Destinations.seerrMedia(entry.id),
-                          extra: {'mediaType': mediaType},
+                          Destinations.seerrMedia(entry.id, mediaType: mediaType),
                         );
                       } else {
                         context.push(
