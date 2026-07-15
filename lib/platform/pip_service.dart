@@ -34,6 +34,8 @@ class PipService {
   bool _isInPiP = false;
   bool get isInPiP => _isInPiP;
 
+  Object? _autoPiPOwner;
+
   bool _didConfigureIosBackend = false;
   bool _isIosPiPInitialized = false;
 
@@ -83,7 +85,14 @@ class PipService {
     }
   }
 
-  Future<void> enableAutoPiP(bool enabled) async {
+  Future<void> enableAutoPiP(bool enabled, {Object? owner}) async {
+    if (enabled) {
+      _autoPiPOwner = owner;
+    } else if (owner != null && !identical(_autoPiPOwner, owner)) {
+      return;
+    } else {
+      _autoPiPOwner = null;
+    }
     final channel = _activeChannel;
     if (channel == null) return;
     try {

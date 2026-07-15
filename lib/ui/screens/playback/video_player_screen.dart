@@ -149,6 +149,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   DateTime? _lastPlaybackErrorAt;
   String? _lastPlaybackErrorMessage;
   bool _isInPiP = false;
+  final GlobalKey _videoSurfaceKey = GlobalKey();
   bool _forcedLandscape = false;
   double _playerVolume = 100.0;
   double _volumeBeforeMute = 1.0;
@@ -3533,7 +3534,9 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         PlaybackEnginePreference.media3;
     final prewarmMedia3 = _activeBackend == null && prefersMedia3;
     if (_activeMedia3Backend != null || prewarmMedia3) {
-      return const Positioned.fill(child: Media3VideoView(fill: Colors.black));
+      return Positioned.fill(
+        child: Media3VideoView(key: _videoSurfaceKey, fill: Colors.black),
+      );
     }
 
     final htmlBackend = _activeHtmlVideoBackend;
@@ -3570,6 +3573,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
             return const ColoredBox(color: Colors.black);
           }
           return Video(
+            key: _videoSurfaceKey,
             controller: controller,
             controls: NoVideoControls,
             width: constraints.maxWidth,

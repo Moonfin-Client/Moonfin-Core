@@ -160,7 +160,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
       _initSystemVolume();
     }
     if (PlatformDetection.isAndroid && !PlatformDetection.isTV) {
-      _pipService.enableAutoPiP(true);
+      _pipService.enableAutoPiP(true, owner: this);
       _pipChangedSub = _pipService.onPiPChanged.listen(_onPiPChanged);
       _pipActionSub = _pipService.onPiPAction.listen(_onPiPAction);
       _pipScreenLockSub = _pipService.onScreenLock.listen(_onScreenLock);
@@ -185,7 +185,7 @@ class _LiveTvPlayerScreenState extends State<LiveTvPlayerScreen>
     _pipScreenLockSub?.cancel();
     _pipPlayingSub?.cancel();
     if (PlatformDetection.isAndroid && !PlatformDetection.isTV) {
-      _pipService.enableAutoPiP(false);
+      _pipService.enableAutoPiP(false, owner: this);
     }
     if (PlatformDetection.isMobile) {
       _volumeListenerSub?.cancel();
