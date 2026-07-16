@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Quick Connect",
+    "quickConnect": "Rapida Konekto",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -277,7 +277,7 @@
     "@guide": {
         "description": "Live TV guide button label"
     },
-    "recordings": "Registraĵoj",
+    "recordings": "Registradoj",
     "@recordings": {
         "description": "Live TV recordings button label"
     },
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "Serioj",
+    "series": "Serio",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "Daŭrigi",
+    "resume": "Rekomenci",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "Spektitaj",
+    "watched": "Rigardis",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Nespektitaj",
+    "unwatched": "Nerigardita",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 aŭdlibro} other{{count} aŭdlibroj}}",
+    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -939,7 +939,7 @@
     "@delete": {
         "description": "Delete action button label"
     },
-    "save": "Konservi",
+    "save": "Konservu",
     "@save": {
         "description": "Save action button label"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 Sezono} other{{count} Sezonoj}}",
+    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "Ludi",
+    "play": "Ludu",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Elsendi",
+    "cast": "Rolantaro",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "SCENARISTOJ",
+    "writers": "SKRIBOJ",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 trako} other{{count} trakoj}}",
+    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 ĉapitro} other{{count} ĉapitroj}}",
+    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count} kanaloj",
+    "channelsCount": "{count}ch",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1526,11 +1526,11 @@
             }
         }
     },
-    "mono": "Monofonia",
+    "mono": "Mono",
     "@mono": {
         "description": "Audio channel layout label for mono"
     },
-    "stereo": "Stereofonia",
+    "stereo": "Stereo",
     "@stereo": {
         "description": "Audio channel layout label for stereo"
     },
@@ -1756,7 +1756,7 @@
             }
         }
     },
-    "bitrateOverride": "Anstataŭigita bitrapido",
+    "bitrateOverride": "Bitrate Override",
     "@bitrateOverride": {
         "description": "Label shown in stream info when a manual bitrate override is active"
     },
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "Medialudilo",
+    "player": "Ludanto",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1830,7 +1830,7 @@
     "@container": {
         "description": "Stream info label for media container"
     },
-    "bitrate": "Bitrapido",
+    "bitrate": "Bitrate",
     "@bitrate": {
         "description": "Stream info label for bitrate"
     },
@@ -1850,7 +1850,7 @@
     "@codec": {
         "description": "Stream info label for codec"
     },
-    "videoBitrate": "Videa bitrapido",
+    "videoBitrate": "Video Bitrate",
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
@@ -1862,7 +1862,7 @@
     "@channels": {
         "description": "Stream info label for audio channels"
     },
-    "audioBitrate": "Aŭdia bitrapido",
+    "audioBitrate": "Audio Bitrate",
     "@audioBitrate": {
         "description": "Stream info label for audio bitrate"
     },
@@ -2187,11 +2187,11 @@
     "@favoriteChannel": {
         "description": "Button label to add a channel to favorites"
     },
-    "watch": "Spekti",
+    "watch": "Rigardu",
     "@watch": {
         "description": "Button label to start watching a channel"
     },
-    "close": "Fermi",
+    "close": "Fermu",
     "@close": {
         "description": "Button label to close a dialog"
     },
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 epizodo} other{{count} epizodoj}}",
+    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -3045,7 +3045,7 @@
             }
         }
     },
-    "mediaQueuing": "Vicigo de aŭdvidaĵoj",
+    "mediaQueuing": "Media Queuing",
     "@mediaQueuing": {
         "description": "Setting for media queuing"
     },
@@ -3805,7 +3805,7 @@
     "@libraryArt": {
         "description": "Screensaver mode: library art"
     },
-    "logo": "Emblemo",
+    "logo": "Logo",
     "@logo": {
         "description": "Screensaver mode: logo"
     },
@@ -3813,7 +3813,7 @@
     "@clock": {
         "description": "Screensaver mode: clock"
     },
-    "timeout": "Tempolimo",
+    "timeout": "Timeout",
     "@timeout": {
         "description": "Setting for timeout"
     },
@@ -3951,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Moonbase-kromaĵo",
+    "pluginLabel": "Kromaĵo",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -4080,15 +4080,15 @@
             }
         }
     },
-    "discoverRows": "Malkovra paĝo de Seerr",
+    "discoverRows": "Malkovru Vicojn",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Ebligu vicojn por vidi sur la ĉefpaĝo de Seerr. Trenu por reordigi. Propra ordo sinkroniĝas kun Moonbase.",
+    "discoverRowsDescriptionPlugin": "Trenu por reordigi. Ebligu aŭ malŝalti vicojn. Ebligitaj vic-ordo sinkronigas kun la kromaĵo Moonfin.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Ebligu vicojn por vidi sur la ĉefpaĝo de Seerr. Trenu por reordigi. Propra ordo sinkroniĝas kun Moonbase.",
+    "discoverRowsDescription": "Trenu por reordigi. Ebligu aŭ malŝalti vicojn.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4248,7 +4248,7 @@
             }
         }
     },
-    "clear": "Vakigi",
+    "clear": "Klara",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4495,7 +4495,7 @@
     "@revenueLabel": {
         "description": "Stat label for revenue"
     },
-    "runtimeLabel": "Daŭro",
+    "runtimeLabel": "Runtime",
     "@runtimeLabel": {
         "description": "Stat label for runtime"
     },
@@ -4529,14 +4529,14 @@
     "encoding": "Kodigado",
     "error": "Eraro",
     "forward": "Antaŭen",
-    "general": "Ĝenerala",
+    "general": "Generalo",
     "go": "Iru",
     "install": "Instali",
     "installed": "Instalita",
     "interval": "Intervalo",
     "name": "Nomo",
     "networking": "Retoj",
-    "next": "Sekva",
+    "next": "Poste",
     "path": "Vojo",
     "paused": "Paŭzita",
     "permissions": "Permesoj",
@@ -4544,28 +4544,28 @@
     "profile": "Profilo",
     "provider": "Provizanto",
     "refresh": "Refreŝigi",
-    "remote": "Teleregilo",
+    "remote": "Malproksima",
     "rename": "Alinomi",
     "revoke": "Revoki",
     "role": "Rolo",
     "root": "Radiko",
     "run": "Kuru",
-    "search": "Serĉi",
+    "search": "Serĉu",
     "select": "Elektu",
     "send": "Sendu",
     "sessions": "Sesioj",
     "set": "Agordu",
     "status": "Statuso",
-    "stop": "Haltigi",
-    "streaming": "Elsendfluado",
+    "stop": "Haltu",
+    "streaming": "Streaming",
     "time": "Tempo",
-    "trickplay": "Trickplay",
+    "trickplay": "Ruzludo",
     "uninstall": "Malinstali",
     "up": "Supren",
     "update": "Ĝisdatigo",
     "upload": "Alŝutu",
     "unmute": "Malŝaltu",
-    "mute": "Silentigi",
+    "mute": "Mute",
     "branding": "Markado",
     "adminDrawerDashboard": "Panelo",
     "adminDrawerAnalytics": "Analitiko",
@@ -4574,9 +4574,9 @@
     "adminDrawerUsers": "Uzantoj",
     "adminDrawerLibraries": "Bibliotekoj",
     "adminDrawerTranscoding": "Transkodigo",
-    "adminDrawerResume": "Daŭrigi",
-    "adminDrawerStreaming": "Elsendfluado",
-    "adminDrawerTrickplay": "Trickplay",
+    "adminDrawerResume": "Rekomenci",
+    "adminDrawerStreaming": "Streaming",
+    "adminDrawerTrickplay": "Ruzludo",
     "adminDrawerDevices": "Aparatoj",
     "adminDrawerActivity": "Aktiveco",
     "adminDrawerNetworking": "Retoj",
@@ -4671,16 +4671,16 @@
     "sessionPrev": "Antaŭa",
     "sessionRewind": "Rebobenu",
     "sessionForward": "Antaŭen",
-    "sessionNext": "Sekva",
+    "sessionNext": "Poste",
     "sessionVolumeDown": "Vol -",
-    "sessionVolumeUp": "Laŭt. +",
+    "sessionVolumeUp": "Vol +",
     "uhd4k": "4K",
     "nowPlaying": "Nun Ludante",
-    "volume": "Laŭteco",
+    "volume": "Volumo",
     "actions": "Agoj",
-    "videoCodec": "Videa kodeko",
+    "videoCodec": "Video Codec",
     "audioCodec": "Aŭdiokodeko",
-    "hwAccel": "Aparatara akcelo",
+    "hwAccel": "HW Accel",
     "completion": "Kompletigo",
     "direct": "Rekta",
     "adminDisconnect": "Malkonekti",
@@ -4904,7 +4904,7 @@
     "adminBackToUsers": "Reen al Uzantoj",
     "adminSaveProfile": "Konservi Profilon",
     "adminDeleteUser": "Forigi Uzanton",
-    "admin": "Administranto",
+    "admin": "Admin",
     "adminFullAccessWarning": "Administrantoj havas kompletan aliron al la servilo. Donu kun singardemo.",
     "administrator": "Administranto",
     "adminHiddenUser": "Kaŝita uzanto",
@@ -5367,7 +5367,7 @@
     "adminSegmentKeepSeconds": "Segmento konservi (sekundoj)",
     "adminThrottleBuffering": "Akcelila bufro",
     "adminTrickplaySaved": "Trickplay-agordoj konservitaj",
-    "adminTrickplayLoadFailed": "Malsukcesis ŝargi Trickplay-agordojn",
+    "adminTrickplayLoadFailed": "Malsukcesis ŝargi trukludajn agordojn",
     "adminEnableHardwareAcceleration": "Ebligu aparatan akcelon",
     "adminEnableKeyFrameExtraction": "Ebligu eltiron de nur ŝlosila kadro",
     "adminKeyFrameSubtitle": "Pli rapida sed pli malalta precizeco",
@@ -5401,7 +5401,7 @@
     "adminHttpsPort": "HTTPS-haveno",
     "adminPublicHttpsPort": "Publika HTTPS-haveno",
     "adminBaseUrl": "Baza URL",
-    "adminBaseUrlHint": "ekz. /jellyfin",
+    "adminBaseUrlHint": "ekz. /mezulo",
     "https": "HW Accel",
     "adminEnableHttps": "Ebligu HTTPS",
     "adminLocalNetwork": "Loka Reto",
@@ -5647,7 +5647,7 @@
             }
         }
     },
-    "adminTunerDiscovery": "Malkovro de agordiloj",
+    "adminTunerDiscovery": "Tuner Discovery",
     "adminChannelMappings": "Kanalaj Mapoj",
     "adminNoDiscoveredTuners": "Ankoraŭ neniuj malkovritaj agordiloj",
     "adminSettingsSaved": "Agordoj konservitaj",
@@ -5745,7 +5745,7 @@
     "adminMetadataRole": "Rolo",
     "adminMetadataImagePrimary": "Primara",
     "adminMetadataImageBackdrop": "Fono",
-    "adminMetadataImageLogo": "Emblemo",
+    "adminMetadataImageLogo": "Logo",
     "adminMetadataImageBanner": "Standardo",
     "adminMetadataImageThumb": "Dikfingro",
     "adminMetadataRecursive": "Rekursiva",
@@ -5952,7 +5952,7 @@
     "adminPlaybackEncodingThreads": "Kodi fadenojn",
     "adminPlaybackFallbackFont": "Ebligu rezervan tiparon",
     "adminPlaybackFallbackFontPath": "Retipara vojo",
-    "adminPlaybackStreaming": "Elsendfluado",
+    "adminPlaybackStreaming": "Streaming",
     "adminResumeVideo": "Video",
     "adminResumeAudiobooks": "Aŭdlibroj",
     "adminResumeMinAudiobookPct": "Minimuma aŭdlibro-rekomenca procento",
@@ -5984,7 +5984,7 @@
     "adminTaskCancelling": "Nuligo...",
     "adminTaskRunning": "Kurante...",
     "adminTaskNeverRun": "Neniam kuru",
-    "adminTaskStop": "Haltigi",
+    "adminTaskStop": "Haltu",
     "adminTaskRun": "Kuru",
     "adminTaskDetailLastExecution": "Lasta Ekzekuto",
     "adminTaskDetailStarted": "Komencis",
@@ -6028,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "Ĉiujn 12 horojn",
     "adminTaskTriggerEvery24Hours": "Ĉiujn 24 horojn",
     "adminTaskTriggerEvery2Days": "Ĉiujn 2 tagojn",
-    "adminTaskTriggerHours": "{count, plural, one{1 horo} other{{count} horoj}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6084,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days}t",
+    "adminActivityDaysShort": "{days}d",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6106,7 +6106,7 @@
     "adminTrickplayDescription": "Agordu trickplay bildgeneracion por serĉi antaŭrigardajn bildetojn.",
     "adminNetworkingPublicHttpsPort": "Publika HTTPS-haveno",
     "adminNetworkingBaseUrl": "Baza URL",
-    "adminNetworkingBaseUrlHint": "ekz. /jellyfin",
+    "adminNetworkingBaseUrlHint": "ekz. /mezulo",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Vojo de atestilo",
     "adminNetworkingRemoteIpFilter": "Fora IP-Filtrilo",
@@ -6170,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay postulas Jellyfin-servilon. La nuna servilo ne subtenas ĝin.",
     "syncPlayGroupFallbackName": "SyncPlay Grupo",
     "syncPlayGroupTooltip": "SyncPlay grupo",
-    "syncPlayParticipantCount": "{count, plural, one {# partoprenanto} other {# partoprenantoj}}",
+    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6251,7 +6251,7 @@
     "rememberMyChoice": "Memoru mian elekton",
     "playHdr10Fallback": "Ludu HDR10-riparon",
     "requestTranscode": "Petu transkodon",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# vico malkovrita} other {# vicoj malkovritaj}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6326,16 +6326,16 @@
     "pinIncorrect": "Malĝusta PIN",
     "pinMismatch": "PIN-oj ne kongruas",
     "pinForgot": "Ĉu vi forgesis PIN?",
-    "pinClear": "Vakigi",
-    "pinBackspace": "Retropaŝo",
-    "quickConnectAuthorized": "Peto de Quick Connect rajtigita.",
-    "quickConnectInvalidOrExpired": "Kodo de Quick Connect estas nevalida aŭ eksvalidiĝinta.",
-    "quickConnectNotSupported": "Quick Connect ne estas subtenata sur ĉi tiu servilo.",
+    "pinClear": "Klara",
+    "pinBackspace": "Backspace",
+    "quickConnectAuthorized": "Peto de Rapida Konekto rajtigita.",
+    "quickConnectInvalidOrExpired": "Rapida Konekto-kodo estas nevalida aŭ eksvalidiĝis.",
+    "quickConnectNotSupported": "Rapida Konekto ne estas subtenata sur ĉi tiu servilo.",
     "quickConnectAuthorizeFailed": "Malsukcesis rajtigi Quick Connect-kodon.",
-    "quickConnectDisabled": "Quick Connect estas malŝaltita sur ĉi tiu servilo.",
-    "quickConnectForbidden": "Via konto ne povas rajtigi ĉi tiun peton de Quick Connect.",
-    "quickConnectNotFound": "Kodo de Quick Connect ne estis trovita. Provu novan kodon.",
-    "quickConnectFailedWithMessage": "Quick Connect malsukcesis: {message}",
+    "quickConnectDisabled": "Rapida Konekto estas malŝaltita en ĉi tiu servilo.",
+    "quickConnectForbidden": "Via konto ne povas rajtigi ĉi tiun peton de Rapida Konekto.",
+    "quickConnectNotFound": "Rapida Konekto-kodo ne estis trovita. Provu novan kodon.",
+    "quickConnectFailedWithMessage": "Rapida Konekto malsukcesis: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6412,10 +6412,10 @@
     "playlistNoneFound": "Neniuj ludlistoj trovitaj",
     "addToPlaylist": "Aldoni al Ludlisto",
     "lyricsNotAvailable": "Neniu kantoteksto haveblaj",
-    "upNext": "Sekva",
+    "upNext": "Up Next",
     "playNext": "Ludu Poste",
     "stillWatchingContent": "La reprodukto estas paŭzita. Ĉu vi ankoraŭ rigardas?",
-    "stillWatchingStop": "Haltigi",
+    "stillWatchingStop": "Haltu",
     "stillWatchingContinue": "Daŭrigu",
     "skipSegment": "Preterpasi {segment}",
     "@skipSegment": {
@@ -6459,7 +6459,7 @@
     "@playerTooltipCastControls": {
         "description": "Tooltip label for active cast controls button in player"
     },
-    "playerTooltipPlaybackQuality": "Bitrapido",
+    "playerTooltipPlaybackQuality": "Bitrate",
     "@playerTooltipPlaybackQuality": {
         "description": "Tooltip label for playback quality/bitrate control in player"
     },
@@ -6567,7 +6567,7 @@
     "settingsCheckForUpdates": "Kontrolu ĝisdatigojn",
     "settingsCheckForUpdatesSubtitle": "Kontrolu la plej novan eldonon de Moonfin",
     "settingsPoweredByFlutter": "Funkciigita de Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# licencavizo} other {# licencavizoj}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6763,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Registri",
+    "record": "Rekordo",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6791,7 +6791,7 @@
     "@settingsAudioOutputModeAvrPassthrough": {
         "description": "Audio output mode option for AVR passthrough"
     },
-    "settingsAudioFallbackCodec": "Rezerva aŭdia kodeko",
+    "settingsAudioFallbackCodec": "Audio Fallback Codec",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
     },
@@ -6799,7 +6799,7 @@
     "@settingsAudioPassthroughAdvanced": {
         "description": "Section title for advanced passthrough controls"
     },
-    "settingsAudioCodecPassthrough": "Kodeka trapaso",
+    "settingsAudioCodecPassthrough": "Codec Passthrough",
     "@settingsAudioCodecPassthrough": {
         "description": "Title for codec passthrough settings group"
     },
@@ -6815,19 +6815,19 @@
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "DTS Core trapaso",
+    "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
-    "settingsAudioDtsHdPassthrough": "DTS-HD MA trapaso",
+    "settingsAudioDtsHdPassthrough": "DTS-HD MA Passthrough",
     "@settingsAudioDtsHdPassthrough": {
         "description": "Setting for DTS-HD MA passthrough"
     },
-    "settingsAudioTrueHdPassthrough": "TrueHD trapaso",
+    "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos trapaso",
+    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
     "@settingsAudioTrueHdAtmosPassthrough": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
@@ -6891,7 +6891,7 @@
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count} kanaloj PCM",
+    "settingsAudioPcmChannels": "{count}ch PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -6928,7 +6928,7 @@
     "@settingsAudioDiagnosticsHlsFmp4AudioCodecs": {
         "description": "Diagnostics label for HLS fMP4 audio codecs"
     },
-    "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif trapaso",
+    "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif passthrough",
     "@settingsAudioDiagnosticsAudioSpdifPassthrough": {
         "description": "Diagnostics label for audio-spdif passthrough codecs"
     },
@@ -7192,7 +7192,7 @@
     "analyticsTopArtists": "Plej bonaj Artistoj",
     "analyticsTopAuthors": "Ĉefaj Aŭtoroj",
     "analyticsTopContributors": "Ĉefaj Kontribuantoj",
-    "analyticsLibrariesCount": "{count, plural, =1{1 Biblioteko} other{{count} Bibliotekoj}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7234,7 +7234,7 @@
     "mixedContent": "Miksita Enhavo",
     "homeVideosAndPhotos": "Hejmaj Videoj kaj Fotoj",
     "mixedMoviesAndShows": "Miksitaj Filmoj kaj Spektakloj",
-    "intelQuickSync": "Intel Quick Sync",
+    "intelQuickSync": "Intel Rapida Sinkronigo",
     "rockchipMpp": "Rockchip MPP",
     "dolbyVision": "Dolby Vision",
     "noRecordingsFound": "Neniuj registradoj trovitaj",
@@ -7302,199 +7302,199 @@
     "cb7ExtractionPluginUnavailable": "CB7-eltira kromaĵo ne haveblas sur ĉi tiu platformo.",
     "closeGenrePanel": "Fermu ĝenran panelon",
     "loadingShuffle": "Ŝargante miksadon...",
-    "libraryShuffleLabel": "BIBLIOTEKA MIKSADO",
-    "randomShuffleLabel": "HAZARDA MIKSADO",
-    "genresShuffleLabel": "ĜENRA MIKSADO",
+    "libraryShuffleLabel": "LIBRARY SHUFFLE",
+    "randomShuffleLabel": "RANDOM SHUFFLE",
+    "genresShuffleLabel": "GENRES SHUFFLE",
     "autoHdrSwitching": "Aŭtomata HDR Ŝanĝo",
     "autoHdrSwitchingDescription": "Aŭtomate ebligu HDR por HDR-video-reproduktado kaj restarigu ekranreĝimon ĉe eliro.",
     "whenFullscreen": "Kiam plenekrana",
     "transcodingLimits": "Transkodigaj Limoj",
     "settingsSupportMoonfinSubtitle": "Donacu kafon al la programisto",
-    "accountPreferences": "KONTAJ PREFEROJ",
+    "accountPreferences": "",
     "@accountPreferences": {
         "description": "Section header for account preferences settings"
     },
-    "interfaceLanguage": "Interfaca lingvo",
+    "interfaceLanguage": "",
     "@interfaceLanguage": {
         "description": "Label for the app interface language setting"
     },
-    "systemLanguageDefault": "Sistema defaŭlto",
+    "systemLanguageDefault": "",
     "@systemLanguageDefault": {
         "description": "Label for using the system default language in settings"
     },
-    "empty": "Malplena",
+    "empty": "",
     "@empty": {
         "description": "Label indicating a section or category is empty"
     },
-    "detailScreenStyle": "Stilo de detala ekrano",
+    "detailScreenStyle": "",
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Klasika estas la origina centrigita aranĝo de Moonfin. Moderna estas respondema kinema aranĝo.",
+    "detailScreenStyleSubtitle": "",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
-    "detailScreenStyleMoonfin": "Klasika",
+    "detailScreenStyleMoonfin": "",
     "@detailScreenStyleMoonfin": {
         "description": "Detail screen style option: the classic centered layout"
     },
-    "detailScreenStyleModern": "Moderna",
+    "detailScreenStyleModern": "",
     "@detailScreenStyleModern": {
         "description": "Detail screen style option: the responsive cinematic layout"
     },
-    "expandedTabs": "Etenditaj langetoj",
+    "expandedTabs": "",
     "@expandedTabs": {
         "description": "Label for the detail screen expanded tabs setting"
     },
-    "expandedTabsSubtitle": "Aŭtomate montri la enhavon de la langetoj dum vi trarigardas ilin. Malŝaltu por malfermi kaj fermi ĉiun langeton permane.",
+    "expandedTabsSubtitle": "",
     "@expandedTabsSubtitle": {
         "description": "Explanation under the expanded tabs setting"
     },
-    "showTechnicalDetails": "Ĉu montri teknikajn detalojn?",
+    "showTechnicalDetails": "",
     "@showTechnicalDetails": {
         "description": "Label for the detail screen setting to show stream/codec technical details"
     },
-    "showTechnicalDetailsSubtitle": "Montri informojn pri kodeko, distingivo kaj fluo en la resumo de la banero",
+    "showTechnicalDetailsSubtitle": "",
     "@showTechnicalDetailsSubtitle": {
         "description": "Explanation under the show technical details setting"
     },
-    "recommendationSystem": "Rekomenda sistemo",
+    "recommendationSystem": "",
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Uzi la lok-bibliotekan algoritmon de Moonfin Recommends aŭ la retajn similecajn metrikojn de TMDb. Noto: retaj rekomendoj bezonas Seerr-integriĝon.",
+    "recommendationSystemSubtitle": "",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
-    "recommendationSystemMoonfin": "Moonfin Recommends",
+    "recommendationSystemMoonfin": "",
     "@recommendationSystemMoonfin": {
         "description": "Recommendation system option: Moonfin Recommends"
     },
-    "recommendationSystemTmdb": "TMDb-simileco",
+    "recommendationSystemTmdb": "",
     "@recommendationSystemTmdb": {
         "description": "Recommendation system option: TMDb Similarity"
     },
-    "recommendationsApplyParentalRatingCap": "Ĉu apliki limon de aĝoklasifiko?",
+    "recommendationsApplyParentalRatingCap": "",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
-    "recommendationsApplyParentalRatingCapSubtitle": "Limigi la sugestojn de Moonfin Recommends laŭ la aĝoklasifiko de la celata aŭdvidaĵo",
+    "recommendationsApplyParentalRatingCapSubtitle": "",
     "@recommendationsApplyParentalRatingCapSubtitle": {
         "description": "Explanation under the parental rating cap setting toggle"
     },
-    "interfaceStyle": "Interfaca stilo",
+    "interfaceStyle": "",
     "@interfaceStyle": {
         "description": "Label for the Automatic/Apple/Material interface style setting"
     },
-    "interfaceStyleSubtitle": "Aŭtomata adaptiĝas al via aparato. Elektu Apple aŭ Material por devigi aspekton.",
+    "interfaceStyleSubtitle": "",
     "@interfaceStyleSubtitle": {
         "description": "Explanation under the interface style setting"
     },
-    "interfaceStyleAutomatic": "Aŭtomata",
+    "interfaceStyleAutomatic": "",
     "@interfaceStyleAutomatic": {
         "description": "Interface style option: follow the platform"
     },
-    "interfaceStyleApple": "Apple",
+    "interfaceStyleApple": "",
     "@interfaceStyleApple": {
         "description": "Interface style option: Apple native look"
     },
-    "interfaceStyleMaterial": "Material",
+    "interfaceStyleMaterial": "",
     "@interfaceStyleMaterial": {
         "description": "Interface style option: Material look"
     },
-    "glassQuality": "Kvalito de vitro",
+    "glassQuality": "",
     "@glassQuality": {
         "description": "Label for the glass rendering quality setting"
     },
-    "glassQualitySubtitle": "Aŭtomata elektas la plej bonan vitran efekton por ĉi tiu aparato. Plena devigas veran malfokusigon; Reduktita uzas malpezan vitron, kiu ŝparas GPU-energion.",
+    "glassQualitySubtitle": "",
     "@glassQualitySubtitle": {
         "description": "Explanation under the glass quality setting"
     },
-    "glassQualityAuto": "Aŭtomata",
+    "glassQualityAuto": "",
     "@glassQualityAuto": {
         "description": "Glass quality option: per-device default"
     },
-    "glassQualityFull": "Plena",
+    "glassQualityFull": "",
     "@glassQualityFull": {
         "description": "Glass quality option: force real blur"
     },
-    "glassQualityReduced": "Reduktita",
+    "glassQualityReduced": "",
     "@glassQualityReduced": {
         "description": "Glass quality option: lightweight zero-blur glass"
     },
-    "customThemeTitle": "Propra temo",
+    "customThemeTitle": "",
     "@customThemeTitle": {
         "description": "Title for the custom theme settings section"
     },
-    "customThemeSubtitle": "Propraj temoj ŝanĝas vidajn elementojn tra Moonfin. Elektu unu el ĉi tiuj ebloj laŭ via stilo.",
+    "customThemeSubtitle": "",
     "@customThemeSubtitle": {
         "description": "Description under custom themes section"
     },
-    "themeGlass": "Vitro",
+    "themeGlass": "",
     "@themeGlass": {
         "description": "Display name for the Glass theme"
     },
-    "themeGlassSubtitle": "Likva-vitra stilo kun drivanta gradienta fono, prujnaj surfacoj kaj Apple-blua akcento",
+    "themeGlassSubtitle": "",
     "@themeGlassSubtitle": {
         "description": "Preview description for the Glass theme"
     },
-    "theme8BitHero": "8-bita Heroo",
+    "theme8BitHero": "",
     "@theme8BitHero": {
         "description": "Display name for the 8-bit Hero theme"
     },
-    "theme8BitHeroSubtitle": "Retro piksel-arta stilo kun dika paletro, blokecaj borderoj, akraj falombroj kaj piksela tiparo",
+    "theme8BitHeroSubtitle": "",
     "@theme8BitHeroSubtitle": {
         "description": "Preview description for the 8-bit Hero theme"
     },
-    "gameMenu": "Menuo",
+    "gameMenu": "",
     "@gameMenu": {
         "description": "Tooltip for the in-game menu button"
     },
-    "gamePaused": "Paŭzita",
+    "gamePaused": "",
     "@gamePaused": {
         "description": "Status shown in the in-game menu while the game is paused"
     },
-    "gameSaveState": "Konservi staton",
+    "gameSaveState": "",
     "@gameSaveState": {
         "description": "In-game menu action to save the game state"
     },
-    "games": "Ludoj",
+    "games": "",
     "@games": {
         "description": "Label for the games category tab in search results"
     },
-    "gameLoadState": "Ŝargi staton",
+    "gameLoadState": "",
     "@gameLoadState": {
         "description": "In-game menu action to load the saved game state"
     },
-    "gameFastForward": "Rapide antaŭen",
+    "gameFastForward": "",
     "@gameFastForward": {
         "description": "In-game menu action to toggle fast-forward"
     },
-    "gameEmulatorSettings": "Agordoj de emulilo",
+    "gameEmulatorSettings": "",
     "@gameEmulatorSettings": {
         "description": "In-game menu action opening the emulator settings"
     },
-    "gameNoCoreOptions": "Ĉi tiu kerno havas neniujn agordeblajn opciojn.",
+    "gameNoCoreOptions": "",
     "@gameNoCoreOptions": {
         "description": "Shown when a game core exposes no settings"
     },
-    "gameHoldToOpenMenu": "Tenu por malfermi la menuon",
+    "gameHoldToOpenMenu": "",
     "@gameHoldToOpenMenu": {
         "description": "Hint shown while holding the gamepad combo to open the in-game menu"
     },
-    "gamePlaybackUnsupported": "Ludado ankoraŭ ne estas subtenata sur ĉi tiu aparato.",
+    "gamePlaybackUnsupported": "",
     "@gamePlaybackUnsupported": {
         "description": "Shown when the device cannot run the retro-game emulator"
     },
-    "latestBooks": "Plej novaj libroj",
+    "latestBooks": "",
     "@latestBooks": {
         "description": "Row title for recently added books in the book library"
     },
-    "latestAudiobooks": "Plej novaj aŭdlibroj",
+    "latestAudiobooks": "",
     "@latestAudiobooks": {
         "description": "Row title for recently added audiobooks in the book library"
     },
-    "bookSeriesItemCount": "{count, plural, =1{1 libro} other{{count} libroj}}",
+    "bookSeriesItemCount": "",
     "@bookSeriesItemCount": {
         "description": "Subtitle for a book series shelf entry showing how many books it contains",
         "placeholders": {
@@ -7503,15 +7503,15 @@
             }
         }
     },
-    "bookFormatBook": "Libro",
+    "bookFormatBook": "",
     "@bookFormatBook": {
         "description": "Semantic label for the book format badge on library cards"
     },
-    "bookFormatAudiobook": "Aŭdlibro",
+    "bookFormatAudiobook": "",
     "@bookFormatAudiobook": {
         "description": "Semantic label for the audiobook format badge on library cards"
     },
-    "bookPercentRead": "{percent}% legita",
+    "bookPercentRead": "",
     "@bookPercentRead": {
         "description": "Reading progress label on book cards",
         "placeholders": {
@@ -7520,7 +7520,7 @@
             }
         }
     },
-    "bookTimeLeft": "{time} restas",
+    "bookTimeLeft": "",
     "@bookTimeLeft": {
         "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
         "placeholders": {
@@ -7529,47 +7529,47 @@
             }
         }
     },
-    "bookHeroRead": "Legi",
+    "bookHeroRead": "",
     "@bookHeroRead": {
         "description": "Hero CTA label to start reading a book"
     },
-    "bookHeroListen": "Aŭskulti",
+    "bookHeroListen": "",
     "@bookHeroListen": {
         "description": "Hero CTA label to start listening to an audiobook"
     },
-    "items": "Eroj",
+    "items": "",
     "@items": {
         "description": "Tab label for the items in a collection/box set"
     },
-    "extras": "Ekstraĵoj",
+    "extras": "",
     "@extras": {
         "description": "Tab label for special features / extras"
     },
-    "behindTheScenes": "Malantaŭ la scenejo",
+    "behindTheScenes": "",
     "@behindTheScenes": {
         "description": "Tab label for behind the scenes special features"
     },
-    "deletedScenes": "Forigitaj scenoj",
+    "deletedScenes": "",
     "@deletedScenes": {
         "description": "Tab label for deleted scenes special features"
     },
-    "featurettes": "Dokumentetoj",
+    "featurettes": "",
     "@featurettes": {
         "description": "Tab label for featurettes special features"
     },
-    "interviews": "Intervjuoj",
+    "interviews": "",
     "@interviews": {
         "description": "Tab label for interviews special features"
     },
-    "scenes": "Scenoj",
+    "scenes": "",
     "@scenes": {
         "description": "Tab label for scenes special features"
     },
-    "shorts": "Mallongaj filmoj",
+    "shorts": "",
     "@shorts": {
         "description": "Tab label for shorts special features"
     },
-    "timeRemaining": "{time} restas",
+    "timeRemaining": "",
     "@timeRemaining": {
         "description": "Label showing remaining playback time, e.g. '42m remaining'",
         "placeholders": {
@@ -7578,7 +7578,7 @@
             }
         }
     },
-    "endsIn": "Finiĝas post {time}",
+    "endsIn": "",
     "@endsIn": {
         "description": "Label showing remaining time for segment or timeout",
         "placeholders": {
@@ -7587,27 +7587,27 @@
             }
         }
     },
-    "directors": "REĜISOROJ",
+    "directors": "",
     "@directors": {
         "description": "Metadata label for directors"
     },
-    "writer": "VERKISTO",
+    "writer": "",
     "@writer": {
         "description": "Metadata label for writer"
     },
-    "shuffleAllMusic": "Miksi la tutan muzikon",
+    "shuffleAllMusic": "",
     "@shuffleAllMusic": {
         "description": "Car browse action that shuffles the whole music library"
     },
-    "carSignInPrompt": "Ensalutu al Moonfin per via telefono",
+    "carSignInPrompt": "",
     "@carSignInPrompt": {
         "description": "Shown in the car when no account is signed in"
     },
-    "carServerUnreachable": "Ne eblas atingi vian servilon",
+    "carServerUnreachable": "",
     "@carServerUnreachable": {
         "description": "Shown in the car when the media server can't be reached"
     },
-    "guideNextProgram": "Sekva: {time}  {title}",
+    "guideNextProgram": "",
     "@guideNextProgram": {
         "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
         "placeholders": {
@@ -7619,7 +7619,7 @@
             }
         }
     },
-    "guideMinutesLeft": "{minutes}min restas",
+    "guideMinutesLeft": "",
     "@guideMinutesLeft": {
         "description": "Remaining time of the current program, under an hour",
         "placeholders": {
@@ -7628,7 +7628,7 @@
             }
         }
     },
-    "guideHoursLeft": "{hours}h restas",
+    "guideHoursLeft": "",
     "@guideHoursLeft": {
         "description": "Remaining time of the current program, whole hours",
         "placeholders": {
@@ -7637,7 +7637,7 @@
             }
         }
     },
-    "guideHoursMinutesLeft": "{hours}h {minutes}min restas",
+    "guideHoursMinutesLeft": "",
     "@guideHoursMinutesLeft": {
         "description": "Remaining time of the current program, hours and minutes",
         "placeholders": {
@@ -7649,301 +7649,301 @@
             }
         }
     },
-    "themeMusicSettingsSubtitle": "Detalaj paĝoj, hejmaj vicoj kaj laŭteco",
+    "themeMusicSettingsSubtitle": "",
     "@themeMusicSettingsSubtitle": {
         "description": "Subtitle for the Theme Music settings sub-category tile"
     },
-    "loopThemeMusic": "Ripetigi teman muzikon",
+    "loopThemeMusic": "",
     "@loopThemeMusic": {
         "description": "Setting to loop the theme music"
     },
-    "loopThemeMusicSubtitle": "Ripeti la trakon anstataŭ ludi ĝin unufoje",
+    "loopThemeMusicSubtitle": "",
     "@loopThemeMusicSubtitle": {
         "description": "Description for the loop theme music setting"
     },
-    "settingsScrollWheelAction": "Musa rulumrado",
+    "settingsScrollWheelAction": "",
     "@settingsScrollWheelAction": {
         "description": "Setting title for the mouse scroll wheel action during playback"
     },
-    "settingsScrollWheelActionDescription": "Elektu kion faras rulumado de la musrado super la video dum ludado.",
+    "settingsScrollWheelActionDescription": "",
     "@settingsScrollWheelActionDescription": {
         "description": "Description for the mouse scroll wheel action setting"
     },
-    "scrollWheelActionOff": "Malŝaltita",
+    "scrollWheelActionOff": "",
     "@scrollWheelActionOff": {
         "description": "Scroll wheel action option: do nothing"
     },
-    "scrollWheelActionSeek": "Serĉi (antaŭen / malantaŭen)",
+    "scrollWheelActionSeek": "",
     "@scrollWheelActionSeek": {
         "description": "Scroll wheel action option: seek forward and back"
     },
-    "scrollWheelActionVolume": "Laŭteco",
+    "scrollWheelActionVolume": "",
     "@scrollWheelActionVolume": {
         "description": "Scroll wheel action option: adjust volume"
     },
-    "playerTooltipVolume": "Laŭteco",
+    "playerTooltipVolume": "",
     "@playerTooltipVolume": {
         "description": "Tooltip for the volume control button in the player OSD"
     },
-    "fallbackAudioLanguage": "Rezerva aŭdia lingvo",
+    "fallbackAudioLanguage": "",
     "@fallbackAudioLanguage": {
         "description": "Setting for fallback audio language"
     },
-    "preferDefaultAudioTrack": "Preferi defaŭltan aŭdian trakon",
+    "preferDefaultAudioTrack": "",
     "@preferDefaultAudioTrack": {
         "description": "Setting for preferring default audio track"
     },
-    "preferDefaultAudioTrackDescription": "Preferi la originalan aŭdian trakon anstataŭ lokalizitan sinkronigadon.",
+    "preferDefaultAudioTrackDescription": "",
     "@preferDefaultAudioTrackDescription": {
         "description": "Description for preferring default audio track setting"
     },
-    "preferAudioDescription": "Preferi aŭdpriskribajn trakojn",
+    "preferAudioDescription": "",
     "@preferAudioDescription": {
         "description": "Setting for preferring audio description tracks"
     },
-    "preferAudioDescriptionDescription": "Preferi aŭdpriskribajn trakojn anstataŭ normalajn trakojn.",
+    "preferAudioDescriptionDescription": "",
     "@preferAudioDescriptionDescription": {
         "description": "Description for preferring audio description tracks setting"
     },
-    "transcodingAudio": "Transkodado (Aŭdio)",
+    "transcodingAudio": "",
     "@transcodingAudio": {
         "description": "Label for audio-only transcode playback method"
     },
-    "directStreamRemux": "Rekta fluo (Remux)",
+    "directStreamRemux": "",
     "@directStreamRemux": {
         "description": "Play method label for direct stream with remuxing"
     },
-    "transcodingBitrateOrResolution": "Transkodado (Bitrapido aŭ Distingivo)",
+    "transcodingBitrateOrResolution": "",
     "@transcodingBitrateOrResolution": {
         "description": "Play method label for transcoding due to bitrate or resolution"
     },
-    "transcodingVideoAndAudio": "Transkodado (Video kaj Aŭdio)",
+    "transcodingVideoAndAudio": "",
     "@transcodingVideoAndAudio": {
         "description": "Play method label for transcoding both video and audio"
     },
-    "transcodingVideo": "Transkodado (Video)",
+    "transcodingVideo": "",
     "@transcodingVideo": {
         "description": "Play method label for transcoding video"
     },
-    "settingsAudioOutputModeDescription": "Elektu kiel la aŭdio estas dekodita. AVR Trapaso sendas krudajn Dolby/DTS-fluojn al via ricevilo; Aŭtomata aŭ Downmix dekodas loke.",
+    "settingsAudioOutputModeDescription": "",
     "@settingsAudioOutputModeDescription": {
         "description": "Description for audio output mode setting"
     },
-    "settingsAudioFallbackCodecDescription": "Elektu la celan formaton por transkodi plurkanalan aŭdion kiam la fontfluo ne povas esti rekte ludata aŭ trapasata.",
+    "settingsAudioFallbackCodecDescription": "",
     "@settingsAudioFallbackCodecDescription": {
         "description": "Description for audio fallback codec setting"
     },
-    "settingsAudioFallbackCodecAuto": "Aŭtomata detekto\n(Rekomendita)",
+    "settingsAudioFallbackCodecAuto": "",
     "@settingsAudioFallbackCodecAuto": {
         "description": "Fallback codec option: Auto"
     },
-    "settingsAudioFallbackCodecAac": "AAC\n(Defaŭlta)",
+    "settingsAudioFallbackCodecAac": "",
     "@settingsAudioFallbackCodecAac": {
         "description": "Fallback codec option: AAC"
     },
-    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "settingsAudioFallbackCodecAc3": "",
     "@settingsAudioFallbackCodecAc3": {
         "description": "Fallback codec option: AC3"
     },
-    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "settingsAudioFallbackCodecEac3": "",
     "@settingsAudioFallbackCodecEac3": {
         "description": "Fallback codec option: EAC3"
     },
-    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(Senperda)",
+    "settingsAudioFallbackCodecTrueHd": "",
     "@settingsAudioFallbackCodecTrueHd": {
         "description": "Fallback codec option: TrueHD"
     },
-    "settingsAudioFallbackCodecMp3": "MP3\n(Nur stereofonia)",
+    "settingsAudioFallbackCodecMp3": "",
     "@settingsAudioFallbackCodecMp3": {
         "description": "Fallback codec option: MP3"
     },
-    "settingsAudioFallbackCodecOpus": "Opus\n(Efika)",
+    "settingsAudioFallbackCodecOpus": "",
     "@settingsAudioFallbackCodecOpus": {
         "description": "Fallback codec option: Opus"
     },
-    "settingsAudioFallbackCodecFlac": "FLAC\n(Senperda)",
+    "settingsAudioFallbackCodecFlac": "",
     "@settingsAudioFallbackCodecFlac": {
         "description": "Fallback codec option: FLAC"
     },
-    "settingsMaxAudioChannels": "Maksimumaj aŭdiaj kanaloj",
+    "settingsMaxAudioChannels": "",
     "@settingsMaxAudioChannels": {
         "description": "Setting for maximum audio channels capability"
     },
-    "settingsMaxAudioChannelsDescription": "Agordu la maksimumajn kanalojn de via aŭdia aranĝo. Plurkanalaj fluoj superantaj ĉi tiun limon estos downmiksitaj aŭ transkoditaj.",
+    "settingsMaxAudioChannelsDescription": "",
     "@settingsMaxAudioChannelsDescription": {
         "description": "Description for maximum audio channels setting"
     },
-    "settingsMaxAudioChannelsAuto": "Aŭtomata detekto\n(Aparatara defaŭlto)",
+    "settingsMaxAudioChannelsAuto": "",
     "@settingsMaxAudioChannelsAuto": {
         "description": "Option: Auto detect channels"
     },
-    "settingsMaxAudioChannelsMono": "1.0 Monofonia",
+    "settingsMaxAudioChannelsMono": "",
     "@settingsMaxAudioChannelsMono": {
         "description": "Option: Mono (1 channel)"
     },
-    "settingsMaxAudioChannelsStereo": "2.0 Stereofonia",
+    "settingsMaxAudioChannelsStereo": "",
     "@settingsMaxAudioChannelsStereo": {
         "description": "Option: Stereo (2 channels)"
     },
-    "settingsMaxAudioChannels3_0": "3.0 / 2.1 Ĉirkaŭsono",
+    "settingsMaxAudioChannels3_0": "",
     "@settingsMaxAudioChannels3_0": {
         "description": "Option: 3 channels"
     },
-    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Kvarfonia",
+    "settingsMaxAudioChannels4_0": "",
     "@settingsMaxAudioChannels4_0": {
         "description": "Option: 4 channels"
     },
-    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Ĉirkaŭsono",
+    "settingsMaxAudioChannels5_0": "",
     "@settingsMaxAudioChannels5_0": {
         "description": "Option: 5 channels"
     },
-    "settingsMaxAudioChannels5_1": "5.1 Ĉirkaŭsono",
+    "settingsMaxAudioChannels5_1": "",
     "@settingsMaxAudioChannels5_1": {
         "description": "Option: 5.1 Surround channels"
     },
-    "settingsMaxAudioChannels6_1": "6.1 Ĉirkaŭsono",
+    "settingsMaxAudioChannels6_1": "",
     "@settingsMaxAudioChannels6_1": {
         "description": "Option: 6.1 Surround channels"
     },
-    "settingsMaxAudioChannels7_1": "7.1 Ĉirkaŭsono",
+    "settingsMaxAudioChannels7_1": "",
     "@settingsMaxAudioChannels7_1": {
         "description": "Option: 7.1 Surround channels"
     },
-    "settingsAudioRouteHeadphones": "Kapaŭskultiloj",
+    "settingsAudioRouteHeadphones": "",
     "@settingsAudioRouteHeadphones": {
         "description": "Audio route type wired or USB headphones"
     },
-    "subtitleMode": "Subteksta reĝimo",
+    "subtitleMode": "",
     "@subtitleMode": {
         "description": "Setting for subtitle mode"
     },
-    "subtitleModeFlagged": "Markita",
+    "subtitleModeFlagged": "",
     "@subtitleModeFlagged": {
         "description": "Subtitle mode: default/flagged"
     },
-    "subtitleModeAlways": "Ĉiam",
+    "subtitleModeAlways": "",
     "@subtitleModeAlways": {
         "description": "Subtitle mode: always play"
     },
-    "subtitleModeForeign": "Fremda",
+    "subtitleModeForeign": "",
     "@subtitleModeForeign": {
         "description": "Subtitle mode: foreign/smart"
     },
-    "subtitleModeForced": "Devigita",
+    "subtitleModeForced": "",
     "@subtitleModeForced": {
         "description": "Subtitle mode: only forced"
     },
-    "subtitleModeFlaggedDescription": "Ludas trakojn interne markitajn en la metadatumoj de la dosiero kiel \"default\" aŭ \"forced\".",
+    "subtitleModeFlaggedDescription": "",
     "@subtitleModeFlaggedDescription": {
         "description": "Description for flagged subtitle mode"
     },
-    "subtitleModeAlwaysDescription": "Aŭtomate ŝargas kaj montras subtekstojn ĉiufoje kiam video komenciĝas.",
+    "subtitleModeAlwaysDescription": "",
     "@subtitleModeAlwaysDescription": {
         "description": "Description for always subtitle mode"
     },
-    "subtitleModeForeignDescription": "Aŭtomate ŝaltas subtekstojn se la defaŭlta aŭdia trako estas en fremda lingvo.",
+    "subtitleModeForeignDescription": "",
     "@subtitleModeForeignDescription": {
         "description": "Description for foreign subtitle mode"
     },
-    "subtitleModeForcedDescription": "Ŝargas nur subtekstojn eksplicite markitajn per la marko \"forced\".",
+    "subtitleModeForcedDescription": "",
     "@subtitleModeForcedDescription": {
         "description": "Description for forced subtitle mode"
     },
-    "subtitleModeNoneDescription": "Tute malŝaltas aŭtomatan ŝargon de subtekstoj.",
+    "subtitleModeNoneDescription": "",
     "@subtitleModeNoneDescription": {
         "description": "Description for none subtitle mode"
     },
-    "fallbackSubtitleLanguage": "Rezerva subteksta lingvo",
+    "fallbackSubtitleLanguage": "",
     "@fallbackSubtitleLanguage": {
         "description": "Setting for fallback subtitle language"
     },
-    "subtitleStream": "Subteksta fluo",
+    "subtitleStream": "",
     "@subtitleStream": {
         "description": "Header for subtitle stream settings"
     },
     "reportDownloadsActivity": "Montri elŝutojn sur la servilo",
     "reportDownloadsActivitySubtitle": "Permesi al la servila administranto vidi viajn transkoditajn elŝutojn en la panelo",
-    "navbarAlwaysExpanded": "Ĉiam etendi etikedojn de la navigbreto",
+    "navbarAlwaysExpanded": "",
     "@navbarAlwaysExpanded": {
         "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
     },
-    "showSeerrButton": "Montri butonon de Seerr",
+    "showSeerrButton": "",
     "@showSeerrButton": {
         "description": "Setting for showing Seerr button"
     },
-    "groupItemsIntoCollections": "Grupigi erojn en kolektojn",
+    "groupItemsIntoCollections": "",
     "@groupItemsIntoCollections": {
         "description": "Setting for grouping items into collections"
     },
-    "hideCollectionAssociatedItems": "Kaŝi bibliotekajn erojn asociitajn kun kolektoj dum foliumado de bibliotekoj",
+    "hideCollectionAssociatedItems": "",
     "@hideCollectionAssociatedItems": {
         "description": "Description for grouping items into collections"
     },
-    "groupItemsIntoCollectionsDialogTitle": "Avizo pri bibliotekgrupigo",
+    "groupItemsIntoCollectionsDialogTitle": "",
     "@groupItemsIntoCollectionsDialogTitle": {
         "description": "Title of the alert dialog explaining server settings requirement"
     },
-    "groupItemsIntoCollectionsDialogMessage": "Por uzi ĉi tiun agordon, bonvolu certigi ke la bibliotekaj agordoj \"Grupigi filmojn en kolektojn\" kaj/aŭ \"Grupigi seriojn en kolektojn\" estas ebligitaj sub la Montroagordoj de via biblioteko en via Jellyfin- aŭ Emby-servilo.",
+    "groupItemsIntoCollectionsDialogMessage": "",
     "@groupItemsIntoCollectionsDialogMessage": {
         "description": "Message of the alert dialog explaining server settings requirement"
     },
-    "trailerAudio": "Aŭdio de antaŭfilmoj",
+    "trailerAudio": "",
     "@trailerAudio": {
         "description": "Setting for trailer audio"
     },
-    "enableTrailerAudio": "Ebligi aŭdion por antaŭfilmoj en la aŭdvida breto",
+    "enableTrailerAudio": "",
     "@enableTrailerAudio": {
         "description": "Description for trailer audio"
     },
-    "fullScreenRows": "Etenditaj hejmaj vicoj",
+    "fullScreenRows": "",
     "@fullScreenRows": {
         "description": "Setting for full screen home rows"
     },
-    "fullScreenRowsDescription": "Limigi hejmajn vicojn al 1 vico po ekrano",
+    "fullScreenRowsDescription": "",
     "@fullScreenRowsDescription": {
         "description": "Description for full screen home rows"
     },
-    "currentUser": "Nuna uzanto",
+    "currentUser": "",
     "@currentUser": {
         "description": "Option: current user"
     },
-    "clockModeStatic": "Statika",
+    "clockModeStatic": "",
     "@clockModeStatic": {
         "description": "Screensaver clock mode: fixed in a corner"
     },
-    "clockModeBouncing": "Resaltanta",
+    "clockModeBouncing": "",
     "@clockModeBouncing": {
         "description": "Screensaver clock mode: bounces around the screen"
     },
-    "seerrDiscoveryRows": "Malkovraj vicoj de Seerr",
+    "seerrDiscoveryRows": "",
     "@seerrDiscoveryRows": {
         "description": "Subtitle shown under Seerr discovery home rows"
     },
-    "seerrNotificationsSection": "Sciigoj",
+    "seerrNotificationsSection": "",
     "@seerrNotificationsSection": {
         "description": "Header for the Seerr notifications settings section"
     },
-    "seerrNotifyNewRequestsTitle": "Sciigoj pri novaj petoj",
+    "seerrNotifyNewRequestsTitle": "",
     "@seerrNotifyNewRequestsTitle": {
         "description": "Title for the toggle that notifies approvers of new Seerr requests"
     },
-    "seerrNotifyNewRequestsSubtitle": "Averti min kiam iu sendas peton",
+    "seerrNotifyNewRequestsSubtitle": "",
     "@seerrNotifyNewRequestsSubtitle": {
         "description": "Subtitle for the new request notifications toggle"
     },
-    "seerrNotifyLibraryAddedTitle": "Ĝisdatigoj pri petoj",
+    "seerrNotifyLibraryAddedTitle": "",
     "@seerrNotifyLibraryAddedTitle": {
         "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
     },
-    "seerrNotifyLibraryAddedSubtitle": "Aprobita, malaprobita kaj aldonita al via biblioteko",
+    "seerrNotifyLibraryAddedSubtitle": "",
     "@seerrNotifyLibraryAddedSubtitle": {
         "description": "Subtitle for the library-added notifications toggle"
     },
-    "seerrNotifyIssuesTitle": "Ĝisdatigoj pri problemoj",
+    "seerrNotifyIssuesTitle": "",
     "@seerrNotifyIssuesTitle": {
         "description": "Title for the issue notifications toggle"
     },
-    "seerrNotifyIssuesSubtitle": "Novaj problemoj, respondoj kaj solvoj",
+    "seerrNotifyIssuesSubtitle": "",
     "@seerrNotifyIssuesSubtitle": {
         "description": "Subtitle for the issue notifications toggle"
     },
@@ -7959,7 +7959,7 @@
     "imageCacheLimit": "Limo de bildkaŝmemoro",
     "clearImageCache": "Vakigi bildkaŝmemoron",
     "imageCacheCleared": "Bildkaŝmemoro vakigita",
-    "seerrDownloadingPercent": "Elŝutante · {percent}%",
+    "seerrDownloadingPercent": "",
     "@seerrDownloadingPercent": {
         "description": "Label above the Seerr download progress bar",
         "placeholders": {
@@ -7968,19 +7968,19 @@
             }
         }
     },
-    "seerrImportingStatus": "Importante",
+    "seerrImportingStatus": "",
     "@seerrImportingStatus": {
         "description": "Label when a Seerr download has finished and is importing"
     },
-    "failedStatus": "Malsukcesis",
+    "failedStatus": "",
     "@failedStatus": {
         "description": "Request status label when the request failed to send to Radarr/Sonarr"
     },
-    "processingStatus": "Traktante",
+    "processingStatus": "",
     "@processingStatus": {
         "description": "Filter label for approved requests being processed"
     },
-    "modifiedByName": "Modifita de {name}",
+    "modifiedByName": "",
     "@modifiedByName": {
         "description": "Label showing which manager acted on a request",
         "placeholders": {
@@ -7989,51 +7989,51 @@
             }
         }
     },
-    "completedStatus": "Finita",
+    "completedStatus": "",
     "@completedStatus": {
         "description": "Request status label when the request finished"
     },
-    "requestErrorDuplicate": "Ĉi tiu titolo jam estis petita",
+    "requestErrorDuplicate": "",
     "@requestErrorDuplicate": {
         "description": "Error when creating a request that already exists"
     },
-    "requestErrorQuota": "Limo de petoj atingita",
+    "requestErrorQuota": "",
     "@requestErrorQuota": {
         "description": "Error when the user is out of request quota"
     },
-    "requestErrorBlocklisted": "Ĉi tiu titolo estas en la bloklisto",
+    "requestErrorBlocklisted": "",
     "@requestErrorBlocklisted": {
         "description": "Error when requesting blocklisted media"
     },
-    "requestErrorNoSeasons": "Neniuj sezonoj restas por peti",
+    "requestErrorNoSeasons": "",
     "@requestErrorNoSeasons": {
         "description": "Error when every season is already requested or available"
     },
-    "requestErrorPermission": "Vi ne havas permeson fari ĉi tiun peton",
+    "requestErrorPermission": "",
     "@requestErrorPermission": {
         "description": "Error when the user lacks request permission"
     },
-    "seerrRequestsTitle": "Petoj",
+    "seerrRequestsTitle": "",
     "@seerrRequestsTitle": {
         "description": "Requests tab and screen title"
     },
-    "seerrIssuesTitle": "Problemoj",
+    "seerrIssuesTitle": "",
     "@seerrIssuesTitle": {
         "description": "Issues tab title on the requests hub"
     },
-    "sortNewest": "Plej novaj",
+    "sortNewest": "",
     "@sortNewest": {
         "description": "Request sort option, most recently added first"
     },
-    "sortLastModified": "Laste modifita",
+    "sortLastModified": "",
     "@sortLastModified": {
         "description": "Request sort option, most recently updated first"
     },
-    "noIssues": "Neniuj problemoj",
+    "noIssues": "",
     "@noIssues": {
         "description": "Shown when the issue list is empty"
     },
-    "movieQuotaRemaining": "{remaining} el {limit} filmpetoj restas",
+    "movieQuotaRemaining": "",
     "@movieQuotaRemaining": {
         "description": "Quota line in the request dialog",
         "placeholders": {
@@ -8045,7 +8045,7 @@
             }
         }
     },
-    "seasonQuotaRemaining": "{remaining} el {limit} sezonpetoj restas",
+    "seasonQuotaRemaining": "",
     "@seasonQuotaRemaining": {
         "description": "Quota line in the request dialog for series",
         "placeholders": {
@@ -8057,7 +8057,7 @@
             }
         }
     },
-    "partOfCollectionName": "Parto de {name}",
+    "partOfCollectionName": "",
     "@partOfCollectionName": {
         "description": "Banner on a movie that belongs to a collection",
         "placeholders": {
@@ -8066,15 +8066,15 @@
             }
         }
     },
-    "viewCollection": "Vidi kolekton",
+    "viewCollection": "",
     "@viewCollection": {
         "description": "Link to open the collection screen"
     },
-    "requestCollection": "Peti kolekton",
+    "requestCollection": "",
     "@requestCollection": {
         "description": "Button to request movies from a collection"
     },
-    "collectionMoviesSummary": "{total} filmoj · {available} disponeblaj",
+    "collectionMoviesSummary": "",
     "@collectionMoviesSummary": {
         "description": "Collection header summary line",
         "placeholders": {
@@ -8086,7 +8086,7 @@
             }
         }
     },
-    "requestMoviesCount": "Peti {count} filmojn",
+    "requestMoviesCount": "",
     "@requestMoviesCount": {
         "description": "Submit button on the collection request sheet",
         "placeholders": {
@@ -8095,7 +8095,7 @@
             }
         }
     },
-    "requestingProgress": "Petante {current} el {total}...",
+    "requestingProgress": "",
     "@requestingProgress": {
         "description": "Progress label while collection requests are submitted",
         "placeholders": {
@@ -8107,7 +8107,7 @@
             }
         }
     },
-    "requestedMoviesCount": "Petis {count} filmojn",
+    "requestedMoviesCount": "",
     "@requestedMoviesCount": {
         "description": "Snackbar after a collection request succeeds",
         "placeholders": {
@@ -8116,7 +8116,7 @@
             }
         }
     },
-    "requestedMoviesPartial": "Petis {ok} el {total} filmoj",
+    "requestedMoviesPartial": "",
     "@requestedMoviesPartial": {
         "description": "Snackbar when some collection requests failed",
         "placeholders": {
@@ -8128,51 +8128,51 @@
             }
         }
     },
-    "collectionAllRequested": "Ĉiuj filmoj jam estas disponeblaj aŭ petitaj",
+    "collectionAllRequested": "",
     "@collectionAllRequested": {
         "description": "Shown instead of the request button when nothing is requestable"
     },
-    "reportIssue": "Raporti problemon",
+    "reportIssue": "",
     "@reportIssue": {
         "description": "Button on the seerr detail screen to report a media issue"
     },
-    "issueTypeVideo": "Video",
+    "issueTypeVideo": "",
     "@issueTypeVideo": {
         "description": "Issue type option"
     },
-    "issueTypeAudio": "Aŭdio",
+    "issueTypeAudio": "",
     "@issueTypeAudio": {
         "description": "Issue type option"
     },
-    "whatsWrong": "Kio malas?",
+    "whatsWrong": "",
     "@whatsWrong": {
         "description": "Label for the issue description field"
     },
-    "allEpisodes": "Ĉiuj epizodoj",
+    "allEpisodes": "",
     "@allEpisodes": {
         "description": "Episode dropdown option covering the whole season"
     },
-    "episode": "Epizodo",
+    "episode": "",
     "@episode": {
         "description": "Episode dropdown label"
     },
-    "openStatus": "Malfermita",
+    "openStatus": "",
     "@openStatus": {
         "description": "Issue status label"
     },
-    "resolvedStatus": "Solvita",
+    "resolvedStatus": "",
     "@resolvedStatus": {
         "description": "Issue status label"
     },
-    "resolveAction": "Solvi",
+    "resolveAction": "",
     "@resolveAction": {
         "description": "Button to resolve an issue"
     },
-    "reopenAction": "Remalfermi",
+    "reopenAction": "",
     "@reopenAction": {
         "description": "Button to reopen a resolved issue"
     },
-    "reportedByName": "Raportita de {name}",
+    "reportedByName": "",
     "@reportedByName": {
         "description": "Label showing who reported an issue",
         "placeholders": {
@@ -8181,7 +8181,7 @@
             }
         }
     },
-    "commentsCount": "{count} komentoj",
+    "commentsCount": "",
     "@commentsCount": {
         "description": "Number of comments on an issue",
         "placeholders": {
@@ -8190,24 +8190,24 @@
             }
         }
     },
-    "addComment": "Aldoni komenton",
+    "addComment": "",
     "@addComment": {
         "description": "Hint for the issue comment field"
     },
-    "deleteIssueConfirm": "Ĉu forigi ĉi tiun problemon?",
+    "deleteIssueConfirm": "",
     "@deleteIssueConfirm": {
         "description": "Confirmation before deleting an issue"
     },
-    "submitReport": "Sendi raporton",
+    "submitReport": "",
     "@submitReport": {
         "description": "Button to submit an issue report"
     },
-    "adminDrawerDisplay": "Montro",
-    "adminDrawerMetadata": "Metadatumoj",
-    "adminDrawerNfo": "NFO-agordoj",
-    "adminActivitySeverityAll": "Ĉiuj gravecoj",
-    "adminActivityDateRange": "Datintervalo",
-    "adminRemoveDeviceConfirm": "Ĉu forigi aparaton '{name}'? La uzanto devos denove ensaluti sur ĉi tiu aparato.",
+    "adminDrawerDisplay": "",
+    "adminDrawerMetadata": "",
+    "adminDrawerNfo": "",
+    "adminActivitySeverityAll": "",
+    "adminActivityDateRange": "",
+    "adminRemoveDeviceConfirm": "",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8215,8 +8215,8 @@
             }
         }
     },
-    "adminDeleteAllDevices": "Forigi ĉiujn aparatojn",
-    "adminDeleteAllDevicesConfirm": "Ĉu forigi {count} aparatojn? La koncernaj uzantoj devos denove ensaluti. Via nuna aparato ne estas tuŝita.",
+    "adminDeleteAllDevices": "",
+    "adminDeleteAllDevicesConfirm": "",
     "@adminDeleteAllDevicesConfirm": {
         "placeholders": {
             "count": {
@@ -8224,8 +8224,8 @@
             }
         }
     },
-    "adminDevicesDeletedAll": "Aparatoj forigitaj",
-    "adminDevicesDeletedPartial": "Forigis kelkajn aparatojn; {count} ne povis esti forigitaj.",
+    "adminDevicesDeletedAll": "",
+    "adminDevicesDeletedPartial": "",
     "@adminDevicesDeletedPartial": {
         "placeholders": {
             "count": {
@@ -8233,13 +8233,13 @@
             }
         }
     },
-    "adminLibraryTabPaths": "Vojoj",
-    "adminLibraryTabOptions": "Opcioj",
-    "adminLibraryTabDownloaders": "Elŝutiloj",
-    "adminLibMetadataSavers": "Konservantoj de metadatumoj",
-    "adminLibSubtitleDownloaders": "Elŝutiloj de subtekstoj",
-    "adminLibLyricDownloaders": "Elŝutiloj de kantotekstoj",
-    "adminLibMetadataDownloadersFor": "Elŝutiloj de metadatumoj: {type}",
+    "adminLibraryTabPaths": "",
+    "adminLibraryTabOptions": "",
+    "adminLibraryTabDownloaders": "",
+    "adminLibMetadataSavers": "",
+    "adminLibSubtitleDownloaders": "",
+    "adminLibLyricDownloaders": "",
+    "adminLibMetadataDownloadersFor": "",
     "@adminLibMetadataDownloadersFor": {
         "placeholders": {
             "type": {
@@ -8247,7 +8247,7 @@
             }
         }
     },
-    "adminLibImageFetchersFor": "Alportiloj de bildoj: {type}",
+    "adminLibImageFetchersFor": "",
     "@adminLibImageFetchersFor": {
         "placeholders": {
             "type": {
@@ -8255,48 +8255,48 @@
             }
         }
     },
-    "adminLibNoDownloaders": "Ĉi tiu servilo prezentas neniujn elŝutilojn por ĉi tiu bibliotektipo.",
-    "adminLibrarySectionGeneral": "Ĝenerala",
-    "adminLibrarySectionMetadata": "Metadatumoj",
-    "adminLibrarySectionEmbedded": "Enigita informo",
-    "adminLibrarySectionSubtitles": "Subtekstoj",
-    "adminLibrarySectionImages": "Bildoj",
-    "adminLibrarySectionSeries": "Serioj",
-    "adminLibrarySectionMusic": "Muziko",
-    "adminLibrarySectionMovies": "Filmoj",
-    "adminLibRealtimeMonitor": "Ebligi realtempan monitoradon",
-    "adminLibRealtimeMonitorHint": "Detekti dosierŝanĝojn kaj trakti ilin aŭtomate.",
-    "adminLibArchiveMediaFiles": "Trakti arkivojn kiel aŭdvidajn dosierojn",
-    "adminLibEnablePhotos": "Montri fotojn",
-    "adminLibSaveLocalMetadata": "Konservi bildojn en aŭdvidajn dosierujojn",
-    "adminLibRefreshInterval": "Aŭtomata refreŝigo de metadatumoj",
-    "adminLibRefreshNever": "Neniam",
-    "adminLibDefault": "Defaŭlta",
-    "adminLibDisplayTitle": "Montro",
-    "adminLibDisplaySection": "Bibliotekmontro",
-    "adminLibFolderView": "Montri dosierujan vidon por prezenti simplajn aŭdvidajn dosierujojn",
-    "adminLibSpecialsInSeasons": "Montri specialaĵojn ene de la sezonoj en kiuj ili elsendiĝis",
-    "adminLibGroupMovies": "Grupigi filmojn en kolektojn",
-    "adminLibGroupShows": "Grupigi seriojn en kolektojn",
-    "adminLibExternalSuggestions": "Montri eksteran enhavon en sugestoj",
-    "adminLibDateAddedSection": "Konduto de aldondato",
-    "adminLibDateAddedLabel": "Uzi aldondaton el",
-    "adminLibDateAddedImport": "Dato skanita en la bibliotekon",
-    "adminLibDateAddedFile": "Dato kiam la dosiero estis kreita",
-    "adminLibMetadataTitle": "Metadatumoj kaj bildoj",
-    "adminLibMetadataLangSection": "Preferata lingvo de metadatumoj",
-    "adminLibChaptersSection": "Ĉapitroj",
-    "adminLibDummyChapterDuration": "Daŭro de fikcia ĉapitro (sekundoj)",
-    "adminLibDummyChapterDurationHint": "Longeco de ĉapitroj generitaj por aŭdvidaĵoj kiuj havas neniujn. Agordu al 0 por malŝalti.",
-    "adminLibChapterImageResolution": "Distingivo de ĉapitraj bildoj",
-    "adminLibNfoTitle": "NFO-agordoj",
-    "adminLibNfoHelp": "NFO-metadatumoj kongruas kun Kodi kaj similaj klientoj. La agordoj validas por ĉiuj bibliotekoj kiuj konservas NFO-metadatumojn.",
-    "adminLibKodiUser": "Uzanto por kiu konservi spektadan datumon en NFO-dosieroj",
-    "adminLibSaveImagePaths": "Konservi bildvojojn ene de NFO-dosieroj",
-    "adminLibPathSubstitution": "Ebligi vojanstataŭigon por NFO-bildvojoj",
-    "adminLibExtraThumbs": "Kopii extrafanart-bildojn en extrathumbs-dosierujon",
-    "adminLibNone": "Neniu",
-    "adminLibRefreshDays": "{days} tagoj",
+    "adminLibNoDownloaders": "",
+    "adminLibrarySectionGeneral": "",
+    "adminLibrarySectionMetadata": "",
+    "adminLibrarySectionEmbedded": "",
+    "adminLibrarySectionSubtitles": "",
+    "adminLibrarySectionImages": "",
+    "adminLibrarySectionSeries": "",
+    "adminLibrarySectionMusic": "",
+    "adminLibrarySectionMovies": "",
+    "adminLibRealtimeMonitor": "",
+    "adminLibRealtimeMonitorHint": "",
+    "adminLibArchiveMediaFiles": "",
+    "adminLibEnablePhotos": "",
+    "adminLibSaveLocalMetadata": "",
+    "adminLibRefreshInterval": "",
+    "adminLibRefreshNever": "",
+    "adminLibDefault": "",
+    "adminLibDisplayTitle": "",
+    "adminLibDisplaySection": "",
+    "adminLibFolderView": "",
+    "adminLibSpecialsInSeasons": "",
+    "adminLibGroupMovies": "",
+    "adminLibGroupShows": "",
+    "adminLibExternalSuggestions": "",
+    "adminLibDateAddedSection": "",
+    "adminLibDateAddedLabel": "",
+    "adminLibDateAddedImport": "",
+    "adminLibDateAddedFile": "",
+    "adminLibMetadataTitle": "",
+    "adminLibMetadataLangSection": "",
+    "adminLibChaptersSection": "",
+    "adminLibDummyChapterDuration": "",
+    "adminLibDummyChapterDurationHint": "",
+    "adminLibChapterImageResolution": "",
+    "adminLibNfoTitle": "",
+    "adminLibNfoHelp": "",
+    "adminLibKodiUser": "",
+    "adminLibSaveImagePaths": "",
+    "adminLibPathSubstitution": "",
+    "adminLibExtraThumbs": "",
+    "adminLibNone": "",
+    "adminLibRefreshDays": "",
     "@adminLibRefreshDays": {
         "placeholders": {
             "days": {
@@ -8304,119 +8304,119 @@
             }
         }
     },
-    "adminLibEmbeddedTitles": "Uzi enigitajn titolojn",
-    "adminLibEmbeddedExtrasTitles": "Uzi enigitajn titolojn por ekstraĵoj",
-    "adminLibEmbeddedEpisodeInfos": "Uzi enigitajn epizodinformojn",
-    "adminLibAllowEmbeddedSubtitles": "Permesi enigitajn subtekstojn",
-    "adminLibEmbeddedAllowAll": "Permesi ĉiujn",
-    "adminLibEmbeddedAllowText": "Nur teksto",
-    "adminLibEmbeddedAllowImage": "Nur bildo",
-    "adminLibEmbeddedAllowNone": "Neniu",
-    "adminLibSkipIfEmbeddedSubs": "Preterlasi elŝuton se enigitaj subtekstoj ĉeestas",
-    "adminLibSkipIfAudioMatches": "Preterlasi elŝuton se la aŭdia trako kongruas kun la elŝutlingvo",
-    "adminLibRequirePerfectMatch": "Postuli perfektan subtekstan kongruon",
-    "adminLibSaveSubtitlesWithMedia": "Konservi subtekstojn en aŭdvidajn dosierujojn",
-    "adminLibChapterImageExtraction": "Ekstrakti ĉapitrajn bildojn",
-    "adminLibChapterImagesDuringScan": "Ekstrakti ĉapitrajn bildojn dum la bibliotekskano",
-    "adminLibTrickplayExtraction": "Ebligi ekstraktadon de Trickplay-bildoj",
-    "adminLibTrickplayDuringScan": "Ekstrakti Trickplay-bildojn dum la bibliotekskano",
-    "adminLibSaveTrickplayWithMedia": "Konservi Trickplay-bildojn en aŭdvidajn dosierujojn",
-    "adminLibAutomaticSeriesGrouping": "Aŭtomate kunfandi seriojn disigitajn tra pluraj dosierujoj",
-    "adminLibSeasonZeroName": "Montronomo de sezono nul",
-    "adminLibLufsScan": "Ebligi LUFS-skanon por aŭdia normaligo",
-    "adminLibPreferNonstandardArtist": "Preferi nenorman artistetikedon",
-    "adminLibAutoAddToCollection": "Aŭtomate aldoni filmojn al kolektoj",
-    "adminParentalControl": "Gepatra kontrolo",
-    "adminMaxParentalRating": "Maksimuma permesita aĝoklasifiko",
-    "adminMaxParentalRatingHint": "Enhavo kun pli alta klasifiko estos kaŝita de ĉi tiu uzanto.",
-    "adminParentalRatingNone": "Neniu",
-    "adminBlockUnratedItems": "Bloki erojn kun neniu aŭ nerekonata klasifika informo",
-    "adminUnratedBook": "Libroj",
-    "adminUnratedChannelContent": "Kanaloj",
-    "adminUnratedLiveTvChannel": "Viva televido",
-    "adminUnratedMovie": "Filmoj",
-    "adminUnratedMusic": "Muziko",
-    "adminUnratedTrailer": "Antaŭfilmoj",
-    "adminUnratedSeries": "Serioj",
-    "adminAccessSchedules": "Alirhoraroj",
-    "adminAccessSchedulesHint": "Permesi aliron nur dum la suba horaro. Aliro estas permesita la tutan tagon kiam neniu horaro estas agordita.",
-    "adminAddSchedule": "Aldoni horaron",
-    "adminScheduleDay": "Tago",
-    "adminScheduleStart": "Komenco",
-    "adminScheduleEnd": "Fino",
-    "adminDayEveryday": "Ĉiutage",
-    "adminDayWeekday": "Labortago",
-    "adminDayWeekend": "Semajnfino",
-    "adminDaySunday": "Dimanĉo",
-    "adminDayMonday": "Lundo",
-    "adminDayTuesday": "Mardo",
-    "adminDayWednesday": "Merkredo",
-    "adminDayThursday": "Ĵaŭdo",
-    "adminDayFriday": "Vendredo",
-    "adminDaySaturday": "Sabato",
-    "adminAllowedTags": "Permesitaj etikedoj",
-    "adminAllowedTagsHint": "Nur enhavo kun ĉi tiuj etikedoj estas montrata. Lasu malplena por permesi ĉiujn.",
-    "adminBlockedTags": "Blokitaj etikedoj",
-    "adminBlockedTagsHint": "Enhavo kun ĉi tiuj etikedoj estas kaŝita de ĉi tiu uzanto.",
-    "adminAddTag": "Aldoni etikedon",
-    "adminEnabledDevices": "Ebligitaj aparatoj",
-    "adminEnabledChannels": "Ebligitaj kanaloj",
-    "adminAuthProvider": "Aŭtentiga provizanto",
-    "adminPasswordResetProvider": "Provizanto de pasvortrestarigo",
-    "adminLoginAttemptsBeforeLockout": "Maksimumaj malsukcesaj ensalutprovoj antaŭ ŝloso",
-    "adminLoginAttemptsHint": "Agordu al 0 por la defaŭlto, aŭ al -1 por malŝalti ŝloson.",
-    "adminSyncPlayAccess": "SyncPlay-aliro",
-    "adminSyncPlayCreateAndJoin": "Permesi krei kaj aliĝi al grupoj",
-    "adminSyncPlayJoin": "Permesi aliĝi al grupoj",
-    "adminSyncPlayNone": "Neniu aliro",
-    "adminContentDeletionFolders": "Permesi forigon de enhavo el",
-    "adminBackupOptionsTitle": "Krei sekurkopion",
-    "adminBackupInclude": "Elektu kion inkluzivi en la sekurkopio.",
-    "adminBackupDatabase": "Datumbazo",
-    "adminBackupDatabaseAlways": "Ĉiam inkluzivita",
-    "adminBackupMetadata": "Metadatumoj",
-    "adminBackupSubtitles": "Subtekstoj",
-    "adminBackupTrickplay": "Trickplay-bildoj",
-    "adminEditTuner": "Redakti agordilon",
-    "adminTunerTypeM3u": "M3U-agordilo",
-    "adminTunerTypeHdHomerun": "HDHomeRun",
-    "adminTunerFileOrUrl": "Dosiero aŭ URL",
-    "adminTunerIpAddress": "IP-adreso de la agordilo",
-    "adminTunerFriendlyName": "Amika nomo",
-    "adminTunerUserAgent": "User agent",
-    "adminTunerCount": "Limo de samtempaj konektoj",
-    "adminTunerCountHelp": "La maksimuma nombro da fluoj kiujn la agordilo permesas samtempe. Agordu al 0 por senlima.",
-    "adminTunerFallbackBitrate": "Rezerva maksimuma elsenda bitrapido",
-    "adminTunerImportFavoritesOnly": "Importi nur ŝatatajn kanalojn",
-    "adminTunerAllowHwTranscoding": "Permesi aparataran transkodadon",
-    "adminTunerAllowFmp4": "Permesi fMP4-transkodan ujon",
-    "adminTunerAllowStreamSharing": "Permesi fludividon",
-    "adminTunerEnableStreamLooping": "Ebligi fluripetadon",
-    "adminTunerIgnoreDts": "Ignori DTS",
-    "adminTunerReadAtNativeFramerate": "Legi enigon je la denaska kadrofrekvenco",
-    "adminEditProvider": "Redakti provizanton",
-    "adminProviderXmltv": "XMLTV",
-    "adminProviderSchedulesDirect": "Schedules Direct",
-    "adminXmltvPath": "Dosiero aŭ URL",
-    "adminXmltvMoviePrefix": "Filmoprefikso",
-    "adminXmltvMovieCategories": "Filmkategorioj",
-    "adminXmltvCategoriesHelp": "Apartigu plurajn kategoriojn per vertikala streko.",
-    "adminXmltvKidsCategories": "Infankategorioj",
-    "adminXmltvNewsCategories": "Novaĵkategorioj",
-    "adminXmltvSportsCategories": "Sportkategorioj",
-    "adminSdUsername": "Uzantnomo",
-    "adminSdPassword": "Pasvorto",
-    "adminSdCountry": "Lando",
-    "adminSdCountrySelect": "Elektu landon",
-    "adminSdPostalCode": "Poŝtkodo",
-    "adminSdGetListings": "Akiri listojn",
-    "adminSdListings": "Listoj",
-    "adminEnableAllTuners": "Ebligi ĉiujn agordilojn",
-    "adminTunerResetNotSupported": "Ĉi tiu agordiltipo ne subtenas restarigon.",
-    "adminMovieRecordingPath": "Vojo de filmregistrado",
-    "adminGuideDays": "Tagoj da programdatumoj",
-    "adminGuideDaysAuto": "Aŭtomata",
-    "adminGuideDaysValue": "{days} tagoj",
+    "adminLibEmbeddedTitles": "",
+    "adminLibEmbeddedExtrasTitles": "",
+    "adminLibEmbeddedEpisodeInfos": "",
+    "adminLibAllowEmbeddedSubtitles": "",
+    "adminLibEmbeddedAllowAll": "",
+    "adminLibEmbeddedAllowText": "",
+    "adminLibEmbeddedAllowImage": "",
+    "adminLibEmbeddedAllowNone": "",
+    "adminLibSkipIfEmbeddedSubs": "",
+    "adminLibSkipIfAudioMatches": "",
+    "adminLibRequirePerfectMatch": "",
+    "adminLibSaveSubtitlesWithMedia": "",
+    "adminLibChapterImageExtraction": "",
+    "adminLibChapterImagesDuringScan": "",
+    "adminLibTrickplayExtraction": "",
+    "adminLibTrickplayDuringScan": "",
+    "adminLibSaveTrickplayWithMedia": "",
+    "adminLibAutomaticSeriesGrouping": "",
+    "adminLibSeasonZeroName": "",
+    "adminLibLufsScan": "",
+    "adminLibPreferNonstandardArtist": "",
+    "adminLibAutoAddToCollection": "",
+    "adminParentalControl": "",
+    "adminMaxParentalRating": "",
+    "adminMaxParentalRatingHint": "",
+    "adminParentalRatingNone": "",
+    "adminBlockUnratedItems": "",
+    "adminUnratedBook": "",
+    "adminUnratedChannelContent": "",
+    "adminUnratedLiveTvChannel": "",
+    "adminUnratedMovie": "",
+    "adminUnratedMusic": "",
+    "adminUnratedTrailer": "",
+    "adminUnratedSeries": "",
+    "adminAccessSchedules": "",
+    "adminAccessSchedulesHint": "",
+    "adminAddSchedule": "",
+    "adminScheduleDay": "",
+    "adminScheduleStart": "",
+    "adminScheduleEnd": "",
+    "adminDayEveryday": "",
+    "adminDayWeekday": "",
+    "adminDayWeekend": "",
+    "adminDaySunday": "",
+    "adminDayMonday": "",
+    "adminDayTuesday": "",
+    "adminDayWednesday": "",
+    "adminDayThursday": "",
+    "adminDayFriday": "",
+    "adminDaySaturday": "",
+    "adminAllowedTags": "",
+    "adminAllowedTagsHint": "",
+    "adminBlockedTags": "",
+    "adminBlockedTagsHint": "",
+    "adminAddTag": "",
+    "adminEnabledDevices": "",
+    "adminEnabledChannels": "",
+    "adminAuthProvider": "",
+    "adminPasswordResetProvider": "",
+    "adminLoginAttemptsBeforeLockout": "",
+    "adminLoginAttemptsHint": "",
+    "adminSyncPlayAccess": "",
+    "adminSyncPlayCreateAndJoin": "",
+    "adminSyncPlayJoin": "",
+    "adminSyncPlayNone": "",
+    "adminContentDeletionFolders": "",
+    "adminBackupOptionsTitle": "",
+    "adminBackupInclude": "",
+    "adminBackupDatabase": "",
+    "adminBackupDatabaseAlways": "",
+    "adminBackupMetadata": "",
+    "adminBackupSubtitles": "",
+    "adminBackupTrickplay": "",
+    "adminEditTuner": "",
+    "adminTunerTypeM3u": "",
+    "adminTunerTypeHdHomerun": "",
+    "adminTunerFileOrUrl": "",
+    "adminTunerIpAddress": "",
+    "adminTunerFriendlyName": "",
+    "adminTunerUserAgent": "",
+    "adminTunerCount": "",
+    "adminTunerCountHelp": "",
+    "adminTunerFallbackBitrate": "",
+    "adminTunerImportFavoritesOnly": "",
+    "adminTunerAllowHwTranscoding": "",
+    "adminTunerAllowFmp4": "",
+    "adminTunerAllowStreamSharing": "",
+    "adminTunerEnableStreamLooping": "",
+    "adminTunerIgnoreDts": "",
+    "adminTunerReadAtNativeFramerate": "",
+    "adminEditProvider": "",
+    "adminProviderXmltv": "",
+    "adminProviderSchedulesDirect": "",
+    "adminXmltvPath": "",
+    "adminXmltvMoviePrefix": "",
+    "adminXmltvMovieCategories": "",
+    "adminXmltvCategoriesHelp": "",
+    "adminXmltvKidsCategories": "",
+    "adminXmltvNewsCategories": "",
+    "adminXmltvSportsCategories": "",
+    "adminSdUsername": "",
+    "adminSdPassword": "",
+    "adminSdCountry": "",
+    "adminSdCountrySelect": "",
+    "adminSdPostalCode": "",
+    "adminSdGetListings": "",
+    "adminSdListings": "",
+    "adminEnableAllTuners": "",
+    "adminTunerResetNotSupported": "",
+    "adminMovieRecordingPath": "",
+    "adminGuideDays": "",
+    "adminGuideDaysAuto": "",
+    "adminGuideDaysValue": "",
     "@adminGuideDaysValue": {
         "placeholders": {
             "days": {
@@ -8424,14 +8424,14 @@
             }
         }
     },
-    "adminRecordingPostProcessor": "Vojo de posttrakta aplikaĵo",
-    "adminRecordingPostProcessorArgs": "Argumentoj de posttraktilo",
-    "adminSaveRecordingNfo": "Konservi NFO-metadatumojn de registrado",
-    "adminSaveRecordingImages": "Konservi bildojn de registrado",
-    "adminLiveTvSectionTiming": "Tempigo",
-    "adminLiveTvSectionPaths": "Registradvojoj",
-    "adminLiveTvSectionPostProcessing": "Posttraktado",
-    "adminGuideDaysDisplay": "Programdatumoj: {value}",
+    "adminRecordingPostProcessor": "",
+    "adminRecordingPostProcessorArgs": "",
+    "adminSaveRecordingNfo": "",
+    "adminSaveRecordingImages": "",
+    "adminLiveTvSectionTiming": "",
+    "adminLiveTvSectionPaths": "",
+    "adminLiveTvSectionPostProcessing": "",
+    "adminGuideDaysDisplay": "",
     "@adminGuideDaysDisplay": {
         "placeholders": {
             "value": {
@@ -8439,124 +8439,124 @@
             }
         }
     },
-    "adminRefreshGuideData": "Refreŝigi programdatumojn",
-    "adminGuideRefreshStarted": "Refreŝigo de programdatumoj komenciĝis",
-    "adminGuideRefreshUnavailable": "Tasko de programrefreŝigo ne estas disponebla sur ĉi tiu servilo.",
-    "adminMetadataIdentify": "Identigi",
-    "adminBrandingSplashUpload": "Alŝuti bildon",
-    "adminBrandingSplashUploaded": "Ekranŝprucaĵo ĝisdatigita",
-    "adminBrandingSplashUploadFailed": "Malsukcesis alŝuti ekranŝprucaĵon",
-    "adminBrandingSplashDeleted": "Ekranŝprucaĵo forigita",
-    "adminBrandingNoSplash": "Neniu propra ekranŝprucaĵo",
-    "adminPlaybackQsvDevice": "QSV-aparato",
-    "adminPlaybackEnhancedNvdec": "Ebligi plibonigitan NVDEC-dekodilon",
-    "adminPlaybackPreferNativeDecoder": "Preferi la denaskan aparataran dekodilon de la sistemo",
-    "adminPlaybackColorDepth": "Kolorprofundo de aparatara dekodado",
-    "adminPlaybackColorDepth10Hevc": "10-bita HEVC-dekodado",
-    "adminPlaybackColorDepth10Vp9": "10-bita VP9-dekodado",
-    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10-bita dekodado",
-    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12-bita dekodado",
-    "adminPlaybackHwEncodingSection": "Aparatara kodado",
-    "adminPlaybackAllowHevcEncoding": "Permesi HEVC-kodadon",
-    "adminPlaybackAllowAv1Encoding": "Permesi AV1-kodadon",
-    "adminPlaybackIntelLowPowerH264": "Ebligi Intel malaltenergian H.264-kodilon",
-    "adminPlaybackIntelLowPowerHevc": "Ebligi Intel malaltenergian HEVC-kodilon",
-    "adminPlaybackToneMapping": "Tonmapado",
-    "adminPlaybackEnableTonemapping": "Ebligi tonmapadon",
-    "adminPlaybackEnableVppTonemapping": "Ebligi VPP-tonmapadon",
-    "adminPlaybackEnableVtTonemapping": "Ebligi VideoToolbox-tonmapadon",
-    "adminPlaybackTonemappingAlgorithm": "Algoritmo de tonmapado",
-    "adminPlaybackTonemappingMode": "Reĝimo de tonmapado",
-    "adminPlaybackTonemappingRange": "Amplekso de tonmapado",
-    "adminPlaybackTonemappingDesat": "Malsaturigo de tonmapado",
-    "adminPlaybackTonemappingPeak": "Pinto de tonmapado",
-    "adminPlaybackTonemappingParam": "Parametro de tonmapado",
-    "adminPlaybackVppTonemappingBrightness": "Heleco de VPP-tonmapado",
-    "adminPlaybackVppTonemappingContrast": "Kontrasto de VPP-tonmapado",
-    "adminPlaybackPresetsQuality": "Antaŭagordoj kaj kvalito",
-    "adminPlaybackEncoderPreset": "Antaŭagordo de kodilo",
-    "adminPlaybackH264Crf": "H.264-koda CRF",
-    "adminPlaybackH265Crf": "H.265 (HEVC)-koda CRF",
-    "adminPlaybackDeinterlaceMethod": "Metodo de malenteksado",
-    "adminPlaybackDeinterlaceDoubleRate": "Duobligi la kadrofrekvencon dum malenteksado",
-    "adminPlaybackAudioSection": "Aŭdio",
-    "adminPlaybackEnableAudioVbr": "Ebligi aŭdian VBR-kodadon",
-    "adminPlaybackDownmixBoost": "Plifortigo de aŭdia downmix",
-    "adminPlaybackDownmixAlgorithm": "Algoritmo de stereofonia downmix",
-    "adminPlaybackMaxMuxingQueue": "Maksimuma grandeco de miksvico",
-    "adminPlaybackAutoOption": "Aŭtomata",
-    "adminRunningTasks": "Aktivaj taskoj",
-    "adminNetworkingPublicHttpPort": "Publika HTTP-pordo",
-    "adminNetworkingRequireHttps": "Postuli HTTPS",
-    "adminNetworkingRequireHttpsHint": "Alidirekti ĉiujn forajn petojn al HTTPS. Havas neniun efikon se la servilo ne havas validan atestilon.",
-    "adminNetworkingCertPassword": "Pasvorto de atestilo",
-    "adminNetworkingIpSettings": "IP-agordoj",
-    "adminNetworkingEnableIpv4": "Ebligi IPv4",
-    "adminNetworkingEnableIpv6": "Ebligi IPv6",
-    "adminNetworkingAutoDiscovery": "Ebligi aŭtomatan pordomapadon",
-    "adminNetworkingLocalSubnets": "LAN-retoj",
-    "adminNetworkingLocalSubnetsHint": "Listo de IP-adresoj aŭ CIDR-subretoj, apartigitaj per komo aŭ linio, traktataj kiel estantaj en la loka reto.",
-    "adminNetworkingPublishedUris": "Publikigitaj servilaj URI-oj",
-    "adminNetworkingPublishedUriHint": "Mapi subreton aŭ adreson al publikigita URL, ekz. all=https://example.com",
-    "adminPlaybackThrottleDelay": "Bremsa prokrasto (sekundoj)",
-    "adminPlaybackEnableSubtitleExtraction": "Permesi ekstraktadon de subtekstoj dum ludado",
-    "adminGeneralEnableSlowResponse": "Ebligi avertojn pri malrapida respondo",
-    "adminGeneralQuickConnect": "Ebligi Quick Connect",
-    "adminGeneralSectionServer": "Servilo",
-    "adminGeneralSectionMetadata": "Metadatumoj",
-    "adminGeneralSectionPaths": "Vojoj",
-    "adminGeneralSectionPerformance": "Rendimento",
-    "adminGeneralDisplayLanguage": "Preferata montrolingvo",
-    "offlineBannerTitle": "Vi estas eksterrete",
-    "offlineBannerSubtitle": "Montrante viajn elŝutojn",
-    "offlineBannerAction": "Elŝutoj",
-    "serverUnreachableBannerTitle": "Ne eblas atingi vian servilon",
-    "serverUnreachableBannerSubtitle": "Ludante el elŝutoj ĝis ĝi revenos",
-    "contextMenuHideFromContinueWatching": "Kaŝi el Daŭre Rigardi",
+    "adminRefreshGuideData": "",
+    "adminGuideRefreshStarted": "",
+    "adminGuideRefreshUnavailable": "",
+    "adminMetadataIdentify": "",
+    "adminBrandingSplashUpload": "",
+    "adminBrandingSplashUploaded": "",
+    "adminBrandingSplashUploadFailed": "",
+    "adminBrandingSplashDeleted": "",
+    "adminBrandingNoSplash": "",
+    "adminPlaybackQsvDevice": "",
+    "adminPlaybackEnhancedNvdec": "",
+    "adminPlaybackPreferNativeDecoder": "",
+    "adminPlaybackColorDepth": "",
+    "adminPlaybackColorDepth10Hevc": "",
+    "adminPlaybackColorDepth10Vp9": "",
+    "adminPlaybackColorDepth10HevcRext": "",
+    "adminPlaybackColorDepth12HevcRext": "",
+    "adminPlaybackHwEncodingSection": "",
+    "adminPlaybackAllowHevcEncoding": "",
+    "adminPlaybackAllowAv1Encoding": "",
+    "adminPlaybackIntelLowPowerH264": "",
+    "adminPlaybackIntelLowPowerHevc": "",
+    "adminPlaybackToneMapping": "",
+    "adminPlaybackEnableTonemapping": "",
+    "adminPlaybackEnableVppTonemapping": "",
+    "adminPlaybackEnableVtTonemapping": "",
+    "adminPlaybackTonemappingAlgorithm": "",
+    "adminPlaybackTonemappingMode": "",
+    "adminPlaybackTonemappingRange": "",
+    "adminPlaybackTonemappingDesat": "",
+    "adminPlaybackTonemappingPeak": "",
+    "adminPlaybackTonemappingParam": "",
+    "adminPlaybackVppTonemappingBrightness": "",
+    "adminPlaybackVppTonemappingContrast": "",
+    "adminPlaybackPresetsQuality": "",
+    "adminPlaybackEncoderPreset": "",
+    "adminPlaybackH264Crf": "",
+    "adminPlaybackH265Crf": "",
+    "adminPlaybackDeinterlaceMethod": "",
+    "adminPlaybackDeinterlaceDoubleRate": "",
+    "adminPlaybackAudioSection": "",
+    "adminPlaybackEnableAudioVbr": "",
+    "adminPlaybackDownmixBoost": "",
+    "adminPlaybackDownmixAlgorithm": "",
+    "adminPlaybackMaxMuxingQueue": "",
+    "adminPlaybackAutoOption": "",
+    "adminRunningTasks": "",
+    "adminNetworkingPublicHttpPort": "",
+    "adminNetworkingRequireHttps": "",
+    "adminNetworkingRequireHttpsHint": "",
+    "adminNetworkingCertPassword": "",
+    "adminNetworkingIpSettings": "",
+    "adminNetworkingEnableIpv4": "",
+    "adminNetworkingEnableIpv6": "",
+    "adminNetworkingAutoDiscovery": "",
+    "adminNetworkingLocalSubnets": "",
+    "adminNetworkingLocalSubnetsHint": "",
+    "adminNetworkingPublishedUris": "",
+    "adminNetworkingPublishedUriHint": "",
+    "adminPlaybackThrottleDelay": "",
+    "adminPlaybackEnableSubtitleExtraction": "",
+    "adminGeneralEnableSlowResponse": "",
+    "adminGeneralQuickConnect": "",
+    "adminGeneralSectionServer": "",
+    "adminGeneralSectionMetadata": "",
+    "adminGeneralSectionPaths": "",
+    "adminGeneralSectionPerformance": "",
+    "adminGeneralDisplayLanguage": "",
+    "offlineBannerTitle": "",
+    "offlineBannerSubtitle": "",
+    "offlineBannerAction": "",
+    "serverUnreachableBannerTitle": "",
+    "serverUnreachableBannerSubtitle": "",
+    "contextMenuHideFromContinueWatching": "",
     "@contextMenuHideFromContinueWatching": {
         "description": "Context menu action to hide an item from the Continue Watching section"
     },
-    "contextMenuHideFromNextUp": "Kaŝi el Sekva",
+    "contextMenuHideFromNextUp": "",
     "@contextMenuHideFromNextUp": {
         "description": "Context menu action to hide a show from the Next Up section"
     },
-    "contextMenuAddToCollection": "Aldoni al kolekto",
+    "contextMenuAddToCollection": "",
     "@contextMenuAddToCollection": {
         "description": "Context menu action to add an item to a collection"
     },
-    "settingsConnectionSection": "KONEKTO",
+    "settingsConnectionSection": "",
     "@settingsConnectionSection": {
         "description": "Section header for server connection settings"
     },
-    "settingsAllowSelfSignedCerts": "Permesi memsubskribitajn atestilojn",
+    "settingsAllowSelfSignedCerts": "",
     "@settingsAllowSelfSignedCerts": {
         "description": "Setting to trust self-signed TLS certificates"
     },
-    "settingsAllowSelfSignedCertsSubtitle": "Fidi servilojn uzantajn memsubskribitajn aŭ privat-CA TLS-atestilojn. Ebligu nur por serviloj kiujn vi regas. Ĉi tio malŝaltas atestilvalidigon por ĉiuj konektoj.",
+    "settingsAllowSelfSignedCertsSubtitle": "",
     "@settingsAllowSelfSignedCertsSubtitle": {
         "description": "Description for the allow self-signed certificates setting"
     },
-    "settingsDetailsScreen": "Detala ekrano",
-    "settingsDetailsScreenSubtitle": "Stilo, fona malfokusigo kaj langeta konduto",
-    "settingsShowSeerrButtonInNavigation": "Montri la butonon de Seerr en la navigbreto",
-    "settingsAlwaysExpandNavbarLabels": "Ĉiam montri tekstajn etikedojn en la supra navigbreto",
-    "settingsMediaSegmentCountdown": "Antaŭnombrado de aŭdvida segmento",
+    "settingsDetailsScreen": "",
+    "settingsDetailsScreenSubtitle": "",
+    "settingsShowSeerrButtonInNavigation": "",
+    "settingsAlwaysExpandNavbarLabels": "",
+    "settingsMediaSegmentCountdown": "",
     "@settingsMediaSegmentCountdown": {
         "description": "Setting label for media segment countdown customizations"
     },
-    "settingsProgressBar": "Progresbreto",
+    "settingsProgressBar": "",
     "@settingsProgressBar": {
         "description": "Option label to show only progress bar on media segment countdown overlay"
     },
-    "settingsTimer": "Tempigilo",
+    "settingsTimer": "",
     "@settingsTimer": {
         "description": "Option label to show only countdown timer on media segment countdown overlay"
     },
-    "settingsNone": "Neniu",
+    "settingsNone": "",
     "@settingsNone": {
         "description": "Option label to hide all decorations on media segment countdown overlay"
     },
-    "recentlyReleasedLibraryName": "Lastatempe eldonita {libraryName}",
+    "recentlyReleasedLibraryName": "",
     "@recentlyReleasedLibraryName": {
         "description": "Row title for recently released media in a specific library",
         "placeholders": {
@@ -8565,36 +8565,36 @@
             }
         }
     },
-    "enableTunnelingTitle": "Ebligi tunuladon",
+    "enableTunnelingTitle": "",
     "@enableTunnelingTitle": {
         "description": "Setting title: enable tunneled video playback (advanced)"
     },
-    "enableTunnelingSubtitle": "Altnivela. Direktas aŭdion kaj videon tra kunligita aparatara vojo. Malŝaltita defaŭlte ĉar ĝi kaŭzas aŭdiajn/videajn interrompojn sur kelkaj aparatoj.",
+    "enableTunnelingSubtitle": "",
     "@enableTunnelingSubtitle": {
         "description": "Setting subtitle for enable tunneling"
     },
-    "showMediaDetailsOnLibraryPage": "Montri aŭdvidajn detalojn",
+    "showMediaDetailsOnLibraryPage": "",
     "@showMediaDetailsOnLibraryPage": {
         "description": "Setting title to show/hide focused media details at the top of the library page"
     },
-    "showMediaDetailsOnLibraryPageDescription": "Montri detalojn de la elektita ero ĉe la supro de bibliotekaj paĝoj.",
+    "showMediaDetailsOnLibraryPageDescription": "",
     "@showMediaDetailsOnLibraryPageDescription": {
         "description": "Setting description to show/hide focused media details at the top of the library page"
     },
-    "hideBackdropsInLibraries": "Ĉu kaŝi fonbildojn dum foliumado?",
+    "hideBackdropsInLibraries": "",
     "@hideBackdropsInLibraries": {
         "description": "Setting title to show/hide backdrops when browsing library pages"
     },
-    "themeStore": "Temvendejo",
-    "themeStoreSubtitle": "Foliumi kaj konservi komunumajn temojn",
-    "themeStoreDescription": "Konservu temon por uzi ĝin kiel viajn aliajn konservitajn temojn.",
-    "themeStoreEmpty": "Neniuj temoj estas disponeblaj nun.",
-    "themeStoreLoadFailed": "Ne eblis ŝargi la Temvendejon. Kontrolu vian konekton kaj reprovu.",
-    "themeStoreSave": "Konservi",
-    "themeStoreSaveAndApply": "Konservi kaj apliki",
-    "themeStoreSaved": "Konservita",
-    "themeStoreInvalidMessage": "Ĉi tiu temo ne povis esti ŝargita.",
-    "themeStoreSavedMessage": "Konservis \"{themeName}\".",
+    "themeStore": "",
+    "themeStoreSubtitle": "",
+    "themeStoreDescription": "",
+    "themeStoreEmpty": "",
+    "themeStoreLoadFailed": "",
+    "themeStoreSave": "",
+    "themeStoreSaveAndApply": "",
+    "themeStoreSaved": "",
+    "themeStoreInvalidMessage": "",
+    "themeStoreSavedMessage": "",
     "@themeStoreSavedMessage": {
         "description": "Status message shown after saving a Theme Store theme",
         "placeholders": {
@@ -8603,34 +8603,34 @@
             }
         }
     },
-    "homeRowDisplay": "Montro de hejmaj vicoj",
-    "homeRowSections": "Sekcioj de hejmaj vicoj",
-    "homeRowToggles": "Ŝaltiloj de hejmaj vicoj",
-    "homeRowTogglesSubtitle": "Ebligi aŭ malŝalti bibliotek-bazitajn kategoriojn de hejmaj vicoj",
-    "homeRowTogglesDescription": "Ebligu la sekvajn ŝaltilojn por montri la vicojn en Hejmaj Sekcioj.",
-    "displayPlaylistsRows": "Montri vicojn de ludlistoj",
-    "displayPlaylistsRowsSubtitle": "Montri vicojn de ludlistoj en Hejmaj Sekcioj.",
-    "playlistsRowSorting": "Ordigo de vicoj de ludlistoj",
-    "playlistsRowSortingDescription": "Ordigi vicojn de ludlistoj laŭ aldondato, eldondato, alfabete kaj pli.",
-    "displayAudioRows": "Montri aŭdiajn vicojn",
-    "displayAudioRowsSubtitle": "Montri aŭdiajn vicojn en Hejmaj Sekcioj.",
-    "audioRowsSorting": "Ordigo de aŭdiaj vicoj",
-    "audioRowsSortingDescription": "Ordigi aŭdiajn vicojn laŭ aldondato, eldondato, alfabete kaj pli.",
-    "audioPlaylists": "Aŭdiaj ludlistoj",
-    "layout": "Aranĝo",
-    "theme": "Temo",
-    "keyboard": "Klavaro",
-    "navButtons": "Butonoj",
-    "rendering": "Bildigado",
-    "mpvConfiguration": "MPV-agordo",
-    "externalPlayerAppDescription": "Agordu eksteran ludilon por ebligi la eblon ludi per longa premo",
-    "crewContributionsSeerr": "Kontribuoj de teamo (Seerr)",
-    "changeArtwork": "Ŝanĝi bildaĵon",
-    "missing": "Mankanta",
-    "clearAllArtworkButton": "Ĉu vakigi ĉiujn bildaĵojn?",
-    "clearAllArtworkWarning": "Ĉu vi certas ke vi volas vakigi ĉiujn elŝutitajn bildaĵojn?",
-    "confirmClear": "Konfirmi vakigon",
-    "confirmClearMessage": "Ĉu vi certas ke vi volas vakigi ĉi tiun {itemType}?",
+    "homeRowDisplay": "",
+    "homeRowSections": "",
+    "homeRowToggles": "",
+    "homeRowTogglesSubtitle": "",
+    "homeRowTogglesDescription": "",
+    "displayPlaylistsRows": "",
+    "displayPlaylistsRowsSubtitle": "",
+    "playlistsRowSorting": "",
+    "playlistsRowSortingDescription": "",
+    "displayAudioRows": "",
+    "displayAudioRowsSubtitle": "",
+    "audioRowsSorting": "",
+    "audioRowsSortingDescription": "",
+    "audioPlaylists": "",
+    "layout": "",
+    "theme": "",
+    "keyboard": "",
+    "navButtons": "",
+    "rendering": "",
+    "mpvConfiguration": "",
+    "externalPlayerAppDescription": "",
+    "crewContributionsSeerr": "",
+    "changeArtwork": "",
+    "missing": "",
+    "clearAllArtworkButton": "",
+    "clearAllArtworkWarning": "",
+    "confirmClear": "",
+    "confirmClearMessage": "",
     "@confirmClearMessage": {
         "description": "Confirmation message when clearing a specific artwork",
         "placeholders": {
@@ -8639,12 +8639,12 @@
             }
         }
     },
-    "uploadButton": "Ĉu alŝuti?",
-    "resolutionLabel": "Distingivo: ",
-    "onlyShowInterfaceLanguage": "Montri bildaĵojn nur en la interfaca lingvo",
-    "confirmClearAll": "Konfirmi vakigon de ĉiuj",
-    "imageUploadSuccess": "Bildo alŝutita sukcese!",
-    "imageUploadFailed": "Malsukcesis alŝuti bildon: {error}",
+    "uploadButton": "",
+    "resolutionLabel": "",
+    "onlyShowInterfaceLanguage": "",
+    "confirmClearAll": "",
+    "imageUploadSuccess": "",
+    "imageUploadFailed": "",
     "@imageUploadFailed": {
         "placeholders": {
             "error": {
@@ -8652,7 +8652,7 @@
             }
         }
     },
-    "imageDownloadFailed": "Malsukcesis agordi bildon: {error}",
+    "imageDownloadFailed": "",
     "@imageDownloadFailed": {
         "placeholders": {
             "error": {
@@ -8660,7 +8660,7 @@
             }
         }
     },
-    "imageDeleteFailed": "Malsukcesis forigi bildon: {error}",
+    "imageDeleteFailed": "",
     "@imageDeleteFailed": {
         "placeholders": {
             "error": {
@@ -8668,7 +8668,7 @@
             }
         }
     },
-    "clearAllArtworkFailed": "Malsukcesis vakigi ĉiujn bildaĵojn: {error}",
+    "clearAllArtworkFailed": "",
     "@clearAllArtworkFailed": {
         "placeholders": {
             "error": {
@@ -8676,49 +8676,49 @@
             }
         }
     },
-    "yes": "Jes",
-    "posterCategory": "Afiŝo",
-    "backdropsCategory": "Fonbildoj",
-    "bannerCategory": "Standardo",
-    "logoCategory": "Emblemo",
-    "thumbnailCategory": "Bildeto",
-    "artCategory": "Arto",
-    "discArtCategory": "Diskarto",
-    "screenshotCategory": "Ekrankopio",
-    "boxCoverCategory": "Skatolkovrilo",
-    "boxRearCoverCategory": "Malantaŭa skatolkovrilo",
-    "menuArtCategory": "Menuarto",
-    "confirmItemPoster": "afiŝon",
-    "confirmItemBackdrop": "fonbildon",
-    "confirmItemBanner": "standardon",
-    "confirmItemLogo": "emblemon",
-    "confirmItemThumbnail": "bildeton",
-    "confirmItemArt": "arton",
-    "confirmItemDiscArt": "diskarton",
-    "confirmItemScreenshot": "ekrankopion",
-    "confirmItemBoxCover": "skatolkovrilon",
-    "confirmItemBoxRearCover": "malantaŭan skatolkovrilon",
-    "confirmItemMenuArt": "menuarton",
-    "resolutionAll": "Ĉiuj",
-    "resolutionHigh": "Alta (1080p+)",
-    "resolutionMedium": "Meza (720p)",
-    "resolutionLow": "Malalta (<720p)",
-    "sources": "Fontoj",
+    "yes": "",
+    "posterCategory": "",
+    "backdropsCategory": "",
+    "bannerCategory": "",
+    "logoCategory": "",
+    "thumbnailCategory": "",
+    "artCategory": "",
+    "discArtCategory": "",
+    "screenshotCategory": "",
+    "boxCoverCategory": "",
+    "boxRearCoverCategory": "",
+    "menuArtCategory": "",
+    "confirmItemPoster": "",
+    "confirmItemBackdrop": "",
+    "confirmItemBanner": "",
+    "confirmItemLogo": "",
+    "confirmItemThumbnail": "",
+    "confirmItemArt": "",
+    "confirmItemDiscArt": "",
+    "confirmItemScreenshot": "",
+    "confirmItemBoxCover": "",
+    "confirmItemBoxRearCover": "",
+    "confirmItemMenuArt": "",
+    "resolutionAll": "",
+    "resolutionHigh": "",
+    "resolutionMedium": "",
+    "resolutionLow": "",
+    "sources": "",
     "@sources": {
         "description": "Title of the artwork source-provider filter dialog"
     },
-    "audiobookChapters": "Ĉapitroj",
-    "audiobookBookmarks": "Legosignoj",
-    "audiobookNotes": "Notoj",
-    "audiobookQueue": "Vico",
-    "audiobookTimeline": "Templinio",
-    "audiobookTimelineEmpty": "Templinio estas malplena",
-    "audiobookWholeBook": "Tuta libro",
-    "audiobookFocusedTimeline": "Fokusita templinio",
-    "audiobookExportBookmarks": "Eksporti legosignojn",
-    "audiobookExportNotes": "Eksporti notojn",
-    "audiobookExportAll": "Eksporti ĉion",
-    "audiobookExportSuccess": "Eksportita al {path}",
+    "audiobookChapters": "",
+    "audiobookBookmarks": "",
+    "audiobookNotes": "",
+    "audiobookQueue": "",
+    "audiobookTimeline": "",
+    "audiobookTimelineEmpty": "",
+    "audiobookWholeBook": "",
+    "audiobookFocusedTimeline": "",
+    "audiobookExportBookmarks": "",
+    "audiobookExportNotes": "",
+    "audiobookExportAll": "",
+    "audiobookExportSuccess": "",
     "@audiobookExportSuccess": {
         "placeholders": {
             "path": {
@@ -8726,7 +8726,7 @@
             }
         }
     },
-    "audiobookExportFailed": "Eksporto malsukcesis: {error}",
+    "audiobookExportFailed": "",
     "@audiobookExportFailed": {
         "placeholders": {
             "error": {
@@ -8734,16 +8734,16 @@
             }
         }
     },
-    "audiobookLyrics": "Kantoteksto",
-    "audiobookAddBookmark": "Aldoni legosignon",
-    "audiobookAddNote": "Aldoni noton",
-    "audiobookEditNote": "Redakti noton",
-    "audiobookNoteHint": "Skribu noton por ĉi tiu momento",
-    "audiobookSleepTimer": "Dormtempigilo",
-    "audiobookSleepOff": "Malŝaltita",
-    "audiobookSleepEndOfChapter": "Fino de ĉapitro",
-    "audiobookSleepCustom": "Propra",
-    "audiobookSleepRemaining": "{remaining} restas",
+    "audiobookLyrics": "",
+    "audiobookAddBookmark": "",
+    "audiobookAddNote": "",
+    "audiobookEditNote": "",
+    "audiobookNoteHint": "",
+    "audiobookSleepTimer": "",
+    "audiobookSleepOff": "",
+    "audiobookSleepEndOfChapter": "",
+    "audiobookSleepCustom": "",
+    "audiobookSleepRemaining": "",
     "@audiobookSleepRemaining": {
         "placeholders": {
             "remaining": {
@@ -8751,7 +8751,7 @@
             }
         }
     },
-    "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} min}}",
+    "audiobookSleepMinutes": "",
     "@audiobookSleepMinutes": {
         "placeholders": {
             "count": {
@@ -8759,10 +8759,10 @@
             }
         }
     },
-    "audiobookPlaybackSpeed": "Ludrapido",
-    "audiobookRemainingTime": "Restanta",
-    "audiobookElapsedTime": "Pasinta",
-    "audiobookSkipBackSeconds": "Reen {seconds}s",
+    "audiobookPlaybackSpeed": "",
+    "audiobookRemainingTime": "",
+    "audiobookElapsedTime": "",
+    "audiobookSkipBackSeconds": "",
     "@audiobookSkipBackSeconds": {
         "placeholders": {
             "seconds": {
@@ -8770,7 +8770,7 @@
             }
         }
     },
-    "audiobookSkipForwardSeconds": "Antaŭen {seconds}s",
+    "audiobookSkipForwardSeconds": "",
     "@audiobookSkipForwardSeconds": {
         "placeholders": {
             "seconds": {
@@ -8778,9 +8778,9 @@
             }
         }
     },
-    "audiobookPreviousChapter": "Antaŭa ĉapitro",
-    "audiobookNextChapter": "Sekva ĉapitro",
-    "audiobookChapterIndicator": "Ĉapitro {current} el {total}",
+    "audiobookPreviousChapter": "",
+    "audiobookNextChapter": "",
+    "audiobookChapterIndicator": "",
     "@audiobookChapterIndicator": {
         "placeholders": {
             "current": {
@@ -8791,10 +8791,10 @@
             }
         }
     },
-    "audiobookNoChapters": "Neniuj ĉapitroj",
-    "audiobookNoBookmarks": "Ankoraŭ neniuj legosignoj",
-    "audiobookNoNotes": "Ankoraŭ neniuj notoj",
-    "audiobookBookmarkAdded": "Legosigno aldonita ĉe {position}",
+    "audiobookNoChapters": "",
+    "audiobookNoBookmarks": "",
+    "audiobookNoNotes": "",
+    "audiobookBookmarkAdded": "",
     "@audiobookBookmarkAdded": {
         "placeholders": {
             "position": {
@@ -8802,8 +8802,8 @@
             }
         }
     },
-    "audiobookSpeedReset": "Restarigi al 1.0x",
-    "audiobookSpeedCustomLabel": "{value}x",
+    "audiobookSpeedReset": "",
+    "audiobookSpeedCustomLabel": "",
     "@audiobookSpeedCustomLabel": {
         "placeholders": {
             "value": {
@@ -8811,58 +8811,58 @@
             }
         }
     },
-    "audiobookSave": "Konservi",
-    "audiobookCancel": "Nuligi",
-    "audiobookDelete": "Forigi",
-    "subtitlePreferences": "Preferoj de subtekstoj",
+    "audiobookSave": "",
+    "audiobookCancel": "",
+    "audiobookDelete": "",
+    "subtitlePreferences": "",
     "@subtitlePreferences": {
         "description": "Title for the subtitle preferences settings section"
     },
-    "subtitlePreferencesDescription": "Ŝanĝi subtekstajn reĝimojn, defaŭltajn lingvojn, aspekton kaj bildigajn opciojn.",
+    "subtitlePreferencesDescription": "",
     "@subtitlePreferencesDescription": {
         "description": "Description for the subtitle preferences settings section"
     },
-    "subtitleRendering": "Bildigado de subtekstoj",
+    "subtitleRendering": "",
     "@subtitleRendering": {
         "description": "Header for subtitle rendering settings"
     },
-    "displayOptions": "Montroopcioj",
+    "displayOptions": "",
     "@displayOptions": {
         "description": "Title for details display options dialog"
     },
-    "releaseDateAscending": "Eldondato (kreskanta)",
+    "releaseDateAscending": "",
     "@releaseDateAscending": {
         "description": "Sort option for crew/cast contributions in ascending release date order"
     },
-    "releaseDateDescending": "Eldondato (malkreskanta)",
+    "releaseDateDescending": "",
     "@releaseDateDescending": {
         "description": "Sort option for crew/cast contributions in descending release date order"
     },
-    "groupContributions": "Grupigi kontribuojn",
+    "groupContributions": "",
     "@groupContributions": {
         "description": "Section header for grouping person contributions"
     },
-    "groupMultipleRoles": "Grupigi plurajn rolojn",
+    "groupMultipleRoles": "",
     "@groupMultipleRoles": {
         "description": "Option to group multiple roles for a person"
     },
-    "libraryWriteAccessWarningTitle": "Averto pri skribaliro al biblioteko",
+    "libraryWriteAccessWarningTitle": "",
     "@libraryWriteAccessWarningTitle": {
         "description": "Title for library write access warning dialog"
     },
-    "libraryWriteAccessHowToFix": "Kiel ripari ĉi tion:",
+    "libraryWriteAccessHowToFix": "",
     "@libraryWriteAccessHowToFix": {
         "description": "Section header for write access troubleshooting"
     },
-    "libraryWriteAccessFixSteps": "1. Donu skribpermesojn al la Jellyfin-serva uzanto (ekz. jellyfin aŭ Docker PUID/PGID) por viaj aŭdvidaj bibliotekaj dosierujoj sur la servilo.\n\n2. Aŭ, iru al via Jellyfin-panelo -> Bibliotekoj, redaktu ĉi tiun bibliotekon, kaj malŝaltu 'Konservi bildojn en aŭdvidajn dosierujojn' por konservi bildaĵojn en la interna datumbazo de Jellyfin.",
+    "libraryWriteAccessFixSteps": "",
     "@libraryWriteAccessFixSteps": {
         "description": "Troubleshooting steps for write access issues"
     },
-    "dismiss": "Forĵeti",
+    "dismiss": "",
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Via biblioteko '{libraryName}' estas agordita por konservi bildaĵojn rekte en la aŭdvidajn dosierujojn ('Konservi bildojn en aŭdvidajn dosierujojn' estas ebligita). Tamen Jellyfin testis skribaliron kaj ne havas permeson skribi dosierojn en ĉi tiun dosierujon:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -8874,21 +8874,21 @@
             }
         }
     },
-    "libraryWriteAccessReactiveBody": "Ŝajnas ke Jellyfin malsukcesis ĝisdatigi la bildaĵon. Via biblioteko estas agordita por konservi bildaĵojn rekte en la aŭdvidajn dosierujojn ('Konservi bildojn en aŭdvidajn dosierujojn' estas ebligita). Ĉi tiu eraro tipe okazas kiam la Jellyfin-servila procezo ne havas permeson skribi dosierojn en viajn aŭdvidajn dosierujojn.",
+    "libraryWriteAccessReactiveBody": "",
     "@libraryWriteAccessReactiveBody": {
         "description": "Reactive error warning message when artwork update fails"
     },
-    "externalLists": "Eksteraj listoj",
-    "replay": "Reludi",
-    "fileInformation": "Dosierinformo",
-    "fileSizeFormat": "Grandeco: {size}  •  Formato: {format}",
+    "externalLists": "",
+    "replay": "",
+    "fileInformation": "",
+    "fileSizeFormat": "",
     "@fileSizeFormat": {
         "placeholders": {
             "size": {},
             "format": {}
         }
     },
-    "showAllAudioTracks": "Montri ĉiujn ({count}) aŭdiajn trakojn",
+    "showAllAudioTracks": "",
     "@showAllAudioTracks": {
         "placeholders": {
             "count": {
@@ -8896,7 +8896,7 @@
             }
         }
     },
-    "showAllSubtitleTracks": "Montri ĉiujn ({count}) subtekstajn trakojn",
+    "showAllSubtitleTracks": "",
     "@showAllSubtitleTracks": {
         "placeholders": {
             "count": {
@@ -8904,30 +8904,30 @@
             }
         }
     },
-    "checkingDirectPlay": "Kontrolante la kapablon de Rekta Ludado...",
-    "directPlayCapabilityLabel": "Kapablo de Rekta Ludado: ",
-    "forced": "Devigita",
-    "transcodeContainerNotSupported": "La ujformato ne estas subtenata de la ludilo.",
-    "transcodeVideoCodecNotSupported": "La videa kodeko ne estas subtenata.",
-    "transcodeAudioCodecNotSupported": "La aŭdia kodeko ne estas subtenata.",
-    "transcodeSubtitleCodecNotSupported": "La subteksta formato ne estas subtenata (postulas enbruligon).",
-    "transcodeAudioProfileNotSupported": "La aŭdia profilo ne estas subtenata.",
-    "transcodeVideoProfileNotSupported": "La videa profilo ne estas subtenata.",
-    "transcodeVideoLevelNotSupported": "La videa nivelo ne estas subtenata.",
-    "transcodeVideoResolutionNotSupported": "La videa distingivo ne estas subtenata de ĉi tiu aparato.",
-    "transcodeVideoBitDepthNotSupported": "La videa bitprofundo ne estas subtenata.",
-    "transcodeVideoFramerateNotSupported": "La videa kadrofrekvenco ne estas subtenata.",
-    "transcodeContainerBitrateExceedsLimit": "La dosiera bitrapido superas la elsendan limon de la ludilo.",
-    "transcodeVideoBitrateExceedsLimit": "La videa bitrapido superas la elsendan limon.",
-    "transcodeAudioBitrateExceedsLimit": "La aŭdia bitrapido superas la elsendan limon.",
-    "transcodeAudioChannelsNotSupported": "La nombro da aŭdiaj kanaloj ne estas subtenata.",
-    "sortAlphabetical": "Alfabete",
-    "sortReleaseAscending": "Eldonordo (kreskanta)",
-    "sortReleaseDescending": "Eldonordo (malkreskanta)",
-    "sortCustomDragDrop": "Propra (treni kaj demeti)",
-    "playlistSortOptions": "Ordigopcioj de ludlisto",
-    "resetSort": "Restarigi ordigon",
-    "rewatchSeasonEpisode": "Rerigardi S{season}:E{episode}",
+    "checkingDirectPlay": "",
+    "directPlayCapabilityLabel": "",
+    "forced": "",
+    "transcodeContainerNotSupported": "",
+    "transcodeVideoCodecNotSupported": "",
+    "transcodeAudioCodecNotSupported": "",
+    "transcodeSubtitleCodecNotSupported": "",
+    "transcodeAudioProfileNotSupported": "",
+    "transcodeVideoProfileNotSupported": "",
+    "transcodeVideoLevelNotSupported": "",
+    "transcodeVideoResolutionNotSupported": "",
+    "transcodeVideoBitDepthNotSupported": "",
+    "transcodeVideoFramerateNotSupported": "",
+    "transcodeContainerBitrateExceedsLimit": "",
+    "transcodeVideoBitrateExceedsLimit": "",
+    "transcodeAudioBitrateExceedsLimit": "",
+    "transcodeAudioChannelsNotSupported": "",
+    "sortAlphabetical": "",
+    "sortReleaseAscending": "",
+    "sortReleaseDescending": "",
+    "sortCustomDragDrop": "",
+    "playlistSortOptions": "",
+    "resetSort": "",
+    "rewatchSeasonEpisode": "",
     "@rewatchSeasonEpisode": {
         "placeholders": {
             "season": {
@@ -8938,57 +8938,57 @@
             }
         }
     },
-    "rewatchPlaylist": "Rerigardi ludliston",
-    "noSubtitlesFound": "Neniuj subtekstoj trovitaj.",
-    "adminControls": "Administraj regiloj",
-    "impellerRendering": "Bildiga maŝino (Impeller)",
+    "rewatchPlaylist": "",
+    "noSubtitlesFound": "",
+    "adminControls": "",
+    "impellerRendering": "",
     "@impellerRendering": {
         "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
     },
-    "impellerRenderingSubtitle": "Impeller estas la moderna GPU-bildigilo de Flutter por pli glataj animacioj kaj malpli da ŝutriĝo. Sur kelkaj TV-skatoloj kaj pli malnovaj GPU-oj ĝi povas kaŭzi difektojn aŭ nigran videon; malŝaltu ĝin se vi vidas tiajn. Aŭtomata elektas la plej bonan defaŭlton por via aparato. Restartigu Moonfin por apliki.",
+    "impellerRenderingSubtitle": "",
     "@impellerRenderingSubtitle": {
         "description": "Explanatory description under the rendering engine setting."
     },
-    "impellerAuto": "Aŭtomata",
-    "impellerOn": "Ŝaltita",
-    "impellerOff": "Malŝaltita",
-    "impellerRestartTitle": "Restarto necesa",
+    "impellerAuto": "",
+    "impellerOn": "",
+    "impellerOff": "",
+    "impellerRestartTitle": "",
     "@impellerRestartTitle": {
         "description": "Title of the dialog shown after changing the rendering engine."
     },
-    "impellerRestartMessage": "Moonfin devas restarti por ŝanĝi la bildigan maŝinon. Fermu la aplikaĵon nun, poste remalfermu ĝin por apliki.",
+    "impellerRestartMessage": "",
     "@impellerRestartMessage": {
         "description": "Body of the dialog shown after changing the rendering engine."
     },
-    "impellerCloseNow": "Fermi la aplikaĵon nun",
+    "impellerCloseNow": "",
     "@impellerCloseNow": {
         "description": "Button that closes the app so the new rendering engine takes effect on next launch."
     },
-    "adminRefreshLibrary": "Refreŝigi bibliotekon",
+    "adminRefreshLibrary": "",
     "@adminRefreshLibrary": {
         "description": "Dropdown option to refresh/rescan a single library"
     },
-    "adminRefreshAllLibraries": "Refreŝigi ĉiujn bibliotekojn",
+    "adminRefreshAllLibraries": "",
     "@adminRefreshAllLibraries": {
         "description": "Floating action button text to refresh all libraries"
     },
-    "adminRepoSortDateOldest": "Aldondato (plej malnovaj unue)",
+    "adminRepoSortDateOldest": "",
     "@adminRepoSortDateOldest": {
         "description": "Repository sort option, oldest added first"
     },
-    "adminRepoSortDateNewest": "Aldondato (plej novaj unue)",
+    "adminRepoSortDateNewest": "",
     "@adminRepoSortDateNewest": {
         "description": "Repository sort option, newest added first"
     },
-    "adminRepoSortNameAsc": "Alfabete (A al Z)",
+    "adminRepoSortNameAsc": "",
     "@adminRepoSortNameAsc": {
         "description": "Repository sort option, alphabetical ascending"
     },
-    "adminRepoSortNameDesc": "Alfabete (Z al A)",
+    "adminRepoSortNameDesc": "",
     "@adminRepoSortNameDesc": {
         "description": "Repository sort option, alphabetical descending"
     },
-    "adminAnalyticsLoadingProgress": "Ŝargante servilan analitikon... {percentage}%",
+    "adminAnalyticsLoadingProgress": "",
     "@adminAnalyticsLoadingProgress": {
         "description": "Progress label shown while server analytics load",
         "placeholders": {
@@ -8997,14 +8997,14 @@
             }
         }
     },
-    "adminLibChapterImageResolutionMatchSource": "Kongrui kun fonto",
+    "adminLibChapterImageResolutionMatchSource": "",
     "@adminLibChapterImageResolutionMatchSource": {
         "description": "Chapter image resolution option that matches the source resolution"
     },
-    "imdbTop250Movies": "IMDb Plej Bonaj 250 Filmoj",
-    "imdbTop250TvShows": "IMDb Plej Bonaj 250 TV-Serioj",
-    "imdbMostPopularMovies": "IMDb Plej Popularaj Filmoj",
-    "imdbMostPopularTvShows": "IMDb Plej Popularaj TV-Serioj",
-    "imdbLowestRatedMovies": "IMDb Plej Malalte Taksitaj Filmoj",
-    "imdbTopEnglishMovies": "IMDb Plej Bone Taksitaj Anglaj Filmoj"
+    "imdbTop250Movies": "",
+    "imdbTop250TvShows": "",
+    "imdbMostPopularMovies": "",
+    "imdbMostPopularTvShows": "",
+    "imdbLowestRatedMovies": "",
+    "imdbTopEnglishMovies": ""
 }
