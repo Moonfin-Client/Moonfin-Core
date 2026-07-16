@@ -1,6 +1,6 @@
 {
     "@@locale": "id",
-    "appTitle": "Moonfin",
+    "appTitle": "sirip bulan",
     "@appTitle": {
         "description": "The application title"
     },
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Quick Connect",
+    "quickConnect": "Koneksi Cepat",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -144,7 +144,7 @@
     "@serverAddress": {
         "description": "Label for the server URL input field"
     },
-    "serverAddressHint": "https://your-server.example.com",
+    "serverAddressHint": "[https://your-server.example.com](https://your-server.example.com)",
     "@serverAddressHint": {
         "description": "Hint text for the server URL input field"
     },
@@ -741,7 +741,7 @@
     "@browseByGenre": {
         "description": "Collection picker dialog title for genre browse"
     },
-    "discover": "Jelajahi",
+    "discover": "Discover",
     "@discover": {
         "description": "Section title for book discovery"
     },
@@ -1107,7 +1107,7 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Transmisikan",
+    "cast": "Pemeran",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
@@ -1275,7 +1275,7 @@
     "@subtitleTrack": {
         "description": "Dialog title for subtitle track selection"
     },
-    "none": "Tidak ada",
+    "none": "Tidak Ada",
     "@none": {
         "description": "Option label for no subtitle selected"
     },
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "PENULIS",
+    "writers": "PARA PENULIS",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1786,7 +1786,7 @@
     "@subtitleDelay": {
         "description": "Title for subtitle delay adjuster"
     },
-    "reset": "Atur Ulang",
+    "reset": "Reset",
     "@reset": {
         "description": "Button label to reset a value"
     },
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "Pemutar",
+    "player": "Player",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -2015,7 +2015,7 @@
     "@failedToDecodePageImage": {
         "description": "Error when comic page image cannot be decoded"
     },
-    "resetZoom": "Atur Ulang Zoom ({zoom}x)",
+    "resetZoom": "Reset Zoom ({zoom}x)",
     "@resetZoom": {
         "description": "Tooltip for reset zoom button",
         "placeholders": {
@@ -2138,7 +2138,7 @@
     "@kids": {
         "description": "Kids category filter label"
     },
-    "premiere": "Perdana",
+    "premiere": "Premiere",
     "@premiere": {
         "description": "Premiere category filter label"
     },
@@ -2552,7 +2552,7 @@
     "@images": {
         "description": "Storage breakdown label for images"
     },
-    "database": "Basis Data",
+    "database": "Database",
     "@database": {
         "description": "Storage breakdown label for database"
     },
@@ -3161,7 +3161,7 @@
     "@subtitleCustomizationDescription": {
         "description": "Subtitle for the subtitle customization tile"
     },
-    "subtitlePreviewText": "Musang cokelat lincah melompati anjing pemalas",
+    "subtitlePreviewText": "The quick brown fox jumps over the lazy dog",
     "@subtitlePreviewText": {
         "description": "Sample text shown in the subtitle live preview"
     },
@@ -3169,7 +3169,7 @@
     "@verticalOffset": {
         "description": "Setting for vertical offset"
     },
-    "pgsDirectPlay": "Direct Play PGS",
+    "pgsDirectPlay": "PGS Direct Play",
     "@pgsDirectPlay": {
         "description": "Setting for PGS direct play"
     },
@@ -3177,7 +3177,7 @@
     "@directPlayPgsSubtitles": {
         "description": "Description for PGS direct play"
     },
-    "assSsaDirectPlay": "Direct Play ASS/SSA",
+    "assSsaDirectPlay": "ASS/SSA Direct Play",
     "@assSsaDirectPlay": {
         "description": "Setting for ASS/SSA direct play"
     },
@@ -3328,7 +3328,7 @@
     "@downloadLocation": {
         "description": "Setting for download location"
     },
-    "defaultLabel": "Bawaan",
+    "defaultLabel": "Default",
     "@defaultLabel": {
         "description": "Option: default"
     },
@@ -3436,7 +3436,7 @@
     "@purple": {
         "description": "Color: purple"
     },
-    "teal": "Tosca",
+    "teal": "Teal",
     "@teal": {
         "description": "Color: teal"
     },
@@ -4080,15 +4080,15 @@
             }
         }
     },
-    "discoverRows": "Halaman Jelajah Seerr",
+    "discoverRows": "Baris Discover",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Aktifkan baris yang ingin ditampilkan di halaman utama Seerr. Seret untuk mengubah urutan. Urutan kustom disinkronkan dengan Moonbase.",
+    "discoverRowsDescriptionPlugin": "Seret untuk mengatur ulang urutan. Aktifkan atau nonaktifkan baris. Urutan baris yang diaktifkan akan disinkronkan dengan plugin Moonfin.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Aktifkan baris yang ingin ditampilkan di halaman utama Seerr. Seret untuk mengubah urutan. Urutan kustom disinkronkan dengan Moonbase.",
+    "discoverRowsDescription": "Seret untuk mengatur ulang urutan. Aktifkan atau nonaktifkan baris.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4121,7 +4121,7 @@
     "@sourceCode": {
         "description": "Link to source code"
     },
-    "sourceCodeUrl": "https://github.com/Moonfin-Client/Moonfin-Core",
+    "sourceCodeUrl": "[https://github.com/Moonfin-Client/Moonfin-Core](https://github.com/Moonfin-Client/Moonfin-Core)",
     "@sourceCodeUrl": {
         "description": "Displayed source code repository URL"
     },
@@ -4426,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "Filmografi",
+    "appearances": "Penampilan",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4537,14 +4537,14 @@
     "name": "Nama",
     "networking": "Jaringan",
     "next": "Berikutnya",
-    "path": "Jalur",
+    "path": "Path",
     "paused": "Dijeda",
     "permissions": "Izin",
     "processing": "Memproses",
     "profile": "Profil",
     "provider": "Penyedia",
     "refresh": "Segarkan",
-    "remote": "Jarak jauh",
+    "remote": "Jarak Jauh",
     "rename": "Ubah Nama",
     "revoke": "Cabut",
     "role": "Peran",
@@ -4567,7 +4567,7 @@
     "unmute": "Bunyikan",
     "mute": "Bisukan",
     "branding": "Branding",
-    "adminDrawerDashboard": "Dasbor",
+    "adminDrawerDashboard": "Dashboard",
     "adminDrawerAnalytics": "Analitik",
     "adminDrawerSettings": "Pengaturan",
     "adminDrawerBranding": "Branding",
@@ -4638,7 +4638,7 @@
     "adminRestartPending": "Menunggu Restart",
     "adminServerPaths": "Path Server",
     "adminServerActions": "Tindakan Server",
-    "adminRestartServer": "Mulai Ulang Server",
+    "adminRestartServer": "Restart Server",
     "adminShutdownServer": "Matikan Server",
     "adminScanLibraries": "Pindai Pustaka",
     "adminLibraryScanStarted": "Pemindaian pustaka dimulai",
@@ -4670,7 +4670,7 @@
     "adminSetVolume": "Atur Volume",
     "sessionPrev": "Sebelumnya",
     "sessionRewind": "Mundur",
-    "sessionForward": "Maju cepat",
+    "sessionForward": "Maju",
     "sessionNext": "Berikutnya",
     "sessionVolumeDown": "Vol –",
     "sessionVolumeUp": "Vol +",
@@ -5671,7 +5671,7 @@
     "adminLiveTvTitle": "Administrasi TV Langsung",
     "adminApply": "Terapkan",
     "adminNotSet": "Tidak diatur",
-    "adminReset": "Atur Ulang",
+    "adminReset": "Reset",
     "adminLogsTitle": "Log Server",
     "adminLogsNewestFirst": "Terbaru Dulu",
     "adminLogsOldestFirst": "Terlama Dulu",
@@ -5969,7 +5969,7 @@
     "adminTrickplayPriorityAboveNormal": "Di Atas Normal",
     "adminTrickplayPriorityNormal": "Normal",
     "adminTrickplayPriorityBelowNormal": "Di Bawah Normal",
-    "adminTrickplayPriorityIdle": "Saat menganggur",
+    "adminTrickplayPriorityIdle": "Idle",
     "adminTrickplayImageSettings": "Pengaturan Gambar",
     "adminTrickplayInterval": "Interval (md)",
     "adminTrickplayIntervalSubtitle": "Seberapa sering mengambil frame",
@@ -6092,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{day}/{month}",
+    "adminActivityDateShort": "{month}/{day}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6129,7 +6129,7 @@
     "adminTrickplayTileHeight": "Tinggi tile",
     "adminTrickplayProcessThreads": "Thread proses",
     "adminTrickplayWidthResolutions": "Resolusi lebar",
-    "adminMetadataDefault": "Bawaan",
+    "adminMetadataDefault": "Default",
     "adminMetadataContentTypeUpdated": "Tipe konten diperbarui",
     "adminMetadataContentTypeFailed": "Gagal memperbarui tipe konten: {error}",
     "@adminMetadataContentTypeFailed": {
@@ -6597,7 +6597,7 @@
     "settingsPlaybackEngineAndroidTv": "Mesin Pemutaran (Android TV)",
     "settingsPlaybackEngineAndroidTvDescription": "Pilih mesin pemutaran default pada perangkat Android TV. Perubahan berlaku pada sesi pemutaran berikutnya.",
     "settingsPlaybackEngineMedia3Recommended": "Media3 (direkomendasikan)",
-    "settingsPlaybackEngineMpvLegacy": "mpv (lawas)",
+    "settingsPlaybackEngineMpvLegacy": "mpv (legacy)",
     "settingsDolbyVisionFallback": "Fallback Dolby Vision",
     "settingsDolbyVisionFallbackDescription": "Perilaku untuk judul Dolby Vision pada perangkat tanpa dekode Dolby Vision.",
     "settingsAskEachTime": "Tanya setiap kali",
@@ -6632,7 +6632,7 @@
             }
         }
     },
-    "settingsLiveTvDirect": "TV Langsung Direct",
+    "settingsLiveTvDirect": "Live TV Direct",
     "settingsLiveTvDirectSubtitle": "Aktifkan direct play untuk Live TV",
     "settingsOpenGroups": "Buka Grup",
     "settingsOpenGroupsSubtitle": "Buat, gabung, atau kelola grup SyncPlay",
@@ -6940,7 +6940,7 @@
     "@settingsAudioDiagnosticsRouteHdAudioSupport": {
         "description": "Diagnostics label for route HD audio support"
     },
-    "settingsPlaybackEngineMedia3Legacy": "Media3 (lawas)",
+    "settingsPlaybackEngineMedia3Legacy": "Media3 (legacy)",
     "settingsPlaybackEngineMpvRecommended": "mpv (direkomendasikan)",
     "autoplayNextEpisode": "Putar Otomatis Episode Berikutnya",
     "@autoplayNextEpisode": {
@@ -7131,7 +7131,7 @@
     "webDiagnosticsDefaultServerUrl": "URL Server Default",
     "webDiagnosticsDiscoveryProxyUrl": "URL Proxy Discovery",
     "notConfigured": "tidak dikonfigurasi",
-    "webDiagnosticsMixedContent": "Konten Campuran",
+    "webDiagnosticsMixedContent": "Mixed Content",
     "webDiagnosticsMixedContentDetected": "Halaman ini dimuat melalui HTTPS, tetapi satu atau lebih URL yang dikonfigurasi menggunakan HTTP. Browser memblokir halaman HTTPS untuk memanggil API HTTP.",
     "webDiagnosticsMixedContentFix": "Perbaikan: sajikan server media atau endpoint proxy Anda melalui HTTPS, atau muat Moonfin melalui HTTP hanya pada jaringan lokal tepercaya.",
     "webDiagnosticsNoMixedContentDetected": "Tidak ada konfigurasi mixed content yang jelas terdeteksi dari pengaturan runtime saat ini.",
@@ -7387,7 +7387,7 @@
     "@settingsAudioFallbackCodecAuto": {
         "description": "Fallback codec option: Auto"
     },
-    "settingsAudioFallbackCodecAac": "AAC\n(Bawaan)",
+    "settingsAudioFallbackCodecAac": "AAC\n(Default)",
     "@settingsAudioFallbackCodecAac": {
         "description": "Fallback codec option: AAC"
     },
@@ -7496,11 +7496,11 @@
     "@settingsProgressBar": {
         "description": "Option label to show only progress bar on media segment countdown overlay"
     },
-    "settingsTimer": "Pengatur Waktu",
+    "settingsTimer": "Timer",
     "@settingsTimer": {
         "description": "Option label to show only countdown timer on media segment countdown overlay"
     },
-    "settingsNone": "Tidak ada",
+    "settingsNone": "Tidak Ada",
     "@settingsNone": {
         "description": "Option label to hide all decorations on media segment countdown overlay"
     },
@@ -7611,22 +7611,22 @@
     "logoCategory": "Logo",
     "thumbnailCategory": "Thumbnail",
     "artCategory": "Art",
-    "discArtCategory": "Gambar Cakram",
+    "discArtCategory": "Disc Art",
     "screenshotCategory": "Tangkapan Layar",
     "boxCoverCategory": "Sampul Kotak",
     "boxRearCoverCategory": "Sampul Belakang Kotak",
-    "menuArtCategory": "Gambar Menu",
+    "menuArtCategory": "Menu Art",
     "confirmItemPoster": "poster",
     "confirmItemBackdrop": "backdrop",
     "confirmItemBanner": "banner",
     "confirmItemLogo": "logo",
     "confirmItemThumbnail": "thumbnail",
     "confirmItemArt": "art",
-    "confirmItemDiscArt": "gambar cakram",
+    "confirmItemDiscArt": "disc art",
     "confirmItemScreenshot": "tangkapan layar",
     "confirmItemBoxCover": "sampul kotak",
     "confirmItemBoxRearCover": "sampul belakang kotak",
-    "confirmItemMenuArt": "gambar menu",
+    "confirmItemMenuArt": "menu art",
     "resolutionAll": "Semua",
     "resolutionHigh": "Tinggi (1080p+)",
     "resolutionMedium": "Sedang (720p)",
@@ -7635,167 +7635,167 @@
     "@sources": {
         "description": "Title of the artwork source-provider filter dialog"
     },
-    "detailScreenStyle": "Gaya layar detail",
+    "detailScreenStyle": "",
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Klasik adalah tata letak Moonfin asli yang terpusat. Modern adalah tata letak sinematik yang responsif.",
+    "detailScreenStyleSubtitle": "",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
-    "detailScreenStyleMoonfin": "Klasik",
+    "detailScreenStyleMoonfin": "",
     "@detailScreenStyleMoonfin": {
         "description": "Detail screen style option: the classic centered layout"
     },
-    "detailScreenStyleModern": "Modern",
+    "detailScreenStyleModern": "",
     "@detailScreenStyleModern": {
         "description": "Detail screen style option: the responsive cinematic layout"
     },
-    "expandedTabs": "Tab Diperluas",
+    "expandedTabs": "",
     "@expandedTabs": {
         "description": "Label for the detail screen expanded tabs setting"
     },
-    "expandedTabsSubtitle": "Tampilkan konten tab secara otomatis saat menjelajahi tab. Matikan untuk membuka dan menutup setiap tab secara manual.",
+    "expandedTabsSubtitle": "",
     "@expandedTabsSubtitle": {
         "description": "Explanation under the expanded tabs setting"
     },
-    "showTechnicalDetails": "Tampilkan Detail Teknis?",
+    "showTechnicalDetails": "",
     "@showTechnicalDetails": {
         "description": "Label for the detail screen setting to show stream/codec technical details"
     },
-    "showTechnicalDetailsSubtitle": "Tampilkan informasi codec, resolusi, dan stream pada ringkasan banner",
+    "showTechnicalDetailsSubtitle": "",
     "@showTechnicalDetailsSubtitle": {
         "description": "Explanation under the show technical details setting"
     },
-    "recommendationSystem": "Sistem Rekomendasi",
+    "recommendationSystem": "",
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Gunakan algoritme pustaka lokal Moonfin Recommends atau metrik kemiripan TMDb online. Catatan: rekomendasi online memerlukan integrasi Seerr.",
+    "recommendationSystemSubtitle": "",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
-    "recommendationSystemMoonfin": "Moonfin Recommends",
+    "recommendationSystemMoonfin": "",
     "@recommendationSystemMoonfin": {
         "description": "Recommendation system option: Moonfin Recommends"
     },
-    "recommendationSystemTmdb": "Kemiripan TMDb",
+    "recommendationSystemTmdb": "",
     "@recommendationSystemTmdb": {
         "description": "Recommendation system option: TMDb Similarity"
     },
-    "recommendationsApplyParentalRatingCap": "Terapkan Batas Rating Orang Tua?",
+    "recommendationsApplyParentalRatingCap": "",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
-    "recommendationsApplyParentalRatingCapSubtitle": "Batasi saran Moonfin Recommends berdasarkan rating orang tua dari media yang dituju",
+    "recommendationsApplyParentalRatingCapSubtitle": "",
     "@recommendationsApplyParentalRatingCapSubtitle": {
         "description": "Explanation under the parental rating cap setting toggle"
     },
-    "interfaceStyle": "Gaya Antarmuka",
+    "interfaceStyle": "",
     "@interfaceStyle": {
         "description": "Label for the Automatic/Apple/Material interface style setting"
     },
-    "interfaceStyleSubtitle": "Otomatis menyesuaikan dengan perangkat Anda. Pilih Apple atau Material untuk memaksa tampilan tertentu.",
+    "interfaceStyleSubtitle": "",
     "@interfaceStyleSubtitle": {
         "description": "Explanation under the interface style setting"
     },
-    "interfaceStyleAutomatic": "Otomatis",
+    "interfaceStyleAutomatic": "",
     "@interfaceStyleAutomatic": {
         "description": "Interface style option: follow the platform"
     },
-    "interfaceStyleApple": "Apple",
+    "interfaceStyleApple": "",
     "@interfaceStyleApple": {
         "description": "Interface style option: Apple native look"
     },
-    "interfaceStyleMaterial": "Material",
+    "interfaceStyleMaterial": "",
     "@interfaceStyleMaterial": {
         "description": "Interface style option: Material look"
     },
-    "glassQuality": "Kualitas Efek Kaca",
+    "glassQuality": "",
     "@glassQuality": {
         "description": "Label for the glass rendering quality setting"
     },
-    "glassQualitySubtitle": "Otomatis memilih efek kaca terbaik untuk perangkat ini. Penuh memaksa blur asli; Ringan menggunakan efek kaca sederhana yang menghemat daya GPU.",
+    "glassQualitySubtitle": "",
     "@glassQualitySubtitle": {
         "description": "Explanation under the glass quality setting"
     },
-    "glassQualityAuto": "Otomatis",
+    "glassQualityAuto": "",
     "@glassQualityAuto": {
         "description": "Glass quality option: per-device default"
     },
-    "glassQualityFull": "Penuh",
+    "glassQualityFull": "",
     "@glassQualityFull": {
         "description": "Glass quality option: force real blur"
     },
-    "glassQualityReduced": "Ringan",
+    "glassQualityReduced": "",
     "@glassQualityReduced": {
         "description": "Glass quality option: lightweight zero-blur glass"
     },
-    "customThemeTitle": "Tema Kustom",
+    "customThemeTitle": "",
     "@customThemeTitle": {
         "description": "Title for the custom theme settings section"
     },
-    "customThemeSubtitle": "Tema kustom mengubah elemen visual di seluruh Moonfin. Pilih salah satu opsi berikut yang sesuai dengan gaya Anda.",
+    "customThemeSubtitle": "",
     "@customThemeSubtitle": {
         "description": "Description under custom themes section"
     },
-    "theme8BitHero": "8-bit Hero",
+    "theme8BitHero": "",
     "@theme8BitHero": {
         "description": "Display name for the 8-bit Hero theme"
     },
-    "theme8BitHeroSubtitle": "Gaya pixel-art retro dengan palet tebal, bingkai kotak, bayangan tajam, dan font piksel",
+    "theme8BitHeroSubtitle": "",
     "@theme8BitHeroSubtitle": {
         "description": "Preview description for the 8-bit Hero theme"
     },
-    "gameMenu": "Menu",
+    "gameMenu": "",
     "@gameMenu": {
         "description": "Tooltip for the in-game menu button"
     },
-    "gamePaused": "Dijeda",
+    "gamePaused": "",
     "@gamePaused": {
         "description": "Status shown in the in-game menu while the game is paused"
     },
-    "gameSaveState": "Simpan state",
+    "gameSaveState": "",
     "@gameSaveState": {
         "description": "In-game menu action to save the game state"
     },
-    "games": "Game",
+    "games": "",
     "@games": {
         "description": "Label for the games category tab in search results"
     },
-    "gameLoadState": "Muat state",
+    "gameLoadState": "",
     "@gameLoadState": {
         "description": "In-game menu action to load the saved game state"
     },
-    "gameFastForward": "Percepat",
+    "gameFastForward": "",
     "@gameFastForward": {
         "description": "In-game menu action to toggle fast-forward"
     },
-    "gameEmulatorSettings": "Pengaturan emulator",
+    "gameEmulatorSettings": "",
     "@gameEmulatorSettings": {
         "description": "In-game menu action opening the emulator settings"
     },
-    "gameNoCoreOptions": "Core ini tidak memiliki opsi yang dapat diatur.",
+    "gameNoCoreOptions": "",
     "@gameNoCoreOptions": {
         "description": "Shown when a game core exposes no settings"
     },
-    "gameHoldToOpenMenu": "Tahan untuk membuka menu",
+    "gameHoldToOpenMenu": "",
     "@gameHoldToOpenMenu": {
         "description": "Hint shown while holding the gamepad combo to open the in-game menu"
     },
-    "gamePlaybackUnsupported": "Bermain game belum didukung di perangkat ini.",
+    "gamePlaybackUnsupported": "",
     "@gamePlaybackUnsupported": {
         "description": "Shown when the device cannot run the retro-game emulator"
     },
-    "latestBooks": "Buku Terbaru",
+    "latestBooks": "",
     "@latestBooks": {
         "description": "Row title for recently added books in the book library"
     },
-    "latestAudiobooks": "Audiobook Terbaru",
+    "latestAudiobooks": "",
     "@latestAudiobooks": {
         "description": "Row title for recently added audiobooks in the book library"
     },
-    "bookSeriesItemCount": "{count, plural, =1{1 buku} other{{count} buku}}",
+    "bookSeriesItemCount": "",
     "@bookSeriesItemCount": {
         "description": "Subtitle for a book series shelf entry showing how many books it contains",
         "placeholders": {
@@ -7804,15 +7804,15 @@
             }
         }
     },
-    "bookFormatBook": "Buku",
+    "bookFormatBook": "",
     "@bookFormatBook": {
         "description": "Semantic label for the book format badge on library cards"
     },
-    "bookFormatAudiobook": "Audiobook",
+    "bookFormatAudiobook": "",
     "@bookFormatAudiobook": {
         "description": "Semantic label for the audiobook format badge on library cards"
     },
-    "bookPercentRead": "{percent}% dibaca",
+    "bookPercentRead": "",
     "@bookPercentRead": {
         "description": "Reading progress label on book cards",
         "placeholders": {
@@ -7821,7 +7821,7 @@
             }
         }
     },
-    "bookTimeLeft": "tersisa {time}",
+    "bookTimeLeft": "",
     "@bookTimeLeft": {
         "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
         "placeholders": {
@@ -7830,47 +7830,47 @@
             }
         }
     },
-    "bookHeroRead": "Baca",
+    "bookHeroRead": "",
     "@bookHeroRead": {
         "description": "Hero CTA label to start reading a book"
     },
-    "bookHeroListen": "Dengarkan",
+    "bookHeroListen": "",
     "@bookHeroListen": {
         "description": "Hero CTA label to start listening to an audiobook"
     },
-    "items": "Item",
+    "items": "",
     "@items": {
         "description": "Tab label for the items in a collection/box set"
     },
-    "extras": "Ekstra",
+    "extras": "",
     "@extras": {
         "description": "Tab label for special features / extras"
     },
-    "behindTheScenes": "Di Balik Layar",
+    "behindTheScenes": "",
     "@behindTheScenes": {
         "description": "Tab label for behind the scenes special features"
     },
-    "deletedScenes": "Adegan yang Dihapus",
+    "deletedScenes": "",
     "@deletedScenes": {
         "description": "Tab label for deleted scenes special features"
     },
-    "featurettes": "Featurette",
+    "featurettes": "",
     "@featurettes": {
         "description": "Tab label for featurettes special features"
     },
-    "interviews": "Wawancara",
+    "interviews": "",
     "@interviews": {
         "description": "Tab label for interviews special features"
     },
-    "scenes": "Adegan",
+    "scenes": "",
     "@scenes": {
         "description": "Tab label for scenes special features"
     },
-    "shorts": "Film Pendek",
+    "shorts": "",
     "@shorts": {
         "description": "Tab label for shorts special features"
     },
-    "timeRemaining": "tersisa {time}",
+    "timeRemaining": "",
     "@timeRemaining": {
         "description": "Label showing remaining playback time, e.g. '42m remaining'",
         "placeholders": {
@@ -7879,19 +7879,19 @@
             }
         }
     },
-    "shuffleAllMusic": "Acak semua musik",
+    "shuffleAllMusic": "",
     "@shuffleAllMusic": {
         "description": "Car browse action that shuffles the whole music library"
     },
-    "carSignInPrompt": "Masuk ke Moonfin di ponsel Anda",
+    "carSignInPrompt": "",
     "@carSignInPrompt": {
         "description": "Shown in the car when no account is signed in"
     },
-    "carServerUnreachable": "Tidak dapat menjangkau server Anda",
+    "carServerUnreachable": "",
     "@carServerUnreachable": {
         "description": "Shown in the car when the media server can't be reached"
     },
-    "guideNextProgram": "Berikutnya: {time}  {title}",
+    "guideNextProgram": "",
     "@guideNextProgram": {
         "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
         "placeholders": {
@@ -7903,7 +7903,7 @@
             }
         }
     },
-    "guideMinutesLeft": "tersisa {minutes}m",
+    "guideMinutesLeft": "",
     "@guideMinutesLeft": {
         "description": "Remaining time of the current program, under an hour",
         "placeholders": {
@@ -7912,7 +7912,7 @@
             }
         }
     },
-    "guideHoursLeft": "tersisa {hours}j",
+    "guideHoursLeft": "",
     "@guideHoursLeft": {
         "description": "Remaining time of the current program, whole hours",
         "placeholders": {
@@ -7921,7 +7921,7 @@
             }
         }
     },
-    "guideHoursMinutesLeft": "tersisa {hours}j {minutes}m",
+    "guideHoursMinutesLeft": "",
     "@guideHoursMinutesLeft": {
         "description": "Remaining time of the current program, hours and minutes",
         "placeholders": {
@@ -7933,165 +7933,165 @@
             }
         }
     },
-    "themeMusicSettingsSubtitle": "Halaman detail, baris beranda, dan volume",
+    "themeMusicSettingsSubtitle": "",
     "@themeMusicSettingsSubtitle": {
         "description": "Subtitle for the Theme Music settings sub-category tile"
     },
-    "loopThemeMusic": "Ulangi Musik Tema",
+    "loopThemeMusic": "",
     "@loopThemeMusic": {
         "description": "Setting to loop the theme music"
     },
-    "loopThemeMusicSubtitle": "Ulangi trek terus-menerus, bukan memutarnya sekali saja",
+    "loopThemeMusicSubtitle": "",
     "@loopThemeMusicSubtitle": {
         "description": "Description for the loop theme music setting"
     },
-    "fallbackAudioLanguage": "Bahasa Audio Cadangan",
+    "fallbackAudioLanguage": "",
     "@fallbackAudioLanguage": {
         "description": "Setting for fallback audio language"
     },
-    "preferDefaultAudioTrack": "Utamakan Trek Audio Bawaan",
+    "preferDefaultAudioTrack": "",
     "@preferDefaultAudioTrack": {
         "description": "Setting for preferring default audio track"
     },
-    "preferDefaultAudioTrackDescription": "Utamakan trek audio asli daripada sulih suara terlokalisasi.",
+    "preferDefaultAudioTrackDescription": "",
     "@preferDefaultAudioTrackDescription": {
         "description": "Description for preferring default audio track setting"
     },
-    "preferAudioDescription": "Utamakan Trek Deskripsi Audio",
+    "preferAudioDescription": "",
     "@preferAudioDescription": {
         "description": "Setting for preferring audio description tracks"
     },
-    "preferAudioDescriptionDescription": "Utamakan trek deskripsi audio daripada trek biasa.",
+    "preferAudioDescriptionDescription": "",
     "@preferAudioDescriptionDescription": {
         "description": "Description for preferring audio description tracks setting"
     },
-    "transcodingAudio": "Transcoding (Audio)",
+    "transcodingAudio": "",
     "@transcodingAudio": {
         "description": "Label for audio-only transcode playback method"
     },
-    "directStreamRemux": "Direct Stream (Remux)",
+    "directStreamRemux": "",
     "@directStreamRemux": {
         "description": "Play method label for direct stream with remuxing"
     },
-    "transcodingBitrateOrResolution": "Transcoding (Bitrate atau Resolusi)",
+    "transcodingBitrateOrResolution": "",
     "@transcodingBitrateOrResolution": {
         "description": "Play method label for transcoding due to bitrate or resolution"
     },
-    "transcodingVideoAndAudio": "Transcoding (Video & Audio)",
+    "transcodingVideoAndAudio": "",
     "@transcodingVideoAndAudio": {
         "description": "Play method label for transcoding both video and audio"
     },
-    "transcodingVideo": "Transcoding (Video)",
+    "transcodingVideo": "",
     "@transcodingVideo": {
         "description": "Play method label for transcoding video"
     },
-    "settingsAudioRouteHeadphones": "Headphone",
+    "settingsAudioRouteHeadphones": "",
     "@settingsAudioRouteHeadphones": {
         "description": "Audio route type wired or USB headphones"
     },
-    "subtitleMode": "Mode Subtitle",
+    "subtitleMode": "",
     "@subtitleMode": {
         "description": "Setting for subtitle mode"
     },
-    "subtitleModeFlagged": "Ditandai",
+    "subtitleModeFlagged": "",
     "@subtitleModeFlagged": {
         "description": "Subtitle mode: default/flagged"
     },
-    "subtitleModeAlways": "Selalu",
+    "subtitleModeAlways": "",
     "@subtitleModeAlways": {
         "description": "Subtitle mode: always play"
     },
-    "subtitleModeForeign": "Bahasa Asing",
+    "subtitleModeForeign": "",
     "@subtitleModeForeign": {
         "description": "Subtitle mode: foreign/smart"
     },
-    "subtitleModeForced": "Paksa",
+    "subtitleModeForced": "",
     "@subtitleModeForced": {
         "description": "Subtitle mode: only forced"
     },
-    "subtitleModeFlaggedDescription": "Memutar trek yang ditandai di dalam metadata berkas media sebagai \"default\" atau \"forced\".",
+    "subtitleModeFlaggedDescription": "",
     "@subtitleModeFlaggedDescription": {
         "description": "Description for flagged subtitle mode"
     },
-    "subtitleModeAlwaysDescription": "Memuat dan menampilkan subtitle secara otomatis setiap kali video dimulai.",
+    "subtitleModeAlwaysDescription": "",
     "@subtitleModeAlwaysDescription": {
         "description": "Description for always subtitle mode"
     },
-    "subtitleModeForeignDescription": "Otomatis menyalakan subtitle jika trek audio bawaan menggunakan bahasa asing.",
+    "subtitleModeForeignDescription": "",
     "@subtitleModeForeignDescription": {
         "description": "Description for foreign subtitle mode"
     },
-    "subtitleModeForcedDescription": "Hanya memuat subtitle yang secara eksplisit ditandai dengan flag metadata forced.",
+    "subtitleModeForcedDescription": "",
     "@subtitleModeForcedDescription": {
         "description": "Description for forced subtitle mode"
     },
-    "subtitleModeNoneDescription": "Menonaktifkan pemuatan subtitle otomatis sepenuhnya.",
+    "subtitleModeNoneDescription": "",
     "@subtitleModeNoneDescription": {
         "description": "Description for none subtitle mode"
     },
-    "fallbackSubtitleLanguage": "Bahasa Subtitle Cadangan",
+    "fallbackSubtitleLanguage": "",
     "@fallbackSubtitleLanguage": {
         "description": "Setting for fallback subtitle language"
     },
-    "subtitleStream": "Stream Subtitle",
+    "subtitleStream": "",
     "@subtitleStream": {
         "description": "Header for subtitle stream settings"
     },
     "reportDownloadsActivity": "Tampilkan unduhan di server",
     "reportDownloadsActivitySubtitle": "Izinkan admin server melihat unduhan hasil transcoding Anda di dasbor",
-    "navbarAlwaysExpanded": "Selalu Tampilkan Label Bilah Navigasi",
+    "navbarAlwaysExpanded": "",
     "@navbarAlwaysExpanded": {
         "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
     },
-    "groupItemsIntoCollections": "Kelompokkan Item ke dalam Koleksi",
+    "groupItemsIntoCollections": "",
     "@groupItemsIntoCollections": {
         "description": "Setting for grouping items into collections"
     },
-    "hideCollectionAssociatedItems": "Sembunyikan item pustaka yang terkait koleksi saat menjelajahi pustaka",
+    "hideCollectionAssociatedItems": "",
     "@hideCollectionAssociatedItems": {
         "description": "Description for grouping items into collections"
     },
-    "groupItemsIntoCollectionsDialogTitle": "Pemberitahuan Pengelompokan Pustaka",
+    "groupItemsIntoCollectionsDialogTitle": "",
     "@groupItemsIntoCollectionsDialogTitle": {
         "description": "Title of the alert dialog explaining server settings requirement"
     },
-    "groupItemsIntoCollectionsDialogMessage": "Untuk menggunakan pengaturan ini, pastikan pengaturan pustaka \"Kelompokkan film ke dalam koleksi\" dan/atau \"Kelompokkan serial ke dalam koleksi\" telah diaktifkan pada pengaturan Tampilan pustaka Anda di server Jellyfin atau Emby.",
+    "groupItemsIntoCollectionsDialogMessage": "",
     "@groupItemsIntoCollectionsDialogMessage": {
         "description": "Message of the alert dialog explaining server settings requirement"
     },
-    "trailerAudio": "Audio Trailer",
+    "trailerAudio": "",
     "@trailerAudio": {
         "description": "Setting for trailer audio"
     },
-    "enableTrailerAudio": "Aktifkan audio untuk trailer di bilah media",
+    "enableTrailerAudio": "",
     "@enableTrailerAudio": {
         "description": "Description for trailer audio"
     },
-    "seerrNotificationsSection": "Notifikasi",
+    "seerrNotificationsSection": "",
     "@seerrNotificationsSection": {
         "description": "Header for the Seerr notifications settings section"
     },
-    "seerrNotifyNewRequestsTitle": "Notifikasi permintaan baru",
+    "seerrNotifyNewRequestsTitle": "",
     "@seerrNotifyNewRequestsTitle": {
         "description": "Title for the toggle that notifies approvers of new Seerr requests"
     },
-    "seerrNotifyNewRequestsSubtitle": "Beri tahu saya saat seseorang mengirim permintaan",
+    "seerrNotifyNewRequestsSubtitle": "",
     "@seerrNotifyNewRequestsSubtitle": {
         "description": "Subtitle for the new request notifications toggle"
     },
-    "seerrNotifyLibraryAddedTitle": "Pembaruan permintaan",
+    "seerrNotifyLibraryAddedTitle": "",
     "@seerrNotifyLibraryAddedTitle": {
         "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
     },
-    "seerrNotifyLibraryAddedSubtitle": "Disetujui, ditolak, dan ditambahkan ke pustaka Anda",
+    "seerrNotifyLibraryAddedSubtitle": "",
     "@seerrNotifyLibraryAddedSubtitle": {
         "description": "Subtitle for the library-added notifications toggle"
     },
-    "seerrNotifyIssuesTitle": "Pembaruan masalah",
+    "seerrNotifyIssuesTitle": "",
     "@seerrNotifyIssuesTitle": {
         "description": "Title for the issue notifications toggle"
     },
-    "seerrNotifyIssuesSubtitle": "Masalah baru, balasan, dan penyelesaian",
+    "seerrNotifyIssuesSubtitle": "",
     "@seerrNotifyIssuesSubtitle": {
         "description": "Subtitle for the issue notifications toggle"
     },
@@ -8107,7 +8107,7 @@
     "imageCacheLimit": "Batas cache gambar",
     "clearImageCache": "Bersihkan cache gambar",
     "imageCacheCleared": "Cache gambar telah dibersihkan",
-    "seerrDownloadingPercent": "Mengunduh · {percent}%",
+    "seerrDownloadingPercent": "",
     "@seerrDownloadingPercent": {
         "description": "Label above the Seerr download progress bar",
         "placeholders": {
@@ -8116,19 +8116,19 @@
             }
         }
     },
-    "seerrImportingStatus": "Mengimpor",
+    "seerrImportingStatus": "",
     "@seerrImportingStatus": {
         "description": "Label when a Seerr download has finished and is importing"
     },
-    "failedStatus": "Gagal",
+    "failedStatus": "",
     "@failedStatus": {
         "description": "Request status label when the request failed to send to Radarr/Sonarr"
     },
-    "processingStatus": "Diproses",
+    "processingStatus": "",
     "@processingStatus": {
         "description": "Filter label for approved requests being processed"
     },
-    "modifiedByName": "Diubah oleh {name}",
+    "modifiedByName": "",
     "@modifiedByName": {
         "description": "Label showing which manager acted on a request",
         "placeholders": {
@@ -8137,51 +8137,51 @@
             }
         }
     },
-    "completedStatus": "Selesai",
+    "completedStatus": "",
     "@completedStatus": {
         "description": "Request status label when the request finished"
     },
-    "requestErrorDuplicate": "Judul ini sudah pernah diminta",
+    "requestErrorDuplicate": "",
     "@requestErrorDuplicate": {
         "description": "Error when creating a request that already exists"
     },
-    "requestErrorQuota": "Batas permintaan tercapai",
+    "requestErrorQuota": "",
     "@requestErrorQuota": {
         "description": "Error when the user is out of request quota"
     },
-    "requestErrorBlocklisted": "Judul ini masuk daftar blokir",
+    "requestErrorBlocklisted": "",
     "@requestErrorBlocklisted": {
         "description": "Error when requesting blocklisted media"
     },
-    "requestErrorNoSeasons": "Tidak ada musim tersisa untuk diminta",
+    "requestErrorNoSeasons": "",
     "@requestErrorNoSeasons": {
         "description": "Error when every season is already requested or available"
     },
-    "requestErrorPermission": "Anda tidak memiliki izin untuk membuat permintaan ini",
+    "requestErrorPermission": "",
     "@requestErrorPermission": {
         "description": "Error when the user lacks request permission"
     },
-    "seerrRequestsTitle": "Permintaan",
+    "seerrRequestsTitle": "",
     "@seerrRequestsTitle": {
         "description": "Requests tab and screen title"
     },
-    "seerrIssuesTitle": "Masalah",
+    "seerrIssuesTitle": "",
     "@seerrIssuesTitle": {
         "description": "Issues tab title on the requests hub"
     },
-    "sortNewest": "Terbaru",
+    "sortNewest": "",
     "@sortNewest": {
         "description": "Request sort option, most recently added first"
     },
-    "sortLastModified": "Terakhir Diubah",
+    "sortLastModified": "",
     "@sortLastModified": {
         "description": "Request sort option, most recently updated first"
     },
-    "noIssues": "Tidak ada masalah",
+    "noIssues": "",
     "@noIssues": {
         "description": "Shown when the issue list is empty"
     },
-    "movieQuotaRemaining": "Tersisa {remaining} dari {limit} permintaan film",
+    "movieQuotaRemaining": "",
     "@movieQuotaRemaining": {
         "description": "Quota line in the request dialog",
         "placeholders": {
@@ -8193,7 +8193,7 @@
             }
         }
     },
-    "seasonQuotaRemaining": "Tersisa {remaining} dari {limit} permintaan musim",
+    "seasonQuotaRemaining": "",
     "@seasonQuotaRemaining": {
         "description": "Quota line in the request dialog for series",
         "placeholders": {
@@ -8205,7 +8205,7 @@
             }
         }
     },
-    "partOfCollectionName": "Bagian dari {name}",
+    "partOfCollectionName": "",
     "@partOfCollectionName": {
         "description": "Banner on a movie that belongs to a collection",
         "placeholders": {
@@ -8214,15 +8214,15 @@
             }
         }
     },
-    "viewCollection": "Lihat Koleksi",
+    "viewCollection": "",
     "@viewCollection": {
         "description": "Link to open the collection screen"
     },
-    "requestCollection": "Minta Koleksi",
+    "requestCollection": "",
     "@requestCollection": {
         "description": "Button to request movies from a collection"
     },
-    "collectionMoviesSummary": "{total} film · {available} tersedia",
+    "collectionMoviesSummary": "",
     "@collectionMoviesSummary": {
         "description": "Collection header summary line",
         "placeholders": {
@@ -8234,7 +8234,7 @@
             }
         }
     },
-    "requestMoviesCount": "Minta {count} film",
+    "requestMoviesCount": "",
     "@requestMoviesCount": {
         "description": "Submit button on the collection request sheet",
         "placeholders": {
@@ -8243,7 +8243,7 @@
             }
         }
     },
-    "requestingProgress": "Meminta {current} dari {total}...",
+    "requestingProgress": "",
     "@requestingProgress": {
         "description": "Progress label while collection requests are submitted",
         "placeholders": {
@@ -8255,7 +8255,7 @@
             }
         }
     },
-    "requestedMoviesCount": "{count} film telah diminta",
+    "requestedMoviesCount": "",
     "@requestedMoviesCount": {
         "description": "Snackbar after a collection request succeeds",
         "placeholders": {
@@ -8264,7 +8264,7 @@
             }
         }
     },
-    "requestedMoviesPartial": "{ok} dari {total} film telah diminta",
+    "requestedMoviesPartial": "",
     "@requestedMoviesPartial": {
         "description": "Snackbar when some collection requests failed",
         "placeholders": {
@@ -8276,51 +8276,51 @@
             }
         }
     },
-    "collectionAllRequested": "Semua film sudah tersedia atau telah diminta",
+    "collectionAllRequested": "",
     "@collectionAllRequested": {
         "description": "Shown instead of the request button when nothing is requestable"
     },
-    "reportIssue": "Laporkan Masalah",
+    "reportIssue": "",
     "@reportIssue": {
         "description": "Button on the seerr detail screen to report a media issue"
     },
-    "issueTypeVideo": "Video",
+    "issueTypeVideo": "",
     "@issueTypeVideo": {
         "description": "Issue type option"
     },
-    "issueTypeAudio": "Audio",
+    "issueTypeAudio": "",
     "@issueTypeAudio": {
         "description": "Issue type option"
     },
-    "whatsWrong": "Apa masalahnya?",
+    "whatsWrong": "",
     "@whatsWrong": {
         "description": "Label for the issue description field"
     },
-    "allEpisodes": "Semua Episode",
+    "allEpisodes": "",
     "@allEpisodes": {
         "description": "Episode dropdown option covering the whole season"
     },
-    "episode": "Episode",
+    "episode": "",
     "@episode": {
         "description": "Episode dropdown label"
     },
-    "openStatus": "Terbuka",
+    "openStatus": "",
     "@openStatus": {
         "description": "Issue status label"
     },
-    "resolvedStatus": "Selesai",
+    "resolvedStatus": "",
     "@resolvedStatus": {
         "description": "Issue status label"
     },
-    "resolveAction": "Selesaikan",
+    "resolveAction": "",
     "@resolveAction": {
         "description": "Button to resolve an issue"
     },
-    "reopenAction": "Buka Kembali",
+    "reopenAction": "",
     "@reopenAction": {
         "description": "Button to reopen a resolved issue"
     },
-    "reportedByName": "Dilaporkan oleh {name}",
+    "reportedByName": "",
     "@reportedByName": {
         "description": "Label showing who reported an issue",
         "placeholders": {
@@ -8329,7 +8329,7 @@
             }
         }
     },
-    "commentsCount": "{count} komentar",
+    "commentsCount": "",
     "@commentsCount": {
         "description": "Number of comments on an issue",
         "placeholders": {
@@ -8338,24 +8338,24 @@
             }
         }
     },
-    "addComment": "Tambahkan komentar",
+    "addComment": "",
     "@addComment": {
         "description": "Hint for the issue comment field"
     },
-    "deleteIssueConfirm": "Hapus masalah ini?",
+    "deleteIssueConfirm": "",
     "@deleteIssueConfirm": {
         "description": "Confirmation before deleting an issue"
     },
-    "submitReport": "Kirim Laporan",
+    "submitReport": "",
     "@submitReport": {
         "description": "Button to submit an issue report"
     },
-    "adminDrawerDisplay": "Tampilan",
-    "adminDrawerMetadata": "Metadata",
-    "adminDrawerNfo": "Pengaturan NFO",
-    "adminActivitySeverityAll": "Semua tingkat keparahan",
-    "adminActivityDateRange": "Rentang tanggal",
-    "adminRemoveDeviceConfirm": "Hapus perangkat '{name}'? Pengguna harus masuk kembali di perangkat ini.",
+    "adminDrawerDisplay": "",
+    "adminDrawerMetadata": "",
+    "adminDrawerNfo": "",
+    "adminActivitySeverityAll": "",
+    "adminActivityDateRange": "",
+    "adminRemoveDeviceConfirm": "",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8363,8 +8363,8 @@
             }
         }
     },
-    "adminDeleteAllDevices": "Hapus semua perangkat",
-    "adminDeleteAllDevicesConfirm": "Hapus {count} perangkat? Pengguna yang terdampak harus masuk kembali. Perangkat Anda saat ini tidak terdampak.",
+    "adminDeleteAllDevices": "",
+    "adminDeleteAllDevicesConfirm": "",
     "@adminDeleteAllDevicesConfirm": {
         "placeholders": {
             "count": {
@@ -8372,8 +8372,8 @@
             }
         }
     },
-    "adminDevicesDeletedAll": "Perangkat telah dihapus",
-    "adminDevicesDeletedPartial": "Sebagian perangkat telah dihapus; {count} tidak dapat dihapus.",
+    "adminDevicesDeletedAll": "",
+    "adminDevicesDeletedPartial": "",
     "@adminDevicesDeletedPartial": {
         "placeholders": {
             "count": {
@@ -8381,13 +8381,13 @@
             }
         }
     },
-    "adminLibraryTabPaths": "Jalur",
-    "adminLibraryTabOptions": "Opsi",
-    "adminLibraryTabDownloaders": "Pengunduh",
-    "adminLibMetadataSavers": "Penyimpan metadata",
-    "adminLibSubtitleDownloaders": "Pengunduh subtitle",
-    "adminLibLyricDownloaders": "Pengunduh lirik",
-    "adminLibMetadataDownloadersFor": "Pengunduh metadata: {type}",
+    "adminLibraryTabPaths": "",
+    "adminLibraryTabOptions": "",
+    "adminLibraryTabDownloaders": "",
+    "adminLibMetadataSavers": "",
+    "adminLibSubtitleDownloaders": "",
+    "adminLibLyricDownloaders": "",
+    "adminLibMetadataDownloadersFor": "",
     "@adminLibMetadataDownloadersFor": {
         "placeholders": {
             "type": {
@@ -8395,7 +8395,7 @@
             }
         }
     },
-    "adminLibImageFetchersFor": "Pengambil gambar: {type}",
+    "adminLibImageFetchersFor": "",
     "@adminLibImageFetchersFor": {
         "placeholders": {
             "type": {
@@ -8403,48 +8403,48 @@
             }
         }
     },
-    "adminLibNoDownloaders": "Server ini tidak menyediakan pengunduh untuk jenis pustaka ini.",
-    "adminLibrarySectionGeneral": "Umum",
-    "adminLibrarySectionMetadata": "Metadata",
-    "adminLibrarySectionEmbedded": "Info Tertanam",
-    "adminLibrarySectionSubtitles": "Subtitle",
-    "adminLibrarySectionImages": "Gambar",
-    "adminLibrarySectionSeries": "Serial",
-    "adminLibrarySectionMusic": "Musik",
-    "adminLibrarySectionMovies": "Film",
-    "adminLibRealtimeMonitor": "Aktifkan pemantauan waktu nyata",
-    "adminLibRealtimeMonitorHint": "Deteksi perubahan berkas dan proses secara otomatis.",
-    "adminLibArchiveMediaFiles": "Perlakukan arsip sebagai berkas media",
-    "adminLibEnablePhotos": "Tampilkan foto",
-    "adminLibSaveLocalMetadata": "Simpan artwork ke dalam folder media",
-    "adminLibRefreshInterval": "Penyegaran metadata otomatis",
-    "adminLibRefreshNever": "Tidak pernah",
-    "adminLibDefault": "Bawaan",
-    "adminLibDisplayTitle": "Tampilan",
-    "adminLibDisplaySection": "Tampilan pustaka",
-    "adminLibFolderView": "Tampilkan tampilan folder untuk folder media biasa",
-    "adminLibSpecialsInSeasons": "Tampilkan episode spesial di dalam musim saat episode itu ditayangkan",
-    "adminLibGroupMovies": "Kelompokkan film ke dalam koleksi",
-    "adminLibGroupShows": "Kelompokkan serial ke dalam koleksi",
-    "adminLibExternalSuggestions": "Tampilkan konten eksternal dalam saran",
-    "adminLibDateAddedSection": "Perilaku tanggal ditambahkan",
-    "adminLibDateAddedLabel": "Gunakan tanggal ditambahkan dari",
-    "adminLibDateAddedImport": "Tanggal dipindai ke dalam pustaka",
-    "adminLibDateAddedFile": "Tanggal berkas dibuat",
-    "adminLibMetadataTitle": "Metadata dan Gambar",
-    "adminLibMetadataLangSection": "Bahasa metadata pilihan",
-    "adminLibChaptersSection": "Bab",
-    "adminLibDummyChapterDuration": "Durasi bab bawaan (detik)",
-    "adminLibDummyChapterDurationHint": "Durasi bab yang dibuat untuk media yang tidak memilikinya. Setel ke 0 untuk menonaktifkan.",
-    "adminLibChapterImageResolution": "Resolusi gambar bab",
-    "adminLibNfoTitle": "Pengaturan NFO",
-    "adminLibNfoHelp": "Metadata NFO kompatibel dengan Kodi dan klien serupa. Pengaturan berlaku untuk semua pustaka yang menyimpan metadata NFO.",
-    "adminLibKodiUser": "Pengguna yang data tontonannya disimpan dalam berkas NFO",
-    "adminLibSaveImagePaths": "Simpan jalur gambar di dalam berkas NFO",
-    "adminLibPathSubstitution": "Aktifkan substitusi jalur untuk jalur gambar NFO",
-    "adminLibExtraThumbs": "Salin gambar extrafanart ke dalam folder extrathumbs",
-    "adminLibNone": "Tidak ada",
-    "adminLibRefreshDays": "{days} hari",
+    "adminLibNoDownloaders": "",
+    "adminLibrarySectionGeneral": "",
+    "adminLibrarySectionMetadata": "",
+    "adminLibrarySectionEmbedded": "",
+    "adminLibrarySectionSubtitles": "",
+    "adminLibrarySectionImages": "",
+    "adminLibrarySectionSeries": "",
+    "adminLibrarySectionMusic": "",
+    "adminLibrarySectionMovies": "",
+    "adminLibRealtimeMonitor": "",
+    "adminLibRealtimeMonitorHint": "",
+    "adminLibArchiveMediaFiles": "",
+    "adminLibEnablePhotos": "",
+    "adminLibSaveLocalMetadata": "",
+    "adminLibRefreshInterval": "",
+    "adminLibRefreshNever": "",
+    "adminLibDefault": "",
+    "adminLibDisplayTitle": "",
+    "adminLibDisplaySection": "",
+    "adminLibFolderView": "",
+    "adminLibSpecialsInSeasons": "",
+    "adminLibGroupMovies": "",
+    "adminLibGroupShows": "",
+    "adminLibExternalSuggestions": "",
+    "adminLibDateAddedSection": "",
+    "adminLibDateAddedLabel": "",
+    "adminLibDateAddedImport": "",
+    "adminLibDateAddedFile": "",
+    "adminLibMetadataTitle": "",
+    "adminLibMetadataLangSection": "",
+    "adminLibChaptersSection": "",
+    "adminLibDummyChapterDuration": "",
+    "adminLibDummyChapterDurationHint": "",
+    "adminLibChapterImageResolution": "",
+    "adminLibNfoTitle": "",
+    "adminLibNfoHelp": "",
+    "adminLibKodiUser": "",
+    "adminLibSaveImagePaths": "",
+    "adminLibPathSubstitution": "",
+    "adminLibExtraThumbs": "",
+    "adminLibNone": "",
+    "adminLibRefreshDays": "",
     "@adminLibRefreshDays": {
         "placeholders": {
             "days": {
@@ -8452,119 +8452,119 @@
             }
         }
     },
-    "adminLibEmbeddedTitles": "Gunakan judul tertanam",
-    "adminLibEmbeddedExtrasTitles": "Gunakan judul tertanam untuk ekstra",
-    "adminLibEmbeddedEpisodeInfos": "Gunakan informasi episode tertanam",
-    "adminLibAllowEmbeddedSubtitles": "Izinkan subtitle tertanam",
-    "adminLibEmbeddedAllowAll": "Izinkan semua",
-    "adminLibEmbeddedAllowText": "Hanya teks",
-    "adminLibEmbeddedAllowImage": "Hanya gambar",
-    "adminLibEmbeddedAllowNone": "Tidak ada",
-    "adminLibSkipIfEmbeddedSubs": "Lewati unduhan jika sudah ada subtitle tertanam",
-    "adminLibSkipIfAudioMatches": "Lewati unduhan jika trek audio sesuai dengan bahasa unduhan",
-    "adminLibRequirePerfectMatch": "Wajibkan kecocokan subtitle yang sempurna",
-    "adminLibSaveSubtitlesWithMedia": "Simpan subtitle ke dalam folder media",
-    "adminLibChapterImageExtraction": "Ekstrak gambar bab",
-    "adminLibChapterImagesDuringScan": "Ekstrak gambar bab saat pemindaian pustaka",
-    "adminLibTrickplayExtraction": "Aktifkan ekstraksi gambar Trickplay",
-    "adminLibTrickplayDuringScan": "Ekstrak gambar Trickplay saat pemindaian pustaka",
-    "adminLibSaveTrickplayWithMedia": "Simpan gambar Trickplay ke dalam folder media",
-    "adminLibAutomaticSeriesGrouping": "Gabungkan otomatis serial yang tersebar di beberapa folder",
-    "adminLibSeasonZeroName": "Nama tampilan musim nol",
-    "adminLibLufsScan": "Aktifkan pemindaian LUFS untuk normalisasi audio",
-    "adminLibPreferNonstandardArtist": "Utamakan tag artis non-standar",
-    "adminLibAutoAddToCollection": "Tambahkan film ke koleksi secara otomatis",
-    "adminParentalControl": "Kontrol Orang Tua",
-    "adminMaxParentalRating": "Rating orang tua maksimum yang diizinkan",
-    "adminMaxParentalRatingHint": "Konten dengan rating lebih tinggi akan disembunyikan dari pengguna ini.",
-    "adminParentalRatingNone": "Tidak ada",
-    "adminBlockUnratedItems": "Blokir item tanpa informasi rating atau dengan rating yang tidak dikenali",
-    "adminUnratedBook": "Buku",
-    "adminUnratedChannelContent": "Kanal",
-    "adminUnratedLiveTvChannel": "TV Langsung",
-    "adminUnratedMovie": "Film",
-    "adminUnratedMusic": "Musik",
-    "adminUnratedTrailer": "Trailer",
-    "adminUnratedSeries": "Serial",
-    "adminAccessSchedules": "Jadwal Akses",
-    "adminAccessSchedulesHint": "Izinkan akses hanya pada waktu terjadwal di bawah ini. Akses diizinkan sepanjang hari jika tidak ada jadwal yang disetel.",
-    "adminAddSchedule": "Tambah Jadwal",
-    "adminScheduleDay": "Hari",
-    "adminScheduleStart": "Mulai",
-    "adminScheduleEnd": "Selesai",
-    "adminDayEveryday": "Setiap hari",
-    "adminDayWeekday": "Hari kerja",
-    "adminDayWeekend": "Akhir pekan",
-    "adminDaySunday": "Minggu",
-    "adminDayMonday": "Senin",
-    "adminDayTuesday": "Selasa",
-    "adminDayWednesday": "Rabu",
-    "adminDayThursday": "Kamis",
-    "adminDayFriday": "Jumat",
-    "adminDaySaturday": "Sabtu",
-    "adminAllowedTags": "Tag yang diizinkan",
-    "adminAllowedTagsHint": "Hanya konten dengan tag ini yang ditampilkan. Kosongkan untuk mengizinkan semua.",
-    "adminBlockedTags": "Tag yang diblokir",
-    "adminBlockedTagsHint": "Konten dengan tag ini disembunyikan dari pengguna ini.",
-    "adminAddTag": "Tambah tag",
-    "adminEnabledDevices": "Perangkat yang diaktifkan",
-    "adminEnabledChannels": "Kanal yang diaktifkan",
-    "adminAuthProvider": "Penyedia autentikasi",
-    "adminPasswordResetProvider": "Penyedia reset kata sandi",
-    "adminLoginAttemptsBeforeLockout": "Jumlah maksimum percobaan masuk yang gagal sebelum penguncian",
-    "adminLoginAttemptsHint": "Setel ke 0 untuk nilai bawaan, atau -1 untuk menonaktifkan penguncian.",
-    "adminSyncPlayAccess": "Akses SyncPlay",
-    "adminSyncPlayCreateAndJoin": "Izinkan membuat dan bergabung ke grup",
-    "adminSyncPlayJoin": "Izinkan bergabung ke grup",
-    "adminSyncPlayNone": "Tanpa akses",
-    "adminContentDeletionFolders": "Izinkan penghapusan konten dari",
-    "adminBackupOptionsTitle": "Buat Cadangan",
-    "adminBackupInclude": "Pilih apa saja yang disertakan dalam cadangan.",
-    "adminBackupDatabase": "Basis Data",
-    "adminBackupDatabaseAlways": "Selalu disertakan",
-    "adminBackupMetadata": "Metadata",
-    "adminBackupSubtitles": "Subtitle",
-    "adminBackupTrickplay": "Gambar Trickplay",
-    "adminEditTuner": "Edit Tuner",
-    "adminTunerTypeM3u": "Tuner M3U",
-    "adminTunerTypeHdHomerun": "HDHomeRun",
-    "adminTunerFileOrUrl": "Berkas atau URL",
-    "adminTunerIpAddress": "Alamat IP tuner",
-    "adminTunerFriendlyName": "Nama ramah",
-    "adminTunerUserAgent": "User agent",
-    "adminTunerCount": "Batas koneksi bersamaan",
-    "adminTunerCountHelp": "Jumlah maksimum stream yang diizinkan tuner secara bersamaan. Setel ke 0 untuk tanpa batas.",
-    "adminTunerFallbackBitrate": "Bitrate streaming maksimum cadangan",
-    "adminTunerImportFavoritesOnly": "Impor hanya kanal favorit",
-    "adminTunerAllowHwTranscoding": "Izinkan transcoding perangkat keras",
-    "adminTunerAllowFmp4": "Izinkan kontainer transcoding fMP4",
-    "adminTunerAllowStreamSharing": "Izinkan berbagi stream",
-    "adminTunerEnableStreamLooping": "Aktifkan pengulangan stream",
-    "adminTunerIgnoreDts": "Abaikan DTS",
-    "adminTunerReadAtNativeFramerate": "Baca masukan pada frame rate asli",
-    "adminEditProvider": "Edit Penyedia",
-    "adminProviderXmltv": "XMLTV",
-    "adminProviderSchedulesDirect": "Schedules Direct",
-    "adminXmltvPath": "Berkas atau URL",
-    "adminXmltvMoviePrefix": "Prefiks film",
-    "adminXmltvMovieCategories": "Kategori film",
-    "adminXmltvCategoriesHelp": "Pisahkan beberapa kategori dengan garis vertikal.",
-    "adminXmltvKidsCategories": "Kategori anak",
-    "adminXmltvNewsCategories": "Kategori berita",
-    "adminXmltvSportsCategories": "Kategori olahraga",
-    "adminSdUsername": "Nama pengguna",
-    "adminSdPassword": "Kata sandi",
-    "adminSdCountry": "Negara",
-    "adminSdCountrySelect": "Pilih negara",
-    "adminSdPostalCode": "Kode pos",
-    "adminSdGetListings": "Ambil daftar acara",
-    "adminSdListings": "Daftar acara",
-    "adminEnableAllTuners": "Aktifkan semua tuner",
-    "adminTunerResetNotSupported": "Jenis tuner ini tidak mendukung pengaturan ulang.",
-    "adminMovieRecordingPath": "Jalur rekaman film",
-    "adminGuideDays": "Jumlah hari data panduan",
-    "adminGuideDaysAuto": "Otomatis",
-    "adminGuideDaysValue": "{days} hari",
+    "adminLibEmbeddedTitles": "",
+    "adminLibEmbeddedExtrasTitles": "",
+    "adminLibEmbeddedEpisodeInfos": "",
+    "adminLibAllowEmbeddedSubtitles": "",
+    "adminLibEmbeddedAllowAll": "",
+    "adminLibEmbeddedAllowText": "",
+    "adminLibEmbeddedAllowImage": "",
+    "adminLibEmbeddedAllowNone": "",
+    "adminLibSkipIfEmbeddedSubs": "",
+    "adminLibSkipIfAudioMatches": "",
+    "adminLibRequirePerfectMatch": "",
+    "adminLibSaveSubtitlesWithMedia": "",
+    "adminLibChapterImageExtraction": "",
+    "adminLibChapterImagesDuringScan": "",
+    "adminLibTrickplayExtraction": "",
+    "adminLibTrickplayDuringScan": "",
+    "adminLibSaveTrickplayWithMedia": "",
+    "adminLibAutomaticSeriesGrouping": "",
+    "adminLibSeasonZeroName": "",
+    "adminLibLufsScan": "",
+    "adminLibPreferNonstandardArtist": "",
+    "adminLibAutoAddToCollection": "",
+    "adminParentalControl": "",
+    "adminMaxParentalRating": "",
+    "adminMaxParentalRatingHint": "",
+    "adminParentalRatingNone": "",
+    "adminBlockUnratedItems": "",
+    "adminUnratedBook": "",
+    "adminUnratedChannelContent": "",
+    "adminUnratedLiveTvChannel": "",
+    "adminUnratedMovie": "",
+    "adminUnratedMusic": "",
+    "adminUnratedTrailer": "",
+    "adminUnratedSeries": "",
+    "adminAccessSchedules": "",
+    "adminAccessSchedulesHint": "",
+    "adminAddSchedule": "",
+    "adminScheduleDay": "",
+    "adminScheduleStart": "",
+    "adminScheduleEnd": "",
+    "adminDayEveryday": "",
+    "adminDayWeekday": "",
+    "adminDayWeekend": "",
+    "adminDaySunday": "",
+    "adminDayMonday": "",
+    "adminDayTuesday": "",
+    "adminDayWednesday": "",
+    "adminDayThursday": "",
+    "adminDayFriday": "",
+    "adminDaySaturday": "",
+    "adminAllowedTags": "",
+    "adminAllowedTagsHint": "",
+    "adminBlockedTags": "",
+    "adminBlockedTagsHint": "",
+    "adminAddTag": "",
+    "adminEnabledDevices": "",
+    "adminEnabledChannels": "",
+    "adminAuthProvider": "",
+    "adminPasswordResetProvider": "",
+    "adminLoginAttemptsBeforeLockout": "",
+    "adminLoginAttemptsHint": "",
+    "adminSyncPlayAccess": "",
+    "adminSyncPlayCreateAndJoin": "",
+    "adminSyncPlayJoin": "",
+    "adminSyncPlayNone": "",
+    "adminContentDeletionFolders": "",
+    "adminBackupOptionsTitle": "",
+    "adminBackupInclude": "",
+    "adminBackupDatabase": "",
+    "adminBackupDatabaseAlways": "",
+    "adminBackupMetadata": "",
+    "adminBackupSubtitles": "",
+    "adminBackupTrickplay": "",
+    "adminEditTuner": "",
+    "adminTunerTypeM3u": "",
+    "adminTunerTypeHdHomerun": "",
+    "adminTunerFileOrUrl": "",
+    "adminTunerIpAddress": "",
+    "adminTunerFriendlyName": "",
+    "adminTunerUserAgent": "",
+    "adminTunerCount": "",
+    "adminTunerCountHelp": "",
+    "adminTunerFallbackBitrate": "",
+    "adminTunerImportFavoritesOnly": "",
+    "adminTunerAllowHwTranscoding": "",
+    "adminTunerAllowFmp4": "",
+    "adminTunerAllowStreamSharing": "",
+    "adminTunerEnableStreamLooping": "",
+    "adminTunerIgnoreDts": "",
+    "adminTunerReadAtNativeFramerate": "",
+    "adminEditProvider": "",
+    "adminProviderXmltv": "",
+    "adminProviderSchedulesDirect": "",
+    "adminXmltvPath": "",
+    "adminXmltvMoviePrefix": "",
+    "adminXmltvMovieCategories": "",
+    "adminXmltvCategoriesHelp": "",
+    "adminXmltvKidsCategories": "",
+    "adminXmltvNewsCategories": "",
+    "adminXmltvSportsCategories": "",
+    "adminSdUsername": "",
+    "adminSdPassword": "",
+    "adminSdCountry": "",
+    "adminSdCountrySelect": "",
+    "adminSdPostalCode": "",
+    "adminSdGetListings": "",
+    "adminSdListings": "",
+    "adminEnableAllTuners": "",
+    "adminTunerResetNotSupported": "",
+    "adminMovieRecordingPath": "",
+    "adminGuideDays": "",
+    "adminGuideDaysAuto": "",
+    "adminGuideDaysValue": "",
     "@adminGuideDaysValue": {
         "placeholders": {
             "days": {
@@ -8572,14 +8572,14 @@
             }
         }
     },
-    "adminRecordingPostProcessor": "Jalur aplikasi pascaproses",
-    "adminRecordingPostProcessorArgs": "Argumen pascaproses",
-    "adminSaveRecordingNfo": "Simpan metadata NFO rekaman",
-    "adminSaveRecordingImages": "Simpan gambar rekaman",
-    "adminLiveTvSectionTiming": "Waktu",
-    "adminLiveTvSectionPaths": "Jalur rekaman",
-    "adminLiveTvSectionPostProcessing": "Pascaproses",
-    "adminGuideDaysDisplay": "Data panduan: {value}",
+    "adminRecordingPostProcessor": "",
+    "adminRecordingPostProcessorArgs": "",
+    "adminSaveRecordingNfo": "",
+    "adminSaveRecordingImages": "",
+    "adminLiveTvSectionTiming": "",
+    "adminLiveTvSectionPaths": "",
+    "adminLiveTvSectionPostProcessing": "",
+    "adminGuideDaysDisplay": "",
     "@adminGuideDaysDisplay": {
         "placeholders": {
             "value": {
@@ -8587,107 +8587,107 @@
             }
         }
     },
-    "adminRefreshGuideData": "Segarkan Data Panduan",
-    "adminGuideRefreshStarted": "Penyegaran data panduan dimulai",
-    "adminGuideRefreshUnavailable": "Tugas penyegaran panduan tidak tersedia di server ini.",
-    "adminMetadataIdentify": "Identifikasi",
-    "adminBrandingSplashUpload": "Unggah gambar",
-    "adminBrandingSplashUploaded": "Splashscreen diperbarui",
-    "adminBrandingSplashUploadFailed": "Gagal mengunggah splashscreen",
-    "adminBrandingSplashDeleted": "Splashscreen dihapus",
-    "adminBrandingNoSplash": "Tidak ada splashscreen kustom",
-    "adminPlaybackQsvDevice": "Perangkat QSV",
-    "adminPlaybackEnhancedNvdec": "Aktifkan dekoder NVDEC yang disempurnakan",
-    "adminPlaybackPreferNativeDecoder": "Utamakan dekoder perangkat keras asli sistem",
-    "adminPlaybackColorDepth": "Kedalaman warna dekoding perangkat keras",
-    "adminPlaybackColorDepth10Hevc": "Dekoding HEVC 10-bit",
-    "adminPlaybackColorDepth10Vp9": "Dekoding VP9 10-bit",
-    "adminPlaybackColorDepth10HevcRext": "Dekoding HEVC RExt 8/10-bit",
-    "adminPlaybackColorDepth12HevcRext": "Dekoding HEVC RExt 12-bit",
-    "adminPlaybackHwEncodingSection": "Encoding perangkat keras",
-    "adminPlaybackAllowHevcEncoding": "Izinkan encoding HEVC",
-    "adminPlaybackAllowAv1Encoding": "Izinkan encoding AV1",
-    "adminPlaybackIntelLowPowerH264": "Aktifkan encoder Intel H.264 berdaya rendah",
-    "adminPlaybackIntelLowPowerHevc": "Aktifkan encoder Intel HEVC berdaya rendah",
-    "adminPlaybackToneMapping": "Tone Mapping",
-    "adminPlaybackEnableTonemapping": "Aktifkan tone mapping",
-    "adminPlaybackEnableVppTonemapping": "Aktifkan tone mapping VPP",
-    "adminPlaybackEnableVtTonemapping": "Aktifkan tone mapping VideoToolbox",
-    "adminPlaybackTonemappingAlgorithm": "Algoritme tone mapping",
-    "adminPlaybackTonemappingMode": "Mode tone mapping",
-    "adminPlaybackTonemappingRange": "Rentang tone mapping",
-    "adminPlaybackTonemappingDesat": "Desaturasi tone mapping",
-    "adminPlaybackTonemappingPeak": "Puncak tone mapping",
-    "adminPlaybackTonemappingParam": "Parameter tone mapping",
-    "adminPlaybackVppTonemappingBrightness": "Kecerahan tone mapping VPP",
-    "adminPlaybackVppTonemappingContrast": "Kontras tone mapping VPP",
-    "adminPlaybackPresetsQuality": "Preset & Kualitas",
-    "adminPlaybackEncoderPreset": "Preset encoder",
-    "adminPlaybackH264Crf": "CRF encoding H.264",
-    "adminPlaybackH265Crf": "CRF encoding H.265 (HEVC)",
-    "adminPlaybackDeinterlaceMethod": "Metode deinterlace",
-    "adminPlaybackDeinterlaceDoubleRate": "Gandakan frame rate saat deinterlace",
-    "adminPlaybackAudioSection": "Audio",
-    "adminPlaybackEnableAudioVbr": "Aktifkan encoding audio VBR",
-    "adminPlaybackDownmixBoost": "Penguatan downmix audio",
-    "adminPlaybackDownmixAlgorithm": "Algoritme downmix stereo",
-    "adminPlaybackMaxMuxingQueue": "Ukuran maksimum antrean muxing",
-    "adminPlaybackAutoOption": "Otomatis",
-    "adminRunningTasks": "Tugas Berjalan",
-    "adminNetworkingPublicHttpPort": "Port HTTP publik",
-    "adminNetworkingRequireHttps": "Wajibkan HTTPS",
-    "adminNetworkingRequireHttpsHint": "Alihkan semua permintaan jarak jauh ke HTTPS. Tidak berpengaruh jika server tidak memiliki sertifikat yang valid.",
-    "adminNetworkingCertPassword": "Kata sandi sertifikat",
-    "adminNetworkingIpSettings": "Pengaturan IP",
-    "adminNetworkingEnableIpv4": "Aktifkan IPv4",
-    "adminNetworkingEnableIpv6": "Aktifkan IPv6",
-    "adminNetworkingAutoDiscovery": "Aktifkan pemetaan port otomatis",
-    "adminNetworkingLocalSubnets": "Jaringan LAN",
-    "adminNetworkingLocalSubnetsHint": "Daftar alamat IP atau subnet CIDR yang dianggap berada di jaringan lokal, dipisahkan dengan koma atau baris baru.",
-    "adminNetworkingPublishedUris": "URI server yang dipublikasikan",
-    "adminNetworkingPublishedUriHint": "Petakan subnet atau alamat ke URL yang dipublikasikan, mis. all=https://example.com",
-    "adminPlaybackThrottleDelay": "Jeda pembatasan (detik)",
-    "adminPlaybackEnableSubtitleExtraction": "Izinkan ekstraksi subtitle secara langsung",
-    "adminGeneralEnableSlowResponse": "Aktifkan peringatan respons lambat",
-    "adminGeneralQuickConnect": "Aktifkan Quick Connect",
-    "adminGeneralSectionServer": "Server",
-    "adminGeneralSectionMetadata": "Metadata",
-    "adminGeneralSectionPaths": "Jalur",
-    "adminGeneralSectionPerformance": "Performa",
-    "adminGeneralDisplayLanguage": "Bahasa tampilan pilihan",
-    "offlineBannerTitle": "Anda sedang offline",
-    "offlineBannerSubtitle": "Menampilkan unduhan Anda",
-    "offlineBannerAction": "Unduhan",
-    "serverUnreachableBannerTitle": "Tidak dapat menjangkau server Anda",
-    "serverUnreachableBannerSubtitle": "Memutar dari unduhan hingga server kembali tersedia",
-    "contextMenuHideFromContinueWatching": "Sembunyikan dari Lanjut Menonton",
+    "adminRefreshGuideData": "",
+    "adminGuideRefreshStarted": "",
+    "adminGuideRefreshUnavailable": "",
+    "adminMetadataIdentify": "",
+    "adminBrandingSplashUpload": "",
+    "adminBrandingSplashUploaded": "",
+    "adminBrandingSplashUploadFailed": "",
+    "adminBrandingSplashDeleted": "",
+    "adminBrandingNoSplash": "",
+    "adminPlaybackQsvDevice": "",
+    "adminPlaybackEnhancedNvdec": "",
+    "adminPlaybackPreferNativeDecoder": "",
+    "adminPlaybackColorDepth": "",
+    "adminPlaybackColorDepth10Hevc": "",
+    "adminPlaybackColorDepth10Vp9": "",
+    "adminPlaybackColorDepth10HevcRext": "",
+    "adminPlaybackColorDepth12HevcRext": "",
+    "adminPlaybackHwEncodingSection": "",
+    "adminPlaybackAllowHevcEncoding": "",
+    "adminPlaybackAllowAv1Encoding": "",
+    "adminPlaybackIntelLowPowerH264": "",
+    "adminPlaybackIntelLowPowerHevc": "",
+    "adminPlaybackToneMapping": "",
+    "adminPlaybackEnableTonemapping": "",
+    "adminPlaybackEnableVppTonemapping": "",
+    "adminPlaybackEnableVtTonemapping": "",
+    "adminPlaybackTonemappingAlgorithm": "",
+    "adminPlaybackTonemappingMode": "",
+    "adminPlaybackTonemappingRange": "",
+    "adminPlaybackTonemappingDesat": "",
+    "adminPlaybackTonemappingPeak": "",
+    "adminPlaybackTonemappingParam": "",
+    "adminPlaybackVppTonemappingBrightness": "",
+    "adminPlaybackVppTonemappingContrast": "",
+    "adminPlaybackPresetsQuality": "",
+    "adminPlaybackEncoderPreset": "",
+    "adminPlaybackH264Crf": "",
+    "adminPlaybackH265Crf": "",
+    "adminPlaybackDeinterlaceMethod": "",
+    "adminPlaybackDeinterlaceDoubleRate": "",
+    "adminPlaybackAudioSection": "",
+    "adminPlaybackEnableAudioVbr": "",
+    "adminPlaybackDownmixBoost": "",
+    "adminPlaybackDownmixAlgorithm": "",
+    "adminPlaybackMaxMuxingQueue": "",
+    "adminPlaybackAutoOption": "",
+    "adminRunningTasks": "",
+    "adminNetworkingPublicHttpPort": "",
+    "adminNetworkingRequireHttps": "",
+    "adminNetworkingRequireHttpsHint": "",
+    "adminNetworkingCertPassword": "",
+    "adminNetworkingIpSettings": "",
+    "adminNetworkingEnableIpv4": "",
+    "adminNetworkingEnableIpv6": "",
+    "adminNetworkingAutoDiscovery": "",
+    "adminNetworkingLocalSubnets": "",
+    "adminNetworkingLocalSubnetsHint": "",
+    "adminNetworkingPublishedUris": "",
+    "adminNetworkingPublishedUriHint": "",
+    "adminPlaybackThrottleDelay": "",
+    "adminPlaybackEnableSubtitleExtraction": "",
+    "adminGeneralEnableSlowResponse": "",
+    "adminGeneralQuickConnect": "",
+    "adminGeneralSectionServer": "",
+    "adminGeneralSectionMetadata": "",
+    "adminGeneralSectionPaths": "",
+    "adminGeneralSectionPerformance": "",
+    "adminGeneralDisplayLanguage": "",
+    "offlineBannerTitle": "",
+    "offlineBannerSubtitle": "",
+    "offlineBannerAction": "",
+    "serverUnreachableBannerTitle": "",
+    "serverUnreachableBannerSubtitle": "",
+    "contextMenuHideFromContinueWatching": "",
     "@contextMenuHideFromContinueWatching": {
         "description": "Context menu action to hide an item from the Continue Watching section"
     },
-    "contextMenuHideFromNextUp": "Sembunyikan dari Berikutnya",
+    "contextMenuHideFromNextUp": "",
     "@contextMenuHideFromNextUp": {
         "description": "Context menu action to hide a show from the Next Up section"
     },
-    "contextMenuAddToCollection": "Tambahkan ke Koleksi",
+    "contextMenuAddToCollection": "",
     "@contextMenuAddToCollection": {
         "description": "Context menu action to add an item to a collection"
     },
-    "settingsConnectionSection": "KONEKSI",
+    "settingsConnectionSection": "",
     "@settingsConnectionSection": {
         "description": "Section header for server connection settings"
     },
-    "settingsAllowSelfSignedCerts": "Izinkan sertifikat yang ditandatangani sendiri",
+    "settingsAllowSelfSignedCerts": "",
     "@settingsAllowSelfSignedCerts": {
         "description": "Setting to trust self-signed TLS certificates"
     },
-    "settingsAllowSelfSignedCertsSubtitle": "Percayai server yang menggunakan sertifikat TLS yang ditandatangani sendiri atau dari CA privat. Aktifkan hanya untuk server yang Anda kendalikan. Opsi ini menonaktifkan validasi sertifikat untuk semua koneksi.",
+    "settingsAllowSelfSignedCertsSubtitle": "",
     "@settingsAllowSelfSignedCertsSubtitle": {
         "description": "Description for the allow self-signed certificates setting"
     },
-    "settingsDetailsScreen": "Layar Detail",
-    "settingsDetailsScreenSubtitle": "Gaya, blur latar belakang, dan perilaku tab",
-    "settingsAlwaysExpandNavbarLabels": "Selalu tampilkan label teks di bilah navigasi atas",
-    "recentlyReleasedLibraryName": "{libraryName} yang Baru Rilis",
+    "settingsDetailsScreen": "",
+    "settingsDetailsScreenSubtitle": "",
+    "settingsAlwaysExpandNavbarLabels": "",
+    "recentlyReleasedLibraryName": "",
     "@recentlyReleasedLibraryName": {
         "description": "Row title for recently released media in a specific library",
         "placeholders": {
@@ -8696,29 +8696,29 @@
             }
         }
     },
-    "hideBackdropsInLibraries": "Sembunyikan Backdrop saat Menjelajah?",
+    "hideBackdropsInLibraries": "",
     "@hideBackdropsInLibraries": {
         "description": "Setting title to show/hide backdrops when browsing library pages"
     },
-    "layout": "Tata Letak",
-    "theme": "Tema",
-    "keyboard": "Papan Ketik",
-    "navButtons": "Tombol",
-    "rendering": "Rendering",
-    "mpvConfiguration": "Konfigurasi MPV",
-    "crewContributionsSeerr": "Kontribusi Kru (Seerr)",
-    "audiobookChapters": "Bab",
-    "audiobookBookmarks": "Markah",
-    "audiobookNotes": "Catatan",
-    "audiobookQueue": "Antrean",
-    "audiobookTimeline": "Lini Masa",
-    "audiobookTimelineEmpty": "Lini masa kosong",
-    "audiobookWholeBook": "Seluruh Buku",
-    "audiobookFocusedTimeline": "Lini Masa Terfokus",
-    "audiobookExportBookmarks": "Ekspor Markah",
-    "audiobookExportNotes": "Ekspor Catatan",
-    "audiobookExportAll": "Ekspor Semua",
-    "audiobookExportSuccess": "Diekspor ke {path}",
+    "layout": "",
+    "theme": "",
+    "keyboard": "",
+    "navButtons": "",
+    "rendering": "",
+    "mpvConfiguration": "",
+    "crewContributionsSeerr": "",
+    "audiobookChapters": "",
+    "audiobookBookmarks": "",
+    "audiobookNotes": "",
+    "audiobookQueue": "",
+    "audiobookTimeline": "",
+    "audiobookTimelineEmpty": "",
+    "audiobookWholeBook": "",
+    "audiobookFocusedTimeline": "",
+    "audiobookExportBookmarks": "",
+    "audiobookExportNotes": "",
+    "audiobookExportAll": "",
+    "audiobookExportSuccess": "",
     "@audiobookExportSuccess": {
         "placeholders": {
             "path": {
@@ -8726,7 +8726,7 @@
             }
         }
     },
-    "audiobookExportFailed": "Ekspor gagal: {error}",
+    "audiobookExportFailed": "",
     "@audiobookExportFailed": {
         "placeholders": {
             "error": {
@@ -8734,16 +8734,16 @@
             }
         }
     },
-    "audiobookLyrics": "Lirik",
-    "audiobookAddBookmark": "Tambah markah",
-    "audiobookAddNote": "Tambah catatan",
-    "audiobookEditNote": "Edit catatan",
-    "audiobookNoteHint": "Tulis catatan untuk momen ini",
-    "audiobookSleepTimer": "Pengatur waktu tidur",
-    "audiobookSleepOff": "Nonaktif",
-    "audiobookSleepEndOfChapter": "Akhir bab",
-    "audiobookSleepCustom": "Kustom",
-    "audiobookSleepRemaining": "tersisa {remaining}",
+    "audiobookLyrics": "",
+    "audiobookAddBookmark": "",
+    "audiobookAddNote": "",
+    "audiobookEditNote": "",
+    "audiobookNoteHint": "",
+    "audiobookSleepTimer": "",
+    "audiobookSleepOff": "",
+    "audiobookSleepEndOfChapter": "",
+    "audiobookSleepCustom": "",
+    "audiobookSleepRemaining": "",
     "@audiobookSleepRemaining": {
         "placeholders": {
             "remaining": {
@@ -8751,7 +8751,7 @@
             }
         }
     },
-    "audiobookSleepMinutes": "{count, plural, =1{1 mnt} other{{count} mnt}}",
+    "audiobookSleepMinutes": "",
     "@audiobookSleepMinutes": {
         "placeholders": {
             "count": {
@@ -8759,10 +8759,10 @@
             }
         }
     },
-    "audiobookPlaybackSpeed": "Kecepatan pemutaran",
-    "audiobookRemainingTime": "Tersisa",
-    "audiobookElapsedTime": "Berlalu",
-    "audiobookSkipBackSeconds": "Mundur {seconds}d",
+    "audiobookPlaybackSpeed": "",
+    "audiobookRemainingTime": "",
+    "audiobookElapsedTime": "",
+    "audiobookSkipBackSeconds": "",
     "@audiobookSkipBackSeconds": {
         "placeholders": {
             "seconds": {
@@ -8770,7 +8770,7 @@
             }
         }
     },
-    "audiobookSkipForwardSeconds": "Maju {seconds}d",
+    "audiobookSkipForwardSeconds": "",
     "@audiobookSkipForwardSeconds": {
         "placeholders": {
             "seconds": {
@@ -8778,9 +8778,9 @@
             }
         }
     },
-    "audiobookPreviousChapter": "Bab sebelumnya",
-    "audiobookNextChapter": "Bab berikutnya",
-    "audiobookChapterIndicator": "Bab {current} dari {total}",
+    "audiobookPreviousChapter": "",
+    "audiobookNextChapter": "",
+    "audiobookChapterIndicator": "",
     "@audiobookChapterIndicator": {
         "placeholders": {
             "current": {
@@ -8791,10 +8791,10 @@
             }
         }
     },
-    "audiobookNoChapters": "Tidak ada bab",
-    "audiobookNoBookmarks": "Belum ada markah",
-    "audiobookNoNotes": "Belum ada catatan",
-    "audiobookBookmarkAdded": "Markah ditambahkan pada {position}",
+    "audiobookNoChapters": "",
+    "audiobookNoBookmarks": "",
+    "audiobookNoNotes": "",
+    "audiobookBookmarkAdded": "",
     "@audiobookBookmarkAdded": {
         "placeholders": {
             "position": {
@@ -8802,8 +8802,8 @@
             }
         }
     },
-    "audiobookSpeedReset": "Atur ulang ke 1.0x",
-    "audiobookSpeedCustomLabel": "{value}x",
+    "audiobookSpeedReset": "",
+    "audiobookSpeedCustomLabel": "",
     "@audiobookSpeedCustomLabel": {
         "placeholders": {
             "value": {
@@ -8811,58 +8811,58 @@
             }
         }
     },
-    "audiobookSave": "Simpan",
-    "audiobookCancel": "Batal",
-    "audiobookDelete": "Hapus",
-    "subtitlePreferences": "Preferensi Subtitle",
+    "audiobookSave": "",
+    "audiobookCancel": "",
+    "audiobookDelete": "",
+    "subtitlePreferences": "",
     "@subtitlePreferences": {
         "description": "Title for the subtitle preferences settings section"
     },
-    "subtitlePreferencesDescription": "Ubah mode subtitle, bahasa bawaan, tampilan, dan opsi rendering.",
+    "subtitlePreferencesDescription": "",
     "@subtitlePreferencesDescription": {
         "description": "Description for the subtitle preferences settings section"
     },
-    "subtitleRendering": "Rendering Subtitle",
+    "subtitleRendering": "",
     "@subtitleRendering": {
         "description": "Header for subtitle rendering settings"
     },
-    "displayOptions": "Opsi Tampilan",
+    "displayOptions": "",
     "@displayOptions": {
         "description": "Title for details display options dialog"
     },
-    "releaseDateAscending": "Tanggal Rilis (Menaik)",
+    "releaseDateAscending": "",
     "@releaseDateAscending": {
         "description": "Sort option for crew/cast contributions in ascending release date order"
     },
-    "releaseDateDescending": "Tanggal Rilis (Menurun)",
+    "releaseDateDescending": "",
     "@releaseDateDescending": {
         "description": "Sort option for crew/cast contributions in descending release date order"
     },
-    "groupContributions": "Kelompokkan Kontribusi",
+    "groupContributions": "",
     "@groupContributions": {
         "description": "Section header for grouping person contributions"
     },
-    "groupMultipleRoles": "Kelompokkan beberapa peran",
+    "groupMultipleRoles": "",
     "@groupMultipleRoles": {
         "description": "Option to group multiple roles for a person"
     },
-    "libraryWriteAccessWarningTitle": "Peringatan Akses Tulis Pustaka",
+    "libraryWriteAccessWarningTitle": "",
     "@libraryWriteAccessWarningTitle": {
         "description": "Title for library write access warning dialog"
     },
-    "libraryWriteAccessHowToFix": "Cara memperbaikinya:",
+    "libraryWriteAccessHowToFix": "",
     "@libraryWriteAccessHowToFix": {
         "description": "Section header for write access troubleshooting"
     },
-    "libraryWriteAccessFixSteps": "1. Berikan izin tulis kepada pengguna layanan Jellyfin (mis. jellyfin atau PUID/PGID Docker) untuk folder pustaka media Anda di server.\n\n2. Atau, buka Dasbor Jellyfin -> Pustaka, edit pustaka ini, lalu nonaktifkan 'Simpan artwork ke dalam folder media' agar artwork disimpan di basis data internal Jellyfin.",
+    "libraryWriteAccessFixSteps": "",
     "@libraryWriteAccessFixSteps": {
         "description": "Troubleshooting steps for write access issues"
     },
-    "dismiss": "Tutup",
+    "dismiss": "",
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Pustaka '{libraryName}' Anda dikonfigurasi untuk menyimpan artwork langsung ke dalam folder media (opsi 'Simpan artwork ke dalam folder media' aktif). Namun, Jellyfin telah menguji akses tulis dan tidak memiliki izin untuk menulis berkas ke direktori ini:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -8874,21 +8874,21 @@
             }
         }
     },
-    "libraryWriteAccessReactiveBody": "Sepertinya Jellyfin gagal memperbarui artwork. Pustaka Anda dikonfigurasi untuk menyimpan artwork langsung ke dalam folder media (opsi 'Simpan artwork ke dalam folder media' aktif). Kesalahan ini biasanya terjadi ketika proses server Jellyfin tidak memiliki izin untuk menulis berkas ke direktori media Anda.",
+    "libraryWriteAccessReactiveBody": "",
     "@libraryWriteAccessReactiveBody": {
         "description": "Reactive error warning message when artwork update fails"
     },
-    "externalLists": "Daftar Eksternal",
-    "replay": "Putar Ulang",
-    "fileInformation": "Informasi Berkas",
-    "fileSizeFormat": "Ukuran: {size}  •  Format: {format}",
+    "externalLists": "",
+    "replay": "",
+    "fileInformation": "",
+    "fileSizeFormat": "",
     "@fileSizeFormat": {
         "placeholders": {
             "size": {},
             "format": {}
         }
     },
-    "showAllAudioTracks": "Tampilkan Semua ({count}) Trek Audio",
+    "showAllAudioTracks": "",
     "@showAllAudioTracks": {
         "placeholders": {
             "count": {
@@ -8896,7 +8896,7 @@
             }
         }
     },
-    "showAllSubtitleTracks": "Tampilkan Semua ({count}) Trek Subtitle",
+    "showAllSubtitleTracks": "",
     "@showAllSubtitleTracks": {
         "placeholders": {
             "count": {
@@ -8904,30 +8904,30 @@
             }
         }
     },
-    "checkingDirectPlay": "Memeriksa kemampuan Direct Play...",
-    "directPlayCapabilityLabel": "Kemampuan Direct Play: ",
-    "forced": "Dipaksa",
-    "transcodeContainerNotSupported": "Format kontainer tidak didukung oleh pemutar.",
-    "transcodeVideoCodecNotSupported": "Codec video tidak didukung.",
-    "transcodeAudioCodecNotSupported": "Codec audio tidak didukung.",
-    "transcodeSubtitleCodecNotSupported": "Format subtitle tidak didukung (perlu dibakar ke gambar).",
-    "transcodeAudioProfileNotSupported": "Profil audio tidak didukung.",
-    "transcodeVideoProfileNotSupported": "Profil video tidak didukung.",
-    "transcodeVideoLevelNotSupported": "Level video tidak didukung.",
-    "transcodeVideoResolutionNotSupported": "Resolusi video tidak didukung oleh perangkat ini.",
-    "transcodeVideoBitDepthNotSupported": "Kedalaman bit video tidak didukung.",
-    "transcodeVideoFramerateNotSupported": "Frame rate video tidak didukung.",
-    "transcodeContainerBitrateExceedsLimit": "Bitrate berkas melebihi batas streaming pemutar.",
-    "transcodeVideoBitrateExceedsLimit": "Bitrate video melebihi batas streaming.",
-    "transcodeAudioBitrateExceedsLimit": "Bitrate audio melebihi batas streaming.",
-    "transcodeAudioChannelsNotSupported": "Jumlah kanal audio tidak didukung.",
-    "sortAlphabetical": "Alfabetis",
-    "sortReleaseAscending": "Urutan Rilis (Menaik)",
-    "sortReleaseDescending": "Urutan Rilis (Menurun)",
-    "sortCustomDragDrop": "Kustom (Seret dan Lepas)",
-    "playlistSortOptions": "Opsi Urutan Playlist",
-    "resetSort": "Atur Ulang Urutan",
-    "rewatchSeasonEpisode": "Tonton Ulang S{season}:E{episode}",
+    "checkingDirectPlay": "",
+    "directPlayCapabilityLabel": "",
+    "forced": "",
+    "transcodeContainerNotSupported": "",
+    "transcodeVideoCodecNotSupported": "",
+    "transcodeAudioCodecNotSupported": "",
+    "transcodeSubtitleCodecNotSupported": "",
+    "transcodeAudioProfileNotSupported": "",
+    "transcodeVideoProfileNotSupported": "",
+    "transcodeVideoLevelNotSupported": "",
+    "transcodeVideoResolutionNotSupported": "",
+    "transcodeVideoBitDepthNotSupported": "",
+    "transcodeVideoFramerateNotSupported": "",
+    "transcodeContainerBitrateExceedsLimit": "",
+    "transcodeVideoBitrateExceedsLimit": "",
+    "transcodeAudioBitrateExceedsLimit": "",
+    "transcodeAudioChannelsNotSupported": "",
+    "sortAlphabetical": "",
+    "sortReleaseAscending": "",
+    "sortReleaseDescending": "",
+    "sortCustomDragDrop": "",
+    "playlistSortOptions": "",
+    "resetSort": "",
+    "rewatchSeasonEpisode": "",
     "@rewatchSeasonEpisode": {
         "placeholders": {
             "season": {
@@ -8938,57 +8938,57 @@
             }
         }
     },
-    "rewatchPlaylist": "Tonton Ulang Playlist",
-    "noSubtitlesFound": "Subtitle tidak ditemukan.",
-    "adminControls": "Kontrol Admin",
-    "impellerRendering": "Mesin rendering (Impeller)",
+    "rewatchPlaylist": "",
+    "noSubtitlesFound": "",
+    "adminControls": "",
+    "impellerRendering": "",
     "@impellerRendering": {
         "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
     },
-    "impellerRenderingSubtitle": "Impeller adalah perender GPU modern dari Flutter untuk animasi yang lebih mulus dan minim patah-patah. Pada sebagian TV box dan GPU lama, Impeller dapat menyebabkan gangguan tampilan atau video hitam; matikan jika Anda mengalaminya. Otomatis memilih nilai bawaan terbaik untuk perangkat Anda. Mulai ulang Moonfin untuk menerapkannya.",
+    "impellerRenderingSubtitle": "",
     "@impellerRenderingSubtitle": {
         "description": "Explanatory description under the rendering engine setting."
     },
-    "impellerAuto": "Otomatis",
-    "impellerOn": "Aktif",
-    "impellerOff": "Nonaktif",
-    "impellerRestartTitle": "Perlu dimulai ulang",
+    "impellerAuto": "",
+    "impellerOn": "",
+    "impellerOff": "",
+    "impellerRestartTitle": "",
     "@impellerRestartTitle": {
         "description": "Title of the dialog shown after changing the rendering engine."
     },
-    "impellerRestartMessage": "Moonfin perlu dimulai ulang untuk mengubah mesin rendering. Tutup aplikasi sekarang, lalu buka kembali untuk menerapkannya.",
+    "impellerRestartMessage": "",
     "@impellerRestartMessage": {
         "description": "Body of the dialog shown after changing the rendering engine."
     },
-    "impellerCloseNow": "Tutup aplikasi sekarang",
+    "impellerCloseNow": "",
     "@impellerCloseNow": {
         "description": "Button that closes the app so the new rendering engine takes effect on next launch."
     },
-    "adminRefreshLibrary": "Segarkan Pustaka",
+    "adminRefreshLibrary": "",
     "@adminRefreshLibrary": {
         "description": "Dropdown option to refresh/rescan a single library"
     },
-    "adminRefreshAllLibraries": "Segarkan Semua Pustaka",
+    "adminRefreshAllLibraries": "",
     "@adminRefreshAllLibraries": {
         "description": "Floating action button text to refresh all libraries"
     },
-    "adminRepoSortDateOldest": "Tanggal Ditambahkan (Terlama Dulu)",
+    "adminRepoSortDateOldest": "",
     "@adminRepoSortDateOldest": {
         "description": "Repository sort option, oldest added first"
     },
-    "adminRepoSortDateNewest": "Tanggal Ditambahkan (Terbaru Dulu)",
+    "adminRepoSortDateNewest": "",
     "@adminRepoSortDateNewest": {
         "description": "Repository sort option, newest added first"
     },
-    "adminRepoSortNameAsc": "Alfabetis (A ke Z)",
+    "adminRepoSortNameAsc": "",
     "@adminRepoSortNameAsc": {
         "description": "Repository sort option, alphabetical ascending"
     },
-    "adminRepoSortNameDesc": "Alfabetis (Z ke A)",
+    "adminRepoSortNameDesc": "",
     "@adminRepoSortNameDesc": {
         "description": "Repository sort option, alphabetical descending"
     },
-    "adminAnalyticsLoadingProgress": "Memuat Analitik Server... {percentage}%",
+    "adminAnalyticsLoadingProgress": "",
     "@adminAnalyticsLoadingProgress": {
         "description": "Progress label shown while server analytics load",
         "placeholders": {
@@ -8997,14 +8997,14 @@
             }
         }
     },
-    "adminLibChapterImageResolutionMatchSource": "Samakan dengan sumber",
+    "adminLibChapterImageResolutionMatchSource": "",
     "@adminLibChapterImageResolutionMatchSource": {
         "description": "Chapter image resolution option that matches the source resolution"
     },
-    "imdbTop250Movies": "IMDb Top 250 Film",
-    "imdbTop250TvShows": "IMDb Top 250 Serial TV",
-    "imdbMostPopularMovies": "Film Terpopuler IMDb",
-    "imdbMostPopularTvShows": "Serial TV Terpopuler IMDb",
-    "imdbLowestRatedMovies": "Film dengan Rating Terendah IMDb",
-    "imdbTopEnglishMovies": "Film Berbahasa Inggris dengan Rating Tertinggi IMDb"
+    "imdbTop250Movies": "",
+    "imdbTop250TvShows": "",
+    "imdbMostPopularMovies": "",
+    "imdbMostPopularTvShows": "",
+    "imdbLowestRatedMovies": "",
+    "imdbTopEnglishMovies": ""
 }
