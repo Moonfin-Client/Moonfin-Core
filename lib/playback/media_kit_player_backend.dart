@@ -469,7 +469,9 @@ class MediaKitPlayerBackend extends PlayerBackend {
 
   @override
   bool get canRenderBitmapSubtitles =>
-      PlatformDetection.isDesktop || PlatformDetection.isAndroid;
+      PlatformDetection.isDesktop ||
+      PlatformDetection.isAndroid ||
+      PlatformDetection.isIOS;
 
   Player get player => _player;
 
