@@ -18,6 +18,7 @@ import 'package:window_manager/window_manager.dart';
 
 import '../../../util/fullscreen_helper.dart';
 import '../../widgets/playback/seek_icons.dart';
+import '../../widgets/playback/trickplay_tile_image.dart';
 
 import '../../../playback/html_video_backend.dart';
 import '../../../playback/media_kit_player_backend.dart';
@@ -4403,39 +4404,16 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
           ),
           child: ClipRRect(
             borderRadius: AppRadius.circular(9),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final tileW = thumbWidth * tileWidth;
-                final tileH = thumbHeight * tileHeight;
-                final scaleX = constraints.maxWidth / thumbWidth;
-                final scaleY = constraints.maxHeight / thumbHeight;
-                return OverflowBox(
-                  maxWidth: tileW * scaleX,
-                  maxHeight: tileH * scaleY,
-                  alignment: Alignment(
-                    tileWidth <= 1
-                        ? 0.0
-                        : -1.0 + 2.0 * sourceRect.left / (tileW - thumbWidth),
-                    tileHeight <= 1
-                        ? 0.0
-                        : -1.0 + 2.0 * sourceRect.top / (tileH - thumbHeight),
-                  ),
-                  child: Image.network(
-                    imageUrl,
-                    headers: headers.isEmpty ? null : headers,
-                    fit: BoxFit.fill,
-                    filterQuality: FilterQuality.medium,
-                    errorBuilder: (_, _, _) => Container(
-                      color: Colors.white.withValues(alpha: 0.08),
-                      alignment: Alignment.center,
-                      child: AdaptiveIcon(
-                        Icons.movie,
-                        color: Colors.white.withValues(alpha: 0.45),
-                      ),
-                    ),
-                  ),
-                );
-              },
+            child: TrickplayTileImage(
+              sheet: NetworkImage(
+                imageUrl,
+                headers: headers.isEmpty ? null : headers,
+              ),
+              sourceRect: sourceRect,
+              thumbWidth: thumbWidth,
+              thumbHeight: thumbHeight,
+              tileWidth: tileWidth,
+              tileHeight: tileHeight,
             ),
           ),
         ),
