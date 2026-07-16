@@ -5578,26 +5578,35 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
         final isPlaying = _displayPlaying;
 
         return Row(
-          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (_queue.hasPrevious)
-              _controlButton(
-                Icons.skip_previous_rounded,
-                onPressed: _manager.previous,
-                size: 40,
-                extent: 72,
-                tooltip: l10n.playerTooltipPrevious,
-              ),
-            _controlButton(
-              seekBackIcon(_prefs.get(UserPreferences.skipBackLength)),
-              onPressed: () =>
-                  _seekRelative(-_prefs.get(UserPreferences.skipBackLength)),
-              size: 46,
-              extent: 78,
-              tooltip: _tooltipMessage(
-                l10n.playerTooltipSeekBack,
-                shortcut: 'Left',
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (_queue.hasPrevious)
+                      _controlButton(
+                        Icons.skip_previous_rounded,
+                        onPressed: _manager.previous,
+                        size: 40,
+                        extent: 72,
+                        tooltip: l10n.playerTooltipPrevious,
+                      ),
+                    _controlButton(
+                      seekBackIcon(_prefs.get(UserPreferences.skipBackLength)),
+                      onPressed: () =>
+                          _seekRelative(-_prefs.get(UserPreferences.skipBackLength)),
+                      size: 46,
+                      extent: 78,
+                      tooltip: _tooltipMessage(
+                        l10n.playerTooltipSeekBack,
+                        shortcut: 'Left',
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             _controlButton(
@@ -5611,25 +5620,35 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
                 shortcut: 'Space',
               ),
             ),
-            _controlButton(
-              seekForwardIcon(_prefs.get(UserPreferences.skipForwardLength)),
-              onPressed: () =>
-                  _seekRelative(_prefs.get(UserPreferences.skipForwardLength)),
-              size: 46,
-              extent: 78,
-              tooltip: _tooltipMessage(
-                l10n.playerTooltipSeekForward,
-                shortcut: 'Right',
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _controlButton(
+                      seekForwardIcon(_prefs.get(UserPreferences.skipForwardLength)),
+                      onPressed: () =>
+                          _seekRelative(_prefs.get(UserPreferences.skipForwardLength)),
+                      size: 46,
+                      extent: 78,
+                      tooltip: _tooltipMessage(
+                        l10n.playerTooltipSeekForward,
+                        shortcut: 'Right',
+                      ),
+                    ),
+                    if (_queue.hasNext)
+                      _controlButton(
+                        Icons.skip_next_rounded,
+                        onPressed: _manager.next,
+                        size: 40,
+                        extent: 72,
+                        tooltip: l10n.next,
+                      ),
+                  ],
+                ),
               ),
             ),
-            if (_queue.hasNext)
-              _controlButton(
-                Icons.skip_next_rounded,
-                onPressed: _manager.next,
-                size: 40,
-                extent: 72,
-                tooltip: l10n.next,
-              ),
           ],
         );
       },
