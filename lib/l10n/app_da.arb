@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Quick Connect",
+    "quickConnect": "Hurtig tilslutning",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -180,7 +180,7 @@
     "@themeMoonfinSubtitle": {
         "description": "Preview description for the Moonfin theme"
     },
-    "themeNeonPulse": "Neonpuls",
+    "themeNeonPulse": "Neon Pulse",
     "@themeNeonPulse": {
         "description": "Display name for the Neon Pulse theme"
     },
@@ -432,7 +432,7 @@
     "@small": {
         "description": "Poster size option"
     },
-    "medium": "Mellem",
+    "medium": "Medium",
     "@medium": {
         "description": "Poster size option"
     },
@@ -457,7 +457,7 @@
     "@views": {
         "description": "Section header for music browse view buttons"
     },
-    "albums": "Album",
+    "albums": "Albums",
     "@albums": {
         "description": "Music browse view button label"
     },
@@ -532,7 +532,7 @@
     "@pickDiscoverySubjects": {
         "description": "Instruction text in discovery subject picker"
     },
-    "apply": "Anvend",
+    "apply": "Anvende",
     "@apply": {
         "description": "Button label to apply selected options"
     },
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "Genoptag",
+    "resume": "Genoptage",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -770,7 +770,7 @@
             }
         }
     },
-    "folder": "Mappe",
+    "folder": "Folder",
     "@folder": {
         "description": "Fallback subtitle for navigable folder items"
     },
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "Set",
+    "watched": "Så",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Ikke set",
+    "unwatched": "Uovervåget",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 lydbog} other{{count} lydbøger}}",
+    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -939,7 +939,7 @@
     "@delete": {
         "description": "Delete action button label"
     },
-    "save": "Gem",
+    "save": "Spare",
     "@save": {
         "description": "Save action button label"
     },
@@ -947,7 +947,7 @@
     "@moreLikeThis": {
         "description": "Section header for similar items"
     },
-    "castAndCrew": "Medvirkende & hold",
+    "castAndCrew": "Cast & Crew",
     "@castAndCrew": {
         "description": "Section header for cast and crew section"
     },
@@ -963,7 +963,7 @@
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "Sæsoner",
+    "seasons": "Årstider",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 sæson} other{{count} sæsoner}}",
+    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "Afspil",
+    "play": "Spil",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1391,11 +1391,11 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "MANUSKRIPTFORFATTERE",
+    "writers": "SKRIFTERE",
     "@writers": {
         "description": "Metadata label for writers"
     },
-    "studio": "STUDIE",
+    "studio": "STUDIO",
     "@studio": {
         "description": "Metadata label for studio"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 nummer} other{{count} numre}}",
+    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 kapitel} other{{count} kapitler}}",
+    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1530,7 +1530,7 @@
     "@mono": {
         "description": "Audio channel layout label for mono"
     },
-    "stereo": "Stereo",
+    "stereo": "Stereoanlæg",
     "@stereo": {
         "description": "Audio channel layout label for stereo"
     },
@@ -1706,11 +1706,11 @@
     "@castingToGoogleCast": {
         "description": "Cast mini bar label for Google Cast"
     },
-    "castingViaAirPlay": "Caster via AirPlay",
+    "castingViaAirPlay": "Casting via AirPlay",
     "@castingViaAirPlay": {
         "description": "Cast mini bar label for AirPlay"
     },
-    "castingViaDlna": "Caster via DLNA",
+    "castingViaDlna": "Casting via DLNA",
     "@castingViaDlna": {
         "description": "Cast mini bar label for DLNA"
     },
@@ -1727,7 +1727,7 @@
     "@longPressToUnlock": {
         "description": "OSD lock overlay hint"
     },
-    "off": "Fra",
+    "off": "Slukket",
     "@off": {
         "description": "Label for subtitle off option"
     },
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "Afspiller",
+    "player": "Spiller",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1854,7 +1854,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "Spor",
+    "track": "Spore",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -1866,7 +1866,7 @@
     "@audioBitrate": {
         "description": "Stream info label for audio bitrate"
     },
-    "sampleRate": "Samplingsfrekvens",
+    "sampleRate": "Sample Rate",
     "@sampleRate": {
         "description": "Stream info label for audio sample rate"
     },
@@ -2187,7 +2187,7 @@
     "@favoriteChannel": {
         "description": "Button label to add a channel to favorites"
     },
-    "watch": "Se",
+    "watch": "Ur",
     "@watch": {
         "description": "Button label to start watching a channel"
     },
@@ -2241,7 +2241,7 @@
             }
         }
     },
-    "no": "Nej",
+    "no": "Ingen",
     "@no": {
         "description": "Negative dialog button label"
     },
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 episode} other{{count} episoder}}",
+    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2702,7 +2702,7 @@
     "@never": {
         "description": "Option: never"
     },
-    "focusExpansionAnimation": "Animation for fokusudvidelse",
+    "focusExpansionAnimation": "Focus Expansion Animation",
     "@focusExpansionAnimation": {
         "description": "Setting for focus expansion animation"
     },
@@ -2840,7 +2840,7 @@
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
-    "disabled": "Deaktiveret",
+    "disabled": "Handicappet",
     "@disabled": {
         "description": "Option: disabled"
     },
@@ -2964,11 +2964,11 @@
     "@polish": {
         "description": "Language: Polish"
     },
-    "ac3Passthrough": "AC3-passthrough",
+    "ac3Passthrough": "AC3 Passthrough",
     "@ac3Passthrough": {
         "description": "Setting for AC3 passthrough"
     },
-    "dtsPassthrough": "DTS-passthrough",
+    "dtsPassthrough": "DTS Passthrough",
     "@dtsPassthrough": {
         "description": "Setting for DTS passthrough"
     },
@@ -3221,7 +3221,7 @@
     "@global": {
         "description": "Profile: global"
     },
-    "desktop": "Computer",
+    "desktop": "Desktop",
     "@desktop": {
         "description": "Profile: desktop"
     },
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "Moonfin",
+    "mediaBarModeMoonfin": "Månefinne",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3569,7 +3569,7 @@
     "@mediaBarModeMakd": {
         "description": "Media bar style option: MakD"
     },
-    "mediaBarModeOff": "Fra",
+    "mediaBarModeOff": "Slukket",
     "@mediaBarModeOff": {
         "description": "Media bar style option: Off"
     },
@@ -3797,7 +3797,7 @@
     "@enableBuiltInScreensaver": {
         "description": "Description for in-app screensaver"
     },
-    "mode": "Tilstand",
+    "mode": "Mode",
     "@mode": {
         "description": "Setting for mode"
     },
@@ -3813,7 +3813,7 @@
     "@clock": {
         "description": "Screensaver mode: clock"
     },
-    "timeout": "Tidsgrænse",
+    "timeout": "Timeout",
     "@timeout": {
         "description": "Setting for timeout"
     },
@@ -3951,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Moonbase-plugin",
+    "pluginLabel": "Plugin",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -3987,7 +3987,7 @@
     "@availableServices": {
         "description": "Section title for available services"
     },
-    "serverPluginSync": "Synkronisering af serverplugin",
+    "serverPluginSync": "Server Plugin Sync",
     "@serverPluginSync": {
         "description": "Setting for server plugin sync"
     },
@@ -4011,7 +4011,7 @@
     "@recentlyAdded": {
         "description": "Seerr row: recently added"
     },
-    "trending": "Populært lige nu",
+    "trending": "Trending",
     "@trending": {
         "description": "Seerr row: trending"
     },
@@ -4080,15 +4080,15 @@
             }
         }
     },
-    "discoverRows": "Seerr-opdagelsesside",
+    "discoverRows": "Opdag Rows",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Aktiver de rækker, du vil se på Seerr-hovedsiden. Træk for at omarrangere. Den tilpassede rækkefølge synkroniseres med Moonbase.",
+    "discoverRowsDescriptionPlugin": "Træk for at omarrangere. Aktiver eller deaktiver rækker. Aktiveret rækkefølge synkroniseres med Moonfin-pluginnet.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Aktiver de rækker, du vil se på Seerr-hovedsiden. Træk for at omarrangere. Den tilpassede rækkefølge synkroniseres med Moonbase.",
+    "discoverRowsDescription": "Træk for at omarrangere. Aktiver eller deaktiver rækker.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4248,7 +4248,7 @@
             }
         }
     },
-    "clear": "Ryd",
+    "clear": "Klar",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4355,7 +4355,7 @@
     "@errorSearchingLibrary": {
         "description": "Snackbar when library search fails"
     },
-    "budgetAmount": "Budget: {amount} $",
+    "budgetAmount": "Budget: ${amount}",
     "@budgetAmount": {
         "description": "Movie budget display",
         "placeholders": {
@@ -4495,7 +4495,7 @@
     "@revenueLabel": {
         "description": "Stat label for revenue"
     },
-    "runtimeLabel": "Spilletid",
+    "runtimeLabel": "Runtime",
     "@runtimeLabel": {
         "description": "Stat label for runtime"
     },
@@ -4507,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "Sæsoner",
+    "seasonsLabel": "Årstider",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4516,20 +4516,20 @@
         "description": "Stat label for number of episodes"
     },
     "access": "Adgang",
-    "add": "Tilføj",
+    "add": "Tilføje",
     "address": "Adresse",
-    "analytics": "Analyse",
+    "analytics": "Analytics",
     "catalog": "Katalog",
     "content": "Tilfreds",
     "copy": "Kopi",
     "create": "Skabe",
     "disable": "Deaktiver",
     "done": "Færdig",
-    "edit": "Rediger",
+    "edit": "Redigere",
     "encoding": "Kodning",
     "error": "Fejl",
-    "forward": "Frem",
-    "general": "Generelt",
+    "forward": "Forward",
+    "general": "Generel",
     "go": "Gå",
     "install": "Installere",
     "installed": "Installeret",
@@ -4544,13 +4544,13 @@
     "profile": "Profil",
     "provider": "Udbyder",
     "refresh": "Opfriske",
-    "remote": "Fjernbetjening",
+    "remote": "Fjern",
     "rename": "Omdøb",
     "revoke": "Tilbagekald",
     "role": "Rolle",
     "root": "Rod",
     "run": "Løbe",
-    "search": "Søg",
+    "search": "Søge",
     "select": "Vælge",
     "send": "Sende",
     "sessions": "Sessioner",
@@ -4559,30 +4559,30 @@
     "stop": "Stop",
     "streaming": "Streaming",
     "time": "Tid",
-    "trickplay": "Trickplay",
+    "trickplay": "Trickspil",
     "uninstall": "Afinstaller",
     "up": "Op",
     "update": "Opdatering",
     "upload": "Upload",
     "unmute": "Slå lyden til",
-    "mute": "Slå lyd fra",
+    "mute": "Stum",
     "branding": "Branding",
-    "adminDrawerDashboard": "Kontrolpanel",
-    "adminDrawerAnalytics": "Analyse",
+    "adminDrawerDashboard": "Dashboard",
+    "adminDrawerAnalytics": "Analytics",
     "adminDrawerSettings": "Indstillinger",
     "adminDrawerBranding": "Branding",
     "adminDrawerUsers": "Brugere",
     "adminDrawerLibraries": "Biblioteker",
     "adminDrawerTranscoding": "Omkodning",
-    "adminDrawerResume": "Genoptag",
+    "adminDrawerResume": "Genoptage",
     "adminDrawerStreaming": "Streaming",
-    "adminDrawerTrickplay": "Trickplay",
+    "adminDrawerTrickplay": "Trickspil",
     "adminDrawerDevices": "Enheder",
     "adminDrawerActivity": "Aktivitet",
     "adminDrawerNetworking": "Netværk",
     "adminDrawerApiKeys": "API nøgler",
     "adminDrawerBackups": "Sikkerhedskopier",
-    "adminDrawerLogs": "Logfiler",
+    "adminDrawerLogs": "Logs",
     "adminDrawerScheduledTasks": "Planlagte opgaver",
     "adminDrawerPlugins": "Plugins",
     "adminDrawerRepositories": "Depoter",
@@ -4631,7 +4631,7 @@
     "analyticsTopGenres": "Top genrer",
     "analyticsReleaseYears": "Udgivelsesår",
     "analyticsContentRatings": "Indholdsvurderinger",
-    "analyticsRuntimeBuckets": "Spilletidsintervaller",
+    "analyticsRuntimeBuckets": "Runtime Buckets",
     "analyticsFileFormats": "Filformater",
     "analyticsNoData": "Ingen tilgængelige data.",
     "adminServerInfo": "Server info",
@@ -4670,17 +4670,17 @@
     "adminSetVolume": "Indstil lydstyrke",
     "sessionPrev": "Forrige",
     "sessionRewind": "Spole tilbage",
-    "sessionForward": "Spol frem",
+    "sessionForward": "Forward",
     "sessionNext": "Næste",
     "sessionVolumeDown": "bind –",
-    "sessionVolumeUp": "Lyd +",
+    "sessionVolumeUp": "Vol +",
     "uhd4k": "4K",
     "nowPlaying": "Spiller nu",
-    "volume": "Lydstyrke",
+    "volume": "Bind",
     "actions": "Handlinger",
-    "videoCodec": "Videocodec",
-    "audioCodec": "Lydcodec",
-    "hwAccel": "HW-accel",
+    "videoCodec": "Video Codec",
+    "audioCodec": "Audio Codec",
+    "hwAccel": "HW Accel",
     "completion": "Fuldførelse",
     "direct": "Direkte",
     "adminDisconnect": "Afbryde",
@@ -5310,7 +5310,7 @@
         }
     },
     "adminRepositoryNameHint": "f.eks. Jellyfin Stald",
-    "adminRepositoryUrl": "Depot-URL",
+    "adminRepositoryUrl": "Repository URL",
     "adminAddEntry": "Tilføj post",
     "adminInvalidUrl": "Ugyldig URL",
     "adminPluginSettingsLoadFailed": "Kan ikke indlæse plugin-indstillinger: {error}",
@@ -5398,7 +5398,7 @@
     "adminEnableRemoteAccess": "Aktiver fjernadgang",
     "ports": "Havne",
     "adminHttpPort": "HTTP-port",
-    "adminHttpsPort": "HTTPS-port",
+    "adminHttpsPort": "HTTPS port",
     "adminPublicHttpsPort": "Offentlig HTTPS-port",
     "adminBaseUrl": "Basis URL",
     "adminBaseUrlHint": "f.eks. /jellyfin",
@@ -5647,7 +5647,7 @@
             }
         }
     },
-    "adminTunerDiscovery": "Registrering af tunere",
+    "adminTunerDiscovery": "Tuner Discovery",
     "adminChannelMappings": "Kanalkortlægninger",
     "adminNoDiscoveredTuners": "Ingen opdagede tunere endnu",
     "adminSettingsSaved": "Indstillinger gemt",
@@ -5669,7 +5669,7 @@
     "adminUnnamedBackup": "Unavngivet backup",
     "adminLiveTvNotAvailable": "Direkte tv-administration er ikke tilgængelig på denne serverbuild.",
     "adminLiveTvTitle": "Direkte tv-administration",
-    "adminApply": "Anvend",
+    "adminApply": "Anvende",
     "adminNotSet": "Ikke indstillet",
     "adminReset": "Nulstil",
     "adminLogsTitle": "Serverlogs",
@@ -5717,7 +5717,7 @@
         }
     },
     "adminLogViewerNoMatches": "Ingen matchende linjer",
-    "adminMetadataEditorTitle": "Metadataeditor",
+    "adminMetadataEditorTitle": "Metadata Editor",
     "adminMetadataType": "Type",
     "adminMetadataDetails": "Detaljer",
     "adminMetadataExternalIds": "Eksterne ID'er",
@@ -5896,7 +5896,7 @@
             }
         }
     },
-    "adminReposRemove": "Fjern",
+    "adminReposRemove": "Fjerne",
     "adminReposSaveFailed": "Kunne ikke gemme lagre: {error}",
     "@adminReposSaveFailed": {
         "placeholders": {
@@ -5910,7 +5910,7 @@
     "adminReposUnnamed": "(unavngivet)",
     "adminReposEditTitle": "Rediger lager",
     "adminReposAddTitle": "Tilføj lager",
-    "adminReposUrl": "Depot-URL",
+    "adminReposUrl": "Repository URL",
     "adminReposNameHint": "f.eks. Jellyfin Stald",
     "adminPluginSettingsInvalidUrl": "Ugyldig URL",
     "adminGeneralSettingsTitle": "Generelle indstillinger",
@@ -5928,7 +5928,7 @@
     "adminNetworkingRemoteAccess": "Aktiver fjernadgang",
     "adminNetworkingPorts": "Havne",
     "adminNetworkingHttpPort": "HTTP-port",
-    "adminNetworkingHttpsPort": "HTTPS-port",
+    "adminNetworkingHttpsPort": "HTTPS port",
     "adminNetworkingEnableHttps": "Aktiver HTTPS",
     "adminNetworkingLocalNetwork": "Lokalt netværk",
     "adminNetworkingLocalAddresses": "Lokale netværksadresser",
@@ -6028,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "Hver 12. time",
     "adminTaskTriggerEvery24Hours": "Hver 24 timer",
     "adminTaskTriggerEvery2Days": "Hver 2. dag",
-    "adminTaskTriggerHours": "{count, plural, one{1 time} other{{count} timer}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6076,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours}t",
+    "adminActivityHoursShort": "{hours}h",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6092,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{day}/{month}",
+    "adminActivityDateShort": "{month}/{day}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6170,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay kræver en Jellyfin-server. Den aktuelle server understøtter det ikke.",
     "syncPlayGroupFallbackName": "SyncPlay gruppe",
     "syncPlayGroupTooltip": "SyncPlay gruppe",
-    "syncPlayParticipantCount": "{count, plural, one {# deltager} other {# deltagere}}",
+    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6251,7 +6251,7 @@
     "rememberMyChoice": "Husk mit valg",
     "playHdr10Fallback": "Afspil HDR10 fallback",
     "requestTranscode": "Anmod om omkodning",
-    "integrationRowsDiscoveredCount": "{count, plural, one {# række fundet} other {# rækker fundet}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6326,8 +6326,8 @@
     "pinIncorrect": "Forkert pinkode",
     "pinMismatch": "PIN-koder stemmer ikke overens",
     "pinForgot": "Har du glemt PIN-koden?",
-    "pinClear": "Ryd",
-    "pinBackspace": "Tilbagetast",
+    "pinClear": "Klar",
+    "pinBackspace": "Backspace",
     "quickConnectAuthorized": "Quick Connect-anmodning godkendt.",
     "quickConnectInvalidOrExpired": "Quick Connect-koden er ugyldig eller udløbet.",
     "quickConnectNotSupported": "Quick Connect understøttes ikke på denne server.",
@@ -6335,7 +6335,7 @@
     "quickConnectDisabled": "Quick Connect er deaktiveret på denne server.",
     "quickConnectForbidden": "Din konto kan ikke godkende denne Quick Connect-anmodning.",
     "quickConnectNotFound": "Quick Connect-koden blev ikke fundet. Prøv en ny kode.",
-    "quickConnectFailedWithMessage": "Quick Connect mislykkedes: {message}",
+    "quickConnectFailedWithMessage": "Hurtig forbindelse mislykkedes: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6479,7 +6479,7 @@
     "@playerTooltipUnlockOrientation": {
         "description": "Tooltip label for unlocking orientation lock in player"
     },
-    "playerTooltipPrevious": "Forrige",
+    "playerTooltipPrevious": "Tidligere",
     "@playerTooltipPrevious": {
         "description": "Tooltip label for previous item control in player"
     },
@@ -6552,14 +6552,14 @@
     "settingsEnterDownloadFolderPath": "Indtast download-mappestien",
     "settingsConcurrentDownloads": "Samtidige downloads",
     "settingsConcurrentDownloadsDescription": "Maksimalt antal elementer at downloade på én gang.",
-    "settingsAppInfo": "APPOPLYSNINGER",
+    "settingsAppInfo": "APP INFO",
     "settingsReportAnIssue": "Rapporter et problem",
     "settingsReportAnIssueSubtitle": "Åbn problemsporingen på GitHub",
     "settingsJoinDiscord": "Tilmeld dig Discord",
     "settingsJoinDiscordSubtitle": "Chat med fællesskabet",
     "settingsJoinTheDiscord": "Deltag i Discord",
     "settingsSupportMoonfin": "Støt Moonfin",
-    "settingsLegal": "JURIDISK",
+    "settingsLegal": "LEGAL",
     "settingsLicenses": "Licenser",
     "settingsOpenSourceLicenseNotices": "Open source-licensmeddelelser",
     "settingsPrivacyPolicy": "Privatlivspolitik",
@@ -6567,7 +6567,7 @@
     "settingsCheckForUpdates": "Se efter opdateringer",
     "settingsCheckForUpdatesSubtitle": "Se efter den seneste Moonfin-udgivelse",
     "settingsPoweredByFlutter": "Drevet af Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# licensmeddelelse} other {# licensmeddelelser}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6594,11 +6594,11 @@
     "settingsMaxBitrateDescription": "Begræns streaming-bithastigheden. Indhold over denne tærskel vil blive omkodet, så det passer.",
     "settingsMaxResolutionDescription": "Begræns den maksimale opløsning, som spilleren vil anmode om. Indhold i højere opløsning vil blive omkodet ned.",
     "settingsPlayerZoomDescription": "Hvordan video skal skaleres, så den passer til skærmen.",
-    "settingsPlaybackEngineAndroidTv": "Afspilningsmotor (Android TV)",
+    "settingsPlaybackEngineAndroidTv": "Playback Engine (Android TV)",
     "settingsPlaybackEngineAndroidTvDescription": "Vælg standardafspilningsmotoren på Android TV-enheder. Ændringer gælder for den næste afspilningssession.",
     "settingsPlaybackEngineMedia3Recommended": "Media3 (anbefales)",
     "settingsPlaybackEngineMpvLegacy": "mpv (forældet)",
-    "settingsDolbyVisionFallback": "Dolby Vision-reserve",
+    "settingsDolbyVisionFallback": "Dolby Vision Fallback",
     "settingsDolbyVisionFallbackDescription": "Adfærd for Dolby Vision-titler på enheder uden Dolby Vision-afkodning.",
     "settingsAskEachTime": "Spørg hver gang",
     "settingsPreferHdr10Fallback": "Foretrækker HDR10 fallback",
@@ -6690,7 +6690,7 @@
     "@desktopUiScale": {
         "description": "Setting for desktop UI scale"
     },
-    "nextUpDisplay": "Visning af Næste op",
+    "nextUpDisplay": "Next Up Display",
     "@nextUpDisplay": {
         "description": "Setting for next up behavior"
     },
@@ -6763,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Optag",
+    "record": "Optage",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6787,11 +6787,11 @@
     "@settingsAudioOutputMode": {
         "description": "Setting for audio output mode"
     },
-    "settingsAudioOutputModeAvrPassthrough": "AVR-passthrough",
+    "settingsAudioOutputModeAvrPassthrough": "AVR Passthrough",
     "@settingsAudioOutputModeAvrPassthrough": {
         "description": "Audio output mode option for AVR passthrough"
     },
-    "settingsAudioFallbackCodec": "Reservecodec for lyd",
+    "settingsAudioFallbackCodec": "Audio Fallback Codec",
     "@settingsAudioFallbackCodec": {
         "description": "Setting for fallback audio codec"
     },
@@ -6799,7 +6799,7 @@
     "@settingsAudioPassthroughAdvanced": {
         "description": "Section title for advanced passthrough controls"
     },
-    "settingsAudioCodecPassthrough": "Codec-passthrough",
+    "settingsAudioCodecPassthrough": "Codec Passthrough",
     "@settingsAudioCodecPassthrough": {
         "description": "Title for codec passthrough settings group"
     },
@@ -6807,27 +6807,27 @@
     "@settingsAudioCodecPassthroughDescription": {
         "description": "Description for codec passthrough settings group"
     },
-    "settingsAudioEac3Passthrough": "EAC3-passthrough",
+    "settingsAudioEac3Passthrough": "EAC3 Passthrough",
     "@settingsAudioEac3Passthrough": {
         "description": "Setting for EAC3 passthrough"
     },
-    "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos)-passthrough",
+    "settingsAudioEac3JocPassthrough": "EAC3 JOC (Atmos) Passthrough",
     "@settingsAudioEac3JocPassthrough": {
         "description": "Setting for EAC3 JOC Atmos passthrough"
     },
-    "settingsAudioDtsCorePassthrough": "DTS Core-passthrough",
+    "settingsAudioDtsCorePassthrough": "DTS Core Passthrough",
     "@settingsAudioDtsCorePassthrough": {
         "description": "Setting for DTS core passthrough"
     },
-    "settingsAudioDtsHdPassthrough": "DTS-HD MA-passthrough",
+    "settingsAudioDtsHdPassthrough": "DTS-HD MA Passthrough",
     "@settingsAudioDtsHdPassthrough": {
         "description": "Setting for DTS-HD MA passthrough"
     },
-    "settingsAudioTrueHdPassthrough": "TrueHD-passthrough",
+    "settingsAudioTrueHdPassthrough": "TrueHD Passthrough",
     "@settingsAudioTrueHdPassthrough": {
         "description": "Setting for TrueHD passthrough"
     },
-    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos-passthrough",
+    "settingsAudioTrueHdAtmosPassthrough": "TrueHD Atmos Passthrough",
     "@settingsAudioTrueHdAtmosPassthrough": {
         "description": "Setting for TrueHD Atmos passthrough"
     },
@@ -6891,7 +6891,7 @@
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count}-kanals PCM",
+    "settingsAudioPcmChannels": "{count}ch PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -6920,15 +6920,15 @@
     "@settingsAudioDiagnosticsAllowedAudioCodecs": {
         "description": "Diagnostics label for allowed audio codecs"
     },
-    "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS-lydcodecs",
+    "settingsAudioDiagnosticsHlsMpegTsAudioCodecs": "HLS MPEG-TS Audio Codecs",
     "@settingsAudioDiagnosticsHlsMpegTsAudioCodecs": {
         "description": "Diagnostics label for HLS MPEG-TS audio codecs"
     },
-    "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4-lydcodecs",
+    "settingsAudioDiagnosticsHlsFmp4AudioCodecs": "HLS fMP4 Audio Codecs",
     "@settingsAudioDiagnosticsHlsFmp4AudioCodecs": {
         "description": "Diagnostics label for HLS fMP4 audio codecs"
     },
-    "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif-passthrough",
+    "settingsAudioDiagnosticsAudioSpdifPassthrough": "audio-spdif passthrough",
     "@settingsAudioDiagnosticsAudioSpdifPassthrough": {
         "description": "Diagnostics label for audio-spdif passthrough codecs"
     },
@@ -6936,11 +6936,11 @@
     "@settingsAudioDiagnosticsActiveAudioRoute": {
         "description": "Diagnostics label for active audio route"
     },
-    "settingsAudioDiagnosticsRouteHdAudioSupport": "HD-lydunderstøttelse for ruten",
+    "settingsAudioDiagnosticsRouteHdAudioSupport": "Route HD Audio Support",
     "@settingsAudioDiagnosticsRouteHdAudioSupport": {
         "description": "Diagnostics label for route HD audio support"
     },
-    "settingsPlaybackEngineMedia3Legacy": "Media3 (ældre)",
+    "settingsPlaybackEngineMedia3Legacy": "Media3 (legacy)",
     "settingsPlaybackEngineMpvRecommended": "mpv (anbefales)",
     "autoplayNextEpisode": "Autoplay næste afsnit",
     "@autoplayNextEpisode": {
@@ -7081,7 +7081,7 @@
     "passthrough": "Gennemløb",
     "supportedOnThisDevice": "Understøttet på denne enhed",
     "notSupportedOnThisDevice": "Ikke understøttet på denne enhed",
-    "settingsAudioDtsXPassthrough": "DTS:X (DTS UHD)-passthrough",
+    "settingsAudioDtsXPassthrough": "DTS:X (DTS UHD) Passthrough",
     "settingsAudioBitstreamDtsXToExternalDecoder": "Bitstream DTS:X (DTS UHD) til ekstern dekoder.",
     "settingsAudioTrueHdJocPassthrough": "TrueHD med Atmos (JOC) Passthrough",
     "mediaPlayerBehavior": "Medieafspillerens opførsel",
@@ -7129,7 +7129,7 @@
     "webDiagnosticsWebRtcScan": "WebRTC-scanning",
     "webDiagnosticsForcedServerUrl": "Tvunget server-URL",
     "webDiagnosticsDefaultServerUrl": "Standard server-URL",
-    "webDiagnosticsDiscoveryProxyUrl": "URL til discovery-proxy",
+    "webDiagnosticsDiscoveryProxyUrl": "Discovery Proxy URL",
     "notConfigured": "ikke konfigureret",
     "webDiagnosticsMixedContent": "Blandet indhold",
     "webDiagnosticsMixedContentDetected": "Denne side indlæses via HTTPS, men en eller flere konfigurerede URL'er er HTTP. Browsere blokerer HTTPS-sider fra at kalde HTTP API'er.",
@@ -7141,7 +7141,7 @@
     "webDiagnosticsCorsChecklistItem3": "• Eksponer Content-Range og Accept-Ranges for streaming og søgeadfærd.",
     "webDiagnosticsCorsChecklistItem4": "• Returner 204 til OPTIONS preflight-anmodninger.",
     "webDiagnosticsHeaderSnippetTitle": "Eksempel på overskriftsstykke (nginx-stil)",
-    "note": "Bemærk",
+    "note": "Note",
     "webDiagnosticsNonWebNote": "Denne diagnosticeringsrute er beregnet til webbuilds. Hvis du ser dette på en anden platform, gælder disse kontroller muligvis ikke.",
     "backToServerSelect": "Tilbage til server Vælg",
     "signOutAllUsers": "Log ud af alle brugere",
@@ -7167,7 +7167,7 @@
     "recentlyReleasedEpisodes": "Nyligt udgivne afsnit",
     "watchAgain": "Se igen",
     "guestAppearances": "Gæsteoptræden",
-    "appearancesSeerr": "Optrædener (Seerr)",
+    "appearancesSeerr": "Optrædener (seer)",
     "watchWithGroup": "Se med gruppen",
     "errors": "Fejl",
     "warnings": "Advarsler",
@@ -7192,7 +7192,7 @@
     "analyticsTopArtists": "Top kunstnere",
     "analyticsTopAuthors": "Topforfattere",
     "analyticsTopContributors": "Topbidragydere",
-    "analyticsLibrariesCount": "{count, plural, =1{1 bibliotek} other{{count} biblioteker}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7208,7 +7208,7 @@
     "adminServerPathData": "Data",
     "adminServerPathImageCache": "Billedcache",
     "adminServerPathCache": "Cache",
-    "adminServerPathLogs": "Logfiler",
+    "adminServerPathLogs": "Logs",
     "adminServerPathMetadata": "Metadata",
     "adminServerPathTranscode": "Omkode",
     "adminServerPathWeb": "Web",
@@ -7302,9 +7302,9 @@
     "cb7ExtractionPluginUnavailable": "CB7 ekstraktionsplugin er ikke tilgængelig på denne platform.",
     "closeGenrePanel": "Luk genrepanelet",
     "loadingShuffle": "Indlæser shuffle...",
-    "libraryShuffleLabel": "BLAND BIBLIOTEK",
-    "randomShuffleLabel": "BLAND TILFÆLDIGT",
-    "genresShuffleLabel": "BLAND GENRER",
+    "libraryShuffleLabel": "LIBRARY SHUFFLE",
+    "randomShuffleLabel": "RANDOM SHUFFLE",
+    "genresShuffleLabel": "GENRES SHUFFLE",
     "autoHdrSwitching": "Automatisk HDR-skift",
     "autoHdrSwitchingDescription": "Aktiver automatisk HDR for HDR-videoafspilning og gendan visningstilstand ved afslutning.",
     "whenFullscreen": "Når fuldskærm",
@@ -7375,171 +7375,171 @@
     "@settingsAudioOutputModeDescription": {
         "description": "Description for audio output mode setting"
     },
-    "detailScreenStyle": "Detaljeskærmens stil",
+    "detailScreenStyle": "",
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Klassisk er det oprindelige centrerede Moonfin-layout. Moderne er et responsivt, filmisk layout.",
+    "detailScreenStyleSubtitle": "",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
-    "detailScreenStyleMoonfin": "Klassisk",
+    "detailScreenStyleMoonfin": "",
     "@detailScreenStyleMoonfin": {
         "description": "Detail screen style option: the classic centered layout"
     },
-    "detailScreenStyleModern": "Moderne",
+    "detailScreenStyleModern": "",
     "@detailScreenStyleModern": {
         "description": "Detail screen style option: the responsive cinematic layout"
     },
-    "expandedTabs": "Udvidede faneblade",
+    "expandedTabs": "",
     "@expandedTabs": {
         "description": "Label for the detail screen expanded tabs setting"
     },
-    "expandedTabsSubtitle": "Vis automatisk indholdet, når du bladrer gennem faneblade. Slå fra for at åbne og lukke hvert faneblad manuelt.",
+    "expandedTabsSubtitle": "",
     "@expandedTabsSubtitle": {
         "description": "Explanation under the expanded tabs setting"
     },
-    "showTechnicalDetails": "Vis tekniske detaljer?",
+    "showTechnicalDetails": "",
     "@showTechnicalDetails": {
         "description": "Label for the detail screen setting to show stream/codec technical details"
     },
-    "showTechnicalDetailsSubtitle": "Vis codec, opløsning og streamoplysninger i banneroversigten",
+    "showTechnicalDetailsSubtitle": "",
     "@showTechnicalDetailsSubtitle": {
         "description": "Explanation under the show technical details setting"
     },
-    "recommendationSystem": "Anbefalingssystem",
+    "recommendationSystem": "",
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Brug Moonfin Anbefaler-algoritmen til dit lokale bibliotek eller TMDb's lighedsmålinger online. Bemærk: Onlineanbefalinger kræver Seerr-integration.",
+    "recommendationSystemSubtitle": "",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
-    "recommendationSystemMoonfin": "Moonfin Anbefaler",
+    "recommendationSystemMoonfin": "",
     "@recommendationSystemMoonfin": {
         "description": "Recommendation system option: Moonfin Recommends"
     },
-    "recommendationSystemTmdb": "TMDb-lighed",
+    "recommendationSystemTmdb": "",
     "@recommendationSystemTmdb": {
         "description": "Recommendation system option: TMDb Similarity"
     },
-    "recommendationsApplyParentalRatingCap": "Begræns efter aldersgrænse?",
+    "recommendationsApplyParentalRatingCap": "",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
-    "recommendationsApplyParentalRatingCapSubtitle": "Begræns forslag fra Moonfin Anbefaler efter målmediets aldersgrænse",
+    "recommendationsApplyParentalRatingCapSubtitle": "",
     "@recommendationsApplyParentalRatingCapSubtitle": {
         "description": "Explanation under the parental rating cap setting toggle"
     },
-    "interfaceStyle": "Grænsefladestil",
+    "interfaceStyle": "",
     "@interfaceStyle": {
         "description": "Label for the Automatic/Apple/Material interface style setting"
     },
-    "interfaceStyleSubtitle": "Automatisk tilpasser sig din enhed. Vælg Apple eller Material for at fastlåse et udseende.",
+    "interfaceStyleSubtitle": "",
     "@interfaceStyleSubtitle": {
         "description": "Explanation under the interface style setting"
     },
-    "interfaceStyleAutomatic": "Automatisk",
+    "interfaceStyleAutomatic": "",
     "@interfaceStyleAutomatic": {
         "description": "Interface style option: follow the platform"
     },
-    "interfaceStyleApple": "Apple",
+    "interfaceStyleApple": "",
     "@interfaceStyleApple": {
         "description": "Interface style option: Apple native look"
     },
-    "interfaceStyleMaterial": "Material",
+    "interfaceStyleMaterial": "",
     "@interfaceStyleMaterial": {
         "description": "Interface style option: Material look"
     },
-    "glassQuality": "Glaskvalitet",
+    "glassQuality": "",
     "@glassQuality": {
         "description": "Label for the glass rendering quality setting"
     },
-    "glassQualitySubtitle": "Auto vælger den bedste glaseffekt til denne enhed. Fuld fremtvinger ægte sløring; Reduceret bruger et let glas, der sparer GPU-strøm.",
+    "glassQualitySubtitle": "",
     "@glassQualitySubtitle": {
         "description": "Explanation under the glass quality setting"
     },
-    "glassQualityAuto": "Auto",
+    "glassQualityAuto": "",
     "@glassQualityAuto": {
         "description": "Glass quality option: per-device default"
     },
-    "glassQualityFull": "Fuld",
+    "glassQualityFull": "",
     "@glassQualityFull": {
         "description": "Glass quality option: force real blur"
     },
-    "glassQualityReduced": "Reduceret",
+    "glassQualityReduced": "",
     "@glassQualityReduced": {
         "description": "Glass quality option: lightweight zero-blur glass"
     },
-    "customThemeTitle": "Brugerdefineret tema",
+    "customThemeTitle": "",
     "@customThemeTitle": {
         "description": "Title for the custom theme settings section"
     },
-    "customThemeSubtitle": "Brugerdefinerede temaer ændrer visuelle elementer i hele Moonfin. Vælg en af disse muligheder, der passer til din stil.",
+    "customThemeSubtitle": "",
     "@customThemeSubtitle": {
         "description": "Description under custom themes section"
     },
-    "themeGlassSubtitle": "Flydende glas-design med en glidende gradientbaggrund, frostede overflader og Apple-blå accentfarve",
+    "themeGlassSubtitle": "",
     "@themeGlassSubtitle": {
         "description": "Preview description for the Glass theme"
     },
-    "theme8BitHero": "8-bit-helt",
+    "theme8BitHero": "",
     "@theme8BitHero": {
         "description": "Display name for the 8-bit Hero theme"
     },
-    "theme8BitHeroSubtitle": "Retro pixelart-design med en fed palet, kantede rammer, hårde slagskygger og en pixelskrifttype",
+    "theme8BitHeroSubtitle": "",
     "@theme8BitHeroSubtitle": {
         "description": "Preview description for the 8-bit Hero theme"
     },
-    "gameMenu": "Menu",
+    "gameMenu": "",
     "@gameMenu": {
         "description": "Tooltip for the in-game menu button"
     },
-    "gamePaused": "Sat på pause",
+    "gamePaused": "",
     "@gamePaused": {
         "description": "Status shown in the in-game menu while the game is paused"
     },
-    "gameSaveState": "Gem tilstand",
+    "gameSaveState": "",
     "@gameSaveState": {
         "description": "In-game menu action to save the game state"
     },
-    "games": "Spil",
+    "games": "",
     "@games": {
         "description": "Label for the games category tab in search results"
     },
-    "gameLoadState": "Indlæs tilstand",
+    "gameLoadState": "",
     "@gameLoadState": {
         "description": "In-game menu action to load the saved game state"
     },
-    "gameFastForward": "Spol frem",
+    "gameFastForward": "",
     "@gameFastForward": {
         "description": "In-game menu action to toggle fast-forward"
     },
-    "gameEmulatorSettings": "Emulatorindstillinger",
+    "gameEmulatorSettings": "",
     "@gameEmulatorSettings": {
         "description": "In-game menu action opening the emulator settings"
     },
-    "gameNoCoreOptions": "Denne kerne har ingen justerbare indstillinger.",
+    "gameNoCoreOptions": "",
     "@gameNoCoreOptions": {
         "description": "Shown when a game core exposes no settings"
     },
-    "gameHoldToOpenMenu": "Hold nede for at åbne menuen",
+    "gameHoldToOpenMenu": "",
     "@gameHoldToOpenMenu": {
         "description": "Hint shown while holding the gamepad combo to open the in-game menu"
     },
-    "gamePlaybackUnsupported": "Spil understøttes endnu ikke på denne enhed.",
+    "gamePlaybackUnsupported": "",
     "@gamePlaybackUnsupported": {
         "description": "Shown when the device cannot run the retro-game emulator"
     },
-    "latestBooks": "Seneste bøger",
+    "latestBooks": "",
     "@latestBooks": {
         "description": "Row title for recently added books in the book library"
     },
-    "latestAudiobooks": "Seneste lydbøger",
+    "latestAudiobooks": "",
     "@latestAudiobooks": {
         "description": "Row title for recently added audiobooks in the book library"
     },
-    "bookSeriesItemCount": "{count, plural, =1{1 bog} other{{count} bøger}}",
+    "bookSeriesItemCount": "",
     "@bookSeriesItemCount": {
         "description": "Subtitle for a book series shelf entry showing how many books it contains",
         "placeholders": {
@@ -7548,15 +7548,15 @@
             }
         }
     },
-    "bookFormatBook": "Bog",
+    "bookFormatBook": "",
     "@bookFormatBook": {
         "description": "Semantic label for the book format badge on library cards"
     },
-    "bookFormatAudiobook": "Lydbog",
+    "bookFormatAudiobook": "",
     "@bookFormatAudiobook": {
         "description": "Semantic label for the audiobook format badge on library cards"
     },
-    "bookPercentRead": "{percent}% læst",
+    "bookPercentRead": "",
     "@bookPercentRead": {
         "description": "Reading progress label on book cards",
         "placeholders": {
@@ -7565,7 +7565,7 @@
             }
         }
     },
-    "bookTimeLeft": "{time} tilbage",
+    "bookTimeLeft": "",
     "@bookTimeLeft": {
         "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
         "placeholders": {
@@ -7574,47 +7574,47 @@
             }
         }
     },
-    "bookHeroRead": "Læs",
+    "bookHeroRead": "",
     "@bookHeroRead": {
         "description": "Hero CTA label to start reading a book"
     },
-    "bookHeroListen": "Lyt",
+    "bookHeroListen": "",
     "@bookHeroListen": {
         "description": "Hero CTA label to start listening to an audiobook"
     },
-    "items": "Elementer",
+    "items": "",
     "@items": {
         "description": "Tab label for the items in a collection/box set"
     },
-    "extras": "Ekstramateriale",
+    "extras": "",
     "@extras": {
         "description": "Tab label for special features / extras"
     },
-    "behindTheScenes": "Bag kulisserne",
+    "behindTheScenes": "",
     "@behindTheScenes": {
         "description": "Tab label for behind the scenes special features"
     },
-    "deletedScenes": "Slettede scener",
+    "deletedScenes": "",
     "@deletedScenes": {
         "description": "Tab label for deleted scenes special features"
     },
-    "featurettes": "Featurettes",
+    "featurettes": "",
     "@featurettes": {
         "description": "Tab label for featurettes special features"
     },
-    "interviews": "Interviews",
+    "interviews": "",
     "@interviews": {
         "description": "Tab label for interviews special features"
     },
-    "scenes": "Scener",
+    "scenes": "",
     "@scenes": {
         "description": "Tab label for scenes special features"
     },
-    "shorts": "Kortfilm",
+    "shorts": "",
     "@shorts": {
         "description": "Tab label for shorts special features"
     },
-    "timeRemaining": "{time} tilbage",
+    "timeRemaining": "",
     "@timeRemaining": {
         "description": "Label showing remaining playback time, e.g. '42m remaining'",
         "placeholders": {
@@ -7623,19 +7623,19 @@
             }
         }
     },
-    "shuffleAllMusic": "Bland al musik",
+    "shuffleAllMusic": "",
     "@shuffleAllMusic": {
         "description": "Car browse action that shuffles the whole music library"
     },
-    "carSignInPrompt": "Log ind på Moonfin på din telefon",
+    "carSignInPrompt": "",
     "@carSignInPrompt": {
         "description": "Shown in the car when no account is signed in"
     },
-    "carServerUnreachable": "Kan ikke få forbindelse til din server",
+    "carServerUnreachable": "",
     "@carServerUnreachable": {
         "description": "Shown in the car when the media server can't be reached"
     },
-    "guideNextProgram": "Næste: {time}  {title}",
+    "guideNextProgram": "",
     "@guideNextProgram": {
         "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
         "placeholders": {
@@ -7647,7 +7647,7 @@
             }
         }
     },
-    "guideMinutesLeft": "{minutes} min tilbage",
+    "guideMinutesLeft": "",
     "@guideMinutesLeft": {
         "description": "Remaining time of the current program, under an hour",
         "placeholders": {
@@ -7656,7 +7656,7 @@
             }
         }
     },
-    "guideHoursLeft": "{hours} t tilbage",
+    "guideHoursLeft": "",
     "@guideHoursLeft": {
         "description": "Remaining time of the current program, whole hours",
         "placeholders": {
@@ -7665,7 +7665,7 @@
             }
         }
     },
-    "guideHoursMinutesLeft": "{hours} t {minutes} min tilbage",
+    "guideHoursMinutesLeft": "",
     "@guideHoursMinutesLeft": {
         "description": "Remaining time of the current program, hours and minutes",
         "placeholders": {
@@ -7677,273 +7677,273 @@
             }
         }
     },
-    "themeMusicSettingsSubtitle": "Detaljesider, rækker på startskærmen og lydstyrke",
+    "themeMusicSettingsSubtitle": "",
     "@themeMusicSettingsSubtitle": {
         "description": "Subtitle for the Theme Music settings sub-category tile"
     },
-    "loopThemeMusic": "Gentag temamusik",
+    "loopThemeMusic": "",
     "@loopThemeMusic": {
         "description": "Setting to loop the theme music"
     },
-    "loopThemeMusicSubtitle": "Gentag nummeret i stedet for at afspille det én gang",
+    "loopThemeMusicSubtitle": "",
     "@loopThemeMusicSubtitle": {
         "description": "Description for the loop theme music setting"
     },
-    "fallbackAudioLanguage": "Reservesprog for lyd",
+    "fallbackAudioLanguage": "",
     "@fallbackAudioLanguage": {
         "description": "Setting for fallback audio language"
     },
-    "preferDefaultAudioTrack": "Foretræk standardlydspor",
+    "preferDefaultAudioTrack": "",
     "@preferDefaultAudioTrack": {
         "description": "Setting for preferring default audio track"
     },
-    "preferDefaultAudioTrackDescription": "Foretræk det originale lydspor frem for lokaliseret eftersynkronisering.",
+    "preferDefaultAudioTrackDescription": "",
     "@preferDefaultAudioTrackDescription": {
         "description": "Description for preferring default audio track setting"
     },
-    "preferAudioDescription": "Foretræk synstolkningsspor",
+    "preferAudioDescription": "",
     "@preferAudioDescription": {
         "description": "Setting for preferring audio description tracks"
     },
-    "preferAudioDescriptionDescription": "Foretræk synstolkningsspor frem for normale spor.",
+    "preferAudioDescriptionDescription": "",
     "@preferAudioDescriptionDescription": {
         "description": "Description for preferring audio description tracks setting"
     },
-    "transcodingAudio": "Transkodning (lyd)",
+    "transcodingAudio": "",
     "@transcodingAudio": {
         "description": "Label for audio-only transcode playback method"
     },
-    "directStreamRemux": "Direct Stream (remux)",
+    "directStreamRemux": "",
     "@directStreamRemux": {
         "description": "Play method label for direct stream with remuxing"
     },
-    "transcodingBitrateOrResolution": "Transkodning (bitrate eller opløsning)",
+    "transcodingBitrateOrResolution": "",
     "@transcodingBitrateOrResolution": {
         "description": "Play method label for transcoding due to bitrate or resolution"
     },
-    "transcodingVideoAndAudio": "Transkodning (video og lyd)",
+    "transcodingVideoAndAudio": "",
     "@transcodingVideoAndAudio": {
         "description": "Play method label for transcoding both video and audio"
     },
-    "transcodingVideo": "Transkodning (video)",
+    "transcodingVideo": "",
     "@transcodingVideo": {
         "description": "Play method label for transcoding video"
     },
-    "settingsAudioFallbackCodecDescription": "Vælg det format, flerkanalslyd skal transkodes til, når kildestrømmen hverken kan afspilles direkte eller sendes igennem.",
+    "settingsAudioFallbackCodecDescription": "",
     "@settingsAudioFallbackCodecDescription": {
         "description": "Description for audio fallback codec setting"
     },
-    "settingsAudioFallbackCodecAuto": "Registrér automatisk\n(anbefales)",
+    "settingsAudioFallbackCodecAuto": "",
     "@settingsAudioFallbackCodecAuto": {
         "description": "Fallback codec option: Auto"
     },
-    "settingsAudioFallbackCodecAac": "AAC\n(standard)",
+    "settingsAudioFallbackCodecAac": "",
     "@settingsAudioFallbackCodecAac": {
         "description": "Fallback codec option: AAC"
     },
-    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "settingsAudioFallbackCodecAc3": "",
     "@settingsAudioFallbackCodecAc3": {
         "description": "Fallback codec option: AC3"
     },
-    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "settingsAudioFallbackCodecEac3": "",
     "@settingsAudioFallbackCodecEac3": {
         "description": "Fallback codec option: EAC3"
     },
-    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(tabsfri)",
+    "settingsAudioFallbackCodecTrueHd": "",
     "@settingsAudioFallbackCodecTrueHd": {
         "description": "Fallback codec option: TrueHD"
     },
-    "settingsAudioFallbackCodecMp3": "MP3\n(kun stereo)",
+    "settingsAudioFallbackCodecMp3": "",
     "@settingsAudioFallbackCodecMp3": {
         "description": "Fallback codec option: MP3"
     },
-    "settingsAudioFallbackCodecOpus": "Opus\n(effektiv)",
+    "settingsAudioFallbackCodecOpus": "",
     "@settingsAudioFallbackCodecOpus": {
         "description": "Fallback codec option: Opus"
     },
-    "settingsAudioFallbackCodecFlac": "FLAC\n(tabsfri)",
+    "settingsAudioFallbackCodecFlac": "",
     "@settingsAudioFallbackCodecFlac": {
         "description": "Fallback codec option: FLAC"
     },
-    "settingsMaxAudioChannels": "Maks. antal lydkanaler",
+    "settingsMaxAudioChannels": "",
     "@settingsMaxAudioChannels": {
         "description": "Setting for maximum audio channels capability"
     },
-    "settingsMaxAudioChannelsDescription": "Angiv det maksimale antal kanaler i dit lydanlæg. Flerkanalsstrømme, der overskrider denne grænse, bliver downmixet eller transkodet.",
+    "settingsMaxAudioChannelsDescription": "",
     "@settingsMaxAudioChannelsDescription": {
         "description": "Description for maximum audio channels setting"
     },
-    "settingsMaxAudioChannelsAuto": "Registrér automatisk\n(hardwarestandard)",
+    "settingsMaxAudioChannelsAuto": "",
     "@settingsMaxAudioChannelsAuto": {
         "description": "Option: Auto detect channels"
     },
-    "settingsMaxAudioChannelsMono": "1.0 Mono",
+    "settingsMaxAudioChannelsMono": "",
     "@settingsMaxAudioChannelsMono": {
         "description": "Option: Mono (1 channel)"
     },
-    "settingsMaxAudioChannelsStereo": "2.0 Stereo",
+    "settingsMaxAudioChannelsStereo": "",
     "@settingsMaxAudioChannelsStereo": {
         "description": "Option: Stereo (2 channels)"
     },
-    "settingsMaxAudioChannels3_0": "3.0 / 2.1 Surround",
+    "settingsMaxAudioChannels3_0": "",
     "@settingsMaxAudioChannels3_0": {
         "description": "Option: 3 channels"
     },
-    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Kvadrofonisk",
+    "settingsMaxAudioChannels4_0": "",
     "@settingsMaxAudioChannels4_0": {
         "description": "Option: 4 channels"
     },
-    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Surround",
+    "settingsMaxAudioChannels5_0": "",
     "@settingsMaxAudioChannels5_0": {
         "description": "Option: 5 channels"
     },
-    "settingsMaxAudioChannels5_1": "5.1 Surround",
+    "settingsMaxAudioChannels5_1": "",
     "@settingsMaxAudioChannels5_1": {
         "description": "Option: 5.1 Surround channels"
     },
-    "settingsMaxAudioChannels6_1": "6.1 Surround",
+    "settingsMaxAudioChannels6_1": "",
     "@settingsMaxAudioChannels6_1": {
         "description": "Option: 6.1 Surround channels"
     },
-    "settingsMaxAudioChannels7_1": "7.1 Surround",
+    "settingsMaxAudioChannels7_1": "",
     "@settingsMaxAudioChannels7_1": {
         "description": "Option: 7.1 Surround channels"
     },
-    "settingsAudioRouteHeadphones": "Hovedtelefoner",
+    "settingsAudioRouteHeadphones": "",
     "@settingsAudioRouteHeadphones": {
         "description": "Audio route type wired or USB headphones"
     },
-    "subtitleMode": "Underteksttilstand",
+    "subtitleMode": "",
     "@subtitleMode": {
         "description": "Setting for subtitle mode"
     },
-    "subtitleModeFlagged": "Markeret",
+    "subtitleModeFlagged": "",
     "@subtitleModeFlagged": {
         "description": "Subtitle mode: default/flagged"
     },
-    "subtitleModeAlways": "Altid",
+    "subtitleModeAlways": "",
     "@subtitleModeAlways": {
         "description": "Subtitle mode: always play"
     },
-    "subtitleModeForeign": "Fremmedsprog",
+    "subtitleModeForeign": "",
     "@subtitleModeForeign": {
         "description": "Subtitle mode: foreign/smart"
     },
-    "subtitleModeForced": "Tvungen",
+    "subtitleModeForced": "",
     "@subtitleModeForced": {
         "description": "Subtitle mode: only forced"
     },
-    "subtitleModeFlaggedDescription": "Afspiller spor, der i mediefilens metadata er markeret som \"default\" eller \"forced\".",
+    "subtitleModeFlaggedDescription": "",
     "@subtitleModeFlaggedDescription": {
         "description": "Description for flagged subtitle mode"
     },
-    "subtitleModeAlwaysDescription": "Indlæser og viser automatisk undertekster, hver gang en video starter.",
+    "subtitleModeAlwaysDescription": "",
     "@subtitleModeAlwaysDescription": {
         "description": "Description for always subtitle mode"
     },
-    "subtitleModeForeignDescription": "Slår automatisk undertekster til, hvis standardlydsporet er på et fremmedsprog.",
+    "subtitleModeForeignDescription": "",
     "@subtitleModeForeignDescription": {
         "description": "Description for foreign subtitle mode"
     },
-    "subtitleModeForcedDescription": "Indlæser kun undertekster, der udtrykkeligt er mærket med det tvungne metadataflag.",
+    "subtitleModeForcedDescription": "",
     "@subtitleModeForcedDescription": {
         "description": "Description for forced subtitle mode"
     },
-    "subtitleModeNoneDescription": "Deaktiverer automatisk indlæsning af undertekster fuldstændigt.",
+    "subtitleModeNoneDescription": "",
     "@subtitleModeNoneDescription": {
         "description": "Description for none subtitle mode"
     },
-    "fallbackSubtitleLanguage": "Reservesprog for undertekster",
+    "fallbackSubtitleLanguage": "",
     "@fallbackSubtitleLanguage": {
         "description": "Setting for fallback subtitle language"
     },
-    "subtitleStream": "Undertekststrøm",
+    "subtitleStream": "",
     "@subtitleStream": {
         "description": "Header for subtitle stream settings"
     },
     "reportDownloadsActivity": "Vis downloads på serveren",
     "reportDownloadsActivitySubtitle": "Lad serveradministratoren se dine transkodede downloads i kontrolpanelet",
-    "navbarAlwaysExpanded": "Udvid altid navigationslinjens etiketter",
+    "navbarAlwaysExpanded": "",
     "@navbarAlwaysExpanded": {
         "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
     },
-    "showSeerrButton": "Vis Seerr-knap",
+    "showSeerrButton": "",
     "@showSeerrButton": {
         "description": "Setting for showing Seerr button"
     },
-    "groupItemsIntoCollections": "Gruppér elementer i samlinger",
+    "groupItemsIntoCollections": "",
     "@groupItemsIntoCollections": {
         "description": "Setting for grouping items into collections"
     },
-    "hideCollectionAssociatedItems": "Skjul biblioteksemner, der hører til en samling, når du gennemser biblioteker",
+    "hideCollectionAssociatedItems": "",
     "@hideCollectionAssociatedItems": {
         "description": "Description for grouping items into collections"
     },
-    "groupItemsIntoCollectionsDialogTitle": "Bemærkning om biblioteksgruppering",
+    "groupItemsIntoCollectionsDialogTitle": "",
     "@groupItemsIntoCollectionsDialogTitle": {
         "description": "Title of the alert dialog explaining server settings requirement"
     },
-    "groupItemsIntoCollectionsDialogMessage": "For at bruge denne indstilling skal du sikre dig, at biblioteksindstillingerne \"Gruppér film i samlinger\" og/eller \"Gruppér serier i samlinger\" er slået til under dit biblioteks visningsindstillinger på din Jellyfin- eller Emby-server.",
+    "groupItemsIntoCollectionsDialogMessage": "",
     "@groupItemsIntoCollectionsDialogMessage": {
         "description": "Message of the alert dialog explaining server settings requirement"
     },
-    "trailerAudio": "Trailerlyd",
+    "trailerAudio": "",
     "@trailerAudio": {
         "description": "Setting for trailer audio"
     },
-    "enableTrailerAudio": "Aktivér lyd for trailere i mediebaren",
+    "enableTrailerAudio": "",
     "@enableTrailerAudio": {
         "description": "Description for trailer audio"
     },
-    "fullScreenRows": "Udvidede rækker på startskærmen",
+    "fullScreenRows": "",
     "@fullScreenRows": {
         "description": "Setting for full screen home rows"
     },
-    "fullScreenRowsDescription": "Begræns startskærmen til én række pr. skærm",
+    "fullScreenRowsDescription": "",
     "@fullScreenRowsDescription": {
         "description": "Description for full screen home rows"
     },
-    "currentUser": "Nuværende bruger",
+    "currentUser": "",
     "@currentUser": {
         "description": "Option: current user"
     },
-    "clockModeStatic": "Fast",
+    "clockModeStatic": "",
     "@clockModeStatic": {
         "description": "Screensaver clock mode: fixed in a corner"
     },
-    "clockModeBouncing": "Hoppende",
+    "clockModeBouncing": "",
     "@clockModeBouncing": {
         "description": "Screensaver clock mode: bounces around the screen"
     },
-    "seerrDiscoveryRows": "Seerr-opdagelsesrækker",
+    "seerrDiscoveryRows": "",
     "@seerrDiscoveryRows": {
         "description": "Subtitle shown under Seerr discovery home rows"
     },
-    "seerrNotificationsSection": "Notifikationer",
+    "seerrNotificationsSection": "",
     "@seerrNotificationsSection": {
         "description": "Header for the Seerr notifications settings section"
     },
-    "seerrNotifyNewRequestsTitle": "Notifikationer om nye anmodninger",
+    "seerrNotifyNewRequestsTitle": "",
     "@seerrNotifyNewRequestsTitle": {
         "description": "Title for the toggle that notifies approvers of new Seerr requests"
     },
-    "seerrNotifyNewRequestsSubtitle": "Giv mig besked, når nogen sender en anmodning",
+    "seerrNotifyNewRequestsSubtitle": "",
     "@seerrNotifyNewRequestsSubtitle": {
         "description": "Subtitle for the new request notifications toggle"
     },
-    "seerrNotifyLibraryAddedTitle": "Opdateringer om anmodninger",
+    "seerrNotifyLibraryAddedTitle": "",
     "@seerrNotifyLibraryAddedTitle": {
         "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
     },
-    "seerrNotifyLibraryAddedSubtitle": "Godkendt, afvist og tilføjet til dit bibliotek",
+    "seerrNotifyLibraryAddedSubtitle": "",
     "@seerrNotifyLibraryAddedSubtitle": {
         "description": "Subtitle for the library-added notifications toggle"
     },
-    "seerrNotifyIssuesTitle": "Opdateringer om problemer",
+    "seerrNotifyIssuesTitle": "",
     "@seerrNotifyIssuesTitle": {
         "description": "Title for the issue notifications toggle"
     },
-    "seerrNotifyIssuesSubtitle": "Nye problemer, svar og løsninger",
+    "seerrNotifyIssuesSubtitle": "",
     "@seerrNotifyIssuesSubtitle": {
         "description": "Subtitle for the issue notifications toggle"
     },
@@ -7959,7 +7959,7 @@
     "imageCacheLimit": "Grænse for billedcache",
     "clearImageCache": "Ryd billedcache",
     "imageCacheCleared": "Billedcachen er ryddet",
-    "seerrDownloadingPercent": "Downloader · {percent}%",
+    "seerrDownloadingPercent": "",
     "@seerrDownloadingPercent": {
         "description": "Label above the Seerr download progress bar",
         "placeholders": {
@@ -7968,19 +7968,19 @@
             }
         }
     },
-    "seerrImportingStatus": "Importerer",
+    "seerrImportingStatus": "",
     "@seerrImportingStatus": {
         "description": "Label when a Seerr download has finished and is importing"
     },
-    "failedStatus": "Mislykkedes",
+    "failedStatus": "",
     "@failedStatus": {
         "description": "Request status label when the request failed to send to Radarr/Sonarr"
     },
-    "processingStatus": "Behandles",
+    "processingStatus": "",
     "@processingStatus": {
         "description": "Filter label for approved requests being processed"
     },
-    "modifiedByName": "Ændret af {name}",
+    "modifiedByName": "",
     "@modifiedByName": {
         "description": "Label showing which manager acted on a request",
         "placeholders": {
@@ -7989,51 +7989,51 @@
             }
         }
     },
-    "completedStatus": "Fuldført",
+    "completedStatus": "",
     "@completedStatus": {
         "description": "Request status label when the request finished"
     },
-    "requestErrorDuplicate": "Der er allerede anmodet om denne titel",
+    "requestErrorDuplicate": "",
     "@requestErrorDuplicate": {
         "description": "Error when creating a request that already exists"
     },
-    "requestErrorQuota": "Grænsen for anmodninger er nået",
+    "requestErrorQuota": "",
     "@requestErrorQuota": {
         "description": "Error when the user is out of request quota"
     },
-    "requestErrorBlocklisted": "Denne titel er blokeret",
+    "requestErrorBlocklisted": "",
     "@requestErrorBlocklisted": {
         "description": "Error when requesting blocklisted media"
     },
-    "requestErrorNoSeasons": "Der er ikke flere sæsoner at anmode om",
+    "requestErrorNoSeasons": "",
     "@requestErrorNoSeasons": {
         "description": "Error when every season is already requested or available"
     },
-    "requestErrorPermission": "Du har ikke tilladelse til at foretage denne anmodning",
+    "requestErrorPermission": "",
     "@requestErrorPermission": {
         "description": "Error when the user lacks request permission"
     },
-    "seerrRequestsTitle": "Anmodninger",
+    "seerrRequestsTitle": "",
     "@seerrRequestsTitle": {
         "description": "Requests tab and screen title"
     },
-    "seerrIssuesTitle": "Problemer",
+    "seerrIssuesTitle": "",
     "@seerrIssuesTitle": {
         "description": "Issues tab title on the requests hub"
     },
-    "sortNewest": "Nyeste",
+    "sortNewest": "",
     "@sortNewest": {
         "description": "Request sort option, most recently added first"
     },
-    "sortLastModified": "Senest ændret",
+    "sortLastModified": "",
     "@sortLastModified": {
         "description": "Request sort option, most recently updated first"
     },
-    "noIssues": "Ingen problemer",
+    "noIssues": "",
     "@noIssues": {
         "description": "Shown when the issue list is empty"
     },
-    "movieQuotaRemaining": "{remaining} af {limit} filmanmodninger tilbage",
+    "movieQuotaRemaining": "",
     "@movieQuotaRemaining": {
         "description": "Quota line in the request dialog",
         "placeholders": {
@@ -8045,7 +8045,7 @@
             }
         }
     },
-    "seasonQuotaRemaining": "{remaining} af {limit} sæsonanmodninger tilbage",
+    "seasonQuotaRemaining": "",
     "@seasonQuotaRemaining": {
         "description": "Quota line in the request dialog for series",
         "placeholders": {
@@ -8057,7 +8057,7 @@
             }
         }
     },
-    "partOfCollectionName": "Del af {name}",
+    "partOfCollectionName": "",
     "@partOfCollectionName": {
         "description": "Banner on a movie that belongs to a collection",
         "placeholders": {
@@ -8066,15 +8066,15 @@
             }
         }
     },
-    "viewCollection": "Vis samling",
+    "viewCollection": "",
     "@viewCollection": {
         "description": "Link to open the collection screen"
     },
-    "requestCollection": "Anmod om samling",
+    "requestCollection": "",
     "@requestCollection": {
         "description": "Button to request movies from a collection"
     },
-    "collectionMoviesSummary": "{total} film · {available} tilgængelige",
+    "collectionMoviesSummary": "",
     "@collectionMoviesSummary": {
         "description": "Collection header summary line",
         "placeholders": {
@@ -8086,7 +8086,7 @@
             }
         }
     },
-    "requestMoviesCount": "Anmod om {count} film",
+    "requestMoviesCount": "",
     "@requestMoviesCount": {
         "description": "Submit button on the collection request sheet",
         "placeholders": {
@@ -8095,7 +8095,7 @@
             }
         }
     },
-    "requestingProgress": "Anmoder om {current} af {total}...",
+    "requestingProgress": "",
     "@requestingProgress": {
         "description": "Progress label while collection requests are submitted",
         "placeholders": {
@@ -8107,7 +8107,7 @@
             }
         }
     },
-    "requestedMoviesCount": "Der er anmodet om {count} film",
+    "requestedMoviesCount": "",
     "@requestedMoviesCount": {
         "description": "Snackbar after a collection request succeeds",
         "placeholders": {
@@ -8116,7 +8116,7 @@
             }
         }
     },
-    "requestedMoviesPartial": "Der er anmodet om {ok} af {total} film",
+    "requestedMoviesPartial": "",
     "@requestedMoviesPartial": {
         "description": "Snackbar when some collection requests failed",
         "placeholders": {
@@ -8128,51 +8128,51 @@
             }
         }
     },
-    "collectionAllRequested": "Alle film er allerede tilgængelige eller anmodet om",
+    "collectionAllRequested": "",
     "@collectionAllRequested": {
         "description": "Shown instead of the request button when nothing is requestable"
     },
-    "reportIssue": "Rapportér problem",
+    "reportIssue": "",
     "@reportIssue": {
         "description": "Button on the seerr detail screen to report a media issue"
     },
-    "issueTypeVideo": "Video",
+    "issueTypeVideo": "",
     "@issueTypeVideo": {
         "description": "Issue type option"
     },
-    "issueTypeAudio": "Lyd",
+    "issueTypeAudio": "",
     "@issueTypeAudio": {
         "description": "Issue type option"
     },
-    "whatsWrong": "Hvad er der galt?",
+    "whatsWrong": "",
     "@whatsWrong": {
         "description": "Label for the issue description field"
     },
-    "allEpisodes": "Alle episoder",
+    "allEpisodes": "",
     "@allEpisodes": {
         "description": "Episode dropdown option covering the whole season"
     },
-    "episode": "Episode",
+    "episode": "",
     "@episode": {
         "description": "Episode dropdown label"
     },
-    "openStatus": "Åben",
+    "openStatus": "",
     "@openStatus": {
         "description": "Issue status label"
     },
-    "resolvedStatus": "Løst",
+    "resolvedStatus": "",
     "@resolvedStatus": {
         "description": "Issue status label"
     },
-    "resolveAction": "Markér som løst",
+    "resolveAction": "",
     "@resolveAction": {
         "description": "Button to resolve an issue"
     },
-    "reopenAction": "Genåbn",
+    "reopenAction": "",
     "@reopenAction": {
         "description": "Button to reopen a resolved issue"
     },
-    "reportedByName": "Rapporteret af {name}",
+    "reportedByName": "",
     "@reportedByName": {
         "description": "Label showing who reported an issue",
         "placeholders": {
@@ -8181,7 +8181,7 @@
             }
         }
     },
-    "commentsCount": "{count} kommentarer",
+    "commentsCount": "",
     "@commentsCount": {
         "description": "Number of comments on an issue",
         "placeholders": {
@@ -8190,24 +8190,24 @@
             }
         }
     },
-    "addComment": "Tilføj en kommentar",
+    "addComment": "",
     "@addComment": {
         "description": "Hint for the issue comment field"
     },
-    "deleteIssueConfirm": "Slet dette problem?",
+    "deleteIssueConfirm": "",
     "@deleteIssueConfirm": {
         "description": "Confirmation before deleting an issue"
     },
-    "submitReport": "Send rapport",
+    "submitReport": "",
     "@submitReport": {
         "description": "Button to submit an issue report"
     },
-    "adminDrawerDisplay": "Visning",
-    "adminDrawerMetadata": "Metadata",
-    "adminDrawerNfo": "NFO-indstillinger",
-    "adminActivitySeverityAll": "Alle alvorsgrader",
-    "adminActivityDateRange": "Datointerval",
-    "adminRemoveDeviceConfirm": "Fjern enheden '{name}'? Brugeren skal logge ind igen på denne enhed.",
+    "adminDrawerDisplay": "",
+    "adminDrawerMetadata": "",
+    "adminDrawerNfo": "",
+    "adminActivitySeverityAll": "",
+    "adminActivityDateRange": "",
+    "adminRemoveDeviceConfirm": "",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8215,8 +8215,8 @@
             }
         }
     },
-    "adminDeleteAllDevices": "Slet alle enheder",
-    "adminDeleteAllDevicesConfirm": "Fjern {count} enheder? Berørte brugere skal logge ind igen. Din nuværende enhed påvirkes ikke.",
+    "adminDeleteAllDevices": "",
+    "adminDeleteAllDevicesConfirm": "",
     "@adminDeleteAllDevicesConfirm": {
         "placeholders": {
             "count": {
@@ -8224,8 +8224,8 @@
             }
         }
     },
-    "adminDevicesDeletedAll": "Enhederne er fjernet",
-    "adminDevicesDeletedPartial": "Nogle enheder blev fjernet; {count} kunne ikke fjernes.",
+    "adminDevicesDeletedAll": "",
+    "adminDevicesDeletedPartial": "",
     "@adminDevicesDeletedPartial": {
         "placeholders": {
             "count": {
@@ -8233,13 +8233,13 @@
             }
         }
     },
-    "adminLibraryTabPaths": "Stier",
-    "adminLibraryTabOptions": "Indstillinger",
-    "adminLibraryTabDownloaders": "Downloadere",
-    "adminLibMetadataSavers": "Metadatagemmere",
-    "adminLibSubtitleDownloaders": "Undertekstdownloadere",
-    "adminLibLyricDownloaders": "Sangtekstdownloadere",
-    "adminLibMetadataDownloadersFor": "Metadatadownloadere: {type}",
+    "adminLibraryTabPaths": "",
+    "adminLibraryTabOptions": "",
+    "adminLibraryTabDownloaders": "",
+    "adminLibMetadataSavers": "",
+    "adminLibSubtitleDownloaders": "",
+    "adminLibLyricDownloaders": "",
+    "adminLibMetadataDownloadersFor": "",
     "@adminLibMetadataDownloadersFor": {
         "placeholders": {
             "type": {
@@ -8247,7 +8247,7 @@
             }
         }
     },
-    "adminLibImageFetchersFor": "Billedhentere: {type}",
+    "adminLibImageFetchersFor": "",
     "@adminLibImageFetchersFor": {
         "placeholders": {
             "type": {
@@ -8255,48 +8255,48 @@
             }
         }
     },
-    "adminLibNoDownloaders": "Denne server har ingen downloadere til denne bibliotekstype.",
-    "adminLibrarySectionGeneral": "Generelt",
-    "adminLibrarySectionMetadata": "Metadata",
-    "adminLibrarySectionEmbedded": "Indlejrede oplysninger",
-    "adminLibrarySectionSubtitles": "Undertekster",
-    "adminLibrarySectionImages": "Billeder",
-    "adminLibrarySectionSeries": "Serier",
-    "adminLibrarySectionMusic": "Musik",
-    "adminLibrarySectionMovies": "Film",
-    "adminLibRealtimeMonitor": "Aktivér overvågning i realtid",
-    "adminLibRealtimeMonitorHint": "Registrér filændringer, og behandl dem automatisk.",
-    "adminLibArchiveMediaFiles": "Behandl arkiver som mediefiler",
-    "adminLibEnablePhotos": "Vis fotos",
-    "adminLibSaveLocalMetadata": "Gem grafik i mediemapperne",
-    "adminLibRefreshInterval": "Automatisk opdatering af metadata",
-    "adminLibRefreshNever": "Aldrig",
-    "adminLibDefault": "Standard",
-    "adminLibDisplayTitle": "Visning",
-    "adminLibDisplaySection": "Biblioteksvisning",
-    "adminLibFolderView": "Vis en mappevisning med almindelige mediemapper",
-    "adminLibSpecialsInSeasons": "Vis specialafsnit i de sæsoner, de blev sendt i",
-    "adminLibGroupMovies": "Gruppér film i samlinger",
-    "adminLibGroupShows": "Gruppér serier i samlinger",
-    "adminLibExternalSuggestions": "Vis eksternt indhold i forslag",
-    "adminLibDateAddedSection": "Adfærd for tilføjelsesdato",
-    "adminLibDateAddedLabel": "Brug tilføjelsesdato fra",
-    "adminLibDateAddedImport": "Datoen for scanning ind i biblioteket",
-    "adminLibDateAddedFile": "Datoen filen blev oprettet",
-    "adminLibMetadataTitle": "Metadata og billeder",
-    "adminLibMetadataLangSection": "Foretrukket metadatasprog",
-    "adminLibChaptersSection": "Kapitler",
-    "adminLibDummyChapterDuration": "Varighed af dummy-kapitler (sekunder)",
-    "adminLibDummyChapterDurationHint": "Længden på kapitler, der genereres til medier uden kapitler. Sæt til 0 for at deaktivere.",
-    "adminLibChapterImageResolution": "Opløsning for kapitelbilleder",
-    "adminLibNfoTitle": "NFO-indstillinger",
-    "adminLibNfoHelp": "NFO-metadata er kompatible med Kodi og lignende klienter. Indstillingerne gælder for alle biblioteker, der gemmer NFO-metadata.",
-    "adminLibKodiUser": "Bruger, hvis visningsdata gemmes i NFO-filer",
-    "adminLibSaveImagePaths": "Gem billedstier i NFO-filer",
-    "adminLibPathSubstitution": "Aktivér stierstatning for billedstier i NFO-filer",
-    "adminLibExtraThumbs": "Kopiér extrafanart-billeder til en extrathumbs-mappe",
-    "adminLibNone": "Ingen",
-    "adminLibRefreshDays": "{days} dage",
+    "adminLibNoDownloaders": "",
+    "adminLibrarySectionGeneral": "",
+    "adminLibrarySectionMetadata": "",
+    "adminLibrarySectionEmbedded": "",
+    "adminLibrarySectionSubtitles": "",
+    "adminLibrarySectionImages": "",
+    "adminLibrarySectionSeries": "",
+    "adminLibrarySectionMusic": "",
+    "adminLibrarySectionMovies": "",
+    "adminLibRealtimeMonitor": "",
+    "adminLibRealtimeMonitorHint": "",
+    "adminLibArchiveMediaFiles": "",
+    "adminLibEnablePhotos": "",
+    "adminLibSaveLocalMetadata": "",
+    "adminLibRefreshInterval": "",
+    "adminLibRefreshNever": "",
+    "adminLibDefault": "",
+    "adminLibDisplayTitle": "",
+    "adminLibDisplaySection": "",
+    "adminLibFolderView": "",
+    "adminLibSpecialsInSeasons": "",
+    "adminLibGroupMovies": "",
+    "adminLibGroupShows": "",
+    "adminLibExternalSuggestions": "",
+    "adminLibDateAddedSection": "",
+    "adminLibDateAddedLabel": "",
+    "adminLibDateAddedImport": "",
+    "adminLibDateAddedFile": "",
+    "adminLibMetadataTitle": "",
+    "adminLibMetadataLangSection": "",
+    "adminLibChaptersSection": "",
+    "adminLibDummyChapterDuration": "",
+    "adminLibDummyChapterDurationHint": "",
+    "adminLibChapterImageResolution": "",
+    "adminLibNfoTitle": "",
+    "adminLibNfoHelp": "",
+    "adminLibKodiUser": "",
+    "adminLibSaveImagePaths": "",
+    "adminLibPathSubstitution": "",
+    "adminLibExtraThumbs": "",
+    "adminLibNone": "",
+    "adminLibRefreshDays": "",
     "@adminLibRefreshDays": {
         "placeholders": {
             "days": {
@@ -8304,119 +8304,119 @@
             }
         }
     },
-    "adminLibEmbeddedTitles": "Brug indlejrede titler",
-    "adminLibEmbeddedExtrasTitles": "Brug indlejrede titler til ekstramateriale",
-    "adminLibEmbeddedEpisodeInfos": "Brug indlejrede episodeoplysninger",
-    "adminLibAllowEmbeddedSubtitles": "Tillad indlejrede undertekster",
-    "adminLibEmbeddedAllowAll": "Tillad alle",
-    "adminLibEmbeddedAllowText": "Kun tekst",
-    "adminLibEmbeddedAllowImage": "Kun billede",
-    "adminLibEmbeddedAllowNone": "Ingen",
-    "adminLibSkipIfEmbeddedSubs": "Spring download over, hvis der findes indlejrede undertekster",
-    "adminLibSkipIfAudioMatches": "Spring download over, hvis lydsporet matcher downloadsproget",
-    "adminLibRequirePerfectMatch": "Kræv et perfekt undertekstmatch",
-    "adminLibSaveSubtitlesWithMedia": "Gem undertekster i mediemapperne",
-    "adminLibChapterImageExtraction": "Udtræk kapitelbilleder",
-    "adminLibChapterImagesDuringScan": "Udtræk kapitelbilleder under biblioteksscanningen",
-    "adminLibTrickplayExtraction": "Aktivér udtrækning af trickplay-billeder",
-    "adminLibTrickplayDuringScan": "Udtræk trickplay-billeder under biblioteksscanningen",
-    "adminLibSaveTrickplayWithMedia": "Gem trickplay-billeder i mediemapperne",
-    "adminLibAutomaticSeriesGrouping": "Flet automatisk serier, der er fordelt over flere mapper",
-    "adminLibSeasonZeroName": "Visningsnavn for sæson nul",
-    "adminLibLufsScan": "Aktivér LUFS-scanning til lydnormalisering",
-    "adminLibPreferNonstandardArtist": "Foretræk ikke-standardiseret artists-tag",
-    "adminLibAutoAddToCollection": "Tilføj automatisk film til samlinger",
-    "adminParentalControl": "Forældrekontrol",
-    "adminMaxParentalRating": "Højest tilladte aldersgrænse",
-    "adminMaxParentalRatingHint": "Indhold med en højere aldersgrænse skjules for denne bruger.",
-    "adminParentalRatingNone": "Ingen",
-    "adminBlockUnratedItems": "Blokér emner uden eller med ukendte aldersoplysninger",
-    "adminUnratedBook": "Bøger",
-    "adminUnratedChannelContent": "Kanaler",
-    "adminUnratedLiveTvChannel": "Live TV",
-    "adminUnratedMovie": "Film",
-    "adminUnratedMusic": "Musik",
-    "adminUnratedTrailer": "Trailere",
-    "adminUnratedSeries": "Serier",
-    "adminAccessSchedules": "Adgangsplaner",
-    "adminAccessSchedulesHint": "Tillad kun adgang i de planlagte tidsrum nedenfor. Der er adgang hele døgnet, når der ikke er angivet en plan.",
-    "adminAddSchedule": "Tilføj plan",
-    "adminScheduleDay": "Dag",
-    "adminScheduleStart": "Start",
-    "adminScheduleEnd": "Slut",
-    "adminDayEveryday": "Hver dag",
-    "adminDayWeekday": "Hverdag",
-    "adminDayWeekend": "Weekend",
-    "adminDaySunday": "Søndag",
-    "adminDayMonday": "Mandag",
-    "adminDayTuesday": "Tirsdag",
-    "adminDayWednesday": "Onsdag",
-    "adminDayThursday": "Torsdag",
-    "adminDayFriday": "Fredag",
-    "adminDaySaturday": "Lørdag",
-    "adminAllowedTags": "Tilladte tags",
-    "adminAllowedTagsHint": "Kun indhold med disse tags vises. Lad feltet stå tomt for at tillade alt.",
-    "adminBlockedTags": "Blokerede tags",
-    "adminBlockedTagsHint": "Indhold med disse tags skjules for denne bruger.",
-    "adminAddTag": "Tilføj tag",
-    "adminEnabledDevices": "Aktiverede enheder",
-    "adminEnabledChannels": "Aktiverede kanaler",
-    "adminAuthProvider": "Godkendelsesudbyder",
-    "adminPasswordResetProvider": "Udbyder til nulstilling af adgangskode",
-    "adminLoginAttemptsBeforeLockout": "Maksimalt antal mislykkede loginforsøg før låsning",
-    "adminLoginAttemptsHint": "Sæt til 0 for standardværdien, eller -1 for at deaktivere låsning.",
-    "adminSyncPlayAccess": "SyncPlay-adgang",
-    "adminSyncPlayCreateAndJoin": "Tillad oprettelse af og deltagelse i grupper",
-    "adminSyncPlayJoin": "Tillad deltagelse i grupper",
-    "adminSyncPlayNone": "Ingen adgang",
-    "adminContentDeletionFolders": "Tillad sletning af indhold fra",
-    "adminBackupOptionsTitle": "Opret sikkerhedskopi",
-    "adminBackupInclude": "Vælg, hvad sikkerhedskopien skal indeholde.",
-    "adminBackupDatabase": "Database",
-    "adminBackupDatabaseAlways": "Altid inkluderet",
-    "adminBackupMetadata": "Metadata",
-    "adminBackupSubtitles": "Undertekster",
-    "adminBackupTrickplay": "Trickplay-billeder",
-    "adminEditTuner": "Redigér tuner",
-    "adminTunerTypeM3u": "M3U-tuner",
-    "adminTunerTypeHdHomerun": "HDHomeRun",
-    "adminTunerFileOrUrl": "Fil eller URL",
-    "adminTunerIpAddress": "Tunerens IP-adresse",
-    "adminTunerFriendlyName": "Visningsnavn",
-    "adminTunerUserAgent": "User agent",
-    "adminTunerCount": "Grænse for samtidige forbindelser",
-    "adminTunerCountHelp": "Det maksimale antal streams, tuneren tillader samtidigt. Sæt til 0 for ubegrænset.",
-    "adminTunerFallbackBitrate": "Maksimal streamingbitrate som reserve",
-    "adminTunerImportFavoritesOnly": "Importér kun favoritkanaler",
-    "adminTunerAllowHwTranscoding": "Tillad hardwaretranskodning",
-    "adminTunerAllowFmp4": "Tillad fMP4 som transkodningscontainer",
-    "adminTunerAllowStreamSharing": "Tillad deling af streams",
-    "adminTunerEnableStreamLooping": "Aktivér looping af streams",
-    "adminTunerIgnoreDts": "Ignorér DTS",
-    "adminTunerReadAtNativeFramerate": "Læs input med den oprindelige billedhastighed",
-    "adminEditProvider": "Redigér udbyder",
-    "adminProviderXmltv": "XMLTV",
-    "adminProviderSchedulesDirect": "Schedules Direct",
-    "adminXmltvPath": "Fil eller URL",
-    "adminXmltvMoviePrefix": "Filmpræfiks",
-    "adminXmltvMovieCategories": "Filmkategorier",
-    "adminXmltvCategoriesHelp": "Adskil flere kategorier med en lodret streg.",
-    "adminXmltvKidsCategories": "Børnekategorier",
-    "adminXmltvNewsCategories": "Nyhedskategorier",
-    "adminXmltvSportsCategories": "Sportskategorier",
-    "adminSdUsername": "Brugernavn",
-    "adminSdPassword": "Adgangskode",
-    "adminSdCountry": "Land",
-    "adminSdCountrySelect": "Vælg et land",
-    "adminSdPostalCode": "Postnummer",
-    "adminSdGetListings": "Hent programoversigter",
-    "adminSdListings": "Programoversigter",
-    "adminEnableAllTuners": "Aktivér alle tunere",
-    "adminTunerResetNotSupported": "Denne tunertype understøtter ikke nulstilling.",
-    "adminMovieRecordingPath": "Sti til filmoptagelser",
-    "adminGuideDays": "Antal dage med programdata",
-    "adminGuideDaysAuto": "Automatisk",
-    "adminGuideDaysValue": "{days} dage",
+    "adminLibEmbeddedTitles": "",
+    "adminLibEmbeddedExtrasTitles": "",
+    "adminLibEmbeddedEpisodeInfos": "",
+    "adminLibAllowEmbeddedSubtitles": "",
+    "adminLibEmbeddedAllowAll": "",
+    "adminLibEmbeddedAllowText": "",
+    "adminLibEmbeddedAllowImage": "",
+    "adminLibEmbeddedAllowNone": "",
+    "adminLibSkipIfEmbeddedSubs": "",
+    "adminLibSkipIfAudioMatches": "",
+    "adminLibRequirePerfectMatch": "",
+    "adminLibSaveSubtitlesWithMedia": "",
+    "adminLibChapterImageExtraction": "",
+    "adminLibChapterImagesDuringScan": "",
+    "adminLibTrickplayExtraction": "",
+    "adminLibTrickplayDuringScan": "",
+    "adminLibSaveTrickplayWithMedia": "",
+    "adminLibAutomaticSeriesGrouping": "",
+    "adminLibSeasonZeroName": "",
+    "adminLibLufsScan": "",
+    "adminLibPreferNonstandardArtist": "",
+    "adminLibAutoAddToCollection": "",
+    "adminParentalControl": "",
+    "adminMaxParentalRating": "",
+    "adminMaxParentalRatingHint": "",
+    "adminParentalRatingNone": "",
+    "adminBlockUnratedItems": "",
+    "adminUnratedBook": "",
+    "adminUnratedChannelContent": "",
+    "adminUnratedLiveTvChannel": "",
+    "adminUnratedMovie": "",
+    "adminUnratedMusic": "",
+    "adminUnratedTrailer": "",
+    "adminUnratedSeries": "",
+    "adminAccessSchedules": "",
+    "adminAccessSchedulesHint": "",
+    "adminAddSchedule": "",
+    "adminScheduleDay": "",
+    "adminScheduleStart": "",
+    "adminScheduleEnd": "",
+    "adminDayEveryday": "",
+    "adminDayWeekday": "",
+    "adminDayWeekend": "",
+    "adminDaySunday": "",
+    "adminDayMonday": "",
+    "adminDayTuesday": "",
+    "adminDayWednesday": "",
+    "adminDayThursday": "",
+    "adminDayFriday": "",
+    "adminDaySaturday": "",
+    "adminAllowedTags": "",
+    "adminAllowedTagsHint": "",
+    "adminBlockedTags": "",
+    "adminBlockedTagsHint": "",
+    "adminAddTag": "",
+    "adminEnabledDevices": "",
+    "adminEnabledChannels": "",
+    "adminAuthProvider": "",
+    "adminPasswordResetProvider": "",
+    "adminLoginAttemptsBeforeLockout": "",
+    "adminLoginAttemptsHint": "",
+    "adminSyncPlayAccess": "",
+    "adminSyncPlayCreateAndJoin": "",
+    "adminSyncPlayJoin": "",
+    "adminSyncPlayNone": "",
+    "adminContentDeletionFolders": "",
+    "adminBackupOptionsTitle": "",
+    "adminBackupInclude": "",
+    "adminBackupDatabase": "",
+    "adminBackupDatabaseAlways": "",
+    "adminBackupMetadata": "",
+    "adminBackupSubtitles": "",
+    "adminBackupTrickplay": "",
+    "adminEditTuner": "",
+    "adminTunerTypeM3u": "",
+    "adminTunerTypeHdHomerun": "",
+    "adminTunerFileOrUrl": "",
+    "adminTunerIpAddress": "",
+    "adminTunerFriendlyName": "",
+    "adminTunerUserAgent": "",
+    "adminTunerCount": "",
+    "adminTunerCountHelp": "",
+    "adminTunerFallbackBitrate": "",
+    "adminTunerImportFavoritesOnly": "",
+    "adminTunerAllowHwTranscoding": "",
+    "adminTunerAllowFmp4": "",
+    "adminTunerAllowStreamSharing": "",
+    "adminTunerEnableStreamLooping": "",
+    "adminTunerIgnoreDts": "",
+    "adminTunerReadAtNativeFramerate": "",
+    "adminEditProvider": "",
+    "adminProviderXmltv": "",
+    "adminProviderSchedulesDirect": "",
+    "adminXmltvPath": "",
+    "adminXmltvMoviePrefix": "",
+    "adminXmltvMovieCategories": "",
+    "adminXmltvCategoriesHelp": "",
+    "adminXmltvKidsCategories": "",
+    "adminXmltvNewsCategories": "",
+    "adminXmltvSportsCategories": "",
+    "adminSdUsername": "",
+    "adminSdPassword": "",
+    "adminSdCountry": "",
+    "adminSdCountrySelect": "",
+    "adminSdPostalCode": "",
+    "adminSdGetListings": "",
+    "adminSdListings": "",
+    "adminEnableAllTuners": "",
+    "adminTunerResetNotSupported": "",
+    "adminMovieRecordingPath": "",
+    "adminGuideDays": "",
+    "adminGuideDaysAuto": "",
+    "adminGuideDaysValue": "",
     "@adminGuideDaysValue": {
         "placeholders": {
             "days": {
@@ -8424,14 +8424,14 @@
             }
         }
     },
-    "adminRecordingPostProcessor": "Sti til efterbehandlingsprogram",
-    "adminRecordingPostProcessorArgs": "Argumenter til efterbehandling",
-    "adminSaveRecordingNfo": "Gem NFO-metadata for optagelser",
-    "adminSaveRecordingImages": "Gem billeder for optagelser",
-    "adminLiveTvSectionTiming": "Tidsindstilling",
-    "adminLiveTvSectionPaths": "Stier til optagelser",
-    "adminLiveTvSectionPostProcessing": "Efterbehandling",
-    "adminGuideDaysDisplay": "Programdata: {value}",
+    "adminRecordingPostProcessor": "",
+    "adminRecordingPostProcessorArgs": "",
+    "adminSaveRecordingNfo": "",
+    "adminSaveRecordingImages": "",
+    "adminLiveTvSectionTiming": "",
+    "adminLiveTvSectionPaths": "",
+    "adminLiveTvSectionPostProcessing": "",
+    "adminGuideDaysDisplay": "",
     "@adminGuideDaysDisplay": {
         "placeholders": {
             "value": {
@@ -8439,124 +8439,124 @@
             }
         }
     },
-    "adminRefreshGuideData": "Opdatér programdata",
-    "adminGuideRefreshStarted": "Opdatering af programdata er startet",
-    "adminGuideRefreshUnavailable": "Opgaven til opdatering af programoversigten er ikke tilgængelig på denne server.",
-    "adminMetadataIdentify": "Identificér",
-    "adminBrandingSplashUpload": "Upload billede",
-    "adminBrandingSplashUploaded": "Velkomstskærmen er opdateret",
-    "adminBrandingSplashUploadFailed": "Velkomstskærmen kunne ikke uploades",
-    "adminBrandingSplashDeleted": "Velkomstskærmen er fjernet",
-    "adminBrandingNoSplash": "Ingen tilpasset velkomstskærm",
-    "adminPlaybackQsvDevice": "QSV-enhed",
-    "adminPlaybackEnhancedNvdec": "Aktivér forbedret NVDEC-dekoder",
-    "adminPlaybackPreferNativeDecoder": "Foretræk systemets oprindelige hardwaredekoder",
-    "adminPlaybackColorDepth": "Farvedybde ved hardwaredekodning",
-    "adminPlaybackColorDepth10Hevc": "10-bit HEVC-dekodning",
-    "adminPlaybackColorDepth10Vp9": "10-bit VP9-dekodning",
-    "adminPlaybackColorDepth10HevcRext": "HEVC RExt 8/10-bit-dekodning",
-    "adminPlaybackColorDepth12HevcRext": "HEVC RExt 12-bit-dekodning",
-    "adminPlaybackHwEncodingSection": "Hardwarekodning",
-    "adminPlaybackAllowHevcEncoding": "Tillad HEVC-kodning",
-    "adminPlaybackAllowAv1Encoding": "Tillad AV1-kodning",
-    "adminPlaybackIntelLowPowerH264": "Aktivér Intels strømbesparende H.264-encoder",
-    "adminPlaybackIntelLowPowerHevc": "Aktivér Intels strømbesparende HEVC-encoder",
-    "adminPlaybackToneMapping": "Tone mapping",
-    "adminPlaybackEnableTonemapping": "Aktivér tone mapping",
-    "adminPlaybackEnableVppTonemapping": "Aktivér VPP-tone mapping",
-    "adminPlaybackEnableVtTonemapping": "Aktivér VideoToolbox-tone mapping",
-    "adminPlaybackTonemappingAlgorithm": "Algoritme til tone mapping",
-    "adminPlaybackTonemappingMode": "Tilstand for tone mapping",
-    "adminPlaybackTonemappingRange": "Område for tone mapping",
-    "adminPlaybackTonemappingDesat": "Afmætning ved tone mapping",
-    "adminPlaybackTonemappingPeak": "Spidsværdi for tone mapping",
-    "adminPlaybackTonemappingParam": "Parameter for tone mapping",
-    "adminPlaybackVppTonemappingBrightness": "Lysstyrke for VPP-tone mapping",
-    "adminPlaybackVppTonemappingContrast": "Kontrast for VPP-tone mapping",
-    "adminPlaybackPresetsQuality": "Forudindstillinger og kvalitet",
-    "adminPlaybackEncoderPreset": "Forudindstilling for encoder",
-    "adminPlaybackH264Crf": "CRF for H.264-kodning",
-    "adminPlaybackH265Crf": "CRF for H.265-kodning (HEVC)",
-    "adminPlaybackDeinterlaceMethod": "Deinterlacing-metode",
-    "adminPlaybackDeinterlaceDoubleRate": "Fordobl billedhastigheden ved deinterlacing",
-    "adminPlaybackAudioSection": "Lyd",
-    "adminPlaybackEnableAudioVbr": "Aktivér VBR-kodning af lyd",
-    "adminPlaybackDownmixBoost": "Forstærkning ved downmix af lyd",
-    "adminPlaybackDownmixAlgorithm": "Algoritme til stereo-downmix",
-    "adminPlaybackMaxMuxingQueue": "Maksimal størrelse på muxing-kø",
-    "adminPlaybackAutoOption": "Auto",
-    "adminRunningTasks": "Kørende opgaver",
-    "adminNetworkingPublicHttpPort": "Offentlig HTTP-port",
-    "adminNetworkingRequireHttps": "Kræv HTTPS",
-    "adminNetworkingRequireHttpsHint": "Omdiriger alle fjernforespørgsler til HTTPS. Har ingen effekt, hvis serveren ikke har et gyldigt certifikat.",
-    "adminNetworkingCertPassword": "Adgangskode til certifikat",
-    "adminNetworkingIpSettings": "IP-indstillinger",
-    "adminNetworkingEnableIpv4": "Aktivér IPv4",
-    "adminNetworkingEnableIpv6": "Aktivér IPv6",
-    "adminNetworkingAutoDiscovery": "Aktivér automatisk portmapping",
-    "adminNetworkingLocalSubnets": "LAN-netværk",
-    "adminNetworkingLocalSubnetsHint": "Liste over IP-adresser eller CIDR-undernet, adskilt med komma eller linjeskift, som behandles som en del af det lokale netværk.",
-    "adminNetworkingPublishedUris": "Publicerede server-URI'er",
-    "adminNetworkingPublishedUriHint": "Tilknyt et undernet eller en adresse til en publiceret URL, f.eks. all=https://example.com",
-    "adminPlaybackThrottleDelay": "Forsinkelse for throttling (sekunder)",
-    "adminPlaybackEnableSubtitleExtraction": "Tillad udtrækning af undertekster undervejs",
-    "adminGeneralEnableSlowResponse": "Aktivér advarsler om langsomme svar",
-    "adminGeneralQuickConnect": "Aktivér Quick Connect",
-    "adminGeneralSectionServer": "Server",
-    "adminGeneralSectionMetadata": "Metadata",
-    "adminGeneralSectionPaths": "Stier",
-    "adminGeneralSectionPerformance": "Ydeevne",
-    "adminGeneralDisplayLanguage": "Foretrukket visningssprog",
-    "offlineBannerTitle": "Du er offline",
-    "offlineBannerSubtitle": "Viser dine downloads",
-    "offlineBannerAction": "Downloads",
-    "serverUnreachableBannerTitle": "Kan ikke få forbindelse til din server",
-    "serverUnreachableBannerSubtitle": "Afspiller fra downloads, indtil den er tilbage",
-    "contextMenuHideFromContinueWatching": "Skjul fra Fortsæt med at se",
+    "adminRefreshGuideData": "",
+    "adminGuideRefreshStarted": "",
+    "adminGuideRefreshUnavailable": "",
+    "adminMetadataIdentify": "",
+    "adminBrandingSplashUpload": "",
+    "adminBrandingSplashUploaded": "",
+    "adminBrandingSplashUploadFailed": "",
+    "adminBrandingSplashDeleted": "",
+    "adminBrandingNoSplash": "",
+    "adminPlaybackQsvDevice": "",
+    "adminPlaybackEnhancedNvdec": "",
+    "adminPlaybackPreferNativeDecoder": "",
+    "adminPlaybackColorDepth": "",
+    "adminPlaybackColorDepth10Hevc": "",
+    "adminPlaybackColorDepth10Vp9": "",
+    "adminPlaybackColorDepth10HevcRext": "",
+    "adminPlaybackColorDepth12HevcRext": "",
+    "adminPlaybackHwEncodingSection": "",
+    "adminPlaybackAllowHevcEncoding": "",
+    "adminPlaybackAllowAv1Encoding": "",
+    "adminPlaybackIntelLowPowerH264": "",
+    "adminPlaybackIntelLowPowerHevc": "",
+    "adminPlaybackToneMapping": "",
+    "adminPlaybackEnableTonemapping": "",
+    "adminPlaybackEnableVppTonemapping": "",
+    "adminPlaybackEnableVtTonemapping": "",
+    "adminPlaybackTonemappingAlgorithm": "",
+    "adminPlaybackTonemappingMode": "",
+    "adminPlaybackTonemappingRange": "",
+    "adminPlaybackTonemappingDesat": "",
+    "adminPlaybackTonemappingPeak": "",
+    "adminPlaybackTonemappingParam": "",
+    "adminPlaybackVppTonemappingBrightness": "",
+    "adminPlaybackVppTonemappingContrast": "",
+    "adminPlaybackPresetsQuality": "",
+    "adminPlaybackEncoderPreset": "",
+    "adminPlaybackH264Crf": "",
+    "adminPlaybackH265Crf": "",
+    "adminPlaybackDeinterlaceMethod": "",
+    "adminPlaybackDeinterlaceDoubleRate": "",
+    "adminPlaybackAudioSection": "",
+    "adminPlaybackEnableAudioVbr": "",
+    "adminPlaybackDownmixBoost": "",
+    "adminPlaybackDownmixAlgorithm": "",
+    "adminPlaybackMaxMuxingQueue": "",
+    "adminPlaybackAutoOption": "",
+    "adminRunningTasks": "",
+    "adminNetworkingPublicHttpPort": "",
+    "adminNetworkingRequireHttps": "",
+    "adminNetworkingRequireHttpsHint": "",
+    "adminNetworkingCertPassword": "",
+    "adminNetworkingIpSettings": "",
+    "adminNetworkingEnableIpv4": "",
+    "adminNetworkingEnableIpv6": "",
+    "adminNetworkingAutoDiscovery": "",
+    "adminNetworkingLocalSubnets": "",
+    "adminNetworkingLocalSubnetsHint": "",
+    "adminNetworkingPublishedUris": "",
+    "adminNetworkingPublishedUriHint": "",
+    "adminPlaybackThrottleDelay": "",
+    "adminPlaybackEnableSubtitleExtraction": "",
+    "adminGeneralEnableSlowResponse": "",
+    "adminGeneralQuickConnect": "",
+    "adminGeneralSectionServer": "",
+    "adminGeneralSectionMetadata": "",
+    "adminGeneralSectionPaths": "",
+    "adminGeneralSectionPerformance": "",
+    "adminGeneralDisplayLanguage": "",
+    "offlineBannerTitle": "",
+    "offlineBannerSubtitle": "",
+    "offlineBannerAction": "",
+    "serverUnreachableBannerTitle": "",
+    "serverUnreachableBannerSubtitle": "",
+    "contextMenuHideFromContinueWatching": "",
     "@contextMenuHideFromContinueWatching": {
         "description": "Context menu action to hide an item from the Continue Watching section"
     },
-    "contextMenuHideFromNextUp": "Skjul fra Næste op",
+    "contextMenuHideFromNextUp": "",
     "@contextMenuHideFromNextUp": {
         "description": "Context menu action to hide a show from the Next Up section"
     },
-    "contextMenuAddToCollection": "Tilføj til samling",
+    "contextMenuAddToCollection": "",
     "@contextMenuAddToCollection": {
         "description": "Context menu action to add an item to a collection"
     },
-    "settingsConnectionSection": "FORBINDELSE",
+    "settingsConnectionSection": "",
     "@settingsConnectionSection": {
         "description": "Section header for server connection settings"
     },
-    "settingsAllowSelfSignedCerts": "Tillad selvsignerede certifikater",
+    "settingsAllowSelfSignedCerts": "",
     "@settingsAllowSelfSignedCerts": {
         "description": "Setting to trust self-signed TLS certificates"
     },
-    "settingsAllowSelfSignedCertsSubtitle": "Stol på servere, der bruger selvsignerede TLS-certifikater eller certifikater fra en privat CA. Aktivér kun for servere, du selv kontrollerer. Dette deaktiverer certifikatvalidering for alle forbindelser.",
+    "settingsAllowSelfSignedCertsSubtitle": "",
     "@settingsAllowSelfSignedCertsSubtitle": {
         "description": "Description for the allow self-signed certificates setting"
     },
-    "settingsDetailsScreen": "Detaljeskærm",
-    "settingsDetailsScreenSubtitle": "Stil, baggrundssløring og faneadfærd",
-    "settingsShowSeerrButtonInNavigation": "Vis Seerr-knappen i navigationslinjen",
-    "settingsAlwaysExpandNavbarLabels": "Vis altid tekstetiketter i den øverste navigationslinje",
-    "settingsMediaSegmentCountdown": "Nedtælling for mediesegment",
+    "settingsDetailsScreen": "",
+    "settingsDetailsScreenSubtitle": "",
+    "settingsShowSeerrButtonInNavigation": "",
+    "settingsAlwaysExpandNavbarLabels": "",
+    "settingsMediaSegmentCountdown": "",
     "@settingsMediaSegmentCountdown": {
         "description": "Setting label for media segment countdown customizations"
     },
-    "settingsProgressBar": "Statuslinje",
+    "settingsProgressBar": "",
     "@settingsProgressBar": {
         "description": "Option label to show only progress bar on media segment countdown overlay"
     },
-    "settingsTimer": "Timer",
+    "settingsTimer": "",
     "@settingsTimer": {
         "description": "Option label to show only countdown timer on media segment countdown overlay"
     },
-    "settingsNone": "Ingen",
+    "settingsNone": "",
     "@settingsNone": {
         "description": "Option label to hide all decorations on media segment countdown overlay"
     },
-    "recentlyReleasedLibraryName": "Nyligt udgivet i {libraryName}",
+    "recentlyReleasedLibraryName": "",
     "@recentlyReleasedLibraryName": {
         "description": "Row title for recently released media in a specific library",
         "placeholders": {
@@ -8565,36 +8565,36 @@
             }
         }
     },
-    "enableTunnelingTitle": "Aktivér tunneling",
+    "enableTunnelingTitle": "",
     "@enableTunnelingTitle": {
         "description": "Setting title: enable tunneled video playback (advanced)"
     },
-    "enableTunnelingSubtitle": "Avanceret. Sender lyd og video gennem en koblet hardwaresti. Slået fra som standard, fordi det giver udfald i lyd og video på nogle enheder.",
+    "enableTunnelingSubtitle": "",
     "@enableTunnelingSubtitle": {
         "description": "Setting subtitle for enable tunneling"
     },
-    "showMediaDetailsOnLibraryPage": "Vis mediedetaljer",
+    "showMediaDetailsOnLibraryPage": "",
     "@showMediaDetailsOnLibraryPage": {
         "description": "Setting title to show/hide focused media details at the top of the library page"
     },
-    "showMediaDetailsOnLibraryPageDescription": "Vis detaljer om det valgte emne øverst på bibliotekssider.",
+    "showMediaDetailsOnLibraryPageDescription": "",
     "@showMediaDetailsOnLibraryPageDescription": {
         "description": "Setting description to show/hide focused media details at the top of the library page"
     },
-    "hideBackdropsInLibraries": "Skjul baggrundsbilleder, mens du browser?",
+    "hideBackdropsInLibraries": "",
     "@hideBackdropsInLibraries": {
         "description": "Setting title to show/hide backdrops when browsing library pages"
     },
-    "themeStore": "Temabutik",
-    "themeStoreSubtitle": "Gennemse og gem temaer fra fællesskabet",
-    "themeStoreDescription": "Gem et tema for at bruge det ligesom dine andre gemte temaer.",
-    "themeStoreEmpty": "Der er ingen temaer tilgængelige lige nu.",
-    "themeStoreLoadFailed": "Temabutikken kunne ikke indlæses. Tjek din forbindelse, og prøv igen.",
-    "themeStoreSave": "Gem",
-    "themeStoreSaveAndApply": "Gem og anvend",
-    "themeStoreSaved": "Gemt",
-    "themeStoreInvalidMessage": "Dette tema kunne ikke indlæses.",
-    "themeStoreSavedMessage": "\"{themeName}\" er gemt.",
+    "themeStore": "",
+    "themeStoreSubtitle": "",
+    "themeStoreDescription": "",
+    "themeStoreEmpty": "",
+    "themeStoreLoadFailed": "",
+    "themeStoreSave": "",
+    "themeStoreSaveAndApply": "",
+    "themeStoreSaved": "",
+    "themeStoreInvalidMessage": "",
+    "themeStoreSavedMessage": "",
     "@themeStoreSavedMessage": {
         "description": "Status message shown after saving a Theme Store theme",
         "placeholders": {
@@ -8603,34 +8603,34 @@
             }
         }
     },
-    "homeRowDisplay": "Visning af rækker på startskærmen",
-    "homeRowSections": "Sektioner på startskærmen",
-    "homeRowToggles": "Til/fra for rækker på startskærmen",
-    "homeRowTogglesSubtitle": "Aktivér eller deaktivér biblioteksbaserede rækkekategorier på startskærmen",
-    "homeRowTogglesDescription": "Aktivér følgende kontakter for at vise rækkerne i startskærmens sektioner.",
-    "displayPlaylistsRows": "Vis afspilningslisterækker",
-    "displayPlaylistsRowsSubtitle": "Vis afspilningslisterækker i startskærmens sektioner.",
-    "playlistsRowSorting": "Sortering af afspilningslisterækker",
-    "playlistsRowSortingDescription": "Sortér afspilningslisterækker efter tilføjelsesdato, udgivelsesdato, alfabetisk og mere.",
-    "displayAudioRows": "Vis lydrækker",
-    "displayAudioRowsSubtitle": "Vis lydrækker i startskærmens sektioner.",
-    "audioRowsSorting": "Sortering af lydrækker",
-    "audioRowsSortingDescription": "Sortér lydrækker efter tilføjelsesdato, udgivelsesdato, alfabetisk og mere.",
-    "audioPlaylists": "Lydafspilningslister",
-    "layout": "Layout",
-    "theme": "Tema",
-    "keyboard": "Tastatur",
-    "navButtons": "Knapper",
-    "rendering": "Gengivelse",
-    "mpvConfiguration": "MPV-konfiguration",
-    "externalPlayerAppDescription": "Vælg en ekstern afspiller for at aktivere afspilning ved langt tryk",
-    "crewContributionsSeerr": "Crewets bidrag (Seerr)",
-    "changeArtwork": "Skift grafik",
-    "missing": "Mangler",
-    "clearAllArtworkButton": "Ryd al grafik?",
-    "clearAllArtworkWarning": "Er du sikker på, at du vil rydde al downloadet grafik?",
-    "confirmClear": "Bekræft rydning",
-    "confirmClearMessage": "Er du sikker på, at du vil rydde dette billede ({itemType})?",
+    "homeRowDisplay": "",
+    "homeRowSections": "",
+    "homeRowToggles": "",
+    "homeRowTogglesSubtitle": "",
+    "homeRowTogglesDescription": "",
+    "displayPlaylistsRows": "",
+    "displayPlaylistsRowsSubtitle": "",
+    "playlistsRowSorting": "",
+    "playlistsRowSortingDescription": "",
+    "displayAudioRows": "",
+    "displayAudioRowsSubtitle": "",
+    "audioRowsSorting": "",
+    "audioRowsSortingDescription": "",
+    "audioPlaylists": "",
+    "layout": "",
+    "theme": "",
+    "keyboard": "",
+    "navButtons": "",
+    "rendering": "",
+    "mpvConfiguration": "",
+    "externalPlayerAppDescription": "",
+    "crewContributionsSeerr": "",
+    "changeArtwork": "",
+    "missing": "",
+    "clearAllArtworkButton": "",
+    "clearAllArtworkWarning": "",
+    "confirmClear": "",
+    "confirmClearMessage": "",
     "@confirmClearMessage": {
         "description": "Confirmation message when clearing a specific artwork",
         "placeholders": {
@@ -8639,12 +8639,12 @@
             }
         }
     },
-    "uploadButton": "Upload?",
-    "resolutionLabel": "Opløsning: ",
-    "onlyShowInterfaceLanguage": "Vis kun grafik på grænsefladens sprog",
-    "confirmClearAll": "Bekræft rydning af alt",
-    "imageUploadSuccess": "Billedet blev uploadet!",
-    "imageUploadFailed": "Billedet kunne ikke uploades: {error}",
+    "uploadButton": "",
+    "resolutionLabel": "",
+    "onlyShowInterfaceLanguage": "",
+    "confirmClearAll": "",
+    "imageUploadSuccess": "",
+    "imageUploadFailed": "",
     "@imageUploadFailed": {
         "placeholders": {
             "error": {
@@ -8652,7 +8652,7 @@
             }
         }
     },
-    "imageDownloadFailed": "Billedet kunne ikke anvendes: {error}",
+    "imageDownloadFailed": "",
     "@imageDownloadFailed": {
         "placeholders": {
             "error": {
@@ -8660,7 +8660,7 @@
             }
         }
     },
-    "imageDeleteFailed": "Billedet kunne ikke slettes: {error}",
+    "imageDeleteFailed": "",
     "@imageDeleteFailed": {
         "placeholders": {
             "error": {
@@ -8668,7 +8668,7 @@
             }
         }
     },
-    "clearAllArtworkFailed": "Al grafik kunne ikke ryddes: {error}",
+    "clearAllArtworkFailed": "",
     "@clearAllArtworkFailed": {
         "placeholders": {
             "error": {
@@ -8676,49 +8676,49 @@
             }
         }
     },
-    "yes": "Ja",
-    "posterCategory": "Plakat",
-    "backdropsCategory": "Baggrundsbilleder",
-    "bannerCategory": "Banner",
-    "logoCategory": "Logo",
-    "thumbnailCategory": "Miniature",
-    "artCategory": "Grafik",
-    "discArtCategory": "Diskgrafik",
-    "screenshotCategory": "Skærmbillede",
-    "boxCoverCategory": "Coverforside",
-    "boxRearCoverCategory": "Coverbagside",
-    "menuArtCategory": "Menugrafik",
-    "confirmItemPoster": "plakat",
-    "confirmItemBackdrop": "baggrundsbillede",
-    "confirmItemBanner": "banner",
-    "confirmItemLogo": "logo",
-    "confirmItemThumbnail": "miniature",
-    "confirmItemArt": "grafik",
-    "confirmItemDiscArt": "diskgrafik",
-    "confirmItemScreenshot": "skærmbillede",
-    "confirmItemBoxCover": "coverforside",
-    "confirmItemBoxRearCover": "coverbagside",
-    "confirmItemMenuArt": "menugrafik",
-    "resolutionAll": "Alle",
-    "resolutionHigh": "Høj (1080p+)",
-    "resolutionMedium": "Mellem (720p)",
-    "resolutionLow": "Lav (<720p)",
-    "sources": "Kilder",
+    "yes": "",
+    "posterCategory": "",
+    "backdropsCategory": "",
+    "bannerCategory": "",
+    "logoCategory": "",
+    "thumbnailCategory": "",
+    "artCategory": "",
+    "discArtCategory": "",
+    "screenshotCategory": "",
+    "boxCoverCategory": "",
+    "boxRearCoverCategory": "",
+    "menuArtCategory": "",
+    "confirmItemPoster": "",
+    "confirmItemBackdrop": "",
+    "confirmItemBanner": "",
+    "confirmItemLogo": "",
+    "confirmItemThumbnail": "",
+    "confirmItemArt": "",
+    "confirmItemDiscArt": "",
+    "confirmItemScreenshot": "",
+    "confirmItemBoxCover": "",
+    "confirmItemBoxRearCover": "",
+    "confirmItemMenuArt": "",
+    "resolutionAll": "",
+    "resolutionHigh": "",
+    "resolutionMedium": "",
+    "resolutionLow": "",
+    "sources": "",
     "@sources": {
         "description": "Title of the artwork source-provider filter dialog"
     },
-    "audiobookChapters": "Kapitler",
-    "audiobookBookmarks": "Bogmærker",
-    "audiobookNotes": "Noter",
-    "audiobookQueue": "Kø",
-    "audiobookTimeline": "Tidslinje",
-    "audiobookTimelineEmpty": "Tidslinjen er tom",
-    "audiobookWholeBook": "Hele bogen",
-    "audiobookFocusedTimeline": "Fokuseret tidslinje",
-    "audiobookExportBookmarks": "Eksportér bogmærker",
-    "audiobookExportNotes": "Eksportér noter",
-    "audiobookExportAll": "Eksportér alt",
-    "audiobookExportSuccess": "Eksporteret til {path}",
+    "audiobookChapters": "",
+    "audiobookBookmarks": "",
+    "audiobookNotes": "",
+    "audiobookQueue": "",
+    "audiobookTimeline": "",
+    "audiobookTimelineEmpty": "",
+    "audiobookWholeBook": "",
+    "audiobookFocusedTimeline": "",
+    "audiobookExportBookmarks": "",
+    "audiobookExportNotes": "",
+    "audiobookExportAll": "",
+    "audiobookExportSuccess": "",
     "@audiobookExportSuccess": {
         "placeholders": {
             "path": {
@@ -8726,7 +8726,7 @@
             }
         }
     },
-    "audiobookExportFailed": "Eksport mislykkedes: {error}",
+    "audiobookExportFailed": "",
     "@audiobookExportFailed": {
         "placeholders": {
             "error": {
@@ -8734,16 +8734,16 @@
             }
         }
     },
-    "audiobookLyrics": "Sangtekster",
-    "audiobookAddBookmark": "Tilføj bogmærke",
-    "audiobookAddNote": "Tilføj note",
-    "audiobookEditNote": "Redigér note",
-    "audiobookNoteHint": "Skriv en note til dette tidspunkt",
-    "audiobookSleepTimer": "Sleep-timer",
-    "audiobookSleepOff": "Fra",
-    "audiobookSleepEndOfChapter": "Slut på kapitlet",
-    "audiobookSleepCustom": "Tilpasset",
-    "audiobookSleepRemaining": "{remaining} tilbage",
+    "audiobookLyrics": "",
+    "audiobookAddBookmark": "",
+    "audiobookAddNote": "",
+    "audiobookEditNote": "",
+    "audiobookNoteHint": "",
+    "audiobookSleepTimer": "",
+    "audiobookSleepOff": "",
+    "audiobookSleepEndOfChapter": "",
+    "audiobookSleepCustom": "",
+    "audiobookSleepRemaining": "",
     "@audiobookSleepRemaining": {
         "placeholders": {
             "remaining": {
@@ -8751,7 +8751,7 @@
             }
         }
     },
-    "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} min}}",
+    "audiobookSleepMinutes": "",
     "@audiobookSleepMinutes": {
         "placeholders": {
             "count": {
@@ -8759,10 +8759,10 @@
             }
         }
     },
-    "audiobookPlaybackSpeed": "Afspilningshastighed",
-    "audiobookRemainingTime": "Tilbage",
-    "audiobookElapsedTime": "Forløbet",
-    "audiobookSkipBackSeconds": "Tilbage {seconds}s",
+    "audiobookPlaybackSpeed": "",
+    "audiobookRemainingTime": "",
+    "audiobookElapsedTime": "",
+    "audiobookSkipBackSeconds": "",
     "@audiobookSkipBackSeconds": {
         "placeholders": {
             "seconds": {
@@ -8770,7 +8770,7 @@
             }
         }
     },
-    "audiobookSkipForwardSeconds": "Frem {seconds}s",
+    "audiobookSkipForwardSeconds": "",
     "@audiobookSkipForwardSeconds": {
         "placeholders": {
             "seconds": {
@@ -8778,9 +8778,9 @@
             }
         }
     },
-    "audiobookPreviousChapter": "Forrige kapitel",
-    "audiobookNextChapter": "Næste kapitel",
-    "audiobookChapterIndicator": "Kapitel {current} af {total}",
+    "audiobookPreviousChapter": "",
+    "audiobookNextChapter": "",
+    "audiobookChapterIndicator": "",
     "@audiobookChapterIndicator": {
         "placeholders": {
             "current": {
@@ -8791,10 +8791,10 @@
             }
         }
     },
-    "audiobookNoChapters": "Ingen kapitler",
-    "audiobookNoBookmarks": "Ingen bogmærker endnu",
-    "audiobookNoNotes": "Ingen noter endnu",
-    "audiobookBookmarkAdded": "Bogmærke tilføjet ved {position}",
+    "audiobookNoChapters": "",
+    "audiobookNoBookmarks": "",
+    "audiobookNoNotes": "",
+    "audiobookBookmarkAdded": "",
     "@audiobookBookmarkAdded": {
         "placeholders": {
             "position": {
@@ -8802,8 +8802,8 @@
             }
         }
     },
-    "audiobookSpeedReset": "Nulstil til 1,0x",
-    "audiobookSpeedCustomLabel": "{value}x",
+    "audiobookSpeedReset": "",
+    "audiobookSpeedCustomLabel": "",
     "@audiobookSpeedCustomLabel": {
         "placeholders": {
             "value": {
@@ -8811,58 +8811,58 @@
             }
         }
     },
-    "audiobookSave": "Gem",
-    "audiobookCancel": "Annullér",
-    "audiobookDelete": "Slet",
-    "subtitlePreferences": "Undertekstindstillinger",
+    "audiobookSave": "",
+    "audiobookCancel": "",
+    "audiobookDelete": "",
+    "subtitlePreferences": "",
     "@subtitlePreferences": {
         "description": "Title for the subtitle preferences settings section"
     },
-    "subtitlePreferencesDescription": "Skift underteksttilstande, standardsprog, udseende og gengivelsesindstillinger.",
+    "subtitlePreferencesDescription": "",
     "@subtitlePreferencesDescription": {
         "description": "Description for the subtitle preferences settings section"
     },
-    "subtitleRendering": "Gengivelse af undertekster",
+    "subtitleRendering": "",
     "@subtitleRendering": {
         "description": "Header for subtitle rendering settings"
     },
-    "displayOptions": "Visningsindstillinger",
+    "displayOptions": "",
     "@displayOptions": {
         "description": "Title for details display options dialog"
     },
-    "releaseDateAscending": "Udgivelsesdato (stigende)",
+    "releaseDateAscending": "",
     "@releaseDateAscending": {
         "description": "Sort option for crew/cast contributions in ascending release date order"
     },
-    "releaseDateDescending": "Udgivelsesdato (faldende)",
+    "releaseDateDescending": "",
     "@releaseDateDescending": {
         "description": "Sort option for crew/cast contributions in descending release date order"
     },
-    "groupContributions": "Gruppér bidrag",
+    "groupContributions": "",
     "@groupContributions": {
         "description": "Section header for grouping person contributions"
     },
-    "groupMultipleRoles": "Gruppér flere roller",
+    "groupMultipleRoles": "",
     "@groupMultipleRoles": {
         "description": "Option to group multiple roles for a person"
     },
-    "libraryWriteAccessWarningTitle": "Advarsel om skriveadgang til bibliotek",
+    "libraryWriteAccessWarningTitle": "",
     "@libraryWriteAccessWarningTitle": {
         "description": "Title for library write access warning dialog"
     },
-    "libraryWriteAccessHowToFix": "Sådan løser du det:",
+    "libraryWriteAccessHowToFix": "",
     "@libraryWriteAccessHowToFix": {
         "description": "Section header for write access troubleshooting"
     },
-    "libraryWriteAccessFixSteps": "1. Giv Jellyfin-tjenestens bruger (f.eks. jellyfin eller Docker PUID/PGID) skriverettigheder til dine mediebiblioteksmapper på serveren.\n\n2. Eller gå til dit Jellyfin-kontrolpanel -> Biblioteker, redigér dette bibliotek, og slå 'Gem grafik i mediemapperne' fra for at gemme grafikken i Jellyfins interne database.",
+    "libraryWriteAccessFixSteps": "",
     "@libraryWriteAccessFixSteps": {
         "description": "Troubleshooting steps for write access issues"
     },
-    "dismiss": "Afvis",
+    "dismiss": "",
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Dit bibliotek '{libraryName}' er indstillet til at gemme grafik direkte i mediemapperne ('Gem grafik i mediemapperne' er slået til). Jellyfin har dog testet skriveadgangen og har ikke tilladelse til at skrive filer til denne mappe:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -8874,21 +8874,21 @@
             }
         }
     },
-    "libraryWriteAccessReactiveBody": "Det ser ud til, at Jellyfin ikke kunne opdatere grafikken. Dit bibliotek er indstillet til at gemme grafik direkte i mediemapperne ('Gem grafik i mediemapperne' er slået til). Denne fejl opstår typisk, når Jellyfin-serverprocessen ikke har tilladelse til at skrive filer til dine mediemapper.",
+    "libraryWriteAccessReactiveBody": "",
     "@libraryWriteAccessReactiveBody": {
         "description": "Reactive error warning message when artwork update fails"
     },
-    "externalLists": "Eksterne lister",
-    "replay": "Afspil igen",
-    "fileInformation": "Filoplysninger",
-    "fileSizeFormat": "Størrelse: {size}  •  Format: {format}",
+    "externalLists": "",
+    "replay": "",
+    "fileInformation": "",
+    "fileSizeFormat": "",
     "@fileSizeFormat": {
         "placeholders": {
             "size": {},
             "format": {}
         }
     },
-    "showAllAudioTracks": "Vis alle ({count}) lydspor",
+    "showAllAudioTracks": "",
     "@showAllAudioTracks": {
         "placeholders": {
             "count": {
@@ -8896,7 +8896,7 @@
             }
         }
     },
-    "showAllSubtitleTracks": "Vis alle ({count}) undertekstspor",
+    "showAllSubtitleTracks": "",
     "@showAllSubtitleTracks": {
         "placeholders": {
             "count": {
@@ -8904,30 +8904,30 @@
             }
         }
     },
-    "checkingDirectPlay": "Kontrollerer Direct Play-understøttelse...",
-    "directPlayCapabilityLabel": "Direct Play-understøttelse: ",
-    "forced": "Tvungen",
-    "transcodeContainerNotSupported": "Containerformatet understøttes ikke af afspilleren.",
-    "transcodeVideoCodecNotSupported": "Videocodec understøttes ikke.",
-    "transcodeAudioCodecNotSupported": "Lydcodec understøttes ikke.",
-    "transcodeSubtitleCodecNotSupported": "Undertekstformatet understøttes ikke (kræver indbrænding).",
-    "transcodeAudioProfileNotSupported": "Lydprofilen understøttes ikke.",
-    "transcodeVideoProfileNotSupported": "Videoprofilen understøttes ikke.",
-    "transcodeVideoLevelNotSupported": "Videoniveauet understøttes ikke.",
-    "transcodeVideoResolutionNotSupported": "Videoopløsningen understøttes ikke af denne enhed.",
-    "transcodeVideoBitDepthNotSupported": "Videoens bitdybde understøttes ikke.",
-    "transcodeVideoFramerateNotSupported": "Videoens billedhastighed understøttes ikke.",
-    "transcodeContainerBitrateExceedsLimit": "Filens bitrate overskrider afspillerens streaminggrænse.",
-    "transcodeVideoBitrateExceedsLimit": "Videoens bitrate overskrider streaminggrænsen.",
-    "transcodeAudioBitrateExceedsLimit": "Lydens bitrate overskrider streaminggrænsen.",
-    "transcodeAudioChannelsNotSupported": "Antallet af lydkanaler understøttes ikke.",
-    "sortAlphabetical": "Alfabetisk",
-    "sortReleaseAscending": "Udgivelsesrækkefølge (stigende)",
-    "sortReleaseDescending": "Udgivelsesrækkefølge (faldende)",
-    "sortCustomDragDrop": "Tilpasset (træk og slip)",
-    "playlistSortOptions": "Sorteringsindstillinger for afspilningsliste",
-    "resetSort": "Nulstil sortering",
-    "rewatchSeasonEpisode": "Se S{season}:E{episode} igen",
+    "checkingDirectPlay": "",
+    "directPlayCapabilityLabel": "",
+    "forced": "",
+    "transcodeContainerNotSupported": "",
+    "transcodeVideoCodecNotSupported": "",
+    "transcodeAudioCodecNotSupported": "",
+    "transcodeSubtitleCodecNotSupported": "",
+    "transcodeAudioProfileNotSupported": "",
+    "transcodeVideoProfileNotSupported": "",
+    "transcodeVideoLevelNotSupported": "",
+    "transcodeVideoResolutionNotSupported": "",
+    "transcodeVideoBitDepthNotSupported": "",
+    "transcodeVideoFramerateNotSupported": "",
+    "transcodeContainerBitrateExceedsLimit": "",
+    "transcodeVideoBitrateExceedsLimit": "",
+    "transcodeAudioBitrateExceedsLimit": "",
+    "transcodeAudioChannelsNotSupported": "",
+    "sortAlphabetical": "",
+    "sortReleaseAscending": "",
+    "sortReleaseDescending": "",
+    "sortCustomDragDrop": "",
+    "playlistSortOptions": "",
+    "resetSort": "",
+    "rewatchSeasonEpisode": "",
     "@rewatchSeasonEpisode": {
         "placeholders": {
             "season": {
@@ -8938,57 +8938,57 @@
             }
         }
     },
-    "rewatchPlaylist": "Se afspilningslisten igen",
-    "noSubtitlesFound": "Der blev ikke fundet nogen undertekster.",
-    "adminControls": "Administratorkontroller",
-    "impellerRendering": "Gengivelsesmotor (Impeller)",
+    "rewatchPlaylist": "",
+    "noSubtitlesFound": "",
+    "adminControls": "",
+    "impellerRendering": "",
     "@impellerRendering": {
         "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
     },
-    "impellerRenderingSubtitle": "Impeller er Flutters moderne GPU-renderer, der giver jævnere animationer og mindre hakken. På nogle TV-bokse og ældre GPU'er kan den give grafikfejl eller sort video; slå den fra, hvis du oplever det. Automatisk vælger den bedste standardindstilling til din enhed. Genstart Moonfin for at anvende ændringen.",
+    "impellerRenderingSubtitle": "",
     "@impellerRenderingSubtitle": {
         "description": "Explanatory description under the rendering engine setting."
     },
-    "impellerAuto": "Automatisk",
-    "impellerOn": "Til",
-    "impellerOff": "Fra",
-    "impellerRestartTitle": "Genstart påkrævet",
+    "impellerAuto": "",
+    "impellerOn": "",
+    "impellerOff": "",
+    "impellerRestartTitle": "",
     "@impellerRestartTitle": {
         "description": "Title of the dialog shown after changing the rendering engine."
     },
-    "impellerRestartMessage": "Moonfin skal genstartes for at skifte gengivelsesmotor. Luk appen nu, og åbn den igen for at anvende ændringen.",
+    "impellerRestartMessage": "",
     "@impellerRestartMessage": {
         "description": "Body of the dialog shown after changing the rendering engine."
     },
-    "impellerCloseNow": "Luk appen nu",
+    "impellerCloseNow": "",
     "@impellerCloseNow": {
         "description": "Button that closes the app so the new rendering engine takes effect on next launch."
     },
-    "adminRefreshLibrary": "Opdatér bibliotek",
+    "adminRefreshLibrary": "",
     "@adminRefreshLibrary": {
         "description": "Dropdown option to refresh/rescan a single library"
     },
-    "adminRefreshAllLibraries": "Opdatér alle biblioteker",
+    "adminRefreshAllLibraries": "",
     "@adminRefreshAllLibraries": {
         "description": "Floating action button text to refresh all libraries"
     },
-    "adminRepoSortDateOldest": "Tilføjelsesdato (ældste først)",
+    "adminRepoSortDateOldest": "",
     "@adminRepoSortDateOldest": {
         "description": "Repository sort option, oldest added first"
     },
-    "adminRepoSortDateNewest": "Tilføjelsesdato (nyeste først)",
+    "adminRepoSortDateNewest": "",
     "@adminRepoSortDateNewest": {
         "description": "Repository sort option, newest added first"
     },
-    "adminRepoSortNameAsc": "Alfabetisk (A til Å)",
+    "adminRepoSortNameAsc": "",
     "@adminRepoSortNameAsc": {
         "description": "Repository sort option, alphabetical ascending"
     },
-    "adminRepoSortNameDesc": "Alfabetisk (Å til A)",
+    "adminRepoSortNameDesc": "",
     "@adminRepoSortNameDesc": {
         "description": "Repository sort option, alphabetical descending"
     },
-    "adminAnalyticsLoadingProgress": "Indlæser serveranalyse... {percentage}%",
+    "adminAnalyticsLoadingProgress": "",
     "@adminAnalyticsLoadingProgress": {
         "description": "Progress label shown while server analytics load",
         "placeholders": {
@@ -8997,14 +8997,14 @@
             }
         }
     },
-    "adminLibChapterImageResolutionMatchSource": "Match kilden",
+    "adminLibChapterImageResolutionMatchSource": "",
     "@adminLibChapterImageResolutionMatchSource": {
         "description": "Chapter image resolution option that matches the source resolution"
     },
-    "imdbTop250Movies": "IMDb Top 250-film",
-    "imdbTop250TvShows": "IMDb Top 250-serier",
-    "imdbMostPopularMovies": "Mest populære film på IMDb",
-    "imdbMostPopularTvShows": "Mest populære serier på IMDb",
-    "imdbLowestRatedMovies": "Lavest bedømte film på IMDb",
-    "imdbTopEnglishMovies": "Bedst bedømte engelsksprogede film på IMDb"
+    "imdbTop250Movies": "",
+    "imdbTop250TvShows": "",
+    "imdbMostPopularMovies": "",
+    "imdbMostPopularTvShows": "",
+    "imdbLowestRatedMovies": "",
+    "imdbTopEnglishMovies": ""
 }
