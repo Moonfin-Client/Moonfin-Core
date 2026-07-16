@@ -39,9 +39,11 @@ class _RequestInitialFocusState extends State<RequestInitialFocus> {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.targetNode, widget.targetNode) &&
         widget.targetNode != null) {
-      _retryTimer?.cancel();
-      _settled = false;
-      _scheduleFrameFocusCheck(0);
+      if (!FocusScope.of(context).hasFocus) {
+        _retryTimer?.cancel();
+        _settled = false;
+        _scheduleFrameFocusCheck(0);
+      }
     }
   }
 

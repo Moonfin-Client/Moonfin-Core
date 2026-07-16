@@ -1350,23 +1350,23 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
 
   void _focusSectionAndEnsureVisible(int index) {
     if (!mounted || index < 0 || index >= _focusNodes.length) return;
-    final node = _focusNodes[index];
-    if (!node.hasFocus) {
-      node.requestFocus();
-    }
 
-    // Defer the scroll until the reorder rebuild commits, so the target row's
-    // context exists.
+    // Defer the focus request and scroll until the reorder rebuild commits,
+    // so the target row's context and widget are fully attached.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || index < 0 || index >= _focusNodes.length) return;
-      final targetContext = _focusNodes[index].context;
+      final node = _focusNodes[index];
+      if (!node.hasFocus) {
+        node.requestFocus();
+      }
+      final targetContext = node.context;
       if (targetContext == null) return;
       Scrollable.ensureVisible(
         targetContext,
         duration: const Duration(milliseconds: 140),
         curve: Curves.easeOut,
         alignment: 0.2,
-        alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+        alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
       );
     });
   }
@@ -1836,7 +1836,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
           // its sorted slot, so it animates instead of jumping.
           isSameItem: (a, b) =>
               a.stableId == b.stableId && a.enabled == b.enabled,
-          enableSwap: false,
+          enableSwap: true,
           enterTransition: [FadeIn(), SizeAnimation()],
           exitTransition: [FadeIn(), SizeAnimation()],
           onReorder: (oldIndex, newIndex) {
@@ -2321,7 +2321,7 @@ class _HomeSectionsScreenState extends State<HomeSectionsScreen>
           // its sorted slot, so it animates instead of jumping.
           isSameItem: (a, b) =>
               a.stableId == b.stableId && a.enabled == b.enabled,
-          enableSwap: false,
+          enableSwap: true,
           enterTransition: [FadeIn(), SizeAnimation()],
           exitTransition: [FadeIn(), SizeAnimation()],
           itemBuilder: (context, index) {

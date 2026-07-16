@@ -349,23 +349,23 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
 
   void _focusRowAndEnsureVisible(int index) {
     if (!mounted || index < 0 || index >= _focusNodes.length) return;
-    final node = _focusNodes[index];
-    if (!node.hasFocus) {
-      node.requestFocus();
-    }
 
-    // Defer the scroll until the reorder rebuild commits, so the target row's
-    // context exists.
+    // Defer the focus request and scroll until the reorder rebuild commits,
+    // so the target row's context and widget are fully attached.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || index < 0 || index >= _focusNodes.length) return;
-      final targetContext = _focusNodes[index].context;
+      final node = _focusNodes[index];
+      if (!node.hasFocus) {
+        node.requestFocus();
+      }
+      final targetContext = node.context;
       if (targetContext == null) return;
       Scrollable.ensureVisible(
         targetContext,
         duration: const Duration(milliseconds: 140),
         curve: Curves.easeOut,
         alignment: 0.2,
-        alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+        alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
       );
     });
   }
@@ -669,7 +669,7 @@ class _SeerrConfigScreenState extends State<SeerrConfigScreen> {
             // a toggled row read as a removal from its old slot and an insert
             // at its sorted slot, so it animates instead of jumping.
             isSameItem: (a, b) => a.type == b.type && a.enabled == b.enabled,
-            enableSwap: false,
+            enableSwap: true,
             enterTransition: [FadeIn(), SizeAnimation()],
             exitTransition: [FadeIn(), SizeAnimation()],
             itemBuilder: (context, rowIndex) {
