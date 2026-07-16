@@ -1,6 +1,6 @@
 {
     "@@locale": "cs",
-    "appTitle": "Moonfin",
+    "appTitle": "Měsíční ploutev",
     "@appTitle": {
         "description": "The application title"
     },
@@ -17,7 +17,7 @@
             }
         }
     },
-    "quickConnect": "Quick Connect",
+    "quickConnect": "Rychlé připojení",
     "@quickConnect": {
         "description": "Quick Connect toggle button label"
     },
@@ -37,7 +37,7 @@
     "@waitingForAuthorization": {
         "description": "Quick Connect polling status text"
     },
-    "back": "Zpět",
+    "back": "Zadní",
     "@back": {
         "description": "Back button label"
     },
@@ -132,7 +132,7 @@
     "@cancel": {
         "description": "Generic cancel button label"
     },
-    "remove": "Odebrat",
+    "remove": "Odstranit",
     "@remove": {
         "description": "Remove button label in confirmation dialogs"
     },
@@ -172,7 +172,7 @@
     "@settingsAppearanceThemeSubtitle": {
         "description": "Subtitle for the theme selection screen and theme settings entry"
     },
-    "themeMoonfin": "Moonfin",
+    "themeMoonfin": "Měsíční ploutev",
     "@themeMoonfin": {
         "description": "Display name for the Moonfin theme"
     },
@@ -285,7 +285,7 @@
     "@schedule": {
         "description": "Live TV schedule button label"
     },
-    "series": "Seriály",
+    "series": "Série",
     "@series": {
         "description": "Section header for TV series"
     },
@@ -293,7 +293,7 @@
     "@noItemsFound": {
         "description": "Empty state when no items match the current view"
     },
-    "home": "Domů",
+    "home": "Domov",
     "@home": {
         "description": "Home navigation tooltip"
     },
@@ -465,7 +465,7 @@
     "@albumArtists": {
         "description": "Music browse view button label"
     },
-    "artists": "Interpreti",
+    "artists": "Umělci",
     "@artists": {
         "description": "Music browse view button label"
     },
@@ -597,7 +597,7 @@
     "@listen": {
         "description": "Primary action label for audiobooks"
     },
-    "resume": "Pokračovat",
+    "resume": "Resumé",
     "@resume": {
         "description": "Primary action label for resuming reading"
     },
@@ -790,7 +790,7 @@
     "@readStatus": {
         "description": "Filter label for read/watched items in book libraries"
     },
-    "watched": "Zhlédnuto",
+    "watched": "Sledováno",
     "@watched": {
         "description": "Filter label for watched items"
     },
@@ -798,7 +798,7 @@
     "@unread": {
         "description": "Status label for an unread book"
     },
-    "unwatched": "Nezhlédnuto",
+    "unwatched": "Nesledováno",
     "@unwatched": {
         "description": "Filter label for unwatched items"
     },
@@ -914,7 +914,7 @@
             }
         }
     },
-    "audiobookCountLabel": "{count, plural, =1{1 audiokniha} few{{count} audioknihy} many{{count} audioknihy} other{{count} audioknih}}",
+    "audiobookCountLabel": "{count, plural, =1{1 audiobook} other{{count} audiobooks}}",
     "@audiobookCountLabel": {
         "description": "Subtitle showing number of audiobooks by an author",
         "placeholders": {
@@ -935,7 +935,7 @@
     "@failedToLoad": {
         "description": "Error message when item detail fails to load"
     },
-    "delete": "Smazat",
+    "delete": "Vymazat",
     "@delete": {
         "description": "Delete action button label"
     },
@@ -963,7 +963,7 @@
     "@nextUp": {
         "description": "Home section: next up"
     },
-    "seasons": "Sezóny",
+    "seasons": "Roční období",
     "@seasons": {
         "description": "Section header for seasons"
     },
@@ -995,7 +995,7 @@
     "@tableOfContents": {
         "description": "Section header for audiobook chapters"
     },
-    "tracklist": "Seznam skladeb",
+    "tracklist": "Tracklist",
     "@tracklist": {
         "description": "Section header for album track listing"
     },
@@ -1036,7 +1036,7 @@
     "@publicationDateUnknown": {
         "description": "Placeholder when publication date is unknown"
     },
-    "seasonCount": "{count, plural, =1{1 sezóna} few{{count} sezóny} many{{count} sezóny} other{{count} sezón}}",
+    "seasonCount": "{count, plural, =1{1 Season} other{{count} Seasons}}",
     "@seasonCount": {
         "description": "Number of seasons for a series",
         "placeholders": {
@@ -1075,7 +1075,7 @@
             }
         }
     },
-    "play": "Přehrát",
+    "play": "Hrát",
     "@play": {
         "description": "Action button label to play media"
     },
@@ -1107,11 +1107,11 @@
     "@version": {
         "description": "Action button label for version/media source selection"
     },
-    "cast": "Odeslat",
+    "cast": "Obsazení",
     "@cast": {
         "description": "Action button label for casting to a device"
     },
-    "trailer": "Upoutávka",
+    "trailer": "Přívěs",
     "@trailer": {
         "description": "Action button label for trailer playback"
     },
@@ -1275,7 +1275,7 @@
     "@subtitleTrack": {
         "description": "Dialog title for subtitle track selection"
     },
-    "none": "Žádné",
+    "none": "Žádný",
     "@none": {
         "description": "Option label for no subtitle selected"
     },
@@ -1391,7 +1391,7 @@
     "@director": {
         "description": "Metadata label for director"
     },
-    "writers": "SCENÁRISTÉ",
+    "writers": "SPISOVATELÉ",
     "@writers": {
         "description": "Metadata label for writers"
     },
@@ -1447,7 +1447,7 @@
             }
         }
     },
-    "trackCount": "{count, plural, =1{1 stopa} few{{count} stopy} many{{count} stopy} other{{count} stop}}",
+    "trackCount": "{count, plural, =1{1 track} other{{count} tracks}}",
     "@trackCount": {
         "description": "Label showing number of tracks in an album",
         "placeholders": {
@@ -1456,7 +1456,7 @@
             }
         }
     },
-    "chapterCount": "{count, plural, =1{1 kapitola} few{{count} kapitoly} many{{count} kapitoly} other{{count} kapitol}}",
+    "chapterCount": "{count, plural, =1{1 chapter} other{{count} chapters}}",
     "@chapterCount": {
         "description": "Label showing number of chapters in an audiobook",
         "placeholders": {
@@ -1500,7 +1500,7 @@
     "@readMore": {
         "description": "Toggle label to expand biography"
     },
-    "shuffle": "Náhodně",
+    "shuffle": "Zamíchat",
     "@shuffle": {
         "description": "Action button label for shuffle playback"
     },
@@ -1517,7 +1517,7 @@
     "@perfectMatch": {
         "description": "Label for a subtitle that is a hash match"
     },
-    "channelsCount": "{count}k",
+    "channelsCount": "{count}ch",
     "@channelsCount": {
         "description": "Audio channel count label",
         "placeholders": {
@@ -1668,7 +1668,7 @@
     "@unavailable": {
         "description": "Label when a feature is unavailable"
     },
-    "pause": "Pozastavit",
+    "pause": "Pauza",
     "@pause": {
         "description": "Pause action label"
     },
@@ -1743,11 +1743,11 @@
             }
         }
     },
-    "auto": "Automaticky",
+    "auto": "Auto",
     "@auto": {
         "description": "Label for automatic bitrate selection"
     },
-    "bitrateValueMbps": "{mbps} Mb/s",
+    "bitrateValueMbps": "{mbps} Mbps",
     "@bitrateValueMbps": {
         "description": "Bitrate option label in Mbps",
         "placeholders": {
@@ -1764,7 +1764,7 @@
     "@audioDelay": {
         "description": "Title for audio delay adjuster"
     },
-    "delayMinusMs": "-{value} ms",
+    "delayMinusMs": "-{value}ms",
     "@delayMinusMs": {
         "description": "Label for decreasing playback delay in milliseconds",
         "placeholders": {
@@ -1773,7 +1773,7 @@
             }
         }
     },
-    "delayPlusMs": "+{value} ms",
+    "delayPlusMs": "+{value}ms",
     "@delayPlusMs": {
         "description": "Label for increasing playback delay in milliseconds",
         "placeholders": {
@@ -1822,7 +1822,7 @@
     "@transcodeReasons": {
         "description": "Stream info label for transcode reasons"
     },
-    "player": "Přehrávač",
+    "player": "Hráč",
     "@player": {
         "description": "Stream info label for player engine"
     },
@@ -1854,7 +1854,7 @@
     "@videoBitrate": {
         "description": "Stream info label for video bitrate"
     },
-    "track": "Stopa",
+    "track": "Dráha",
     "@track": {
         "description": "Stream info label for track name"
     },
@@ -2187,11 +2187,11 @@
     "@favoriteChannel": {
         "description": "Button label to add a channel to favorites"
     },
-    "watch": "Sledovat",
+    "watch": "Hodinky",
     "@watch": {
         "description": "Button label to start watching a channel"
     },
-    "close": "Zavřít",
+    "close": "Blízko",
     "@close": {
         "description": "Button label to close a dialog"
     },
@@ -2241,7 +2241,7 @@
             }
         }
     },
-    "no": "Ne",
+    "no": "Žádný",
     "@no": {
         "description": "Negative dialog button label"
     },
@@ -2490,7 +2490,7 @@
             }
         }
     },
-    "episodeCount": "{count, plural, =1{1 epizoda} few{{count} epizody} many{{count} epizody} other{{count} epizod}}",
+    "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
     "@episodeCount": {
         "description": "Number of episodes with pluralization",
         "placeholders": {
@@ -2778,7 +2778,7 @@
     "@themeMusicVolume": {
         "description": "Setting for theme music volume"
     },
-    "percentValue": "{value} %",
+    "percentValue": "{value}%",
     "@percentValue": {
         "description": "Percentage display",
         "placeholders": {
@@ -2799,7 +2799,7 @@
     "@detailsBackgroundBlur": {
         "description": "Setting for details background blur"
     },
-    "pixelValue": "{value} px",
+    "pixelValue": "{value}px",
     "@pixelValue": {
         "description": "Pixel value display",
         "placeholders": {
@@ -2840,7 +2840,7 @@
     "@refreshRateSwitching": {
         "description": "Setting for refresh rate switching"
     },
-    "disabled": "Vypnuto",
+    "disabled": "Zakázáno",
     "@disabled": {
         "description": "Option: disabled"
     },
@@ -3036,7 +3036,7 @@
     "@nextUpTimeout": {
         "description": "Setting for next up timeout"
     },
-    "secondsValue": "{value} s",
+    "secondsValue": "{value}s",
     "@secondsValue": {
         "description": "Seconds value display",
         "placeholders": {
@@ -3073,7 +3073,7 @@
     "@resumeAndSkip": {
         "description": "Section title for resume and skip settings"
     },
-    "resumeRewind": "Převinutí při navázání",
+    "resumeRewind": "Resume Rewind",
     "@resumeRewind": {
         "description": "Setting for resume rewind"
     },
@@ -3221,7 +3221,7 @@
     "@global": {
         "description": "Profile: global"
     },
-    "desktop": "Počítač",
+    "desktop": "Desktop",
     "@desktop": {
         "description": "Profile: desktop"
     },
@@ -3436,7 +3436,7 @@
     "@purple": {
         "description": "Color: purple"
     },
-    "teal": "Modrozelená",
+    "teal": "Teal",
     "@teal": {
         "description": "Color: teal"
     },
@@ -3464,7 +3464,7 @@
     "@slate": {
         "description": "Color: slate"
     },
-    "indigo": "Indigová",
+    "indigo": "Indigo",
     "@indigo": {
         "description": "Color: indigo"
     },
@@ -3549,7 +3549,7 @@
             }
         }
     },
-    "mediaBar": "Mediální lišta",
+    "mediaBar": "Media Bar",
     "@mediaBar": {
         "description": "Media bar section title"
     },
@@ -3561,7 +3561,7 @@
     "@mediaBarModeDescription": {
         "description": "Description for media bar style setting"
     },
-    "mediaBarModeMoonfin": "Moonfin",
+    "mediaBarModeMoonfin": "Měsíční ploutev",
     "@mediaBarModeMoonfin": {
         "description": "Media bar style option: Moonfin"
     },
@@ -3609,7 +3609,7 @@
     "@noneExcluded": {
         "description": "Label when no genres are excluded"
     },
-    "autoAdvance": "Automatický přechod",
+    "autoAdvance": "Auto Advance",
     "@autoAdvance": {
         "description": "Setting for auto advance"
     },
@@ -3951,7 +3951,7 @@
     "@ratingSourcesDescription": {
         "description": "Description for rating sources"
     },
-    "pluginLabel": "Plugin Moonbase",
+    "pluginLabel": "Plugin",
     "@pluginLabel": {
         "description": "Settings title for plugin"
     },
@@ -3987,7 +3987,7 @@
     "@availableServices": {
         "description": "Section title for available services"
     },
-    "serverPluginSync": "Synchronizace serverového pluginu",
+    "serverPluginSync": "Server Plugin Sync",
     "@serverPluginSync": {
         "description": "Setting for server plugin sync"
     },
@@ -4080,19 +4080,19 @@
             }
         }
     },
-    "discoverRows": "Stránka objevování Seerr",
+    "discoverRows": "Objevte řádky",
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "Povolte řádky, které chcete vidět na hlavní stránce Seerr. Přetažením změníte pořadí. Vlastní pořadí se synchronizuje s pluginem Moonbase.",
+    "discoverRowsDescriptionPlugin": "Přetažením změníte pořadí. Povolit nebo zakázat řádky. Povolená synchronizace pořadí řádků s pluginem Moonfin.",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "Povolte řádky, které chcete vidět na hlavní stránce Seerr. Přetažením změníte pořadí. Vlastní pořadí se synchronizuje s pluginem Moonbase.",
+    "discoverRowsDescription": "Přetažením změníte pořadí. Povolit nebo zakázat řádky.",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
-    "enabled": "Zapnuto",
+    "enabled": "Povoleno",
     "@enabled": {
         "description": "Status: enabled"
     },
@@ -4248,7 +4248,7 @@
             }
         }
     },
-    "clear": "Vymazat",
+    "clear": "Jasný",
     "@clear": {
         "description": "Button to clear"
     },
@@ -4426,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "Účinkování",
+    "appearances": "Vystoupení",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4507,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "Sezóny",
+    "seasonsLabel": "Roční období",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4518,7 +4518,7 @@
     "access": "Přístup",
     "add": "Přidat",
     "address": "Adresa",
-    "analytics": "Analytika",
+    "analytics": "Analytics",
     "catalog": "Katalog",
     "content": "Obsah",
     "copy": "Kopie",
@@ -4529,7 +4529,7 @@
     "encoding": "Kódování",
     "error": "Chyba",
     "forward": "Vpřed",
-    "general": "Obecné",
+    "general": "Generál",
     "go": "Jít",
     "install": "Instalovat",
     "installed": "Instalováno",
@@ -4544,19 +4544,19 @@
     "profile": "Profil",
     "provider": "Poskytovatel",
     "refresh": "Obnovit",
-    "remote": "Dálkové ovládání",
+    "remote": "Vzdálený",
     "rename": "Přejmenovat",
     "revoke": "Zrušit",
     "role": "Role",
     "root": "Vykořenit",
     "run": "Běh",
-    "search": "Hledat",
+    "search": "Vyhledávání",
     "select": "Vybrat",
     "send": "Poslat",
     "sessions": "Relace",
     "set": "Soubor",
     "status": "Postavení",
-    "stop": "Zastavit",
+    "stop": "Zastávka",
     "streaming": "Streamování",
     "time": "Čas",
     "trickplay": "Trickplay",
@@ -4566,15 +4566,15 @@
     "upload": "Nahrát",
     "unmute": "Zapnout zvuk",
     "mute": "Ztlumit",
-    "branding": "Vzhled značky",
-    "adminDrawerDashboard": "Nástěnka",
-    "adminDrawerAnalytics": "Analytika",
+    "branding": "Branding",
+    "adminDrawerDashboard": "Dashboard",
+    "adminDrawerAnalytics": "Analytics",
     "adminDrawerSettings": "Nastavení",
-    "adminDrawerBranding": "Vzhled značky",
+    "adminDrawerBranding": "Branding",
     "adminDrawerUsers": "Uživatelé",
     "adminDrawerLibraries": "Knihovny",
     "adminDrawerTranscoding": "Překódování",
-    "adminDrawerResume": "Pokračovat",
+    "adminDrawerResume": "Resumé",
     "adminDrawerStreaming": "Streamování",
     "adminDrawerTrickplay": "Trickplay",
     "adminDrawerDevices": "Zařízení",
@@ -4672,15 +4672,15 @@
     "sessionRewind": "Přetočit zpět",
     "sessionForward": "Vpřed",
     "sessionNext": "Další",
-    "sessionVolumeDown": "Hlas. –",
-    "sessionVolumeUp": "Hlas. +",
+    "sessionVolumeDown": "Vol –",
+    "sessionVolumeUp": "Vol +",
     "uhd4k": "4K",
     "nowPlaying": "Právě se přehrává",
-    "volume": "Hlasitost",
+    "volume": "Objem",
     "actions": "Akce",
     "videoCodec": "Video kodek",
     "audioCodec": "Audio kodek",
-    "hwAccel": "HW akcelerace",
+    "hwAccel": "HW Accel",
     "completion": "Dokončení",
     "direct": "Řídit",
     "adminDisconnect": "Odpojit",
@@ -4904,7 +4904,7 @@
     "adminBackToUsers": "Zpět na Uživatelé",
     "adminSaveProfile": "Uložit profil",
     "adminDeleteUser": "Smazat uživatele",
-    "admin": "Správce",
+    "admin": "Admin",
     "adminFullAccessWarning": "Administrátoři mají úplný přístup k serveru. Udělujte opatrně.",
     "administrator": "Správce",
     "adminHiddenUser": "Skrytý uživatel",
@@ -5366,7 +5366,7 @@
     "adminAllowSegmentDeletion": "Povolit smazání segmentu",
     "adminSegmentKeepSeconds": "Uchování segmentu (v sekundách)",
     "adminThrottleBuffering": "Vyrovnávací paměť plynu",
-    "adminTrickplaySaved": "Nastavení Trickplay uloženo",
+    "adminTrickplaySaved": "Nastavení trikové hry uloženo",
     "adminTrickplayLoadFailed": "Nepodařilo se načíst nastavení trickplay",
     "adminEnableHardwareAcceleration": "Povolit hardwarovou akceleraci",
     "adminEnableKeyFrameExtraction": "Povolit pouze extrakci klíčového snímku",
@@ -5397,11 +5397,11 @@
     "adminNetworkingWarning": "Změny nastavení sítě mohou vyžadovat restart serveru.",
     "adminEnableRemoteAccess": "Povolit vzdálený přístup",
     "ports": "Porty",
-    "adminHttpPort": "Port HTTP",
-    "adminHttpsPort": "Port HTTPS",
+    "adminHttpPort": "HTTP port",
+    "adminHttpsPort": "HTTPS port",
     "adminPublicHttpsPort": "Veřejný port HTTPS",
     "adminBaseUrl": "Základní URL",
-    "adminBaseUrlHint": "např. /jellyfin",
+    "adminBaseUrlHint": "např. /ploutev",
     "https": "HTTPS",
     "adminEnableHttps": "Povolit HTTPS",
     "adminLocalNetwork": "Místní síť",
@@ -5639,7 +5639,7 @@
             }
         }
     },
-    "adminPostPaddingDisplay": "Doběh: {minutes} min",
+    "adminPostPaddingDisplay": "Post-padding: {minutes} min",
     "@adminPostPaddingDisplay": {
         "placeholders": {
             "minutes": {
@@ -5647,7 +5647,7 @@
             }
         }
     },
-    "adminTunerDiscovery": "Vyhledávání tunerů",
+    "adminTunerDiscovery": "Tuner Discovery",
     "adminChannelMappings": "Mapování kanálů",
     "adminNoDiscoveredTuners": "Zatím žádné objevené tunery",
     "adminSettingsSaved": "Nastavení uloženo",
@@ -5722,7 +5722,7 @@
     "adminMetadataDetails": "Podrobnosti",
     "adminMetadataExternalIds": "Externí ID",
     "adminMetadataImages": "Obrázky",
-    "adminMetadataFieldTitle": "Název",
+    "adminMetadataFieldTitle": "Titul",
     "adminMetadataFieldSortTitle": "Seřadit název",
     "adminMetadataFieldOriginalTitle": "Původní název",
     "adminMetadataFieldPremiereDate": "Datum premiéry (RRRR-MM-DD)",
@@ -5896,7 +5896,7 @@
             }
         }
     },
-    "adminReposRemove": "Odebrat",
+    "adminReposRemove": "Odstranit",
     "adminReposSaveFailed": "Nepodařilo se uložit úložiště: {error}",
     "@adminReposSaveFailed": {
         "placeholders": {
@@ -5927,8 +5927,8 @@
     "adminNetworkingRestartWarning": "Změny nastavení sítě mohou vyžadovat restart serveru.",
     "adminNetworkingRemoteAccess": "Povolit vzdálený přístup",
     "adminNetworkingPorts": "Porty",
-    "adminNetworkingHttpPort": "Port HTTP",
-    "adminNetworkingHttpsPort": "Port HTTPS",
+    "adminNetworkingHttpPort": "HTTP port",
+    "adminNetworkingHttpsPort": "HTTPS port",
     "adminNetworkingEnableHttps": "Povolit HTTPS",
     "adminNetworkingLocalNetwork": "Místní síť",
     "adminNetworkingLocalAddresses": "Lokální síťové adresy",
@@ -5938,7 +5938,7 @@
     "adminNetworkingWhitelist": "Seznam povolených",
     "adminNetworkingBlacklist": "Černá listina",
     "adminNetworkingAddEntry": "Přidat záznam",
-    "adminBrandingTitle": "Vzhled značky",
+    "adminBrandingTitle": "Branding",
     "adminBrandingLoginDisclaimer": "Zřeknutí se odpovědnosti za přihlášení",
     "adminBrandingLoginDisclaimerHint": "HTML zobrazené pod přihlašovacím formulářem",
     "adminBrandingCustomCss": "Vlastní CSS",
@@ -5984,7 +5984,7 @@
     "adminTaskCancelling": "Rušení...",
     "adminTaskRunning": "Běh...",
     "adminTaskNeverRun": "Nikdy neutíkej",
-    "adminTaskStop": "Zastavit",
+    "adminTaskStop": "Zastávka",
     "adminTaskRun": "Běh",
     "adminTaskDetailLastExecution": "Poslední exekuce",
     "adminTaskDetailStarted": "Zahájeno",
@@ -6028,7 +6028,7 @@
     "adminTaskTriggerEvery12Hours": "Každých 12 hodin",
     "adminTaskTriggerEvery24Hours": "Každých 24 hodin",
     "adminTaskTriggerEvery2Days": "Každé 2 dny",
-    "adminTaskTriggerHours": "{count, plural, one{1 hodina} few{{count} hodiny} many{{count} hodiny} other{{count} hodin}}",
+    "adminTaskTriggerHours": "{count, plural, one{1 hour} other{{count} hours}}",
     "@adminTaskTriggerHours": {
         "placeholders": {
             "count": {
@@ -6068,7 +6068,7 @@
         }
     },
     "adminActivityNow": "teď",
-    "adminActivityMinutesShort": "{minutes} min",
+    "adminActivityMinutesShort": "{minutes}m",
     "@adminActivityMinutesShort": {
         "placeholders": {
             "minutes": {
@@ -6076,7 +6076,7 @@
             }
         }
     },
-    "adminActivityHoursShort": "{hours} h",
+    "adminActivityHoursShort": "{hours}h",
     "@adminActivityHoursShort": {
         "placeholders": {
             "hours": {
@@ -6084,7 +6084,7 @@
             }
         }
     },
-    "adminActivityDaysShort": "{days} d",
+    "adminActivityDaysShort": "{days}d",
     "@adminActivityDaysShort": {
         "placeholders": {
             "days": {
@@ -6092,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{day}. {month}.",
+    "adminActivityDateShort": "{month}/{day}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
@@ -6106,7 +6106,7 @@
     "adminTrickplayDescription": "Nakonfigurujte generování obrázků trickplay pro náhledy náhledů.",
     "adminNetworkingPublicHttpsPort": "Veřejný port HTTPS",
     "adminNetworkingBaseUrl": "Základní URL",
-    "adminNetworkingBaseUrlHint": "např. /jellyfin",
+    "adminNetworkingBaseUrlHint": "např. /ploutev",
     "adminNetworkingHttps": "HTTPS",
     "adminNetworkingCertPath": "Cesta k certifikátu",
     "adminNetworkingRemoteIpFilter": "Vzdálený IP filtr",
@@ -6170,7 +6170,7 @@
     "syncPlayServerUnsupportedMessage": "SyncPlay vyžaduje server Jellyfin. Aktuální server to nepodporuje.",
     "syncPlayGroupFallbackName": "Skupina SyncPlay",
     "syncPlayGroupTooltip": "skupina SyncPlay",
-    "syncPlayParticipantCount": "{count, plural, one {# účastník} few {# účastníci} many {# účastníka} other {# účastníků}}",
+    "syncPlayParticipantCount": "{count, plural, one {# participant} other {# participants}}",
     "@syncPlayParticipantCount": {
         "description": "Participant count label shown in SyncPlay UI",
         "placeholders": {
@@ -6251,7 +6251,7 @@
     "rememberMyChoice": "Zapamatuj si mou volbu",
     "playHdr10Fallback": "Přehrajte záložní verzi HDR10",
     "requestTranscode": "Požádat o překódování",
-    "integrationRowsDiscoveredCount": "{count, plural, one {nalezen # řádek} few {nalezeny # řádky} many {nalezeno # řádku} other {nalezeno # řádků}}",
+    "integrationRowsDiscoveredCount": "{count, plural, one {# row discovered} other {# rows discovered}}",
     "@integrationRowsDiscoveredCount": {
         "description": "Plural label for number of rows discovered in integration status",
         "placeholders": {
@@ -6326,16 +6326,16 @@
     "pinIncorrect": "Nesprávný PIN",
     "pinMismatch": "Kódy PIN se neshodují",
     "pinForgot": "Zapomněli jste PIN?",
-    "pinClear": "Vymazat",
+    "pinClear": "Jasný",
     "pinBackspace": "Backspace",
-    "quickConnectAuthorized": "Požadavek Quick Connect byl schválen.",
+    "quickConnectAuthorized": "Požadavek na rychlé připojení povolen.",
     "quickConnectInvalidOrExpired": "Kód Quick Connect je neplatný nebo jeho platnost vypršela.",
-    "quickConnectNotSupported": "Quick Connect není na tomto serveru podporován.",
+    "quickConnectNotSupported": "Rychlé připojení není na tomto serveru podporováno.",
     "quickConnectAuthorizeFailed": "Nepodařilo se autorizovat kód Quick Connect.",
-    "quickConnectDisabled": "Quick Connect je na tomto serveru zakázán.",
-    "quickConnectForbidden": "Váš účet nemůže autorizovat tento požadavek Quick Connect.",
-    "quickConnectNotFound": "Kód Quick Connect nebyl nalezen. Zkuste nový kód.",
-    "quickConnectFailedWithMessage": "Quick Connect se nezdařil: {message}",
+    "quickConnectDisabled": "Rychlé připojení je na tomto serveru zakázáno.",
+    "quickConnectForbidden": "Váš účet nemůže autorizovat tento požadavek rychlého připojení.",
+    "quickConnectNotFound": "Kód rychlého připojení nebyl nalezen. Zkuste nový kód.",
+    "quickConnectFailedWithMessage": "Rychlé připojení se nezdařilo: {message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
             "message": {
@@ -6371,7 +6371,7 @@
     },
     "noRemoteDevices": "Nejsou k dispozici žádná zařízení pro vzdálené přehrávání.",
     "noRemoteDevicesIos": "Nejsou k dispozici žádná zařízení pro vzdálené přehrávání.\n\nNa iOS mohou být cíle AirPlay v simulátoru nedostupné.",
-    "trackActionPlayNext": "Přehrát jako další",
+    "trackActionPlayNext": "Play Next",
     "trackActionAddToQueue": "Přidat do fronty",
     "trackActionAddToPlaylist": "Přidat do seznamu skladeb",
     "trackActionCancelDownload": "Zrušit stahování",
@@ -6392,7 +6392,7 @@
     },
     "trackActionDeletedFile": "Smazaný stažený soubor",
     "trackActionDeleteFileFailed": "Stažený soubor nelze smazat",
-    "shuffleBy": "Zamíchat podle",
+    "shuffleBy": "Shuffle By",
     "shuffleSelectLibrary": "Vyberte Knihovna",
     "shuffleSelectGenre": "Vyberte Žánr",
     "shuffleLibrary": "Knihovna",
@@ -6413,9 +6413,9 @@
     "addToPlaylist": "Přidat do seznamu skladeb",
     "lyricsNotAvailable": "Nejsou k dispozici žádné texty",
     "upNext": "Nahoru Další",
-    "playNext": "Přehrát jako další",
+    "playNext": "Play Next",
     "stillWatchingContent": "Přehrávání bylo pozastaveno. Pořád se díváš?",
-    "stillWatchingStop": "Zastavit",
+    "stillWatchingStop": "Zastávka",
     "stillWatchingContinue": "Pokračovat",
     "skipSegment": "Přeskočit {segment}",
     "@skipSegment": {
@@ -6567,7 +6567,7 @@
     "settingsCheckForUpdates": "Zkontrolujte aktualizace",
     "settingsCheckForUpdatesSubtitle": "Podívejte se na nejnovější vydání Moonfin",
     "settingsPoweredByFlutter": "Běží na Flutter",
-    "settingsLicenseNoticesCount": "{count, plural, one {# licenční upozornění} few {# licenční upozornění} many {# licenčního upozornění} other {# licenčních upozornění}}",
+    "settingsLicenseNoticesCount": "{count, plural, one {# license notice} other {# license notices}}",
     "@settingsLicenseNoticesCount": {
         "description": "Plural label for number of license notices",
         "placeholders": {
@@ -6594,7 +6594,7 @@
     "settingsMaxBitrateDescription": "Omezení datového toku streamování. Obsah nad touto hranicí bude překódován tak, aby se vešel.",
     "settingsMaxResolutionDescription": "Omezte maximální rozlišení, které bude přehrávač požadovat. Obsah ve vyšším rozlišení bude překódován.",
     "settingsPlayerZoomDescription": "Jak by mělo být video zmenšeno, aby se vešlo na obrazovku.",
-    "settingsPlaybackEngineAndroidTv": "Přehrávací jádro (Android TV)",
+    "settingsPlaybackEngineAndroidTv": "Playback Engine (Android TV)",
     "settingsPlaybackEngineAndroidTvDescription": "Vyberte výchozí modul přehrávání na zařízeních Android TV. Změny se použijí na další relaci přehrávání.",
     "settingsPlaybackEngineMedia3Recommended": "Media3 (doporučeno)",
     "settingsPlaybackEngineMpvLegacy": "mpv (starší)",
@@ -6763,7 +6763,7 @@
     "@musicVideos": {
         "description": "Section header for music videos filmography row"
     },
-    "record": "Nahrát",
+    "record": "Záznam",
     "@record": {
         "description": "Button label to schedule a live TV recording"
     },
@@ -6891,7 +6891,7 @@
     "@settingsAudioRouteSpeaker": {
         "description": "Audio route type speaker"
     },
-    "settingsAudioPcmChannels": "{count}k PCM",
+    "settingsAudioPcmChannels": "{count}ch PCM",
     "@settingsAudioPcmChannels": {
         "description": "Audio route subtitle showing max PCM channels",
         "placeholders": {
@@ -7077,7 +7077,7 @@
     "externalPlayerAskEachTimeSubtitle": "Při spuštění přehrávání zobrazit výběr aplikací.",
     "loadingInstalledPlayers": "Načítání nainstalovaných přehrávačů...",
     "connection": "Spojení",
-    "audioTranscodeTarget": "Cílový formát překódování zvuku",
+    "audioTranscodeTarget": "Audio Transcode Target",
     "passthrough": "Průchod",
     "supportedOnThisDevice": "Podporováno na tomto zařízení",
     "notSupportedOnThisDevice": "Na tomto zařízení není podporováno",
@@ -7158,7 +7158,7 @@
     "openIosRoutePicker": "Otevřete výběr trasy pro iOS",
     "airPlayRoutePickerUnavailable": "Výběr trasy AirPlay není na tomto zařízení k dispozici.",
     "videos": "videa",
-    "trailers": "Upoutávky",
+    "trailers": "Přívěsy",
     "programs": "Programy",
     "songs": "Písně",
     "photoAlbums": "Fotoalba",
@@ -7192,7 +7192,7 @@
     "analyticsTopArtists": "Nejlepší umělci",
     "analyticsTopAuthors": "Nejlepší autoři",
     "analyticsTopContributors": "Hlavní přispěvatelé",
-    "analyticsLibrariesCount": "{count, plural, =1{1 knihovna} few{{count} knihovny} many{{count} knihovny} other{{count} knihoven}}",
+    "analyticsLibrariesCount": "{count, plural, =1{1 Library} other{{count} Libraries}}",
     "@analyticsLibrariesCount": {
         "placeholders": {
             "count": {
@@ -7207,7 +7207,7 @@
     "adminServerAdministrationTitle": "Správa serveru",
     "adminServerPathData": "Data",
     "adminServerPathImageCache": "Mezipaměť obrázků",
-    "adminServerPathCache": "Mezipaměť",
+    "adminServerPathCache": "Cache",
     "adminServerPathLogs": "Protokoly",
     "adminServerPathMetadata": "Metadata",
     "adminServerPathTranscode": "Překódovat",
@@ -7302,199 +7302,199 @@
     "cb7ExtractionPluginUnavailable": "Zásuvný modul pro extrakci CB7 není na této platformě dostupný.",
     "closeGenrePanel": "Zavřít panel žánru",
     "loadingShuffle": "Načítání náhodného přehrávání...",
-    "libraryShuffleLabel": "ZAMÍCHÁNÍ KNIHOVNY",
-    "randomShuffleLabel": "NÁHODNÉ ZAMÍCHÁNÍ",
-    "genresShuffleLabel": "ZAMÍCHÁNÍ ŽÁNRŮ",
+    "libraryShuffleLabel": "LIBRARY SHUFFLE",
+    "randomShuffleLabel": "RANDOM SHUFFLE",
+    "genresShuffleLabel": "GENRES SHUFFLE",
     "autoHdrSwitching": "Automatické přepínání HDR",
     "autoHdrSwitchingDescription": "Automaticky povolte HDR pro přehrávání videa HDR a obnovte režim zobrazení při ukončení.",
     "whenFullscreen": "Při zobrazení na celou obrazovku",
     "transcodingLimits": "Limity překódování",
     "settingsSupportMoonfinSubtitle": "Darujte kávu vývojáři",
-    "accountPreferences": "PŘEDVOLBY ÚČTU",
+    "accountPreferences": "",
     "@accountPreferences": {
         "description": "Section header for account preferences settings"
     },
-    "interfaceLanguage": "Jazyk rozhraní",
+    "interfaceLanguage": "",
     "@interfaceLanguage": {
         "description": "Label for the app interface language setting"
     },
-    "systemLanguageDefault": "Výchozí nastavení systému",
+    "systemLanguageDefault": "",
     "@systemLanguageDefault": {
         "description": "Label for using the system default language in settings"
     },
-    "empty": "Prázdné",
+    "empty": "",
     "@empty": {
         "description": "Label indicating a section or category is empty"
     },
-    "detailScreenStyle": "Styl obrazovky s detaily",
+    "detailScreenStyle": "",
     "@detailScreenStyle": {
         "description": "Label for the media detail screen layout style setting"
     },
-    "detailScreenStyleSubtitle": "Klasický je původní vystředěné rozvržení Moonfinu. Moderní je responzivní filmové rozvržení.",
+    "detailScreenStyleSubtitle": "",
     "@detailScreenStyleSubtitle": {
         "description": "Explanation under the detail screen style setting"
     },
-    "detailScreenStyleMoonfin": "Klasický",
+    "detailScreenStyleMoonfin": "",
     "@detailScreenStyleMoonfin": {
         "description": "Detail screen style option: the classic centered layout"
     },
-    "detailScreenStyleModern": "Moderní",
+    "detailScreenStyleModern": "",
     "@detailScreenStyleModern": {
         "description": "Detail screen style option: the responsive cinematic layout"
     },
-    "expandedTabs": "Rozbalené karty",
+    "expandedTabs": "",
     "@expandedTabs": {
         "description": "Label for the detail screen expanded tabs setting"
     },
-    "expandedTabsSubtitle": "Automaticky zobrazovat obsah karty při procházení. Vypněte, pokud chcete každou kartu otevírat a zavírat ručně.",
+    "expandedTabsSubtitle": "",
     "@expandedTabsSubtitle": {
         "description": "Explanation under the expanded tabs setting"
     },
-    "showTechnicalDetails": "Zobrazit technické údaje?",
+    "showTechnicalDetails": "",
     "@showTechnicalDetails": {
         "description": "Label for the detail screen setting to show stream/codec technical details"
     },
-    "showTechnicalDetailsSubtitle": "Zobrazit v souhrnu banneru kodek, rozlišení a informace o streamu",
+    "showTechnicalDetailsSubtitle": "",
     "@showTechnicalDetailsSubtitle": {
         "description": "Explanation under the show technical details setting"
     },
-    "recommendationSystem": "Systém doporučení",
+    "recommendationSystem": "",
     "@recommendationSystem": {
         "description": "Label for the Recommendation System setting"
     },
-    "recommendationSystemSubtitle": "Použijte algoritmus Moonfin doporučuje pro místní knihovnu, nebo online metriky podobnosti z TMDb. Poznámka: Online doporučení vyžadují integraci Seerr.",
+    "recommendationSystemSubtitle": "",
     "@recommendationSystemSubtitle": {
         "description": "Explanation under the recommendation system setting"
     },
-    "recommendationSystemMoonfin": "Moonfin doporučuje",
+    "recommendationSystemMoonfin": "",
     "@recommendationSystemMoonfin": {
         "description": "Recommendation system option: Moonfin Recommends"
     },
-    "recommendationSystemTmdb": "Podobnost podle TMDb",
+    "recommendationSystemTmdb": "",
     "@recommendationSystemTmdb": {
         "description": "Recommendation system option: TMDb Similarity"
     },
-    "recommendationsApplyParentalRatingCap": "Použít limit rodičovského hodnocení?",
+    "recommendationsApplyParentalRatingCap": "",
     "@recommendationsApplyParentalRatingCap": {
         "description": "Label for the toggle that controls whether similar suggestions are capped by target media parental rating"
     },
-    "recommendationsApplyParentalRatingCapSubtitle": "Omezit návrhy Moonfin doporučuje podle rodičovského hodnocení cílového média",
+    "recommendationsApplyParentalRatingCapSubtitle": "",
     "@recommendationsApplyParentalRatingCapSubtitle": {
         "description": "Explanation under the parental rating cap setting toggle"
     },
-    "interfaceStyle": "Styl rozhraní",
+    "interfaceStyle": "",
     "@interfaceStyle": {
         "description": "Label for the Automatic/Apple/Material interface style setting"
     },
-    "interfaceStyleSubtitle": "Automatický se přizpůsobí vašemu zařízení. Zvolte Apple nebo Material pro vynucení vzhledu.",
+    "interfaceStyleSubtitle": "",
     "@interfaceStyleSubtitle": {
         "description": "Explanation under the interface style setting"
     },
-    "interfaceStyleAutomatic": "Automatický",
+    "interfaceStyleAutomatic": "",
     "@interfaceStyleAutomatic": {
         "description": "Interface style option: follow the platform"
     },
-    "interfaceStyleApple": "Apple",
+    "interfaceStyleApple": "",
     "@interfaceStyleApple": {
         "description": "Interface style option: Apple native look"
     },
-    "interfaceStyleMaterial": "Material",
+    "interfaceStyleMaterial": "",
     "@interfaceStyleMaterial": {
         "description": "Interface style option: Material look"
     },
-    "glassQuality": "Kvalita skla",
+    "glassQuality": "",
     "@glassQuality": {
         "description": "Label for the glass rendering quality setting"
     },
-    "glassQualitySubtitle": "Automaticky vybere nejlepší efekt skla pro toto zařízení. Plná vynutí skutečné rozostření; Snížená používá odlehčené sklo, které šetří výkon GPU.",
+    "glassQualitySubtitle": "",
     "@glassQualitySubtitle": {
         "description": "Explanation under the glass quality setting"
     },
-    "glassQualityAuto": "Automaticky",
+    "glassQualityAuto": "",
     "@glassQualityAuto": {
         "description": "Glass quality option: per-device default"
     },
-    "glassQualityFull": "Plná",
+    "glassQualityFull": "",
     "@glassQualityFull": {
         "description": "Glass quality option: force real blur"
     },
-    "glassQualityReduced": "Snížená",
+    "glassQualityReduced": "",
     "@glassQualityReduced": {
         "description": "Glass quality option: lightweight zero-blur glass"
     },
-    "customThemeTitle": "Vlastní motiv",
+    "customThemeTitle": "",
     "@customThemeTitle": {
         "description": "Title for the custom theme settings section"
     },
-    "customThemeSubtitle": "Vlastní motivy mění vzhled napříč celým Moonfinem. Vyberte si možnost, která vyhovuje vašemu stylu.",
+    "customThemeSubtitle": "",
     "@customThemeSubtitle": {
         "description": "Description under custom themes section"
     },
-    "themeGlass": "Glass",
+    "themeGlass": "",
     "@themeGlass": {
         "description": "Display name for the Glass theme"
     },
-    "themeGlassSubtitle": "Styl tekutého skla s plynoucím přechodem na pozadí, matnými plochami a modrým akcentem ve stylu Apple",
+    "themeGlassSubtitle": "",
     "@themeGlassSubtitle": {
         "description": "Preview description for the Glass theme"
     },
-    "theme8BitHero": "8-bit Hero",
+    "theme8BitHero": "",
     "@theme8BitHero": {
         "description": "Display name for the 8-bit Hero theme"
     },
-    "theme8BitHeroSubtitle": "Retro pixel-art styl s hrubou paletou, hranatými okraji, ostrými stíny a pixelovým písmem",
+    "theme8BitHeroSubtitle": "",
     "@theme8BitHeroSubtitle": {
         "description": "Preview description for the 8-bit Hero theme"
     },
-    "gameMenu": "Nabídka",
+    "gameMenu": "",
     "@gameMenu": {
         "description": "Tooltip for the in-game menu button"
     },
-    "gamePaused": "Pozastaveno",
+    "gamePaused": "",
     "@gamePaused": {
         "description": "Status shown in the in-game menu while the game is paused"
     },
-    "gameSaveState": "Uložit stav",
+    "gameSaveState": "",
     "@gameSaveState": {
         "description": "In-game menu action to save the game state"
     },
-    "games": "Hry",
+    "games": "",
     "@games": {
         "description": "Label for the games category tab in search results"
     },
-    "gameLoadState": "Načíst stav",
+    "gameLoadState": "",
     "@gameLoadState": {
         "description": "In-game menu action to load the saved game state"
     },
-    "gameFastForward": "Zrychlit",
+    "gameFastForward": "",
     "@gameFastForward": {
         "description": "In-game menu action to toggle fast-forward"
     },
-    "gameEmulatorSettings": "Nastavení emulátoru",
+    "gameEmulatorSettings": "",
     "@gameEmulatorSettings": {
         "description": "In-game menu action opening the emulator settings"
     },
-    "gameNoCoreOptions": "Toto jádro nemá žádné nastavitelné možnosti.",
+    "gameNoCoreOptions": "",
     "@gameNoCoreOptions": {
         "description": "Shown when a game core exposes no settings"
     },
-    "gameHoldToOpenMenu": "Podržením otevřete nabídku",
+    "gameHoldToOpenMenu": "",
     "@gameHoldToOpenMenu": {
         "description": "Hint shown while holding the gamepad combo to open the in-game menu"
     },
-    "gamePlaybackUnsupported": "Spouštění her zatím není na tomto zařízení podporováno.",
+    "gamePlaybackUnsupported": "",
     "@gamePlaybackUnsupported": {
         "description": "Shown when the device cannot run the retro-game emulator"
     },
-    "latestBooks": "Nejnovější knihy",
+    "latestBooks": "",
     "@latestBooks": {
         "description": "Row title for recently added books in the book library"
     },
-    "latestAudiobooks": "Nejnovější audioknihy",
+    "latestAudiobooks": "",
     "@latestAudiobooks": {
         "description": "Row title for recently added audiobooks in the book library"
     },
-    "bookSeriesItemCount": "{count, plural, =1{1 kniha} few{{count} knihy} many{{count} knihy} other{{count} knih}}",
+    "bookSeriesItemCount": "",
     "@bookSeriesItemCount": {
         "description": "Subtitle for a book series shelf entry showing how many books it contains",
         "placeholders": {
@@ -7503,15 +7503,15 @@
             }
         }
     },
-    "bookFormatBook": "Kniha",
+    "bookFormatBook": "",
     "@bookFormatBook": {
         "description": "Semantic label for the book format badge on library cards"
     },
-    "bookFormatAudiobook": "Audiokniha",
+    "bookFormatAudiobook": "",
     "@bookFormatAudiobook": {
         "description": "Semantic label for the audiobook format badge on library cards"
     },
-    "bookPercentRead": "Přečteno {percent} %",
+    "bookPercentRead": "",
     "@bookPercentRead": {
         "description": "Reading progress label on book cards",
         "placeholders": {
@@ -7520,7 +7520,7 @@
             }
         }
     },
-    "bookTimeLeft": "Zbývá {time}",
+    "bookTimeLeft": "",
     "@bookTimeLeft": {
         "description": "Short remaining-duration chip on audiobook cards, e.g. '6h 12m left'",
         "placeholders": {
@@ -7529,47 +7529,47 @@
             }
         }
     },
-    "bookHeroRead": "Číst",
+    "bookHeroRead": "",
     "@bookHeroRead": {
         "description": "Hero CTA label to start reading a book"
     },
-    "bookHeroListen": "Poslouchat",
+    "bookHeroListen": "",
     "@bookHeroListen": {
         "description": "Hero CTA label to start listening to an audiobook"
     },
-    "items": "Položky",
+    "items": "",
     "@items": {
         "description": "Tab label for the items in a collection/box set"
     },
-    "extras": "Bonusy",
+    "extras": "",
     "@extras": {
         "description": "Tab label for special features / extras"
     },
-    "behindTheScenes": "Ze zákulisí",
+    "behindTheScenes": "",
     "@behindTheScenes": {
         "description": "Tab label for behind the scenes special features"
     },
-    "deletedScenes": "Vystřižené scény",
+    "deletedScenes": "",
     "@deletedScenes": {
         "description": "Tab label for deleted scenes special features"
     },
-    "featurettes": "Featurettes",
+    "featurettes": "",
     "@featurettes": {
         "description": "Tab label for featurettes special features"
     },
-    "interviews": "Rozhovory",
+    "interviews": "",
     "@interviews": {
         "description": "Tab label for interviews special features"
     },
-    "scenes": "Scény",
+    "scenes": "",
     "@scenes": {
         "description": "Tab label for scenes special features"
     },
-    "shorts": "Krátké filmy",
+    "shorts": "",
     "@shorts": {
         "description": "Tab label for shorts special features"
     },
-    "timeRemaining": "Zbývá {time}",
+    "timeRemaining": "",
     "@timeRemaining": {
         "description": "Label showing remaining playback time, e.g. '42m remaining'",
         "placeholders": {
@@ -7578,7 +7578,7 @@
             }
         }
     },
-    "endsIn": "Končí za {time}",
+    "endsIn": "",
     "@endsIn": {
         "description": "Label showing remaining time for segment or timeout",
         "placeholders": {
@@ -7587,27 +7587,27 @@
             }
         }
     },
-    "directors": "REŽIE",
+    "directors": "",
     "@directors": {
         "description": "Metadata label for directors"
     },
-    "writer": "SCÉNÁŘ",
+    "writer": "",
     "@writer": {
         "description": "Metadata label for writer"
     },
-    "shuffleAllMusic": "Zamíchat veškerou hudbu",
+    "shuffleAllMusic": "",
     "@shuffleAllMusic": {
         "description": "Car browse action that shuffles the whole music library"
     },
-    "carSignInPrompt": "Přihlaste se do Moonfinu na telefonu",
+    "carSignInPrompt": "",
     "@carSignInPrompt": {
         "description": "Shown in the car when no account is signed in"
     },
-    "carServerUnreachable": "Nelze se připojit k serveru",
+    "carServerUnreachable": "",
     "@carServerUnreachable": {
         "description": "Shown in the car when the media server can't be reached"
     },
-    "guideNextProgram": "Následuje: {time}  {title}",
+    "guideNextProgram": "",
     "@guideNextProgram": {
         "description": "Guide card line for the upcoming program, e.g. 'Next: 9:00 PM  The News'",
         "placeholders": {
@@ -7619,7 +7619,7 @@
             }
         }
     },
-    "guideMinutesLeft": "Zbývá {minutes} min",
+    "guideMinutesLeft": "",
     "@guideMinutesLeft": {
         "description": "Remaining time of the current program, under an hour",
         "placeholders": {
@@ -7628,7 +7628,7 @@
             }
         }
     },
-    "guideHoursLeft": "Zbývá {hours} h",
+    "guideHoursLeft": "",
     "@guideHoursLeft": {
         "description": "Remaining time of the current program, whole hours",
         "placeholders": {
@@ -7637,7 +7637,7 @@
             }
         }
     },
-    "guideHoursMinutesLeft": "Zbývá {hours} h {minutes} min",
+    "guideHoursMinutesLeft": "",
     "@guideHoursMinutesLeft": {
         "description": "Remaining time of the current program, hours and minutes",
         "placeholders": {
@@ -7649,301 +7649,301 @@
             }
         }
     },
-    "themeMusicSettingsSubtitle": "Stránky s detaily, domovské řádky a hlasitost",
+    "themeMusicSettingsSubtitle": "",
     "@themeMusicSettingsSubtitle": {
         "description": "Subtitle for the Theme Music settings sub-category tile"
     },
-    "loopThemeMusic": "Opakovat úvodní hudbu",
+    "loopThemeMusic": "",
     "@loopThemeMusic": {
         "description": "Setting to loop the theme music"
     },
-    "loopThemeMusicSubtitle": "Přehrávat skladbu dokola místo jednoho přehrání",
+    "loopThemeMusicSubtitle": "",
     "@loopThemeMusicSubtitle": {
         "description": "Description for the loop theme music setting"
     },
-    "settingsScrollWheelAction": "Kolečko myši",
+    "settingsScrollWheelAction": "",
     "@settingsScrollWheelAction": {
         "description": "Setting title for the mouse scroll wheel action during playback"
     },
-    "settingsScrollWheelActionDescription": "Zvolte, co má během přehrávání dělat rolování kolečkem myši nad videem.",
+    "settingsScrollWheelActionDescription": "",
     "@settingsScrollWheelActionDescription": {
         "description": "Description for the mouse scroll wheel action setting"
     },
-    "scrollWheelActionOff": "Vypnuto",
+    "scrollWheelActionOff": "",
     "@scrollWheelActionOff": {
         "description": "Scroll wheel action option: do nothing"
     },
-    "scrollWheelActionSeek": "Převíjení (vpřed / zpět)",
+    "scrollWheelActionSeek": "",
     "@scrollWheelActionSeek": {
         "description": "Scroll wheel action option: seek forward and back"
     },
-    "scrollWheelActionVolume": "Hlasitost",
+    "scrollWheelActionVolume": "",
     "@scrollWheelActionVolume": {
         "description": "Scroll wheel action option: adjust volume"
     },
-    "playerTooltipVolume": "Hlasitost",
+    "playerTooltipVolume": "",
     "@playerTooltipVolume": {
         "description": "Tooltip for the volume control button in the player OSD"
     },
-    "fallbackAudioLanguage": "Záložní jazyk zvuku",
+    "fallbackAudioLanguage": "",
     "@fallbackAudioLanguage": {
         "description": "Setting for fallback audio language"
     },
-    "preferDefaultAudioTrack": "Upřednostnit výchozí zvukovou stopu",
+    "preferDefaultAudioTrack": "",
     "@preferDefaultAudioTrack": {
         "description": "Setting for preferring default audio track"
     },
-    "preferDefaultAudioTrackDescription": "Upřednostnit původní zvukovou stopu před lokalizovaným dabingem.",
+    "preferDefaultAudioTrackDescription": "",
     "@preferDefaultAudioTrackDescription": {
         "description": "Description for preferring default audio track setting"
     },
-    "preferAudioDescription": "Upřednostnit stopy s audiopopisem",
+    "preferAudioDescription": "",
     "@preferAudioDescription": {
         "description": "Setting for preferring audio description tracks"
     },
-    "preferAudioDescriptionDescription": "Upřednostnit stopy s audiopopisem před běžnými stopami.",
+    "preferAudioDescriptionDescription": "",
     "@preferAudioDescriptionDescription": {
         "description": "Description for preferring audio description tracks setting"
     },
-    "transcodingAudio": "Překódování (zvuk)",
+    "transcodingAudio": "",
     "@transcodingAudio": {
         "description": "Label for audio-only transcode playback method"
     },
-    "directStreamRemux": "Přímý stream (remux)",
+    "directStreamRemux": "",
     "@directStreamRemux": {
         "description": "Play method label for direct stream with remuxing"
     },
-    "transcodingBitrateOrResolution": "Překódování (datový tok nebo rozlišení)",
+    "transcodingBitrateOrResolution": "",
     "@transcodingBitrateOrResolution": {
         "description": "Play method label for transcoding due to bitrate or resolution"
     },
-    "transcodingVideoAndAudio": "Překódování (video a zvuk)",
+    "transcodingVideoAndAudio": "",
     "@transcodingVideoAndAudio": {
         "description": "Play method label for transcoding both video and audio"
     },
-    "transcodingVideo": "Překódování (video)",
+    "transcodingVideo": "",
     "@transcodingVideo": {
         "description": "Play method label for transcoding video"
     },
-    "settingsAudioOutputModeDescription": "Zvolte, jak se zvuk dekóduje. AVR Passthrough posílá surové streamy Dolby/DTS do vašeho receiveru; Automaticky nebo Downmix dekódují lokálně.",
+    "settingsAudioOutputModeDescription": "",
     "@settingsAudioOutputModeDescription": {
         "description": "Description for audio output mode setting"
     },
-    "settingsAudioFallbackCodecDescription": "Vyberte cílový formát pro překódování vícekanálového zvuku, když zdrojový stream nelze přehrát přímo ani poslat v původní podobě.",
+    "settingsAudioFallbackCodecDescription": "",
     "@settingsAudioFallbackCodecDescription": {
         "description": "Description for audio fallback codec setting"
     },
-    "settingsAudioFallbackCodecAuto": "Automatická detekce\n(doporučeno)",
+    "settingsAudioFallbackCodecAuto": "",
     "@settingsAudioFallbackCodecAuto": {
         "description": "Fallback codec option: Auto"
     },
-    "settingsAudioFallbackCodecAac": "AAC\n(výchozí)",
+    "settingsAudioFallbackCodecAac": "",
     "@settingsAudioFallbackCodecAac": {
         "description": "Fallback codec option: AAC"
     },
-    "settingsAudioFallbackCodecAc3": "AC3\n(Dolby Digital)",
+    "settingsAudioFallbackCodecAc3": "",
     "@settingsAudioFallbackCodecAc3": {
         "description": "Fallback codec option: AC3"
     },
-    "settingsAudioFallbackCodecEac3": "EAC3\n(Dolby Digital Plus)",
+    "settingsAudioFallbackCodecEac3": "",
     "@settingsAudioFallbackCodecEac3": {
         "description": "Fallback codec option: EAC3"
     },
-    "settingsAudioFallbackCodecTrueHd": "TrueHD\n(bezztrátový)",
+    "settingsAudioFallbackCodecTrueHd": "",
     "@settingsAudioFallbackCodecTrueHd": {
         "description": "Fallback codec option: TrueHD"
     },
-    "settingsAudioFallbackCodecMp3": "MP3\n(pouze stereo)",
+    "settingsAudioFallbackCodecMp3": "",
     "@settingsAudioFallbackCodecMp3": {
         "description": "Fallback codec option: MP3"
     },
-    "settingsAudioFallbackCodecOpus": "Opus\n(úsporný)",
+    "settingsAudioFallbackCodecOpus": "",
     "@settingsAudioFallbackCodecOpus": {
         "description": "Fallback codec option: Opus"
     },
-    "settingsAudioFallbackCodecFlac": "FLAC\n(bezztrátový)",
+    "settingsAudioFallbackCodecFlac": "",
     "@settingsAudioFallbackCodecFlac": {
         "description": "Fallback codec option: FLAC"
     },
-    "settingsMaxAudioChannels": "Maximální počet zvukových kanálů",
+    "settingsMaxAudioChannels": "",
     "@settingsMaxAudioChannels": {
         "description": "Setting for maximum audio channels capability"
     },
-    "settingsMaxAudioChannelsDescription": "Nastavte maximální počet kanálů vaší zvukové sestavy. Vícekanálové streamy nad tímto limitem se smíchají do menšího počtu kanálů nebo překódují.",
+    "settingsMaxAudioChannelsDescription": "",
     "@settingsMaxAudioChannelsDescription": {
         "description": "Description for maximum audio channels setting"
     },
-    "settingsMaxAudioChannelsAuto": "Automatická detekce\n(výchozí podle hardwaru)",
+    "settingsMaxAudioChannelsAuto": "",
     "@settingsMaxAudioChannelsAuto": {
         "description": "Option: Auto detect channels"
     },
-    "settingsMaxAudioChannelsMono": "1.0 Mono",
+    "settingsMaxAudioChannelsMono": "",
     "@settingsMaxAudioChannelsMono": {
         "description": "Option: Mono (1 channel)"
     },
-    "settingsMaxAudioChannelsStereo": "2.0 Stereo",
+    "settingsMaxAudioChannelsStereo": "",
     "@settingsMaxAudioChannelsStereo": {
         "description": "Option: Stereo (2 channels)"
     },
-    "settingsMaxAudioChannels3_0": "3.0 / 2.1 Surround",
+    "settingsMaxAudioChannels3_0": "",
     "@settingsMaxAudioChannels3_0": {
         "description": "Option: 3 channels"
     },
-    "settingsMaxAudioChannels4_0": "4.0 / 3.1 Kvadrofonní",
+    "settingsMaxAudioChannels4_0": "",
     "@settingsMaxAudioChannels4_0": {
         "description": "Option: 4 channels"
     },
-    "settingsMaxAudioChannels5_0": "5.0 / 4.1 Surround",
+    "settingsMaxAudioChannels5_0": "",
     "@settingsMaxAudioChannels5_0": {
         "description": "Option: 5 channels"
     },
-    "settingsMaxAudioChannels5_1": "5.1 Surround",
+    "settingsMaxAudioChannels5_1": "",
     "@settingsMaxAudioChannels5_1": {
         "description": "Option: 5.1 Surround channels"
     },
-    "settingsMaxAudioChannels6_1": "6.1 Surround",
+    "settingsMaxAudioChannels6_1": "",
     "@settingsMaxAudioChannels6_1": {
         "description": "Option: 6.1 Surround channels"
     },
-    "settingsMaxAudioChannels7_1": "7.1 Surround",
+    "settingsMaxAudioChannels7_1": "",
     "@settingsMaxAudioChannels7_1": {
         "description": "Option: 7.1 Surround channels"
     },
-    "settingsAudioRouteHeadphones": "Sluchátka",
+    "settingsAudioRouteHeadphones": "",
     "@settingsAudioRouteHeadphones": {
         "description": "Audio route type wired or USB headphones"
     },
-    "subtitleMode": "Režim titulků",
+    "subtitleMode": "",
     "@subtitleMode": {
         "description": "Setting for subtitle mode"
     },
-    "subtitleModeFlagged": "Označené",
+    "subtitleModeFlagged": "",
     "@subtitleModeFlagged": {
         "description": "Subtitle mode: default/flagged"
     },
-    "subtitleModeAlways": "Vždy",
+    "subtitleModeAlways": "",
     "@subtitleModeAlways": {
         "description": "Subtitle mode: always play"
     },
-    "subtitleModeForeign": "Cizojazyčné",
+    "subtitleModeForeign": "",
     "@subtitleModeForeign": {
         "description": "Subtitle mode: foreign/smart"
     },
-    "subtitleModeForced": "Vynucené",
+    "subtitleModeForced": "",
     "@subtitleModeForced": {
         "description": "Subtitle mode: only forced"
     },
-    "subtitleModeFlaggedDescription": "Přehrává stopy, které jsou v metadatech mediálního souboru interně označené jako „výchozí“ nebo „vynucené“.",
+    "subtitleModeFlaggedDescription": "",
     "@subtitleModeFlaggedDescription": {
         "description": "Description for flagged subtitle mode"
     },
-    "subtitleModeAlwaysDescription": "Automaticky načte a zobrazí titulky při každém spuštění videa.",
+    "subtitleModeAlwaysDescription": "",
     "@subtitleModeAlwaysDescription": {
         "description": "Description for always subtitle mode"
     },
-    "subtitleModeForeignDescription": "Automaticky zapne titulky, pokud je výchozí zvuková stopa v cizím jazyce.",
+    "subtitleModeForeignDescription": "",
     "@subtitleModeForeignDescription": {
         "description": "Description for foreign subtitle mode"
     },
-    "subtitleModeForcedDescription": "Načte pouze titulky výslovně označené příznakem „vynucené“.",
+    "subtitleModeForcedDescription": "",
     "@subtitleModeForcedDescription": {
         "description": "Description for forced subtitle mode"
     },
-    "subtitleModeNoneDescription": "Zcela vypne automatické načítání titulků.",
+    "subtitleModeNoneDescription": "",
     "@subtitleModeNoneDescription": {
         "description": "Description for none subtitle mode"
     },
-    "fallbackSubtitleLanguage": "Záložní jazyk titulků",
+    "fallbackSubtitleLanguage": "",
     "@fallbackSubtitleLanguage": {
         "description": "Setting for fallback subtitle language"
     },
-    "subtitleStream": "Stream titulků",
+    "subtitleStream": "",
     "@subtitleStream": {
         "description": "Header for subtitle stream settings"
     },
     "reportDownloadsActivity": "Zobrazovat stahování na serveru",
     "reportDownloadsActivitySubtitle": "Umožní správci serveru vidět vaše překódovaná stahování na nástěnce",
-    "navbarAlwaysExpanded": "Vždy zobrazovat popisky navigační lišty",
+    "navbarAlwaysExpanded": "",
     "@navbarAlwaysExpanded": {
         "description": "Setting to keep every top navbar heading's text label visible at all times, tvOS-style"
     },
-    "showSeerrButton": "Zobrazit tlačítko Seerr",
+    "showSeerrButton": "",
     "@showSeerrButton": {
         "description": "Setting for showing Seerr button"
     },
-    "groupItemsIntoCollections": "Seskupovat položky do kolekcí",
+    "groupItemsIntoCollections": "",
     "@groupItemsIntoCollections": {
         "description": "Setting for grouping items into collections"
     },
-    "hideCollectionAssociatedItems": "Skrýt při procházení knihoven položky patřící do kolekcí",
+    "hideCollectionAssociatedItems": "",
     "@hideCollectionAssociatedItems": {
         "description": "Description for grouping items into collections"
     },
-    "groupItemsIntoCollectionsDialogTitle": "Upozornění k seskupování knihovny",
+    "groupItemsIntoCollectionsDialogTitle": "",
     "@groupItemsIntoCollectionsDialogTitle": {
         "description": "Title of the alert dialog explaining server settings requirement"
     },
-    "groupItemsIntoCollectionsDialogMessage": "Chcete-li toto nastavení použít, ujistěte se, že máte v nastavení zobrazení dané knihovny na serveru Jellyfin nebo Emby zapnuté možnosti „Seskupovat filmy do kolekcí“ a/nebo „Seskupovat seriály do kolekcí“.",
+    "groupItemsIntoCollectionsDialogMessage": "",
     "@groupItemsIntoCollectionsDialogMessage": {
         "description": "Message of the alert dialog explaining server settings requirement"
     },
-    "trailerAudio": "Zvuk upoutávek",
+    "trailerAudio": "",
     "@trailerAudio": {
         "description": "Setting for trailer audio"
     },
-    "enableTrailerAudio": "Zapnout zvuk upoutávek v mediální liště",
+    "enableTrailerAudio": "",
     "@enableTrailerAudio": {
         "description": "Description for trailer audio"
     },
-    "fullScreenRows": "Rozšířené domovské řádky",
+    "fullScreenRows": "",
     "@fullScreenRows": {
         "description": "Setting for full screen home rows"
     },
-    "fullScreenRowsDescription": "Omezit domovské řádky na 1 řádek na obrazovku",
+    "fullScreenRowsDescription": "",
     "@fullScreenRowsDescription": {
         "description": "Description for full screen home rows"
     },
-    "currentUser": "Aktuální uživatel",
+    "currentUser": "",
     "@currentUser": {
         "description": "Option: current user"
     },
-    "clockModeStatic": "Statické",
+    "clockModeStatic": "",
     "@clockModeStatic": {
         "description": "Screensaver clock mode: fixed in a corner"
     },
-    "clockModeBouncing": "Poskakující",
+    "clockModeBouncing": "",
     "@clockModeBouncing": {
         "description": "Screensaver clock mode: bounces around the screen"
     },
-    "seerrDiscoveryRows": "Objevovací řádky Seerr",
+    "seerrDiscoveryRows": "",
     "@seerrDiscoveryRows": {
         "description": "Subtitle shown under Seerr discovery home rows"
     },
-    "seerrNotificationsSection": "Oznámení",
+    "seerrNotificationsSection": "",
     "@seerrNotificationsSection": {
         "description": "Header for the Seerr notifications settings section"
     },
-    "seerrNotifyNewRequestsTitle": "Oznámení o nových žádostech",
+    "seerrNotifyNewRequestsTitle": "",
     "@seerrNotifyNewRequestsTitle": {
         "description": "Title for the toggle that notifies approvers of new Seerr requests"
     },
-    "seerrNotifyNewRequestsSubtitle": "Upozornit mě, když někdo odešle žádost",
+    "seerrNotifyNewRequestsSubtitle": "",
     "@seerrNotifyNewRequestsSubtitle": {
         "description": "Subtitle for the new request notifications toggle"
     },
-    "seerrNotifyLibraryAddedTitle": "Aktualizace žádostí",
+    "seerrNotifyLibraryAddedTitle": "",
     "@seerrNotifyLibraryAddedTitle": {
         "description": "Title for the toggle that notifies a requester about approvals, declines, and library availability"
     },
-    "seerrNotifyLibraryAddedSubtitle": "Schváleno, zamítnuto a přidáno do vaší knihovny",
+    "seerrNotifyLibraryAddedSubtitle": "",
     "@seerrNotifyLibraryAddedSubtitle": {
         "description": "Subtitle for the library-added notifications toggle"
     },
-    "seerrNotifyIssuesTitle": "Aktualizace problémů",
+    "seerrNotifyIssuesTitle": "",
     "@seerrNotifyIssuesTitle": {
         "description": "Title for the issue notifications toggle"
     },
-    "seerrNotifyIssuesSubtitle": "Nové problémy, odpovědi a řešení",
+    "seerrNotifyIssuesSubtitle": "",
     "@seerrNotifyIssuesSubtitle": {
         "description": "Subtitle for the issue notifications toggle"
     },
@@ -7959,7 +7959,7 @@
     "imageCacheLimit": "Limit mezipaměti obrázků",
     "clearImageCache": "Vymazat mezipaměť obrázků",
     "imageCacheCleared": "Mezipaměť obrázků byla vymazána",
-    "seerrDownloadingPercent": "Stahování · {percent} %",
+    "seerrDownloadingPercent": "",
     "@seerrDownloadingPercent": {
         "description": "Label above the Seerr download progress bar",
         "placeholders": {
@@ -7968,19 +7968,19 @@
             }
         }
     },
-    "seerrImportingStatus": "Importuje se",
+    "seerrImportingStatus": "",
     "@seerrImportingStatus": {
         "description": "Label when a Seerr download has finished and is importing"
     },
-    "failedStatus": "Selhalo",
+    "failedStatus": "",
     "@failedStatus": {
         "description": "Request status label when the request failed to send to Radarr/Sonarr"
     },
-    "processingStatus": "Zpracovává se",
+    "processingStatus": "",
     "@processingStatus": {
         "description": "Filter label for approved requests being processed"
     },
-    "modifiedByName": "Upravil(a) {name}",
+    "modifiedByName": "",
     "@modifiedByName": {
         "description": "Label showing which manager acted on a request",
         "placeholders": {
@@ -7989,51 +7989,51 @@
             }
         }
     },
-    "completedStatus": "Dokončeno",
+    "completedStatus": "",
     "@completedStatus": {
         "description": "Request status label when the request finished"
     },
-    "requestErrorDuplicate": "Tento titul už byl vyžádán",
+    "requestErrorDuplicate": "",
     "@requestErrorDuplicate": {
         "description": "Error when creating a request that already exists"
     },
-    "requestErrorQuota": "Byl dosažen limit žádostí",
+    "requestErrorQuota": "",
     "@requestErrorQuota": {
         "description": "Error when the user is out of request quota"
     },
-    "requestErrorBlocklisted": "Tento titul je na seznamu blokovaných",
+    "requestErrorBlocklisted": "",
     "@requestErrorBlocklisted": {
         "description": "Error when requesting blocklisted media"
     },
-    "requestErrorNoSeasons": "Nezbývají žádné sezóny k vyžádání",
+    "requestErrorNoSeasons": "",
     "@requestErrorNoSeasons": {
         "description": "Error when every season is already requested or available"
     },
-    "requestErrorPermission": "Nemáte oprávnění vytvořit tuto žádost",
+    "requestErrorPermission": "",
     "@requestErrorPermission": {
         "description": "Error when the user lacks request permission"
     },
-    "seerrRequestsTitle": "Žádosti",
+    "seerrRequestsTitle": "",
     "@seerrRequestsTitle": {
         "description": "Requests tab and screen title"
     },
-    "seerrIssuesTitle": "Problémy",
+    "seerrIssuesTitle": "",
     "@seerrIssuesTitle": {
         "description": "Issues tab title on the requests hub"
     },
-    "sortNewest": "Nejnovější",
+    "sortNewest": "",
     "@sortNewest": {
         "description": "Request sort option, most recently added first"
     },
-    "sortLastModified": "Naposledy upravené",
+    "sortLastModified": "",
     "@sortLastModified": {
         "description": "Request sort option, most recently updated first"
     },
-    "noIssues": "Žádné problémy",
+    "noIssues": "",
     "@noIssues": {
         "description": "Shown when the issue list is empty"
     },
-    "movieQuotaRemaining": "Zbývá {remaining} z {limit} žádostí o filmy",
+    "movieQuotaRemaining": "",
     "@movieQuotaRemaining": {
         "description": "Quota line in the request dialog",
         "placeholders": {
@@ -8045,7 +8045,7 @@
             }
         }
     },
-    "seasonQuotaRemaining": "Zbývá {remaining} z {limit} žádostí o sezóny",
+    "seasonQuotaRemaining": "",
     "@seasonQuotaRemaining": {
         "description": "Quota line in the request dialog for series",
         "placeholders": {
@@ -8057,7 +8057,7 @@
             }
         }
     },
-    "partOfCollectionName": "Součást kolekce {name}",
+    "partOfCollectionName": "",
     "@partOfCollectionName": {
         "description": "Banner on a movie that belongs to a collection",
         "placeholders": {
@@ -8066,15 +8066,15 @@
             }
         }
     },
-    "viewCollection": "Zobrazit kolekci",
+    "viewCollection": "",
     "@viewCollection": {
         "description": "Link to open the collection screen"
     },
-    "requestCollection": "Vyžádat kolekci",
+    "requestCollection": "",
     "@requestCollection": {
         "description": "Button to request movies from a collection"
     },
-    "collectionMoviesSummary": "{total} filmů · {available} dostupných",
+    "collectionMoviesSummary": "",
     "@collectionMoviesSummary": {
         "description": "Collection header summary line",
         "placeholders": {
@@ -8086,7 +8086,7 @@
             }
         }
     },
-    "requestMoviesCount": "Vyžádat {count} filmů",
+    "requestMoviesCount": "",
     "@requestMoviesCount": {
         "description": "Submit button on the collection request sheet",
         "placeholders": {
@@ -8095,7 +8095,7 @@
             }
         }
     },
-    "requestingProgress": "Odesílá se žádost {current} z {total}...",
+    "requestingProgress": "",
     "@requestingProgress": {
         "description": "Progress label while collection requests are submitted",
         "placeholders": {
@@ -8107,7 +8107,7 @@
             }
         }
     },
-    "requestedMoviesCount": "Vyžádáno {count} filmů",
+    "requestedMoviesCount": "",
     "@requestedMoviesCount": {
         "description": "Snackbar after a collection request succeeds",
         "placeholders": {
@@ -8116,7 +8116,7 @@
             }
         }
     },
-    "requestedMoviesPartial": "Vyžádáno {ok} z {total} filmů",
+    "requestedMoviesPartial": "",
     "@requestedMoviesPartial": {
         "description": "Snackbar when some collection requests failed",
         "placeholders": {
@@ -8128,51 +8128,51 @@
             }
         }
     },
-    "collectionAllRequested": "Všechny filmy jsou už dostupné nebo vyžádané",
+    "collectionAllRequested": "",
     "@collectionAllRequested": {
         "description": "Shown instead of the request button when nothing is requestable"
     },
-    "reportIssue": "Nahlásit problém",
+    "reportIssue": "",
     "@reportIssue": {
         "description": "Button on the seerr detail screen to report a media issue"
     },
-    "issueTypeVideo": "Video",
+    "issueTypeVideo": "",
     "@issueTypeVideo": {
         "description": "Issue type option"
     },
-    "issueTypeAudio": "Zvuk",
+    "issueTypeAudio": "",
     "@issueTypeAudio": {
         "description": "Issue type option"
     },
-    "whatsWrong": "Co je špatně?",
+    "whatsWrong": "",
     "@whatsWrong": {
         "description": "Label for the issue description field"
     },
-    "allEpisodes": "Všechny epizody",
+    "allEpisodes": "",
     "@allEpisodes": {
         "description": "Episode dropdown option covering the whole season"
     },
-    "episode": "Epizoda",
+    "episode": "",
     "@episode": {
         "description": "Episode dropdown label"
     },
-    "openStatus": "Otevřeno",
+    "openStatus": "",
     "@openStatus": {
         "description": "Issue status label"
     },
-    "resolvedStatus": "Vyřešený",
+    "resolvedStatus": "",
     "@resolvedStatus": {
         "description": "Issue status label"
     },
-    "resolveAction": "Vyřešit",
+    "resolveAction": "",
     "@resolveAction": {
         "description": "Button to resolve an issue"
     },
-    "reopenAction": "Znovu otevřít",
+    "reopenAction": "",
     "@reopenAction": {
         "description": "Button to reopen a resolved issue"
     },
-    "reportedByName": "Nahlásil(a) {name}",
+    "reportedByName": "",
     "@reportedByName": {
         "description": "Label showing who reported an issue",
         "placeholders": {
@@ -8181,7 +8181,7 @@
             }
         }
     },
-    "commentsCount": "{count} komentářů",
+    "commentsCount": "",
     "@commentsCount": {
         "description": "Number of comments on an issue",
         "placeholders": {
@@ -8190,24 +8190,24 @@
             }
         }
     },
-    "addComment": "Přidat komentář",
+    "addComment": "",
     "@addComment": {
         "description": "Hint for the issue comment field"
     },
-    "deleteIssueConfirm": "Smazat tento problém?",
+    "deleteIssueConfirm": "",
     "@deleteIssueConfirm": {
         "description": "Confirmation before deleting an issue"
     },
-    "submitReport": "Odeslat hlášení",
+    "submitReport": "",
     "@submitReport": {
         "description": "Button to submit an issue report"
     },
-    "adminDrawerDisplay": "Zobrazení",
-    "adminDrawerMetadata": "Metadata",
-    "adminDrawerNfo": "Nastavení NFO",
-    "adminActivitySeverityAll": "Všechny závažnosti",
-    "adminActivityDateRange": "Časové období",
-    "adminRemoveDeviceConfirm": "Odebrat zařízení „{name}“? Uživatel se na něm bude muset znovu přihlásit.",
+    "adminDrawerDisplay": "",
+    "adminDrawerMetadata": "",
+    "adminDrawerNfo": "",
+    "adminActivitySeverityAll": "",
+    "adminActivityDateRange": "",
+    "adminRemoveDeviceConfirm": "",
     "@adminRemoveDeviceConfirm": {
         "placeholders": {
             "name": {
@@ -8215,8 +8215,8 @@
             }
         }
     },
-    "adminDeleteAllDevices": "Smazat všechna zařízení",
-    "adminDeleteAllDevicesConfirm": "Odebrat {count} zařízení? Dotčení uživatelé se budou muset znovu přihlásit. Vaše aktuální zařízení to neovlivní.",
+    "adminDeleteAllDevices": "",
+    "adminDeleteAllDevicesConfirm": "",
     "@adminDeleteAllDevicesConfirm": {
         "placeholders": {
             "count": {
@@ -8224,8 +8224,8 @@
             }
         }
     },
-    "adminDevicesDeletedAll": "Zařízení byla odebrána",
-    "adminDevicesDeletedPartial": "Některá zařízení byla odebrána; {count} se odebrat nepodařilo.",
+    "adminDevicesDeletedAll": "",
+    "adminDevicesDeletedPartial": "",
     "@adminDevicesDeletedPartial": {
         "placeholders": {
             "count": {
@@ -8233,13 +8233,13 @@
             }
         }
     },
-    "adminLibraryTabPaths": "Cesty",
-    "adminLibraryTabOptions": "Možnosti",
-    "adminLibraryTabDownloaders": "Stahovače",
-    "adminLibMetadataSavers": "Ukládání metadat",
-    "adminLibSubtitleDownloaders": "Stahovače titulků",
-    "adminLibLyricDownloaders": "Stahovače textů písní",
-    "adminLibMetadataDownloadersFor": "Stahovače metadat: {type}",
+    "adminLibraryTabPaths": "",
+    "adminLibraryTabOptions": "",
+    "adminLibraryTabDownloaders": "",
+    "adminLibMetadataSavers": "",
+    "adminLibSubtitleDownloaders": "",
+    "adminLibLyricDownloaders": "",
+    "adminLibMetadataDownloadersFor": "",
     "@adminLibMetadataDownloadersFor": {
         "placeholders": {
             "type": {
@@ -8247,7 +8247,7 @@
             }
         }
     },
-    "adminLibImageFetchersFor": "Zdroje obrázků: {type}",
+    "adminLibImageFetchersFor": "",
     "@adminLibImageFetchersFor": {
         "placeholders": {
             "type": {
@@ -8255,48 +8255,48 @@
             }
         }
     },
-    "adminLibNoDownloaders": "Tento server nenabízí pro tento typ knihovny žádné stahovače.",
-    "adminLibrarySectionGeneral": "Obecné",
-    "adminLibrarySectionMetadata": "Metadata",
-    "adminLibrarySectionEmbedded": "Vložené informace",
-    "adminLibrarySectionSubtitles": "Titulky",
-    "adminLibrarySectionImages": "Obrázky",
-    "adminLibrarySectionSeries": "Seriály",
-    "adminLibrarySectionMusic": "Hudba",
-    "adminLibrarySectionMovies": "Filmy",
-    "adminLibRealtimeMonitor": "Zapnout sledování v reálném čase",
-    "adminLibRealtimeMonitorHint": "Rozpoznávat změny souborů a automaticky je zpracovávat.",
-    "adminLibArchiveMediaFiles": "Považovat archivy za mediální soubory",
-    "adminLibEnablePhotos": "Zobrazovat fotky",
-    "adminLibSaveLocalMetadata": "Ukládat grafiku do složek s médii",
-    "adminLibRefreshInterval": "Automatická obnova metadat",
-    "adminLibRefreshNever": "Nikdy",
-    "adminLibDefault": "Výchozí",
-    "adminLibDisplayTitle": "Zobrazení",
-    "adminLibDisplaySection": "Zobrazení knihovny",
-    "adminLibFolderView": "Zobrazovat složkové zobrazení s prostými složkami médií",
-    "adminLibSpecialsInSeasons": "Zobrazovat speciály v sezónách, ve kterých se vysílaly",
-    "adminLibGroupMovies": "Seskupovat filmy do kolekcí",
-    "adminLibGroupShows": "Seskupovat seriály do kolekcí",
-    "adminLibExternalSuggestions": "Zobrazovat v návrzích externí obsah",
-    "adminLibDateAddedSection": "Chování data přidání",
-    "adminLibDateAddedLabel": "Použít datum přidání z",
-    "adminLibDateAddedImport": "Datum načtení do knihovny",
-    "adminLibDateAddedFile": "Datum vytvoření souboru",
-    "adminLibMetadataTitle": "Metadata a obrázky",
-    "adminLibMetadataLangSection": "Preferovaný jazyk metadat",
-    "adminLibChaptersSection": "Kapitoly",
-    "adminLibDummyChapterDuration": "Délka náhradních kapitol (sekundy)",
-    "adminLibDummyChapterDurationHint": "Délka kapitol generovaných pro média, která žádné nemají. Nastavením na 0 funkci vypnete.",
-    "adminLibChapterImageResolution": "Rozlišení obrázků kapitol",
-    "adminLibNfoTitle": "Nastavení NFO",
-    "adminLibNfoHelp": "Metadata NFO jsou kompatibilní s Kodi a podobnými klienty. Nastavení platí pro všechny knihovny, které ukládají metadata NFO.",
-    "adminLibKodiUser": "Uživatel, jehož data o sledování se ukládají do souborů NFO",
-    "adminLibSaveImagePaths": "Ukládat cesty k obrázkům do souborů NFO",
-    "adminLibPathSubstitution": "Zapnout nahrazování cest u obrázků v NFO",
-    "adminLibExtraThumbs": "Kopírovat obrázky extrafanart do složky extrathumbs",
-    "adminLibNone": "Žádné",
-    "adminLibRefreshDays": "{days} dní",
+    "adminLibNoDownloaders": "",
+    "adminLibrarySectionGeneral": "",
+    "adminLibrarySectionMetadata": "",
+    "adminLibrarySectionEmbedded": "",
+    "adminLibrarySectionSubtitles": "",
+    "adminLibrarySectionImages": "",
+    "adminLibrarySectionSeries": "",
+    "adminLibrarySectionMusic": "",
+    "adminLibrarySectionMovies": "",
+    "adminLibRealtimeMonitor": "",
+    "adminLibRealtimeMonitorHint": "",
+    "adminLibArchiveMediaFiles": "",
+    "adminLibEnablePhotos": "",
+    "adminLibSaveLocalMetadata": "",
+    "adminLibRefreshInterval": "",
+    "adminLibRefreshNever": "",
+    "adminLibDefault": "",
+    "adminLibDisplayTitle": "",
+    "adminLibDisplaySection": "",
+    "adminLibFolderView": "",
+    "adminLibSpecialsInSeasons": "",
+    "adminLibGroupMovies": "",
+    "adminLibGroupShows": "",
+    "adminLibExternalSuggestions": "",
+    "adminLibDateAddedSection": "",
+    "adminLibDateAddedLabel": "",
+    "adminLibDateAddedImport": "",
+    "adminLibDateAddedFile": "",
+    "adminLibMetadataTitle": "",
+    "adminLibMetadataLangSection": "",
+    "adminLibChaptersSection": "",
+    "adminLibDummyChapterDuration": "",
+    "adminLibDummyChapterDurationHint": "",
+    "adminLibChapterImageResolution": "",
+    "adminLibNfoTitle": "",
+    "adminLibNfoHelp": "",
+    "adminLibKodiUser": "",
+    "adminLibSaveImagePaths": "",
+    "adminLibPathSubstitution": "",
+    "adminLibExtraThumbs": "",
+    "adminLibNone": "",
+    "adminLibRefreshDays": "",
     "@adminLibRefreshDays": {
         "placeholders": {
             "days": {
@@ -8304,119 +8304,119 @@
             }
         }
     },
-    "adminLibEmbeddedTitles": "Používat vložené názvy",
-    "adminLibEmbeddedExtrasTitles": "Používat vložené názvy u bonusů",
-    "adminLibEmbeddedEpisodeInfos": "Používat vložené informace o epizodách",
-    "adminLibAllowEmbeddedSubtitles": "Povolit vložené titulky",
-    "adminLibEmbeddedAllowAll": "Povolit vše",
-    "adminLibEmbeddedAllowText": "Pouze textové",
-    "adminLibEmbeddedAllowImage": "Pouze obrazové",
-    "adminLibEmbeddedAllowNone": "Žádné",
-    "adminLibSkipIfEmbeddedSubs": "Přeskočit stahování, pokud jsou k dispozici vložené titulky",
-    "adminLibSkipIfAudioMatches": "Přeskočit stahování, pokud zvuková stopa odpovídá jazyku stahování",
-    "adminLibRequirePerfectMatch": "Vyžadovat přesnou shodu titulků",
-    "adminLibSaveSubtitlesWithMedia": "Ukládat titulky do složek s médii",
-    "adminLibChapterImageExtraction": "Extrahovat obrázky kapitol",
-    "adminLibChapterImagesDuringScan": "Extrahovat obrázky kapitol při skenování knihovny",
-    "adminLibTrickplayExtraction": "Zapnout extrakci obrázků trickplay",
-    "adminLibTrickplayDuringScan": "Extrahovat obrázky trickplay při skenování knihovny",
-    "adminLibSaveTrickplayWithMedia": "Ukládat obrázky trickplay do složek s médii",
-    "adminLibAutomaticSeriesGrouping": "Automaticky slučovat seriály rozdělené do více složek",
-    "adminLibSeasonZeroName": "Zobrazovaný název nulté sezóny",
-    "adminLibLufsScan": "Zapnout skenování LUFS pro normalizaci hlasitosti",
-    "adminLibPreferNonstandardArtist": "Upřednostnit nestandardní tag interpretů",
-    "adminLibAutoAddToCollection": "Automaticky přidávat filmy do kolekcí",
-    "adminParentalControl": "Rodičovská kontrola",
-    "adminMaxParentalRating": "Maximální povolené rodičovské hodnocení",
-    "adminMaxParentalRatingHint": "Obsah s vyšším hodnocením bude tomuto uživateli skrytý.",
-    "adminParentalRatingNone": "Žádné",
-    "adminBlockUnratedItems": "Blokovat položky bez hodnocení nebo s nerozpoznaným hodnocením",
-    "adminUnratedBook": "Knihy",
-    "adminUnratedChannelContent": "Kanály",
-    "adminUnratedLiveTvChannel": "Živá televize",
-    "adminUnratedMovie": "Filmy",
-    "adminUnratedMusic": "Hudba",
-    "adminUnratedTrailer": "Upoutávky",
-    "adminUnratedSeries": "Seriály",
-    "adminAccessSchedules": "Časové plány přístupu",
-    "adminAccessSchedulesHint": "Povolit přístup pouze v níže naplánovaných časech. Pokud není nastaven žádný plán, je přístup povolen po celý den.",
-    "adminAddSchedule": "Přidat plán",
-    "adminScheduleDay": "Den",
-    "adminScheduleStart": "Začátek",
-    "adminScheduleEnd": "Konec",
-    "adminDayEveryday": "Každý den",
-    "adminDayWeekday": "Všední den",
-    "adminDayWeekend": "Víkend",
-    "adminDaySunday": "Neděle",
-    "adminDayMonday": "Pondělí",
-    "adminDayTuesday": "Úterý",
-    "adminDayWednesday": "Středa",
-    "adminDayThursday": "Čtvrtek",
-    "adminDayFriday": "Pátek",
-    "adminDaySaturday": "Sobota",
-    "adminAllowedTags": "Povolené štítky",
-    "adminAllowedTagsHint": "Zobrazí se pouze obsah s těmito štítky. Ponechte prázdné pro povolení všeho.",
-    "adminBlockedTags": "Blokované štítky",
-    "adminBlockedTagsHint": "Obsah s těmito štítky bude tomuto uživateli skrytý.",
-    "adminAddTag": "Přidat štítek",
-    "adminEnabledDevices": "Povolená zařízení",
-    "adminEnabledChannels": "Povolené kanály",
-    "adminAuthProvider": "Poskytovatel ověření",
-    "adminPasswordResetProvider": "Poskytovatel obnovy hesla",
-    "adminLoginAttemptsBeforeLockout": "Maximální počet neúspěšných přihlášení před zablokováním",
-    "adminLoginAttemptsHint": "Zadejte 0 pro výchozí hodnotu, nebo -1 pro vypnutí blokování.",
-    "adminSyncPlayAccess": "Přístup k SyncPlay",
-    "adminSyncPlayCreateAndJoin": "Povolit vytváření skupin a připojování k nim",
-    "adminSyncPlayJoin": "Povolit připojování ke skupinám",
-    "adminSyncPlayNone": "Bez přístupu",
-    "adminContentDeletionFolders": "Povolit mazání obsahu z",
-    "adminBackupOptionsTitle": "Vytvořit zálohu",
-    "adminBackupInclude": "Zvolte, co se má do zálohy zahrnout.",
-    "adminBackupDatabase": "Databáze",
-    "adminBackupDatabaseAlways": "Vždy zahrnuto",
-    "adminBackupMetadata": "Metadata",
-    "adminBackupSubtitles": "Titulky",
-    "adminBackupTrickplay": "Obrázky trickplay",
-    "adminEditTuner": "Upravit tuner",
-    "adminTunerTypeM3u": "M3U tuner",
-    "adminTunerTypeHdHomerun": "HDHomeRun",
-    "adminTunerFileOrUrl": "Soubor nebo URL",
-    "adminTunerIpAddress": "IP adresa tuneru",
-    "adminTunerFriendlyName": "Popisný název",
-    "adminTunerUserAgent": "User agent",
-    "adminTunerCount": "Limit souběžných připojení",
-    "adminTunerCountHelp": "Maximální počet streamů, které tuner zvládne najednou. Zadejte 0 pro neomezený počet.",
-    "adminTunerFallbackBitrate": "Záložní maximální datový tok streamu",
-    "adminTunerImportFavoritesOnly": "Importovat pouze oblíbené kanály",
-    "adminTunerAllowHwTranscoding": "Povolit hardwarové překódování",
-    "adminTunerAllowFmp4": "Povolit kontejner fMP4 pro překódování",
-    "adminTunerAllowStreamSharing": "Povolit sdílení streamu",
-    "adminTunerEnableStreamLooping": "Zapnout smyčkování streamu",
-    "adminTunerIgnoreDts": "Ignorovat DTS",
-    "adminTunerReadAtNativeFramerate": "Číst vstup v nativní snímkové frekvenci",
-    "adminEditProvider": "Upravit poskytovatele",
-    "adminProviderXmltv": "XMLTV",
-    "adminProviderSchedulesDirect": "Schedules Direct",
-    "adminXmltvPath": "Soubor nebo URL",
-    "adminXmltvMoviePrefix": "Předpona filmů",
-    "adminXmltvMovieCategories": "Kategorie filmů",
-    "adminXmltvCategoriesHelp": "Více kategorií oddělte svislou čarou.",
-    "adminXmltvKidsCategories": "Kategorie pro děti",
-    "adminXmltvNewsCategories": "Kategorie zpravodajství",
-    "adminXmltvSportsCategories": "Kategorie sportu",
-    "adminSdUsername": "Uživatelské jméno",
-    "adminSdPassword": "Heslo",
-    "adminSdCountry": "Země",
-    "adminSdCountrySelect": "Vyberte zemi",
-    "adminSdPostalCode": "PSČ",
-    "adminSdGetListings": "Načíst programy",
-    "adminSdListings": "Programy",
-    "adminEnableAllTuners": "Zapnout všechny tunery",
-    "adminTunerResetNotSupported": "Tento typ tuneru nepodporuje resetování.",
-    "adminMovieRecordingPath": "Cesta pro nahrávání filmů",
-    "adminGuideDays": "Počet dní dat programu",
-    "adminGuideDaysAuto": "Automaticky",
-    "adminGuideDaysValue": "{days} dní",
+    "adminLibEmbeddedTitles": "",
+    "adminLibEmbeddedExtrasTitles": "",
+    "adminLibEmbeddedEpisodeInfos": "",
+    "adminLibAllowEmbeddedSubtitles": "",
+    "adminLibEmbeddedAllowAll": "",
+    "adminLibEmbeddedAllowText": "",
+    "adminLibEmbeddedAllowImage": "",
+    "adminLibEmbeddedAllowNone": "",
+    "adminLibSkipIfEmbeddedSubs": "",
+    "adminLibSkipIfAudioMatches": "",
+    "adminLibRequirePerfectMatch": "",
+    "adminLibSaveSubtitlesWithMedia": "",
+    "adminLibChapterImageExtraction": "",
+    "adminLibChapterImagesDuringScan": "",
+    "adminLibTrickplayExtraction": "",
+    "adminLibTrickplayDuringScan": "",
+    "adminLibSaveTrickplayWithMedia": "",
+    "adminLibAutomaticSeriesGrouping": "",
+    "adminLibSeasonZeroName": "",
+    "adminLibLufsScan": "",
+    "adminLibPreferNonstandardArtist": "",
+    "adminLibAutoAddToCollection": "",
+    "adminParentalControl": "",
+    "adminMaxParentalRating": "",
+    "adminMaxParentalRatingHint": "",
+    "adminParentalRatingNone": "",
+    "adminBlockUnratedItems": "",
+    "adminUnratedBook": "",
+    "adminUnratedChannelContent": "",
+    "adminUnratedLiveTvChannel": "",
+    "adminUnratedMovie": "",
+    "adminUnratedMusic": "",
+    "adminUnratedTrailer": "",
+    "adminUnratedSeries": "",
+    "adminAccessSchedules": "",
+    "adminAccessSchedulesHint": "",
+    "adminAddSchedule": "",
+    "adminScheduleDay": "",
+    "adminScheduleStart": "",
+    "adminScheduleEnd": "",
+    "adminDayEveryday": "",
+    "adminDayWeekday": "",
+    "adminDayWeekend": "",
+    "adminDaySunday": "",
+    "adminDayMonday": "",
+    "adminDayTuesday": "",
+    "adminDayWednesday": "",
+    "adminDayThursday": "",
+    "adminDayFriday": "",
+    "adminDaySaturday": "",
+    "adminAllowedTags": "",
+    "adminAllowedTagsHint": "",
+    "adminBlockedTags": "",
+    "adminBlockedTagsHint": "",
+    "adminAddTag": "",
+    "adminEnabledDevices": "",
+    "adminEnabledChannels": "",
+    "adminAuthProvider": "",
+    "adminPasswordResetProvider": "",
+    "adminLoginAttemptsBeforeLockout": "",
+    "adminLoginAttemptsHint": "",
+    "adminSyncPlayAccess": "",
+    "adminSyncPlayCreateAndJoin": "",
+    "adminSyncPlayJoin": "",
+    "adminSyncPlayNone": "",
+    "adminContentDeletionFolders": "",
+    "adminBackupOptionsTitle": "",
+    "adminBackupInclude": "",
+    "adminBackupDatabase": "",
+    "adminBackupDatabaseAlways": "",
+    "adminBackupMetadata": "",
+    "adminBackupSubtitles": "",
+    "adminBackupTrickplay": "",
+    "adminEditTuner": "",
+    "adminTunerTypeM3u": "",
+    "adminTunerTypeHdHomerun": "",
+    "adminTunerFileOrUrl": "",
+    "adminTunerIpAddress": "",
+    "adminTunerFriendlyName": "",
+    "adminTunerUserAgent": "",
+    "adminTunerCount": "",
+    "adminTunerCountHelp": "",
+    "adminTunerFallbackBitrate": "",
+    "adminTunerImportFavoritesOnly": "",
+    "adminTunerAllowHwTranscoding": "",
+    "adminTunerAllowFmp4": "",
+    "adminTunerAllowStreamSharing": "",
+    "adminTunerEnableStreamLooping": "",
+    "adminTunerIgnoreDts": "",
+    "adminTunerReadAtNativeFramerate": "",
+    "adminEditProvider": "",
+    "adminProviderXmltv": "",
+    "adminProviderSchedulesDirect": "",
+    "adminXmltvPath": "",
+    "adminXmltvMoviePrefix": "",
+    "adminXmltvMovieCategories": "",
+    "adminXmltvCategoriesHelp": "",
+    "adminXmltvKidsCategories": "",
+    "adminXmltvNewsCategories": "",
+    "adminXmltvSportsCategories": "",
+    "adminSdUsername": "",
+    "adminSdPassword": "",
+    "adminSdCountry": "",
+    "adminSdCountrySelect": "",
+    "adminSdPostalCode": "",
+    "adminSdGetListings": "",
+    "adminSdListings": "",
+    "adminEnableAllTuners": "",
+    "adminTunerResetNotSupported": "",
+    "adminMovieRecordingPath": "",
+    "adminGuideDays": "",
+    "adminGuideDaysAuto": "",
+    "adminGuideDaysValue": "",
     "@adminGuideDaysValue": {
         "placeholders": {
             "days": {
@@ -8424,14 +8424,14 @@
             }
         }
     },
-    "adminRecordingPostProcessor": "Cesta k aplikaci pro následné zpracování",
-    "adminRecordingPostProcessorArgs": "Argumenty následného zpracování",
-    "adminSaveRecordingNfo": "Ukládat metadata NFO k nahrávkám",
-    "adminSaveRecordingImages": "Ukládat obrázky k nahrávkám",
-    "adminLiveTvSectionTiming": "Časování",
-    "adminLiveTvSectionPaths": "Cesty pro nahrávání",
-    "adminLiveTvSectionPostProcessing": "Následné zpracování",
-    "adminGuideDaysDisplay": "Data programu: {value}",
+    "adminRecordingPostProcessor": "",
+    "adminRecordingPostProcessorArgs": "",
+    "adminSaveRecordingNfo": "",
+    "adminSaveRecordingImages": "",
+    "adminLiveTvSectionTiming": "",
+    "adminLiveTvSectionPaths": "",
+    "adminLiveTvSectionPostProcessing": "",
+    "adminGuideDaysDisplay": "",
     "@adminGuideDaysDisplay": {
         "placeholders": {
             "value": {
@@ -8439,124 +8439,124 @@
             }
         }
     },
-    "adminRefreshGuideData": "Obnovit data programu",
-    "adminGuideRefreshStarted": "Obnova dat programu byla zahájena",
-    "adminGuideRefreshUnavailable": "Úloha obnovy programu není na tomto serveru k dispozici.",
-    "adminMetadataIdentify": "Identifikovat",
-    "adminBrandingSplashUpload": "Nahrát obrázek",
-    "adminBrandingSplashUploaded": "Úvodní obrazovka byla aktualizována",
-    "adminBrandingSplashUploadFailed": "Nahrání úvodní obrazovky se nezdařilo",
-    "adminBrandingSplashDeleted": "Úvodní obrazovka byla odebrána",
-    "adminBrandingNoSplash": "Žádná vlastní úvodní obrazovka",
-    "adminPlaybackQsvDevice": "Zařízení QSV",
-    "adminPlaybackEnhancedNvdec": "Zapnout vylepšený dekodér NVDEC",
-    "adminPlaybackPreferNativeDecoder": "Upřednostnit nativní hardwarový dekodér systému",
-    "adminPlaybackColorDepth": "Barevná hloubka hardwarového dekódování",
-    "adminPlaybackColorDepth10Hevc": "10bitové dekódování HEVC",
-    "adminPlaybackColorDepth10Vp9": "10bitové dekódování VP9",
-    "adminPlaybackColorDepth10HevcRext": "8/10bitové dekódování HEVC RExt",
-    "adminPlaybackColorDepth12HevcRext": "12bitové dekódování HEVC RExt",
-    "adminPlaybackHwEncodingSection": "Hardwarové kódování",
-    "adminPlaybackAllowHevcEncoding": "Povolit kódování HEVC",
-    "adminPlaybackAllowAv1Encoding": "Povolit kódování AV1",
-    "adminPlaybackIntelLowPowerH264": "Zapnout nízkopříkonový kodér Intel H.264",
-    "adminPlaybackIntelLowPowerHevc": "Zapnout nízkopříkonový kodér Intel HEVC",
-    "adminPlaybackToneMapping": "Mapování tónů",
-    "adminPlaybackEnableTonemapping": "Zapnout mapování tónů",
-    "adminPlaybackEnableVppTonemapping": "Zapnout mapování tónů VPP",
-    "adminPlaybackEnableVtTonemapping": "Zapnout mapování tónů VideoToolbox",
-    "adminPlaybackTonemappingAlgorithm": "Algoritmus mapování tónů",
-    "adminPlaybackTonemappingMode": "Režim mapování tónů",
-    "adminPlaybackTonemappingRange": "Rozsah mapování tónů",
-    "adminPlaybackTonemappingDesat": "Desaturace mapování tónů",
-    "adminPlaybackTonemappingPeak": "Špička mapování tónů",
-    "adminPlaybackTonemappingParam": "Parametr mapování tónů",
-    "adminPlaybackVppTonemappingBrightness": "Jas mapování tónů VPP",
-    "adminPlaybackVppTonemappingContrast": "Kontrast mapování tónů VPP",
-    "adminPlaybackPresetsQuality": "Předvolby a kvalita",
-    "adminPlaybackEncoderPreset": "Předvolba kodéru",
-    "adminPlaybackH264Crf": "CRF kódování H.264",
-    "adminPlaybackH265Crf": "CRF kódování H.265 (HEVC)",
-    "adminPlaybackDeinterlaceMethod": "Metoda odstranění prokládání",
-    "adminPlaybackDeinterlaceDoubleRate": "Zdvojnásobit snímkovou frekvenci při odstranění prokládání",
-    "adminPlaybackAudioSection": "Zvuk",
-    "adminPlaybackEnableAudioVbr": "Zapnout kódování zvuku s VBR",
-    "adminPlaybackDownmixBoost": "Zesílení při downmixu zvuku",
-    "adminPlaybackDownmixAlgorithm": "Algoritmus downmixu do sterea",
-    "adminPlaybackMaxMuxingQueue": "Maximální velikost fronty muxování",
-    "adminPlaybackAutoOption": "Automaticky",
-    "adminRunningTasks": "Běžící úlohy",
-    "adminNetworkingPublicHttpPort": "Veřejný port HTTP",
-    "adminNetworkingRequireHttps": "Vyžadovat HTTPS",
-    "adminNetworkingRequireHttpsHint": "Přesměrovat všechny vzdálené požadavky na HTTPS. Nemá účinek, pokud server nemá platný certifikát.",
-    "adminNetworkingCertPassword": "Heslo certifikátu",
-    "adminNetworkingIpSettings": "Nastavení IP",
-    "adminNetworkingEnableIpv4": "Zapnout IPv4",
-    "adminNetworkingEnableIpv6": "Zapnout IPv6",
-    "adminNetworkingAutoDiscovery": "Zapnout automatické mapování portů",
-    "adminNetworkingLocalSubnets": "Sítě LAN",
-    "adminNetworkingLocalSubnetsHint": "Seznam IP adres nebo podsítí CIDR oddělený čárkami nebo řádky, které se považují za místní síť.",
-    "adminNetworkingPublishedUris": "Publikované adresy serveru",
-    "adminNetworkingPublishedUriHint": "Namapujte podsíť nebo adresu na publikovanou URL, např. all=https://example.com",
-    "adminPlaybackThrottleDelay": "Prodleva omezení (sekundy)",
-    "adminPlaybackEnableSubtitleExtraction": "Povolit průběžnou extrakci titulků",
-    "adminGeneralEnableSlowResponse": "Zapnout upozornění na pomalé odezvy",
-    "adminGeneralQuickConnect": "Zapnout Quick Connect",
-    "adminGeneralSectionServer": "Server",
-    "adminGeneralSectionMetadata": "Metadata",
-    "adminGeneralSectionPaths": "Cesty",
-    "adminGeneralSectionPerformance": "Výkon",
-    "adminGeneralDisplayLanguage": "Preferovaný jazyk zobrazení",
-    "offlineBannerTitle": "Jste offline",
-    "offlineBannerSubtitle": "Zobrazujeme vaše stažené položky",
-    "offlineBannerAction": "Stažené",
-    "serverUnreachableBannerTitle": "Nelze se připojit k serveru",
-    "serverUnreachableBannerSubtitle": "Do jeho obnovení se přehrává ze stažených položek",
-    "contextMenuHideFromContinueWatching": "Skrýt z Pokračovat ve sledování",
+    "adminRefreshGuideData": "",
+    "adminGuideRefreshStarted": "",
+    "adminGuideRefreshUnavailable": "",
+    "adminMetadataIdentify": "",
+    "adminBrandingSplashUpload": "",
+    "adminBrandingSplashUploaded": "",
+    "adminBrandingSplashUploadFailed": "",
+    "adminBrandingSplashDeleted": "",
+    "adminBrandingNoSplash": "",
+    "adminPlaybackQsvDevice": "",
+    "adminPlaybackEnhancedNvdec": "",
+    "adminPlaybackPreferNativeDecoder": "",
+    "adminPlaybackColorDepth": "",
+    "adminPlaybackColorDepth10Hevc": "",
+    "adminPlaybackColorDepth10Vp9": "",
+    "adminPlaybackColorDepth10HevcRext": "",
+    "adminPlaybackColorDepth12HevcRext": "",
+    "adminPlaybackHwEncodingSection": "",
+    "adminPlaybackAllowHevcEncoding": "",
+    "adminPlaybackAllowAv1Encoding": "",
+    "adminPlaybackIntelLowPowerH264": "",
+    "adminPlaybackIntelLowPowerHevc": "",
+    "adminPlaybackToneMapping": "",
+    "adminPlaybackEnableTonemapping": "",
+    "adminPlaybackEnableVppTonemapping": "",
+    "adminPlaybackEnableVtTonemapping": "",
+    "adminPlaybackTonemappingAlgorithm": "",
+    "adminPlaybackTonemappingMode": "",
+    "adminPlaybackTonemappingRange": "",
+    "adminPlaybackTonemappingDesat": "",
+    "adminPlaybackTonemappingPeak": "",
+    "adminPlaybackTonemappingParam": "",
+    "adminPlaybackVppTonemappingBrightness": "",
+    "adminPlaybackVppTonemappingContrast": "",
+    "adminPlaybackPresetsQuality": "",
+    "adminPlaybackEncoderPreset": "",
+    "adminPlaybackH264Crf": "",
+    "adminPlaybackH265Crf": "",
+    "adminPlaybackDeinterlaceMethod": "",
+    "adminPlaybackDeinterlaceDoubleRate": "",
+    "adminPlaybackAudioSection": "",
+    "adminPlaybackEnableAudioVbr": "",
+    "adminPlaybackDownmixBoost": "",
+    "adminPlaybackDownmixAlgorithm": "",
+    "adminPlaybackMaxMuxingQueue": "",
+    "adminPlaybackAutoOption": "",
+    "adminRunningTasks": "",
+    "adminNetworkingPublicHttpPort": "",
+    "adminNetworkingRequireHttps": "",
+    "adminNetworkingRequireHttpsHint": "",
+    "adminNetworkingCertPassword": "",
+    "adminNetworkingIpSettings": "",
+    "adminNetworkingEnableIpv4": "",
+    "adminNetworkingEnableIpv6": "",
+    "adminNetworkingAutoDiscovery": "",
+    "adminNetworkingLocalSubnets": "",
+    "adminNetworkingLocalSubnetsHint": "",
+    "adminNetworkingPublishedUris": "",
+    "adminNetworkingPublishedUriHint": "",
+    "adminPlaybackThrottleDelay": "",
+    "adminPlaybackEnableSubtitleExtraction": "",
+    "adminGeneralEnableSlowResponse": "",
+    "adminGeneralQuickConnect": "",
+    "adminGeneralSectionServer": "",
+    "adminGeneralSectionMetadata": "",
+    "adminGeneralSectionPaths": "",
+    "adminGeneralSectionPerformance": "",
+    "adminGeneralDisplayLanguage": "",
+    "offlineBannerTitle": "",
+    "offlineBannerSubtitle": "",
+    "offlineBannerAction": "",
+    "serverUnreachableBannerTitle": "",
+    "serverUnreachableBannerSubtitle": "",
+    "contextMenuHideFromContinueWatching": "",
     "@contextMenuHideFromContinueWatching": {
         "description": "Context menu action to hide an item from the Continue Watching section"
     },
-    "contextMenuHideFromNextUp": "Skrýt z Další na řadě",
+    "contextMenuHideFromNextUp": "",
     "@contextMenuHideFromNextUp": {
         "description": "Context menu action to hide a show from the Next Up section"
     },
-    "contextMenuAddToCollection": "Přidat do kolekce",
+    "contextMenuAddToCollection": "",
     "@contextMenuAddToCollection": {
         "description": "Context menu action to add an item to a collection"
     },
-    "settingsConnectionSection": "PŘIPOJENÍ",
+    "settingsConnectionSection": "",
     "@settingsConnectionSection": {
         "description": "Section header for server connection settings"
     },
-    "settingsAllowSelfSignedCerts": "Povolit certifikáty podepsané svým vydavatelem",
+    "settingsAllowSelfSignedCerts": "",
     "@settingsAllowSelfSignedCerts": {
         "description": "Setting to trust self-signed TLS certificates"
     },
-    "settingsAllowSelfSignedCertsSubtitle": "Důvěřovat serverům s certifikáty TLS podepsanými svým vydavatelem nebo privátní certifikační autoritou. Zapínejte pouze u serverů, které máte pod kontrolou. Vypne to ověřování certifikátů pro všechna připojení.",
+    "settingsAllowSelfSignedCertsSubtitle": "",
     "@settingsAllowSelfSignedCertsSubtitle": {
         "description": "Description for the allow self-signed certificates setting"
     },
-    "settingsDetailsScreen": "Obrazovka s detaily",
-    "settingsDetailsScreenSubtitle": "Styl, rozostření pozadí a chování karet",
-    "settingsShowSeerrButtonInNavigation": "Zobrazit tlačítko Seerr v navigační liště",
-    "settingsAlwaysExpandNavbarLabels": "Vždy zobrazovat textové popisky v horní navigační liště",
-    "settingsMediaSegmentCountdown": "Odpočet mediálních segmentů",
+    "settingsDetailsScreen": "",
+    "settingsDetailsScreenSubtitle": "",
+    "settingsShowSeerrButtonInNavigation": "",
+    "settingsAlwaysExpandNavbarLabels": "",
+    "settingsMediaSegmentCountdown": "",
     "@settingsMediaSegmentCountdown": {
         "description": "Setting label for media segment countdown customizations"
     },
-    "settingsProgressBar": "Ukazatel průběhu",
+    "settingsProgressBar": "",
     "@settingsProgressBar": {
         "description": "Option label to show only progress bar on media segment countdown overlay"
     },
-    "settingsTimer": "Odpočet",
+    "settingsTimer": "",
     "@settingsTimer": {
         "description": "Option label to show only countdown timer on media segment countdown overlay"
     },
-    "settingsNone": "Žádné",
+    "settingsNone": "",
     "@settingsNone": {
         "description": "Option label to hide all decorations on media segment countdown overlay"
     },
-    "recentlyReleasedLibraryName": "Nedávno vydané – {libraryName}",
+    "recentlyReleasedLibraryName": "",
     "@recentlyReleasedLibraryName": {
         "description": "Row title for recently released media in a specific library",
         "placeholders": {
@@ -8565,36 +8565,36 @@
             }
         }
     },
-    "enableTunnelingTitle": "Zapnout tunelování",
+    "enableTunnelingTitle": "",
     "@enableTunnelingTitle": {
         "description": "Setting title: enable tunneled video playback (advanced)"
     },
-    "enableTunnelingSubtitle": "Pokročilé. Vede zvuk i video propojenou hardwarovou cestou. Ve výchozím stavu vypnuto, protože na některých zařízeních způsobuje výpadky zvuku a obrazu.",
+    "enableTunnelingSubtitle": "",
     "@enableTunnelingSubtitle": {
         "description": "Setting subtitle for enable tunneling"
     },
-    "showMediaDetailsOnLibraryPage": "Zobrazit detaily média",
+    "showMediaDetailsOnLibraryPage": "",
     "@showMediaDetailsOnLibraryPage": {
         "description": "Setting title to show/hide focused media details at the top of the library page"
     },
-    "showMediaDetailsOnLibraryPageDescription": "Zobrazovat detaily vybrané položky v horní části stránek knihovny.",
+    "showMediaDetailsOnLibraryPageDescription": "",
     "@showMediaDetailsOnLibraryPageDescription": {
         "description": "Setting description to show/hide focused media details at the top of the library page"
     },
-    "hideBackdropsInLibraries": "Skrýt pozadí při procházení?",
+    "hideBackdropsInLibraries": "",
     "@hideBackdropsInLibraries": {
         "description": "Setting title to show/hide backdrops when browsing library pages"
     },
-    "themeStore": "Obchod s motivy",
-    "themeStoreSubtitle": "Procházejte a ukládejte komunitní motivy",
-    "themeStoreDescription": "Uložte si motiv, abyste ho mohli používat jako ostatní uložené motivy.",
-    "themeStoreEmpty": "Momentálně nejsou k dispozici žádné motivy.",
-    "themeStoreLoadFailed": "Obchod s motivy se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
-    "themeStoreSave": "Uložit",
-    "themeStoreSaveAndApply": "Uložit a použít",
-    "themeStoreSaved": "Uloženo",
-    "themeStoreInvalidMessage": "Tento motiv se nepodařilo načíst.",
-    "themeStoreSavedMessage": "Motiv „{themeName}“ byl uložen.",
+    "themeStore": "",
+    "themeStoreSubtitle": "",
+    "themeStoreDescription": "",
+    "themeStoreEmpty": "",
+    "themeStoreLoadFailed": "",
+    "themeStoreSave": "",
+    "themeStoreSaveAndApply": "",
+    "themeStoreSaved": "",
+    "themeStoreInvalidMessage": "",
+    "themeStoreSavedMessage": "",
     "@themeStoreSavedMessage": {
         "description": "Status message shown after saving a Theme Store theme",
         "placeholders": {
@@ -8603,34 +8603,34 @@
             }
         }
     },
-    "homeRowDisplay": "Zobrazení domovských řádků",
-    "homeRowSections": "Sekce domovských řádků",
-    "homeRowToggles": "Přepínače domovských řádků",
-    "homeRowTogglesSubtitle": "Zapněte nebo vypněte kategorie domovských řádků podle knihoven",
-    "homeRowTogglesDescription": "Zapnutím následujících přepínačů zobrazíte řádky v domovských sekcích.",
-    "displayPlaylistsRows": "Zobrazovat řádky playlistů",
-    "displayPlaylistsRowsSubtitle": "Zobrazovat řádky playlistů v domovských sekcích.",
-    "playlistsRowSorting": "Řazení řádků playlistů",
-    "playlistsRowSortingDescription": "Řaďte řádky playlistů podle data přidání, data vydání, abecedy a dalších kritérií.",
-    "displayAudioRows": "Zobrazovat řádky se zvukem",
-    "displayAudioRowsSubtitle": "Zobrazovat řádky se zvukem v domovských sekcích.",
-    "audioRowsSorting": "Řazení řádků se zvukem",
-    "audioRowsSortingDescription": "Řaďte řádky se zvukem podle data přidání, data vydání, abecedy a dalších kritérií.",
-    "audioPlaylists": "Zvukové playlisty",
-    "layout": "Rozvržení",
-    "theme": "Motiv",
-    "keyboard": "Klávesnice",
-    "navButtons": "Tlačítka",
-    "rendering": "Vykreslování",
-    "mpvConfiguration": "Konfigurace MPV",
-    "externalPlayerAppDescription": "Nastavte externí přehrávač pro zapnutí přehrávání dlouhým stiskem",
-    "crewContributionsSeerr": "Příspěvky štábu (Seerr)",
-    "changeArtwork": "Změnit grafiku",
-    "missing": "Chybí",
-    "clearAllArtworkButton": "Odstranit veškerou grafiku?",
-    "clearAllArtworkWarning": "Opravdu chcete odstranit veškerou staženou grafiku?",
-    "confirmClear": "Potvrdit odstranění",
-    "confirmClearMessage": "Opravdu chcete odstranit tuto položku: {itemType}?",
+    "homeRowDisplay": "",
+    "homeRowSections": "",
+    "homeRowToggles": "",
+    "homeRowTogglesSubtitle": "",
+    "homeRowTogglesDescription": "",
+    "displayPlaylistsRows": "",
+    "displayPlaylistsRowsSubtitle": "",
+    "playlistsRowSorting": "",
+    "playlistsRowSortingDescription": "",
+    "displayAudioRows": "",
+    "displayAudioRowsSubtitle": "",
+    "audioRowsSorting": "",
+    "audioRowsSortingDescription": "",
+    "audioPlaylists": "",
+    "layout": "",
+    "theme": "",
+    "keyboard": "",
+    "navButtons": "",
+    "rendering": "",
+    "mpvConfiguration": "",
+    "externalPlayerAppDescription": "",
+    "crewContributionsSeerr": "",
+    "changeArtwork": "",
+    "missing": "",
+    "clearAllArtworkButton": "",
+    "clearAllArtworkWarning": "",
+    "confirmClear": "",
+    "confirmClearMessage": "",
     "@confirmClearMessage": {
         "description": "Confirmation message when clearing a specific artwork",
         "placeholders": {
@@ -8639,12 +8639,12 @@
             }
         }
     },
-    "uploadButton": "Nahrát?",
-    "resolutionLabel": "Rozlišení: ",
-    "onlyShowInterfaceLanguage": "Zobrazovat pouze grafiku v jazyce rozhraní",
-    "confirmClearAll": "Potvrdit odstranění všeho",
-    "imageUploadSuccess": "Obrázek byl úspěšně nahrán!",
-    "imageUploadFailed": "Nahrání obrázku se nezdařilo: {error}",
+    "uploadButton": "",
+    "resolutionLabel": "",
+    "onlyShowInterfaceLanguage": "",
+    "confirmClearAll": "",
+    "imageUploadSuccess": "",
+    "imageUploadFailed": "",
     "@imageUploadFailed": {
         "placeholders": {
             "error": {
@@ -8652,7 +8652,7 @@
             }
         }
     },
-    "imageDownloadFailed": "Nastavení obrázku se nezdařilo: {error}",
+    "imageDownloadFailed": "",
     "@imageDownloadFailed": {
         "placeholders": {
             "error": {
@@ -8660,7 +8660,7 @@
             }
         }
     },
-    "imageDeleteFailed": "Smazání obrázku se nezdařilo: {error}",
+    "imageDeleteFailed": "",
     "@imageDeleteFailed": {
         "placeholders": {
             "error": {
@@ -8668,7 +8668,7 @@
             }
         }
     },
-    "clearAllArtworkFailed": "Odstranění veškeré grafiky se nezdařilo: {error}",
+    "clearAllArtworkFailed": "",
     "@clearAllArtworkFailed": {
         "placeholders": {
             "error": {
@@ -8676,49 +8676,49 @@
             }
         }
     },
-    "yes": "Ano",
-    "posterCategory": "Plakát",
-    "backdropsCategory": "Pozadí",
-    "bannerCategory": "Banner",
-    "logoCategory": "Logo",
-    "thumbnailCategory": "Náhled",
-    "artCategory": "Grafika",
-    "discArtCategory": "Grafika disku",
-    "screenshotCategory": "Snímek obrazovky",
-    "boxCoverCategory": "Přední obal",
-    "boxRearCoverCategory": "Zadní obal",
-    "menuArtCategory": "Grafika nabídky",
-    "confirmItemPoster": "plakát",
-    "confirmItemBackdrop": "pozadí",
-    "confirmItemBanner": "banner",
-    "confirmItemLogo": "logo",
-    "confirmItemThumbnail": "náhled",
-    "confirmItemArt": "grafika",
-    "confirmItemDiscArt": "grafika disku",
-    "confirmItemScreenshot": "snímek obrazovky",
-    "confirmItemBoxCover": "přední obal",
-    "confirmItemBoxRearCover": "zadní obal",
-    "confirmItemMenuArt": "grafika nabídky",
-    "resolutionAll": "Vše",
-    "resolutionHigh": "Vysoké (1080p+)",
-    "resolutionMedium": "Střední (720p)",
-    "resolutionLow": "Nízké (<720p)",
-    "sources": "Zdroje",
+    "yes": "",
+    "posterCategory": "",
+    "backdropsCategory": "",
+    "bannerCategory": "",
+    "logoCategory": "",
+    "thumbnailCategory": "",
+    "artCategory": "",
+    "discArtCategory": "",
+    "screenshotCategory": "",
+    "boxCoverCategory": "",
+    "boxRearCoverCategory": "",
+    "menuArtCategory": "",
+    "confirmItemPoster": "",
+    "confirmItemBackdrop": "",
+    "confirmItemBanner": "",
+    "confirmItemLogo": "",
+    "confirmItemThumbnail": "",
+    "confirmItemArt": "",
+    "confirmItemDiscArt": "",
+    "confirmItemScreenshot": "",
+    "confirmItemBoxCover": "",
+    "confirmItemBoxRearCover": "",
+    "confirmItemMenuArt": "",
+    "resolutionAll": "",
+    "resolutionHigh": "",
+    "resolutionMedium": "",
+    "resolutionLow": "",
+    "sources": "",
     "@sources": {
         "description": "Title of the artwork source-provider filter dialog"
     },
-    "audiobookChapters": "Kapitoly",
-    "audiobookBookmarks": "Záložky",
-    "audiobookNotes": "Poznámky",
-    "audiobookQueue": "Fronta",
-    "audiobookTimeline": "Časová osa",
-    "audiobookTimelineEmpty": "Časová osa je prázdná",
-    "audiobookWholeBook": "Celá kniha",
-    "audiobookFocusedTimeline": "Přiblížená časová osa",
-    "audiobookExportBookmarks": "Exportovat záložky",
-    "audiobookExportNotes": "Exportovat poznámky",
-    "audiobookExportAll": "Exportovat vše",
-    "audiobookExportSuccess": "Exportováno do {path}",
+    "audiobookChapters": "",
+    "audiobookBookmarks": "",
+    "audiobookNotes": "",
+    "audiobookQueue": "",
+    "audiobookTimeline": "",
+    "audiobookTimelineEmpty": "",
+    "audiobookWholeBook": "",
+    "audiobookFocusedTimeline": "",
+    "audiobookExportBookmarks": "",
+    "audiobookExportNotes": "",
+    "audiobookExportAll": "",
+    "audiobookExportSuccess": "",
     "@audiobookExportSuccess": {
         "placeholders": {
             "path": {
@@ -8726,7 +8726,7 @@
             }
         }
     },
-    "audiobookExportFailed": "Export se nezdařil: {error}",
+    "audiobookExportFailed": "",
     "@audiobookExportFailed": {
         "placeholders": {
             "error": {
@@ -8734,16 +8734,16 @@
             }
         }
     },
-    "audiobookLyrics": "Text",
-    "audiobookAddBookmark": "Přidat záložku",
-    "audiobookAddNote": "Přidat poznámku",
-    "audiobookEditNote": "Upravit poznámku",
-    "audiobookNoteHint": "Napište si poznámku k tomuto místu",
-    "audiobookSleepTimer": "Časovač vypnutí",
-    "audiobookSleepOff": "Vypnuto",
-    "audiobookSleepEndOfChapter": "Konec kapitoly",
-    "audiobookSleepCustom": "Vlastní",
-    "audiobookSleepRemaining": "Zbývá {remaining}",
+    "audiobookLyrics": "",
+    "audiobookAddBookmark": "",
+    "audiobookAddNote": "",
+    "audiobookEditNote": "",
+    "audiobookNoteHint": "",
+    "audiobookSleepTimer": "",
+    "audiobookSleepOff": "",
+    "audiobookSleepEndOfChapter": "",
+    "audiobookSleepCustom": "",
+    "audiobookSleepRemaining": "",
     "@audiobookSleepRemaining": {
         "placeholders": {
             "remaining": {
@@ -8751,7 +8751,7 @@
             }
         }
     },
-    "audiobookSleepMinutes": "{count, plural, =1{1 min} other{{count} min}}",
+    "audiobookSleepMinutes": "",
     "@audiobookSleepMinutes": {
         "placeholders": {
             "count": {
@@ -8759,10 +8759,10 @@
             }
         }
     },
-    "audiobookPlaybackSpeed": "Rychlost přehrávání",
-    "audiobookRemainingTime": "Zbývá",
-    "audiobookElapsedTime": "Uplynulo",
-    "audiobookSkipBackSeconds": "Zpět o {seconds} s",
+    "audiobookPlaybackSpeed": "",
+    "audiobookRemainingTime": "",
+    "audiobookElapsedTime": "",
+    "audiobookSkipBackSeconds": "",
     "@audiobookSkipBackSeconds": {
         "placeholders": {
             "seconds": {
@@ -8770,7 +8770,7 @@
             }
         }
     },
-    "audiobookSkipForwardSeconds": "Vpřed o {seconds} s",
+    "audiobookSkipForwardSeconds": "",
     "@audiobookSkipForwardSeconds": {
         "placeholders": {
             "seconds": {
@@ -8778,9 +8778,9 @@
             }
         }
     },
-    "audiobookPreviousChapter": "Předchozí kapitola",
-    "audiobookNextChapter": "Další kapitola",
-    "audiobookChapterIndicator": "Kapitola {current} z {total}",
+    "audiobookPreviousChapter": "",
+    "audiobookNextChapter": "",
+    "audiobookChapterIndicator": "",
     "@audiobookChapterIndicator": {
         "placeholders": {
             "current": {
@@ -8791,10 +8791,10 @@
             }
         }
     },
-    "audiobookNoChapters": "Žádné kapitoly",
-    "audiobookNoBookmarks": "Zatím žádné záložky",
-    "audiobookNoNotes": "Zatím žádné poznámky",
-    "audiobookBookmarkAdded": "Záložka přidána na {position}",
+    "audiobookNoChapters": "",
+    "audiobookNoBookmarks": "",
+    "audiobookNoNotes": "",
+    "audiobookBookmarkAdded": "",
     "@audiobookBookmarkAdded": {
         "placeholders": {
             "position": {
@@ -8802,8 +8802,8 @@
             }
         }
     },
-    "audiobookSpeedReset": "Obnovit na 1,0×",
-    "audiobookSpeedCustomLabel": "{value}×",
+    "audiobookSpeedReset": "",
+    "audiobookSpeedCustomLabel": "",
     "@audiobookSpeedCustomLabel": {
         "placeholders": {
             "value": {
@@ -8811,58 +8811,58 @@
             }
         }
     },
-    "audiobookSave": "Uložit",
-    "audiobookCancel": "Zrušit",
-    "audiobookDelete": "Smazat",
-    "subtitlePreferences": "Předvolby titulků",
+    "audiobookSave": "",
+    "audiobookCancel": "",
+    "audiobookDelete": "",
+    "subtitlePreferences": "",
     "@subtitlePreferences": {
         "description": "Title for the subtitle preferences settings section"
     },
-    "subtitlePreferencesDescription": "Změňte režimy titulků, výchozí jazyky, vzhled a možnosti vykreslování.",
+    "subtitlePreferencesDescription": "",
     "@subtitlePreferencesDescription": {
         "description": "Description for the subtitle preferences settings section"
     },
-    "subtitleRendering": "Vykreslování titulků",
+    "subtitleRendering": "",
     "@subtitleRendering": {
         "description": "Header for subtitle rendering settings"
     },
-    "displayOptions": "Možnosti zobrazení",
+    "displayOptions": "",
     "@displayOptions": {
         "description": "Title for details display options dialog"
     },
-    "releaseDateAscending": "Datum vydání (vzestupně)",
+    "releaseDateAscending": "",
     "@releaseDateAscending": {
         "description": "Sort option for crew/cast contributions in ascending release date order"
     },
-    "releaseDateDescending": "Datum vydání (sestupně)",
+    "releaseDateDescending": "",
     "@releaseDateDescending": {
         "description": "Sort option for crew/cast contributions in descending release date order"
     },
-    "groupContributions": "Seskupit příspěvky",
+    "groupContributions": "",
     "@groupContributions": {
         "description": "Section header for grouping person contributions"
     },
-    "groupMultipleRoles": "Seskupit více rolí",
+    "groupMultipleRoles": "",
     "@groupMultipleRoles": {
         "description": "Option to group multiple roles for a person"
     },
-    "libraryWriteAccessWarningTitle": "Upozornění na přístup pro zápis do knihovny",
+    "libraryWriteAccessWarningTitle": "",
     "@libraryWriteAccessWarningTitle": {
         "description": "Title for library write access warning dialog"
     },
-    "libraryWriteAccessHowToFix": "Jak to napravit:",
+    "libraryWriteAccessHowToFix": "",
     "@libraryWriteAccessHowToFix": {
         "description": "Section header for write access troubleshooting"
     },
-    "libraryWriteAccessFixSteps": "1. Udělte uživateli služby Jellyfin (např. jellyfin nebo Docker PUID/PGID) oprávnění k zápisu do složek vaší mediální knihovny na serveru.\n\n2. Nebo přejděte na nástěnce Jellyfin do sekce Knihovny, upravte tuto knihovnu a vypněte možnost „Ukládat grafiku do složek s médii“, aby se grafika ukládala do interní databáze Jellyfinu.",
+    "libraryWriteAccessFixSteps": "",
     "@libraryWriteAccessFixSteps": {
         "description": "Troubleshooting steps for write access issues"
     },
-    "dismiss": "Zavřít",
+    "dismiss": "",
     "@dismiss": {
         "description": "Dismiss button text"
     },
-    "libraryWriteAccessProactiveBody": "Vaše knihovna „{libraryName}“ je nastavena tak, aby ukládala grafiku přímo do složek s médii (je zapnutá možnost „Ukládat grafiku do složek s médii“). Jellyfin však otestoval přístup pro zápis a nemá oprávnění zapisovat soubory do tohoto adresáře:\n\n{failedPath}",
+    "libraryWriteAccessProactiveBody": "",
     "@libraryWriteAccessProactiveBody": {
         "description": "Proactive warning message about server write access",
         "placeholders": {
@@ -8874,21 +8874,21 @@
             }
         }
     },
-    "libraryWriteAccessReactiveBody": "Vypadá to, že se Jellyfinu nepodařilo aktualizovat grafiku. Vaše knihovna je nastavena tak, aby ukládala grafiku přímo do složek s médii (je zapnutá možnost „Ukládat grafiku do složek s médii“). Tato chyba obvykle nastává, když proces serveru Jellyfin nemá oprávnění zapisovat soubory do vašich adresářů s médii.",
+    "libraryWriteAccessReactiveBody": "",
     "@libraryWriteAccessReactiveBody": {
         "description": "Reactive error warning message when artwork update fails"
     },
-    "externalLists": "Externí seznamy",
-    "replay": "Přehrát znovu",
-    "fileInformation": "Informace o souboru",
-    "fileSizeFormat": "Velikost: {size}  •  Formát: {format}",
+    "externalLists": "",
+    "replay": "",
+    "fileInformation": "",
+    "fileSizeFormat": "",
     "@fileSizeFormat": {
         "placeholders": {
             "size": {},
             "format": {}
         }
     },
-    "showAllAudioTracks": "Zobrazit všechny zvukové stopy ({count})",
+    "showAllAudioTracks": "",
     "@showAllAudioTracks": {
         "placeholders": {
             "count": {
@@ -8896,7 +8896,7 @@
             }
         }
     },
-    "showAllSubtitleTracks": "Zobrazit všechny titulkové stopy ({count})",
+    "showAllSubtitleTracks": "",
     "@showAllSubtitleTracks": {
         "placeholders": {
             "count": {
@@ -8904,30 +8904,30 @@
             }
         }
     },
-    "checkingDirectPlay": "Kontroluje se možnost přímého přehrávání...",
-    "directPlayCapabilityLabel": "Možnost přímého přehrávání: ",
-    "forced": "Vynucené",
-    "transcodeContainerNotSupported": "Formát kontejneru přehrávač nepodporuje.",
-    "transcodeVideoCodecNotSupported": "Video kodek není podporován.",
-    "transcodeAudioCodecNotSupported": "Zvukový kodek není podporován.",
-    "transcodeSubtitleCodecNotSupported": "Formát titulků není podporován (vyžaduje vypálení do obrazu).",
-    "transcodeAudioProfileNotSupported": "Zvukový profil není podporován.",
-    "transcodeVideoProfileNotSupported": "Video profil není podporován.",
-    "transcodeVideoLevelNotSupported": "Úroveň videa není podporována.",
-    "transcodeVideoResolutionNotSupported": "Rozlišení videa toto zařízení nepodporuje.",
-    "transcodeVideoBitDepthNotSupported": "Bitová hloubka videa není podporována.",
-    "transcodeVideoFramerateNotSupported": "Snímková frekvence videa není podporována.",
-    "transcodeContainerBitrateExceedsLimit": "Datový tok souboru překračuje limit přehrávače pro streamování.",
-    "transcodeVideoBitrateExceedsLimit": "Datový tok videa překračuje limit pro streamování.",
-    "transcodeAudioBitrateExceedsLimit": "Datový tok zvuku překračuje limit pro streamování.",
-    "transcodeAudioChannelsNotSupported": "Počet zvukových kanálů není podporován.",
-    "sortAlphabetical": "Abecedně",
-    "sortReleaseAscending": "Pořadí vydání (vzestupně)",
-    "sortReleaseDescending": "Pořadí vydání (sestupně)",
-    "sortCustomDragDrop": "Vlastní (přetažením)",
-    "playlistSortOptions": "Možnosti řazení playlistu",
-    "resetSort": "Obnovit řazení",
-    "rewatchSeasonEpisode": "Znovu přehrát S{season}:E{episode}",
+    "checkingDirectPlay": "",
+    "directPlayCapabilityLabel": "",
+    "forced": "",
+    "transcodeContainerNotSupported": "",
+    "transcodeVideoCodecNotSupported": "",
+    "transcodeAudioCodecNotSupported": "",
+    "transcodeSubtitleCodecNotSupported": "",
+    "transcodeAudioProfileNotSupported": "",
+    "transcodeVideoProfileNotSupported": "",
+    "transcodeVideoLevelNotSupported": "",
+    "transcodeVideoResolutionNotSupported": "",
+    "transcodeVideoBitDepthNotSupported": "",
+    "transcodeVideoFramerateNotSupported": "",
+    "transcodeContainerBitrateExceedsLimit": "",
+    "transcodeVideoBitrateExceedsLimit": "",
+    "transcodeAudioBitrateExceedsLimit": "",
+    "transcodeAudioChannelsNotSupported": "",
+    "sortAlphabetical": "",
+    "sortReleaseAscending": "",
+    "sortReleaseDescending": "",
+    "sortCustomDragDrop": "",
+    "playlistSortOptions": "",
+    "resetSort": "",
+    "rewatchSeasonEpisode": "",
     "@rewatchSeasonEpisode": {
         "placeholders": {
             "season": {
@@ -8938,57 +8938,57 @@
             }
         }
     },
-    "rewatchPlaylist": "Znovu přehrát playlist",
-    "noSubtitlesFound": "Nebyly nalezeny žádné titulky.",
-    "adminControls": "Ovládání pro správce",
-    "impellerRendering": "Vykreslovací jádro (Impeller)",
+    "rewatchPlaylist": "",
+    "noSubtitlesFound": "",
+    "adminControls": "",
+    "impellerRendering": "",
     "@impellerRendering": {
         "description": "Title of the setting that selects the Flutter rendering engine (Impeller vs. legacy)."
     },
-    "impellerRenderingSubtitle": "Impeller je moderní GPU renderer Flutteru pro plynulejší animace a méně zadrhávání. Na některých TV boxech a starších GPU může způsobovat grafické chyby nebo černé video; v takovém případě jej vypněte. Automaticky zvolí nejlepší výchozí nastavení pro vaše zařízení. Změna se projeví po restartu Moonfinu.",
+    "impellerRenderingSubtitle": "",
     "@impellerRenderingSubtitle": {
         "description": "Explanatory description under the rendering engine setting."
     },
-    "impellerAuto": "Automaticky",
-    "impellerOn": "Zapnuto",
-    "impellerOff": "Vypnuto",
-    "impellerRestartTitle": "Vyžaduje restart",
+    "impellerAuto": "",
+    "impellerOn": "",
+    "impellerOff": "",
+    "impellerRestartTitle": "",
     "@impellerRestartTitle": {
         "description": "Title of the dialog shown after changing the rendering engine."
     },
-    "impellerRestartMessage": "Ke změně vykreslovacího jádra je nutné Moonfin restartovat. Zavřete aplikaci a znovu ji otevřete, aby se změna projevila.",
+    "impellerRestartMessage": "",
     "@impellerRestartMessage": {
         "description": "Body of the dialog shown after changing the rendering engine."
     },
-    "impellerCloseNow": "Zavřít aplikaci",
+    "impellerCloseNow": "",
     "@impellerCloseNow": {
         "description": "Button that closes the app so the new rendering engine takes effect on next launch."
     },
-    "adminRefreshLibrary": "Obnovit knihovnu",
+    "adminRefreshLibrary": "",
     "@adminRefreshLibrary": {
         "description": "Dropdown option to refresh/rescan a single library"
     },
-    "adminRefreshAllLibraries": "Obnovit všechny knihovny",
+    "adminRefreshAllLibraries": "",
     "@adminRefreshAllLibraries": {
         "description": "Floating action button text to refresh all libraries"
     },
-    "adminRepoSortDateOldest": "Datum přidání (od nejstarších)",
+    "adminRepoSortDateOldest": "",
     "@adminRepoSortDateOldest": {
         "description": "Repository sort option, oldest added first"
     },
-    "adminRepoSortDateNewest": "Datum přidání (od nejnovějších)",
+    "adminRepoSortDateNewest": "",
     "@adminRepoSortDateNewest": {
         "description": "Repository sort option, newest added first"
     },
-    "adminRepoSortNameAsc": "Abecedně (A–Z)",
+    "adminRepoSortNameAsc": "",
     "@adminRepoSortNameAsc": {
         "description": "Repository sort option, alphabetical ascending"
     },
-    "adminRepoSortNameDesc": "Abecedně (Z–A)",
+    "adminRepoSortNameDesc": "",
     "@adminRepoSortNameDesc": {
         "description": "Repository sort option, alphabetical descending"
     },
-    "adminAnalyticsLoadingProgress": "Načítání analytiky serveru... {percentage} %",
+    "adminAnalyticsLoadingProgress": "",
     "@adminAnalyticsLoadingProgress": {
         "description": "Progress label shown while server analytics load",
         "placeholders": {
@@ -8997,14 +8997,14 @@
             }
         }
     },
-    "adminLibChapterImageResolutionMatchSource": "Podle zdroje",
+    "adminLibChapterImageResolutionMatchSource": "",
     "@adminLibChapterImageResolutionMatchSource": {
         "description": "Chapter image resolution option that matches the source resolution"
     },
-    "imdbTop250Movies": "IMDb Top 250 filmů",
-    "imdbTop250TvShows": "IMDb Top 250 seriálů",
-    "imdbMostPopularMovies": "Nejpopulárnější filmy podle IMDb",
-    "imdbMostPopularTvShows": "Nejpopulárnější seriály podle IMDb",
-    "imdbLowestRatedMovies": "Nejhůře hodnocené filmy podle IMDb",
-    "imdbTopEnglishMovies": "Nejlépe hodnocené anglické filmy podle IMDb"
+    "imdbTop250Movies": "",
+    "imdbTop250TvShows": "",
+    "imdbMostPopularMovies": "",
+    "imdbMostPopularTvShows": "",
+    "imdbLowestRatedMovies": "",
+    "imdbTopEnglishMovies": ""
 }
