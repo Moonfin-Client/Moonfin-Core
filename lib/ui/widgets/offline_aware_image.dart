@@ -34,8 +34,6 @@ class OfflineAwareImage extends StatelessWidget {
   final int? memCacheWidth;
   final int? memCacheHeight;
   final String? cacheKey;
-  final int? maxWidthDiskCache;
-  final int? maxHeightDiskCache;
 
   const OfflineAwareImage({
     super.key,
@@ -63,8 +61,6 @@ class OfflineAwareImage extends StatelessWidget {
     this.memCacheWidth,
     this.memCacheHeight,
     this.cacheKey,
-    this.maxWidthDiskCache,
-    this.maxHeightDiskCache,
   });
 
   @override
@@ -117,8 +113,6 @@ class OfflineAwareImage extends StatelessWidget {
       memCacheWidth: memCacheWidth,
       memCacheHeight: memCacheHeight,
       cacheKey: cacheKey,
-      maxWidthDiskCache: maxWidthDiskCache,
-      maxHeightDiskCache: maxHeightDiskCache,
     );
   }
 }

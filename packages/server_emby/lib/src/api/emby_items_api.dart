@@ -119,12 +119,17 @@ class EmbyItemsApi implements ItemsApi {
   }
 
   @override
-  Future<Map<String, dynamic>> getItem(String itemId, {String? mediaSourceId}) async {
+  Future<Map<String, dynamic>> getItem(
+    String itemId, {
+    String? mediaSourceId,
+    String? fields,
+  }) async {
     final userId = _getUserId();
     final response = await _dio.get(
       '/Users/$userId/Items/$itemId',
       queryParameters: {
         if (mediaSourceId != null) 'mediaSourceId': mediaSourceId,
+        if (fields != null && fields.isNotEmpty) 'Fields': fields,
       },
     );
     return response.data as Map<String, dynamic>;

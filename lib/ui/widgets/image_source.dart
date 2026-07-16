@@ -26,11 +26,16 @@ ImageProvider offlineAwareImageProvider(
     }
     return file;
   }
-  return CachedNetworkImageProvider(
+  // maxWidth/maxHeight bound the decode, matching the local-file branch above.
+  // They are deliberately not passed to the provider: that would make the cache
+  // manager keep the original and write a second, PNG re-encoded copy per size.
+  final provider = CachedNetworkImageProvider(
     url,
-    maxWidth: maxWidth,
-    maxHeight: maxHeight,
     cacheKey: cacheKey,
     headers: headers,
   );
+  if (maxWidth != null || maxHeight != null) {
+    return ResizeImage.resizeIfNeeded(maxWidth, maxHeight, provider);
+  }
+  return provider;
 }

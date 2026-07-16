@@ -11,6 +11,11 @@ enum BlurContext { details, browsing, none }
 
 class BackgroundService {
   static const backdropMaxWidth = 1920;
+
+  // Decode width for a blurred backdrop. Kept here, alongside backdropMaxWidth
+  // for the unblurred case, so _evictBackgrounds can rebuild the same cache
+  // keys the backdrop widgets insert.
+  static const backdropBlurredDecodeWidth = 640;
   static const slideshowDuration = Duration(seconds: 30);
   static const transitionDuration = Duration(milliseconds: 800);
 
@@ -113,7 +118,14 @@ class BackgroundService {
   void _evictBackgrounds(Iterable<String> urls) {
     final imageCache = PaintingBinding.instance.imageCache;
     for (final url in urls) {
-      imageCache.evict(CachedNetworkImageProvider(url));
+      final provider = CachedNetworkImageProvider(url);
+      // memCacheWidth wraps the provider in a ResizeImage, so evicting the bare
+      // provider alone would miss the key the backdrop actually inserted.
+      imageCache.evict(provider);
+      imageCache.evict(ResizeImage(provider, width: backdropMaxWidth));
+      imageCache.evict(
+        ResizeImage(provider, width: backdropBlurredDecodeWidth),
+      );
     }
   }
 }

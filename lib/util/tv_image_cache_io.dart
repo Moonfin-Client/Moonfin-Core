@@ -37,6 +37,9 @@ Future<void> configureImageDiskCache() async {
         maxNrOfCacheObjects: maxObjects,
       );
     }
+    // Deliberately a plain CacheManager: nothing asks the disk layer to resize,
+    // and if anything ever does, this trips an assert rather than silently
+    // storing a second re-encoded copy of every image.
     CachedNetworkImageProvider.defaultCacheManager = CacheManager(config);
   } catch (_) {}
 }

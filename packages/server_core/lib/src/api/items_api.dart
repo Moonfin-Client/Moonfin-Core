@@ -40,7 +40,13 @@ abstract class ItemsApi {
     String? enableImageTypes,
   });
 
-  Future<Map<String, dynamic>> getItem(String itemId, {String? mediaSourceId});
+  /// Full metadata by default. Pass [fields] to request a leaner set, e.g. an
+  /// empty string when only the default DTO members like Name are needed.
+  Future<Map<String, dynamic>> getItem(
+    String itemId, {
+    String? mediaSourceId,
+    String? fields,
+  });
   Future<List<Map<String, dynamic>>> getAncestors(String itemId);
   Future<Map<String, dynamic>> getSimilarItems(String itemId, {int? limit});
 

@@ -414,6 +414,7 @@ class OfflineItemsApi implements ItemsApi {
   Future<Map<String, dynamic>> getItem(
     String itemId, {
     String? mediaSourceId,
+    String? fields,
   }) async {
     if (OfflineViews.isOfflineView(itemId)) {
       final serverId = _catalog.entries.isNotEmpty

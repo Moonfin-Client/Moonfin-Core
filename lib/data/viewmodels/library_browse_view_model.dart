@@ -22,8 +22,13 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
   static const _pageSize = 48;
   static const _firstPageSize = 75;
+  // Name and CollectionType come back as default fields, so the library lookup
+  // needs none. Asking for the full set makes the server recursively count the
+  // whole library before the first item can render.
+  static const _libraryMetaFields = '';
+
   static const _browseFields =
-      'PrimaryImageAspectRatio,SortName,Type,IsFolder,UserData,CommunityRating,OfficialRating,RunTimeTicks,ProductionYear,ImageTags,BackdropImageTags,ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag';
+      'PrimaryImageAspectRatio,SortName,Type,IsFolder,UserData,CommunityRating,OfficialRating,RunTimeTicks,ProductionYear,ProviderIds,ImageTags,BackdropImageTags,ParentBackdropItemId,ParentBackdropImageTags,ParentThumbItemId,ParentThumbImageTag,SeriesId,SeriesPrimaryImageTag';
   // Cap image tags to one per type (server returns all by default)
   static const _imageTypes = 'Primary,Backdrop,Thumb';
   static const _imageTypeLimit = 1;
@@ -51,6 +56,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
   String? _collectionType;
   bool _initialLibraryFilterSet = false;
   bool _imageTypeSynced = false;
+  bool _libraryMetaResolved = false;
 
   bool _loadingMore = false;
   bool get loadingMore => _loadingMore;
@@ -132,7 +138,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         tmdbId = _tmdbIdByItemId[item.id];
       } else {
         try {
-          final details = await _client.itemsApi.getItem(item.id);
+          final details =
+              await _client.itemsApi.getItem(item.id, fields: 'ProviderIds');
           tmdbId = (details['ProviderIds'] as Map?)?['Tmdb'] as String?;
         } catch (_) {
           tmdbId = null;
@@ -216,6 +223,12 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // Independent of the library lookup, so let it run alongside instead of
+      // adding a third round trip before the first item can render.
+      final imageTypeSync = _imageTypeSynced
+          ? Future<void>.value()
+          : _syncImageTypeFromServer().then((_) => _imageTypeSynced = true);
+
       if (isFilterBrowse) {
         _libraryName = overrideName ?? '';
         if (!_initialLibraryFilterSet) {
@@ -225,16 +238,19 @@ class LibraryBrowseViewModel extends ChangeNotifier {
         if (_libraries.isEmpty) _loadLibraries();
         if (libraryId.isNotEmpty) {
           try {
-            final parentData = await _client.itemsApi.getItem(libraryId);
+            final parentData = await _client.itemsApi
+                .getItem(libraryId, fields: _libraryMetaFields);
             _collectionType = (parentData['CollectionType'] as String?)
                 ?.toLowerCase();
           } catch (_) {}
         }
-      } else {
-        final parentData = await _client.itemsApi.getItem(libraryId);
+      } else if (!_libraryMetaResolved) {
+        final parentData = await _client.itemsApi
+            .getItem(libraryId, fields: _libraryMetaFields);
         _libraryName = parentData['Name'] as String? ?? '';
         _collectionType = (parentData['CollectionType'] as String?)
             ?.toLowerCase();
+        _libraryMetaResolved = true;
       }
 
       if (isHomeVideosLibrary || isMixedContentLibrary) {
@@ -251,10 +267,7 @@ class LibraryBrowseViewModel extends ChangeNotifier {
 
       _refreshPosterSizeFromScope();
 
-      if (!_imageTypeSynced) {
-        await _syncImageTypeFromServer();
-        _imageTypeSynced = true;
-      }
+      await imageTypeSync;
       await _fetchPage(0);
       _state = LibraryBrowseState.ready;
     } catch (e) {
@@ -587,7 +600,8 @@ class LibraryBrowseViewModel extends ChangeNotifier {
     _collectionType = null;
     if (value != null) {
       try {
-        final parentData = await _client.itemsApi.getItem(value);
+        final parentData = await _client.itemsApi
+            .getItem(value, fields: _libraryMetaFields);
         _collectionType = (parentData['CollectionType'] as String?)
             ?.toLowerCase();
       } catch (_) {}

@@ -78,7 +78,7 @@ class BoundedNetworkImage extends StatelessWidget {
       ResizeImage.resizeIfNeeded(
         cacheW,
         null,
-        CachedNetworkImageProvider(imageUrl, maxWidth: cacheW),
+        CachedNetworkImageProvider(imageUrl),
       ),
       context,
     );
@@ -114,7 +114,6 @@ class BoundedNetworkImage extends StatelessWidget {
           alignment: alignment,
           fadeInDuration: fadeInDuration,
           memCacheWidth: cacheW,
-          maxWidthDiskCache: cacheW,
           errorWidget: errorBuilder == null
               ? null
               : (context, url, error) => errorBuilder!(context, url, error),

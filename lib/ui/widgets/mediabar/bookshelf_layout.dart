@@ -302,7 +302,6 @@ class BookshelfLayout extends StatelessWidget {
     return OfflineAwareImage(
       imageUrl: posterUrl,
       memCacheWidth: cacheW,
-      maxWidthDiskCache: cacheW,
       fadeInDuration: const Duration(milliseconds: 250),
       fadeOutDuration: Duration.zero,
       placeholder: (context, url) => const SizedBox.shrink(),

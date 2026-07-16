@@ -78,26 +78,30 @@ void _attachIosAudioRouteHandling() {
   });
 }
 
+// The entry counts are generous on purpose: a library grid shows dozens of
+// posters at once, so a small count evicts them after about two screenfuls and
+// scrolling back re-decodes everything. maximumSizeBytes is what really bounds
+// memory here.
 void _configureImageCache() {
   final imageCache = PaintingBinding.instance.imageCache;
   if (PlatformDetection.isWeb) {
-    imageCache.maximumSize = 200;
+    imageCache.maximumSize = 400;
     imageCache.maximumSizeBytes = 96 << 20;
     return;
   }
   if (PlatformDetection.isMobile) {
-    imageCache.maximumSize = 100;
+    imageCache.maximumSize = 400;
     imageCache.maximumSizeBytes = 120 << 20;
     return;
   }
 
   if (PlatformDetection.isTV) {
-    imageCache.maximumSize = 120;
+    imageCache.maximumSize = 500;
     imageCache.maximumSizeBytes = 96 << 20;
     return;
   }
 
-  imageCache.maximumSize = 200;
+  imageCache.maximumSize = 600;
   imageCache.maximumSizeBytes = 256 << 20;
 }
 

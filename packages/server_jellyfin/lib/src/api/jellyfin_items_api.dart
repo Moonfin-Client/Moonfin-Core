@@ -120,12 +120,16 @@ class JellyfinItemsApi implements ItemsApi {
   }
 
   @override
-  Future<Map<String, dynamic>> getItem(String itemId, {String? mediaSourceId}) async {
+  Future<Map<String, dynamic>> getItem(
+    String itemId, {
+    String? mediaSourceId,
+    String? fields,
+  }) async {
     final userId = _getUserId();
     final response = await _dio.get(
       '/Users/$userId/Items/$itemId',
       queryParameters: {
-        'Fields': kItemFields,
+        'Fields': fields ?? kItemFields,
         if (mediaSourceId != null) 'mediaSourceId': mediaSourceId,
       },
     );
