@@ -425,14 +425,17 @@ class _ReorderableTileState extends State<_ReorderableTile> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 90),
         color: bg,
-        child: ListTile(
-          onTap: () => widget.onToggle(!widget.enabled),
-          leading: Icon(
-            widget.enabled ? Icons.check_box : Icons.check_box_outline_blank,
-            color: widget.enabled ? colorScheme.primary : null,
+        child: Material(
+          type: MaterialType.transparency,
+          child: ListTile(
+            onTap: () => widget.onToggle(!widget.enabled),
+            leading: Icon(
+              widget.enabled ? Icons.check_box : Icons.check_box_outline_blank,
+              color: widget.enabled ? colorScheme.primary : null,
+            ),
+            title: Text(widget.label),
+            trailing: widget.trailing,
           ),
-          title: Text(widget.label),
-          trailing: widget.trailing,
         ),
       ),
     );

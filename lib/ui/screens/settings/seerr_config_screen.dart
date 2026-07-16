@@ -1819,27 +1819,30 @@ class _SeerrReorderableTileState extends State<_SeerrReorderableTile> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 90),
           decoration: _tileDecoration(context, focused: _focused),
-          child: ListTile(
-            onTap: () => widget.onToggle(!widget.enabled),
-            leading: Icon(
-              widget.enabled ? Icons.check_box : Icons.check_box_outline_blank,
-              color: widget.enabled
-                  ? (_focused ? AppColors.black : colorScheme.primary)
-                  : iconColor,
-            ),
-            title: Text(
-              widget.label,
-              style: TextStyle(color: textColor, fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text(
-              widget.enabled ? widget.enabledLabel : widget.hiddenLabel,
-              style: TextStyle(
-                color: _focused
-                    ? AppColors.black.withValues(alpha: 0.6)
-                    : colorScheme.onSurfaceVariant,
+          child: Material(
+            type: MaterialType.transparency,
+            child: ListTile(
+              onTap: () => widget.onToggle(!widget.enabled),
+              leading: Icon(
+                widget.enabled ? Icons.check_box : Icons.check_box_outline_blank,
+                color: widget.enabled
+                    ? (_focused ? AppColors.black : colorScheme.primary)
+                    : iconColor,
               ),
+              title: Text(
+                widget.label,
+                style: TextStyle(color: textColor, fontWeight: FontWeight.w600),
+              ),
+              subtitle: Text(
+                widget.enabled ? widget.enabledLabel : widget.hiddenLabel,
+                style: TextStyle(
+                  color: _focused
+                      ? AppColors.black.withValues(alpha: 0.6)
+                      : colorScheme.onSurfaceVariant,
+                ),
+              ),
+              trailing: widget.trailing,
             ),
-            trailing: widget.trailing,
           ),
         ),
       ),

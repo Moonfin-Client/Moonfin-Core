@@ -2865,97 +2865,100 @@ class _HomeSectionTileState extends State<_HomeSectionTile> {
                 UserPreferences.mergeContinueWatchingNextUp,
               ),
             ),
-            child: ListTile(
-              focusColor: Colors.transparent,
-              hoverColor: Colors.transparent,
-              contentPadding: _kHomeSectionTileContentPadding,
-              minLeadingWidth: 44,
-              horizontalTitleGap: 14,
-              leading: buildSettingsLeadingIconShell(
-                context,
-                icon: Icon(
-                  (widget.enabled && !widget.isEmpty)
-                      ? Icons.check_box
-                      : Icons.check_box_outline_blank,
-                ),
-                focused: _focused,
-                iconColor: _focused
-                    ? AppColors.black.withValues(alpha: 0.54)
-                    : AppColorScheme.onSurface.withValues(alpha: 0.78),
-              ),
-              title: Row(
-                children: [
-                  Text(
-                    widget.label,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: kCleanSettingsFontFamily,
-                      color: _focused
-                          ? AppColors.black.withValues(alpha: 0.87)
-                          : AppColorScheme.onSurface,
-                    ),
+            child: Material(
+              type: MaterialType.transparency,
+              child: ListTile(
+                focusColor: Colors.transparent,
+                hoverColor: Colors.transparent,
+                contentPadding: _kHomeSectionTileContentPadding,
+                minLeadingWidth: 44,
+                horizontalTitleGap: 14,
+                leading: buildSettingsLeadingIconShell(
+                  context,
+                  icon: Icon(
+                    (widget.enabled && !widget.isEmpty)
+                        ? Icons.check_box
+                        : Icons.check_box_outline_blank,
                   ),
-                  if (widget.isEmpty) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.red.withValues(alpha: 0.15),
-                        borderRadius: AppRadius.circular(4),
-                        border: Border.all(
-                          color: Colors.red.withValues(alpha: 0.5),
-                          width: 0.8,
-                        ),
-                      ),
-                      child: Text(
-                        l10n.empty,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: kCleanSettingsFontFamily,
-                        ),
+                  focused: _focused,
+                  iconColor: _focused
+                      ? AppColors.black.withValues(alpha: 0.54)
+                      : AppColorScheme.onSurface.withValues(alpha: 0.78),
+                ),
+                title: Row(
+                  children: [
+                    Text(
+                      widget.label,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: kCleanSettingsFontFamily,
+                        color: _focused
+                            ? AppColors.black.withValues(alpha: 0.87)
+                            : AppColorScheme.onSurface,
                       ),
                     ),
+                    if (widget.isEmpty) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withValues(alpha: 0.15),
+                          borderRadius: AppRadius.circular(4),
+                          border: Border.all(
+                            color: Colors.red.withValues(alpha: 0.5),
+                            width: 0.8,
+                          ),
+                        ),
+                        child: Text(
+                          l10n.empty,
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: kCleanSettingsFontFamily,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
-                ],
-              ),
-              subtitle: widget.subtitle != null
-                  ? Text(
-                      widget.subtitle!,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontFamily: kCleanSettingsFontFamily,
+                ),
+                subtitle: widget.subtitle != null
+                    ? Text(
+                        widget.subtitle!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontFamily: kCleanSettingsFontFamily,
+                          color: _focused
+                              ? AppColors.black.withValues(alpha: 0.54)
+                              : AppColorScheme.onSurface.withValues(alpha: 0.7),
+                        ),
+                      )
+                    : null,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (!widget.isFirst)
+                      Icon(
+                        Icons.arrow_left,
+                        size: 18,
                         color: _focused
                             ? AppColors.black.withValues(alpha: 0.54)
                             : AppColorScheme.onSurface.withValues(alpha: 0.7),
                       ),
-                    )
-                  : null,
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (!widget.isFirst)
-                    Icon(
-                      Icons.arrow_left,
-                      size: 18,
-                      color: _focused
-                          ? AppColors.black.withValues(alpha: 0.54)
-                          : AppColorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                  if (!widget.isLast)
-                    Icon(
-                      Icons.arrow_right,
-                      size: 18,
-                      color: _focused
-                          ? AppColors.black.withValues(alpha: 0.54)
-                          : AppColorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                ],
+                    if (!widget.isLast)
+                      Icon(
+                        Icons.arrow_right,
+                        size: 18,
+                        color: _focused
+                            ? AppColors.black.withValues(alpha: 0.54)
+                            : AppColorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),
