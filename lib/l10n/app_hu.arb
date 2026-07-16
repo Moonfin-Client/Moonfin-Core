@@ -1275,7 +1275,7 @@
     "@subtitleTrack": {
         "description": "Dialog title for subtitle track selection"
     },
-    "none": "Nincs",
+    "none": "Egyik sem",
     "@none": {
         "description": "Option label for no subtitle selected"
     },
@@ -4426,7 +4426,7 @@
     "@showMore": {
         "description": "Button to expand truncated content"
     },
-    "appearances": "Szereplések",
+    "appearances": "Megjelenések",
     "@appearances": {
         "description": "Section title for cast appearances"
     },
@@ -4670,7 +4670,7 @@
     "adminSetVolume": "Hangerő beállítása",
     "sessionPrev": "Előző",
     "sessionRewind": "Visszatekerés",
-    "sessionForward": "Előretekerés",
+    "sessionForward": "Előre",
     "sessionNext": "Következő",
     "sessionVolumeDown": "Hangerő –",
     "sessionVolumeUp": "Hangerő +",
@@ -6092,7 +6092,7 @@
             }
         }
     },
-    "adminActivityDateShort": "{month}. {day}.",
+    "adminActivityDateShort": "{month}/{day}",
     "@adminActivityDateShort": {
         "placeholders": {
             "month": {
