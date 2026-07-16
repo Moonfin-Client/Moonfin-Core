@@ -49,7 +49,7 @@
     "@loginFailed": {
         "description": "Generic login failure message"
     },
-    "quickConnectUnavailable": "QuickConnect 不可用：{detail}",
+    "quickConnectUnavailable": "快速连接不可用：{detail}",
     "@quickConnectUnavailable": {
         "description": "Quick Connect generic error message",
         "placeholders": {
@@ -58,7 +58,7 @@
             }
         }
     },
-    "quickConnectUnavailableWithStatus": "QuickConnect 不可用（{status}）：{detail}",
+    "quickConnectUnavailableWithStatus": "快速连接不可用（{status}）：{detail}",
     "@quickConnectUnavailableWithStatus": {
         "description": "Quick Connect error message with HTTP status info",
         "placeholders": {
@@ -277,7 +277,7 @@
     "@guide": {
         "description": "Live TV guide button label"
     },
-    "recordings": "录制内容",
+    "recordings": "录制",
     "@recordings": {
         "description": "Live TV recordings button label"
     },
@@ -4084,11 +4084,11 @@
     "@discoverRows": {
         "description": "Section title for discover rows"
     },
-    "discoverRowsDescriptionPlugin": "启用要在 Seerr 首页显示的栏目，拖动可调整排序。自定义顺序将与 Moonbase 同步。",
+    "discoverRowsDescriptionPlugin": "启用首页展示栏目，拖动调整排序，自定义顺序将同步至 Moonfin 服务端。",
     "@discoverRowsDescriptionPlugin": {
         "description": "Description for discover rows with plugin"
     },
-    "discoverRowsDescription": "启用要在 Seerr 首页显示的栏目，拖动可调整排序。自定义顺序将与 Moonbase 同步。",
+    "discoverRowsDescription": "启用首页展示栏目，拖动调整排序，自定义顺序将同步至 Moonfin 服务端。",
     "@discoverRowsDescription": {
         "description": "Description for discover rows without plugin"
     },
@@ -4507,7 +4507,7 @@
     "@originalLanguageLabel": {
         "description": "Stat label for original language"
     },
-    "seasonsLabel": "季数",
+    "seasonsLabel": "季",
     "@seasonsLabel": {
         "description": "Stat label for number of seasons"
     },
@@ -4536,7 +4536,7 @@
     "interval": "间隔",
     "name": "名称",
     "networking": "网络",
-    "next": "下一个",
+    "next": "下一项",
     "path": "路径",
     "paused": "已暂停",
     "permissions": "权限",
@@ -4544,7 +4544,7 @@
     "profile": "资料",
     "provider": "提供方",
     "refresh": "刷新",
-    "remote": "遥控",
+    "remote": "远程",
     "rename": "重命名",
     "revoke": "撤销",
     "role": "角色",
@@ -4574,7 +4574,7 @@
     "adminDrawerUsers": "用户",
     "adminDrawerLibraries": "媒体库",
     "adminDrawerTranscoding": "转码",
-    "adminDrawerResume": "继续播放",
+    "adminDrawerResume": "播放进度",
     "adminDrawerStreaming": "串流",
     "adminDrawerTrickplay": "Trickplay 预览图",
     "adminDrawerDevices": "设备",
@@ -4671,7 +4671,7 @@
     "sessionPrev": "上一项",
     "sessionRewind": "快退",
     "sessionForward": "快进",
-    "sessionNext": "下一个",
+    "sessionNext": "下一项",
     "sessionVolumeDown": "音量 -",
     "sessionVolumeUp": "音量 +",
     "uhd4k": "4K",
@@ -6333,8 +6333,8 @@
     "quickConnectNotSupported": "此服务器不支持 Quick Connect。",
     "quickConnectAuthorizeFailed": "无法授权 Quick Connect 代码。",
     "quickConnectDisabled": "此服务器上禁用了 Quick Connect。",
-    "quickConnectForbidden": "你的账号无法授权此 Quick Connect 请求。",
-    "quickConnectNotFound": "未找到 Quick Connect 代码。请尝试新的代码。",
+    "quickConnectForbidden": "你的账号无法授权此快速连接请求。",
+    "quickConnectNotFound": "未找到快速连接代码。请尝试新的代码。",
     "quickConnectFailedWithMessage": "Quick Connect 失败：{message}",
     "@quickConnectFailedWithMessage": {
         "placeholders": {
@@ -6479,7 +6479,7 @@
     "@playerTooltipUnlockOrientation": {
         "description": "Tooltip label for unlocking orientation lock in player"
     },
-    "playerTooltipPrevious": "上一个",
+    "playerTooltipPrevious": "上一项",
     "@playerTooltipPrevious": {
         "description": "Tooltip label for previous item control in player"
     },
@@ -7980,7 +7980,7 @@
     "adminRunningTasks": "正在运行的任务",
     "adminNetworkingPublicHttpPort": "公共 HTTP 端口",
     "adminNetworkingRequireHttpsHint": "将所有远程请求重定向到 HTTPS。如果服务器没有有效证书则无效。",
-    "adminGeneralQuickConnect": "启用 Quick Connect",
+    "adminGeneralQuickConnect": "启用快速连接",
     "adminGeneralSectionPaths": "路径",
     "adminGeneralSectionPerformance": "性能",
     "settingsConnectionSection": "连接",
@@ -8195,7 +8195,7 @@
     "adminLibChapterImageExtraction": "提取章节图片",
     "adminLibChapterImagesDuringScan": "在媒体库扫描期间提取章节图片",
     "impellerAuto": "自动",
-    "impellerOn": "开",
+    "impellerOn": "开启",
     "impellerRestartTitle": "需要重启",
     "@impellerRestartTitle": {
         "description": "Title of the dialog shown after changing the rendering engine."
@@ -8293,7 +8293,7 @@
     },
     "adminLibraryTabOptions": "选项",
     "audiobookSleepTimer": "睡眠定时",
-    "audiobookSleepOff": "关",
+    "audiobookSleepOff": "关闭",
     "audiobookNoNotes": "还没有笔记",
     "adminLibRefreshNever": "从不",
     "adminAddSchedule": "添加时间表",
@@ -8392,8 +8392,8 @@
     "@interviews": {
         "description": "Tab label for interviews special features"
     },
-    "impellerOff": "关",
-    "externalLists": "外部首页栏目列表",
+    "impellerOff": "关闭",
+    "externalLists": "外部榜单",
     "forced": "强制",
     "transcodeVideoResolutionNotSupported": "视频分辨率不受此设备支持。",
     "theme8BitHero": "8位英雄",
@@ -8405,19 +8405,19 @@
         "description": "Tooltip for the in-game menu button"
     },
     "audiobookDelete": "删除",
-    "expandedTabs": "展开标签页",
+    "expandedTabs": "自动展开标签页",
     "@expandedTabs": {
         "description": "Label for the detail screen expanded tabs setting"
     },
-    "expandedTabsSubtitle": "浏览标签页时自动显示其内容。关闭后需手动展开和收起每个标签页。",
+    "expandedTabsSubtitle": "浏览时自动加载标签内容；关闭后需手动展开/收起标签。",
     "@expandedTabsSubtitle": {
         "description": "Explanation under the expanded tabs setting"
     },
-    "showTechnicalDetails": "显示技术详情？",
+    "showTechnicalDetails": "显示媒体技术参数？",
     "@showTechnicalDetails": {
         "description": "Label for the detail screen setting to show stream/codec technical details"
     },
-    "showTechnicalDetailsSubtitle": "在横幅摘要中显示编解码器、分辨率和串流信息",
+    "showTechnicalDetailsSubtitle": "在顶部概览栏显示编码、分辨率及音视频流信息",
     "@showTechnicalDetailsSubtitle": {
         "description": "Explanation under the show technical details setting"
     },
@@ -8425,7 +8425,7 @@
     "@games": {
         "description": "Label for the games category tab in search results"
     },
-    "themeMusicSettingsSubtitle": "详情页、首页行和音量",
+    "themeMusicSettingsSubtitle": "详情页、首页分类栏及音量控制",
     "@themeMusicSettingsSubtitle": {
         "description": "Subtitle for the Theme Music settings sub-category tile"
     },
@@ -8433,23 +8433,23 @@
     "@loopThemeMusic": {
         "description": "Setting to loop the theme music"
     },
-    "loopThemeMusicSubtitle": "重复播放该曲目，而不是只播放一次",
+    "loopThemeMusicSubtitle": "单曲循环，而非仅播放一次",
     "@loopThemeMusicSubtitle": {
         "description": "Description for the loop theme music setting"
     },
-    "directStreamRemux": "直接串流（重新封装）",
+    "directStreamRemux": "直流（封装转码）",
     "@directStreamRemux": {
         "description": "Play method label for direct stream with remuxing"
     },
-    "transcodingBitrateOrResolution": "转码（比特率或分辨率）",
+    "transcodingBitrateOrResolution": "转码（码率/分辨率适配）",
     "@transcodingBitrateOrResolution": {
         "description": "Play method label for transcoding due to bitrate or resolution"
     },
-    "transcodingVideoAndAudio": "转码（视频和音频）",
+    "transcodingVideoAndAudio": "转码（视频+音频）",
     "@transcodingVideoAndAudio": {
         "description": "Play method label for transcoding both video and audio"
     },
-    "transcodingVideo": "转码（视频）",
+    "transcodingVideo": "转码（仅视频）",
     "@transcodingVideo": {
         "description": "Play method label for transcoding video"
     },
@@ -8459,15 +8459,15 @@
     "@trailerAudio": {
         "description": "Setting for trailer audio"
     },
-    "enableTrailerAudio": "为媒体栏中的预告片启用音频",
+    "enableTrailerAudio": "媒体栏预告片开启音效",
     "@enableTrailerAudio": {
         "description": "Description for trailer audio"
     },
-    "seerrNotifyIssuesTitle": "问题更新",
+    "seerrNotifyIssuesTitle": "媒体问题通知",
     "@seerrNotifyIssuesTitle": {
         "description": "Title for the issue notifications toggle"
     },
-    "seerrNotifyIssuesSubtitle": "新问题、回复和解决情况",
+    "seerrNotifyIssuesSubtitle": "新增问题、回复及问题解决通知",
     "@seerrNotifyIssuesSubtitle": {
         "description": "Subtitle for the issue notifications toggle"
     },
@@ -8483,7 +8483,7 @@
     "imageCacheLimit": "图片缓存上限",
     "clearImageCache": "清除图片缓存",
     "imageCacheCleared": "已清除图片缓存",
-    "seerrDownloadingPercent": "正在下载 · {percent}%",
+    "seerrDownloadingPercent": "下载中 · {percent}%",
     "@seerrDownloadingPercent": {
         "description": "Label above the Seerr download progress bar",
         "placeholders": {
@@ -8492,11 +8492,11 @@
             }
         }
     },
-    "seerrImportingStatus": "正在导入",
+    "seerrImportingStatus": "入库中",
     "@seerrImportingStatus": {
         "description": "Label when a Seerr download has finished and is importing"
     },
-    "failedStatus": "失败",
+    "failedStatus": "请求失败",
     "@failedStatus": {
         "description": "Request status label when the request failed to send to Radarr/Sonarr"
     },
@@ -8504,7 +8504,7 @@
     "@processingStatus": {
         "description": "Filter label for approved requests being processed"
     },
-    "modifiedByName": "由 {name} 修改",
+    "modifiedByName": "操作人：{name}",
     "@modifiedByName": {
         "description": "Label showing which manager acted on a request",
         "placeholders": {
@@ -8517,47 +8517,47 @@
     "@completedStatus": {
         "description": "Request status label when the request finished"
     },
-    "requestErrorDuplicate": "该内容已被请求过",
+    "requestErrorDuplicate": "该影片已提交过请求",
     "@requestErrorDuplicate": {
         "description": "Error when creating a request that already exists"
     },
-    "requestErrorQuota": "已达请求上限",
+    "requestErrorQuota": "已达最大请求额度",
     "@requestErrorQuota": {
         "description": "Error when the user is out of request quota"
     },
-    "requestErrorBlocklisted": "该内容已被列入屏蔽名单",
+    "requestErrorBlocklisted": "该影片已被屏蔽，无法请求",
     "@requestErrorBlocklisted": {
         "description": "Error when requesting blocklisted media"
     },
-    "requestErrorNoSeasons": "没有可请求的季",
+    "requestErrorNoSeasons": "全季资源已拥有或已提交请求",
     "@requestErrorNoSeasons": {
         "description": "Error when every season is already requested or available"
     },
-    "requestErrorPermission": "你没有权限发起此请求",
+    "requestErrorPermission": "你无权限提交媒体请求",
     "@requestErrorPermission": {
         "description": "Error when the user lacks request permission"
     },
-    "seerrRequestsTitle": "请求",
+    "seerrRequestsTitle": "媒体请求",
     "@seerrRequestsTitle": {
         "description": "Requests tab and screen title"
     },
-    "seerrIssuesTitle": "问题",
+    "seerrIssuesTitle": "媒体问题反馈",
     "@seerrIssuesTitle": {
         "description": "Issues tab title on the requests hub"
     },
-    "sortNewest": "最新",
+    "sortNewest": "最新提交",
     "@sortNewest": {
         "description": "Request sort option, most recently added first"
     },
-    "sortLastModified": "最近修改",
+    "sortLastModified": "最近更新",
     "@sortLastModified": {
         "description": "Request sort option, most recently updated first"
     },
-    "noIssues": "暂无问题",
+    "noIssues": "暂无反馈问题",
     "@noIssues": {
         "description": "Shown when the issue list is empty"
     },
-    "movieQuotaRemaining": "电影请求剩余 {remaining}/{limit} 次",
+    "movieQuotaRemaining": "电影剩余请求额度：{remaining}/{limit}",
     "@movieQuotaRemaining": {
         "description": "Quota line in the request dialog",
         "placeholders": {
@@ -8569,7 +8569,7 @@
             }
         }
     },
-    "seasonQuotaRemaining": "剧季请求剩余 {remaining}/{limit} 次",
+    "seasonQuotaRemaining": "剧集剩余请求额度：{remaining}/{limit}",
     "@seasonQuotaRemaining": {
         "description": "Quota line in the request dialog for series",
         "placeholders": {
@@ -8581,7 +8581,7 @@
             }
         }
     },
-    "partOfCollectionName": "属于 {name}",
+    "partOfCollectionName": "合集：{name}",
     "@partOfCollectionName": {
         "description": "Banner on a movie that belongs to a collection",
         "placeholders": {
@@ -8590,15 +8590,15 @@
             }
         }
     },
-    "viewCollection": "查看合集",
+    "viewCollection": "查看完整合集",
     "@viewCollection": {
         "description": "Link to open the collection screen"
     },
-    "requestCollection": "请求合集",
+    "requestCollection": "请求整套合集",
     "@requestCollection": {
         "description": "Button to request movies from a collection"
     },
-    "collectionMoviesSummary": "{total} 部电影 · {available} 部可用",
+    "collectionMoviesSummary": "共{total}部影片 · 已有{available}部",
     "@collectionMoviesSummary": {
         "description": "Collection header summary line",
         "placeholders": {
@@ -8610,7 +8610,7 @@
             }
         }
     },
-    "requestMoviesCount": "请求 {count} 部电影",
+    "requestMoviesCount": "请求{count}部影片",
     "@requestMoviesCount": {
         "description": "Submit button on the collection request sheet",
         "placeholders": {
@@ -8619,7 +8619,7 @@
             }
         }
     },
-    "requestingProgress": "正在请求第 {current}/{total} 部...",
+    "requestingProgress": "正在提交 {current}/{total}……",
     "@requestingProgress": {
         "description": "Progress label while collection requests are submitted",
         "placeholders": {
@@ -8631,7 +8631,7 @@
             }
         }
     },
-    "requestedMoviesCount": "已请求 {count} 部电影",
+    "requestedMoviesCount": "已提交{count}部影片请求",
     "@requestedMoviesCount": {
         "description": "Snackbar after a collection request succeeds",
         "placeholders": {
@@ -8640,7 +8640,7 @@
             }
         }
     },
-    "requestedMoviesPartial": "已请求 {total} 部电影中的 {ok} 部",
+    "requestedMoviesPartial": "成功{ok}部，总计{total}部",
     "@requestedMoviesPartial": {
         "description": "Snackbar when some collection requests failed",
         "placeholders": {
@@ -8652,35 +8652,35 @@
             }
         }
     },
-    "collectionAllRequested": "所有电影均已可用或已请求",
+    "collectionAllRequested": "合集全部影片已拥有或已提交请求",
     "@collectionAllRequested": {
         "description": "Shown instead of the request button when nothing is requestable"
     },
-    "reportIssue": "报告问题",
+    "reportIssue": "反馈媒体问题",
     "@reportIssue": {
         "description": "Button on the seerr detail screen to report a media issue"
     },
-    "issueTypeVideo": "视频",
+    "issueTypeVideo": "视频画面",
     "@issueTypeVideo": {
         "description": "Issue type option"
     },
-    "issueTypeAudio": "音频",
+    "issueTypeAudio": "音频音效",
     "@issueTypeAudio": {
         "description": "Issue type option"
     },
-    "whatsWrong": "遇到了什么问题？",
+    "whatsWrong": "问题描述？",
     "@whatsWrong": {
         "description": "Label for the issue description field"
     },
-    "allEpisodes": "所有剧集",
+    "allEpisodes": "全季所有集数",
     "@allEpisodes": {
         "description": "Episode dropdown option covering the whole season"
     },
-    "episode": "剧集",
+    "episode": "单集",
     "@episode": {
         "description": "Episode dropdown label"
     },
-    "openStatus": "未解决",
+    "openStatus": "待处理",
     "@openStatus": {
         "description": "Issue status label"
     },
@@ -8688,15 +8688,15 @@
     "@resolvedStatus": {
         "description": "Issue status label"
     },
-    "resolveAction": "解决",
+    "resolveAction": "标记已解决",
     "@resolveAction": {
         "description": "Button to resolve an issue"
     },
-    "reopenAction": "重新打开",
+    "reopenAction": "重新开启反馈",
     "@reopenAction": {
         "description": "Button to reopen a resolved issue"
     },
-    "reportedByName": "由 {name} 报告",
+    "reportedByName": "反馈人：{name}",
     "@reportedByName": {
         "description": "Label showing who reported an issue",
         "placeholders": {
@@ -8705,7 +8705,7 @@
             }
         }
     },
-    "commentsCount": "{count} 条评论",
+    "commentsCount": "{count}条评论",
     "@commentsCount": {
         "description": "Number of comments on an issue",
         "placeholders": {
@@ -8718,88 +8718,88 @@
     "@addComment": {
         "description": "Hint for the issue comment field"
     },
-    "deleteIssueConfirm": "删除此问题？",
+    "deleteIssueConfirm": "确定删除这条反馈？",
     "@deleteIssueConfirm": {
         "description": "Confirmation before deleting an issue"
     },
-    "submitReport": "提交报告",
+    "submitReport": "提交反馈",
     "@submitReport": {
         "description": "Button to submit an issue report"
     },
     "adminEditTuner": "编辑调谐器",
-    "adminTunerTypeM3u": "M3U 调谐器",
-    "adminTunerTypeHdHomerun": "HDHomeRun",
-    "adminTunerFileOrUrl": "文件或 URL",
+    "adminTunerTypeM3u": "M3U 直播源调谐器",
+    "adminTunerTypeHdHomerun": "HDHomeRun 硬件调谐器",
+    "adminTunerFileOrUrl": "文件/网络地址",
     "adminTunerIpAddress": "调谐器 IP 地址",
-    "adminTunerFriendlyName": "友好名称",
-    "adminTunerUserAgent": "用户代理",
-    "adminTunerCount": "同时连接数上限",
-    "adminTunerCountHelp": "调谐器同时允许的最大串流数量。设为 0 表示不限制。",
+    "adminTunerFriendlyName": "自定义名称",
+    "adminTunerUserAgent": "UA 客户端标识",
+    "adminTunerCount": "最大并发流数量",
+    "adminTunerCountHelp": "调谐器同时允许的最大播放流，填 0 代表无限制。",
     "adminTunerFallbackBitrate": "备用最大串流码率",
-    "adminTunerImportFavoritesOnly": "仅导入收藏的频道",
-    "adminTunerAllowHwTranscoding": "允许硬件转码",
-    "adminTunerAllowFmp4": "允许 fMP4 转码容器",
-    "adminTunerAllowStreamSharing": "允许共享串流",
-    "adminTunerEnableStreamLooping": "启用串流循环",
-    "adminTunerIgnoreDts": "忽略 DTS",
-    "adminTunerReadAtNativeFramerate": "以原始帧率读取输入",
-    "adminEditProvider": "编辑提供程序",
-    "adminProviderXmltv": "XMLTV",
-    "adminProviderSchedulesDirect": "Schedules Direct",
-    "adminXmltvPath": "文件或 URL",
-    "adminXmltvMoviePrefix": "电影前缀",
-    "adminXmltvMovieCategories": "电影类别",
-    "adminXmltvCategoriesHelp": "多个类别之间请用竖线分隔。",
-    "adminXmltvKidsCategories": "儿童类别",
-    "adminXmltvNewsCategories": "新闻类别",
-    "adminXmltvSportsCategories": "体育类别",
-    "adminSdUsername": "用户名",
+    "adminTunerImportFavoritesOnly": "仅导入收藏频道",
+    "adminTunerAllowHwTranscoding": "启用硬件转码",
+    "adminTunerAllowFmp4": "允许 fMP4 封装转码",
+    "adminTunerAllowStreamSharing": "开启播放流共享",
+    "adminTunerEnableStreamLooping": "启用直播循环播放",
+    "adminTunerIgnoreDts": "忽略 DTS 音轨",
+    "adminTunerReadAtNativeFramerate": "按原始帧率读取源文件",
+    "adminEditProvider": "编辑节目源",
+    "adminProviderXmltv": "XMLTV 节目单",
+    "adminProviderSchedulesDirect": "Schedules Direct 节目源",
+    "adminXmltvPath": "文件/节目单链接",
+    "adminXmltvMoviePrefix": "电影分类前缀",
+    "adminXmltvMovieCategories": "电影分类标签",
+    "adminXmltvCategoriesHelp": "多分类使用竖线 | 分隔。",
+    "adminXmltvKidsCategories": "少儿分类标签",
+    "adminXmltvNewsCategories": "新闻分类标签",
+    "adminXmltvSportsCategories": "体育分类标签",
+    "adminSdUsername": "账号",
     "adminSdPassword": "密码",
     "adminSdCountry": "国家/地区",
-    "adminSdCountrySelect": "选择国家/地区",
+    "adminSdCountrySelect": "选择地区",
     "adminSdPostalCode": "邮政编码",
-    "adminSdGetListings": "获取节目单",
-    "adminSdListings": "节目单",
-    "adminEnableAllTuners": "启用所有调谐器",
+    "adminSdGetListings": "拉取节目单",
+    "adminSdListings": "电视节目单",
+    "adminEnableAllTuners": "启用全部调谐器",
     "adminPlaybackVppTonemappingBrightness": "VPP 色调映射亮度",
     "adminPlaybackVppTonemappingContrast": "VPP 色调映射对比度",
-    "adminPlaybackDeinterlaceDoubleRate": "去隔行时将帧率加倍",
-    "adminPlaybackThrottleDelay": "节流延迟（秒）",
-    "adminPlaybackEnableSubtitleExtraction": "允许实时提取字幕",
-    "adminGeneralDisplayLanguage": "首选显示语言",
-    "offlineBannerTitle": "你已离线",
-    "offlineBannerSubtitle": "正在显示已下载内容",
-    "offlineBannerAction": "下载",
-    "serverUnreachableBannerTitle": "无法连接到服务器",
-    "serverUnreachableBannerSubtitle": "恢复前将播放已下载内容",
-    "contextMenuHideFromContinueWatching": "从“继续观看”中隐藏",
+    "adminPlaybackDeinterlaceDoubleRate": "去隔行时倍帧输出",
+    "adminPlaybackThrottleDelay": "播放节流延迟（秒）",
+    "adminPlaybackEnableSubtitleExtraction": "实时提取内嵌字幕",
+    "adminGeneralDisplayLanguage": "界面首选语言",
+    "offlineBannerTitle": "当前离线状态",
+    "offlineBannerSubtitle": "仅展示本地离线下载内容",
+    "offlineBannerAction": "离线下载",
+    "serverUnreachableBannerTitle": "无法连接媒体服务器",
+    "serverUnreachableBannerSubtitle": "服务器恢复前仅播放本地缓存影片",
+    "contextMenuHideFromContinueWatching": "从继续观看列表隐藏",
     "@contextMenuHideFromContinueWatching": {
         "description": "Context menu action to hide an item from the Continue Watching section"
     },
-    "contextMenuHideFromNextUp": "从“接下来播放”中隐藏",
+    "contextMenuHideFromNextUp": "从待播剧集列表隐藏",
     "@contextMenuHideFromNextUp": {
         "description": "Context menu action to hide a show from the Next Up section"
     },
-    "contextMenuAddToCollection": "添加到合集",
+    "contextMenuAddToCollection": "添加至影片合集",
     "@contextMenuAddToCollection": {
         "description": "Context menu action to add an item to a collection"
     },
-    "settingsDetailsScreen": "详情界面",
-    "settingsDetailsScreenSubtitle": "样式、背景模糊和标签页行为",
-    "hideBackdropsInLibraries": "浏览时隐藏背景图？",
+    "settingsDetailsScreen": "媒体详情页设置",
+    "settingsDetailsScreenSubtitle": "页面样式、背景模糊、标签交互逻辑",
+    "hideBackdropsInLibraries": "浏览库时隐藏背景海报？",
     "@hideBackdropsInLibraries": {
         "description": "Setting title to show/hide backdrops when browsing library pages"
     },
-    "layout": "布局",
-    "theme": "主题",
-    "keyboard": "键盘",
-    "navButtons": "按钮",
-    "rendering": "渲染",
-    "mpvConfiguration": "MPV 配置",
-    "imdbTop250Movies": "IMDb 250 佳片",
-    "imdbTop250TvShows": "IMDb 剧集 250 佳作",
-    "imdbMostPopularMovies": "IMDb 最热门电影",
-    "imdbMostPopularTvShows": "IMDb 最热门剧集",
-    "imdbLowestRatedMovies": "IMDb 评分最低电影",
-    "imdbTopEnglishMovies": "IMDb 英语片高分榜"
+    "layout": "界面布局",
+    "theme": "主题外观",
+    "keyboard": "键盘快捷键",
+    "navButtons": "导航按钮",
+    "rendering": "渲染设置",
+    "mpvConfiguration": "MPV 播放器参数",
+    "imdbTop250Movies": "IMDb Top250 电影",
+    "imdbTop250TvShows": "IMDb Top250 电视剧",
+    "imdbMostPopularMovies": "IMDb 热门电影榜单",
+    "imdbMostPopularTvShows": "IMDb 热门电视剧榜单",
+    "imdbLowestRatedMovies": "IMDb 低分电影榜单",
+    "imdbTopEnglishMovies": "IMDb 高分英语电影"
 }
